@@ -6,8 +6,6 @@ package notion
 
 import (
 	"context"
-	"encoding/base64"
-	"errors"
 	"net/http"
 	"net/url"
 	"strings"
@@ -41,24 +39,13 @@ var (
 type Client struct {
 	// The HTTP client to use for requests.
 	cli *http.Client
-	// The authorization header to use.
-	authHeader string
+	// The bearer token to use.
+	Bearer string
 }
 
-// NewClient creates a new Client with the given username and password to be used for basic authentication.
-func NewClient(username, password string) (*Client, error) {
-	if username == "" {
-		return nil, errors.New("username is empty")
-	}
-
-	if password == "" {
-		return nil, errors.New("password is empty")
-	}
-
-	return &Client{
-		authHeader: "Basic " + base64.StdEncoding.EncodeToString([]byte(username+":"+password)),
-		cli:        http.DefaultClient,
-	}, nil
+// NewClient creates a new Client.
+func NewClient() (*Client, error) {
+	return &Client{cli: http.DefaultClient}, nil
 }
 
 // GetPage defines an operation.
@@ -76,7 +63,6 @@ func GetPage[R any](ctx context.Context, c *Client, id uuid.UUID) (*R, error) {
 	u := baseURL.JoinPath("pages", id.String())
 	req := (&http.Request{
 		Header: http.Header{
-			"Authorization": []string{c.authHeader},
 			"NotionVersion": []string{"2022-06-28"},
 			"User-Agent":    []string{userAgent},
 		},

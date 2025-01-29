@@ -37,19 +37,7 @@ func (t *testRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) 
 func TestClient_Error(t *testing.T) {
 	ctx := context.Background()
 
-	if _, err := notion.NewClient("", ""); err == nil {
-		t.Fatal("expected error")
-	} else if "username is empty" != err.Error() {
-		t.Fatalf("want: username is empty, got: %v", err)
-	}
-
-	if _, err := notion.NewClient("myUsername", ""); err == nil {
-		t.Fatal("expected error")
-	} else if "password is empty" != err.Error() {
-		t.Fatalf("want: password is empty, got: %v", err)
-	}
-
-	c, err := notion.NewClient("myUsername", "myPassword")
+	c, err := notion.NewClient()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -184,7 +172,7 @@ func getBody(r *http.Request) string {
 func TestClient_VCR(t *testing.T) {
 	ctx := context.Background()
 
-	c, err := notion.NewClient("myUsername", "myPassword")
+	c, err := notion.NewClient()
 	if err != nil {
 		t.Fatal(err)
 	}
