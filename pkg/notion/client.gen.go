@@ -42,7 +42,7 @@ type Client struct {
 	// The HTTP client to use for requests.
 	cli *http.Client
 	// The bearer token to use.
-	Bearer string
+	bearer string
 }
 
 // NewClient creates a new Client, setting the bearer token to [os.Getenv]("NOTION_TOKEN").
@@ -53,7 +53,7 @@ func NewClient() (*Client, error) {
 	}
 
 	return &Client{
-		Bearer: "Bearer " + strings.TrimPrefix(bearer, "Bearer "),
+		bearer: "Bearer " + strings.TrimPrefix(bearer, "Bearer "),
 		cli:    http.DefaultClient,
 	}, nil
 }
@@ -73,7 +73,7 @@ func GetPage[R any](ctx context.Context, c *Client, id uuid.UUID) (*R, error) {
 	u := baseURL.JoinPath("pages", id.String())
 	req := (&http.Request{
 		Header: http.Header{
-			"Authorization": []string{c.Bearer},
+			"Authorization": []string{c.bearer},
 			"NotionVersion": []string{"2022-06-28"},
 			"User-Agent":    []string{userAgent},
 		},
