@@ -58,14 +58,14 @@ func NewClient() (*Client, error) {
 	}, nil
 }
 
-// GetPage defines an operation.
+// Retrieves a Page object using the ID in the request path. This endpoint exposes page properties, not page content.
 //
 //	GET /pages/{id}
 func (c *Client) GetPage(ctx context.Context, id uuid.UUID) (*Page, error) {
 	return GetPage[Page](ctx, c, id)
 }
 
-// GetPage defines an operation.
+// Retrieves a Page object using the ID in the request path. This endpoint exposes page properties, not page content.
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /pages/{id}

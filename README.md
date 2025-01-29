@@ -21,7 +21,7 @@ go get github.com/go-api-libs/notion/pkg/notion
 
 ## Usage
 
-### Example: 
+### Example: Retrieve a Page
 
 ```go
 package main

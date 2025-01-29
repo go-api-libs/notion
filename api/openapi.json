@@ -21,6 +21,11 @@
         }
       ],
       "get": {
+        "tags": [
+          "Pages"
+        ],
+        "summary": "Retrieve a Page",
+        "description": "Retrieves a Page object using the ID in the request path. This endpoint exposes page properties, not page content.",
         "operationId": "GetPage",
         "responses": {
           "200": {
@@ -610,7 +615,7 @@
     "securitySchemes": {
       "BearerToken": {
         "type": "http",
-        "name": "NotionToken",
+        "name": "NOTION_TOKEN",
         "scheme": "bearer",
         "bearerFormat": "Bearer"
       }
