@@ -93,7 +93,7 @@ func GetPage[R any](ctx context.Context, c *Client, id uuid.UUID) (*R, error) {
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
-		// TODO
+		// Returns the page that was requested or created.
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R

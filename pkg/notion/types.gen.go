@@ -11,7 +11,13 @@ import (
 	"github.com/google/uuid"
 )
 
-// Page defines a model
+/*
+The Page object contains the [property values](https://developers.notion.com/reference/property-value-object) of a single Notion page.
+
+All pages have a parent. If the parent is a [database](https://developers.notion.com/reference/database), the property values conform to the schema laid out database's [properties](https://developers.notion.com/reference/property-object). Otherwise, the only property value is the `title`.
+
+Page content is available as [blocks](https://developers.notion.com/reference/block). The content can be read using [retrieve block children](https://developers.notion.com/reference/get-block-children) and appended using [append block children](https://developers.notion.com/reference/patch-block-children).
+*/
 type Page struct {
 	Object         string           `json:"object,omitzero"`
 	ID             uuid.UUID        `json:"id,omitzero"`
