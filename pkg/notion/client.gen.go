@@ -8,6 +8,7 @@ import (
 	"context"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 
 	"github.com/MarkRosemaker/jsonutil"
@@ -43,9 +44,12 @@ type Client struct {
 	Bearer string
 }
 
-// NewClient creates a new Client.
+// NewClient creates a new Client, setting the bearer token to [os.Getenv]("NOTION_TOKEN").
 func NewClient() (*Client, error) {
-	return &Client{cli: http.DefaultClient}, nil
+	return &Client{
+		Bearer: "Bearer " + strings.TrimPrefix(os.Getenv("NOTION_TOKEN"), "Bearer "),
+		cli:    http.DefaultClient,
+	}, nil
 }
 
 // GetPage defines an operation.
