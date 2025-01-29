@@ -11,10 +11,13 @@
     }
   ],
   "paths": {
-    "/pages/96245c8f-1784-44a4-82ad-1941127c3ec3": {
+    "/pages/{id}": {
       "parameters": [
         {
           "$ref": "#/components/parameters/NotionVersion"
+        },
+        {
+          "$ref": "#/components/parameters/id"
         }
       ],
       "get": {
@@ -590,6 +593,16 @@
           "type": "string"
         },
         "example": "2022-06-28"
+      },
+      "id": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "96245c8f-1784-44a4-82ad-1941127c3ec3"
+        },
+        "example": "96245c8f-1784-44a4-82ad-1941127c3ec3"
       }
     },
     "securitySchemes": {

@@ -1,0 +1,75 @@
+---
+version: 2
+interactions:
+    - id: 0
+      request:
+        proto: HTTP/1.1
+        proto_major: 1
+        proto_minor: 1
+        content_length: 0
+        transfer_encoding: []
+        trailer: {}
+        host: api.notion.com
+        remote_addr: ""
+        request_uri: ""
+        body: ""
+        form: {}
+        headers:
+            Authorization:
+                - Bearer **************************************************
+            Notion-Version:
+                - "2022-06-28"
+        url: https://api.notion.com/v1/pages/96245c8f-1784-44a4-82ad-1941127c3ec3
+        method: GET
+      response:
+        proto: HTTP/2.0
+        proto_major: 2
+        proto_minor: 0
+        transfer_encoding: []
+        trailer: {}
+        content_length: -1
+        uncompressed: true
+        body: "{\"object\":\"page\",\"id\":\"96245c8f-1784-44a4-82ad-1941127c3ec3\",\"created_time\":\"2022-07-14T05:31:00.000Z\",\"last_edited_time\":\"2024-10-14T11:26:00.000Z\",\"created_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"last_edited_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"cover\":{\"type\":\"external\",\"external\":{\"url\":\"https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg\"}},\"icon\":{\"type\":\"emoji\",\"emoji\":\"\U0001F304\"},\"parent\":{\"type\":\"page_id\",\"page_id\":\"11f88fcd-daf4-802e-b645-eb2d041a759b\"},\"archived\":false,\"in_trash\":false,\"properties\":{\"title\":{\"id\":\"title\",\"type\":\"title\",\"title\":[{\"type\":\"text\",\"text\":{\"content\":\"Example Page\",\"link\":null},\"annotations\":{\"bold\":false,\"italic\":false,\"strikethrough\":false,\"underline\":false,\"code\":false,\"color\":\"default\"},\"plain_text\":\"Example Page\",\"href\":null}]}},\"url\":\"https://www.notion.so/Example-Page-96245c8f178444a482ad1941127c3ec3\",\"public_url\":\"https://fae-tools.notion.site/Example-Page-96245c8f178444a482ad1941127c3ec3\",\"request_id\":\"3c2a24a7-a814-4d9f-a78a-24a1d832d367\"}"
+        headers:
+            Alt-Svc:
+                - h3=":443"; ma=86400
+            Cf-Cache-Status:
+                - DYNAMIC
+            Cf-Ray:
+                - 909c86aedcfd0c3c-MRS
+            Content-Security-Policy:
+                - default-src 'none'
+            Content-Type:
+                - application/json; charset=utf-8
+            Date:
+                - Wed, 29 Jan 2025 22:05:52 GMT
+            Etag:
+                - W/"43d-iZTzZ4TUTkjikzqkBHSkYdXNusc"
+            Referrer-Policy:
+                - strict-origin-when-cross-origin
+            Server:
+                - cloudflare
+            Set-Cookie:
+                - __cf_bm=wCQ8G6TaX.whJOA72FBRbH6Yy.x.xlYdhJA7Bj4mQ8U-1738188352-1.0.1.1-Fz4LH_7Cn40JQMFTpvo3Q_ztZx1Awl_8hYBXO.gTj9qESqes1VgWeixcHiRyhdVQRl2y9c49hcNw9yYvYCZkmg; path=/; expires=Wed, 29-Jan-25 22:35:52 GMT; domain=.notion.com; HttpOnly; Secure; SameSite=None
+                - _cfuvid=lXxwu80phcWAVswyO4wWaU6DE6ml0_FY9turJIzdsmo-1738188352903-0.0.1.1-604800000; path=/; domain=.notion.com; HttpOnly; Secure; SameSite=None
+            Strict-Transport-Security:
+                - max-age=31536000; includeSubDomains; preload
+            Vary:
+                - Accept-Encoding
+            X-Content-Type-Options:
+                - nosniff
+            X-Dns-Prefetch-Control:
+                - "off"
+            X-Download-Options:
+                - noopen
+            X-Frame-Options:
+                - SAMEORIGIN
+            X-Notion-Request-Id:
+                - 3c2a24a7-a814-4d9f-a78a-24a1d832d367
+            X-Permitted-Cross-Domain-Policies:
+                - none
+            X-Xss-Protection:
+                - "0"
+        status: 200 OK
+        code: 200
+        duration: 1.489831458s

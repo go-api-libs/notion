@@ -39,7 +39,7 @@ func main() {
 	}
 
 	ctx := context.Background()
-	get96245c8f178444a482ad1941127c3ec3OkJSONResponse, err := c.Get96245c8f178444a482ad1941127c3ec3(ctx)
+	get96245c8f178444a482ad1941127c3ec3OkJSONResponse, err := c.Get96245c8f178444a482ad1941127c3ec3(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3")
 	if err != nil {
 		panic(err)
 	}

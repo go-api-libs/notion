@@ -47,17 +47,17 @@ func NewClient() (*Client, error) {
 
 // Get96245c8f178444a482ad1941127c3ec3 defines an operation.
 //
-//	GET /pages/96245c8f-1784-44a4-82ad-1941127c3ec3
-func (c *Client) Get96245c8f178444a482ad1941127c3ec3(ctx context.Context) (*Get96245c8f178444a482ad1941127c3ec3OkJSONResponse, error) {
-	return Get96245c8f178444a482ad1941127c3ec3[Get96245c8f178444a482ad1941127c3ec3OkJSONResponse](ctx, c)
+//	GET /pages/{id}
+func (c *Client) Get96245c8f178444a482ad1941127c3ec3(ctx context.Context, id string) (*Get96245c8f178444a482ad1941127c3ec3OkJSONResponse, error) {
+	return Get96245c8f178444a482ad1941127c3ec3[Get96245c8f178444a482ad1941127c3ec3OkJSONResponse](ctx, c, id)
 }
 
 // Get96245c8f178444a482ad1941127c3ec3 defines an operation.
 // You can define a custom result to unmarshal the response into.
 //
-//	GET /pages/96245c8f-1784-44a4-82ad-1941127c3ec3
-func Get96245c8f178444a482ad1941127c3ec3[R any](ctx context.Context, c *Client) (*R, error) {
-	u := baseURL.JoinPath("/pages/96245c8f-1784-44a4-82ad-1941127c3ec3")
+//	GET /pages/{id}
+func Get96245c8f178444a482ad1941127c3ec3[R any](ctx context.Context, c *Client, id string) (*R, error) {
+	u := baseURL.JoinPath("pages", id)
 	req := (&http.Request{
 		Header:     http.Header{"User-Agent": []string{userAgent}},
 		Host:       u.Host,
