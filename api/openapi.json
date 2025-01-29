@@ -610,6 +610,7 @@
     "securitySchemes": {
       "NOTION_TOKEN": {
         "type": "http",
+        "name": "NOTION_TOKEN",
         "scheme": "bearer",
         "bearerFormat": "Bearer"
       }
