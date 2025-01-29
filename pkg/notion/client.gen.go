@@ -6,6 +6,7 @@ package notion
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/url"
 	"os"
@@ -46,8 +47,12 @@ type Client struct {
 
 // NewClient creates a new Client, setting the bearer token to [os.Getenv]("NOTION_TOKEN").
 func NewClient() (*Client, error) {
+	bearer := os.Getenv("NOTION_TOKEN")
+	if bearer == "" {
+		return nil, errors.New("bearer token \"NOTION_TOKEN\" not provided")
+	}
 	return &Client{
-		Bearer: "Bearer " + strings.TrimPrefix(os.Getenv("NOTION_TOKEN"), "Bearer "),
+		Bearer: "Bearer " + strings.TrimPrefix(bearer, "Bearer "),
 		cli:    http.DefaultClient,
 	}, nil
 }
