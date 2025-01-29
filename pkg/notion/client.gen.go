@@ -13,6 +13,7 @@ import (
 	"github.com/MarkRosemaker/jsonutil"
 	"github.com/go-api-libs/api"
 	"github.com/go-json-experiment/json"
+	"github.com/google/uuid"
 )
 
 const (
@@ -48,7 +49,7 @@ func NewClient() (*Client, error) {
 // GetPage defines an operation.
 //
 //	GET /pages/{id}
-func (c *Client) GetPage(ctx context.Context, id string) (*Page, error) {
+func (c *Client) GetPage(ctx context.Context, id uuid.UUID) (*Page, error) {
 	return GetPage[Page](ctx, c, id)
 }
 
@@ -56,8 +57,8 @@ func (c *Client) GetPage(ctx context.Context, id string) (*Page, error) {
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /pages/{id}
-func GetPage[R any](ctx context.Context, c *Client, id string) (*R, error) {
-	u := baseURL.JoinPath("pages", id)
+func GetPage[R any](ctx context.Context, c *Client, id uuid.UUID) (*R, error) {
+	u := baseURL.JoinPath("pages", id.String())
 	req := (&http.Request{
 		Header:     http.Header{"User-Agent": []string{userAgent}},
 		Host:       u.Host,

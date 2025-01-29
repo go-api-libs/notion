@@ -20,6 +20,7 @@ import (
 
 	"github.com/go-api-libs/api"
 	"github.com/go-api-libs/notion/pkg/notion"
+	"github.com/google/uuid"
 	"gopkg.in/dnaeon/go-vcr.v3/cassette"
 	"gopkg.in/dnaeon/go-vcr.v3/recorder"
 )
@@ -45,7 +46,7 @@ func TestClient_Error(t *testing.T) {
 		testErr := errors.New("test error")
 		http.DefaultClient.Transport = &testRoundTripper{err: testErr}
 
-		if _, err := c.GetPage(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3"); err == nil {
+		if _, err := c.GetPage(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3")); err == nil {
 			t.Fatal("expected error")
 		} else if !errors.Is(err, testErr) {
 			t.Fatalf("want: %v, got: %v", testErr, err)
@@ -59,7 +60,7 @@ func TestClient_Error(t *testing.T) {
 			// unknown status code
 			http.DefaultClient.Transport = &testRoundTripper{rsp: &http.Response{StatusCode: http.StatusTeapot}}
 
-			if _, err := c.GetPage(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3"); err == nil {
+			if _, err := c.GetPage(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3")); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownStatusCode) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownStatusCode, err)
@@ -71,7 +72,7 @@ func TestClient_Error(t *testing.T) {
 				StatusCode: http.StatusOK,
 			}}
 
-			if _, err := c.GetPage(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3"); err == nil {
+			if _, err := c.GetPage(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3")); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -84,7 +85,7 @@ func TestClient_Error(t *testing.T) {
 				StatusCode: http.StatusOK,
 			}}
 
-			if _, err := c.GetPage(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3"); err == nil {
+			if _, err := c.GetPage(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3")); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.As(err, &errDecode) {
 				t.Fatalf("want: %v, got: %v", errDecode, err)

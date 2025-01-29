@@ -30,6 +30,7 @@ import (
 	"context"
 
 	"github.com/go-api-libs/notion/pkg/notion"
+	"github.com/google/uuid"
 )
 
 func main() {
@@ -39,7 +40,7 @@ func main() {
 	}
 
 	ctx := context.Background()
-	page, err := c.GetPage(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3")
+	page, err := c.GetPage(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"))
 	if err != nil {
 		panic(err)
 	}

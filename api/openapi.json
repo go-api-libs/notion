@@ -600,6 +600,7 @@
         "required": true,
         "schema": {
           "type": "string",
+          "format": "uuid",
           "example": "96245c8f-1784-44a4-82ad-1941127c3ec3"
         },
         "example": "96245c8f-1784-44a4-82ad-1941127c3ec3"
