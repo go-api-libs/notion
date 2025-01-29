@@ -1,11 +1,17 @@
-# TODO
+# Notion API
 [![Go Reference](https://pkg.go.dev/badge/github.com/go-api-libs/notion.svg)](https://pkg.go.dev/github.com/go-api-libs/notion/pkg/notion)
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-3.1-blue)](/api/openapi.json)
 [![Go Report Card](https://goreportcard.com/badge/github.com/go-api-libs/notion)](https://goreportcard.com/report/github.com/go-api-libs/notion)
-![Code Coverage](https://img.shields.io/badge/coverage-0%25-red)
+![Code Coverage](https://img.shields.io/badge/coverage-20%25-red)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
+Hello and welcome!
 
+[Create an integration](https://www.notion.so/my-integrations) to retrieve an API token, add your database and page ID's as variables in the collection, and start making your requests!
+
+For our full documentation, including sample integrations and guides, visit [developers.notion.com](developers.notion.com)
+
+Need more help? Join our [developer community on Slack](https://join.slack.com/t/notiondevs/shared_invite/zt-lkrnk74h-YmPRroySRFGiqgjI193AqA/)
 
 ## Installation
 
@@ -16,6 +22,34 @@ go get github.com/go-api-libs/notion/pkg/notion
 ```
 
 ## Usage
+
+### Example: 
+
+```go
+package main
+
+import (
+	"context"
+
+	"github.com/go-api-libs/notion/pkg/notion"
+)
+
+func main() {
+	c, err := notion.NewClient()
+	if err != nil {
+		panic(err)
+	}
+
+	ctx := context.Background()
+	get96245c8f178444a482ad1941127c3ec3OkJSONResponse, err := c.Get96245c8f178444a482ad1941127c3ec3(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	// Use get96245c8f178444a482ad1941127c3ec3OkJSONResponse object
+}
+
+```
 
 ## Additional Information
 

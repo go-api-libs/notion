@@ -5,18 +5,33 @@
 package notion
 
 import (
+	"context"
 	"net/http"
+	"net/url"
+	"strings"
 
+	"github.com/MarkRosemaker/jsonutil"
+	"github.com/go-api-libs/api"
 	"github.com/go-json-experiment/json"
 )
 
 const (
-	userAgent = "NotionGoAPILibrary/1.0.0 (https://github.com/go-api-libs/notion)"
+	userAgent = "NotionGoAPILibrary/2022-06-28 (https://github.com/go-api-libs/notion)"
 )
 
 var (
+	baseURL = &url.URL{
+		Host:   "api.notion.com",
+		Path:   "/v1/pages",
+		Scheme: "https",
+	}
+
 	jsonOpts = json.JoinOptions(
-		json.RejectUnknownMembers(true))
+		json.RejectUnknownMembers(true),
+		json.WithMarshalers(json.JoinMarshalers(
+			json.MarshalToFunc(jsonutil.URLMarshal))),
+		json.WithUnmarshalers(json.JoinUnmarshalers(
+			json.UnmarshalFromFunc(jsonutil.URLUnmarshal))))
 )
 
 // Client conforms to the OpenAPI3 specification for this service.
@@ -28,4 +43,52 @@ type Client struct {
 // NewClient creates a new Client.
 func NewClient() (*Client, error) {
 	return &Client{cli: http.DefaultClient}, nil
+}
+
+// Get96245c8f178444a482ad1941127c3ec3 defines an operation.
+//
+//	GET /96245c8f-1784-44a4-82ad-1941127c3ec3
+func (c *Client) Get96245c8f178444a482ad1941127c3ec3(ctx context.Context) (*Get96245c8f178444a482ad1941127c3ec3OkJSONResponse, error) {
+	return Get96245c8f178444a482ad1941127c3ec3[Get96245c8f178444a482ad1941127c3ec3OkJSONResponse](ctx, c)
+}
+
+// Get96245c8f178444a482ad1941127c3ec3 defines an operation.
+// You can define a custom result to unmarshal the response into.
+//
+//	GET /96245c8f-1784-44a4-82ad-1941127c3ec3
+func Get96245c8f178444a482ad1941127c3ec3[R any](ctx context.Context, c *Client) (*R, error) {
+	u := baseURL.JoinPath("/96245c8f-1784-44a4-82ad-1941127c3ec3")
+	req := (&http.Request{
+		Header:     http.Header{"User-Agent": []string{userAgent}},
+		Host:       u.Host,
+		Method:     http.MethodGet,
+		Proto:      "HTTP/1.1",
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		URL:        u,
+	}).WithContext(ctx)
+
+	rsp, err := c.cli.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer rsp.Body.Close()
+
+	switch rsp.StatusCode {
+	case http.StatusOK:
+		// TODO
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out R
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				return nil, api.WrapDecodingError(rsp, err)
+			}
+
+			return &out, nil
+		default:
+			return nil, api.NewErrUnknownContentType(rsp)
+		}
+	default:
+		return nil, api.NewErrUnknownStatusCode(rsp)
+	}
 }

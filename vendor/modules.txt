@@ -1,3 +1,9 @@
+# github.com/MarkRosemaker/jsonutil v0.0.0-20250114201208-e81a63afd92c
+## explicit; go 1.23.2
+github.com/MarkRosemaker/jsonutil
+# github.com/go-api-libs/api v0.0.0-20241220213325-f2e74c88e4c9
+## explicit; go 1.23.2
+github.com/go-api-libs/api
 # github.com/go-json-experiment/json v0.0.0-20250129011340-4e0381018ad6
 ## explicit; go 1.23
 github.com/go-json-experiment/json
@@ -6,6 +12,9 @@ github.com/go-json-experiment/json/internal/jsonflags
 github.com/go-json-experiment/json/internal/jsonopts
 github.com/go-json-experiment/json/internal/jsonwire
 github.com/go-json-experiment/json/jsontext
+# github.com/google/uuid v1.6.0
+## explicit
+github.com/google/uuid
 # gopkg.in/dnaeon/go-vcr.v3 v3.2.0
 ## explicit; go 1.19
 gopkg.in/dnaeon/go-vcr.v3/cassette

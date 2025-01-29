@@ -1,10 +1,617 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "TODO",
-    "version": "1.0.0"
+    "title": "Notion API",
+    "description": "Hello and welcome!\n\n[Create an integration](https://www.notion.so/my-integrations) to retrieve an API token, add your database and page ID's as variables in the collection, and start making your requests!\n\nFor our full documentation, including sample integrations and guides, visit [developers.notion.com](developers.notion.com)\n\nNeed more help? Join our [developer community on Slack](https://join.slack.com/t/notiondevs/shared_invite/zt-lkrnk74h-YmPRroySRFGiqgjI193AqA/)",
+    "version": "2022-06-28"
   },
+  "servers": [
+    {
+      "url": "https://api.notion.com/v1/pages"
+    }
+  ],
   "paths": {
-    "/": {}
-  }
+    "/96245c8f-1784-44a4-82ad-1941127c3ec3": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/NotionVersion2"
+        }
+      ],
+      "get": {
+        "operationId": "Get96245c8f178444a482ad1941127c3ec3",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Get96245c8f178444a482ad1941127c3ec3OkResponse"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponse": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "example": "page"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "96245c8f-1784-44a4-82ad-1941127c3ec3"
+          },
+          "created_time": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2022-07-14T05:31:00.000Z"
+          },
+          "last_edited_time": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-10-14T11:26:00.000Z"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCreatedBy"
+          },
+          "last_edited_by": {
+            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponseLastEditedBy"
+          },
+          "cover": {
+            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCover"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponseIcon"
+          },
+          "parent": {
+            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponseParent"
+          },
+          "archived": {
+            "type": "boolean",
+            "example": false
+          },
+          "in_trash": {
+            "type": "boolean",
+            "example": false
+          },
+          "properties": {
+            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponseProperties"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://www.notion.so/Example-Page-96245c8f178444a482ad1941127c3ec3"
+          },
+          "public_url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://fae-tools.notion.site/Example-Page-96245c8f178444a482ad1941127c3ec3"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "3620d8d3-11e4-473b-87c9-fddfa7801d6d"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "created_time",
+          "last_edited_time",
+          "created_by",
+          "last_edited_by",
+          "cover",
+          "icon",
+          "parent",
+          "archived",
+          "in_trash",
+          "properties",
+          "url",
+          "public_url",
+          "request_id"
+        ],
+        "example": {
+          "object": "page",
+          "id": "96245c8f-1784-44a4-82ad-1941127c3ec3",
+          "created_time": "2022-07-14T05:31:00.000Z",
+          "last_edited_time": "2024-10-14T11:26:00.000Z",
+          "created_by": {
+            "object": "user",
+            "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+          },
+          "last_edited_by": {
+            "object": "user",
+            "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+          },
+          "cover": {
+            "type": "external",
+            "external": {
+              "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
+            }
+          },
+          "icon": {
+            "type": "emoji",
+            "emoji": "🌄"
+          },
+          "parent": {
+            "type": "page_id",
+            "page_id": "11f88fcd-daf4-802e-b645-eb2d041a759b"
+          },
+          "archived": false,
+          "in_trash": false,
+          "properties": {
+            "title": {
+              "id": "title",
+              "type": "title",
+              "title": [
+                {
+                  "type": "text",
+                  "text": {
+                    "content": "Example Page",
+                    "link": null
+                  },
+                  "annotations": {
+                    "bold": false,
+                    "italic": false,
+                    "strikethrough": false,
+                    "underline": false,
+                    "code": false,
+                    "color": "default"
+                  },
+                  "plain_text": "Example Page",
+                  "href": null
+                }
+              ]
+            }
+          },
+          "url": "https://www.notion.so/Example-Page-96245c8f178444a482ad1941127c3ec3",
+          "public_url": "https://fae-tools.notion.site/Example-Page-96245c8f178444a482ad1941127c3ec3",
+          "request_id": "3620d8d3-11e4-473b-87c9-fddfa7801d6d"
+        }
+      },
+      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCover": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "external"
+          },
+          "external": {
+            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCoverExternal"
+          }
+        },
+        "required": [
+          "type",
+          "external"
+        ],
+        "example": {
+          "type": "external",
+          "external": {
+            "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
+          }
+        }
+      },
+      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCoverExternal": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "example": {
+          "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
+        }
+      },
+      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCreatedBy": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "example": "user"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+          }
+        },
+        "required": [
+          "object",
+          "id"
+        ],
+        "example": {
+          "object": "user",
+          "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+        }
+      },
+      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponseIcon": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "emoji"
+          },
+          "emoji": {
+            "type": "string",
+            "example": "🌄"
+          }
+        },
+        "required": [
+          "type",
+          "emoji"
+        ],
+        "example": {
+          "type": "emoji",
+          "emoji": "🌄"
+        }
+      },
+      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponseLastEditedBy": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "example": "user"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+          }
+        },
+        "required": [
+          "object",
+          "id"
+        ],
+        "example": {
+          "object": "user",
+          "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+        }
+      },
+      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponseParent": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "page_id"
+          },
+          "page_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "11f88fcd-daf4-802e-b645-eb2d041a759b"
+          }
+        },
+        "required": [
+          "type",
+          "page_id"
+        ],
+        "example": {
+          "type": "page_id",
+          "page_id": "11f88fcd-daf4-802e-b645-eb2d041a759b"
+        }
+      },
+      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponseProperties": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitle"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "example": {
+          "title": {
+            "id": "title",
+            "type": "title",
+            "title": [
+              {
+                "type": "text",
+                "text": {
+                  "content": "Example Page",
+                  "link": null
+                },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Example Page",
+                "href": null
+              }
+            ]
+          }
+        }
+      },
+      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitle": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "title"
+          },
+          "type": {
+            "type": "string",
+            "example": "title"
+          },
+          "title": {
+            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitle"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "title"
+        ],
+        "example": {
+          "id": "title",
+          "type": "title",
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "Example Page",
+                "link": null
+              },
+              "annotations": {
+                "bold": false,
+                "italic": false,
+                "strikethrough": false,
+                "underline": false,
+                "code": false,
+                "color": "default"
+              },
+              "plain_text": "Example Page",
+              "href": null
+            }
+          ]
+        }
+      },
+      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitle": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItems"
+        },
+        "example": [
+          {
+            "type": "text",
+            "text": {
+              "content": "Example Page",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "Example Page",
+            "href": null
+          }
+        ]
+      },
+      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItems": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItemsText"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItemsAnnotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": "Example Page"
+          },
+          "href": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "type",
+          "text",
+          "annotations",
+          "plain_text",
+          "href"
+        ],
+        "example": {
+          "type": "text",
+          "text": {
+            "content": "Example Page",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Example Page",
+          "href": null
+        }
+      },
+      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItemsAnnotations": {
+        "type": "object",
+        "properties": {
+          "bold": {
+            "type": "boolean",
+            "example": false
+          },
+          "italic": {
+            "type": "boolean",
+            "example": false
+          },
+          "strikethrough": {
+            "type": "boolean",
+            "example": false
+          },
+          "underline": {
+            "type": "boolean",
+            "example": false
+          },
+          "code": {
+            "type": "boolean",
+            "example": false
+          },
+          "color": {
+            "type": "string",
+            "example": "default"
+          }
+        },
+        "required": [
+          "bold",
+          "italic",
+          "strikethrough",
+          "underline",
+          "code",
+          "color"
+        ],
+        "example": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        }
+      },
+      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItemsText": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "example": "Example Page"
+          },
+          "link": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "content",
+          "link"
+        ],
+        "example": {
+          "content": "Example Page",
+          "link": null
+        }
+      }
+    },
+    "responses": {
+      "Get96245c8f178444a482ad1941127c3ec3OkResponse": {
+        "description": "TODO",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponse"
+            },
+            "example": {
+              "object": "page",
+              "id": "96245c8f-1784-44a4-82ad-1941127c3ec3",
+              "created_time": "2022-07-14T05:31:00.000Z",
+              "last_edited_time": "2024-10-14T11:26:00.000Z",
+              "created_by": {
+                "object": "user",
+                "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+              },
+              "last_edited_by": {
+                "object": "user",
+                "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+              },
+              "cover": {
+                "type": "external",
+                "external": {
+                  "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
+                }
+              },
+              "icon": {
+                "type": "emoji",
+                "emoji": "🌄"
+              },
+              "parent": {
+                "type": "page_id",
+                "page_id": "11f88fcd-daf4-802e-b645-eb2d041a759b"
+              },
+              "archived": false,
+              "in_trash": false,
+              "properties": {
+                "title": {
+                  "id": "title",
+                  "type": "title",
+                  "title": [
+                    {
+                      "type": "text",
+                      "text": {
+                        "content": "Example Page",
+                        "link": null
+                      },
+                      "annotations": {
+                        "bold": false,
+                        "italic": false,
+                        "strikethrough": false,
+                        "underline": false,
+                        "code": false,
+                        "color": "default"
+                      },
+                      "plain_text": "Example Page",
+                      "href": null
+                    }
+                  ]
+                }
+              },
+              "url": "https://www.notion.so/Example-Page-96245c8f178444a482ad1941127c3ec3",
+              "public_url": "https://fae-tools.notion.site/Example-Page-96245c8f178444a482ad1941127c3ec3",
+              "request_id": "3620d8d3-11e4-473b-87c9-fddfa7801d6d"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "NotionVersion": {
+        "name": "NotionVersion",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "2022-06-28"
+      },
+      "NotionVersion2": {
+        "name": "NotionVersion",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "example": "2022-06-28"
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "Bearer"
+      }
+    }
+  },
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ]
 }
