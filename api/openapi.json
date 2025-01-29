@@ -24,7 +24,7 @@
         "operationId": "GetPage",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/GetPageOkResponse"
+            "$ref": "#/components/responses/PageResponse"
           }
         }
       }
@@ -515,7 +515,7 @@
       }
     },
     "responses": {
-      "GetPageOkResponse": {
+      "PageResponse": {
         "description": "TODO",
         "content": {
           "application/json": {
