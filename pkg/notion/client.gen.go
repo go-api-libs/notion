@@ -60,7 +60,10 @@ func (c *Client) GetPage(ctx context.Context, id uuid.UUID) (*Page, error) {
 func GetPage[R any](ctx context.Context, c *Client, id uuid.UUID) (*R, error) {
 	u := baseURL.JoinPath("pages", id.String())
 	req := (&http.Request{
-		Header:     http.Header{"User-Agent": []string{userAgent}},
+		Header: http.Header{
+			"NotionVersion": []string{""},
+			"User-Agent":    []string{userAgent},
+		},
 		Host:       u.Host,
 		Method:     http.MethodGet,
 		Proto:      "HTTP/1.1",
