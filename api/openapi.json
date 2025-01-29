@@ -14,7 +14,7 @@
     "/pages/96245c8f-1784-44a4-82ad-1941127c3ec3": {
       "parameters": [
         {
-          "$ref": "#/components/parameters/NotionVersion2"
+          "$ref": "#/components/parameters/NotionVersion"
         }
       ],
       "get": {
@@ -583,15 +583,6 @@
     },
     "parameters": {
       "NotionVersion": {
-        "name": "NotionVersion",
-        "in": "header",
-        "required": true,
-        "schema": {
-          "type": "string"
-        },
-        "example": "2022-06-28"
-      },
-      "NotionVersion2": {
         "name": "NotionVersion",
         "in": "header",
         "required": true,
