@@ -608,7 +608,7 @@
       }
     },
     "securitySchemes": {
-      "NOTION_TOKEN": {
+      "BearerToken": {
         "type": "http",
         "name": "NOTION_TOKEN",
         "scheme": "bearer",
@@ -618,7 +618,7 @@
   },
   "security": [
     {
-      "NOTION_TOKEN": []
+      "BearerToken": []
     }
   ]
 }
