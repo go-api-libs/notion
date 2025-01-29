@@ -590,7 +590,8 @@
         "in": "header",
         "required": true,
         "schema": {
-          "type": "string"
+          "type": "string",
+          "example": "2022-06-28"
         },
         "example": "2022-06-28"
       },
