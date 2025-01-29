@@ -45,18 +45,18 @@ func NewClient() (*Client, error) {
 	return &Client{cli: http.DefaultClient}, nil
 }
 
-// Get96245c8f178444a482ad1941127c3ec3 defines an operation.
+// GetPage defines an operation.
 //
 //	GET /pages/{id}
-func (c *Client) Get96245c8f178444a482ad1941127c3ec3(ctx context.Context, id string) (*Get96245c8f178444a482ad1941127c3ec3OkJSONResponse, error) {
-	return Get96245c8f178444a482ad1941127c3ec3[Get96245c8f178444a482ad1941127c3ec3OkJSONResponse](ctx, c, id)
+func (c *Client) GetPage(ctx context.Context, id string) (*GetPageOkJSONResponse, error) {
+	return GetPage[GetPageOkJSONResponse](ctx, c, id)
 }
 
-// Get96245c8f178444a482ad1941127c3ec3 defines an operation.
+// GetPage defines an operation.
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /pages/{id}
-func Get96245c8f178444a482ad1941127c3ec3[R any](ctx context.Context, c *Client, id string) (*R, error) {
+func GetPage[R any](ctx context.Context, c *Client, id string) (*R, error) {
 	u := baseURL.JoinPath("pages", id)
 	req := (&http.Request{
 		Header:     http.Header{"User-Agent": []string{userAgent}},

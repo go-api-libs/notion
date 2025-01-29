@@ -11,86 +11,86 @@ import (
 	"github.com/google/uuid"
 )
 
-// Get96245c8f178444a482ad1941127c3ec3OkJSONResponse defines a model
-type Get96245c8f178444a482ad1941127c3ec3OkJSONResponse struct {
-	Object         string                                                        `json:"object,omitzero"`
-	ID             uuid.UUID                                                     `json:"id,omitzero"`
-	CreatedTime    time.Time                                                     `json:"created_time,omitzero"`
-	LastEditedTime time.Time                                                     `json:"last_edited_time,omitzero"`
-	CreatedBy      Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCreatedBy    `json:"created_by"`
-	LastEditedBy   Get96245c8f178444a482ad1941127c3ec3OkJSONResponseLastEditedBy `json:"last_edited_by"`
-	Cover          Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCover        `json:"cover"`
-	Icon           Get96245c8f178444a482ad1941127c3ec3OkJSONResponseIcon         `json:"icon"`
-	Parent         Get96245c8f178444a482ad1941127c3ec3OkJSONResponseParent       `json:"parent"`
-	Archived       bool                                                          `json:"archived,omitzero"`
-	InTrash        bool                                                          `json:"in_trash,omitzero"`
-	Properties     Get96245c8f178444a482ad1941127c3ec3OkJSONResponseProperties   `json:"properties"`
-	URL            url.URL                                                       `json:"url,omitzero"`
-	PublicURL      url.URL                                                       `json:"public_url,omitzero"`
-	RequestID      uuid.UUID                                                     `json:"request_id,omitzero"`
+// GetPageOkJSONResponse defines a model
+type GetPageOkJSONResponse struct {
+	Object         string                            `json:"object,omitzero"`
+	ID             uuid.UUID                         `json:"id,omitzero"`
+	CreatedTime    time.Time                         `json:"created_time,omitzero"`
+	LastEditedTime time.Time                         `json:"last_edited_time,omitzero"`
+	CreatedBy      GetPageOkJSONResponseCreatedBy    `json:"created_by"`
+	LastEditedBy   GetPageOkJSONResponseLastEditedBy `json:"last_edited_by"`
+	Cover          GetPageOkJSONResponseCover        `json:"cover"`
+	Icon           GetPageOkJSONResponseIcon         `json:"icon"`
+	Parent         GetPageOkJSONResponseParent       `json:"parent"`
+	Archived       bool                              `json:"archived,omitzero"`
+	InTrash        bool                              `json:"in_trash,omitzero"`
+	Properties     GetPageOkJSONResponseProperties   `json:"properties"`
+	URL            url.URL                           `json:"url,omitzero"`
+	PublicURL      url.URL                           `json:"public_url,omitzero"`
+	RequestID      uuid.UUID                         `json:"request_id,omitzero"`
 }
 
-// Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCover defines a model
-type Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCover struct {
-	Type     string                                                         `json:"type,omitzero"`
-	External Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCoverExternal `json:"external"`
+// GetPageOkJSONResponseCover defines a model
+type GetPageOkJSONResponseCover struct {
+	Type     string                             `json:"type,omitzero"`
+	External GetPageOkJSONResponseCoverExternal `json:"external"`
 }
 
-// Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCoverExternal defines a model
-type Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCoverExternal struct {
+// GetPageOkJSONResponseCoverExternal defines a model
+type GetPageOkJSONResponseCoverExternal struct {
 	URL url.URL `json:"url,omitzero"`
 }
 
-// Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCreatedBy defines a model
-type Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCreatedBy struct {
+// GetPageOkJSONResponseCreatedBy defines a model
+type GetPageOkJSONResponseCreatedBy struct {
 	Object string    `json:"object,omitzero"`
 	ID     uuid.UUID `json:"id,omitzero"`
 }
 
-// Get96245c8f178444a482ad1941127c3ec3OkJSONResponseIcon defines a model
-type Get96245c8f178444a482ad1941127c3ec3OkJSONResponseIcon struct {
+// GetPageOkJSONResponseIcon defines a model
+type GetPageOkJSONResponseIcon struct {
 	Type  string `json:"type,omitzero"`
 	Emoji string `json:"emoji,omitzero"`
 }
 
-// Get96245c8f178444a482ad1941127c3ec3OkJSONResponseLastEditedBy defines a model
-type Get96245c8f178444a482ad1941127c3ec3OkJSONResponseLastEditedBy struct {
+// GetPageOkJSONResponseLastEditedBy defines a model
+type GetPageOkJSONResponseLastEditedBy struct {
 	Object string    `json:"object,omitzero"`
 	ID     uuid.UUID `json:"id,omitzero"`
 }
 
-// Get96245c8f178444a482ad1941127c3ec3OkJSONResponseParent defines a model
-type Get96245c8f178444a482ad1941127c3ec3OkJSONResponseParent struct {
+// GetPageOkJSONResponseParent defines a model
+type GetPageOkJSONResponseParent struct {
 	Type   string    `json:"type,omitzero"`
 	PageID uuid.UUID `json:"page_id,omitzero"`
 }
 
-// Get96245c8f178444a482ad1941127c3ec3OkJSONResponseProperties defines a model
-type Get96245c8f178444a482ad1941127c3ec3OkJSONResponseProperties struct {
-	Title Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitle `json:"title"`
+// GetPageOkJSONResponseProperties defines a model
+type GetPageOkJSONResponseProperties struct {
+	Title GetPageOkJSONResponsePropertiesTitle `json:"title"`
 }
 
-// Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitle defines a model
-type Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitle struct {
-	ID    string                                                                `json:"id,omitzero"`
-	Type  string                                                                `json:"type,omitzero"`
-	Title Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitle `json:"title,omitempty"`
+// GetPageOkJSONResponsePropertiesTitle defines a model
+type GetPageOkJSONResponsePropertiesTitle struct {
+	ID    string                                    `json:"id,omitzero"`
+	Type  string                                    `json:"type,omitzero"`
+	Title GetPageOkJSONResponsePropertiesTitleTitle `json:"title,omitempty"`
 }
 
-// Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitle defines a model
-type Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitle []Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItems
+// GetPageOkJSONResponsePropertiesTitleTitle defines a model
+type GetPageOkJSONResponsePropertiesTitleTitle []GetPageOkJSONResponsePropertiesTitleTitleItems
 
-// Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItems defines a model
-type Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItems struct {
-	Type        string                                                                                `json:"type,omitzero"`
-	Text        Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItemsText        `json:"text"`
-	Annotations Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItemsAnnotations `json:"annotations"`
-	PlainText   string                                                                                `json:"plain_text,omitzero"`
-	Href        struct{}                                                                              `json:"href"`
+// GetPageOkJSONResponsePropertiesTitleTitleItems defines a model
+type GetPageOkJSONResponsePropertiesTitleTitleItems struct {
+	Type        string                                                    `json:"type,omitzero"`
+	Text        GetPageOkJSONResponsePropertiesTitleTitleItemsText        `json:"text"`
+	Annotations GetPageOkJSONResponsePropertiesTitleTitleItemsAnnotations `json:"annotations"`
+	PlainText   string                                                    `json:"plain_text,omitzero"`
+	Href        struct{}                                                  `json:"href"`
 }
 
-// Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItemsAnnotations defines a model
-type Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItemsAnnotations struct {
+// GetPageOkJSONResponsePropertiesTitleTitleItemsAnnotations defines a model
+type GetPageOkJSONResponsePropertiesTitleTitleItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -99,8 +99,8 @@ type Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItemsA
 	Color         string `json:"color,omitzero"`
 }
 
-// Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItemsText defines a model
-type Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItemsText struct {
+// GetPageOkJSONResponsePropertiesTitleTitleItemsText defines a model
+type GetPageOkJSONResponsePropertiesTitleTitleItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }

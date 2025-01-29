@@ -45,7 +45,7 @@ func TestClient_Error(t *testing.T) {
 		testErr := errors.New("test error")
 		http.DefaultClient.Transport = &testRoundTripper{err: testErr}
 
-		if _, err := c.Get96245c8f178444a482ad1941127c3ec3(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3"); err == nil {
+		if _, err := c.GetPage(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3"); err == nil {
 			t.Fatal("expected error")
 		} else if !errors.Is(err, testErr) {
 			t.Fatalf("want: %v, got: %v", testErr, err)
@@ -55,11 +55,11 @@ func TestClient_Error(t *testing.T) {
 	t.Run("Unmarshal", func(t *testing.T) {
 		errDecode := &api.DecodingError{}
 
-		t.Run("Get96245c8f178444a482ad1941127c3ec3", func(t *testing.T) {
+		t.Run("GetPage", func(t *testing.T) {
 			// unknown status code
 			http.DefaultClient.Transport = &testRoundTripper{rsp: &http.Response{StatusCode: http.StatusTeapot}}
 
-			if _, err := c.Get96245c8f178444a482ad1941127c3ec3(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3"); err == nil {
+			if _, err := c.GetPage(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3"); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownStatusCode) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownStatusCode, err)
@@ -71,7 +71,7 @@ func TestClient_Error(t *testing.T) {
 				StatusCode: http.StatusOK,
 			}}
 
-			if _, err := c.Get96245c8f178444a482ad1941127c3ec3(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3"); err == nil {
+			if _, err := c.GetPage(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3"); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -84,7 +84,7 @@ func TestClient_Error(t *testing.T) {
 				StatusCode: http.StatusOK,
 			}}
 
-			if _, err := c.Get96245c8f178444a482ad1941127c3ec3(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3"); err == nil {
+			if _, err := c.GetPage(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3"); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.As(err, &errDecode) {
 				t.Fatalf("want: %v, got: %v", errDecode, err)
@@ -179,7 +179,7 @@ func TestClient_VCR(t *testing.T) {
 	t.Run("2025-01-30", func(t *testing.T) {
 		replay(t, "vcr/2025-01-30")
 
-		res, err := c.Get96245c8f178444a482ad1941127c3ec3(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3")
+		res, err := c.GetPage(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3")
 		if err != nil {
 			t.Fatal(err)
 		} else if res == nil {

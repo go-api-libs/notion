@@ -21,10 +21,10 @@
         }
       ],
       "get": {
-        "operationId": "Get96245c8f178444a482ad1941127c3ec3",
+        "operationId": "GetPage",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/Get96245c8f178444a482ad1941127c3ec3OkResponse"
+            "$ref": "#/components/responses/GetPageOkResponse"
           }
         }
       }
@@ -32,7 +32,7 @@
   },
   "components": {
     "schemas": {
-      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponse": {
+      "GetPageOkJSONResponse": {
         "type": "object",
         "properties": {
           "object": {
@@ -55,19 +55,19 @@
             "example": "2024-10-14T11:26:00.000Z"
           },
           "created_by": {
-            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCreatedBy"
+            "$ref": "#/components/schemas/GetPageOkJSONResponseCreatedBy"
           },
           "last_edited_by": {
-            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponseLastEditedBy"
+            "$ref": "#/components/schemas/GetPageOkJSONResponseLastEditedBy"
           },
           "cover": {
-            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCover"
+            "$ref": "#/components/schemas/GetPageOkJSONResponseCover"
           },
           "icon": {
-            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponseIcon"
+            "$ref": "#/components/schemas/GetPageOkJSONResponseIcon"
           },
           "parent": {
-            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponseParent"
+            "$ref": "#/components/schemas/GetPageOkJSONResponseParent"
           },
           "archived": {
             "type": "boolean",
@@ -78,7 +78,7 @@
             "example": false
           },
           "properties": {
-            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponseProperties"
+            "$ref": "#/components/schemas/GetPageOkJSONResponseProperties"
           },
           "url": {
             "type": "string",
@@ -172,7 +172,7 @@
           "request_id": "3620d8d3-11e4-473b-87c9-fddfa7801d6d"
         }
       },
-      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCover": {
+      "GetPageOkJSONResponseCover": {
         "type": "object",
         "properties": {
           "type": {
@@ -180,7 +180,7 @@
             "example": "external"
           },
           "external": {
-            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCoverExternal"
+            "$ref": "#/components/schemas/GetPageOkJSONResponseCoverExternal"
           }
         },
         "required": [
@@ -194,7 +194,7 @@
           }
         }
       },
-      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCoverExternal": {
+      "GetPageOkJSONResponseCoverExternal": {
         "type": "object",
         "properties": {
           "url": {
@@ -210,7 +210,7 @@
           "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
         }
       },
-      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponseCreatedBy": {
+      "GetPageOkJSONResponseCreatedBy": {
         "type": "object",
         "properties": {
           "object": {
@@ -232,7 +232,7 @@
           "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
         }
       },
-      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponseIcon": {
+      "GetPageOkJSONResponseIcon": {
         "type": "object",
         "properties": {
           "type": {
@@ -253,7 +253,7 @@
           "emoji": "🌄"
         }
       },
-      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponseLastEditedBy": {
+      "GetPageOkJSONResponseLastEditedBy": {
         "type": "object",
         "properties": {
           "object": {
@@ -275,7 +275,7 @@
           "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
         }
       },
-      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponseParent": {
+      "GetPageOkJSONResponseParent": {
         "type": "object",
         "properties": {
           "type": {
@@ -297,11 +297,11 @@
           "page_id": "11f88fcd-daf4-802e-b645-eb2d041a759b"
         }
       },
-      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponseProperties": {
+      "GetPageOkJSONResponseProperties": {
         "type": "object",
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitle"
+            "$ref": "#/components/schemas/GetPageOkJSONResponsePropertiesTitle"
           }
         },
         "required": [
@@ -333,7 +333,7 @@
           }
         }
       },
-      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitle": {
+      "GetPageOkJSONResponsePropertiesTitle": {
         "type": "object",
         "properties": {
           "id": {
@@ -345,7 +345,7 @@
             "example": "title"
           },
           "title": {
-            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitle"
+            "$ref": "#/components/schemas/GetPageOkJSONResponsePropertiesTitleTitle"
           }
         },
         "required": [
@@ -377,10 +377,10 @@
           ]
         }
       },
-      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitle": {
+      "GetPageOkJSONResponsePropertiesTitleTitle": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItems"
+          "$ref": "#/components/schemas/GetPageOkJSONResponsePropertiesTitleTitleItems"
         },
         "example": [
           {
@@ -402,7 +402,7 @@
           }
         ]
       },
-      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItems": {
+      "GetPageOkJSONResponsePropertiesTitleTitleItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -410,10 +410,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItemsText"
+            "$ref": "#/components/schemas/GetPageOkJSONResponsePropertiesTitleTitleItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItemsAnnotations"
+            "$ref": "#/components/schemas/GetPageOkJSONResponsePropertiesTitleTitleItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -448,7 +448,7 @@
           "href": null
         }
       },
-      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItemsAnnotations": {
+      "GetPageOkJSONResponsePropertiesTitleTitleItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -493,7 +493,7 @@
           "color": "default"
         }
       },
-      "Get96245c8f178444a482ad1941127c3ec3OkJSONResponsePropertiesTitleTitleItemsText": {
+      "GetPageOkJSONResponsePropertiesTitleTitleItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -515,12 +515,12 @@
       }
     },
     "responses": {
-      "Get96245c8f178444a482ad1941127c3ec3OkResponse": {
+      "GetPageOkResponse": {
         "description": "TODO",
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/Get96245c8f178444a482ad1941127c3ec3OkJSONResponse"
+              "$ref": "#/components/schemas/GetPageOkJSONResponse"
             },
             "example": {
               "object": "page",
