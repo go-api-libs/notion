@@ -11,86 +11,86 @@ import (
 	"github.com/google/uuid"
 )
 
-// GetPageOkJSONResponse defines a model
-type GetPageOkJSONResponse struct {
-	Object         string                            `json:"object,omitzero"`
-	ID             uuid.UUID                         `json:"id,omitzero"`
-	CreatedTime    time.Time                         `json:"created_time,omitzero"`
-	LastEditedTime time.Time                         `json:"last_edited_time,omitzero"`
-	CreatedBy      GetPageOkJSONResponseCreatedBy    `json:"created_by"`
-	LastEditedBy   GetPageOkJSONResponseLastEditedBy `json:"last_edited_by"`
-	Cover          GetPageOkJSONResponseCover        `json:"cover"`
-	Icon           GetPageOkJSONResponseIcon         `json:"icon"`
-	Parent         GetPageOkJSONResponseParent       `json:"parent"`
-	Archived       bool                              `json:"archived,omitzero"`
-	InTrash        bool                              `json:"in_trash,omitzero"`
-	Properties     GetPageOkJSONResponseProperties   `json:"properties"`
-	URL            url.URL                           `json:"url,omitzero"`
-	PublicURL      url.URL                           `json:"public_url,omitzero"`
-	RequestID      uuid.UUID                         `json:"request_id,omitzero"`
+// Page defines a model
+type Page struct {
+	Object         string           `json:"object,omitzero"`
+	ID             uuid.UUID        `json:"id,omitzero"`
+	CreatedTime    time.Time        `json:"created_time,omitzero"`
+	LastEditedTime time.Time        `json:"last_edited_time,omitzero"`
+	CreatedBy      PageCreatedBy    `json:"created_by"`
+	LastEditedBy   PageLastEditedBy `json:"last_edited_by"`
+	Cover          PageCover        `json:"cover"`
+	Icon           PageIcon         `json:"icon"`
+	Parent         PageParent       `json:"parent"`
+	Archived       bool             `json:"archived,omitzero"`
+	InTrash        bool             `json:"in_trash,omitzero"`
+	Properties     PageProperties   `json:"properties"`
+	URL            url.URL          `json:"url,omitzero"`
+	PublicURL      url.URL          `json:"public_url,omitzero"`
+	RequestID      uuid.UUID        `json:"request_id,omitzero"`
 }
 
-// GetPageOkJSONResponseCover defines a model
-type GetPageOkJSONResponseCover struct {
-	Type     string                             `json:"type,omitzero"`
-	External GetPageOkJSONResponseCoverExternal `json:"external"`
+// PageCover defines a model
+type PageCover struct {
+	Type     string            `json:"type,omitzero"`
+	External PageCoverExternal `json:"external"`
 }
 
-// GetPageOkJSONResponseCoverExternal defines a model
-type GetPageOkJSONResponseCoverExternal struct {
+// PageCoverExternal defines a model
+type PageCoverExternal struct {
 	URL url.URL `json:"url,omitzero"`
 }
 
-// GetPageOkJSONResponseCreatedBy defines a model
-type GetPageOkJSONResponseCreatedBy struct {
+// PageCreatedBy defines a model
+type PageCreatedBy struct {
 	Object string    `json:"object,omitzero"`
 	ID     uuid.UUID `json:"id,omitzero"`
 }
 
-// GetPageOkJSONResponseIcon defines a model
-type GetPageOkJSONResponseIcon struct {
+// PageIcon defines a model
+type PageIcon struct {
 	Type  string `json:"type,omitzero"`
 	Emoji string `json:"emoji,omitzero"`
 }
 
-// GetPageOkJSONResponseLastEditedBy defines a model
-type GetPageOkJSONResponseLastEditedBy struct {
+// PageLastEditedBy defines a model
+type PageLastEditedBy struct {
 	Object string    `json:"object,omitzero"`
 	ID     uuid.UUID `json:"id,omitzero"`
 }
 
-// GetPageOkJSONResponseParent defines a model
-type GetPageOkJSONResponseParent struct {
+// PageParent defines a model
+type PageParent struct {
 	Type   string    `json:"type,omitzero"`
 	PageID uuid.UUID `json:"page_id,omitzero"`
 }
 
-// GetPageOkJSONResponseProperties defines a model
-type GetPageOkJSONResponseProperties struct {
-	Title GetPageOkJSONResponsePropertiesTitle `json:"title"`
+// PageProperties defines a model
+type PageProperties struct {
+	Title PagePropertiesTitle `json:"title"`
 }
 
-// GetPageOkJSONResponsePropertiesTitle defines a model
-type GetPageOkJSONResponsePropertiesTitle struct {
-	ID    string                                    `json:"id,omitzero"`
-	Type  string                                    `json:"type,omitzero"`
-	Title GetPageOkJSONResponsePropertiesTitleTitle `json:"title,omitempty"`
+// PagePropertiesTitle defines a model
+type PagePropertiesTitle struct {
+	ID    string                   `json:"id,omitzero"`
+	Type  string                   `json:"type,omitzero"`
+	Title PagePropertiesTitleTitle `json:"title,omitempty"`
 }
 
-// GetPageOkJSONResponsePropertiesTitleTitle defines a model
-type GetPageOkJSONResponsePropertiesTitleTitle []GetPageOkJSONResponsePropertiesTitleTitleItems
+// PagePropertiesTitleTitle defines a model
+type PagePropertiesTitleTitle []PagePropertiesTitleTitleItems
 
-// GetPageOkJSONResponsePropertiesTitleTitleItems defines a model
-type GetPageOkJSONResponsePropertiesTitleTitleItems struct {
-	Type        string                                                    `json:"type,omitzero"`
-	Text        GetPageOkJSONResponsePropertiesTitleTitleItemsText        `json:"text"`
-	Annotations GetPageOkJSONResponsePropertiesTitleTitleItemsAnnotations `json:"annotations"`
-	PlainText   string                                                    `json:"plain_text,omitzero"`
-	Href        struct{}                                                  `json:"href"`
+// PagePropertiesTitleTitleItems defines a model
+type PagePropertiesTitleTitleItems struct {
+	Type        string                                   `json:"type,omitzero"`
+	Text        PagePropertiesTitleTitleItemsText        `json:"text"`
+	Annotations PagePropertiesTitleTitleItemsAnnotations `json:"annotations"`
+	PlainText   string                                   `json:"plain_text,omitzero"`
+	Href        struct{}                                 `json:"href"`
 }
 
-// GetPageOkJSONResponsePropertiesTitleTitleItemsAnnotations defines a model
-type GetPageOkJSONResponsePropertiesTitleTitleItemsAnnotations struct {
+// PagePropertiesTitleTitleItemsAnnotations defines a model
+type PagePropertiesTitleTitleItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -99,8 +99,8 @@ type GetPageOkJSONResponsePropertiesTitleTitleItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// GetPageOkJSONResponsePropertiesTitleTitleItemsText defines a model
-type GetPageOkJSONResponsePropertiesTitleTitleItemsText struct {
+// PagePropertiesTitleTitleItemsText defines a model
+type PagePropertiesTitleTitleItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }

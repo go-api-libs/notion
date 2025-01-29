@@ -48,8 +48,8 @@ func NewClient() (*Client, error) {
 // GetPage defines an operation.
 //
 //	GET /pages/{id}
-func (c *Client) GetPage(ctx context.Context, id string) (*GetPageOkJSONResponse, error) {
-	return GetPage[GetPageOkJSONResponse](ctx, c, id)
+func (c *Client) GetPage(ctx context.Context, id string) (*Page, error) {
+	return GetPage[Page](ctx, c, id)
 }
 
 // GetPage defines an operation.

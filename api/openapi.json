@@ -32,7 +32,7 @@
   },
   "components": {
     "schemas": {
-      "GetPageOkJSONResponse": {
+      "Page": {
         "type": "object",
         "properties": {
           "object": {
@@ -55,19 +55,19 @@
             "example": "2024-10-14T11:26:00.000Z"
           },
           "created_by": {
-            "$ref": "#/components/schemas/GetPageOkJSONResponseCreatedBy"
+            "$ref": "#/components/schemas/PageCreatedBy"
           },
           "last_edited_by": {
-            "$ref": "#/components/schemas/GetPageOkJSONResponseLastEditedBy"
+            "$ref": "#/components/schemas/PageLastEditedBy"
           },
           "cover": {
-            "$ref": "#/components/schemas/GetPageOkJSONResponseCover"
+            "$ref": "#/components/schemas/PageCover"
           },
           "icon": {
-            "$ref": "#/components/schemas/GetPageOkJSONResponseIcon"
+            "$ref": "#/components/schemas/PageIcon"
           },
           "parent": {
-            "$ref": "#/components/schemas/GetPageOkJSONResponseParent"
+            "$ref": "#/components/schemas/PageParent"
           },
           "archived": {
             "type": "boolean",
@@ -78,7 +78,7 @@
             "example": false
           },
           "properties": {
-            "$ref": "#/components/schemas/GetPageOkJSONResponseProperties"
+            "$ref": "#/components/schemas/PageProperties"
           },
           "url": {
             "type": "string",
@@ -172,7 +172,7 @@
           "request_id": "3620d8d3-11e4-473b-87c9-fddfa7801d6d"
         }
       },
-      "GetPageOkJSONResponseCover": {
+      "PageCover": {
         "type": "object",
         "properties": {
           "type": {
@@ -180,7 +180,7 @@
             "example": "external"
           },
           "external": {
-            "$ref": "#/components/schemas/GetPageOkJSONResponseCoverExternal"
+            "$ref": "#/components/schemas/PageCoverExternal"
           }
         },
         "required": [
@@ -194,7 +194,7 @@
           }
         }
       },
-      "GetPageOkJSONResponseCoverExternal": {
+      "PageCoverExternal": {
         "type": "object",
         "properties": {
           "url": {
@@ -210,7 +210,7 @@
           "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
         }
       },
-      "GetPageOkJSONResponseCreatedBy": {
+      "PageCreatedBy": {
         "type": "object",
         "properties": {
           "object": {
@@ -232,7 +232,7 @@
           "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
         }
       },
-      "GetPageOkJSONResponseIcon": {
+      "PageIcon": {
         "type": "object",
         "properties": {
           "type": {
@@ -253,7 +253,7 @@
           "emoji": "🌄"
         }
       },
-      "GetPageOkJSONResponseLastEditedBy": {
+      "PageLastEditedBy": {
         "type": "object",
         "properties": {
           "object": {
@@ -275,7 +275,7 @@
           "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
         }
       },
-      "GetPageOkJSONResponseParent": {
+      "PageParent": {
         "type": "object",
         "properties": {
           "type": {
@@ -297,11 +297,11 @@
           "page_id": "11f88fcd-daf4-802e-b645-eb2d041a759b"
         }
       },
-      "GetPageOkJSONResponseProperties": {
+      "PageProperties": {
         "type": "object",
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/GetPageOkJSONResponsePropertiesTitle"
+            "$ref": "#/components/schemas/PagePropertiesTitle"
           }
         },
         "required": [
@@ -333,7 +333,7 @@
           }
         }
       },
-      "GetPageOkJSONResponsePropertiesTitle": {
+      "PagePropertiesTitle": {
         "type": "object",
         "properties": {
           "id": {
@@ -345,7 +345,7 @@
             "example": "title"
           },
           "title": {
-            "$ref": "#/components/schemas/GetPageOkJSONResponsePropertiesTitleTitle"
+            "$ref": "#/components/schemas/PagePropertiesTitleTitle"
           }
         },
         "required": [
@@ -377,10 +377,10 @@
           ]
         }
       },
-      "GetPageOkJSONResponsePropertiesTitleTitle": {
+      "PagePropertiesTitleTitle": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/GetPageOkJSONResponsePropertiesTitleTitleItems"
+          "$ref": "#/components/schemas/PagePropertiesTitleTitleItems"
         },
         "example": [
           {
@@ -402,7 +402,7 @@
           }
         ]
       },
-      "GetPageOkJSONResponsePropertiesTitleTitleItems": {
+      "PagePropertiesTitleTitleItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -410,10 +410,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/GetPageOkJSONResponsePropertiesTitleTitleItemsText"
+            "$ref": "#/components/schemas/PagePropertiesTitleTitleItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/GetPageOkJSONResponsePropertiesTitleTitleItemsAnnotations"
+            "$ref": "#/components/schemas/PagePropertiesTitleTitleItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -448,7 +448,7 @@
           "href": null
         }
       },
-      "GetPageOkJSONResponsePropertiesTitleTitleItemsAnnotations": {
+      "PagePropertiesTitleTitleItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -493,7 +493,7 @@
           "color": "default"
         }
       },
-      "GetPageOkJSONResponsePropertiesTitleTitleItemsText": {
+      "PagePropertiesTitleTitleItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -520,7 +520,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/GetPageOkJSONResponse"
+              "$ref": "#/components/schemas/Page"
             },
             "example": {
               "object": "page",

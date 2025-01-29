@@ -39,12 +39,12 @@ func main() {
 	}
 
 	ctx := context.Background()
-	getPageOkJSONResponse, err := c.GetPage(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3")
+	page, err := c.GetPage(ctx, "96245c8f-1784-44a4-82ad-1941127c3ec3")
 	if err != nil {
 		panic(err)
 	}
 
-	// Use getPageOkJSONResponse object
+	// Use page object
 }
 
 ```
