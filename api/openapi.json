@@ -2,16 +2,16 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Notion API",
-    "description": "Hello and welcome!\n\n[Create an integration](https://www.notion.so/my-integrations) to retrieve an API token, add your database and page ID's as variables in the collection, and start making your requests!\n\nFor our full documentation, including sample integrations and guides, visit [developers.notion.com](developers.notion.com)\n\nNeed more help? Join our [developer community on Slack](https://join.slack.com/t/notiondevs/shared_invite/zt-lkrnk74h-YmPRroySRFGiqgjI193AqA/)",
+    "description": "[Create an integration](https://www.notion.so/my-integrations) to retrieve an API token, add your database and page ID's as variables in the collection, and start making your requests!\n\nFor our full documentation, including sample integrations and guides, visit [developers.notion.com](developers.notion.com)\n\nNeed more help? Join our [developer community on Slack](https://join.slack.com/t/notiondevs/shared_invite/zt-lkrnk74h-YmPRroySRFGiqgjI193AqA/)",
     "version": "2022-06-28"
   },
   "servers": [
     {
-      "url": "https://api.notion.com/v1/pages"
+      "url": "https://api.notion.com/v1"
     }
   ],
   "paths": {
-    "/96245c8f-1784-44a4-82ad-1941127c3ec3": {
+    "/pages/96245c8f-1784-44a4-82ad-1941127c3ec3": {
       "parameters": [
         {
           "$ref": "#/components/parameters/NotionVersion2"
