@@ -91,6 +91,9 @@ const (
 	IconTypeExternal IconType = "external"
 )
 
+// An inline link in a text.
+type Link struct{}
+
 // The Page object contains the [property values](https://developers.notion.com/reference/property-value-object) of a single Notion page.
 //
 // All pages have a parent. If the parent is a [database](https://developers.notion.com/reference/database), the property values conform to the schema laid out database's [properties](https://developers.notion.com/reference/property-object). Otherwise, the only property value is the `title`.
@@ -214,12 +217,7 @@ type Text struct {
 	// Text content. This field contains the actual content of your text and is probably the field you'll use most often.
 	Content string `json:"content,omitzero"`
 	// An inline link in a text.
-	Link *TextLink `json:"link,omitempty"`
-}
-
-// An inline link in a text.
-type TextLink struct {
-	URL string `json:"url,omitzero"`
+	Link *Link `json:"link,omitempty"`
 }
 
 // UserReference defines a model
