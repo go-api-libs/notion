@@ -37,29 +37,7 @@
   },
   "components": {
     "schemas": {
-      "File": {
-        "description": "File objects contain data about files uploaded to Notion as well as external files linked in Notion.",
-        "type": "object",
-        "properties": {
-          "type": {
-            "$ref": "#/components/schemas/FileType"
-          },
-          "external": {
-            "$ref": "#/components/schemas/FileExternal"
-          }
-        },
-        "required": [
-          "type",
-          "external"
-        ],
-        "example": {
-          "type": "external",
-          "external": {
-            "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
-          }
-        }
-      },
-      "FileExternal": {
+      "ExternalFile": {
         "type": "object",
         "properties": {
           "url": {
@@ -73,6 +51,27 @@
         ],
         "example": {
           "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
+        }
+      },
+      "File": {
+        "description": "File objects contain data about files uploaded to Notion as well as external files linked in Notion.",
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/FileType"
+          },
+          "external": {
+            "$ref": "#/components/schemas/ExternalFile"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "example": {
+          "type": "external",
+          "external": {
+            "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
+          }
         }
       },
       "FileType": {
