@@ -37,6 +37,51 @@
   },
   "components": {
     "schemas": {
+      "Annotations": {
+        "type": "object",
+        "properties": {
+          "bold": {
+            "type": "boolean",
+            "example": false
+          },
+          "italic": {
+            "type": "boolean",
+            "example": false
+          },
+          "strikethrough": {
+            "type": "boolean",
+            "example": false
+          },
+          "underline": {
+            "type": "boolean",
+            "example": false
+          },
+          "code": {
+            "type": "boolean",
+            "example": false
+          },
+          "color": {
+            "type": "string",
+            "example": "default"
+          }
+        },
+        "required": [
+          "bold",
+          "italic",
+          "strikethrough",
+          "underline",
+          "code",
+          "color"
+        ],
+        "example": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        }
+      },
       "ExternalFile": {
         "description": "An external file is any URL that isn't hosted by Notion.",
         "type": "object",
@@ -401,32 +446,34 @@
         }
       },
       "RichText": {
+        "description": "Rich text objects contain data for displaying formatted text, mentions, and equations. A rich text object also contains annotations for style information. Arrays of rich text objects are used [within property objects](https://developers.notion.com/reference/database-property) and [property value objects](https://developers.notion.com/reference/page-property-value) to create what a user sees as a single text value in Notion.",
         "type": "object",
         "properties": {
           "type": {
-            "type": "string",
-            "example": "text"
+            "$ref": "#/components/schemas/RichTextType"
           },
           "text": {
-            "$ref": "#/components/schemas/RichTextText"
+            "$ref": "#/components/schemas/Text"
           },
           "annotations": {
-            "$ref": "#/components/schemas/RichTextAnnotations"
+            "$ref": "#/components/schemas/Annotations"
           },
           "plain_text": {
+            "description": "The plain text without annotations.",
             "type": "string",
             "example": "Example Page"
           },
           "href": {
-            "type": "object"
+            "description": "The URL of any link or internal Notion mention in this text, if any.",
+            "type": "string",
+            "format": "uri"
           }
         },
         "required": [
           "type",
           "text",
           "annotations",
-          "plain_text",
-          "href"
+          "plain_text"
         ],
         "example": {
           "type": "text",
@@ -446,70 +493,15 @@
           "href": null
         }
       },
-      "RichTextAnnotations": {
-        "type": "object",
-        "properties": {
-          "bold": {
-            "type": "boolean",
-            "example": false
-          },
-          "italic": {
-            "type": "boolean",
-            "example": false
-          },
-          "strikethrough": {
-            "type": "boolean",
-            "example": false
-          },
-          "underline": {
-            "type": "boolean",
-            "example": false
-          },
-          "code": {
-            "type": "boolean",
-            "example": false
-          },
-          "color": {
-            "type": "string",
-            "example": "default"
-          }
-        },
-        "required": [
-          "bold",
-          "italic",
-          "strikethrough",
-          "underline",
-          "code",
-          "color"
+      "RichTextType": {
+        "description": "Type of this rich text object.",
+        "type": "string",
+        "enum": [
+          "text",
+          "mention",
+          "equation"
         ],
-        "example": {
-          "bold": false,
-          "italic": false,
-          "strikethrough": false,
-          "underline": false,
-          "code": false,
-          "color": "default"
-        }
-      },
-      "RichTextText": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "string",
-            "example": "Example Page"
-          },
-          "link": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "content",
-          "link"
-        ],
-        "example": {
-          "content": "Example Page",
-          "link": null
-        }
+        "example": "text"
       },
       "RichTexts": {
         "type": "array",
@@ -535,6 +527,26 @@
             "href": null
           }
         ]
+      },
+      "Text": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "example": "Example Page"
+          },
+          "link": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "content",
+          "link"
+        ],
+        "example": {
+          "content": "Example Page",
+          "link": null
+        }
       },
       "UserReference": {
         "type": "object",

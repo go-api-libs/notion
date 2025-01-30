@@ -11,6 +11,16 @@ import (
 	"github.com/google/uuid"
 )
 
+// Annotations defines a model
+type Annotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
 // An external file is any URL that isn't hosted by Notion.
 type ExternalFile struct {
 	// Link to the externally hosted content.
@@ -142,33 +152,35 @@ type PropertyValue struct {
 // Properties of a page or database.
 type PropertyValues map[string]PropertyValue
 
-// RichText defines a model
+// Rich text objects contain data for displaying formatted text, mentions, and equations. A rich text object also contains annotations for style information. Arrays of rich text objects are used [within property objects](https://developers.notion.com/reference/database-property) and [property value objects](https://developers.notion.com/reference/page-property-value) to create what a user sees as a single text value in Notion.
 type RichText struct {
-	Type        string              `json:"type,omitzero"`
-	Text        RichTextText        `json:"text"`
-	Annotations RichTextAnnotations `json:"annotations"`
-	PlainText   string              `json:"plain_text,omitzero"`
-	Href        struct{}            `json:"href"`
+	// Type of this rich text object.
+	Type        RichTextType `json:"type,omitzero"`
+	Text        Text         `json:"text"`
+	Annotations Annotations  `json:"annotations"`
+	// The plain text without annotations.
+	PlainText string `json:"plain_text,omitzero"`
+	// The URL of any link or internal Notion mention in this text, if any.
+	Href *url.URL `json:"href,omitempty"`
 }
 
-// RichTextAnnotations defines a model
-type RichTextAnnotations struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
-}
+// Type of this rich text object.
+type RichTextType string
 
-// RichTextText defines a model
-type RichTextText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
-}
+const (
+	RichTextTypeText     RichTextType = "text"
+	RichTextTypeMention  RichTextType = "mention"
+	RichTextTypeEquation RichTextType = "equation"
+)
 
 // RichTexts defines a model
 type RichTexts []RichText
+
+// Text defines a model
+type Text struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
 
 // UserReference defines a model
 type UserReference struct {
