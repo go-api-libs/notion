@@ -265,38 +265,6 @@
           "page_id": "11f88fcd-daf4-802e-b645-eb2d041a759b"
         }
       },
-      "PropertyValues": {
-        "type": "object",
-        "description": "Properties of a page or database.",
-        "additionalProperties": {
-            "$ref": "#/components/schemas/PropertyValue"
-        },
-        "example": {
-          "title": {
-            "id": "title",
-            "type": "title",
-            "title": [
-              {
-                "type": "text",
-                "text": {
-                  "content": "Example Page",
-                  "link": null
-                },
-                "annotations": {
-                  "bold": false,
-                  "italic": false,
-                  "strikethrough": false,
-                  "underline": false,
-                  "code": false,
-                  "color": "default"
-                },
-                "plain_text": "Example Page",
-                "href": null
-              }
-            ]
-          }
-        }
-      },
       "PropertyValue": {
         "type": "object",
         "properties": {
@@ -474,6 +442,38 @@
         "example": {
           "content": "Example Page",
           "link": null
+        }
+      },
+      "PropertyValues": {
+        "description": "Properties of a page or database.",
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/PropertyValue"
+        },
+        "example": {
+          "title": {
+            "id": "title",
+            "type": "title",
+            "title": [
+              {
+                "type": "text",
+                "text": {
+                  "content": "Example Page",
+                  "link": null
+                },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Example Page",
+                "href": null
+              }
+            ]
+          }
         }
       },
       "UserReference": {

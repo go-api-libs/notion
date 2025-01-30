@@ -47,8 +47,9 @@ type Page struct {
 	Icon           Icon           `json:"icon"`
 	Parent         Parent         `json:"parent"`
 	// The archived status of the page.
-	Archived   bool           `json:"archived,omitzero"`
-	InTrash    bool           `json:"in_trash,omitzero"`
+	Archived bool `json:"archived,omitzero"`
+	InTrash  bool `json:"in_trash,omitzero"`
+	// Properties of a page or database.
 	Properties PropertyValues `json:"properties"`
 	// The URL of the Notion page.
 	URL       url.URL   `json:"url,omitzero"`
@@ -62,32 +63,27 @@ type Parent struct {
 	PageID uuid.UUID `json:"page_id,omitzero"`
 }
 
-// PropertyValues defines a model
-type PropertyValues struct {
-	Title PropertyValuesTitle `json:"title"`
+// PropertyValue defines a model
+type PropertyValue struct {
+	ID    string             `json:"id,omitzero"`
+	Type  string             `json:"type,omitzero"`
+	Title PropertyValueTitle `json:"title,omitempty"`
 }
 
-// PropertyValuesTitle defines a model
-type PropertyValuesTitle struct {
-	ID    string                   `json:"id,omitzero"`
-	Type  string                   `json:"type,omitzero"`
-	Title PropertyValuesTitleTitle `json:"title,omitempty"`
+// PropertyValueTitle defines a model
+type PropertyValueTitle []PropertyValueTitleItems
+
+// PropertyValueTitleItems defines a model
+type PropertyValueTitleItems struct {
+	Type        string                             `json:"type,omitzero"`
+	Text        PropertyValueTitleItemsText        `json:"text"`
+	Annotations PropertyValueTitleItemsAnnotations `json:"annotations"`
+	PlainText   string                             `json:"plain_text,omitzero"`
+	Href        struct{}                           `json:"href"`
 }
 
-// PropertyValuesTitleTitle defines a model
-type PropertyValuesTitleTitle []PropertyValuesTitleTitleItems
-
-// PropertyValuesTitleTitleItems defines a model
-type PropertyValuesTitleTitleItems struct {
-	Type        string                                   `json:"type,omitzero"`
-	Text        PropertyValuesTitleTitleItemsText        `json:"text"`
-	Annotations PropertyValuesTitleTitleItemsAnnotations `json:"annotations"`
-	PlainText   string                                   `json:"plain_text,omitzero"`
-	Href        struct{}                                 `json:"href"`
-}
-
-// PropertyValuesTitleTitleItemsAnnotations defines a model
-type PropertyValuesTitleTitleItemsAnnotations struct {
+// PropertyValueTitleItemsAnnotations defines a model
+type PropertyValueTitleItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -96,11 +92,14 @@ type PropertyValuesTitleTitleItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// PropertyValuesTitleTitleItemsText defines a model
-type PropertyValuesTitleTitleItemsText struct {
+// PropertyValueTitleItemsText defines a model
+type PropertyValueTitleItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }
+
+// Properties of a page or database.
+type PropertyValues map[string]PropertyValue
 
 // UserReference defines a model
 type UserReference struct {
