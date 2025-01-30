@@ -296,6 +296,34 @@
         ],
         "example": "page_id"
       },
+      "PropertyType": {
+        "description": "Type of the property.",
+        "type": "string",
+        "enum": [
+          "rich_text",
+          "number",
+          "select",
+          "status",
+          "multi_select",
+          "date",
+          "formula",
+          "relation",
+          "rollup",
+          "title",
+          "people",
+          "files",
+          "checkbox",
+          "url",
+          "email",
+          "phone_number",
+          "created_time",
+          "created_by",
+          "last_edited_time",
+          "last_edited_by",
+          "button"
+        ],
+        "example": "title"
+      },
       "PropertyValue": {
         "description": "A property value defines the identifier, type, and value of a page property in a page object. It's used when retrieving and updating pages ex: Create and Update pages.",
         "type": "object",
@@ -306,10 +334,10 @@
             "example": "title"
           },
           "type": {
-            "$ref": "#/components/schemas/PropertyValueType"
+            "$ref": "#/components/schemas/PropertyType"
           },
           "title": {
-            "$ref": "#/components/schemas/PropertyValueTitle"
+            "$ref": "#/components/schemas/RichTexts"
           }
         },
         "required": [
@@ -340,32 +368,39 @@
           ]
         }
       },
-      "PropertyValueTitle": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/PropertyValueTitleItems"
+      "PropertyValues": {
+        "description": "Properties of a page or database.",
+        "type": "object",
+        "additionalProperties": {
+          "$ref": "#/components/schemas/PropertyValue"
         },
-        "example": [
-          {
-            "type": "text",
-            "text": {
-              "content": "Example Page",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "default"
-            },
-            "plain_text": "Example Page",
-            "href": null
+        "example": {
+          "title": {
+            "id": "title",
+            "type": "title",
+            "title": [
+              {
+                "type": "text",
+                "text": {
+                  "content": "Example Page",
+                  "link": null
+                },
+                "annotations": {
+                  "bold": false,
+                  "italic": false,
+                  "strikethrough": false,
+                  "underline": false,
+                  "code": false,
+                  "color": "default"
+                },
+                "plain_text": "Example Page",
+                "href": null
+              }
+            ]
           }
-        ]
+        }
       },
-      "PropertyValueTitleItems": {
+      "RichText": {
         "type": "object",
         "properties": {
           "type": {
@@ -373,10 +408,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/PropertyValueTitleItemsText"
+            "$ref": "#/components/schemas/RichTextText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/PropertyValueTitleItemsAnnotations"
+            "$ref": "#/components/schemas/RichTextAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -411,7 +446,7 @@
           "href": null
         }
       },
-      "PropertyValueTitleItemsAnnotations": {
+      "RichTextAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -456,7 +491,7 @@
           "color": "default"
         }
       },
-      "PropertyValueTitleItemsText": {
+      "RichTextText": {
         "type": "object",
         "properties": {
           "content": {
@@ -476,65 +511,30 @@
           "link": null
         }
       },
-      "PropertyValueType": {
-        "description": "Type of the property.",
-        "type": "string",
-        "enum": [
-          "rich_text",
-          "number",
-          "select",
-          "status",
-          "multi_select",
-          "date",
-          "formula",
-          "relation",
-          "rollup",
-          "title",
-          "people",
-          "files",
-          "checkbox",
-          "url",
-          "email",
-          "phone_number",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "button"
-        ],
-        "example": "title"
-      },
-      "PropertyValues": {
-        "description": "Properties of a page or database.",
-        "type": "object",
-        "additionalProperties": {
-          "$ref": "#/components/schemas/PropertyValue"
+      "RichTexts": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/RichText"
         },
-        "example": {
-          "title": {
-            "id": "title",
-            "type": "title",
-            "title": [
-              {
-                "type": "text",
-                "text": {
-                  "content": "Example Page",
-                  "link": null
-                },
-                "annotations": {
-                  "bold": false,
-                  "italic": false,
-                  "strikethrough": false,
-                  "underline": false,
-                  "code": false,
-                  "color": "default"
-                },
-                "plain_text": "Example Page",
-                "href": null
-              }
-            ]
+        "example": [
+          {
+            "type": "text",
+            "text": {
+              "content": "Example Page",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "Example Page",
+            "href": null
           }
-        }
+        ]
       },
       "UserReference": {
         "type": "object",

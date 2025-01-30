@@ -99,6 +99,33 @@ const (
 	ParentTypeDatabaseID ParentType = "database_id"
 )
 
+// Type of the property.
+type PropertyType string
+
+const (
+	PropertyTypeRichText       PropertyType = "rich_text"
+	PropertyTypeNumber         PropertyType = "number"
+	PropertyTypeSelect         PropertyType = "select"
+	PropertyTypeStatus         PropertyType = "status"
+	PropertyTypeMultiSelect    PropertyType = "multi_select"
+	PropertyTypeDate           PropertyType = "date"
+	PropertyTypeFormula        PropertyType = "formula"
+	PropertyTypeRelation       PropertyType = "relation"
+	PropertyTypeRollup         PropertyType = "rollup"
+	PropertyTypeTitle          PropertyType = "title"
+	PropertyTypePeople         PropertyType = "people"
+	PropertyTypeFiles          PropertyType = "files"
+	PropertyTypeCheckbox       PropertyType = "checkbox"
+	PropertyTypeURL            PropertyType = "url"
+	PropertyTypeEmail          PropertyType = "email"
+	PropertyTypePhoneNumber    PropertyType = "phone_number"
+	PropertyTypeCreatedTime    PropertyType = "created_time"
+	PropertyTypeCreatedBy      PropertyType = "created_by"
+	PropertyTypeLastEditedTime PropertyType = "last_edited_time"
+	PropertyTypeLastEditedBy   PropertyType = "last_edited_by"
+	PropertyTypeButton         PropertyType = "button"
+)
+
 // A property value defines the identifier, type, and value of a page property in a page object. It's used when retrieving and updating pages ex: Create and Update pages.
 type PropertyValue struct {
 	/*
@@ -108,24 +135,24 @@ type PropertyValue struct {
 	*/
 	ID string `json:"id,omitzero"`
 	// Type of the property.
-	Type  PropertyValueType  `json:"type,omitzero"`
-	Title PropertyValueTitle `json:"title,omitempty"`
+	Type  PropertyType `json:"type,omitzero"`
+	Title RichTexts    `json:"title,omitempty"`
 }
 
-// PropertyValueTitle defines a model
-type PropertyValueTitle []PropertyValueTitleItems
+// Properties of a page or database.
+type PropertyValues map[string]PropertyValue
 
-// PropertyValueTitleItems defines a model
-type PropertyValueTitleItems struct {
-	Type        string                             `json:"type,omitzero"`
-	Text        PropertyValueTitleItemsText        `json:"text"`
-	Annotations PropertyValueTitleItemsAnnotations `json:"annotations"`
-	PlainText   string                             `json:"plain_text,omitzero"`
-	Href        struct{}                           `json:"href"`
+// RichText defines a model
+type RichText struct {
+	Type        string              `json:"type,omitzero"`
+	Text        RichTextText        `json:"text"`
+	Annotations RichTextAnnotations `json:"annotations"`
+	PlainText   string              `json:"plain_text,omitzero"`
+	Href        struct{}            `json:"href"`
 }
 
-// PropertyValueTitleItemsAnnotations defines a model
-type PropertyValueTitleItemsAnnotations struct {
+// RichTextAnnotations defines a model
+type RichTextAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -134,41 +161,14 @@ type PropertyValueTitleItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// PropertyValueTitleItemsText defines a model
-type PropertyValueTitleItemsText struct {
+// RichTextText defines a model
+type RichTextText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }
 
-// Type of the property.
-type PropertyValueType string
-
-const (
-	PropertyValueTypeRichText       PropertyValueType = "rich_text"
-	PropertyValueTypeNumber         PropertyValueType = "number"
-	PropertyValueTypeSelect         PropertyValueType = "select"
-	PropertyValueTypeStatus         PropertyValueType = "status"
-	PropertyValueTypeMultiSelect    PropertyValueType = "multi_select"
-	PropertyValueTypeDate           PropertyValueType = "date"
-	PropertyValueTypeFormula        PropertyValueType = "formula"
-	PropertyValueTypeRelation       PropertyValueType = "relation"
-	PropertyValueTypeRollup         PropertyValueType = "rollup"
-	PropertyValueTypeTitle          PropertyValueType = "title"
-	PropertyValueTypePeople         PropertyValueType = "people"
-	PropertyValueTypeFiles          PropertyValueType = "files"
-	PropertyValueTypeCheckbox       PropertyValueType = "checkbox"
-	PropertyValueTypeURL            PropertyValueType = "url"
-	PropertyValueTypeEmail          PropertyValueType = "email"
-	PropertyValueTypePhoneNumber    PropertyValueType = "phone_number"
-	PropertyValueTypeCreatedTime    PropertyValueType = "created_time"
-	PropertyValueTypeCreatedBy      PropertyValueType = "created_by"
-	PropertyValueTypeLastEditedTime PropertyValueType = "last_edited_time"
-	PropertyValueTypeLastEditedBy   PropertyValueType = "last_edited_by"
-	PropertyValueTypeButton         PropertyValueType = "button"
-)
-
-// Properties of a page or database.
-type PropertyValues map[string]PropertyValue
+// RichTexts defines a model
+type RichTexts []RichText
 
 // UserReference defines a model
 type UserReference struct {
