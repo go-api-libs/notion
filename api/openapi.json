@@ -560,23 +560,33 @@
         ]
       },
       "Text": {
+        "description": "Text objects contain this information within the `text` property of a RichText object.",
         "type": "object",
         "properties": {
           "content": {
+            "description": "Text content. This field contains the actual content of your text and is probably the field you'll use most often.",
             "type": "string",
             "example": "Example Page"
           },
           "link": {
-            "type": "object"
+            "$ref": "#/components/schemas/TextLink"
           }
         },
         "required": [
-          "content",
-          "link"
+          "content"
         ],
         "example": {
           "content": "Example Page",
           "link": null
+        }
+      },
+      "TextLink": {
+        "description": "An inline link in a text.",
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          }
         }
       },
       "UserReference": {

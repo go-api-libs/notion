@@ -187,7 +187,8 @@ type PropertyValues map[string]PropertyValue
 type RichText struct {
 	// Type of this rich text object.
 	Type RichTextType `json:"type,omitzero"`
-	Text Text         `json:"text"`
+	// Text objects contain this information within the `text` property of a RichText object.
+	Text Text `json:"text"`
 	// Style information which applies to the whole rich text object.
 	Annotations Annotations `json:"annotations"`
 	// The plain text without annotations.
@@ -208,10 +209,17 @@ const (
 // RichTexts defines a model
 type RichTexts []RichText
 
-// Text defines a model
+// Text objects contain this information within the `text` property of a RichText object.
 type Text struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
+	// Text content. This field contains the actual content of your text and is probably the field you'll use most often.
+	Content string `json:"content,omitzero"`
+	// An inline link in a text.
+	Link *TextLink `json:"link,omitempty"`
+}
+
+// An inline link in a text.
+type TextLink struct {
+	URL string `json:"url,omitzero"`
 }
 
 // UserReference defines a model
