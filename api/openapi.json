@@ -42,7 +42,9 @@
         "type": "object",
         "properties": {
           "object": {
+            "description": "Always \"page\".",
             "type": "string",
+            "pattern": "^page$",
             "example": "page"
           },
           "id": {

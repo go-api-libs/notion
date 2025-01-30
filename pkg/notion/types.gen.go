@@ -17,6 +17,7 @@ import (
 //
 // Page content is available as [blocks](https://developers.notion.com/reference/block). The content can be read using [retrieve block children](https://developers.notion.com/reference/get-block-children) and appended using [append block children](https://developers.notion.com/reference/patch-block-children).
 type Page struct {
+	// Always "page".
 	Object         string           `json:"object,omitzero"`
 	ID             uuid.UUID        `json:"id,omitzero"`
 	CreatedTime    time.Time        `json:"created_time,omitzero"`
