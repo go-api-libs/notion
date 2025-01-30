@@ -297,15 +297,16 @@
         "example": "page_id"
       },
       "PropertyValue": {
+        "description": "A property value defines the identifier, type, and value of a page property in a page object. It's used when retrieving and updating pages ex: Create and Update pages.",
         "type": "object",
         "properties": {
           "id": {
+            "description": "Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.\n\nThe id may be used in place of name when creating or updating pages.",
             "type": "string",
             "example": "title"
           },
           "type": {
-            "type": "string",
-            "example": "title"
+            "$ref": "#/components/schemas/PropertyValueType"
           },
           "title": {
             "$ref": "#/components/schemas/PropertyValueTitle"
@@ -474,6 +475,34 @@
           "content": "Example Page",
           "link": null
         }
+      },
+      "PropertyValueType": {
+        "description": "Type of the property.",
+        "type": "string",
+        "enum": [
+          "rich_text",
+          "number",
+          "select",
+          "status",
+          "multi_select",
+          "date",
+          "formula",
+          "relation",
+          "rollup",
+          "title",
+          "people",
+          "files",
+          "checkbox",
+          "url",
+          "email",
+          "phone_number",
+          "created_time",
+          "created_by",
+          "last_edited_time",
+          "last_edited_by",
+          "button"
+        ],
+        "example": "title"
       },
       "PropertyValues": {
         "description": "Properties of a page or database.",

@@ -99,10 +99,16 @@ const (
 	ParentTypeDatabaseID ParentType = "database_id"
 )
 
-// PropertyValue defines a model
+// A property value defines the identifier, type, and value of a page property in a page object. It's used when retrieving and updating pages ex: Create and Update pages.
 type PropertyValue struct {
-	ID    string             `json:"id,omitzero"`
-	Type  string             `json:"type,omitzero"`
+	/*
+	   Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.
+
+	   The id may be used in place of name when creating or updating pages.
+	*/
+	ID string `json:"id,omitzero"`
+	// Type of the property.
+	Type  PropertyValueType  `json:"type,omitzero"`
 	Title PropertyValueTitle `json:"title,omitempty"`
 }
 
@@ -133,6 +139,33 @@ type PropertyValueTitleItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }
+
+// Type of the property.
+type PropertyValueType string
+
+const (
+	PropertyValueTypeRichText       PropertyValueType = "rich_text"
+	PropertyValueTypeNumber         PropertyValueType = "number"
+	PropertyValueTypeSelect         PropertyValueType = "select"
+	PropertyValueTypeStatus         PropertyValueType = "status"
+	PropertyValueTypeMultiSelect    PropertyValueType = "multi_select"
+	PropertyValueTypeDate           PropertyValueType = "date"
+	PropertyValueTypeFormula        PropertyValueType = "formula"
+	PropertyValueTypeRelation       PropertyValueType = "relation"
+	PropertyValueTypeRollup         PropertyValueType = "rollup"
+	PropertyValueTypeTitle          PropertyValueType = "title"
+	PropertyValueTypePeople         PropertyValueType = "people"
+	PropertyValueTypeFiles          PropertyValueType = "files"
+	PropertyValueTypeCheckbox       PropertyValueType = "checkbox"
+	PropertyValueTypeURL            PropertyValueType = "url"
+	PropertyValueTypeEmail          PropertyValueType = "email"
+	PropertyValueTypePhoneNumber    PropertyValueType = "phone_number"
+	PropertyValueTypeCreatedTime    PropertyValueType = "created_time"
+	PropertyValueTypeCreatedBy      PropertyValueType = "created_by"
+	PropertyValueTypeLastEditedTime PropertyValueType = "last_edited_time"
+	PropertyValueTypeLastEditedBy   PropertyValueType = "last_edited_by"
+	PropertyValueTypeButton         PropertyValueType = "button"
+)
 
 // Properties of a page or database.
 type PropertyValues map[string]PropertyValue
