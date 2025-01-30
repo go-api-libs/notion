@@ -267,14 +267,10 @@
       },
       "PropertyValues": {
         "type": "object",
-        "properties": {
-          "title": {
-            "$ref": "#/components/schemas/PropertyValuesTitle"
-          }
+        "description": "Properties of a page or database.",
+        "additionalProperties": {
+            "$ref": "#/components/schemas/PropertyValue"
         },
-        "required": [
-          "title"
-        ],
         "example": {
           "title": {
             "id": "title",
@@ -301,7 +297,7 @@
           }
         }
       },
-      "PropertyValuesTitle": {
+      "PropertyValue": {
         "type": "object",
         "properties": {
           "id": {
@@ -313,13 +309,12 @@
             "example": "title"
           },
           "title": {
-            "$ref": "#/components/schemas/PropertyValuesTitleTitle"
+            "$ref": "#/components/schemas/PropertyValueTitle"
           }
         },
         "required": [
           "id",
-          "type",
-          "title"
+          "type"
         ],
         "example": {
           "id": "title",
@@ -345,10 +340,10 @@
           ]
         }
       },
-      "PropertyValuesTitleTitle": {
+      "PropertyValueTitle": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/PropertyValuesTitleTitleItems"
+          "$ref": "#/components/schemas/PropertyValueTitleItems"
         },
         "example": [
           {
@@ -370,7 +365,7 @@
           }
         ]
       },
-      "PropertyValuesTitleTitleItems": {
+      "PropertyValueTitleItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -378,10 +373,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/PropertyValuesTitleTitleItemsText"
+            "$ref": "#/components/schemas/PropertyValueTitleItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/PropertyValuesTitleTitleItemsAnnotations"
+            "$ref": "#/components/schemas/PropertyValueTitleItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -416,7 +411,7 @@
           "href": null
         }
       },
-      "PropertyValuesTitleTitleItemsAnnotations": {
+      "PropertyValueTitleItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -461,7 +456,7 @@
           "color": "default"
         }
       },
-      "PropertyValuesTitleTitleItemsText": {
+      "PropertyValueTitleItemsText": {
         "type": "object",
         "properties": {
           "content": {
