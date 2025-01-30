@@ -100,8 +100,7 @@
           }
         },
         "required": [
-          "type",
-          "emoji"
+          "type"
         ],
         "example": {
           "type": "emoji",
