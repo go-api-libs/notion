@@ -33,11 +33,22 @@ const (
 	FileTypeExternal FileType = "external"
 )
 
-// Icon defines a model
+// Page or database icon. It is either an emoji or a file.
 type Icon struct {
-	Type  string `json:"type,omitzero"`
+	// Type of icon.
+	Type IconType `json:"type,omitzero"`
+	// Emoji character.
 	Emoji string `json:"emoji,omitzero"`
 }
+
+// Type of icon.
+type IconType string
+
+const (
+	IconTypeEmoji    IconType = "emoji"
+	IconTypeFile     IconType = "file"
+	IconTypeExternal IconType = "external"
+)
 
 // The Page object contains the [property values](https://developers.notion.com/reference/property-value-object) of a single Notion page.
 //
@@ -55,7 +66,8 @@ type Page struct {
 	CreatedBy      UserReference  `json:"created_by"`
 	LastEditedBy   UserReference2 `json:"last_edited_by"`
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion.
-	Cover  File   `json:"cover"`
+	Cover File `json:"cover"`
+	// Page or database icon. It is either an emoji or a file.
 	Icon   Icon   `json:"icon"`
 	Parent Parent `json:"parent"`
 	// The archived status of the page.
