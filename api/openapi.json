@@ -38,31 +38,36 @@
   "components": {
     "schemas": {
       "Annotations": {
+        "description": "Style information which applies to the whole rich text object.",
         "type": "object",
         "properties": {
           "bold": {
+            "description": "Whether the text is **bolded**.",
             "type": "boolean",
             "example": false
           },
           "italic": {
+            "description": "Whether the text is *italicized*.",
             "type": "boolean",
             "example": false
           },
           "strikethrough": {
+            "description": "Whether the text is struck through.",
             "type": "boolean",
             "example": false
           },
           "underline": {
+            "description": "Whether the text is underlined.",
             "type": "boolean",
             "example": false
           },
           "code": {
+            "description": "Whether the text is code `style`.",
             "type": "boolean",
             "example": false
           },
           "color": {
-            "type": "string",
-            "example": "default"
+            "$ref": "#/components/schemas/AnnotationsColor"
           }
         },
         "required": [
@@ -81,6 +86,32 @@
           "code": false,
           "color": "default"
         }
+      },
+      "AnnotationsColor": {
+        "description": "The color of the block.",
+        "type": "string",
+        "enum": [
+          "default",
+          "gray",
+          "brown",
+          "orange",
+          "yellow",
+          "green",
+          "blue",
+          "purple",
+          "pink",
+          "red",
+          "gray_background",
+          "brown_background",
+          "orange_background",
+          "yellow_background",
+          "green_background",
+          "blue_background",
+          "purple_background",
+          "pink_background",
+          "red_background"
+        ],
+        "example": "default"
       },
       "ExternalFile": {
         "description": "An external file is any URL that isn't hosted by Notion.",

@@ -11,15 +11,46 @@ import (
 	"github.com/google/uuid"
 )
 
-// Annotations defines a model
+// Style information which applies to the whole rich text object.
 type Annotations struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
+	// Whether the text is **bolded**.
+	Bold bool `json:"bold,omitzero"`
+	// Whether the text is *italicized*.
+	Italic bool `json:"italic,omitzero"`
+	// Whether the text is struck through.
+	Strikethrough bool `json:"strikethrough,omitzero"`
+	// Whether the text is underlined.
+	Underline bool `json:"underline,omitzero"`
+	// Whether the text is code `style`.
+	Code bool `json:"code,omitzero"`
+	// The color of the block.
+	Color AnnotationsColor `json:"color,omitzero"`
 }
+
+// The color of the block.
+type AnnotationsColor string
+
+const (
+	AnnotationsColorDefault          AnnotationsColor = "default"
+	AnnotationsColorGray             AnnotationsColor = "gray"
+	AnnotationsColorBrown            AnnotationsColor = "brown"
+	AnnotationsColorOrange           AnnotationsColor = "orange"
+	AnnotationsColorYellow           AnnotationsColor = "yellow"
+	AnnotationsColorGreen            AnnotationsColor = "green"
+	AnnotationsColorBlue             AnnotationsColor = "blue"
+	AnnotationsColorPurple           AnnotationsColor = "purple"
+	AnnotationsColorPink             AnnotationsColor = "pink"
+	AnnotationsColorRed              AnnotationsColor = "red"
+	AnnotationsColorGrayBackground   AnnotationsColor = "gray_background"
+	AnnotationsColorBrownBackground  AnnotationsColor = "brown_background"
+	AnnotationsColorOrangeBackground AnnotationsColor = "orange_background"
+	AnnotationsColorYellowBackground AnnotationsColor = "yellow_background"
+	AnnotationsColorGreenBackground  AnnotationsColor = "green_background"
+	AnnotationsColorBlueBackground   AnnotationsColor = "blue_background"
+	AnnotationsColorPurpleBackground AnnotationsColor = "purple_background"
+	AnnotationsColorPinkBackground   AnnotationsColor = "pink_background"
+	AnnotationsColorRedBackground    AnnotationsColor = "red_background"
+)
 
 // An external file is any URL that isn't hosted by Notion.
 type ExternalFile struct {
@@ -155,9 +186,10 @@ type PropertyValues map[string]PropertyValue
 // Rich text objects contain data for displaying formatted text, mentions, and equations. A rich text object also contains annotations for style information. Arrays of rich text objects are used [within property objects](https://developers.notion.com/reference/database-property) and [property value objects](https://developers.notion.com/reference/page-property-value) to create what a user sees as a single text value in Notion.
 type RichText struct {
 	// Type of this rich text object.
-	Type        RichTextType `json:"type,omitzero"`
-	Text        Text         `json:"text"`
-	Annotations Annotations  `json:"annotations"`
+	Type RichTextType `json:"type,omitzero"`
+	Text Text         `json:"text"`
+	// Style information which applies to the whole rich text object.
+	Annotations Annotations `json:"annotations"`
 	// The plain text without annotations.
 	PlainText string `json:"plain_text,omitzero"`
 	// The URL of any link or internal Notion mention in this text, if any.
