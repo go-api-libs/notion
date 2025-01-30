@@ -37,6 +37,65 @@
   },
   "components": {
     "schemas": {
+      "File": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "external"
+          },
+          "external": {
+            "$ref": "#/components/schemas/FileExternal"
+          }
+        },
+        "required": [
+          "type",
+          "external"
+        ],
+        "example": {
+          "type": "external",
+          "external": {
+            "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
+          }
+        }
+      },
+      "FileExternal": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "example": {
+          "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
+        }
+      },
+      "Icon": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "emoji"
+          },
+          "emoji": {
+            "type": "string",
+            "example": "🌄"
+          }
+        },
+        "required": [
+          "type",
+          "emoji"
+        ],
+        "example": {
+          "type": "emoji",
+          "emoji": "🌄"
+        }
+      },
       "Page": {
         "description": "The Page object contains the [property values](https://developers.notion.com/reference/property-value-object) of a single Notion page.\n\nAll pages have a parent. If the parent is a [database](https://developers.notion.com/reference/database), the property values conform to the schema laid out database's [properties](https://developers.notion.com/reference/property-object). Otherwise, the only property value is the `title`.\n\nPage content is available as [blocks](https://developers.notion.com/reference/block). The content can be read using [retrieve block children](https://developers.notion.com/reference/get-block-children) and appended using [append block children](https://developers.notion.com/reference/patch-block-children).",
         "type": "object",
@@ -68,16 +127,16 @@
             "$ref": "#/components/schemas/UserReference"
           },
           "last_edited_by": {
-            "$ref": "#/components/schemas/PageLastEditedBy"
+            "$ref": "#/components/schemas/UserReference2"
           },
           "cover": {
-            "$ref": "#/components/schemas/PageCover"
+            "$ref": "#/components/schemas/File"
           },
           "icon": {
-            "$ref": "#/components/schemas/PageIcon"
+            "$ref": "#/components/schemas/Icon"
           },
           "parent": {
-            "$ref": "#/components/schemas/PageParent"
+            "$ref": "#/components/schemas/Parent"
           },
           "archived": {
             "type": "boolean",
@@ -180,109 +239,6 @@
           "url": "https://www.notion.so/Example-Page-96245c8f178444a482ad1941127c3ec3",
           "public_url": "https://fae-tools.notion.site/Example-Page-96245c8f178444a482ad1941127c3ec3",
           "request_id": "3620d8d3-11e4-473b-87c9-fddfa7801d6d"
-        }
-      },
-      "PageCover": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "external"
-          },
-          "external": {
-            "$ref": "#/components/schemas/PageCoverExternal"
-          }
-        },
-        "required": [
-          "type",
-          "external"
-        ],
-        "example": {
-          "type": "external",
-          "external": {
-            "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
-          }
-        }
-      },
-      "PageCoverExternal": {
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
-          }
-        },
-        "required": [
-          "url"
-        ],
-        "example": {
-          "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
-        }
-      },
-      "PageIcon": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "emoji"
-          },
-          "emoji": {
-            "type": "string",
-            "example": "🌄"
-          }
-        },
-        "required": [
-          "type",
-          "emoji"
-        ],
-        "example": {
-          "type": "emoji",
-          "emoji": "🌄"
-        }
-      },
-      "PageLastEditedBy": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "type": "string",
-            "example": "user"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-          }
-        },
-        "required": [
-          "object",
-          "id"
-        ],
-        "example": {
-          "object": "user",
-          "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-        }
-      },
-      "PageParent": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "page_id"
-          },
-          "page_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "11f88fcd-daf4-802e-b645-eb2d041a759b"
-          }
-        },
-        "required": [
-          "type",
-          "page_id"
-        ],
-        "example": {
-          "type": "page_id",
-          "page_id": "11f88fcd-daf4-802e-b645-eb2d041a759b"
         }
       },
       "PageProperties": {
@@ -501,7 +457,51 @@
           "link": null
         }
       },
+      "Parent": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "page_id"
+          },
+          "page_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "11f88fcd-daf4-802e-b645-eb2d041a759b"
+          }
+        },
+        "required": [
+          "type",
+          "page_id"
+        ],
+        "example": {
+          "type": "page_id",
+          "page_id": "11f88fcd-daf4-802e-b645-eb2d041a759b"
+        }
+      },
       "UserReference": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "example": "user"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+          }
+        },
+        "required": [
+          "object",
+          "id"
+        ],
+        "example": {
+          "object": "user",
+          "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+        }
+      },
+      "UserReference2": {
         "type": "object",
         "properties": {
           "object": {

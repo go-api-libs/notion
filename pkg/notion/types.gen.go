@@ -11,6 +11,23 @@ import (
 	"github.com/google/uuid"
 )
 
+// File defines a model
+type File struct {
+	Type     string       `json:"type,omitzero"`
+	External FileExternal `json:"external"`
+}
+
+// FileExternal defines a model
+type FileExternal struct {
+	URL url.URL `json:"url,omitzero"`
+}
+
+// Icon defines a model
+type Icon struct {
+	Type  string `json:"type,omitzero"`
+	Emoji string `json:"emoji,omitzero"`
+}
+
 // The Page object contains the [property values](https://developers.notion.com/reference/property-value-object) of a single Notion page.
 //
 // All pages have a parent. If the parent is a [database](https://developers.notion.com/reference/database), the property values conform to the schema laid out database's [properties](https://developers.notion.com/reference/property-object). Otherwise, the only property value is the `title`.
@@ -23,47 +40,18 @@ type Page struct {
 	// Date and time when this page was created. Formatted as an ISO 8601 date time string.
 	CreatedTime time.Time `json:"created_time,omitzero"`
 	// Date and time when this page was updated. Formatted as an ISO 8601 date time string.
-	LastEditedTime time.Time        `json:"last_edited_time,omitzero"`
-	CreatedBy      UserReference    `json:"created_by"`
-	LastEditedBy   PageLastEditedBy `json:"last_edited_by"`
-	Cover          PageCover        `json:"cover"`
-	Icon           PageIcon         `json:"icon"`
-	Parent         PageParent       `json:"parent"`
-	Archived       bool             `json:"archived,omitzero"`
-	InTrash        bool             `json:"in_trash,omitzero"`
-	Properties     PageProperties   `json:"properties"`
-	URL            url.URL          `json:"url,omitzero"`
-	PublicURL      url.URL          `json:"public_url,omitzero"`
-	RequestID      uuid.UUID        `json:"request_id,omitzero"`
-}
-
-// PageCover defines a model
-type PageCover struct {
-	Type     string            `json:"type,omitzero"`
-	External PageCoverExternal `json:"external"`
-}
-
-// PageCoverExternal defines a model
-type PageCoverExternal struct {
-	URL url.URL `json:"url,omitzero"`
-}
-
-// PageIcon defines a model
-type PageIcon struct {
-	Type  string `json:"type,omitzero"`
-	Emoji string `json:"emoji,omitzero"`
-}
-
-// PageLastEditedBy defines a model
-type PageLastEditedBy struct {
-	Object string    `json:"object,omitzero"`
-	ID     uuid.UUID `json:"id,omitzero"`
-}
-
-// PageParent defines a model
-type PageParent struct {
-	Type   string    `json:"type,omitzero"`
-	PageID uuid.UUID `json:"page_id,omitzero"`
+	LastEditedTime time.Time      `json:"last_edited_time,omitzero"`
+	CreatedBy      UserReference  `json:"created_by"`
+	LastEditedBy   UserReference2 `json:"last_edited_by"`
+	Cover          File           `json:"cover"`
+	Icon           Icon           `json:"icon"`
+	Parent         Parent         `json:"parent"`
+	Archived       bool           `json:"archived,omitzero"`
+	InTrash        bool           `json:"in_trash,omitzero"`
+	Properties     PageProperties `json:"properties"`
+	URL            url.URL        `json:"url,omitzero"`
+	PublicURL      url.URL        `json:"public_url,omitzero"`
+	RequestID      uuid.UUID      `json:"request_id,omitzero"`
 }
 
 // PageProperties defines a model
@@ -106,8 +94,20 @@ type PagePropertiesTitleTitleItemsText struct {
 	Link    struct{} `json:"link"`
 }
 
+// Parent defines a model
+type Parent struct {
+	Type   string    `json:"type,omitzero"`
+	PageID uuid.UUID `json:"page_id,omitzero"`
+}
+
 // UserReference defines a model
 type UserReference struct {
+	Object string    `json:"object,omitzero"`
+	ID     uuid.UUID `json:"id,omitzero"`
+}
+
+// UserReference2 defines a model
+type UserReference2 struct {
 	Object string    `json:"object,omitzero"`
 	ID     uuid.UUID `json:"id,omitzero"`
 }
