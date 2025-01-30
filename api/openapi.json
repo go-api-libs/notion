@@ -139,6 +139,7 @@
             "$ref": "#/components/schemas/Parent"
           },
           "archived": {
+            "description": "The archived status of the page.",
             "type": "boolean",
             "example": false
           },
@@ -147,9 +148,10 @@
             "example": false
           },
           "properties": {
-            "$ref": "#/components/schemas/PageProperties"
+            "$ref": "#/components/schemas/PropertyValues"
           },
           "url": {
+            "description": "The URL of the Notion page.",
             "type": "string",
             "format": "uri",
             "example": "https://www.notion.so/Example-Page-96245c8f178444a482ad1941127c3ec3"
@@ -241,11 +243,33 @@
           "request_id": "3620d8d3-11e4-473b-87c9-fddfa7801d6d"
         }
       },
-      "PageProperties": {
+      "Parent": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "page_id"
+          },
+          "page_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "11f88fcd-daf4-802e-b645-eb2d041a759b"
+          }
+        },
+        "required": [
+          "type",
+          "page_id"
+        ],
+        "example": {
+          "type": "page_id",
+          "page_id": "11f88fcd-daf4-802e-b645-eb2d041a759b"
+        }
+      },
+      "PropertyValues": {
         "type": "object",
         "properties": {
           "title": {
-            "$ref": "#/components/schemas/PagePropertiesTitle"
+            "$ref": "#/components/schemas/PropertyValuesTitle"
           }
         },
         "required": [
@@ -277,7 +301,7 @@
           }
         }
       },
-      "PagePropertiesTitle": {
+      "PropertyValuesTitle": {
         "type": "object",
         "properties": {
           "id": {
@@ -289,7 +313,7 @@
             "example": "title"
           },
           "title": {
-            "$ref": "#/components/schemas/PagePropertiesTitleTitle"
+            "$ref": "#/components/schemas/PropertyValuesTitleTitle"
           }
         },
         "required": [
@@ -321,10 +345,10 @@
           ]
         }
       },
-      "PagePropertiesTitleTitle": {
+      "PropertyValuesTitleTitle": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/PagePropertiesTitleTitleItems"
+          "$ref": "#/components/schemas/PropertyValuesTitleTitleItems"
         },
         "example": [
           {
@@ -346,7 +370,7 @@
           }
         ]
       },
-      "PagePropertiesTitleTitleItems": {
+      "PropertyValuesTitleTitleItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -354,10 +378,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/PagePropertiesTitleTitleItemsText"
+            "$ref": "#/components/schemas/PropertyValuesTitleTitleItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/PagePropertiesTitleTitleItemsAnnotations"
+            "$ref": "#/components/schemas/PropertyValuesTitleTitleItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -392,7 +416,7 @@
           "href": null
         }
       },
-      "PagePropertiesTitleTitleItemsAnnotations": {
+      "PropertyValuesTitleTitleItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -437,7 +461,7 @@
           "color": "default"
         }
       },
-      "PagePropertiesTitleTitleItemsText": {
+      "PropertyValuesTitleTitleItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -455,28 +479,6 @@
         "example": {
           "content": "Example Page",
           "link": null
-        }
-      },
-      "Parent": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "page_id"
-          },
-          "page_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "11f88fcd-daf4-802e-b645-eb2d041a759b"
-          }
-        },
-        "required": [
-          "type",
-          "page_id"
-        ],
-        "example": {
-          "type": "page_id",
-          "page_id": "11f88fcd-daf4-802e-b645-eb2d041a759b"
         }
       },
       "UserReference": {
