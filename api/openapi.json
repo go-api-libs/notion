@@ -67,7 +67,7 @@
             "example": false
           },
           "color": {
-            "$ref": "#/components/schemas/AnnotationsColor"
+            "$ref": "#/components/schemas/Color"
           }
         },
         "required": [
@@ -87,7 +87,7 @@
           "color": "default"
         }
       },
-      "AnnotationsColor": {
+      "Color": {
         "description": "The color of the block.",
         "type": "string",
         "enum": [

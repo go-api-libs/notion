@@ -24,32 +24,32 @@ type Annotations struct {
 	// Whether the text is code `style`.
 	Code bool `json:"code,omitzero"`
 	// The color of the block.
-	Color AnnotationsColor `json:"color,omitzero"`
+	Color Color `json:"color,omitzero"`
 }
 
 // The color of the block.
-type AnnotationsColor string
+type Color string
 
 const (
-	AnnotationsColorDefault          AnnotationsColor = "default"
-	AnnotationsColorGray             AnnotationsColor = "gray"
-	AnnotationsColorBrown            AnnotationsColor = "brown"
-	AnnotationsColorOrange           AnnotationsColor = "orange"
-	AnnotationsColorYellow           AnnotationsColor = "yellow"
-	AnnotationsColorGreen            AnnotationsColor = "green"
-	AnnotationsColorBlue             AnnotationsColor = "blue"
-	AnnotationsColorPurple           AnnotationsColor = "purple"
-	AnnotationsColorPink             AnnotationsColor = "pink"
-	AnnotationsColorRed              AnnotationsColor = "red"
-	AnnotationsColorGrayBackground   AnnotationsColor = "gray_background"
-	AnnotationsColorBrownBackground  AnnotationsColor = "brown_background"
-	AnnotationsColorOrangeBackground AnnotationsColor = "orange_background"
-	AnnotationsColorYellowBackground AnnotationsColor = "yellow_background"
-	AnnotationsColorGreenBackground  AnnotationsColor = "green_background"
-	AnnotationsColorBlueBackground   AnnotationsColor = "blue_background"
-	AnnotationsColorPurpleBackground AnnotationsColor = "purple_background"
-	AnnotationsColorPinkBackground   AnnotationsColor = "pink_background"
-	AnnotationsColorRedBackground    AnnotationsColor = "red_background"
+	ColorDefault          Color = "default"
+	ColorGray             Color = "gray"
+	ColorBrown            Color = "brown"
+	ColorOrange           Color = "orange"
+	ColorYellow           Color = "yellow"
+	ColorGreen            Color = "green"
+	ColorBlue             Color = "blue"
+	ColorPurple           Color = "purple"
+	ColorPink             Color = "pink"
+	ColorRed              Color = "red"
+	ColorGrayBackground   Color = "gray_background"
+	ColorBrownBackground  Color = "brown_background"
+	ColorOrangeBackground Color = "orange_background"
+	ColorYellowBackground Color = "yellow_background"
+	ColorGreenBackground  Color = "green_background"
+	ColorBlueBackground   Color = "blue_background"
+	ColorPurpleBackground Color = "purple_background"
+	ColorPinkBackground   Color = "pink_background"
+	ColorRedBackground    Color = "red_background"
 )
 
 // An external file is any URL that isn't hosted by Notion.
