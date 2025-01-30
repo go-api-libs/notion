@@ -38,9 +38,11 @@
   "components": {
     "schemas": {
       "ExternalFile": {
+        "description": "An external file is any URL that isn't hosted by Notion.",
         "type": "object",
         "properties": {
           "url": {
+            "description": "Link to the externally hosted content.",
             "type": "string",
             "format": "uri",
             "example": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"

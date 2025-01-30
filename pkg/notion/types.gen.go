@@ -11,15 +11,17 @@ import (
 	"github.com/google/uuid"
 )
 
-// ExternalFile defines a model
+// An external file is any URL that isn't hosted by Notion.
 type ExternalFile struct {
+	// Link to the externally hosted content.
 	URL url.URL `json:"url,omitzero"`
 }
 
 // File objects contain data about files uploaded to Notion as well as external files linked in Notion.
 type File struct {
 	// Type of this file object.
-	Type     FileType      `json:"type,omitzero"`
+	Type FileType `json:"type,omitzero"`
+	// An external file is any URL that isn't hosted by Notion.
 	External *ExternalFile `json:"external,omitempty"`
 }
 
