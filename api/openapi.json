@@ -228,7 +228,7 @@
             "$ref": "#/components/schemas/UserReference"
           },
           "last_edited_by": {
-            "$ref": "#/components/schemas/UserReference2"
+            "$ref": "#/components/schemas/UserReference"
           },
           "cover": {
             "$ref": "#/components/schemas/File"
@@ -588,29 +588,9 @@
         "type": "object",
         "properties": {
           "object": {
+            "description": "Always \"user\"",
             "type": "string",
-            "example": "user"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-          }
-        },
-        "required": [
-          "object",
-          "id"
-        ],
-        "example": {
-          "object": "user",
-          "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-        }
-      },
-      "UserReference2": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "type": "string",
+            "pattern": "^user$",
             "example": "user"
           },
           "id": {

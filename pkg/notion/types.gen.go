@@ -106,9 +106,9 @@ type Page struct {
 	// Date and time when this page was created. Formatted as an ISO 8601 date time string.
 	CreatedTime time.Time `json:"created_time,omitzero"`
 	// Date and time when this page was updated. Formatted as an ISO 8601 date time string.
-	LastEditedTime time.Time      `json:"last_edited_time,omitzero"`
-	CreatedBy      UserReference  `json:"created_by"`
-	LastEditedBy   UserReference2 `json:"last_edited_by"`
+	LastEditedTime time.Time     `json:"last_edited_time,omitzero"`
+	CreatedBy      UserReference `json:"created_by"`
+	LastEditedBy   UserReference `json:"last_edited_by"`
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion.
 	Cover File `json:"cover"`
 	// Page or database icon. It is either an emoji or a file.
@@ -222,12 +222,7 @@ type Text struct {
 
 // UserReference defines a model
 type UserReference struct {
-	Object string    `json:"object,omitzero"`
-	ID     uuid.UUID `json:"id,omitzero"`
-}
-
-// UserReference2 defines a model
-type UserReference2 struct {
+	// Always "user"
 	Object string    `json:"object,omitzero"`
 	ID     uuid.UUID `json:"id,omitzero"`
 }
