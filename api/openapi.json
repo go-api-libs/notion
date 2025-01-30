@@ -265,11 +265,11 @@
         }
       },
       "Parent": {
+        "description": "The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.",
         "type": "object",
         "properties": {
           "type": {
-            "type": "string",
-            "example": "page_id"
+            "$ref": "#/components/schemas/ParentType"
           },
           "page_id": {
             "type": "string",
@@ -285,6 +285,17 @@
           "type": "page_id",
           "page_id": "11f88fcd-daf4-802e-b645-eb2d041a759b"
         }
+      },
+      "ParentType": {
+        "description": "The type of the parent.",
+        "type": "string",
+        "enum": [
+          "page_id",
+          "workspace",
+          "block_id",
+          "database_id"
+        ],
+        "example": "page_id"
       },
       "PropertyValue": {
         "type": "object",

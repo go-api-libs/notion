@@ -68,7 +68,8 @@ type Page struct {
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion.
 	Cover File `json:"cover"`
 	// Page or database icon. It is either an emoji or a file.
-	Icon   Icon   `json:"icon"`
+	Icon Icon `json:"icon"`
+	// The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
 	Parent Parent `json:"parent"`
 	// The archived status of the page.
 	Archived bool `json:"archived,omitzero"`
@@ -81,11 +82,22 @@ type Page struct {
 	RequestID uuid.UUID `json:"request_id,omitzero"`
 }
 
-// Parent defines a model
+// The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
 type Parent struct {
-	Type   string    `json:"type,omitzero"`
-	PageID uuid.UUID `json:"page_id,omitzero"`
+	// The type of the parent.
+	Type   ParentType `json:"type,omitzero"`
+	PageID uuid.UUID  `json:"page_id,omitzero"`
 }
+
+// The type of the parent.
+type ParentType string
+
+const (
+	ParentTypePageID     ParentType = "page_id"
+	ParentTypeWorkspace  ParentType = "workspace"
+	ParentTypeBlockID    ParentType = "block_id"
+	ParentTypeDatabaseID ParentType = "database_id"
+)
 
 // PropertyValue defines a model
 type PropertyValue struct {
