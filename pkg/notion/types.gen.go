@@ -86,7 +86,7 @@ type Page struct {
 type Parent struct {
 	// The type of the parent.
 	Type   ParentType `json:"type,omitzero"`
-	PageID uuid.UUID  `json:"page_id,omitzero"`
+	PageID *uuid.UUID `json:"page_id,omitempty"`
 }
 
 // The type of the parent.
