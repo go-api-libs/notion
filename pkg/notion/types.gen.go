@@ -18,11 +18,13 @@ import (
 // Page content is available as [blocks](https://developers.notion.com/reference/block). The content can be read using [retrieve block children](https://developers.notion.com/reference/get-block-children) and appended using [append block children](https://developers.notion.com/reference/patch-block-children).
 type Page struct {
 	// Always "page".
-	Object         string           `json:"object,omitzero"`
-	ID             uuid.UUID        `json:"id,omitzero"`
-	CreatedTime    time.Time        `json:"created_time,omitzero"`
+	Object string    `json:"object,omitzero"`
+	ID     uuid.UUID `json:"id,omitzero"`
+	// Date and time when this page was created. Formatted as an ISO 8601 date time string.
+	CreatedTime time.Time `json:"created_time,omitzero"`
+	// Date and time when this page was updated. Formatted as an ISO 8601 date time string.
 	LastEditedTime time.Time        `json:"last_edited_time,omitzero"`
-	CreatedBy      PageCreatedBy    `json:"created_by"`
+	CreatedBy      UserReference    `json:"created_by"`
 	LastEditedBy   PageLastEditedBy `json:"last_edited_by"`
 	Cover          PageCover        `json:"cover"`
 	Icon           PageIcon         `json:"icon"`
@@ -44,12 +46,6 @@ type PageCover struct {
 // PageCoverExternal defines a model
 type PageCoverExternal struct {
 	URL url.URL `json:"url,omitzero"`
-}
-
-// PageCreatedBy defines a model
-type PageCreatedBy struct {
-	Object string    `json:"object,omitzero"`
-	ID     uuid.UUID `json:"id,omitzero"`
 }
 
 // PageIcon defines a model
@@ -108,4 +104,10 @@ type PagePropertiesTitleTitleItemsAnnotations struct {
 type PagePropertiesTitleTitleItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
+}
+
+// UserReference defines a model
+type UserReference struct {
+	Object string    `json:"object,omitzero"`
+	ID     uuid.UUID `json:"id,omitzero"`
 }

@@ -53,17 +53,19 @@
             "example": "96245c8f-1784-44a4-82ad-1941127c3ec3"
           },
           "created_time": {
+            "description": "Date and time when this page was created. Formatted as an ISO 8601 date time string.",
             "type": "string",
             "format": "date-time",
             "example": "2022-07-14T05:31:00.000Z"
           },
           "last_edited_time": {
+            "description": "Date and time when this page was updated. Formatted as an ISO 8601 date time string.",
             "type": "string",
             "format": "date-time",
             "example": "2024-10-14T11:26:00.000Z"
           },
           "created_by": {
-            "$ref": "#/components/schemas/PageCreatedBy"
+            "$ref": "#/components/schemas/UserReference"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/PageLastEditedBy"
@@ -216,28 +218,6 @@
         ],
         "example": {
           "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
-        }
-      },
-      "PageCreatedBy": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "type": "string",
-            "example": "user"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-          }
-        },
-        "required": [
-          "object",
-          "id"
-        ],
-        "example": {
-          "object": "user",
-          "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
         }
       },
       "PageIcon": {
@@ -519,6 +499,28 @@
         "example": {
           "content": "Example Page",
           "link": null
+        }
+      },
+      "UserReference": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "example": "user"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+          }
+        },
+        "required": [
+          "object",
+          "id"
+        ],
+        "example": {
+          "object": "user",
+          "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
         }
       }
     },
