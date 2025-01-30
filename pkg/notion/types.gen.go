@@ -11,9 +11,10 @@ import (
 	"github.com/google/uuid"
 )
 
-// File defines a model
+// File objects contain data about files uploaded to Notion as well as external files linked in Notion.
 type File struct {
-	Type     string       `json:"type,omitzero"`
+	// Type of this file object.
+	Type     FileType     `json:"type,omitzero"`
 	External FileExternal `json:"external"`
 }
 
@@ -21,6 +22,14 @@ type File struct {
 type FileExternal struct {
 	URL url.URL `json:"url,omitzero"`
 }
+
+// Type of this file object.
+type FileType string
+
+const (
+	FileTypeFile     FileType = "file"
+	FileTypeExternal FileType = "external"
+)
 
 // Icon defines a model
 type Icon struct {
@@ -43,9 +52,10 @@ type Page struct {
 	LastEditedTime time.Time      `json:"last_edited_time,omitzero"`
 	CreatedBy      UserReference  `json:"created_by"`
 	LastEditedBy   UserReference2 `json:"last_edited_by"`
-	Cover          File           `json:"cover"`
-	Icon           Icon           `json:"icon"`
-	Parent         Parent         `json:"parent"`
+	// File objects contain data about files uploaded to Notion as well as external files linked in Notion.
+	Cover  File   `json:"cover"`
+	Icon   Icon   `json:"icon"`
+	Parent Parent `json:"parent"`
 	// The archived status of the page.
 	Archived bool `json:"archived,omitzero"`
 	InTrash  bool `json:"in_trash,omitzero"`
