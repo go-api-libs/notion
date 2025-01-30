@@ -38,7 +38,7 @@ type Icon struct {
 	// Type of icon.
 	Type IconType `json:"type,omitzero"`
 	// Emoji character.
-	Emoji *string `json:"emoji,omitempty"`
+	Emoji string `json:"emoji,omitempty"`
 }
 
 // Type of icon.
