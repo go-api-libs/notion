@@ -2,7 +2,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/go-api-libs/notion.svg)](https://pkg.go.dev/github.com/go-api-libs/notion/pkg/notion)
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-3.1-blue)](/api/openapi.json)
 [![Go Report Card](https://goreportcard.com/badge/github.com/go-api-libs/notion)](https://goreportcard.com/report/github.com/go-api-libs/notion)
-![Code Coverage](https://img.shields.io/badge/coverage-22%25-red)
+![Code Coverage](https://img.shields.io/badge/coverage-18%25-red)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [Create an integration](https://www.notion.so/my-integrations) to retrieve an API token, add your database and page ID's as variables in the collection, and start making your requests!

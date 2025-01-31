@@ -177,8 +177,8 @@ func TestClient_VCR(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	t.Run("2025-01-30", func(t *testing.T) {
-		replay(t, "vcr/2025-01-30")
+	t.Run("2025-01-31", func(t *testing.T) {
+		replay(t, "vcr/2025-01-31")
 
 		res, err := c.GetPage(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"))
 		if err != nil {

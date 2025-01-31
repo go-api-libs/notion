@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
 	"strings"
 
+	"github.com/go-api-libs/notion/pkg/notion"
 	"github.com/google/uuid"
 	"gopkg.in/dnaeon/go-vcr.v3/cassette"
 )
@@ -16,9 +18,23 @@ var examplePageID = uuid.MustParse("96245c8f178444a482ad1941127c3ec3")
 
 // probe calls the API server to check what we can do
 func probe() error {
-	bearer := os.Getenv("NOTION_TOKEN")
+	ctx := context.Background()
+
+	c, err := notion.NewClient()
+	if err != nil {
+		return err
+	}
+
+	p, err := c.GetPage(ctx, examplePageID)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Title: %v\n", p.Title())
+
+	bearer := os.Getenv("NOTION_API_KEY")
 	if bearer == "" {
-		return fmt.Errorf("missing bearer token, set NOTION_TOKEN")
+		return fmt.Errorf("missing bearer token, set NOTION_API_KEY")
 	}
 
 	if !strings.HasPrefix(bearer, "Bearer ") {
@@ -31,15 +47,15 @@ func probe() error {
 		req.Header.Set("Notion-Version", "2022-06-28")
 	}
 
-	req, err := http.NewRequest(http.MethodGet, "https://api.notion.com/v1/pages/"+examplePageID.String(), nil)
+	req, err := http.NewRequest(http.MethodGet, "https://api.notion.com/v1/blocks/"+examplePageID.String()+"/children?page_size=100", nil)
 	if err != nil {
 		return err
 	}
 
 	reqEditor(req)
 
-	_, err = http.DefaultClient.Do(req)
-	return err
+	_, _ = http.DefaultClient.Do(req)
+	return nil
 }
 
 // mask any secrets the API might return, e.g. in the response body
