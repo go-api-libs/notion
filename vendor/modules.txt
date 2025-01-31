@@ -4,6 +4,9 @@ github.com/MarkRosemaker/jsonutil
 # github.com/go-api-libs/api v0.0.0-20241220213325-f2e74c88e4c9
 ## explicit; go 1.23.2
 github.com/go-api-libs/api
+# github.com/go-api-libs/types v0.0.0-20241220214721-81dc6f654a15
+## explicit; go 1.23.2
+github.com/go-api-libs/types
 # github.com/go-json-experiment/json v0.0.0-20250129011340-4e0381018ad6
 ## explicit; go 1.23
 github.com/go-json-experiment/json

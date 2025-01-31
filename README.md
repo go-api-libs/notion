@@ -2,7 +2,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/go-api-libs/notion.svg)](https://pkg.go.dev/github.com/go-api-libs/notion/pkg/notion)
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-3.1-blue)](/api/openapi.json)
 [![Go Report Card](https://goreportcard.com/badge/github.com/go-api-libs/notion)](https://goreportcard.com/report/github.com/go-api-libs/notion)
-![Code Coverage](https://img.shields.io/badge/coverage-18%25-red)
+![Code Coverage](https://img.shields.io/badge/coverage-30%25-orange)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 [Create an integration](https://www.notion.so/my-integrations) to retrieve an API token, add your database and page ID's as variables in the collection, and start making your requests!
@@ -21,7 +21,7 @@ go get github.com/go-api-libs/notion/pkg/notion
 
 ## Usage
 
-### Example: Retrieve a Page
+### Example 1: Retrieve a Page
 
 ```go
 package main
@@ -46,6 +46,34 @@ func main() {
 	}
 
 	// Use page object
+}
+
+```
+
+### Example 2: 
+
+```go
+package main
+
+import (
+	"context"
+
+	"github.com/go-api-libs/notion/pkg/notion"
+)
+
+func main() {
+	c, err := notion.NewClient()
+	if err != nil {
+		panic(err)
+	}
+
+	ctx := context.Background()
+	getBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse, err := c.GetBlocks96245c8f178444a482ad1941127c3ec3Children(ctx, &notion.GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenParams{PageSize: 100})
+	if err != nil {
+		panic(err)
+	}
+
+	// Use getBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse object
 }
 
 ```

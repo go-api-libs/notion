@@ -32,8 +32,6 @@ func probe() error {
 
 	fmt.Printf("Title: %q\n", p.Title())
 
-	return nil
-
 	bearer := os.Getenv("NOTION_API_KEY")
 	if bearer == "" {
 		return fmt.Errorf("missing bearer token, set NOTION_API_KEY")

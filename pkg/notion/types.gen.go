@@ -8,8 +8,13 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/go-api-libs/types"
 	"github.com/google/uuid"
 )
+
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenParams struct {
+	PageSize int
+}
 
 // Style information which applies to the whole rich text object.
 type Annotations struct {
@@ -73,6 +78,791 @@ const (
 	FileTypeFile     FileType = "file"
 	FileTypeExternal FileType = "external"
 )
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse struct {
+	Object     string                                                                 `json:"object,omitzero"`
+	Results    GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResults `json:"results,omitempty"`
+	NextCursor struct{}                                                               `json:"next_cursor"`
+	HasMore    bool                                                                   `json:"has_more,omitzero"`
+	Type       string                                                                 `json:"type,omitzero"`
+	Block      struct{}                                                               `json:"block"`
+	RequestID  uuid.UUID                                                              `json:"request_id,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResults defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResults []GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItems
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItems defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItems struct {
+	Object           string                                                                                       `json:"object,omitzero"`
+	ID               uuid.UUID                                                                                    `json:"id,omitzero"`
+	Parent           GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParent            `json:"parent"`
+	CreatedTime      time.Time                                                                                    `json:"created_time,omitzero"`
+	LastEditedTime   time.Time                                                                                    `json:"last_edited_time,omitzero"`
+	CreatedBy        GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCreatedBy         `json:"created_by"`
+	LastEditedBy     GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsLastEditedBy      `json:"last_edited_by"`
+	HasChildren      bool                                                                                         `json:"has_children,omitzero"`
+	Archived         bool                                                                                         `json:"archived,omitzero"`
+	InTrash          bool                                                                                         `json:"in_trash,omitzero"`
+	Type             string                                                                                       `json:"type,omitzero"`
+	Paragraph        GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraph         `json:"paragraph"`
+	Heading1         *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1         `json:"heading_1,omitempty"`
+	Heading2         *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2         `json:"heading_2,omitempty"`
+	Heading3         *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3         `json:"heading_3,omitempty"`
+	Callout          *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCallout          `json:"callout,omitempty"`
+	Quote            *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuote            `json:"quote,omitempty"`
+	SyncedBlock      *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsSyncedBlock      `json:"synced_block,omitempty"`
+	NumberedListItem *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItem `json:"numbered_list_item,omitempty"`
+	BulletedListItem *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItem `json:"bulleted_list_item,omitempty"`
+	ToDo             *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDo             `json:"to_do,omitempty"`
+	Toggle           *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggle           `json:"toggle,omitempty"`
+	Code             *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCode             `json:"code,omitempty"`
+	ChildPage        *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsChildPage        `json:"child_page,omitempty"`
+	ChildDatabase    *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsChildDatabase    `json:"child_database,omitempty"`
+	Embed            *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbed            `json:"embed,omitempty"`
+	PDF              *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdf              `json:"pdf,omitempty"`
+	ColumnList       *struct{}                                                                                    `json:"column_list,omitempty"`
+	Video            *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsVideo            `json:"video,omitempty"`
+	File             *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsFile             `json:"file,omitempty"`
+	Bookmark         *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmark         `json:"bookmark,omitempty"`
+	Equation         *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEquation         `json:"equation,omitempty"`
+	Divider          *struct{}                                                                                    `json:"divider,omitempty"`
+	TableOfContents  *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsTableOfContents  `json:"table_of_contents,omitempty"`
+	Breadcrumb       *struct{}                                                                                    `json:"breadcrumb,omitempty"`
+	LinkPreview      *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsLinkPreview      `json:"link_preview,omitempty"`
+	Unsupported      *struct{}                                                                                    `json:"unsupported,omitempty"`
+	LinkToPage       *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsLinkToPage       `json:"link_to_page,omitempty"`
+	Table            *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsTable            `json:"table,omitempty"`
+	Audio            *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsAudio            `json:"audio,omitempty"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsAudio defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsAudio struct {
+	Caption  []struct{}                                                                               `json:"caption,omitempty"`
+	Type     string                                                                                   `json:"type,omitzero"`
+	External GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsAudioExternal `json:"external"`
+	File     *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsAudioFile    `json:"file,omitempty"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsAudioExternal defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsAudioExternal struct {
+	URL url.URL `json:"url,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsAudioFile defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsAudioFile struct {
+	URL        url.URL   `json:"url,omitzero"`
+	ExpiryTime time.Time `json:"expiry_time,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmark defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmark struct {
+	Caption GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaption `json:"caption,omitempty"`
+	URL     url.URL                                                                                    `json:"url,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaption defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaption []GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaptionItems
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaptionItems defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaptionItems struct {
+	Type        string                                                                                                     `json:"type,omitzero"`
+	Text        GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaptionItemsText        `json:"text"`
+	Annotations GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaptionItemsAnnotations `json:"annotations"`
+	PlainText   string                                                                                                     `json:"plain_text,omitzero"`
+	Href        struct{}                                                                                                   `json:"href"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaptionItemsAnnotations defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaptionItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaptionItemsText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaptionItemsText struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItem defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItem struct {
+	RichText GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichText `json:"rich_text,omitempty"`
+	Color    string                                                                                              `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichText []GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichTextItems
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichTextItems defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichTextItems struct {
+	Type        string                                                                                                              `json:"type,omitzero"`
+	Text        GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichTextItemsText        `json:"text"`
+	Annotations GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                                                                                                              `json:"plain_text,omitzero"`
+	Href        struct{}                                                                                                            `json:"href"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichTextItemsAnnotations defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichTextItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichTextItemsText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichTextItemsText struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCallout defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCallout struct {
+	RichText GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichText `json:"rich_text,omitempty"`
+	Icon     GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutIcon     `json:"icon"`
+	Color    string                                                                                     `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutIcon defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutIcon struct {
+	Type     string                                                                                          `json:"type,omitzero"`
+	Emoji    string                                                                                          `json:"emoji,omitzero"`
+	External *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutIconExternal `json:"external,omitempty"`
+	File     *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutIconFile     `json:"file,omitempty"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutIconExternal defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutIconExternal struct {
+	URL url.URL `json:"url,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutIconFile defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutIconFile struct {
+	URL        url.URL   `json:"url,omitzero"`
+	ExpiryTime time.Time `json:"expiry_time,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichText []GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichTextItems
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichTextItems defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichTextItems struct {
+	Type        string                                                                                                     `json:"type,omitzero"`
+	Text        GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichTextItemsText        `json:"text"`
+	Annotations GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                                                                                                     `json:"plain_text,omitzero"`
+	Href        struct{}                                                                                                   `json:"href"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichTextItemsAnnotations defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichTextItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichTextItemsText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichTextItemsText struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsChildDatabase defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsChildDatabase struct {
+	Title string `json:"title,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsChildPage defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsChildPage struct {
+	Title string `json:"title,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCode defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCode struct {
+	Caption  GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaption  `json:"caption,omitempty"`
+	RichText GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichText `json:"rich_text,omitempty"`
+	Language string                                                                                  `json:"language,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaption defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaption []GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaptionItems
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaptionItems defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaptionItems struct {
+	Type        string                                                                                                 `json:"type,omitzero"`
+	Text        GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaptionItemsText        `json:"text"`
+	Annotations GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaptionItemsAnnotations `json:"annotations"`
+	PlainText   string                                                                                                 `json:"plain_text,omitzero"`
+	Href        struct{}                                                                                               `json:"href"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaptionItemsAnnotations defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaptionItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaptionItemsText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaptionItemsText struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichText []GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItems
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItems defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItems struct {
+	Type        string                                                                                                  `json:"type,omitzero"`
+	Text        GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItemsText        `json:"text"`
+	Annotations GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                                                                                                  `json:"plain_text,omitzero"`
+	Href        url.URL                                                                                                 `json:"href,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItemsAnnotations defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItemsText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItemsText struct {
+	Content string                                                                                               `json:"content,omitzero"`
+	Link    GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItemsTextLink `json:"link"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItemsTextLink defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItemsTextLink struct {
+	URL *url.URL `json:"url,omitempty"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCreatedBy defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCreatedBy struct {
+	Object string    `json:"object,omitzero"`
+	ID     uuid.UUID `json:"id,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbed defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbed struct {
+	Caption GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaption `json:"caption,omitempty"`
+	URL     url.URL                                                                                 `json:"url,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaption defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaption []GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaptionItems
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaptionItems defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaptionItems struct {
+	Type        string                                                                                                   `json:"type,omitzero"`
+	Text        *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaptionItemsText        `json:"text,omitempty"`
+	Annotations *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaptionItemsAnnotations `json:"annotations,omitempty"`
+	PlainText   string                                                                                                   `json:"plain_text,omitzero"`
+	Href        *struct{}                                                                                                `json:"href,omitempty"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaptionItemsAnnotations defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaptionItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaptionItemsText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaptionItemsText struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEquation defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEquation struct {
+	Expression string `json:"expression,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsFile defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsFile struct {
+	Caption []struct{}                                                                          `json:"caption,omitempty"`
+	Type    string                                                                              `json:"type,omitzero"`
+	File    GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsFileFile `json:"file"`
+	Name    string                                                                              `json:"name,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsFileFile defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsFileFile struct {
+	URL        url.URL   `json:"url,omitzero"`
+	ExpiryTime time.Time `json:"expiry_time,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1 defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1 struct {
+	RichText     GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichText `json:"rich_text,omitempty"`
+	IsToggleable bool                                                                                        `json:"is_toggleable,omitzero"`
+	Color        string                                                                                      `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichText []GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichTextItems
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichTextItems defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichTextItems struct {
+	Type        string                                                                                                      `json:"type,omitzero"`
+	Text        GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichTextItemsText        `json:"text"`
+	Annotations GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                                                                                                      `json:"plain_text,omitzero"`
+	Href        struct{}                                                                                                    `json:"href"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichTextItemsAnnotations defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichTextItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichTextItemsText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichTextItemsText struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2 defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2 struct {
+	RichText     GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichText `json:"rich_text,omitempty"`
+	IsToggleable bool                                                                                        `json:"is_toggleable,omitzero"`
+	Color        string                                                                                      `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichText []GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichTextItems
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichTextItems defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichTextItems struct {
+	Type        string                                                                                                      `json:"type,omitzero"`
+	Text        GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichTextItemsText        `json:"text"`
+	Annotations GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                                                                                                      `json:"plain_text,omitzero"`
+	Href        struct{}                                                                                                    `json:"href"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichTextItemsAnnotations defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichTextItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichTextItemsText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichTextItemsText struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3 defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3 struct {
+	RichText     GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichText `json:"rich_text,omitempty"`
+	IsToggleable bool                                                                                        `json:"is_toggleable,omitzero"`
+	Color        string                                                                                      `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichText []GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichTextItems
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichTextItems defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichTextItems struct {
+	Type        string                                                                                                      `json:"type,omitzero"`
+	Text        GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichTextItemsText        `json:"text"`
+	Annotations GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                                                                                                      `json:"plain_text,omitzero"`
+	Href        struct{}                                                                                                    `json:"href"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichTextItemsAnnotations defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichTextItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichTextItemsText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichTextItemsText struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsLastEditedBy defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsLastEditedBy struct {
+	Object string    `json:"object,omitzero"`
+	ID     uuid.UUID `json:"id,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsLinkPreview defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsLinkPreview struct {
+	URL url.URL `json:"url,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsLinkToPage defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsLinkToPage struct {
+	Type   string    `json:"type,omitzero"`
+	PageID uuid.UUID `json:"page_id,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItem defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItem struct {
+	RichText GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichText `json:"rich_text,omitempty"`
+	Color    string                                                                                              `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichText []GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichTextItems
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichTextItems defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichTextItems struct {
+	Type        string                                                                                                              `json:"type,omitzero"`
+	Text        GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichTextItemsText        `json:"text"`
+	Annotations GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                                                                                                              `json:"plain_text,omitzero"`
+	Href        struct{}                                                                                                            `json:"href"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichTextItemsAnnotations defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichTextItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichTextItemsText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichTextItemsText struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraph defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraph struct {
+	RichText GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichText `json:"rich_text,omitempty"`
+	Color    string                                                                                       `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichText []GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItems
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItems defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItems struct {
+	Type        string                                                                                                        `json:"type,omitzero"`
+	Text        *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsText        `json:"text,omitempty"`
+	Annotations *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsAnnotations `json:"annotations,omitempty"`
+	PlainText   string                                                                                                        `json:"plain_text,omitzero"`
+	Href        *url.URL                                                                                                      `json:"href,omitempty"`
+	Mention     *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMention     `json:"mention,omitempty"`
+	Equation    *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsEquation    `json:"equation,omitempty"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsAnnotations defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsEquation defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsEquation struct {
+	Expression string `json:"expression,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMention defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMention struct {
+	Type        string                                                                                                              `json:"type,omitzero"`
+	LinkMention GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionLinkMention `json:"link_mention"`
+	Database    *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionDatabase   `json:"database,omitempty"`
+	User        *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionUser       `json:"user,omitempty"`
+	Date        *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionDate       `json:"date,omitempty"`
+	Page        *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionPage       `json:"page,omitempty"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionDatabase defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionDatabase struct {
+	ID uuid.UUID `json:"id,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionDate defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionDate struct {
+	Start    string   `json:"start,omitzero"`
+	End      struct{} `json:"end"`
+	TimeZone struct{} `json:"time_zone"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionLinkMention defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionLinkMention struct {
+	Href        url.URL `json:"href,omitzero"`
+	Title       string  `json:"title,omitzero"`
+	Description string  `json:"description,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionPage defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionPage struct {
+	ID uuid.UUID `json:"id,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionUser defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionUser struct {
+	Object    string                                                                                                             `json:"object,omitzero"`
+	ID        uuid.UUID                                                                                                          `json:"id,omitzero"`
+	Name      string                                                                                                             `json:"name,omitzero"`
+	AvatarURL url.URL                                                                                                            `json:"avatar_url,omitzero"`
+	Type      string                                                                                                             `json:"type,omitzero"`
+	Person    GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionUserPerson `json:"person"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionUserPerson defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionUserPerson struct {
+	Email types.Email `json:"email,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsText struct {
+	Content string                                                                                                    `json:"content,omitzero"`
+	Link    GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsTextLink `json:"link"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsTextLink defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsTextLink struct {
+	URL *url.URL `json:"url,omitempty"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParent defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParent struct {
+	Type   string    `json:"type,omitzero"`
+	PageID uuid.UUID `json:"page_id,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdf defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdf struct {
+	Caption  GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaption  `json:"caption,omitempty"`
+	Type     string                                                                                 `json:"type,omitzero"`
+	External GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfExternal `json:"external"`
+	File     *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfFile    `json:"file,omitempty"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaption defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaption []GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaptionItems
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaptionItems defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaptionItems struct {
+	Type        string                                                                                                `json:"type,omitzero"`
+	Text        GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaptionItemsText        `json:"text"`
+	Annotations GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaptionItemsAnnotations `json:"annotations"`
+	PlainText   string                                                                                                `json:"plain_text,omitzero"`
+	Href        struct{}                                                                                              `json:"href"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaptionItemsAnnotations defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaptionItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaptionItemsText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaptionItemsText struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfExternal defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfExternal struct {
+	URL url.URL `json:"url,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfFile defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfFile struct {
+	URL        url.URL   `json:"url,omitzero"`
+	ExpiryTime time.Time `json:"expiry_time,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuote defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuote struct {
+	RichText GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichText `json:"rich_text,omitempty"`
+	Color    string                                                                                   `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichText []GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichTextItems
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichTextItems defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichTextItems struct {
+	Type        string                                                                                                   `json:"type,omitzero"`
+	Text        GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichTextItemsText        `json:"text"`
+	Annotations GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                                                                                                   `json:"plain_text,omitzero"`
+	Href        struct{}                                                                                                 `json:"href"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichTextItemsAnnotations defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichTextItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichTextItemsText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichTextItemsText struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsSyncedBlock defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsSyncedBlock struct {
+	SyncedFrom GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsSyncedBlockSyncedFrom `json:"synced_from"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsSyncedBlockSyncedFrom defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsSyncedBlockSyncedFrom struct {
+	Type    string    `json:"type,omitzero"`
+	BlockID uuid.UUID `json:"block_id,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsTable defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsTable struct {
+	TableWidth      int  `json:"table_width,omitzero"`
+	HasColumnHeader bool `json:"has_column_header,omitzero"`
+	HasRowHeader    bool `json:"has_row_header,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsTableOfContents defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsTableOfContents struct {
+	Color string `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDo defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDo struct {
+	RichText GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichText `json:"rich_text,omitempty"`
+	Checked  bool                                                                                    `json:"checked,omitzero"`
+	Color    string                                                                                  `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichText []GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichTextItems
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichTextItems defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichTextItems struct {
+	Type        string                                                                                                  `json:"type,omitzero"`
+	Text        GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichTextItemsText        `json:"text"`
+	Annotations GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                                                                                                  `json:"plain_text,omitzero"`
+	Href        struct{}                                                                                                `json:"href"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichTextItemsAnnotations defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichTextItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichTextItemsText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichTextItemsText struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggle defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggle struct {
+	RichText GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichText `json:"rich_text,omitempty"`
+	Color    string                                                                                    `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichText []GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichTextItems
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichTextItems defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichTextItems struct {
+	Type        string                                                                                                    `json:"type,omitzero"`
+	Text        GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichTextItemsText        `json:"text"`
+	Annotations GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                                                                                                    `json:"plain_text,omitzero"`
+	Href        struct{}                                                                                                  `json:"href"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichTextItemsAnnotations defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichTextItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichTextItemsText defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichTextItemsText struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsVideo defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsVideo struct {
+	Caption  []struct{}                                                                                `json:"caption,omitempty"`
+	Type     string                                                                                    `json:"type,omitzero"`
+	File     GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsVideoFile      `json:"file"`
+	External *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsVideoExternal `json:"external,omitempty"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsVideoExternal defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsVideoExternal struct {
+	URL url.URL `json:"url,omitzero"`
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsVideoFile defines a model
+type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsVideoFile struct {
+	URL        url.URL   `json:"url,omitzero"`
+	ExpiryTime time.Time `json:"expiry_time,omitzero"`
+}
 
 // Page or database icon. It is either an emoji or a file.
 type Icon struct {

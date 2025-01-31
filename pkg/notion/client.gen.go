@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/MarkRosemaker/jsonutil"
@@ -94,6 +95,63 @@ func GetPage[R any](ctx context.Context, c *Client, id uuid.UUID) (*R, error) {
 	switch rsp.StatusCode {
 	case http.StatusOK:
 		// Returns the page that was requested or created.
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out R
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				return nil, api.WrapDecodingError(rsp, err)
+			}
+
+			return &out, nil
+		default:
+			return nil, api.NewErrUnknownContentType(rsp)
+		}
+	default:
+		return nil, api.NewErrUnknownStatusCode(rsp)
+	}
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3Children defines an operation.
+//
+//	GET /blocks/96245c8f-1784-44a4-82ad-1941127c3ec3/children
+func (c *Client) GetBlocks96245c8f178444a482ad1941127c3ec3Children(ctx context.Context, params *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenParams) (*GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse, error) {
+	return GetBlocks96245c8f178444a482ad1941127c3ec3Children[GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse](ctx, c, params)
+}
+
+// GetBlocks96245c8f178444a482ad1941127c3ec3Children defines an operation.
+// You can define a custom result to unmarshal the response into.
+//
+//	GET /blocks/96245c8f-1784-44a4-82ad-1941127c3ec3/children
+func GetBlocks96245c8f178444a482ad1941127c3ec3Children[R any](ctx context.Context, c *Client, params *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenParams) (*R, error) {
+	u := baseURL.JoinPath("/blocks/96245c8f-1784-44a4-82ad-1941127c3ec3/children")
+
+	if params != nil && params.PageSize != 0 {
+		u.RawQuery = url.Values{"page_size": []string{strconv.Itoa(params.PageSize)}}.Encode()
+	}
+
+	req := (&http.Request{
+		Header: http.Header{
+			"Authorization": []string{c.bearer},
+			"NotionVersion": []string{"2022-06-28"},
+			"User-Agent":    []string{userAgent},
+		},
+		Host:       u.Host,
+		Method:     http.MethodGet,
+		Proto:      "HTTP/1.1",
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		URL:        u,
+	}).WithContext(ctx)
+
+	rsp, err := c.cli.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer rsp.Body.Close()
+
+	switch rsp.StatusCode {
+	case http.StatusOK:
+		// TODO
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R
