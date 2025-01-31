@@ -705,7 +705,7 @@
     "securitySchemes": {
       "BearerToken": {
         "type": "http",
-        "name": "NOTION_TOKEN",
+        "name": "NOTION_API_KEY",
         "scheme": "bearer",
         "bearerFormat": "Bearer"
       }

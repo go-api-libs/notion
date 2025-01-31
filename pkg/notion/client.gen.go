@@ -45,11 +45,11 @@ type Client struct {
 	bearer string
 }
 
-// NewClient creates a new Client, setting the bearer token to [os.Getenv]("NOTION_TOKEN").
+// NewClient creates a new Client, setting the bearer token to [os.Getenv]("NOTION_API_KEY").
 func NewClient() (*Client, error) {
-	bearer := os.Getenv("NOTION_TOKEN")
+	bearer := os.Getenv("NOTION_API_KEY")
 	if bearer == "" {
-		return nil, errors.New("bearer token NOTION_TOKEN not provided")
+		return nil, errors.New("bearer token NOTION_API_KEY not provided")
 	}
 
 	return &Client{
