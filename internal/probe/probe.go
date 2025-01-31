@@ -32,6 +32,8 @@ func probe() error {
 
 	fmt.Printf("Title: %v\n", p.Title())
 
+	return nil
+
 	bearer := os.Getenv("NOTION_API_KEY")
 	if bearer == "" {
 		return fmt.Errorf("missing bearer token, set NOTION_API_KEY")
@@ -54,8 +56,8 @@ func probe() error {
 
 	reqEditor(req)
 
-	_, _ = http.DefaultClient.Do(req)
-	return nil
+	_, err = http.DefaultClient.Do(req)
+	return err
 }
 
 // mask any secrets the API might return, e.g. in the response body
