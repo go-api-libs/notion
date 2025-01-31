@@ -30,7 +30,7 @@ func probe() error {
 		return err
 	}
 
-	fmt.Printf("Title: %v\n", p.Title())
+	fmt.Printf("Title: %q\n", p.Title())
 
 	return nil
 
