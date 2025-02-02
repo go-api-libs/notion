@@ -32,89 +32,89 @@ type Annotations struct {
 	Color Color `json:"color,omitzero"`
 }
 
-// Block2 defines a model
-type Block2 struct {
-	Object           string                  `json:"object,omitzero"`
-	ID               uuid.UUID               `json:"id,omitzero"`
-	Parent           Block2Parent            `json:"parent"`
-	CreatedTime      time.Time               `json:"created_time,omitzero"`
-	LastEditedTime   time.Time               `json:"last_edited_time,omitzero"`
-	CreatedBy        Block2CreatedBy         `json:"created_by"`
-	LastEditedBy     Block2LastEditedBy      `json:"last_edited_by"`
-	HasChildren      bool                    `json:"has_children,omitzero"`
-	Archived         bool                    `json:"archived,omitzero"`
-	InTrash          bool                    `json:"in_trash,omitzero"`
-	Type             string                  `json:"type,omitzero"`
-	Paragraph        Block2Paragraph         `json:"paragraph"`
-	Heading1         *Block2Heading1         `json:"heading_1,omitempty"`
-	Heading2         *Block2Heading2         `json:"heading_2,omitempty"`
-	Heading3         *Block2Heading3         `json:"heading_3,omitempty"`
-	Callout          *Block2Callout          `json:"callout,omitempty"`
-	Quote            *Block2Quote            `json:"quote,omitempty"`
-	SyncedBlock      *Block2SyncedBlock      `json:"synced_block,omitempty"`
-	NumberedListItem *Block2NumberedListItem `json:"numbered_list_item,omitempty"`
-	BulletedListItem *Block2BulletedListItem `json:"bulleted_list_item,omitempty"`
-	ToDo             *Block2ToDo             `json:"to_do,omitempty"`
-	Toggle           *Block2Toggle           `json:"toggle,omitempty"`
-	Code             *Block2Code             `json:"code,omitempty"`
-	ChildPage        *Block2ChildPage        `json:"child_page,omitempty"`
-	ChildDatabase    *Block2ChildDatabase    `json:"child_database,omitempty"`
-	Embed            *Block2Embed            `json:"embed,omitempty"`
-	PDF              *Block2Pdf              `json:"pdf,omitempty"`
-	ColumnList       *struct{}               `json:"column_list,omitempty"`
-	Video            *Block2Video            `json:"video,omitempty"`
-	File             *Block2File             `json:"file,omitempty"`
-	Bookmark         *Block2Bookmark         `json:"bookmark,omitempty"`
-	Equation         *Block2Equation         `json:"equation,omitempty"`
-	Divider          *struct{}               `json:"divider,omitempty"`
-	TableOfContents  *Block2TableOfContents  `json:"table_of_contents,omitempty"`
-	Breadcrumb       *struct{}               `json:"breadcrumb,omitempty"`
-	LinkPreview      *Block2LinkPreview      `json:"link_preview,omitempty"`
-	Unsupported      *struct{}               `json:"unsupported,omitempty"`
-	LinkToPage       *Block2LinkToPage       `json:"link_to_page,omitempty"`
-	Table            *Block2Table            `json:"table,omitempty"`
-	Audio            *Block2Audio            `json:"audio,omitempty"`
+// Block defines a model
+type Block struct {
+	Object           string                 `json:"object,omitzero"`
+	ID               uuid.UUID              `json:"id,omitzero"`
+	Parent           BlockParent            `json:"parent"`
+	CreatedTime      time.Time              `json:"created_time,omitzero"`
+	LastEditedTime   time.Time              `json:"last_edited_time,omitzero"`
+	CreatedBy        BlockCreatedBy         `json:"created_by"`
+	LastEditedBy     BlockLastEditedBy      `json:"last_edited_by"`
+	HasChildren      bool                   `json:"has_children,omitzero"`
+	Archived         bool                   `json:"archived,omitzero"`
+	InTrash          bool                   `json:"in_trash,omitzero"`
+	Type             string                 `json:"type,omitzero"`
+	Paragraph        BlockParagraph         `json:"paragraph"`
+	Heading1         *BlockHeading1         `json:"heading_1,omitempty"`
+	Heading2         *BlockHeading2         `json:"heading_2,omitempty"`
+	Heading3         *BlockHeading3         `json:"heading_3,omitempty"`
+	Callout          *BlockCallout          `json:"callout,omitempty"`
+	Quote            *BlockQuote            `json:"quote,omitempty"`
+	SyncedBlock      *BlockSyncedBlock      `json:"synced_block,omitempty"`
+	NumberedListItem *BlockNumberedListItem `json:"numbered_list_item,omitempty"`
+	BulletedListItem *BlockBulletedListItem `json:"bulleted_list_item,omitempty"`
+	ToDo             *BlockToDo             `json:"to_do,omitempty"`
+	Toggle           *BlockToggle           `json:"toggle,omitempty"`
+	Code             *BlockCode             `json:"code,omitempty"`
+	ChildPage        *BlockChildPage        `json:"child_page,omitempty"`
+	ChildDatabase    *BlockChildDatabase    `json:"child_database,omitempty"`
+	Embed            *BlockEmbed            `json:"embed,omitempty"`
+	PDF              *BlockPdf              `json:"pdf,omitempty"`
+	ColumnList       *struct{}              `json:"column_list,omitempty"`
+	Video            *BlockVideo            `json:"video,omitempty"`
+	File             *BlockFile             `json:"file,omitempty"`
+	Bookmark         *BlockBookmark         `json:"bookmark,omitempty"`
+	Equation         *BlockEquation         `json:"equation,omitempty"`
+	Divider          *struct{}              `json:"divider,omitempty"`
+	TableOfContents  *BlockTableOfContents  `json:"table_of_contents,omitempty"`
+	Breadcrumb       *struct{}              `json:"breadcrumb,omitempty"`
+	LinkPreview      *BlockLinkPreview      `json:"link_preview,omitempty"`
+	Unsupported      *struct{}              `json:"unsupported,omitempty"`
+	LinkToPage       *BlockLinkToPage       `json:"link_to_page,omitempty"`
+	Table            *BlockTable            `json:"table,omitempty"`
+	Audio            *BlockAudio            `json:"audio,omitempty"`
 }
 
-// Block2Audio defines a model
-type Block2Audio struct {
-	Caption  []struct{}          `json:"caption,omitempty"`
-	Type     string              `json:"type,omitzero"`
-	External Block2AudioExternal `json:"external"`
-	File     *Block2AudioFile    `json:"file,omitempty"`
+// BlockAudio defines a model
+type BlockAudio struct {
+	Caption  []struct{}         `json:"caption,omitempty"`
+	Type     string             `json:"type,omitzero"`
+	External BlockAudioExternal `json:"external"`
+	File     *BlockAudioFile    `json:"file,omitempty"`
 }
 
-// Block2AudioExternal defines a model
-type Block2AudioExternal struct {
+// BlockAudioExternal defines a model
+type BlockAudioExternal struct {
 	URL url.URL `json:"url,omitzero"`
 }
 
-// Block2AudioFile defines a model
-type Block2AudioFile struct {
+// BlockAudioFile defines a model
+type BlockAudioFile struct {
 	URL        url.URL   `json:"url,omitzero"`
 	ExpiryTime time.Time `json:"expiry_time,omitzero"`
 }
 
-// Block2Bookmark defines a model
-type Block2Bookmark struct {
-	Caption Block2BookmarkCaption `json:"caption,omitempty"`
-	URL     url.URL               `json:"url,omitzero"`
+// BlockBookmark defines a model
+type BlockBookmark struct {
+	Caption BlockBookmarkCaption `json:"caption,omitempty"`
+	URL     url.URL              `json:"url,omitzero"`
 }
 
-// Block2BookmarkCaption defines a model
-type Block2BookmarkCaption []Block2BookmarkCaptionItems
+// BlockBookmarkCaption defines a model
+type BlockBookmarkCaption []BlockBookmarkCaptionItems
 
-// Block2BookmarkCaptionItems defines a model
-type Block2BookmarkCaptionItems struct {
-	Type        string                                `json:"type,omitzero"`
-	Text        Block2BookmarkCaptionItemsText        `json:"text"`
-	Annotations Block2BookmarkCaptionItemsAnnotations `json:"annotations"`
-	PlainText   string                                `json:"plain_text,omitzero"`
-	Href        struct{}                              `json:"href"`
+// BlockBookmarkCaptionItems defines a model
+type BlockBookmarkCaptionItems struct {
+	Type        string                               `json:"type,omitzero"`
+	Text        BlockBookmarkCaptionItemsText        `json:"text"`
+	Annotations BlockBookmarkCaptionItemsAnnotations `json:"annotations"`
+	PlainText   string                               `json:"plain_text,omitzero"`
+	Href        struct{}                             `json:"href"`
 }
 
-// Block2BookmarkCaptionItemsAnnotations defines a model
-type Block2BookmarkCaptionItemsAnnotations struct {
+// BlockBookmarkCaptionItemsAnnotations defines a model
+type BlockBookmarkCaptionItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -123,32 +123,32 @@ type Block2BookmarkCaptionItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// Block2BookmarkCaptionItemsText defines a model
-type Block2BookmarkCaptionItemsText struct {
+// BlockBookmarkCaptionItemsText defines a model
+type BlockBookmarkCaptionItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }
 
-// Block2BulletedListItem defines a model
-type Block2BulletedListItem struct {
-	RichText Block2BulletedListItemRichText `json:"rich_text,omitempty"`
-	Color    string                         `json:"color,omitzero"`
+// BlockBulletedListItem defines a model
+type BlockBulletedListItem struct {
+	RichText BlockBulletedListItemRichText `json:"rich_text,omitempty"`
+	Color    string                        `json:"color,omitzero"`
 }
 
-// Block2BulletedListItemRichText defines a model
-type Block2BulletedListItemRichText []Block2BulletedListItemRichTextItems
+// BlockBulletedListItemRichText defines a model
+type BlockBulletedListItemRichText []BlockBulletedListItemRichTextItems
 
-// Block2BulletedListItemRichTextItems defines a model
-type Block2BulletedListItemRichTextItems struct {
-	Type        string                                         `json:"type,omitzero"`
-	Text        Block2BulletedListItemRichTextItemsText        `json:"text"`
-	Annotations Block2BulletedListItemRichTextItemsAnnotations `json:"annotations"`
-	PlainText   string                                         `json:"plain_text,omitzero"`
-	Href        struct{}                                       `json:"href"`
+// BlockBulletedListItemRichTextItems defines a model
+type BlockBulletedListItemRichTextItems struct {
+	Type        string                                        `json:"type,omitzero"`
+	Text        BlockBulletedListItemRichTextItemsText        `json:"text"`
+	Annotations BlockBulletedListItemRichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                                        `json:"plain_text,omitzero"`
+	Href        struct{}                                      `json:"href"`
 }
 
-// Block2BulletedListItemRichTextItemsAnnotations defines a model
-type Block2BulletedListItemRichTextItemsAnnotations struct {
+// BlockBulletedListItemRichTextItemsAnnotations defines a model
+type BlockBulletedListItemRichTextItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -157,52 +157,52 @@ type Block2BulletedListItemRichTextItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// Block2BulletedListItemRichTextItemsText defines a model
-type Block2BulletedListItemRichTextItemsText struct {
+// BlockBulletedListItemRichTextItemsText defines a model
+type BlockBulletedListItemRichTextItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }
 
-// Block2Callout defines a model
-type Block2Callout struct {
-	RichText Block2CalloutRichText `json:"rich_text,omitempty"`
-	Icon     Block2CalloutIcon     `json:"icon"`
-	Color    string                `json:"color,omitzero"`
+// BlockCallout defines a model
+type BlockCallout struct {
+	RichText BlockCalloutRichText `json:"rich_text,omitempty"`
+	Icon     BlockCalloutIcon     `json:"icon"`
+	Color    string               `json:"color,omitzero"`
 }
 
-// Block2CalloutIcon defines a model
-type Block2CalloutIcon struct {
-	Type     string                     `json:"type,omitzero"`
-	Emoji    string                     `json:"emoji,omitzero"`
-	External *Block2CalloutIconExternal `json:"external,omitempty"`
-	File     *Block2CalloutIconFile     `json:"file,omitempty"`
+// BlockCalloutIcon defines a model
+type BlockCalloutIcon struct {
+	Type     string                    `json:"type,omitzero"`
+	Emoji    string                    `json:"emoji,omitzero"`
+	External *BlockCalloutIconExternal `json:"external,omitempty"`
+	File     *BlockCalloutIconFile     `json:"file,omitempty"`
 }
 
-// Block2CalloutIconExternal defines a model
-type Block2CalloutIconExternal struct {
+// BlockCalloutIconExternal defines a model
+type BlockCalloutIconExternal struct {
 	URL url.URL `json:"url,omitzero"`
 }
 
-// Block2CalloutIconFile defines a model
-type Block2CalloutIconFile struct {
+// BlockCalloutIconFile defines a model
+type BlockCalloutIconFile struct {
 	URL        url.URL   `json:"url,omitzero"`
 	ExpiryTime time.Time `json:"expiry_time,omitzero"`
 }
 
-// Block2CalloutRichText defines a model
-type Block2CalloutRichText []Block2CalloutRichTextItems
+// BlockCalloutRichText defines a model
+type BlockCalloutRichText []BlockCalloutRichTextItems
 
-// Block2CalloutRichTextItems defines a model
-type Block2CalloutRichTextItems struct {
-	Type        string                                `json:"type,omitzero"`
-	Text        Block2CalloutRichTextItemsText        `json:"text"`
-	Annotations Block2CalloutRichTextItemsAnnotations `json:"annotations"`
-	PlainText   string                                `json:"plain_text,omitzero"`
-	Href        struct{}                              `json:"href"`
+// BlockCalloutRichTextItems defines a model
+type BlockCalloutRichTextItems struct {
+	Type        string                               `json:"type,omitzero"`
+	Text        BlockCalloutRichTextItemsText        `json:"text"`
+	Annotations BlockCalloutRichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                               `json:"plain_text,omitzero"`
+	Href        struct{}                             `json:"href"`
 }
 
-// Block2CalloutRichTextItemsAnnotations defines a model
-type Block2CalloutRichTextItemsAnnotations struct {
+// BlockCalloutRichTextItemsAnnotations defines a model
+type BlockCalloutRichTextItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -211,43 +211,71 @@ type Block2CalloutRichTextItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// Block2CalloutRichTextItemsText defines a model
-type Block2CalloutRichTextItemsText struct {
+// BlockCalloutRichTextItemsText defines a model
+type BlockCalloutRichTextItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }
 
-// Block2ChildDatabase defines a model
-type Block2ChildDatabase struct {
+// BlockChildDatabase defines a model
+type BlockChildDatabase struct {
 	Title string `json:"title,omitzero"`
 }
 
-// Block2ChildPage defines a model
-type Block2ChildPage struct {
+// BlockChildPage defines a model
+type BlockChildPage struct {
 	Title string `json:"title,omitzero"`
 }
 
-// Block2Code defines a model
-type Block2Code struct {
-	Caption  Block2CodeCaption  `json:"caption,omitempty"`
-	RichText Block2CodeRichText `json:"rich_text,omitempty"`
-	Language string             `json:"language,omitzero"`
+// BlockCode defines a model
+type BlockCode struct {
+	Caption  BlockCodeCaption  `json:"caption,omitempty"`
+	RichText BlockCodeRichText `json:"rich_text,omitempty"`
+	Language string            `json:"language,omitzero"`
 }
 
-// Block2CodeCaption defines a model
-type Block2CodeCaption []Block2CodeCaptionItems
+// BlockCodeCaption defines a model
+type BlockCodeCaption []BlockCodeCaptionItems
 
-// Block2CodeCaptionItems defines a model
-type Block2CodeCaptionItems struct {
+// BlockCodeCaptionItems defines a model
+type BlockCodeCaptionItems struct {
+	Type        string                           `json:"type,omitzero"`
+	Text        BlockCodeCaptionItemsText        `json:"text"`
+	Annotations BlockCodeCaptionItemsAnnotations `json:"annotations"`
+	PlainText   string                           `json:"plain_text,omitzero"`
+	Href        struct{}                         `json:"href"`
+}
+
+// BlockCodeCaptionItemsAnnotations defines a model
+type BlockCodeCaptionItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// BlockCodeCaptionItemsText defines a model
+type BlockCodeCaptionItemsText struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
+// BlockCodeRichText defines a model
+type BlockCodeRichText []BlockCodeRichTextItems
+
+// BlockCodeRichTextItems defines a model
+type BlockCodeRichTextItems struct {
 	Type        string                            `json:"type,omitzero"`
-	Text        Block2CodeCaptionItemsText        `json:"text"`
-	Annotations Block2CodeCaptionItemsAnnotations `json:"annotations"`
+	Text        BlockCodeRichTextItemsText        `json:"text"`
+	Annotations BlockCodeRichTextItemsAnnotations `json:"annotations"`
 	PlainText   string                            `json:"plain_text,omitzero"`
-	Href        struct{}                          `json:"href"`
+	Href        url.URL                           `json:"href,omitzero"`
 }
 
-// Block2CodeCaptionItemsAnnotations defines a model
-type Block2CodeCaptionItemsAnnotations struct {
+// BlockCodeRichTextItemsAnnotations defines a model
+type BlockCodeRichTextItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -256,71 +284,43 @@ type Block2CodeCaptionItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// Block2CodeCaptionItemsText defines a model
-type Block2CodeCaptionItemsText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
+// BlockCodeRichTextItemsText defines a model
+type BlockCodeRichTextItemsText struct {
+	Content string                         `json:"content,omitzero"`
+	Link    BlockCodeRichTextItemsTextLink `json:"link"`
 }
 
-// Block2CodeRichText defines a model
-type Block2CodeRichText []Block2CodeRichTextItems
-
-// Block2CodeRichTextItems defines a model
-type Block2CodeRichTextItems struct {
-	Type        string                             `json:"type,omitzero"`
-	Text        Block2CodeRichTextItemsText        `json:"text"`
-	Annotations Block2CodeRichTextItemsAnnotations `json:"annotations"`
-	PlainText   string                             `json:"plain_text,omitzero"`
-	Href        url.URL                            `json:"href,omitzero"`
-}
-
-// Block2CodeRichTextItemsAnnotations defines a model
-type Block2CodeRichTextItemsAnnotations struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
-}
-
-// Block2CodeRichTextItemsText defines a model
-type Block2CodeRichTextItemsText struct {
-	Content string                          `json:"content,omitzero"`
-	Link    Block2CodeRichTextItemsTextLink `json:"link"`
-}
-
-// Block2CodeRichTextItemsTextLink defines a model
-type Block2CodeRichTextItemsTextLink struct {
+// BlockCodeRichTextItemsTextLink defines a model
+type BlockCodeRichTextItemsTextLink struct {
 	URL *url.URL `json:"url,omitempty"`
 }
 
-// Block2CreatedBy defines a model
-type Block2CreatedBy struct {
+// BlockCreatedBy defines a model
+type BlockCreatedBy struct {
 	Object string    `json:"object,omitzero"`
 	ID     uuid.UUID `json:"id,omitzero"`
 }
 
-// Block2Embed defines a model
-type Block2Embed struct {
-	Caption Block2EmbedCaption `json:"caption,omitempty"`
-	URL     url.URL            `json:"url,omitzero"`
+// BlockEmbed defines a model
+type BlockEmbed struct {
+	Caption BlockEmbedCaption `json:"caption,omitempty"`
+	URL     url.URL           `json:"url,omitzero"`
 }
 
-// Block2EmbedCaption defines a model
-type Block2EmbedCaption []Block2EmbedCaptionItems
+// BlockEmbedCaption defines a model
+type BlockEmbedCaption []BlockEmbedCaptionItems
 
-// Block2EmbedCaptionItems defines a model
-type Block2EmbedCaptionItems struct {
-	Type        string                              `json:"type,omitzero"`
-	Text        *Block2EmbedCaptionItemsText        `json:"text,omitempty"`
-	Annotations *Block2EmbedCaptionItemsAnnotations `json:"annotations,omitempty"`
-	PlainText   string                              `json:"plain_text,omitzero"`
-	Href        *struct{}                           `json:"href,omitempty"`
+// BlockEmbedCaptionItems defines a model
+type BlockEmbedCaptionItems struct {
+	Type        string                             `json:"type,omitzero"`
+	Text        *BlockEmbedCaptionItemsText        `json:"text,omitempty"`
+	Annotations *BlockEmbedCaptionItemsAnnotations `json:"annotations,omitempty"`
+	PlainText   string                             `json:"plain_text,omitzero"`
+	Href        *struct{}                          `json:"href,omitempty"`
 }
 
-// Block2EmbedCaptionItemsAnnotations defines a model
-type Block2EmbedCaptionItemsAnnotations struct {
+// BlockEmbedCaptionItemsAnnotations defines a model
+type BlockEmbedCaptionItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -329,52 +329,52 @@ type Block2EmbedCaptionItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// Block2EmbedCaptionItemsText defines a model
-type Block2EmbedCaptionItemsText struct {
+// BlockEmbedCaptionItemsText defines a model
+type BlockEmbedCaptionItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }
 
-// Block2Equation defines a model
-type Block2Equation struct {
+// BlockEquation defines a model
+type BlockEquation struct {
 	Expression string `json:"expression,omitzero"`
 }
 
-// Block2File defines a model
-type Block2File struct {
-	Caption []struct{}     `json:"caption,omitempty"`
-	Type    string         `json:"type,omitzero"`
-	File    Block2FileFile `json:"file"`
-	Name    string         `json:"name,omitzero"`
+// BlockFile defines a model
+type BlockFile struct {
+	Caption []struct{}    `json:"caption,omitempty"`
+	Type    string        `json:"type,omitzero"`
+	File    BlockFileFile `json:"file"`
+	Name    string        `json:"name,omitzero"`
 }
 
-// Block2FileFile defines a model
-type Block2FileFile struct {
+// BlockFileFile defines a model
+type BlockFileFile struct {
 	URL        url.URL   `json:"url,omitzero"`
 	ExpiryTime time.Time `json:"expiry_time,omitzero"`
 }
 
-// Block2Heading1 defines a model
-type Block2Heading1 struct {
-	RichText     Block2Heading1RichText `json:"rich_text,omitempty"`
-	IsToggleable bool                   `json:"is_toggleable,omitzero"`
-	Color        string                 `json:"color,omitzero"`
+// BlockHeading1 defines a model
+type BlockHeading1 struct {
+	RichText     BlockHeading1RichText `json:"rich_text,omitempty"`
+	IsToggleable bool                  `json:"is_toggleable,omitzero"`
+	Color        string                `json:"color,omitzero"`
 }
 
-// Block2Heading1RichText defines a model
-type Block2Heading1RichText []Block2Heading1RichTextItems
+// BlockHeading1RichText defines a model
+type BlockHeading1RichText []BlockHeading1RichTextItems
 
-// Block2Heading1RichTextItems defines a model
-type Block2Heading1RichTextItems struct {
-	Type        string                                 `json:"type,omitzero"`
-	Text        Block2Heading1RichTextItemsText        `json:"text"`
-	Annotations Block2Heading1RichTextItemsAnnotations `json:"annotations"`
-	PlainText   string                                 `json:"plain_text,omitzero"`
-	Href        struct{}                               `json:"href"`
+// BlockHeading1RichTextItems defines a model
+type BlockHeading1RichTextItems struct {
+	Type        string                                `json:"type,omitzero"`
+	Text        BlockHeading1RichTextItemsText        `json:"text"`
+	Annotations BlockHeading1RichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                                `json:"plain_text,omitzero"`
+	Href        struct{}                              `json:"href"`
 }
 
-// Block2Heading1RichTextItemsAnnotations defines a model
-type Block2Heading1RichTextItemsAnnotations struct {
+// BlockHeading1RichTextItemsAnnotations defines a model
+type BlockHeading1RichTextItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -383,33 +383,33 @@ type Block2Heading1RichTextItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// Block2Heading1RichTextItemsText defines a model
-type Block2Heading1RichTextItemsText struct {
+// BlockHeading1RichTextItemsText defines a model
+type BlockHeading1RichTextItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }
 
-// Block2Heading2 defines a model
-type Block2Heading2 struct {
-	RichText     Block2Heading2RichText `json:"rich_text,omitempty"`
-	IsToggleable bool                   `json:"is_toggleable,omitzero"`
-	Color        string                 `json:"color,omitzero"`
+// BlockHeading2 defines a model
+type BlockHeading2 struct {
+	RichText     BlockHeading2RichText `json:"rich_text,omitempty"`
+	IsToggleable bool                  `json:"is_toggleable,omitzero"`
+	Color        string                `json:"color,omitzero"`
 }
 
-// Block2Heading2RichText defines a model
-type Block2Heading2RichText []Block2Heading2RichTextItems
+// BlockHeading2RichText defines a model
+type BlockHeading2RichText []BlockHeading2RichTextItems
 
-// Block2Heading2RichTextItems defines a model
-type Block2Heading2RichTextItems struct {
-	Type        string                                 `json:"type,omitzero"`
-	Text        Block2Heading2RichTextItemsText        `json:"text"`
-	Annotations Block2Heading2RichTextItemsAnnotations `json:"annotations"`
-	PlainText   string                                 `json:"plain_text,omitzero"`
-	Href        struct{}                               `json:"href"`
+// BlockHeading2RichTextItems defines a model
+type BlockHeading2RichTextItems struct {
+	Type        string                                `json:"type,omitzero"`
+	Text        BlockHeading2RichTextItemsText        `json:"text"`
+	Annotations BlockHeading2RichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                                `json:"plain_text,omitzero"`
+	Href        struct{}                              `json:"href"`
 }
 
-// Block2Heading2RichTextItemsAnnotations defines a model
-type Block2Heading2RichTextItemsAnnotations struct {
+// BlockHeading2RichTextItemsAnnotations defines a model
+type BlockHeading2RichTextItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -418,33 +418,33 @@ type Block2Heading2RichTextItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// Block2Heading2RichTextItemsText defines a model
-type Block2Heading2RichTextItemsText struct {
+// BlockHeading2RichTextItemsText defines a model
+type BlockHeading2RichTextItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }
 
-// Block2Heading3 defines a model
-type Block2Heading3 struct {
-	RichText     Block2Heading3RichText `json:"rich_text,omitempty"`
-	IsToggleable bool                   `json:"is_toggleable,omitzero"`
-	Color        string                 `json:"color,omitzero"`
+// BlockHeading3 defines a model
+type BlockHeading3 struct {
+	RichText     BlockHeading3RichText `json:"rich_text,omitempty"`
+	IsToggleable bool                  `json:"is_toggleable,omitzero"`
+	Color        string                `json:"color,omitzero"`
 }
 
-// Block2Heading3RichText defines a model
-type Block2Heading3RichText []Block2Heading3RichTextItems
+// BlockHeading3RichText defines a model
+type BlockHeading3RichText []BlockHeading3RichTextItems
 
-// Block2Heading3RichTextItems defines a model
-type Block2Heading3RichTextItems struct {
-	Type        string                                 `json:"type,omitzero"`
-	Text        Block2Heading3RichTextItemsText        `json:"text"`
-	Annotations Block2Heading3RichTextItemsAnnotations `json:"annotations"`
-	PlainText   string                                 `json:"plain_text,omitzero"`
-	Href        struct{}                               `json:"href"`
+// BlockHeading3RichTextItems defines a model
+type BlockHeading3RichTextItems struct {
+	Type        string                                `json:"type,omitzero"`
+	Text        BlockHeading3RichTextItemsText        `json:"text"`
+	Annotations BlockHeading3RichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                                `json:"plain_text,omitzero"`
+	Href        struct{}                              `json:"href"`
 }
 
-// Block2Heading3RichTextItemsAnnotations defines a model
-type Block2Heading3RichTextItemsAnnotations struct {
+// BlockHeading3RichTextItemsAnnotations defines a model
+type BlockHeading3RichTextItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -453,49 +453,49 @@ type Block2Heading3RichTextItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// Block2Heading3RichTextItemsText defines a model
-type Block2Heading3RichTextItemsText struct {
+// BlockHeading3RichTextItemsText defines a model
+type BlockHeading3RichTextItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }
 
-// Block2LastEditedBy defines a model
-type Block2LastEditedBy struct {
+// BlockLastEditedBy defines a model
+type BlockLastEditedBy struct {
 	Object string    `json:"object,omitzero"`
 	ID     uuid.UUID `json:"id,omitzero"`
 }
 
-// Block2LinkPreview defines a model
-type Block2LinkPreview struct {
+// BlockLinkPreview defines a model
+type BlockLinkPreview struct {
 	URL url.URL `json:"url,omitzero"`
 }
 
-// Block2LinkToPage defines a model
-type Block2LinkToPage struct {
+// BlockLinkToPage defines a model
+type BlockLinkToPage struct {
 	Type   string    `json:"type,omitzero"`
 	PageID uuid.UUID `json:"page_id,omitzero"`
 }
 
-// Block2NumberedListItem defines a model
-type Block2NumberedListItem struct {
-	RichText Block2NumberedListItemRichText `json:"rich_text,omitempty"`
-	Color    string                         `json:"color,omitzero"`
+// BlockNumberedListItem defines a model
+type BlockNumberedListItem struct {
+	RichText BlockNumberedListItemRichText `json:"rich_text,omitempty"`
+	Color    string                        `json:"color,omitzero"`
 }
 
-// Block2NumberedListItemRichText defines a model
-type Block2NumberedListItemRichText []Block2NumberedListItemRichTextItems
+// BlockNumberedListItemRichText defines a model
+type BlockNumberedListItemRichText []BlockNumberedListItemRichTextItems
 
-// Block2NumberedListItemRichTextItems defines a model
-type Block2NumberedListItemRichTextItems struct {
-	Type        string                                         `json:"type,omitzero"`
-	Text        Block2NumberedListItemRichTextItemsText        `json:"text"`
-	Annotations Block2NumberedListItemRichTextItemsAnnotations `json:"annotations"`
-	PlainText   string                                         `json:"plain_text,omitzero"`
-	Href        struct{}                                       `json:"href"`
+// BlockNumberedListItemRichTextItems defines a model
+type BlockNumberedListItemRichTextItems struct {
+	Type        string                                        `json:"type,omitzero"`
+	Text        BlockNumberedListItemRichTextItemsText        `json:"text"`
+	Annotations BlockNumberedListItemRichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                                        `json:"plain_text,omitzero"`
+	Href        struct{}                                      `json:"href"`
 }
 
-// Block2NumberedListItemRichTextItemsAnnotations defines a model
-type Block2NumberedListItemRichTextItemsAnnotations struct {
+// BlockNumberedListItemRichTextItemsAnnotations defines a model
+type BlockNumberedListItemRichTextItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -504,34 +504,34 @@ type Block2NumberedListItemRichTextItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// Block2NumberedListItemRichTextItemsText defines a model
-type Block2NumberedListItemRichTextItemsText struct {
+// BlockNumberedListItemRichTextItemsText defines a model
+type BlockNumberedListItemRichTextItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }
 
-// Block2Paragraph defines a model
-type Block2Paragraph struct {
-	RichText Block2ParagraphRichText `json:"rich_text,omitempty"`
-	Color    string                  `json:"color,omitzero"`
+// BlockParagraph defines a model
+type BlockParagraph struct {
+	RichText BlockParagraphRichText `json:"rich_text,omitempty"`
+	Color    string                 `json:"color,omitzero"`
 }
 
-// Block2ParagraphRichText defines a model
-type Block2ParagraphRichText []Block2ParagraphRichTextItems
+// BlockParagraphRichText defines a model
+type BlockParagraphRichText []BlockParagraphRichTextItems
 
-// Block2ParagraphRichTextItems defines a model
-type Block2ParagraphRichTextItems struct {
-	Type        string                                   `json:"type,omitzero"`
-	Text        *Block2ParagraphRichTextItemsText        `json:"text,omitempty"`
-	Annotations *Block2ParagraphRichTextItemsAnnotations `json:"annotations,omitempty"`
-	PlainText   string                                   `json:"plain_text,omitzero"`
-	Href        *url.URL                                 `json:"href,omitempty"`
-	Mention     *Block2ParagraphRichTextItemsMention     `json:"mention,omitempty"`
-	Equation    *Block2ParagraphRichTextItemsEquation    `json:"equation,omitempty"`
+// BlockParagraphRichTextItems defines a model
+type BlockParagraphRichTextItems struct {
+	Type        string                                  `json:"type,omitzero"`
+	Text        *BlockParagraphRichTextItemsText        `json:"text,omitempty"`
+	Annotations *BlockParagraphRichTextItemsAnnotations `json:"annotations,omitempty"`
+	PlainText   string                                  `json:"plain_text,omitzero"`
+	Href        *url.URL                                `json:"href,omitempty"`
+	Mention     *BlockParagraphRichTextItemsMention     `json:"mention,omitempty"`
+	Equation    *BlockParagraphRichTextItemsEquation    `json:"equation,omitempty"`
 }
 
-// Block2ParagraphRichTextItemsAnnotations defines a model
-type Block2ParagraphRichTextItemsAnnotations struct {
+// BlockParagraphRichTextItemsAnnotations defines a model
+type BlockParagraphRichTextItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -540,99 +540,99 @@ type Block2ParagraphRichTextItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// Block2ParagraphRichTextItemsEquation defines a model
-type Block2ParagraphRichTextItemsEquation struct {
+// BlockParagraphRichTextItemsEquation defines a model
+type BlockParagraphRichTextItemsEquation struct {
 	Expression string `json:"expression,omitzero"`
 }
 
-// Block2ParagraphRichTextItemsMention defines a model
-type Block2ParagraphRichTextItemsMention struct {
-	Type        string                                         `json:"type,omitzero"`
-	LinkMention Block2ParagraphRichTextItemsMentionLinkMention `json:"link_mention"`
-	Database    *Block2ParagraphRichTextItemsMentionDatabase   `json:"database,omitempty"`
-	User        *Block2ParagraphRichTextItemsMentionUser       `json:"user,omitempty"`
-	Date        *Block2ParagraphRichTextItemsMentionDate       `json:"date,omitempty"`
-	Page        *Block2ParagraphRichTextItemsMentionPage       `json:"page,omitempty"`
+// BlockParagraphRichTextItemsMention defines a model
+type BlockParagraphRichTextItemsMention struct {
+	Type        string                                        `json:"type,omitzero"`
+	LinkMention BlockParagraphRichTextItemsMentionLinkMention `json:"link_mention"`
+	Database    *BlockParagraphRichTextItemsMentionDatabase   `json:"database,omitempty"`
+	User        *BlockParagraphRichTextItemsMentionUser       `json:"user,omitempty"`
+	Date        *BlockParagraphRichTextItemsMentionDate       `json:"date,omitempty"`
+	Page        *BlockParagraphRichTextItemsMentionPage       `json:"page,omitempty"`
 }
 
-// Block2ParagraphRichTextItemsMentionDatabase defines a model
-type Block2ParagraphRichTextItemsMentionDatabase struct {
+// BlockParagraphRichTextItemsMentionDatabase defines a model
+type BlockParagraphRichTextItemsMentionDatabase struct {
 	ID uuid.UUID `json:"id,omitzero"`
 }
 
-// Block2ParagraphRichTextItemsMentionDate defines a model
-type Block2ParagraphRichTextItemsMentionDate struct {
+// BlockParagraphRichTextItemsMentionDate defines a model
+type BlockParagraphRichTextItemsMentionDate struct {
 	Start    string   `json:"start,omitzero"`
 	End      struct{} `json:"end"`
 	TimeZone struct{} `json:"time_zone"`
 }
 
-// Block2ParagraphRichTextItemsMentionLinkMention defines a model
-type Block2ParagraphRichTextItemsMentionLinkMention struct {
+// BlockParagraphRichTextItemsMentionLinkMention defines a model
+type BlockParagraphRichTextItemsMentionLinkMention struct {
 	Href        url.URL `json:"href,omitzero"`
 	Title       string  `json:"title,omitzero"`
 	Description string  `json:"description,omitzero"`
 }
 
-// Block2ParagraphRichTextItemsMentionPage defines a model
-type Block2ParagraphRichTextItemsMentionPage struct {
+// BlockParagraphRichTextItemsMentionPage defines a model
+type BlockParagraphRichTextItemsMentionPage struct {
 	ID uuid.UUID `json:"id,omitzero"`
 }
 
-// Block2ParagraphRichTextItemsMentionUser defines a model
-type Block2ParagraphRichTextItemsMentionUser struct {
-	Object    string                                        `json:"object,omitzero"`
-	ID        uuid.UUID                                     `json:"id,omitzero"`
-	Name      string                                        `json:"name,omitzero"`
-	AvatarURL url.URL                                       `json:"avatar_url,omitzero"`
-	Type      string                                        `json:"type,omitzero"`
-	Person    Block2ParagraphRichTextItemsMentionUserPerson `json:"person"`
+// BlockParagraphRichTextItemsMentionUser defines a model
+type BlockParagraphRichTextItemsMentionUser struct {
+	Object    string                                       `json:"object,omitzero"`
+	ID        uuid.UUID                                    `json:"id,omitzero"`
+	Name      string                                       `json:"name,omitzero"`
+	AvatarURL url.URL                                      `json:"avatar_url,omitzero"`
+	Type      string                                       `json:"type,omitzero"`
+	Person    BlockParagraphRichTextItemsMentionUserPerson `json:"person"`
 }
 
-// Block2ParagraphRichTextItemsMentionUserPerson defines a model
-type Block2ParagraphRichTextItemsMentionUserPerson struct {
+// BlockParagraphRichTextItemsMentionUserPerson defines a model
+type BlockParagraphRichTextItemsMentionUserPerson struct {
 	Email types.Email `json:"email,omitzero"`
 }
 
-// Block2ParagraphRichTextItemsText defines a model
-type Block2ParagraphRichTextItemsText struct {
-	Content string                               `json:"content,omitzero"`
-	Link    Block2ParagraphRichTextItemsTextLink `json:"link"`
+// BlockParagraphRichTextItemsText defines a model
+type BlockParagraphRichTextItemsText struct {
+	Content string                              `json:"content,omitzero"`
+	Link    BlockParagraphRichTextItemsTextLink `json:"link"`
 }
 
-// Block2ParagraphRichTextItemsTextLink defines a model
-type Block2ParagraphRichTextItemsTextLink struct {
+// BlockParagraphRichTextItemsTextLink defines a model
+type BlockParagraphRichTextItemsTextLink struct {
 	URL *url.URL `json:"url,omitempty"`
 }
 
-// Block2Parent defines a model
-type Block2Parent struct {
+// BlockParent defines a model
+type BlockParent struct {
 	Type   string    `json:"type,omitzero"`
 	PageID uuid.UUID `json:"page_id,omitzero"`
 }
 
-// Block2Pdf defines a model
-type Block2Pdf struct {
-	Caption  Block2PdfCaption  `json:"caption,omitempty"`
-	Type     string            `json:"type,omitzero"`
-	External Block2PdfExternal `json:"external"`
-	File     *Block2PdfFile    `json:"file,omitempty"`
+// BlockPdf defines a model
+type BlockPdf struct {
+	Caption  BlockPdfCaption  `json:"caption,omitempty"`
+	Type     string           `json:"type,omitzero"`
+	External BlockPdfExternal `json:"external"`
+	File     *BlockPdfFile    `json:"file,omitempty"`
 }
 
-// Block2PdfCaption defines a model
-type Block2PdfCaption []Block2PdfCaptionItems
+// BlockPdfCaption defines a model
+type BlockPdfCaption []BlockPdfCaptionItems
 
-// Block2PdfCaptionItems defines a model
-type Block2PdfCaptionItems struct {
-	Type        string                           `json:"type,omitzero"`
-	Text        Block2PdfCaptionItemsText        `json:"text"`
-	Annotations Block2PdfCaptionItemsAnnotations `json:"annotations"`
-	PlainText   string                           `json:"plain_text,omitzero"`
-	Href        struct{}                         `json:"href"`
+// BlockPdfCaptionItems defines a model
+type BlockPdfCaptionItems struct {
+	Type        string                          `json:"type,omitzero"`
+	Text        BlockPdfCaptionItemsText        `json:"text"`
+	Annotations BlockPdfCaptionItemsAnnotations `json:"annotations"`
+	PlainText   string                          `json:"plain_text,omitzero"`
+	Href        struct{}                        `json:"href"`
 }
 
-// Block2PdfCaptionItemsAnnotations defines a model
-type Block2PdfCaptionItemsAnnotations struct {
+// BlockPdfCaptionItemsAnnotations defines a model
+type BlockPdfCaptionItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -641,43 +641,43 @@ type Block2PdfCaptionItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// Block2PdfCaptionItemsText defines a model
-type Block2PdfCaptionItemsText struct {
+// BlockPdfCaptionItemsText defines a model
+type BlockPdfCaptionItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }
 
-// Block2PdfExternal defines a model
-type Block2PdfExternal struct {
+// BlockPdfExternal defines a model
+type BlockPdfExternal struct {
 	URL url.URL `json:"url,omitzero"`
 }
 
-// Block2PdfFile defines a model
-type Block2PdfFile struct {
+// BlockPdfFile defines a model
+type BlockPdfFile struct {
 	URL        url.URL   `json:"url,omitzero"`
 	ExpiryTime time.Time `json:"expiry_time,omitzero"`
 }
 
-// Block2Quote defines a model
-type Block2Quote struct {
-	RichText Block2QuoteRichText `json:"rich_text,omitempty"`
-	Color    string              `json:"color,omitzero"`
+// BlockQuote defines a model
+type BlockQuote struct {
+	RichText BlockQuoteRichText `json:"rich_text,omitempty"`
+	Color    string             `json:"color,omitzero"`
 }
 
-// Block2QuoteRichText defines a model
-type Block2QuoteRichText []Block2QuoteRichTextItems
+// BlockQuoteRichText defines a model
+type BlockQuoteRichText []BlockQuoteRichTextItems
 
-// Block2QuoteRichTextItems defines a model
-type Block2QuoteRichTextItems struct {
-	Type        string                              `json:"type,omitzero"`
-	Text        Block2QuoteRichTextItemsText        `json:"text"`
-	Annotations Block2QuoteRichTextItemsAnnotations `json:"annotations"`
-	PlainText   string                              `json:"plain_text,omitzero"`
-	Href        struct{}                            `json:"href"`
+// BlockQuoteRichTextItems defines a model
+type BlockQuoteRichTextItems struct {
+	Type        string                             `json:"type,omitzero"`
+	Text        BlockQuoteRichTextItemsText        `json:"text"`
+	Annotations BlockQuoteRichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                             `json:"plain_text,omitzero"`
+	Href        struct{}                           `json:"href"`
 }
 
-// Block2QuoteRichTextItemsAnnotations defines a model
-type Block2QuoteRichTextItemsAnnotations struct {
+// BlockQuoteRichTextItemsAnnotations defines a model
+type BlockQuoteRichTextItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -686,56 +686,56 @@ type Block2QuoteRichTextItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// Block2QuoteRichTextItemsText defines a model
-type Block2QuoteRichTextItemsText struct {
+// BlockQuoteRichTextItemsText defines a model
+type BlockQuoteRichTextItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }
 
-// Block2SyncedBlock defines a model
-type Block2SyncedBlock struct {
-	SyncedFrom Block2SyncedBlockSyncedFrom `json:"synced_from"`
+// BlockSyncedBlock defines a model
+type BlockSyncedBlock struct {
+	SyncedFrom BlockSyncedBlockSyncedFrom `json:"synced_from"`
 }
 
-// Block2SyncedBlockSyncedFrom defines a model
-type Block2SyncedBlockSyncedFrom struct {
+// BlockSyncedBlockSyncedFrom defines a model
+type BlockSyncedBlockSyncedFrom struct {
 	Type    string    `json:"type,omitzero"`
 	BlockID uuid.UUID `json:"block_id,omitzero"`
 }
 
-// Block2Table defines a model
-type Block2Table struct {
+// BlockTable defines a model
+type BlockTable struct {
 	TableWidth      int  `json:"table_width,omitzero"`
 	HasColumnHeader bool `json:"has_column_header,omitzero"`
 	HasRowHeader    bool `json:"has_row_header,omitzero"`
 }
 
-// Block2TableOfContents defines a model
-type Block2TableOfContents struct {
+// BlockTableOfContents defines a model
+type BlockTableOfContents struct {
 	Color string `json:"color,omitzero"`
 }
 
-// Block2ToDo defines a model
-type Block2ToDo struct {
-	RichText Block2ToDoRichText `json:"rich_text,omitempty"`
-	Checked  bool               `json:"checked,omitzero"`
-	Color    string             `json:"color,omitzero"`
+// BlockToDo defines a model
+type BlockToDo struct {
+	RichText BlockToDoRichText `json:"rich_text,omitempty"`
+	Checked  bool              `json:"checked,omitzero"`
+	Color    string            `json:"color,omitzero"`
 }
 
-// Block2ToDoRichText defines a model
-type Block2ToDoRichText []Block2ToDoRichTextItems
+// BlockToDoRichText defines a model
+type BlockToDoRichText []BlockToDoRichTextItems
 
-// Block2ToDoRichTextItems defines a model
-type Block2ToDoRichTextItems struct {
-	Type        string                             `json:"type,omitzero"`
-	Text        Block2ToDoRichTextItemsText        `json:"text"`
-	Annotations Block2ToDoRichTextItemsAnnotations `json:"annotations"`
-	PlainText   string                             `json:"plain_text,omitzero"`
-	Href        struct{}                           `json:"href"`
+// BlockToDoRichTextItems defines a model
+type BlockToDoRichTextItems struct {
+	Type        string                            `json:"type,omitzero"`
+	Text        BlockToDoRichTextItemsText        `json:"text"`
+	Annotations BlockToDoRichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                            `json:"plain_text,omitzero"`
+	Href        struct{}                          `json:"href"`
 }
 
-// Block2ToDoRichTextItemsAnnotations defines a model
-type Block2ToDoRichTextItemsAnnotations struct {
+// BlockToDoRichTextItemsAnnotations defines a model
+type BlockToDoRichTextItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -744,32 +744,32 @@ type Block2ToDoRichTextItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// Block2ToDoRichTextItemsText defines a model
-type Block2ToDoRichTextItemsText struct {
+// BlockToDoRichTextItemsText defines a model
+type BlockToDoRichTextItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }
 
-// Block2Toggle defines a model
-type Block2Toggle struct {
-	RichText Block2ToggleRichText `json:"rich_text,omitempty"`
-	Color    string               `json:"color,omitzero"`
+// BlockToggle defines a model
+type BlockToggle struct {
+	RichText BlockToggleRichText `json:"rich_text,omitempty"`
+	Color    string              `json:"color,omitzero"`
 }
 
-// Block2ToggleRichText defines a model
-type Block2ToggleRichText []Block2ToggleRichTextItems
+// BlockToggleRichText defines a model
+type BlockToggleRichText []BlockToggleRichTextItems
 
-// Block2ToggleRichTextItems defines a model
-type Block2ToggleRichTextItems struct {
-	Type        string                               `json:"type,omitzero"`
-	Text        Block2ToggleRichTextItemsText        `json:"text"`
-	Annotations Block2ToggleRichTextItemsAnnotations `json:"annotations"`
-	PlainText   string                               `json:"plain_text,omitzero"`
-	Href        struct{}                             `json:"href"`
+// BlockToggleRichTextItems defines a model
+type BlockToggleRichTextItems struct {
+	Type        string                              `json:"type,omitzero"`
+	Text        BlockToggleRichTextItemsText        `json:"text"`
+	Annotations BlockToggleRichTextItemsAnnotations `json:"annotations"`
+	PlainText   string                              `json:"plain_text,omitzero"`
+	Href        struct{}                            `json:"href"`
 }
 
-// Block2ToggleRichTextItemsAnnotations defines a model
-type Block2ToggleRichTextItemsAnnotations struct {
+// BlockToggleRichTextItemsAnnotations defines a model
+type BlockToggleRichTextItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -778,33 +778,33 @@ type Block2ToggleRichTextItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// Block2ToggleRichTextItemsText defines a model
-type Block2ToggleRichTextItemsText struct {
+// BlockToggleRichTextItemsText defines a model
+type BlockToggleRichTextItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }
 
-// Block2Video defines a model
-type Block2Video struct {
-	Caption  []struct{}           `json:"caption,omitempty"`
-	Type     string               `json:"type,omitzero"`
-	File     Block2VideoFile      `json:"file"`
-	External *Block2VideoExternal `json:"external,omitempty"`
+// BlockVideo defines a model
+type BlockVideo struct {
+	Caption  []struct{}          `json:"caption,omitempty"`
+	Type     string              `json:"type,omitzero"`
+	File     BlockVideoFile      `json:"file"`
+	External *BlockVideoExternal `json:"external,omitempty"`
 }
 
-// Block2VideoExternal defines a model
-type Block2VideoExternal struct {
+// BlockVideoExternal defines a model
+type BlockVideoExternal struct {
 	URL url.URL `json:"url,omitzero"`
 }
 
-// Block2VideoFile defines a model
-type Block2VideoFile struct {
+// BlockVideoFile defines a model
+type BlockVideoFile struct {
 	URL        url.URL   `json:"url,omitzero"`
 	ExpiryTime time.Time `json:"expiry_time,omitzero"`
 }
 
 // Blocks defines a model
-type Blocks []Block2
+type Blocks []Block
 
 // BlocksList defines a model
 type BlocksList struct {

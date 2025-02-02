@@ -115,7 +115,7 @@
           "color": "default"
         }
       },
-      "Block2": {
+      "Block": {
         "type": "object",
         "properties": {
           "object": {
@@ -128,7 +128,7 @@
             "example": "dad588e3-83ec-430a-bcd3-3cc5dc37d7e9"
           },
           "parent": {
-            "$ref": "#/components/schemas/Block2Parent"
+            "$ref": "#/components/schemas/BlockParent"
           },
           "created_time": {
             "type": "string",
@@ -141,10 +141,10 @@
             "example": "2022-07-14T05:33:00.000Z"
           },
           "created_by": {
-            "$ref": "#/components/schemas/Block2CreatedBy"
+            "$ref": "#/components/schemas/BlockCreatedBy"
           },
           "last_edited_by": {
-            "$ref": "#/components/schemas/Block2LastEditedBy"
+            "$ref": "#/components/schemas/BlockLastEditedBy"
           },
           "has_children": {
             "type": "boolean",
@@ -163,91 +163,91 @@
             "example": "paragraph"
           },
           "paragraph": {
-            "$ref": "#/components/schemas/Block2Paragraph"
+            "$ref": "#/components/schemas/BlockParagraph"
           },
           "heading_1": {
-            "$ref": "#/components/schemas/Block2Heading1"
+            "$ref": "#/components/schemas/BlockHeading1"
           },
           "heading_2": {
-            "$ref": "#/components/schemas/Block2Heading2"
+            "$ref": "#/components/schemas/BlockHeading2"
           },
           "heading_3": {
-            "$ref": "#/components/schemas/Block2Heading3"
+            "$ref": "#/components/schemas/BlockHeading3"
           },
           "callout": {
-            "$ref": "#/components/schemas/Block2Callout"
+            "$ref": "#/components/schemas/BlockCallout"
           },
           "quote": {
-            "$ref": "#/components/schemas/Block2Quote"
+            "$ref": "#/components/schemas/BlockQuote"
           },
           "synced_block": {
-            "$ref": "#/components/schemas/Block2SyncedBlock"
+            "$ref": "#/components/schemas/BlockSyncedBlock"
           },
           "numbered_list_item": {
-            "$ref": "#/components/schemas/Block2NumberedListItem"
+            "$ref": "#/components/schemas/BlockNumberedListItem"
           },
           "bulleted_list_item": {
-            "$ref": "#/components/schemas/Block2BulletedListItem"
+            "$ref": "#/components/schemas/BlockBulletedListItem"
           },
           "to_do": {
-            "$ref": "#/components/schemas/Block2ToDo"
+            "$ref": "#/components/schemas/BlockToDo"
           },
           "toggle": {
-            "$ref": "#/components/schemas/Block2Toggle"
+            "$ref": "#/components/schemas/BlockToggle"
           },
           "code": {
-            "$ref": "#/components/schemas/Block2Code"
+            "$ref": "#/components/schemas/BlockCode"
           },
           "child_page": {
-            "$ref": "#/components/schemas/Block2ChildPage"
+            "$ref": "#/components/schemas/BlockChildPage"
           },
           "child_database": {
-            "$ref": "#/components/schemas/Block2ChildDatabase"
+            "$ref": "#/components/schemas/BlockChildDatabase"
           },
           "embed": {
-            "$ref": "#/components/schemas/Block2Embed"
+            "$ref": "#/components/schemas/BlockEmbed"
           },
           "pdf": {
-            "$ref": "#/components/schemas/Block2Pdf"
+            "$ref": "#/components/schemas/BlockPdf"
           },
           "column_list": {
             "type": "object"
           },
           "video": {
-            "$ref": "#/components/schemas/Block2Video"
+            "$ref": "#/components/schemas/BlockVideo"
           },
           "file": {
-            "$ref": "#/components/schemas/Block2File"
+            "$ref": "#/components/schemas/BlockFile"
           },
           "bookmark": {
-            "$ref": "#/components/schemas/Block2Bookmark"
+            "$ref": "#/components/schemas/BlockBookmark"
           },
           "equation": {
-            "$ref": "#/components/schemas/Block2Equation"
+            "$ref": "#/components/schemas/BlockEquation"
           },
           "divider": {
             "type": "object"
           },
           "table_of_contents": {
-            "$ref": "#/components/schemas/Block2TableOfContents"
+            "$ref": "#/components/schemas/BlockTableOfContents"
           },
           "breadcrumb": {
             "type": "object"
           },
           "link_preview": {
-            "$ref": "#/components/schemas/Block2LinkPreview"
+            "$ref": "#/components/schemas/BlockLinkPreview"
           },
           "unsupported": {
             "type": "object"
           },
           "link_to_page": {
-            "$ref": "#/components/schemas/Block2LinkToPage"
+            "$ref": "#/components/schemas/BlockLinkToPage"
           },
           "table": {
-            "$ref": "#/components/schemas/Block2Table"
+            "$ref": "#/components/schemas/BlockTable"
           },
           "audio": {
-            "$ref": "#/components/schemas/Block2Audio"
+            "$ref": "#/components/schemas/BlockAudio"
           }
         },
         "required": [
@@ -291,7 +291,7 @@
           }
         }
       },
-      "Block2Audio": {
+      "BlockAudio": {
         "type": "object",
         "properties": {
           "caption": {
@@ -305,10 +305,10 @@
             "example": "external"
           },
           "external": {
-            "$ref": "#/components/schemas/Block2AudioExternal"
+            "$ref": "#/components/schemas/BlockAudioExternal"
           },
           "file": {
-            "$ref": "#/components/schemas/Block2AudioFile"
+            "$ref": "#/components/schemas/BlockAudioFile"
           }
         },
         "required": [
@@ -324,7 +324,7 @@
           }
         }
       },
-      "Block2AudioExternal": {
+      "BlockAudioExternal": {
         "type": "object",
         "properties": {
           "url": {
@@ -340,7 +340,7 @@
           "url": "https://upload.wikimedia.org/wikipedia/commons/f/f7/En-us-notion.ogg"
         }
       },
-      "Block2AudioFile": {
+      "BlockAudioFile": {
         "type": "object",
         "properties": {
           "url": {
@@ -363,11 +363,11 @@
           "expiry_time": "2025-01-31T12:25:21.557Z"
         }
       },
-      "Block2Bookmark": {
+      "BlockBookmark": {
         "type": "object",
         "properties": {
           "caption": {
-            "$ref": "#/components/schemas/Block2BookmarkCaption"
+            "$ref": "#/components/schemas/BlockBookmarkCaption"
           },
           "url": {
             "type": "string",
@@ -402,10 +402,10 @@
           "url": "https://example.com/"
         }
       },
-      "Block2BookmarkCaption": {
+      "BlockBookmarkCaption": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Block2BookmarkCaptionItems"
+          "$ref": "#/components/schemas/BlockBookmarkCaptionItems"
         },
         "example": [
           {
@@ -427,7 +427,7 @@
           }
         ]
       },
-      "Block2BookmarkCaptionItems": {
+      "BlockBookmarkCaptionItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -435,10 +435,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/Block2BookmarkCaptionItemsText"
+            "$ref": "#/components/schemas/BlockBookmarkCaptionItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Block2BookmarkCaptionItemsAnnotations"
+            "$ref": "#/components/schemas/BlockBookmarkCaptionItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -473,7 +473,7 @@
           "href": null
         }
       },
-      "Block2BookmarkCaptionItemsAnnotations": {
+      "BlockBookmarkCaptionItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -518,7 +518,7 @@
           "color": "default"
         }
       },
-      "Block2BookmarkCaptionItemsText": {
+      "BlockBookmarkCaptionItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -538,11 +538,11 @@
           "link": null
         }
       },
-      "Block2BulletedListItem": {
+      "BlockBulletedListItem": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/Block2BulletedListItemRichText"
+            "$ref": "#/components/schemas/BlockBulletedListItemRichText"
           },
           "color": {
             "type": "string",
@@ -576,10 +576,10 @@
           "color": "default"
         }
       },
-      "Block2BulletedListItemRichText": {
+      "BlockBulletedListItemRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Block2BulletedListItemRichTextItems"
+          "$ref": "#/components/schemas/BlockBulletedListItemRichTextItems"
         },
         "example": [
           {
@@ -601,7 +601,7 @@
           }
         ]
       },
-      "Block2BulletedListItemRichTextItems": {
+      "BlockBulletedListItemRichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -609,10 +609,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/Block2BulletedListItemRichTextItemsText"
+            "$ref": "#/components/schemas/BlockBulletedListItemRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Block2BulletedListItemRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlockBulletedListItemRichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -647,7 +647,7 @@
           "href": null
         }
       },
-      "Block2BulletedListItemRichTextItemsAnnotations": {
+      "BlockBulletedListItemRichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -692,7 +692,7 @@
           "color": "default"
         }
       },
-      "Block2BulletedListItemRichTextItemsText": {
+      "BlockBulletedListItemRichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -712,14 +712,14 @@
           "link": null
         }
       },
-      "Block2Callout": {
+      "BlockCallout": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/Block2CalloutRichText"
+            "$ref": "#/components/schemas/BlockCalloutRichText"
           },
           "icon": {
-            "$ref": "#/components/schemas/Block2CalloutIcon"
+            "$ref": "#/components/schemas/BlockCalloutIcon"
           },
           "color": {
             "type": "string",
@@ -758,7 +758,7 @@
           "color": "gray_background"
         }
       },
-      "Block2CalloutIcon": {
+      "BlockCalloutIcon": {
         "type": "object",
         "properties": {
           "type": {
@@ -770,10 +770,10 @@
             "example": "🔥"
           },
           "external": {
-            "$ref": "#/components/schemas/Block2CalloutIconExternal"
+            "$ref": "#/components/schemas/BlockCalloutIconExternal"
           },
           "file": {
-            "$ref": "#/components/schemas/Block2CalloutIconFile"
+            "$ref": "#/components/schemas/BlockCalloutIconFile"
           }
         },
         "required": [
@@ -785,7 +785,7 @@
           "emoji": "🔥"
         }
       },
-      "Block2CalloutIconExternal": {
+      "BlockCalloutIconExternal": {
         "type": "object",
         "properties": {
           "url": {
@@ -801,7 +801,7 @@
           "url": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/melting-face_1fae0.png"
         }
       },
-      "Block2CalloutIconFile": {
+      "BlockCalloutIconFile": {
         "type": "object",
         "properties": {
           "url": {
@@ -824,10 +824,10 @@
           "expiry_time": "2025-01-31T12:25:21.225Z"
         }
       },
-      "Block2CalloutRichText": {
+      "BlockCalloutRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Block2CalloutRichTextItems"
+          "$ref": "#/components/schemas/BlockCalloutRichTextItems"
         },
         "example": [
           {
@@ -849,7 +849,7 @@
           }
         ]
       },
-      "Block2CalloutRichTextItems": {
+      "BlockCalloutRichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -857,10 +857,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/Block2CalloutRichTextItemsText"
+            "$ref": "#/components/schemas/BlockCalloutRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Block2CalloutRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlockCalloutRichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -895,7 +895,7 @@
           "href": null
         }
       },
-      "Block2CalloutRichTextItemsAnnotations": {
+      "BlockCalloutRichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -940,7 +940,7 @@
           "color": "default"
         }
       },
-      "Block2CalloutRichTextItemsText": {
+      "BlockCalloutRichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -960,7 +960,7 @@
           "link": null
         }
       },
-      "Block2ChildDatabase": {
+      "BlockChildDatabase": {
         "type": "object",
         "properties": {
           "title": {
@@ -975,7 +975,7 @@
           "title": "My Child Database"
         }
       },
-      "Block2ChildPage": {
+      "BlockChildPage": {
         "type": "object",
         "properties": {
           "title": {
@@ -990,14 +990,14 @@
           "title": "My child page"
         }
       },
-      "Block2Code": {
+      "BlockCode": {
         "type": "object",
         "properties": {
           "caption": {
-            "$ref": "#/components/schemas/Block2CodeCaption"
+            "$ref": "#/components/schemas/BlockCodeCaption"
           },
           "rich_text": {
-            "$ref": "#/components/schemas/Block2CodeRichText"
+            "$ref": "#/components/schemas/BlockCodeRichText"
           },
           "language": {
             "type": "string",
@@ -1087,10 +1087,10 @@
           "language": "go"
         }
       },
-      "Block2CodeCaption": {
+      "BlockCodeCaption": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Block2CodeCaptionItems"
+          "$ref": "#/components/schemas/BlockCodeCaptionItems"
         },
         "example": [
           {
@@ -1112,7 +1112,7 @@
           }
         ]
       },
-      "Block2CodeCaptionItems": {
+      "BlockCodeCaptionItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -1120,10 +1120,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/Block2CodeCaptionItemsText"
+            "$ref": "#/components/schemas/BlockCodeCaptionItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Block2CodeCaptionItemsAnnotations"
+            "$ref": "#/components/schemas/BlockCodeCaptionItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -1158,7 +1158,7 @@
           "href": null
         }
       },
-      "Block2CodeCaptionItemsAnnotations": {
+      "BlockCodeCaptionItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -1203,7 +1203,7 @@
           "color": "default"
         }
       },
-      "Block2CodeCaptionItemsText": {
+      "BlockCodeCaptionItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -1223,10 +1223,10 @@
           "link": null
         }
       },
-      "Block2CodeRichText": {
+      "BlockCodeRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Block2CodeRichTextItems"
+          "$ref": "#/components/schemas/BlockCodeRichTextItems"
         },
         "example": [
           {
@@ -1284,7 +1284,7 @@
           }
         ]
       },
-      "Block2CodeRichTextItems": {
+      "BlockCodeRichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -1292,10 +1292,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/Block2CodeRichTextItemsText"
+            "$ref": "#/components/schemas/BlockCodeRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Block2CodeRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlockCodeRichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -1332,7 +1332,7 @@
           "href": null
         }
       },
-      "Block2CodeRichTextItemsAnnotations": {
+      "BlockCodeRichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -1377,7 +1377,7 @@
           "color": "default"
         }
       },
-      "Block2CodeRichTextItemsText": {
+      "BlockCodeRichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -1385,7 +1385,7 @@
             "example": "func main() {\n\t"
           },
           "link": {
-            "$ref": "#/components/schemas/Block2CodeRichTextItemsTextLink"
+            "$ref": "#/components/schemas/BlockCodeRichTextItemsTextLink"
           }
         },
         "required": [
@@ -1397,7 +1397,7 @@
           "link": null
         }
       },
-      "Block2CodeRichTextItemsTextLink": {
+      "BlockCodeRichTextItemsTextLink": {
         "type": "object",
         "properties": {
           "url": {
@@ -1407,7 +1407,7 @@
           }
         }
       },
-      "Block2CreatedBy": {
+      "BlockCreatedBy": {
         "type": "object",
         "properties": {
           "object": {
@@ -1429,11 +1429,11 @@
           "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
         }
       },
-      "Block2Embed": {
+      "BlockEmbed": {
         "type": "object",
         "properties": {
           "caption": {
-            "$ref": "#/components/schemas/Block2EmbedCaption"
+            "$ref": "#/components/schemas/BlockEmbedCaption"
           },
           "url": {
             "type": "string",
@@ -1450,13 +1450,13 @@
           "url": "https://twitter.com/elonmusk/status/1519480761749016577"
         }
       },
-      "Block2EmbedCaption": {
+      "BlockEmbedCaption": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Block2EmbedCaptionItems"
+          "$ref": "#/components/schemas/BlockEmbedCaptionItems"
         }
       },
-      "Block2EmbedCaptionItems": {
+      "BlockEmbedCaptionItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -1464,10 +1464,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/Block2EmbedCaptionItemsText"
+            "$ref": "#/components/schemas/BlockEmbedCaptionItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Block2EmbedCaptionItemsAnnotations"
+            "$ref": "#/components/schemas/BlockEmbedCaptionItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -1495,7 +1495,7 @@
           "href": null
         }
       },
-      "Block2EmbedCaptionItemsAnnotations": {
+      "BlockEmbedCaptionItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -1540,7 +1540,7 @@
           "color": "default"
         }
       },
-      "Block2EmbedCaptionItemsText": {
+      "BlockEmbedCaptionItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -1560,7 +1560,7 @@
           "link": null
         }
       },
-      "Block2Equation": {
+      "BlockEquation": {
         "type": "object",
         "properties": {
           "expression": {
@@ -1575,7 +1575,7 @@
           "expression": "e^{\\pi i}+1 = 0"
         }
       },
-      "Block2File": {
+      "BlockFile": {
         "type": "object",
         "properties": {
           "caption": {
@@ -1589,7 +1589,7 @@
             "example": "file"
           },
           "file": {
-            "$ref": "#/components/schemas/Block2FileFile"
+            "$ref": "#/components/schemas/BlockFileFile"
           },
           "name": {
             "type": "string",
@@ -1612,7 +1612,7 @@
           "name": "hd-wallpaper-g6e0a7c1ce_1920.jpeg"
         }
       },
-      "Block2FileFile": {
+      "BlockFileFile": {
         "type": "object",
         "properties": {
           "url": {
@@ -1635,11 +1635,11 @@
           "expiry_time": "2025-01-31T12:25:21.226Z"
         }
       },
-      "Block2Heading1": {
+      "BlockHeading1": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/Block2Heading1RichText"
+            "$ref": "#/components/schemas/BlockHeading1RichText"
           },
           "is_toggleable": {
             "type": "boolean",
@@ -1747,10 +1747,10 @@
           "color": "default"
         }
       },
-      "Block2Heading1RichText": {
+      "BlockHeading1RichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Block2Heading1RichTextItems"
+          "$ref": "#/components/schemas/BlockHeading1RichTextItems"
         },
         "example": [
           {
@@ -1840,7 +1840,7 @@
           }
         ]
       },
-      "Block2Heading1RichTextItems": {
+      "BlockHeading1RichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -1848,10 +1848,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/Block2Heading1RichTextItemsText"
+            "$ref": "#/components/schemas/BlockHeading1RichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Block2Heading1RichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlockHeading1RichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -1886,7 +1886,7 @@
           "href": null
         }
       },
-      "Block2Heading1RichTextItemsAnnotations": {
+      "BlockHeading1RichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -1931,7 +1931,7 @@
           "color": "default"
         }
       },
-      "Block2Heading1RichTextItemsText": {
+      "BlockHeading1RichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -1951,11 +1951,11 @@
           "link": null
         }
       },
-      "Block2Heading2": {
+      "BlockHeading2": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/Block2Heading2RichText"
+            "$ref": "#/components/schemas/BlockHeading2RichText"
           },
           "is_toggleable": {
             "type": "boolean",
@@ -1995,10 +1995,10 @@
           "color": "default"
         }
       },
-      "Block2Heading2RichText": {
+      "BlockHeading2RichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Block2Heading2RichTextItems"
+          "$ref": "#/components/schemas/BlockHeading2RichTextItems"
         },
         "example": [
           {
@@ -2020,7 +2020,7 @@
           }
         ]
       },
-      "Block2Heading2RichTextItems": {
+      "BlockHeading2RichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -2028,10 +2028,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/Block2Heading2RichTextItemsText"
+            "$ref": "#/components/schemas/BlockHeading2RichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Block2Heading2RichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlockHeading2RichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -2066,7 +2066,7 @@
           "href": null
         }
       },
-      "Block2Heading2RichTextItemsAnnotations": {
+      "BlockHeading2RichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -2111,7 +2111,7 @@
           "color": "default"
         }
       },
-      "Block2Heading2RichTextItemsText": {
+      "BlockHeading2RichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -2131,11 +2131,11 @@
           "link": null
         }
       },
-      "Block2Heading3": {
+      "BlockHeading3": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/Block2Heading3RichText"
+            "$ref": "#/components/schemas/BlockHeading3RichText"
           },
           "is_toggleable": {
             "type": "boolean",
@@ -2175,10 +2175,10 @@
           "color": "default"
         }
       },
-      "Block2Heading3RichText": {
+      "BlockHeading3RichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Block2Heading3RichTextItems"
+          "$ref": "#/components/schemas/BlockHeading3RichTextItems"
         },
         "example": [
           {
@@ -2200,7 +2200,7 @@
           }
         ]
       },
-      "Block2Heading3RichTextItems": {
+      "BlockHeading3RichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -2208,10 +2208,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/Block2Heading3RichTextItemsText"
+            "$ref": "#/components/schemas/BlockHeading3RichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Block2Heading3RichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlockHeading3RichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -2246,7 +2246,7 @@
           "href": null
         }
       },
-      "Block2Heading3RichTextItemsAnnotations": {
+      "BlockHeading3RichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -2291,7 +2291,7 @@
           "color": "default"
         }
       },
-      "Block2Heading3RichTextItemsText": {
+      "BlockHeading3RichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -2311,7 +2311,7 @@
           "link": null
         }
       },
-      "Block2LastEditedBy": {
+      "BlockLastEditedBy": {
         "type": "object",
         "properties": {
           "object": {
@@ -2333,7 +2333,7 @@
           "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
         }
       },
-      "Block2LinkPreview": {
+      "BlockLinkPreview": {
         "type": "object",
         "properties": {
           "url": {
@@ -2349,7 +2349,7 @@
           "url": "https://github.com/faetools/go-notion"
         }
       },
-      "Block2LinkToPage": {
+      "BlockLinkToPage": {
         "type": "object",
         "properties": {
           "type": {
@@ -2371,11 +2371,11 @@
           "page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
         }
       },
-      "Block2NumberedListItem": {
+      "BlockNumberedListItem": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/Block2NumberedListItemRichText"
+            "$ref": "#/components/schemas/BlockNumberedListItemRichText"
           },
           "color": {
             "type": "string",
@@ -2409,10 +2409,10 @@
           "color": "default"
         }
       },
-      "Block2NumberedListItemRichText": {
+      "BlockNumberedListItemRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Block2NumberedListItemRichTextItems"
+          "$ref": "#/components/schemas/BlockNumberedListItemRichTextItems"
         },
         "example": [
           {
@@ -2434,7 +2434,7 @@
           }
         ]
       },
-      "Block2NumberedListItemRichTextItems": {
+      "BlockNumberedListItemRichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -2442,10 +2442,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/Block2NumberedListItemRichTextItemsText"
+            "$ref": "#/components/schemas/BlockNumberedListItemRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Block2NumberedListItemRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlockNumberedListItemRichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -2480,7 +2480,7 @@
           "href": null
         }
       },
-      "Block2NumberedListItemRichTextItemsAnnotations": {
+      "BlockNumberedListItemRichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -2525,7 +2525,7 @@
           "color": "default"
         }
       },
-      "Block2NumberedListItemRichTextItemsText": {
+      "BlockNumberedListItemRichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -2545,11 +2545,11 @@
           "link": null
         }
       },
-      "Block2Paragraph": {
+      "BlockParagraph": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/Block2ParagraphRichText"
+            "$ref": "#/components/schemas/BlockParagraphRichText"
           },
           "color": {
             "type": "string",
@@ -2565,13 +2565,13 @@
           "color": "default"
         }
       },
-      "Block2ParagraphRichText": {
+      "BlockParagraphRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Block2ParagraphRichTextItems"
+          "$ref": "#/components/schemas/BlockParagraphRichTextItems"
         }
       },
-      "Block2ParagraphRichTextItems": {
+      "BlockParagraphRichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -2579,10 +2579,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/Block2ParagraphRichTextItemsText"
+            "$ref": "#/components/schemas/BlockParagraphRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Block2ParagraphRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlockParagraphRichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -2594,10 +2594,10 @@
             "example": "https://www.google.com/"
           },
           "mention": {
-            "$ref": "#/components/schemas/Block2ParagraphRichTextItemsMention"
+            "$ref": "#/components/schemas/BlockParagraphRichTextItemsMention"
           },
           "equation": {
-            "$ref": "#/components/schemas/Block2ParagraphRichTextItemsEquation"
+            "$ref": "#/components/schemas/BlockParagraphRichTextItemsEquation"
           }
         },
         "example": {
@@ -2618,7 +2618,7 @@
           "href": null
         }
       },
-      "Block2ParagraphRichTextItemsAnnotations": {
+      "BlockParagraphRichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -2663,7 +2663,7 @@
           "color": "default"
         }
       },
-      "Block2ParagraphRichTextItemsEquation": {
+      "BlockParagraphRichTextItemsEquation": {
         "type": "object",
         "properties": {
           "expression": {
@@ -2678,7 +2678,7 @@
           "expression": "e^{\\pi i}+1=0"
         }
       },
-      "Block2ParagraphRichTextItemsMention": {
+      "BlockParagraphRichTextItemsMention": {
         "type": "object",
         "properties": {
           "type": {
@@ -2686,19 +2686,19 @@
             "example": "link_mention"
           },
           "link_mention": {
-            "$ref": "#/components/schemas/Block2ParagraphRichTextItemsMentionLinkMention"
+            "$ref": "#/components/schemas/BlockParagraphRichTextItemsMentionLinkMention"
           },
           "database": {
-            "$ref": "#/components/schemas/Block2ParagraphRichTextItemsMentionDatabase"
+            "$ref": "#/components/schemas/BlockParagraphRichTextItemsMentionDatabase"
           },
           "user": {
-            "$ref": "#/components/schemas/Block2ParagraphRichTextItemsMentionUser"
+            "$ref": "#/components/schemas/BlockParagraphRichTextItemsMentionUser"
           },
           "date": {
-            "$ref": "#/components/schemas/Block2ParagraphRichTextItemsMentionDate"
+            "$ref": "#/components/schemas/BlockParagraphRichTextItemsMentionDate"
           },
           "page": {
-            "$ref": "#/components/schemas/Block2ParagraphRichTextItemsMentionPage"
+            "$ref": "#/components/schemas/BlockParagraphRichTextItemsMentionPage"
           }
         },
         "required": [
@@ -2714,7 +2714,7 @@
           }
         }
       },
-      "Block2ParagraphRichTextItemsMentionDatabase": {
+      "BlockParagraphRichTextItemsMentionDatabase": {
         "type": "object",
         "properties": {
           "id": {
@@ -2730,7 +2730,7 @@
           "id": "7a3c647e-4c1e-4c27-bf1d-cfb0105e55ce"
         }
       },
-      "Block2ParagraphRichTextItemsMentionDate": {
+      "BlockParagraphRichTextItemsMentionDate": {
         "type": "object",
         "properties": {
           "start": {
@@ -2755,7 +2755,7 @@
           "time_zone": null
         }
       },
-      "Block2ParagraphRichTextItemsMentionLinkMention": {
+      "BlockParagraphRichTextItemsMentionLinkMention": {
         "type": "object",
         "properties": {
           "href": {
@@ -2783,7 +2783,7 @@
           "description": "This domain is for use in illustrative examples in documents. You may use this\n    domain in literature without prior coordination or asking for permission."
         }
       },
-      "Block2ParagraphRichTextItemsMentionPage": {
+      "BlockParagraphRichTextItemsMentionPage": {
         "type": "object",
         "properties": {
           "id": {
@@ -2799,7 +2799,7 @@
           "id": "2633808e-7e36-4f4e-972a-ccd2d3c49004"
         }
       },
-      "Block2ParagraphRichTextItemsMentionUser": {
+      "BlockParagraphRichTextItemsMentionUser": {
         "type": "object",
         "properties": {
           "object": {
@@ -2825,7 +2825,7 @@
             "example": "person"
           },
           "person": {
-            "$ref": "#/components/schemas/Block2ParagraphRichTextItemsMentionUserPerson"
+            "$ref": "#/components/schemas/BlockParagraphRichTextItemsMentionUserPerson"
           }
         },
         "required": [
@@ -2847,7 +2847,7 @@
           }
         }
       },
-      "Block2ParagraphRichTextItemsMentionUserPerson": {
+      "BlockParagraphRichTextItemsMentionUserPerson": {
         "type": "object",
         "properties": {
           "email": {
@@ -2863,7 +2863,7 @@
           "email": "mark@faetools.com"
         }
       },
-      "Block2ParagraphRichTextItemsText": {
+      "BlockParagraphRichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -2871,7 +2871,7 @@
             "example": "This is a simple paragraph."
           },
           "link": {
-            "$ref": "#/components/schemas/Block2ParagraphRichTextItemsTextLink"
+            "$ref": "#/components/schemas/BlockParagraphRichTextItemsTextLink"
           }
         },
         "required": [
@@ -2883,7 +2883,7 @@
           "link": null
         }
       },
-      "Block2ParagraphRichTextItemsTextLink": {
+      "BlockParagraphRichTextItemsTextLink": {
         "type": "object",
         "properties": {
           "url": {
@@ -2893,7 +2893,7 @@
           }
         }
       },
-      "Block2Parent": {
+      "BlockParent": {
         "type": "object",
         "properties": {
           "type": {
@@ -2915,21 +2915,21 @@
           "page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
         }
       },
-      "Block2Pdf": {
+      "BlockPdf": {
         "type": "object",
         "properties": {
           "caption": {
-            "$ref": "#/components/schemas/Block2PdfCaption"
+            "$ref": "#/components/schemas/BlockPdfCaption"
           },
           "type": {
             "type": "string",
             "example": "external"
           },
           "external": {
-            "$ref": "#/components/schemas/Block2PdfExternal"
+            "$ref": "#/components/schemas/BlockPdfExternal"
           },
           "file": {
-            "$ref": "#/components/schemas/Block2PdfFile"
+            "$ref": "#/components/schemas/BlockPdfFile"
           }
         },
         "required": [
@@ -2997,10 +2997,10 @@
           }
         }
       },
-      "Block2PdfCaption": {
+      "BlockPdfCaption": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Block2PdfCaptionItems"
+          "$ref": "#/components/schemas/BlockPdfCaptionItems"
         },
         "example": [
           {
@@ -3056,7 +3056,7 @@
           }
         ]
       },
-      "Block2PdfCaptionItems": {
+      "BlockPdfCaptionItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -3064,10 +3064,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/Block2PdfCaptionItemsText"
+            "$ref": "#/components/schemas/BlockPdfCaptionItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Block2PdfCaptionItemsAnnotations"
+            "$ref": "#/components/schemas/BlockPdfCaptionItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -3102,7 +3102,7 @@
           "href": null
         }
       },
-      "Block2PdfCaptionItemsAnnotations": {
+      "BlockPdfCaptionItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -3147,7 +3147,7 @@
           "color": "default"
         }
       },
-      "Block2PdfCaptionItemsText": {
+      "BlockPdfCaptionItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -3167,7 +3167,7 @@
           "link": null
         }
       },
-      "Block2PdfExternal": {
+      "BlockPdfExternal": {
         "type": "object",
         "properties": {
           "url": {
@@ -3183,7 +3183,7 @@
           "url": "https://bitcoin.org/bitcoin.pdf"
         }
       },
-      "Block2PdfFile": {
+      "BlockPdfFile": {
         "type": "object",
         "properties": {
           "url": {
@@ -3206,11 +3206,11 @@
           "expiry_time": "2025-01-31T12:25:21.208Z"
         }
       },
-      "Block2Quote": {
+      "BlockQuote": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/Block2QuoteRichText"
+            "$ref": "#/components/schemas/BlockQuoteRichText"
           },
           "color": {
             "type": "string",
@@ -3278,10 +3278,10 @@
           "color": "green"
         }
       },
-      "Block2QuoteRichText": {
+      "BlockQuoteRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Block2QuoteRichTextItems"
+          "$ref": "#/components/schemas/BlockQuoteRichTextItems"
         },
         "example": [
           {
@@ -3337,7 +3337,7 @@
           }
         ]
       },
-      "Block2QuoteRichTextItems": {
+      "BlockQuoteRichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -3345,10 +3345,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/Block2QuoteRichTextItemsText"
+            "$ref": "#/components/schemas/BlockQuoteRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Block2QuoteRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlockQuoteRichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -3383,7 +3383,7 @@
           "href": null
         }
       },
-      "Block2QuoteRichTextItemsAnnotations": {
+      "BlockQuoteRichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -3428,7 +3428,7 @@
           "color": "default"
         }
       },
-      "Block2QuoteRichTextItemsText": {
+      "BlockQuoteRichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -3448,11 +3448,11 @@
           "link": null
         }
       },
-      "Block2SyncedBlock": {
+      "BlockSyncedBlock": {
         "type": "object",
         "properties": {
           "synced_from": {
-            "$ref": "#/components/schemas/Block2SyncedBlockSyncedFrom"
+            "$ref": "#/components/schemas/BlockSyncedBlockSyncedFrom"
           }
         },
         "required": [
@@ -3465,7 +3465,7 @@
           }
         }
       },
-      "Block2SyncedBlockSyncedFrom": {
+      "BlockSyncedBlockSyncedFrom": {
         "type": "object",
         "properties": {
           "type": {
@@ -3487,7 +3487,7 @@
           "block_id": "0960b64c-81c9-4f19-a873-e8072b083a40"
         }
       },
-      "Block2Table": {
+      "BlockTable": {
         "type": "object",
         "properties": {
           "table_width": {
@@ -3514,7 +3514,7 @@
           "has_row_header": true
         }
       },
-      "Block2TableOfContents": {
+      "BlockTableOfContents": {
         "type": "object",
         "properties": {
           "color": {
@@ -3529,11 +3529,11 @@
           "color": "gray"
         }
       },
-      "Block2ToDo": {
+      "BlockToDo": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/Block2ToDoRichText"
+            "$ref": "#/components/schemas/BlockToDoRichText"
           },
           "checked": {
             "type": "boolean",
@@ -3573,10 +3573,10 @@
           "color": "default"
         }
       },
-      "Block2ToDoRichText": {
+      "BlockToDoRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Block2ToDoRichTextItems"
+          "$ref": "#/components/schemas/BlockToDoRichTextItems"
         },
         "example": [
           {
@@ -3598,7 +3598,7 @@
           }
         ]
       },
-      "Block2ToDoRichTextItems": {
+      "BlockToDoRichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -3606,10 +3606,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/Block2ToDoRichTextItemsText"
+            "$ref": "#/components/schemas/BlockToDoRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Block2ToDoRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlockToDoRichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -3644,7 +3644,7 @@
           "href": null
         }
       },
-      "Block2ToDoRichTextItemsAnnotations": {
+      "BlockToDoRichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -3689,7 +3689,7 @@
           "color": "default"
         }
       },
-      "Block2ToDoRichTextItemsText": {
+      "BlockToDoRichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -3709,11 +3709,11 @@
           "link": null
         }
       },
-      "Block2Toggle": {
+      "BlockToggle": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/Block2ToggleRichText"
+            "$ref": "#/components/schemas/BlockToggleRichText"
           },
           "color": {
             "type": "string",
@@ -3747,10 +3747,10 @@
           "color": "default"
         }
       },
-      "Block2ToggleRichText": {
+      "BlockToggleRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Block2ToggleRichTextItems"
+          "$ref": "#/components/schemas/BlockToggleRichTextItems"
         },
         "example": [
           {
@@ -3772,7 +3772,7 @@
           }
         ]
       },
-      "Block2ToggleRichTextItems": {
+      "BlockToggleRichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -3780,10 +3780,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/Block2ToggleRichTextItemsText"
+            "$ref": "#/components/schemas/BlockToggleRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Block2ToggleRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlockToggleRichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -3818,7 +3818,7 @@
           "href": null
         }
       },
-      "Block2ToggleRichTextItemsAnnotations": {
+      "BlockToggleRichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -3863,7 +3863,7 @@
           "color": "default"
         }
       },
-      "Block2ToggleRichTextItemsText": {
+      "BlockToggleRichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -3883,7 +3883,7 @@
           "link": null
         }
       },
-      "Block2Video": {
+      "BlockVideo": {
         "type": "object",
         "properties": {
           "caption": {
@@ -3897,10 +3897,10 @@
             "example": "file"
           },
           "file": {
-            "$ref": "#/components/schemas/Block2VideoFile"
+            "$ref": "#/components/schemas/BlockVideoFile"
           },
           "external": {
-            "$ref": "#/components/schemas/Block2VideoExternal"
+            "$ref": "#/components/schemas/BlockVideoExternal"
           }
         },
         "required": [
@@ -3917,7 +3917,7 @@
           }
         }
       },
-      "Block2VideoExternal": {
+      "BlockVideoExternal": {
         "type": "object",
         "properties": {
           "url": {
@@ -3933,7 +3933,7 @@
           "url": "https://www.youtube.com/watch?v=RKhhCYim48g"
         }
       },
-      "Block2VideoFile": {
+      "BlockVideoFile": {
         "type": "object",
         "properties": {
           "url": {
@@ -3959,7 +3959,7 @@
       "Blocks": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Block2"
+          "$ref": "#/components/schemas/Block"
         },
         "example": [
           {
