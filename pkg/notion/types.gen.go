@@ -44,14 +44,17 @@ type Block struct {
 	// Date and time when this block was created. Formatted as an ISO 8601 date time string.
 	CreatedTime time.Time `json:"created_time,omitzero"`
 	// Date and time when this block was last updated. Formatted as an ISO 8601 date time string.
-	LastEditedTime   time.Time              `json:"last_edited_time,omitzero"`
-	CreatedBy        UserReference          `json:"created_by"`
-	LastEditedBy     UserReference          `json:"last_edited_by"`
-	HasChildren      bool                   `json:"has_children,omitzero"`
-	Archived         bool                   `json:"archived,omitzero"`
-	InTrash          bool                   `json:"in_trash,omitzero"`
-	Type             string                 `json:"type,omitzero"`
-	Paragraph        BlockParagraph         `json:"paragraph"`
+	LastEditedTime time.Time     `json:"last_edited_time,omitzero"`
+	CreatedBy      UserReference `json:"created_by"`
+	LastEditedBy   UserReference `json:"last_edited_by"`
+	// Whether or not the block has children blocks nested within it.
+	HasChildren bool `json:"has_children,omitzero"`
+	// The archived status of the block.
+	Archived bool `json:"archived,omitzero"`
+	InTrash  bool `json:"in_trash,omitzero"`
+	// Type of block.
+	Type             BlockType              `json:"type,omitzero"`
+	Paragraph        *BlockParagraph        `json:"paragraph,omitempty"`
 	Heading1         *BlockHeading1         `json:"heading_1,omitempty"`
 	Heading2         *BlockHeading2         `json:"heading_2,omitempty"`
 	Heading3         *BlockHeading3         `json:"heading_3,omitempty"`
@@ -771,6 +774,45 @@ type BlockToggleRichTextItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }
+
+// Type of block.
+type BlockType string
+
+const (
+	BlockTypeParagraph        BlockType = "paragraph"
+	BlockTypeHeading1         BlockType = "heading_1"
+	BlockTypeHeading2         BlockType = "heading_2"
+	BlockTypeHeading3         BlockType = "heading_3"
+	BlockTypeBulletedListItem BlockType = "bulleted_list_item"
+	BlockTypeNumberedListItem BlockType = "numbered_list_item"
+	BlockTypeToDo             BlockType = "to_do"
+	BlockTypeToggle           BlockType = "toggle"
+	BlockTypeChildPage        BlockType = "child_page"
+	BlockTypeChildDatabase    BlockType = "child_database"
+	BlockTypeEmbed            BlockType = "embed"
+	BlockTypeImage            BlockType = "image"
+	BlockTypeVideo            BlockType = "video"
+	BlockTypeFile             BlockType = "file"
+	BlockTypePdf              BlockType = "pdf"
+	BlockTypeBookmark         BlockType = "bookmark"
+	BlockTypeCallout          BlockType = "callout"
+	BlockTypeQuote            BlockType = "quote"
+	BlockTypeEquation         BlockType = "equation"
+	BlockTypeDivider          BlockType = "divider"
+	BlockTypeTableOfContents  BlockType = "table_of_contents"
+	BlockTypeColumn           BlockType = "column"
+	BlockTypeColumnList       BlockType = "column_list"
+	BlockTypeLinkPreview      BlockType = "link_preview"
+	BlockTypeSyncedBlock      BlockType = "synced_block"
+	BlockTypeTemplate         BlockType = "template"
+	BlockTypeLinkToPage       BlockType = "link_to_page"
+	BlockTypeTable            BlockType = "table"
+	BlockTypeTableRow         BlockType = "table_row"
+	BlockTypeCode             BlockType = "code"
+	BlockTypeBreadcrumb       BlockType = "breadcrumb"
+	BlockTypeAudio            BlockType = "audio"
+	BlockTypeUnsupported      BlockType = "unsupported"
+)
 
 // BlockVideo defines a model
 type BlockVideo struct {
