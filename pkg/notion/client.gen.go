@@ -113,17 +113,17 @@ func GetPage[R any](ctx context.Context, c *Client, id uuid.UUID) (*R, error) {
 
 // GetBlocks96245c8f178444a482ad1941127c3ec3Children defines an operation.
 //
-//	GET /blocks/96245c8f-1784-44a4-82ad-1941127c3ec3/children
-func (c *Client) GetBlocks96245c8f178444a482ad1941127c3ec3Children(ctx context.Context, params *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenParams) (*GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse, error) {
-	return GetBlocks96245c8f178444a482ad1941127c3ec3Children[GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse](ctx, c, params)
+//	GET /blocks/{id}/children
+func (c *Client) GetBlocks96245c8f178444a482ad1941127c3ec3Children(ctx context.Context, id uuid.UUID, params *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenParams) (*GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse, error) {
+	return GetBlocks96245c8f178444a482ad1941127c3ec3Children[GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse](ctx, c, id, params)
 }
 
 // GetBlocks96245c8f178444a482ad1941127c3ec3Children defines an operation.
 // You can define a custom result to unmarshal the response into.
 //
-//	GET /blocks/96245c8f-1784-44a4-82ad-1941127c3ec3/children
-func GetBlocks96245c8f178444a482ad1941127c3ec3Children[R any](ctx context.Context, c *Client, params *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenParams) (*R, error) {
-	u := baseURL.JoinPath("/blocks/96245c8f-1784-44a4-82ad-1941127c3ec3/children")
+//	GET /blocks/{id}/children
+func GetBlocks96245c8f178444a482ad1941127c3ec3Children[R any](ctx context.Context, c *Client, id uuid.UUID, params *GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenParams) (*R, error) {
+	u := baseURL.JoinPath("blocks", id.String(), "children")
 
 	if params != nil && params.PageSize != 0 {
 		u.RawQuery = url.Values{"page_size": []string{strconv.Itoa(params.PageSize)}}.Encode()

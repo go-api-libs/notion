@@ -34,13 +34,16 @@
         }
       }
     },
-    "/blocks/96245c8f-1784-44a4-82ad-1941127c3ec3/children": {
+    "/blocks/{id}/children": {
       "parameters": [
         {
-          "$ref": "#/components/parameters/page_size2"
+          "$ref": "#/components/parameters/NotionVersion"
         },
         {
-          "$ref": "#/components/parameters/NotionVersion"
+          "$ref": "#/components/parameters/id"
+        },
+        {
+          "$ref": "#/components/parameters/page_size2"
         }
       ],
       "get": {
