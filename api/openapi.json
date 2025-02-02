@@ -199,7 +199,7 @@
             "$ref": "#/components/schemas/Child"
           },
           "child_database": {
-            "$ref": "#/components/schemas/Child2"
+            "$ref": "#/components/schemas/Child"
           },
           "embed": {
             "$ref": "#/components/schemas/Embed"
@@ -871,6 +871,7 @@
         }
       },
       "Callout": {
+        "description": "Callout block objects contain the following information within the callout field.",
         "type": "object",
         "properties": {
           "rich_text": {
@@ -1131,21 +1132,6 @@
         ],
         "example": {
           "title": "My child page"
-        }
-      },
-      "Child2": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "example": "My Child Database"
-          }
-        },
-        "required": [
-          "title"
-        ],
-        "example": {
-          "title": "My Child Database"
         }
       },
       "Code": {

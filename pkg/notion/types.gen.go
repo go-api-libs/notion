@@ -64,16 +64,17 @@ type Block struct {
 	Toggle           *Paragraph4       `json:"toggle,omitempty"`
 	Code             *Code             `json:"code,omitempty"`
 	ChildPage        *Child            `json:"child_page,omitempty"`
-	ChildDatabase    *Child2           `json:"child_database,omitempty"`
+	ChildDatabase    *Child            `json:"child_database,omitempty"`
 	Embed            *Embed            `json:"embed,omitempty"`
 	Video            *FileWithCaption2 `json:"video,omitempty"`
 	Audio            *FileWithCaption3 `json:"audio,omitempty"`
 	File             *FileWithCaption4 `json:"file,omitempty"`
 	PDF              *FileWithCaption5 `json:"pdf,omitempty"`
 	Bookmark         *Embed3           `json:"bookmark,omitempty"`
-	Callout          *Callout          `json:"callout,omitempty"`
-	Quote            *Paragraph8       `json:"quote,omitempty"`
-	Equation         *Equation         `json:"equation,omitempty"`
+	// Callout block objects contain the following information within the callout field.
+	Callout  *Callout    `json:"callout,omitempty"`
+	Quote    *Paragraph8 `json:"quote,omitempty"`
+	Equation *Equation   `json:"equation,omitempty"`
 	// Divider block objects do not contain any information within the divider property
 	Divider         *struct{}        `json:"divider,omitempty"`
 	TableOfContents *TableOfContents `json:"table_of_contents,omitempty"`
@@ -143,7 +144,7 @@ type BlocksList struct {
 	RequestID  uuid.UUID `json:"request_id,omitzero"`
 }
 
-// Callout defines a model
+// Callout block objects contain the following information within the callout field.
 type Callout struct {
 	RichText CalloutRichText `json:"rich_text,omitempty"`
 	Icon     CalloutIcon     `json:"icon"`
@@ -199,11 +200,6 @@ type CalloutRichTextItemsText struct {
 
 // Child defines a model
 type Child struct {
-	Title string `json:"title,omitzero"`
-}
-
-// Child2 defines a model
-type Child2 struct {
 	Title string `json:"title,omitzero"`
 }
 
