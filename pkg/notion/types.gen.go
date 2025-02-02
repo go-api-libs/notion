@@ -45,8 +45,8 @@ type Block struct {
 	CreatedTime time.Time `json:"created_time,omitzero"`
 	// Date and time when this block was last updated. Formatted as an ISO 8601 date time string.
 	LastEditedTime   time.Time              `json:"last_edited_time,omitzero"`
-	CreatedBy        UserReference2         `json:"created_by"`
-	LastEditedBy     UserReference3         `json:"last_edited_by"`
+	CreatedBy        UserReference          `json:"created_by"`
+	LastEditedBy     UserReference          `json:"last_edited_by"`
 	HasChildren      bool                   `json:"has_children,omitzero"`
 	Archived         bool                   `json:"archived,omitzero"`
 	InTrash          bool                   `json:"in_trash,omitzero"`
@@ -1002,18 +1002,6 @@ type Text struct {
 // UserReference defines a model
 type UserReference struct {
 	// Always "user"
-	Object string    `json:"object,omitzero"`
-	ID     uuid.UUID `json:"id,omitzero"`
-}
-
-// UserReference2 defines a model
-type UserReference2 struct {
-	Object string    `json:"object,omitzero"`
-	ID     uuid.UUID `json:"id,omitzero"`
-}
-
-// UserReference3 defines a model
-type UserReference3 struct {
 	Object string    `json:"object,omitzero"`
 	ID     uuid.UUID `json:"id,omitzero"`
 }
