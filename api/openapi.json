@@ -1954,8 +1954,7 @@
             "$ref": "#/components/schemas/RichTexts"
           },
           "type": {
-            "type": "string",
-            "example": "file"
+            "$ref": "#/components/schemas/FileType"
           },
           "file": {
             "$ref": "#/components/schemas/FileWithCaptionFile"
@@ -1982,10 +1981,7 @@
         "type": "object",
         "properties": {
           "caption": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           },
           "type": {
             "type": "string",
@@ -2054,10 +2050,7 @@
         "type": "object",
         "properties": {
           "caption": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           },
           "type": {
             "type": "string",

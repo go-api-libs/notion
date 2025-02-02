@@ -394,15 +394,16 @@ const (
 
 // File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
 type FileWithCaption struct {
-	Caption  RichTexts                `json:"caption,omitempty"`
-	Type     string                   `json:"type,omitzero"`
+	Caption RichTexts `json:"caption,omitempty"`
+	// Type of this file object.
+	Type     FileType                 `json:"type,omitzero"`
 	File     FileWithCaptionFile      `json:"file"`
 	External *FileWithCaptionExternal `json:"external,omitempty"`
 }
 
 // FileWithCaption3 defines a model
 type FileWithCaption3 struct {
-	Caption  []struct{}               `json:"caption,omitempty"`
+	Caption  RichTexts                `json:"caption,omitempty"`
 	Type     string                   `json:"type,omitzero"`
 	External FileWithCaption3External `json:"external"`
 	File     *FileWithCaption3File    `json:"file,omitempty"`
@@ -421,7 +422,7 @@ type FileWithCaption3File struct {
 
 // FileWithCaption4 defines a model
 type FileWithCaption4 struct {
-	Caption []struct{}           `json:"caption,omitempty"`
+	Caption RichTexts            `json:"caption,omitempty"`
 	Type    string               `json:"type,omitzero"`
 	File    FileWithCaption4File `json:"file"`
 	Name    string               `json:"name,omitzero"`
