@@ -1916,22 +1916,6 @@
           "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
         }
       },
-      "ExternalFile2": {
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://www.youtube.com/watch?v=RKhhCYim48g"
-          }
-        },
-        "required": [
-          "url"
-        ],
-        "example": {
-          "url": "https://www.youtube.com/watch?v=RKhhCYim48g"
-        }
-      },
       "File": {
         "description": "File objects contain data about files uploaded to Notion as well as external files linked in Notion.",
         "type": "object",
@@ -1976,7 +1960,7 @@
             "$ref": "#/components/schemas/NotionFile"
           },
           "external": {
-            "$ref": "#/components/schemas/ExternalFile2"
+            "$ref": "#/components/schemas/ExternalFile"
           }
         },
         "required": [

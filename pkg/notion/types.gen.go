@@ -376,11 +376,6 @@ type ExternalFile struct {
 	URL url.URL `json:"url,omitzero"`
 }
 
-// ExternalFile2 defines a model
-type ExternalFile2 struct {
-	URL url.URL `json:"url,omitzero"`
-}
-
 // File objects contain data about files uploaded to Notion as well as external files linked in Notion.
 type File struct {
 	// Type of this file object.
@@ -401,9 +396,10 @@ const (
 type FileWithCaption struct {
 	Caption RichTexts `json:"caption,omitempty"`
 	// Type of this file object.
-	Type     FileType       `json:"type,omitzero"`
-	File     *NotionFile    `json:"file,omitempty"`
-	External *ExternalFile2 `json:"external,omitempty"`
+	Type FileType    `json:"type,omitzero"`
+	File *NotionFile `json:"file,omitempty"`
+	// An external file is any URL that isn't hosted by Notion.
+	External *ExternalFile `json:"external,omitempty"`
 }
 
 // FileWithCaption3 defines a model
