@@ -377,11 +377,6 @@ type ExternalFile struct {
 	URL url.URL `json:"url,omitzero"`
 }
 
-// ExternalFile2 defines a model
-type ExternalFile2 struct {
-	URL url.URL `json:"url,omitzero"`
-}
-
 // File objects contain data about files uploaded to Notion as well as external files linked in Notion.
 type File struct {
 	// Type of this file object.
@@ -411,18 +406,19 @@ type FileWithCaption struct {
 
 // FileWithCaption4 defines a model
 type FileWithCaption4 struct {
-	Caption RichTexts   `json:"caption,omitempty"`
-	Type    string      `json:"type,omitzero"`
-	File    NotionFile2 `json:"file"`
-	Name    string      `json:"name,omitzero"`
+	Caption RichTexts  `json:"caption,omitempty"`
+	Type    string     `json:"type,omitzero"`
+	File    NotionFile `json:"file"`
+	Name    string     `json:"name,omitzero"`
 }
 
 // FileWithCaption5 defines a model
 type FileWithCaption5 struct {
-	Caption  RichTexts2    `json:"caption,omitempty"`
-	Type     string        `json:"type,omitzero"`
-	External ExternalFile2 `json:"external"`
-	File     *NotionFile3  `json:"file,omitempty"`
+	Caption RichTexts2 `json:"caption,omitempty"`
+	Type    string     `json:"type,omitzero"`
+	// An external file is any URL that isn't hosted by Notion.
+	External ExternalFile `json:"external"`
+	File     *NotionFile  `json:"file,omitempty"`
 }
 
 // Heading1 defines a model
@@ -563,18 +559,6 @@ type LinkToPage struct {
 
 // NotionFile defines a model
 type NotionFile struct {
-	URL        url.URL   `json:"url,omitzero"`
-	ExpiryTime time.Time `json:"expiry_time,omitzero"`
-}
-
-// NotionFile2 defines a model
-type NotionFile2 struct {
-	URL        url.URL   `json:"url,omitzero"`
-	ExpiryTime time.Time `json:"expiry_time,omitzero"`
-}
-
-// NotionFile3 defines a model
-type NotionFile3 struct {
 	URL        url.URL   `json:"url,omitzero"`
 	ExpiryTime time.Time `json:"expiry_time,omitzero"`
 }
@@ -916,6 +900,31 @@ type RichText struct {
 	Href *url.URL `json:"href,omitempty"`
 }
 
+// RichText2 defines a model
+type RichText2 struct {
+	Type        string               `json:"type,omitzero"`
+	Text        RichText2Text        `json:"text"`
+	Annotations RichText2Annotations `json:"annotations"`
+	PlainText   string               `json:"plain_text,omitzero"`
+	Href        struct{}             `json:"href"`
+}
+
+// RichText2Annotations defines a model
+type RichText2Annotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// RichText2Text defines a model
+type RichText2Text struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
 // Type of this rich text object.
 type RichTextType string
 
@@ -929,32 +938,7 @@ const (
 type RichTexts []RichText
 
 // RichTexts2 defines a model
-type RichTexts2 []RichTexts2Items
-
-// RichTexts2Items defines a model
-type RichTexts2Items struct {
-	Type        string                     `json:"type,omitzero"`
-	Text        RichTexts2ItemsText        `json:"text"`
-	Annotations RichTexts2ItemsAnnotations `json:"annotations"`
-	PlainText   string                     `json:"plain_text,omitzero"`
-	Href        struct{}                   `json:"href"`
-}
-
-// RichTexts2ItemsAnnotations defines a model
-type RichTexts2ItemsAnnotations struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
-}
-
-// RichTexts2ItemsText defines a model
-type RichTexts2ItemsText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
-}
+type RichTexts2 []RichText2
 
 // SyncedBlock defines a model
 type SyncedBlock struct {

@@ -1916,22 +1916,6 @@
           "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
         }
       },
-      "ExternalFile2": {
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://bitcoin.org/bitcoin.pdf"
-          }
-        },
-        "required": [
-          "url"
-        ],
-        "example": {
-          "url": "https://bitcoin.org/bitcoin.pdf"
-        }
-      },
       "File": {
         "description": "File objects contain data about files uploaded to Notion as well as external files linked in Notion.",
         "type": "object",
@@ -2007,7 +1991,7 @@
             "example": "file"
           },
           "file": {
-            "$ref": "#/components/schemas/NotionFile2"
+            "$ref": "#/components/schemas/NotionFile"
           },
           "name": {
             "type": "string",
@@ -2041,10 +2025,10 @@
             "example": "external"
           },
           "external": {
-            "$ref": "#/components/schemas/ExternalFile2"
+            "$ref": "#/components/schemas/ExternalFile"
           },
           "file": {
-            "$ref": "#/components/schemas/NotionFile3"
+            "$ref": "#/components/schemas/NotionFile"
           }
         },
         "required": [
@@ -2883,52 +2867,6 @@
         "example": {
           "url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/1162837c-64dd-401a-aa1d-91f795079052/small.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XIAECK6E%2F20250131%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250131T112521Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQD4UujnejYRkyMDGRuKJbIgo5p1h2yzfv8bb%2BFetXwqqwIgXdwatek%2F8VGbJo48DI2wRajJa6VapXYOw1%2BAXGx%2Fq4gqiAQIvP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDOcsW2%2BPFn5bTbwpjyrcAxOkcesJhzQt06sOaWRNNrpwpNU5VK9v4YJF1P%2B1yQYTGw0L7WurWmW9Z76FTMmoAtrx4D7aMXBpwhTc%2BSw8iEetOwHs9NS%2F%2BPfnPay8JwYr%2F6Ck86H%2FWWVHEdHOqd0b%2Bi5%2FA8olnEDSgWKvM%2B9R618YTMT9UfSmfufVfN9DXXExMIwaI96W8tL2TFJEfbcXAkTlbPWoK4CFyC7fCi7wum7ixTdWKja%2BNpeuETsKXMMlzFgt0oHhDZpJG7Md869uQIZq%2Fv88G5VMqvlQJMZrFH9RMCqrspRRozS%2Fpd9EMa8JyhTaVV1f2viZ8o1v%2FICgPRbXW0L6B7Ty3BPcDq1Cx%2FrKltMy%2B4XDVrKum663pCaxcwhVE37QO6BFIoub4GuFStUQvATrzaNw0oMcFfVLw9JSpAS8h4B3NrwN%2BqPcUKrAKt8cb3TL8%2BHdSzhpyt3o4G2PXEvk%2FVzcVZTi4BzFnBlC%2BFRTEFnw4zT5N%2BrVmJj3s52bv%2FLFOvRnMyyIHDIqXMdWx9UuG6JNR22sYvN3FfvvLx4eIL33lf2eX1xlRi0ft9mjVMQqsNK%2BkkxiwmJKx04QtQRiC0HB%2F3M8kUrnY9ZpExf%2B9ke%2FFRio7xSwkwKCQI%2B4%2B0iAqMtfxIQiMNrW8rwGOqUBbMh4hPgk22nna%2Bi0YlyK54yZTYRc4k%2FLIAsRBXy%2F5PyOO8TzG3JOxFTsG11OjA6JLidms71TrIU22tv0GO5Qe38qP2DEPhZYUPJb7iwW4HMaOwwOxaeDmXgDoRfCskg93uQB52QNEWnweYkAIYXs5n97H5dM3p35Je3KBiv1PY6H6YjeY6Y%2FvPi%2Fsj6uB8lPCYnDIhptx7BVnxgyiAYknXNiSgUx&X-Amz-Signature=fedff21b145ef075388d4715f53fc703181c85c2328ed42ea712c3523d3f136a&X-Amz-SignedHeaders=host&x-id=GetObject",
           "expiry_time": "2025-01-31T12:25:21.209Z"
-        }
-      },
-      "NotionFile2": {
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/5960876f-0eff-473b-9e62-0714480008bd/hd-wallpaper-g6e0a7c1ce_1920.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XIAECK6E%2F20250131%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250131T112521Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQD4UujnejYRkyMDGRuKJbIgo5p1h2yzfv8bb%2BFetXwqqwIgXdwatek%2F8VGbJo48DI2wRajJa6VapXYOw1%2BAXGx%2Fq4gqiAQIvP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDOcsW2%2BPFn5bTbwpjyrcAxOkcesJhzQt06sOaWRNNrpwpNU5VK9v4YJF1P%2B1yQYTGw0L7WurWmW9Z76FTMmoAtrx4D7aMXBpwhTc%2BSw8iEetOwHs9NS%2F%2BPfnPay8JwYr%2F6Ck86H%2FWWVHEdHOqd0b%2Bi5%2FA8olnEDSgWKvM%2B9R618YTMT9UfSmfufVfN9DXXExMIwaI96W8tL2TFJEfbcXAkTlbPWoK4CFyC7fCi7wum7ixTdWKja%2BNpeuETsKXMMlzFgt0oHhDZpJG7Md869uQIZq%2Fv88G5VMqvlQJMZrFH9RMCqrspRRozS%2Fpd9EMa8JyhTaVV1f2viZ8o1v%2FICgPRbXW0L6B7Ty3BPcDq1Cx%2FrKltMy%2B4XDVrKum663pCaxcwhVE37QO6BFIoub4GuFStUQvATrzaNw0oMcFfVLw9JSpAS8h4B3NrwN%2BqPcUKrAKt8cb3TL8%2BHdSzhpyt3o4G2PXEvk%2FVzcVZTi4BzFnBlC%2BFRTEFnw4zT5N%2BrVmJj3s52bv%2FLFOvRnMyyIHDIqXMdWx9UuG6JNR22sYvN3FfvvLx4eIL33lf2eX1xlRi0ft9mjVMQqsNK%2BkkxiwmJKx04QtQRiC0HB%2F3M8kUrnY9ZpExf%2B9ke%2FFRio7xSwkwKCQI%2B4%2B0iAqMtfxIQiMNrW8rwGOqUBbMh4hPgk22nna%2Bi0YlyK54yZTYRc4k%2FLIAsRBXy%2F5PyOO8TzG3JOxFTsG11OjA6JLidms71TrIU22tv0GO5Qe38qP2DEPhZYUPJb7iwW4HMaOwwOxaeDmXgDoRfCskg93uQB52QNEWnweYkAIYXs5n97H5dM3p35Je3KBiv1PY6H6YjeY6Y%2FvPi%2Fsj6uB8lPCYnDIhptx7BVnxgyiAYknXNiSgUx&X-Amz-Signature=1d2436a210ef0bea467a9da7f7f3e8194697e3258860fab17334fdd849152520&X-Amz-SignedHeaders=host&x-id=GetObject"
-          },
-          "expiry_time": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2025-01-31T12:25:21.226Z"
-          }
-        },
-        "required": [
-          "url",
-          "expiry_time"
-        ],
-        "example": {
-          "url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/5960876f-0eff-473b-9e62-0714480008bd/hd-wallpaper-g6e0a7c1ce_1920.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XIAECK6E%2F20250131%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250131T112521Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQD4UujnejYRkyMDGRuKJbIgo5p1h2yzfv8bb%2BFetXwqqwIgXdwatek%2F8VGbJo48DI2wRajJa6VapXYOw1%2BAXGx%2Fq4gqiAQIvP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDOcsW2%2BPFn5bTbwpjyrcAxOkcesJhzQt06sOaWRNNrpwpNU5VK9v4YJF1P%2B1yQYTGw0L7WurWmW9Z76FTMmoAtrx4D7aMXBpwhTc%2BSw8iEetOwHs9NS%2F%2BPfnPay8JwYr%2F6Ck86H%2FWWVHEdHOqd0b%2Bi5%2FA8olnEDSgWKvM%2B9R618YTMT9UfSmfufVfN9DXXExMIwaI96W8tL2TFJEfbcXAkTlbPWoK4CFyC7fCi7wum7ixTdWKja%2BNpeuETsKXMMlzFgt0oHhDZpJG7Md869uQIZq%2Fv88G5VMqvlQJMZrFH9RMCqrspRRozS%2Fpd9EMa8JyhTaVV1f2viZ8o1v%2FICgPRbXW0L6B7Ty3BPcDq1Cx%2FrKltMy%2B4XDVrKum663pCaxcwhVE37QO6BFIoub4GuFStUQvATrzaNw0oMcFfVLw9JSpAS8h4B3NrwN%2BqPcUKrAKt8cb3TL8%2BHdSzhpyt3o4G2PXEvk%2FVzcVZTi4BzFnBlC%2BFRTEFnw4zT5N%2BrVmJj3s52bv%2FLFOvRnMyyIHDIqXMdWx9UuG6JNR22sYvN3FfvvLx4eIL33lf2eX1xlRi0ft9mjVMQqsNK%2BkkxiwmJKx04QtQRiC0HB%2F3M8kUrnY9ZpExf%2B9ke%2FFRio7xSwkwKCQI%2B4%2B0iAqMtfxIQiMNrW8rwGOqUBbMh4hPgk22nna%2Bi0YlyK54yZTYRc4k%2FLIAsRBXy%2F5PyOO8TzG3JOxFTsG11OjA6JLidms71TrIU22tv0GO5Qe38qP2DEPhZYUPJb7iwW4HMaOwwOxaeDmXgDoRfCskg93uQB52QNEWnweYkAIYXs5n97H5dM3p35Je3KBiv1PY6H6YjeY6Y%2FvPi%2Fsj6uB8lPCYnDIhptx7BVnxgyiAYknXNiSgUx&X-Amz-Signature=1d2436a210ef0bea467a9da7f7f3e8194697e3258860fab17334fdd849152520&X-Amz-SignedHeaders=host&x-id=GetObject",
-          "expiry_time": "2025-01-31T12:25:21.226Z"
-        }
-      },
-      "NotionFile3": {
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/69893027-1bf7-4177-a7b8-06a53dc4d1a6/bitcoin.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XIAECK6E%2F20250131%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250131T112521Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQD4UujnejYRkyMDGRuKJbIgo5p1h2yzfv8bb%2BFetXwqqwIgXdwatek%2F8VGbJo48DI2wRajJa6VapXYOw1%2BAXGx%2Fq4gqiAQIvP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDOcsW2%2BPFn5bTbwpjyrcAxOkcesJhzQt06sOaWRNNrpwpNU5VK9v4YJF1P%2B1yQYTGw0L7WurWmW9Z76FTMmoAtrx4D7aMXBpwhTc%2BSw8iEetOwHs9NS%2F%2BPfnPay8JwYr%2F6Ck86H%2FWWVHEdHOqd0b%2Bi5%2FA8olnEDSgWKvM%2B9R618YTMT9UfSmfufVfN9DXXExMIwaI96W8tL2TFJEfbcXAkTlbPWoK4CFyC7fCi7wum7ixTdWKja%2BNpeuETsKXMMlzFgt0oHhDZpJG7Md869uQIZq%2Fv88G5VMqvlQJMZrFH9RMCqrspRRozS%2Fpd9EMa8JyhTaVV1f2viZ8o1v%2FICgPRbXW0L6B7Ty3BPcDq1Cx%2FrKltMy%2B4XDVrKum663pCaxcwhVE37QO6BFIoub4GuFStUQvATrzaNw0oMcFfVLw9JSpAS8h4B3NrwN%2BqPcUKrAKt8cb3TL8%2BHdSzhpyt3o4G2PXEvk%2FVzcVZTi4BzFnBlC%2BFRTEFnw4zT5N%2BrVmJj3s52bv%2FLFOvRnMyyIHDIqXMdWx9UuG6JNR22sYvN3FfvvLx4eIL33lf2eX1xlRi0ft9mjVMQqsNK%2BkkxiwmJKx04QtQRiC0HB%2F3M8kUrnY9ZpExf%2B9ke%2FFRio7xSwkwKCQI%2B4%2B0iAqMtfxIQiMNrW8rwGOqUBbMh4hPgk22nna%2Bi0YlyK54yZTYRc4k%2FLIAsRBXy%2F5PyOO8TzG3JOxFTsG11OjA6JLidms71TrIU22tv0GO5Qe38qP2DEPhZYUPJb7iwW4HMaOwwOxaeDmXgDoRfCskg93uQB52QNEWnweYkAIYXs5n97H5dM3p35Je3KBiv1PY6H6YjeY6Y%2FvPi%2Fsj6uB8lPCYnDIhptx7BVnxgyiAYknXNiSgUx&X-Amz-Signature=5afedf0cffcd6f4a6e827b84330d8bc0cd4b98bd2befa4917197ca2943cbc57d&X-Amz-SignedHeaders=host&x-id=GetObject"
-          },
-          "expiry_time": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2025-01-31T12:25:21.208Z"
-          }
-        },
-        "required": [
-          "url",
-          "expiry_time"
-        ],
-        "example": {
-          "url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/69893027-1bf7-4177-a7b8-06a53dc4d1a6/bitcoin.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XIAECK6E%2F20250131%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250131T112521Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQD4UujnejYRkyMDGRuKJbIgo5p1h2yzfv8bb%2BFetXwqqwIgXdwatek%2F8VGbJo48DI2wRajJa6VapXYOw1%2BAXGx%2Fq4gqiAQIvP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDOcsW2%2BPFn5bTbwpjyrcAxOkcesJhzQt06sOaWRNNrpwpNU5VK9v4YJF1P%2B1yQYTGw0L7WurWmW9Z76FTMmoAtrx4D7aMXBpwhTc%2BSw8iEetOwHs9NS%2F%2BPfnPay8JwYr%2F6Ck86H%2FWWVHEdHOqd0b%2Bi5%2FA8olnEDSgWKvM%2B9R618YTMT9UfSmfufVfN9DXXExMIwaI96W8tL2TFJEfbcXAkTlbPWoK4CFyC7fCi7wum7ixTdWKja%2BNpeuETsKXMMlzFgt0oHhDZpJG7Md869uQIZq%2Fv88G5VMqvlQJMZrFH9RMCqrspRRozS%2Fpd9EMa8JyhTaVV1f2viZ8o1v%2FICgPRbXW0L6B7Ty3BPcDq1Cx%2FrKltMy%2B4XDVrKum663pCaxcwhVE37QO6BFIoub4GuFStUQvATrzaNw0oMcFfVLw9JSpAS8h4B3NrwN%2BqPcUKrAKt8cb3TL8%2BHdSzhpyt3o4G2PXEvk%2FVzcVZTi4BzFnBlC%2BFRTEFnw4zT5N%2BrVmJj3s52bv%2FLFOvRnMyyIHDIqXMdWx9UuG6JNR22sYvN3FfvvLx4eIL33lf2eX1xlRi0ft9mjVMQqsNK%2BkkxiwmJKx04QtQRiC0HB%2F3M8kUrnY9ZpExf%2B9ke%2FFRio7xSwkwKCQI%2B4%2B0iAqMtfxIQiMNrW8rwGOqUBbMh4hPgk22nna%2Bi0YlyK54yZTYRc4k%2FLIAsRBXy%2F5PyOO8TzG3JOxFTsG11OjA6JLidms71TrIU22tv0GO5Qe38qP2DEPhZYUPJb7iwW4HMaOwwOxaeDmXgDoRfCskg93uQB52QNEWnweYkAIYXs5n97H5dM3p35Je3KBiv1PY6H6YjeY6Y%2FvPi%2Fsj6uB8lPCYnDIhptx7BVnxgyiAYknXNiSgUx&X-Amz-Signature=5afedf0cffcd6f4a6e827b84330d8bc0cd4b98bd2befa4917197ca2943cbc57d&X-Amz-SignedHeaders=host&x-id=GetObject",
-          "expiry_time": "2025-01-31T12:25:21.208Z"
         }
       },
       "Page": {
@@ -4374,6 +4312,117 @@
           "href": null
         }
       },
+      "RichText2": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/RichText2Text"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/RichText2Annotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": "This is the whitepaper introducing "
+          },
+          "href": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "type",
+          "text",
+          "annotations",
+          "plain_text",
+          "href"
+        ],
+        "example": {
+          "type": "text",
+          "text": {
+            "content": "This is the whitepaper introducing ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "This is the whitepaper introducing ",
+          "href": null
+        }
+      },
+      "RichText2Annotations": {
+        "type": "object",
+        "properties": {
+          "bold": {
+            "type": "boolean",
+            "example": false
+          },
+          "italic": {
+            "type": "boolean",
+            "example": false
+          },
+          "strikethrough": {
+            "type": "boolean",
+            "example": false
+          },
+          "underline": {
+            "type": "boolean",
+            "example": false
+          },
+          "code": {
+            "type": "boolean",
+            "example": false
+          },
+          "color": {
+            "type": "string",
+            "example": "default"
+          }
+        },
+        "required": [
+          "bold",
+          "italic",
+          "strikethrough",
+          "underline",
+          "code",
+          "color"
+        ],
+        "example": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        }
+      },
+      "RichText2Text": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "example": "This is the whitepaper introducing "
+          },
+          "link": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "content",
+          "link"
+        ],
+        "example": {
+          "content": "This is the whitepaper introducing ",
+          "link": null
+        }
+      },
       "RichTextType": {
         "description": "Type of this rich text object.",
         "type": "string",
@@ -4412,7 +4461,7 @@
       "RichTexts2": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/RichTexts2Items"
+          "$ref": "#/components/schemas/RichText2"
         },
         "example": [
           {
@@ -4467,117 +4516,6 @@
             "href": null
           }
         ]
-      },
-      "RichTexts2Items": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/RichTexts2ItemsText"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/RichTexts2ItemsAnnotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "This is the whitepaper introducing "
-          },
-          "href": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "This is the whitepaper introducing ",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "This is the whitepaper introducing ",
-          "href": null
-        }
-      },
-      "RichTexts2ItemsAnnotations": {
-        "type": "object",
-        "properties": {
-          "bold": {
-            "type": "boolean",
-            "example": false
-          },
-          "italic": {
-            "type": "boolean",
-            "example": false
-          },
-          "strikethrough": {
-            "type": "boolean",
-            "example": false
-          },
-          "underline": {
-            "type": "boolean",
-            "example": false
-          },
-          "code": {
-            "type": "boolean",
-            "example": false
-          },
-          "color": {
-            "type": "string",
-            "example": "default"
-          }
-        },
-        "required": [
-          "bold",
-          "italic",
-          "strikethrough",
-          "underline",
-          "code",
-          "color"
-        ],
-        "example": {
-          "bold": false,
-          "italic": false,
-          "strikethrough": false,
-          "underline": false,
-          "code": false,
-          "color": "default"
-        }
-      },
-      "RichTexts2ItemsText": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "string",
-            "example": "This is the whitepaper introducing "
-          },
-          "link": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "content",
-          "link"
-        ],
-        "example": {
-          "content": "This is the whitepaper introducing ",
-          "link": null
-        }
       },
       "SyncedBlock": {
         "type": "object",
