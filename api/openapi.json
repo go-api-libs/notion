@@ -14,7 +14,7 @@
     "/pages/{id}": {
       "parameters": [
         {
-          "$ref": "#/components/parameters/NotionVersion"
+          "$ref": "#/components/parameters/Notion-Version"
         },
         {
           "$ref": "#/components/parameters/id"
@@ -37,13 +37,13 @@
     "/blocks/{id}/children": {
       "parameters": [
         {
-          "$ref": "#/components/parameters/NotionVersion"
+          "$ref": "#/components/parameters/Notion-Version"
         },
         {
           "$ref": "#/components/parameters/id"
         },
         {
-          "$ref": "#/components/parameters/page_size2"
+          "$ref": "#/components/parameters/page_size"
         }
       ],
       "get": {
@@ -17831,7 +17831,7 @@
       }
     },
     "parameters": {
-      "NotionVersion": {
+      "Notion-Version": {
         "name": "Notion-Version",
         "in": "header",
         "required": true,
@@ -17853,15 +17853,6 @@
         "example": "96245c8f-1784-44a4-82ad-1941127c3ec3"
       },
       "page_size": {
-        "name": "page_size",
-        "in": "query",
-        "schema": {
-          "type": "integer",
-          "example": 100
-        },
-        "example": 100
-      },
-      "page_size2": {
         "name": "page_size",
         "in": "query",
         "schema": {
