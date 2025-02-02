@@ -66,7 +66,7 @@ type Block struct {
 	ChildPage        *Child            `json:"child_page,omitempty"`
 	ChildDatabase    *Child            `json:"child_database,omitempty"`
 	Embed            *Embed            `json:"embed,omitempty"`
-	Video            *FileWithCaption2 `json:"video,omitempty"`
+	Video            *FileWithCaption  `json:"video,omitempty"`
 	Audio            *FileWithCaption3 `json:"audio,omitempty"`
 	File             *FileWithCaption4 `json:"file,omitempty"`
 	PDF              *FileWithCaption5 `json:"pdf,omitempty"`
@@ -391,23 +391,12 @@ const (
 	FileTypeExternal FileType = "external"
 )
 
-// FileWithCaption2 defines a model
-type FileWithCaption2 struct {
-	Caption  []struct{}                `json:"caption,omitempty"`
-	Type     string                    `json:"type,omitzero"`
-	File     FileWithCaption2File      `json:"file"`
-	External *FileWithCaption2External `json:"external,omitempty"`
-}
-
-// FileWithCaption2External defines a model
-type FileWithCaption2External struct {
-	URL url.URL `json:"url,omitzero"`
-}
-
-// FileWithCaption2File defines a model
-type FileWithCaption2File struct {
-	URL        url.URL   `json:"url,omitzero"`
-	ExpiryTime time.Time `json:"expiry_time,omitzero"`
+// FileWithCaption defines a model
+type FileWithCaption struct {
+	Caption  []struct{}               `json:"caption,omitempty"`
+	Type     string                   `json:"type,omitzero"`
+	File     FileWithCaptionFile      `json:"file"`
+	External *FileWithCaptionExternal `json:"external,omitempty"`
 }
 
 // FileWithCaption3 defines a model
@@ -486,6 +475,17 @@ type FileWithCaption5External struct {
 
 // FileWithCaption5File defines a model
 type FileWithCaption5File struct {
+	URL        url.URL   `json:"url,omitzero"`
+	ExpiryTime time.Time `json:"expiry_time,omitzero"`
+}
+
+// FileWithCaptionExternal defines a model
+type FileWithCaptionExternal struct {
+	URL url.URL `json:"url,omitzero"`
+}
+
+// FileWithCaptionFile defines a model
+type FileWithCaptionFile struct {
 	URL        url.URL   `json:"url,omitzero"`
 	ExpiryTime time.Time `json:"expiry_time,omitzero"`
 }
