@@ -3952,6 +3952,221 @@
           "href": null
         }
       },
+      "RichText2": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/RichText2Text"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/RichText2Annotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": "A "
+          },
+          "href": {
+            "type": "object"
+          }
+        },
+        "example": {
+          "type": "text",
+          "text": {
+            "content": "A ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "A ",
+          "href": null
+        }
+      },
+      "RichText2Annotations": {
+        "type": "object",
+        "properties": {
+          "bold": {
+            "type": "boolean",
+            "example": false
+          },
+          "italic": {
+            "type": "boolean",
+            "example": false
+          },
+          "strikethrough": {
+            "type": "boolean",
+            "example": false
+          },
+          "underline": {
+            "type": "boolean",
+            "example": false
+          },
+          "code": {
+            "type": "boolean",
+            "example": false
+          },
+          "color": {
+            "type": "string",
+            "example": "default"
+          }
+        },
+        "required": [
+          "bold",
+          "italic",
+          "strikethrough",
+          "underline",
+          "code",
+          "color"
+        ],
+        "example": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        }
+      },
+      "RichText2Text": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "example": "A "
+          },
+          "link": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "content",
+          "link"
+        ],
+        "example": {
+          "content": "A ",
+          "link": null
+        }
+      },
+      "RichText3": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/RichText3Text"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/RichText3Annotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": "A bookmark object."
+          },
+          "href": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "type",
+          "text",
+          "annotations",
+          "plain_text",
+          "href"
+        ],
+        "example": {
+          "type": "text",
+          "text": {
+            "content": "A bookmark object.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "A bookmark object.",
+          "href": null
+        }
+      },
+      "RichText3Annotations": {
+        "type": "object",
+        "properties": {
+          "bold": {
+            "type": "boolean",
+            "example": false
+          },
+          "italic": {
+            "type": "boolean",
+            "example": false
+          },
+          "strikethrough": {
+            "type": "boolean",
+            "example": false
+          },
+          "underline": {
+            "type": "boolean",
+            "example": false
+          },
+          "code": {
+            "type": "boolean",
+            "example": false
+          },
+          "color": {
+            "type": "string",
+            "example": "default"
+          }
+        },
+        "required": [
+          "bold",
+          "italic",
+          "strikethrough",
+          "underline",
+          "code",
+          "color"
+        ],
+        "example": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        }
+      },
+      "RichText3Text": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "example": "A bookmark object."
+          },
+          "link": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "content",
+          "link"
+        ],
+        "example": {
+          "content": "A bookmark object.",
+          "link": null
+        }
+      },
       "RichTextType": {
         "description": "Type of this rich text object.",
         "type": "string",
@@ -3990,13 +4205,13 @@
       "RichTexts2": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/RichTexts2Items"
+          "$ref": "#/components/schemas/RichText2"
         }
       },
       "RichTexts22": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/RichTexts22Items"
+          "$ref": "#/components/schemas/RichText3"
         },
         "example": [
           {
@@ -4017,221 +4232,6 @@
             "href": null
           }
         ]
-      },
-      "RichTexts22Items": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/RichTexts22ItemsText"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/RichTexts22ItemsAnnotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "A bookmark object."
-          },
-          "href": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "A bookmark object.",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "A bookmark object.",
-          "href": null
-        }
-      },
-      "RichTexts22ItemsAnnotations": {
-        "type": "object",
-        "properties": {
-          "bold": {
-            "type": "boolean",
-            "example": false
-          },
-          "italic": {
-            "type": "boolean",
-            "example": false
-          },
-          "strikethrough": {
-            "type": "boolean",
-            "example": false
-          },
-          "underline": {
-            "type": "boolean",
-            "example": false
-          },
-          "code": {
-            "type": "boolean",
-            "example": false
-          },
-          "color": {
-            "type": "string",
-            "example": "default"
-          }
-        },
-        "required": [
-          "bold",
-          "italic",
-          "strikethrough",
-          "underline",
-          "code",
-          "color"
-        ],
-        "example": {
-          "bold": false,
-          "italic": false,
-          "strikethrough": false,
-          "underline": false,
-          "code": false,
-          "color": "default"
-        }
-      },
-      "RichTexts22ItemsText": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "string",
-            "example": "A bookmark object."
-          },
-          "link": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "content",
-          "link"
-        ],
-        "example": {
-          "content": "A bookmark object.",
-          "link": null
-        }
-      },
-      "RichTexts2Items": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/RichTexts2ItemsText"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/RichTexts2ItemsAnnotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "A "
-          },
-          "href": {
-            "type": "object"
-          }
-        },
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "A ",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "A ",
-          "href": null
-        }
-      },
-      "RichTexts2ItemsAnnotations": {
-        "type": "object",
-        "properties": {
-          "bold": {
-            "type": "boolean",
-            "example": false
-          },
-          "italic": {
-            "type": "boolean",
-            "example": false
-          },
-          "strikethrough": {
-            "type": "boolean",
-            "example": false
-          },
-          "underline": {
-            "type": "boolean",
-            "example": false
-          },
-          "code": {
-            "type": "boolean",
-            "example": false
-          },
-          "color": {
-            "type": "string",
-            "example": "default"
-          }
-        },
-        "required": [
-          "bold",
-          "italic",
-          "strikethrough",
-          "underline",
-          "code",
-          "color"
-        ],
-        "example": {
-          "bold": false,
-          "italic": false,
-          "strikethrough": false,
-          "underline": false,
-          "code": false,
-          "color": "default"
-        }
-      },
-      "RichTexts2ItemsText": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "string",
-            "example": "A "
-          },
-          "link": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "content",
-          "link"
-        ],
-        "example": {
-          "content": "A ",
-          "link": null
-        }
       },
       "SyncedBlock": {
         "type": "object",

@@ -831,6 +831,56 @@ type RichText struct {
 	Href *url.URL `json:"href,omitempty"`
 }
 
+// RichText2 defines a model
+type RichText2 struct {
+	Type        string                `json:"type,omitzero"`
+	Text        *RichText2Text        `json:"text,omitempty"`
+	Annotations *RichText2Annotations `json:"annotations,omitempty"`
+	PlainText   string                `json:"plain_text,omitzero"`
+	Href        *struct{}             `json:"href,omitempty"`
+}
+
+// RichText2Annotations defines a model
+type RichText2Annotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// RichText2Text defines a model
+type RichText2Text struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
+// RichText3 defines a model
+type RichText3 struct {
+	Type        string               `json:"type,omitzero"`
+	Text        RichText3Text        `json:"text"`
+	Annotations RichText3Annotations `json:"annotations"`
+	PlainText   string               `json:"plain_text,omitzero"`
+	Href        struct{}             `json:"href"`
+}
+
+// RichText3Annotations defines a model
+type RichText3Annotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// RichText3Text defines a model
+type RichText3Text struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
 // Type of this rich text object.
 type RichTextType string
 
@@ -844,60 +894,10 @@ const (
 type RichTexts []RichText
 
 // RichTexts2 defines a model
-type RichTexts2 []RichTexts2Items
+type RichTexts2 []RichText2
 
 // RichTexts22 defines a model
-type RichTexts22 []RichTexts22Items
-
-// RichTexts22Items defines a model
-type RichTexts22Items struct {
-	Type        string                      `json:"type,omitzero"`
-	Text        RichTexts22ItemsText        `json:"text"`
-	Annotations RichTexts22ItemsAnnotations `json:"annotations"`
-	PlainText   string                      `json:"plain_text,omitzero"`
-	Href        struct{}                    `json:"href"`
-}
-
-// RichTexts22ItemsAnnotations defines a model
-type RichTexts22ItemsAnnotations struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
-}
-
-// RichTexts22ItemsText defines a model
-type RichTexts22ItemsText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
-}
-
-// RichTexts2Items defines a model
-type RichTexts2Items struct {
-	Type        string                      `json:"type,omitzero"`
-	Text        *RichTexts2ItemsText        `json:"text,omitempty"`
-	Annotations *RichTexts2ItemsAnnotations `json:"annotations,omitempty"`
-	PlainText   string                      `json:"plain_text,omitzero"`
-	Href        *struct{}                   `json:"href,omitempty"`
-}
-
-// RichTexts2ItemsAnnotations defines a model
-type RichTexts2ItemsAnnotations struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
-}
-
-// RichTexts2ItemsText defines a model
-type RichTexts2ItemsText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
-}
+type RichTexts22 []RichText3
 
 // SyncedBlock defines a model
 type SyncedBlock struct {
