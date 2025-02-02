@@ -180,18 +180,13 @@ type CalloutRichText []CalloutRichTextItems
 
 // CalloutRichTextItems defines a model
 type CalloutRichTextItems struct {
-	Type string                   `json:"type,omitzero"`
-	Text CalloutRichTextItemsText `json:"text"`
+	Type string `json:"type,omitzero"`
+	// Text objects contain this information within the `text` property of a RichText object.
+	Text Text `json:"text"`
 	// Style information which applies to the whole rich text object.
 	Annotations Annotations `json:"annotations"`
 	PlainText   string      `json:"plain_text,omitzero"`
 	Href        struct{}    `json:"href"`
-}
-
-// CalloutRichTextItemsText defines a model
-type CalloutRichTextItemsText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
 }
 
 // Child defines a model
@@ -230,23 +225,13 @@ type CodeRichText []CodeRichTextItems
 
 // CodeRichTextItems defines a model
 type CodeRichTextItems struct {
-	Type string                `json:"type,omitzero"`
-	Text CodeRichTextItemsText `json:"text"`
+	Type string `json:"type,omitzero"`
+	// Text objects contain this information within the `text` property of a RichText object.
+	Text Text `json:"text"`
 	// Style information which applies to the whole rich text object.
 	Annotations Annotations `json:"annotations"`
 	PlainText   string      `json:"plain_text,omitzero"`
 	Href        url.URL     `json:"href,omitzero"`
-}
-
-// CodeRichTextItemsText defines a model
-type CodeRichTextItemsText struct {
-	Content string                    `json:"content,omitzero"`
-	Link    CodeRichTextItemsTextLink `json:"link"`
-}
-
-// CodeRichTextItemsTextLink defines a model
-type CodeRichTextItemsTextLink struct {
-	URL *url.URL `json:"url,omitempty"`
 }
 
 // The color of the block.
@@ -337,18 +322,13 @@ type Heading1RichText []Heading1RichTextItems
 
 // Heading1RichTextItems defines a model
 type Heading1RichTextItems struct {
-	Type string                    `json:"type,omitzero"`
-	Text Heading1RichTextItemsText `json:"text"`
+	Type string `json:"type,omitzero"`
+	// Text objects contain this information within the `text` property of a RichText object.
+	Text Text `json:"text"`
 	// Style information which applies to the whole rich text object.
 	Annotations Annotations `json:"annotations"`
 	PlainText   string      `json:"plain_text,omitzero"`
 	Href        struct{}    `json:"href"`
-}
-
-// Heading1RichTextItemsText defines a model
-type Heading1RichTextItemsText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
 }
 
 // Heading2 defines a model
@@ -363,18 +343,13 @@ type Heading2RichText []Heading2RichTextItems
 
 // Heading2RichTextItems defines a model
 type Heading2RichTextItems struct {
-	Type string                    `json:"type,omitzero"`
-	Text Heading2RichTextItemsText `json:"text"`
+	Type string `json:"type,omitzero"`
+	// Text objects contain this information within the `text` property of a RichText object.
+	Text Text `json:"text"`
 	// Style information which applies to the whole rich text object.
 	Annotations Annotations `json:"annotations"`
 	PlainText   string      `json:"plain_text,omitzero"`
 	Href        struct{}    `json:"href"`
-}
-
-// Heading2RichTextItemsText defines a model
-type Heading2RichTextItemsText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
 }
 
 // Heading3 defines a model
@@ -389,18 +364,13 @@ type Heading3RichText []Heading3RichTextItems
 
 // Heading3RichTextItems defines a model
 type Heading3RichTextItems struct {
-	Type string                    `json:"type,omitzero"`
-	Text Heading3RichTextItemsText `json:"text"`
+	Type string `json:"type,omitzero"`
+	// Text objects contain this information within the `text` property of a RichText object.
+	Text Text `json:"text"`
 	// Style information which applies to the whole rich text object.
 	Annotations Annotations `json:"annotations"`
 	PlainText   string      `json:"plain_text,omitzero"`
 	Href        struct{}    `json:"href"`
-}
-
-// Heading3RichTextItemsText defines a model
-type Heading3RichTextItemsText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
 }
 
 // Page or database icon. It is either an emoji or a file.
@@ -421,7 +391,9 @@ const (
 )
 
 // An inline link in a text.
-type Link struct{}
+type Link struct {
+	URL *url.URL `json:"url,omitempty"`
+}
 
 // LinkPreview defines a model
 type LinkPreview struct {
@@ -489,18 +461,13 @@ type Paragraph2RichText []Paragraph2RichTextItems
 
 // Paragraph2RichTextItems defines a model
 type Paragraph2RichTextItems struct {
-	Type string                      `json:"type,omitzero"`
-	Text Paragraph2RichTextItemsText `json:"text"`
+	Type string `json:"type,omitzero"`
+	// Text objects contain this information within the `text` property of a RichText object.
+	Text Text `json:"text"`
 	// Style information which applies to the whole rich text object.
 	Annotations Annotations `json:"annotations"`
 	PlainText   string      `json:"plain_text,omitzero"`
 	Href        struct{}    `json:"href"`
-}
-
-// Paragraph2RichTextItemsText defines a model
-type Paragraph2RichTextItemsText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
 }
 
 // Paragraph3 defines a model
@@ -514,18 +481,13 @@ type Paragraph3RichText []Paragraph3RichTextItems
 
 // Paragraph3RichTextItems defines a model
 type Paragraph3RichTextItems struct {
-	Type string                      `json:"type,omitzero"`
-	Text Paragraph3RichTextItemsText `json:"text"`
+	Type string `json:"type,omitzero"`
+	// Text objects contain this information within the `text` property of a RichText object.
+	Text Text `json:"text"`
 	// Style information which applies to the whole rich text object.
 	Annotations Annotations `json:"annotations"`
 	PlainText   string      `json:"plain_text,omitzero"`
 	Href        struct{}    `json:"href"`
-}
-
-// Paragraph3RichTextItemsText defines a model
-type Paragraph3RichTextItemsText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
 }
 
 // Paragraph4 defines a model
@@ -539,18 +501,13 @@ type Paragraph4RichText []Paragraph4RichTextItems
 
 // Paragraph4RichTextItems defines a model
 type Paragraph4RichTextItems struct {
-	Type string                      `json:"type,omitzero"`
-	Text Paragraph4RichTextItemsText `json:"text"`
+	Type string `json:"type,omitzero"`
+	// Text objects contain this information within the `text` property of a RichText object.
+	Text Text `json:"text"`
 	// Style information which applies to the whole rich text object.
 	Annotations Annotations `json:"annotations"`
 	PlainText   string      `json:"plain_text,omitzero"`
 	Href        struct{}    `json:"href"`
-}
-
-// Paragraph4RichTextItemsText defines a model
-type Paragraph4RichTextItemsText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
 }
 
 // Paragraph8 defines a model
@@ -564,18 +521,13 @@ type Paragraph8RichText []Paragraph8RichTextItems
 
 // Paragraph8RichTextItems defines a model
 type Paragraph8RichTextItems struct {
-	Type string                      `json:"type,omitzero"`
-	Text Paragraph8RichTextItemsText `json:"text"`
+	Type string `json:"type,omitzero"`
+	// Text objects contain this information within the `text` property of a RichText object.
+	Text Text `json:"text"`
 	// Style information which applies to the whole rich text object.
 	Annotations Annotations `json:"annotations"`
 	PlainText   string      `json:"plain_text,omitzero"`
 	Href        struct{}    `json:"href"`
-}
-
-// Paragraph8RichTextItemsText defines a model
-type Paragraph8RichTextItemsText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
 }
 
 // ParagraphRichText defines a model
@@ -583,8 +535,9 @@ type ParagraphRichText []ParagraphRichTextItems
 
 // ParagraphRichTextItems defines a model
 type ParagraphRichTextItems struct {
-	Type string                      `json:"type,omitzero"`
-	Text *ParagraphRichTextItemsText `json:"text,omitempty"`
+	Type string `json:"type,omitzero"`
+	// Text objects contain this information within the `text` property of a RichText object.
+	Text *Text `json:"text,omitempty"`
 	// Style information which applies to the whole rich text object.
 	Annotations *Annotations                    `json:"annotations,omitempty"`
 	PlainText   string                          `json:"plain_text,omitzero"`
@@ -645,17 +598,6 @@ type ParagraphRichTextItemsMentionUser struct {
 // ParagraphRichTextItemsMentionUserPerson defines a model
 type ParagraphRichTextItemsMentionUserPerson struct {
 	Email types.Email `json:"email,omitzero"`
-}
-
-// ParagraphRichTextItemsText defines a model
-type ParagraphRichTextItemsText struct {
-	Content string                         `json:"content,omitzero"`
-	Link    ParagraphRichTextItemsTextLink `json:"link"`
-}
-
-// ParagraphRichTextItemsTextLink defines a model
-type ParagraphRichTextItemsTextLink struct {
-	URL *url.URL `json:"url,omitempty"`
 }
 
 // The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
@@ -825,18 +767,13 @@ type ToDoRichText []ToDoRichTextItems
 
 // ToDoRichTextItems defines a model
 type ToDoRichTextItems struct {
-	Type string                `json:"type,omitzero"`
-	Text ToDoRichTextItemsText `json:"text"`
+	Type string `json:"type,omitzero"`
+	// Text objects contain this information within the `text` property of a RichText object.
+	Text Text `json:"text"`
 	// Style information which applies to the whole rich text object.
 	Annotations Annotations `json:"annotations"`
 	PlainText   string      `json:"plain_text,omitzero"`
 	Href        struct{}    `json:"href"`
-}
-
-// ToDoRichTextItemsText defines a model
-type ToDoRichTextItemsText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
 }
 
 // UserReference defines a model
