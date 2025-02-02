@@ -151,7 +151,7 @@ func GetBlocks[R any](ctx context.Context, c *Client, id uuid.UUID, params *GetB
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
-		// TODO
+		// Returns a list of blocks for the specified page.
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
 			var out R

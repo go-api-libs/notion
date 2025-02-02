@@ -57,7 +57,7 @@
         ],
         "responses": {
           "200": {
-            "$ref": "#/components/responses/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkResponse"
+            "$ref": "#/components/responses/BlocksResponse"
           }
         }
       }
@@ -13341,8 +13341,8 @@
       }
     },
     "responses": {
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkResponse": {
-        "description": "TODO",
+      "BlocksResponse": {
+        "description": "Returns a list of blocks for the specified page.",
         "content": {
           "application/json": {
             "schema": {
