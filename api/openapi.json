@@ -40,10 +40,7 @@
           "$ref": "#/components/parameters/page_size2"
         },
         {
-          "$ref": "#/components/parameters/NotionVersion2"
-        },
-        {
-          "$ref": "#/components/parameters/Notion-Version"
+          "$ref": "#/components/parameters/NotionVersion"
         }
       ],
       "get": {
@@ -17826,28 +17823,8 @@
       }
     },
     "parameters": {
-      "Notion-Version": {
-        "name": "Notion-Version",
-        "in": "header",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "example": "2022-06-28"
-        },
-        "example": "2022-06-28"
-      },
       "NotionVersion": {
         "name": "Notion-Version",
-        "in": "header",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "example": "2022-06-28"
-        },
-        "example": "2022-06-28"
-      },
-      "NotionVersion2": {
-        "name": "NotionVersion",
         "in": "header",
         "required": true,
         "schema": {
