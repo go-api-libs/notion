@@ -377,6 +377,11 @@ type ExternalFile struct {
 	URL url.URL `json:"url,omitzero"`
 }
 
+// ExternalFile2 defines a model
+type ExternalFile2 struct {
+	URL url.URL `json:"url,omitzero"`
+}
+
 // File objects contain data about files uploaded to Notion as well as external files linked in Notion.
 type File struct {
 	// Type of this file object.
@@ -401,67 +406,23 @@ type FileWithCaption struct {
 	File *NotionFile `json:"file,omitempty"`
 	// An external file is any URL that isn't hosted by Notion.
 	External *ExternalFile `json:"external,omitempty"`
+	Name     string        `json:"name,omitzero"`
 }
 
 // FileWithCaption4 defines a model
 type FileWithCaption4 struct {
-	Caption RichTexts            `json:"caption,omitempty"`
-	Type    string               `json:"type,omitzero"`
-	File    FileWithCaption4File `json:"file"`
-	Name    string               `json:"name,omitzero"`
-}
-
-// FileWithCaption4File defines a model
-type FileWithCaption4File struct {
-	URL        url.URL   `json:"url,omitzero"`
-	ExpiryTime time.Time `json:"expiry_time,omitzero"`
+	Caption RichTexts   `json:"caption,omitempty"`
+	Type    string      `json:"type,omitzero"`
+	File    NotionFile2 `json:"file"`
+	Name    string      `json:"name,omitzero"`
 }
 
 // FileWithCaption5 defines a model
 type FileWithCaption5 struct {
-	Caption  FileWithCaption5Caption  `json:"caption,omitempty"`
-	Type     string                   `json:"type,omitzero"`
-	External FileWithCaption5External `json:"external"`
-	File     *FileWithCaption5File    `json:"file,omitempty"`
-}
-
-// FileWithCaption5Caption defines a model
-type FileWithCaption5Caption []FileWithCaption5CaptionItems
-
-// FileWithCaption5CaptionItems defines a model
-type FileWithCaption5CaptionItems struct {
-	Type        string                                  `json:"type,omitzero"`
-	Text        FileWithCaption5CaptionItemsText        `json:"text"`
-	Annotations FileWithCaption5CaptionItemsAnnotations `json:"annotations"`
-	PlainText   string                                  `json:"plain_text,omitzero"`
-	Href        struct{}                                `json:"href"`
-}
-
-// FileWithCaption5CaptionItemsAnnotations defines a model
-type FileWithCaption5CaptionItemsAnnotations struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
-}
-
-// FileWithCaption5CaptionItemsText defines a model
-type FileWithCaption5CaptionItemsText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
-}
-
-// FileWithCaption5External defines a model
-type FileWithCaption5External struct {
-	URL url.URL `json:"url,omitzero"`
-}
-
-// FileWithCaption5File defines a model
-type FileWithCaption5File struct {
-	URL        url.URL   `json:"url,omitzero"`
-	ExpiryTime time.Time `json:"expiry_time,omitzero"`
+	Caption  RichTexts2    `json:"caption,omitempty"`
+	Type     string        `json:"type,omitzero"`
+	External ExternalFile2 `json:"external"`
+	File     *NotionFile3  `json:"file,omitempty"`
 }
 
 // Heading1 defines a model
@@ -602,6 +563,18 @@ type LinkToPage struct {
 
 // NotionFile defines a model
 type NotionFile struct {
+	URL        url.URL   `json:"url,omitzero"`
+	ExpiryTime time.Time `json:"expiry_time,omitzero"`
+}
+
+// NotionFile2 defines a model
+type NotionFile2 struct {
+	URL        url.URL   `json:"url,omitzero"`
+	ExpiryTime time.Time `json:"expiry_time,omitzero"`
+}
+
+// NotionFile3 defines a model
+type NotionFile3 struct {
 	URL        url.URL   `json:"url,omitzero"`
 	ExpiryTime time.Time `json:"expiry_time,omitzero"`
 }
@@ -954,6 +927,34 @@ const (
 
 // RichTexts defines a model
 type RichTexts []RichText
+
+// RichTexts2 defines a model
+type RichTexts2 []RichTexts2Items
+
+// RichTexts2Items defines a model
+type RichTexts2Items struct {
+	Type        string                     `json:"type,omitzero"`
+	Text        RichTexts2ItemsText        `json:"text"`
+	Annotations RichTexts2ItemsAnnotations `json:"annotations"`
+	PlainText   string                     `json:"plain_text,omitzero"`
+	Href        struct{}                   `json:"href"`
+}
+
+// RichTexts2ItemsAnnotations defines a model
+type RichTexts2ItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// RichTexts2ItemsText defines a model
+type RichTexts2ItemsText struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
 
 // SyncedBlock defines a model
 type SyncedBlock struct {
