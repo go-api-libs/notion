@@ -32,16 +32,6 @@ type Annotations struct {
 	Color Color `json:"color,omitzero"`
 }
 
-// Annotations2 defines a model
-type Annotations2 struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
-}
-
 // A block object represents content within Notion. Blocks can be text, lists, media, and more. A page is a type of block, too!
 //
 // The optional fields are filled depending on the value of `type`.
@@ -913,11 +903,12 @@ type RichText struct {
 // RichText2 defines a model
 type RichText2 struct {
 	// Type of this rich text object.
-	Type        RichTextType `json:"type,omitzero"`
-	Text        Text2        `json:"text"`
-	Annotations Annotations2 `json:"annotations"`
-	PlainText   string       `json:"plain_text,omitzero"`
-	Href        struct{}     `json:"href"`
+	Type RichTextType `json:"type,omitzero"`
+	Text Text2        `json:"text"`
+	// Style information which applies to the whole rich text object.
+	Annotations Annotations `json:"annotations"`
+	PlainText   string      `json:"plain_text,omitzero"`
+	Href        struct{}    `json:"href"`
 }
 
 // Type of this rich text object.
