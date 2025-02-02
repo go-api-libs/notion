@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenParams struct {
+type GetBlocksParams struct {
 	PageSize int
 }
 

@@ -52,7 +52,7 @@ func TestClient_Error(t *testing.T) {
 			t.Fatalf("want: %v, got: %v", testErr, err)
 		}
 
-		if _, err := c.GetBlocks96245c8f178444a482ad1941127c3ec3Children(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenParams{PageSize: 100}); err == nil {
+		if _, err := c.GetBlocks(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocksParams{PageSize: 100}); err == nil {
 			t.Fatal("expected error")
 		} else if !errors.Is(err, testErr) {
 			t.Fatalf("want: %v, got: %v", testErr, err)
@@ -98,11 +98,11 @@ func TestClient_Error(t *testing.T) {
 			}
 		})
 
-		t.Run("GetBlocks96245c8f178444a482ad1941127c3ec3Children", func(t *testing.T) {
+		t.Run("GetBlocks", func(t *testing.T) {
 			// unknown status code
 			http.DefaultClient.Transport = &testRoundTripper{rsp: &http.Response{StatusCode: http.StatusTeapot}}
 
-			if _, err := c.GetBlocks96245c8f178444a482ad1941127c3ec3Children(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenParams{PageSize: 100}); err == nil {
+			if _, err := c.GetBlocks(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocksParams{PageSize: 100}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownStatusCode) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownStatusCode, err)
@@ -114,7 +114,7 @@ func TestClient_Error(t *testing.T) {
 				StatusCode: http.StatusOK,
 			}}
 
-			if _, err := c.GetBlocks96245c8f178444a482ad1941127c3ec3Children(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenParams{PageSize: 100}); err == nil {
+			if _, err := c.GetBlocks(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocksParams{PageSize: 100}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -127,7 +127,7 @@ func TestClient_Error(t *testing.T) {
 				StatusCode: http.StatusOK,
 			}}
 
-			if _, err := c.GetBlocks96245c8f178444a482ad1941127c3ec3Children(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenParams{PageSize: 100}); err == nil {
+			if _, err := c.GetBlocks(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocksParams{PageSize: 100}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.As(err, &errDecode) {
 				t.Fatalf("want: %v, got: %v", errDecode, err)
@@ -232,7 +232,7 @@ func TestClient_VCR(t *testing.T) {
 		}
 
 		{
-			res, err := c.GetBlocks96245c8f178444a482ad1941127c3ec3Children(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenParams{PageSize: 100})
+			res, err := c.GetBlocks(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocksParams{PageSize: 100})
 			if err != nil {
 				t.Fatal(err)
 			} else if res == nil {
@@ -254,7 +254,7 @@ func TestClient_VCR(t *testing.T) {
 		}
 
 		{
-			res, err := c.GetBlocks96245c8f178444a482ad1941127c3ec3Children(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenParams{PageSize: 100})
+			res, err := c.GetBlocks(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocksParams{PageSize: 100})
 			if err != nil {
 				t.Fatal(err)
 			} else if res == nil {

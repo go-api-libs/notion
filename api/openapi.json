@@ -47,7 +47,12 @@
         }
       ],
       "get": {
-        "operationId": "GetBlocks96245c8f178444a482ad1941127c3ec3Children",
+        "tags": [
+          "Blocks"
+        ],
+        "summary": "Retrieve block children",
+        "description": "Returns a paginated array of child [block objects](https://developers.notion.com/reference/block) contained in the block using the ID specified. In order to receive a complete representation of a block, you may need to recursively retrieve the block children of child blocks.",
+        "operationId": "GetBlocks",
         "responses": {
           "200": {
             "$ref": "#/components/responses/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkResponse"

@@ -50,7 +50,7 @@ func main() {
 
 ```
 
-### Example 2: 
+### Example 2: Retrieve block children
 
 ```go
 package main
@@ -69,7 +69,7 @@ func main() {
 	}
 
 	ctx := context.Background()
-	getBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse, err := c.GetBlocks96245c8f178444a482ad1941127c3ec3Children(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenParams{PageSize: 100})
+	getBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse, err := c.GetBlocks(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocksParams{PageSize: 100})
 	if err != nil {
 		panic(err)
 	}
