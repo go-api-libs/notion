@@ -67,8 +67,9 @@ type Block struct {
 	ChildDatabase    *Child      `json:"child_database,omitempty"`
 	Embed            *Embed      `json:"embed,omitempty"`
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
-	Video    *FileWithCaption  `json:"video,omitempty"`
-	Audio    *FileWithCaption3 `json:"audio,omitempty"`
+	Video *FileWithCaption `json:"video,omitempty"`
+	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
+	Audio    *FileWithCaption  `json:"audio,omitempty"`
 	File     *FileWithCaption4 `json:"file,omitempty"`
 	PDF      *FileWithCaption5 `json:"pdf,omitempty"`
 	Bookmark *Embed3           `json:"bookmark,omitempty"`
@@ -400,15 +401,6 @@ type FileWithCaption struct {
 	File *NotionFile `json:"file,omitempty"`
 	// An external file is any URL that isn't hosted by Notion.
 	External *ExternalFile `json:"external,omitempty"`
-}
-
-// FileWithCaption3 defines a model
-type FileWithCaption3 struct {
-	Caption RichTexts `json:"caption,omitempty"`
-	Type    string    `json:"type,omitzero"`
-	// An external file is any URL that isn't hosted by Notion.
-	External ExternalFile `json:"external"`
-	File     *NotionFile  `json:"file,omitempty"`
 }
 
 // FileWithCaption4 defines a model
