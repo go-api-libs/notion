@@ -71,9 +71,10 @@ type Block struct {
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
 	Audio *FileWithCaption `json:"audio,omitempty"`
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
-	File     *FileWithCaption  `json:"file,omitempty"`
-	PDF      *FileWithCaption5 `json:"pdf,omitempty"`
-	Bookmark *Embed3           `json:"bookmark,omitempty"`
+	File *FileWithCaption `json:"file,omitempty"`
+	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
+	PDF      *FileWithCaption `json:"pdf,omitempty"`
+	Bookmark *Embed3          `json:"bookmark,omitempty"`
 	// Callout block objects contain the following information within the callout field.
 	Callout  *Callout    `json:"callout,omitempty"`
 	Quote    *Paragraph8 `json:"quote,omitempty"`
@@ -403,15 +404,6 @@ type FileWithCaption struct {
 	// An external file is any URL that isn't hosted by Notion.
 	External *ExternalFile `json:"external,omitempty"`
 	Name     string        `json:"name,omitzero"`
-}
-
-// FileWithCaption5 defines a model
-type FileWithCaption5 struct {
-	Caption RichTexts `json:"caption,omitempty"`
-	Type    string    `json:"type,omitzero"`
-	// An external file is any URL that isn't hosted by Notion.
-	External ExternalFile `json:"external"`
-	File     *NotionFile  `json:"file,omitempty"`
 }
 
 // Heading1 defines a model
