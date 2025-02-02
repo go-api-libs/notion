@@ -8378,6 +8378,7 @@
             "$ref": "#/components/schemas/Blocks"
           },
           "next_cursor": {
+            "description": "A unique identifier for a page, block, database, or user.",
             "type": "object"
           },
           "has_more": {
