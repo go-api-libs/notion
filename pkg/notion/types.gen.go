@@ -402,7 +402,7 @@ type FileWithCaption struct {
 	Caption RichTexts `json:"caption,omitempty"`
 	// Type of this file object.
 	Type     FileType       `json:"type,omitzero"`
-	File     NotionFile     `json:"file"`
+	File     *NotionFile    `json:"file,omitempty"`
 	External *ExternalFile2 `json:"external,omitempty"`
 }
 

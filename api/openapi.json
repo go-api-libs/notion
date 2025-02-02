@@ -1981,8 +1981,7 @@
         },
         "required": [
           "caption",
-          "type",
-          "file"
+          "type"
         ],
         "example": {
           "caption": [],
