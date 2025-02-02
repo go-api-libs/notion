@@ -131,23 +131,25 @@
             "example": "dad588e3-83ec-430a-bcd3-3cc5dc37d7e9"
           },
           "parent": {
-            "$ref": "#/components/schemas/Parent2"
+            "$ref": "#/components/schemas/Parent"
           },
           "created_time": {
+            "description": "Date and time when this block was created. Formatted as an ISO 8601 date time string.",
             "type": "string",
             "format": "date-time",
             "example": "2022-07-14T05:31:00.000Z"
           },
           "last_edited_time": {
+            "description": "Date and time when this block was last updated. Formatted as an ISO 8601 date time string.",
             "type": "string",
             "format": "date-time",
             "example": "2022-07-14T05:33:00.000Z"
           },
           "created_by": {
-            "$ref": "#/components/schemas/BlockCreatedBy"
+            "$ref": "#/components/schemas/UserReference2"
           },
           "last_edited_by": {
-            "$ref": "#/components/schemas/BlockLastEditedBy"
+            "$ref": "#/components/schemas/UserReference3"
           },
           "has_children": {
             "type": "boolean",
@@ -1410,28 +1412,6 @@
           }
         }
       },
-      "BlockCreatedBy": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "type": "string",
-            "example": "user"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-          }
-        },
-        "required": [
-          "object",
-          "id"
-        ],
-        "example": {
-          "object": "user",
-          "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-        }
-      },
       "BlockEmbed": {
         "type": "object",
         "properties": {
@@ -2312,28 +2292,6 @@
         "example": {
           "content": "Small heading",
           "link": null
-        }
-      },
-      "BlockLastEditedBy": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "type": "string",
-            "example": "user"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-          }
-        },
-        "required": [
-          "object",
-          "id"
-        ],
-        "example": {
-          "object": "user",
-          "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
         }
       },
       "BlockLinkPreview": {
@@ -4745,28 +4703,6 @@
           "page_id": "11f88fcd-daf4-802e-b645-eb2d041a759b"
         }
       },
-      "Parent2": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "page_id"
-          },
-          "page_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "96245c8f-1784-44a4-82ad-1941127c3ec3"
-          }
-        },
-        "required": [
-          "type",
-          "page_id"
-        ],
-        "example": {
-          "type": "page_id",
-          "page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
-        }
-      },
       "ParentType": {
         "description": "The type of the parent.",
         "type": "string",
@@ -4993,6 +4929,50 @@
             "description": "Always \"user\"",
             "type": "string",
             "pattern": "^user$",
+            "example": "user"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+          }
+        },
+        "required": [
+          "object",
+          "id"
+        ],
+        "example": {
+          "object": "user",
+          "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+        }
+      },
+      "UserReference2": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "example": "user"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+          }
+        },
+        "required": [
+          "object",
+          "id"
+        ],
+        "example": {
+          "object": "user",
+          "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+        }
+      },
+      "UserReference3": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
             "example": "user"
           },
           "id": {

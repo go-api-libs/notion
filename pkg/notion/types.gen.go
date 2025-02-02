@@ -37,13 +37,16 @@ type Annotations struct {
 // The optional fields are filled depending on the value of `type`.
 type Block struct {
 	// Always "block".
-	Object           string                 `json:"object,omitzero"`
-	ID               uuid.UUID              `json:"id,omitzero"`
-	Parent           Parent2                `json:"parent"`
-	CreatedTime      time.Time              `json:"created_time,omitzero"`
+	Object string    `json:"object,omitzero"`
+	ID     uuid.UUID `json:"id,omitzero"`
+	// The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
+	Parent Parent `json:"parent"`
+	// Date and time when this block was created. Formatted as an ISO 8601 date time string.
+	CreatedTime time.Time `json:"created_time,omitzero"`
+	// Date and time when this block was last updated. Formatted as an ISO 8601 date time string.
 	LastEditedTime   time.Time              `json:"last_edited_time,omitzero"`
-	CreatedBy        BlockCreatedBy         `json:"created_by"`
-	LastEditedBy     BlockLastEditedBy      `json:"last_edited_by"`
+	CreatedBy        UserReference2         `json:"created_by"`
+	LastEditedBy     UserReference3         `json:"last_edited_by"`
 	HasChildren      bool                   `json:"has_children,omitzero"`
 	Archived         bool                   `json:"archived,omitzero"`
 	InTrash          bool                   `json:"in_trash,omitzero"`
@@ -298,12 +301,6 @@ type BlockCodeRichTextItemsTextLink struct {
 	URL *url.URL `json:"url,omitempty"`
 }
 
-// BlockCreatedBy defines a model
-type BlockCreatedBy struct {
-	Object string    `json:"object,omitzero"`
-	ID     uuid.UUID `json:"id,omitzero"`
-}
-
 // BlockEmbed defines a model
 type BlockEmbed struct {
 	Caption BlockEmbedCaption `json:"caption,omitempty"`
@@ -460,12 +457,6 @@ type BlockHeading3RichTextItemsAnnotations struct {
 type BlockHeading3RichTextItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
-}
-
-// BlockLastEditedBy defines a model
-type BlockLastEditedBy struct {
-	Object string    `json:"object,omitzero"`
-	ID     uuid.UUID `json:"id,omitzero"`
 }
 
 // BlockLinkPreview defines a model
@@ -921,12 +912,6 @@ type Parent struct {
 	PageID *uuid.UUID `json:"page_id,omitempty"`
 }
 
-// Parent2 defines a model
-type Parent2 struct {
-	Type   string    `json:"type,omitzero"`
-	PageID uuid.UUID `json:"page_id,omitzero"`
-}
-
 // The type of the parent.
 type ParentType string
 
@@ -1017,6 +1002,18 @@ type Text struct {
 // UserReference defines a model
 type UserReference struct {
 	// Always "user"
+	Object string    `json:"object,omitzero"`
+	ID     uuid.UUID `json:"id,omitzero"`
+}
+
+// UserReference2 defines a model
+type UserReference2 struct {
+	Object string    `json:"object,omitzero"`
+	ID     uuid.UUID `json:"id,omitzero"`
+}
+
+// UserReference3 defines a model
+type UserReference3 struct {
 	Object string    `json:"object,omitzero"`
 	ID     uuid.UUID `json:"id,omitzero"`
 }
