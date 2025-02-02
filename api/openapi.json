@@ -41,6 +41,9 @@
         },
         {
           "$ref": "#/components/parameters/NotionVersion2"
+        },
+        {
+          "$ref": "#/components/parameters/Notion-Version"
         }
       ],
       "get": {
@@ -17823,8 +17826,18 @@
       }
     },
     "parameters": {
+      "Notion-Version": {
+        "name": "Notion-Version",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "example": "2022-06-28"
+        },
+        "example": "2022-06-28"
+      },
       "NotionVersion": {
-        "name": "NotionVersion",
+        "name": "Notion-Version",
         "in": "header",
         "required": true,
         "schema": {

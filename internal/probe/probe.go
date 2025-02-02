@@ -2,11 +2,14 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"strings"
 
+	"github.com/go-api-libs/api"
 	"github.com/go-api-libs/notion/pkg/notion"
 	"github.com/google/uuid"
 	"gopkg.in/dnaeon/go-vcr.v3/cassette"
@@ -27,7 +30,13 @@ func probe() error {
 
 	p, err := c.GetPage(ctx, examplePageID)
 	if err != nil {
-		return err
+		apiErr := &api.Error{}
+		if errors.As(err, &apiErr) {
+			b, _ := io.ReadAll(apiErr.Response.Body)
+			return fmt.Errorf("getting page %q: %s", examplePageID, string(b))
+		}
+
+		return fmt.Errorf("getting page %q: %w", examplePageID, err)
 	}
 
 	fmt.Printf("Title: %q\n", p.Title())

@@ -74,9 +74,9 @@ func GetPage[R any](ctx context.Context, c *Client, id uuid.UUID) (*R, error) {
 	u := baseURL.JoinPath("pages", id.String())
 	req := (&http.Request{
 		Header: http.Header{
-			"Authorization": []string{c.bearer},
-			"NotionVersion": []string{"2022-06-28"},
-			"User-Agent":    []string{userAgent},
+			"Authorization":  []string{c.bearer},
+			"Notion-Version": []string{"2022-06-28"},
+			"User-Agent":     []string{userAgent},
 		},
 		Host:       u.Host,
 		Method:     http.MethodGet,
@@ -131,9 +131,10 @@ func GetBlocks96245c8f178444a482ad1941127c3ec3Children[R any](ctx context.Contex
 
 	req := (&http.Request{
 		Header: http.Header{
-			"Authorization": []string{c.bearer},
-			"NotionVersion": []string{"2022-06-28"},
-			"User-Agent":    []string{userAgent},
+			"Authorization":  []string{c.bearer},
+			"Notion-Version": []string{"2022-06-28"},
+			"NotionVersion":  []string{"2022-06-28"},
+			"User-Agent":     []string{userAgent},
 		},
 		Host:       u.Host,
 		Method:     http.MethodGet,
