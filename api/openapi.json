@@ -115,6 +115,321 @@
           "color": "default"
         }
       },
+      "Annotations2": {
+        "type": "object",
+        "properties": {
+          "bold": {
+            "type": "boolean",
+            "example": false
+          },
+          "italic": {
+            "type": "boolean",
+            "example": false
+          },
+          "strikethrough": {
+            "type": "boolean",
+            "example": false
+          },
+          "underline": {
+            "type": "boolean",
+            "example": false
+          },
+          "code": {
+            "type": "boolean",
+            "example": false
+          },
+          "color": {
+            "type": "string",
+            "example": "default"
+          }
+        },
+        "required": [
+          "bold",
+          "italic",
+          "strikethrough",
+          "underline",
+          "code",
+          "color"
+        ],
+        "example": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        }
+      },
+      "Annotations3": {
+        "type": "object",
+        "properties": {
+          "bold": {
+            "type": "boolean",
+            "example": false
+          },
+          "italic": {
+            "type": "boolean",
+            "example": false
+          },
+          "strikethrough": {
+            "type": "boolean",
+            "example": false
+          },
+          "underline": {
+            "type": "boolean",
+            "example": false
+          },
+          "code": {
+            "type": "boolean",
+            "example": false
+          },
+          "color": {
+            "type": "string",
+            "example": "default"
+          }
+        },
+        "required": [
+          "bold",
+          "italic",
+          "strikethrough",
+          "underline",
+          "code",
+          "color"
+        ],
+        "example": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        }
+      },
+      "Annotations4": {
+        "type": "object",
+        "properties": {
+          "bold": {
+            "type": "boolean",
+            "example": false
+          },
+          "italic": {
+            "type": "boolean",
+            "example": false
+          },
+          "strikethrough": {
+            "type": "boolean",
+            "example": false
+          },
+          "underline": {
+            "type": "boolean",
+            "example": false
+          },
+          "code": {
+            "type": "boolean",
+            "example": false
+          },
+          "color": {
+            "type": "string",
+            "example": "default"
+          }
+        },
+        "required": [
+          "bold",
+          "italic",
+          "strikethrough",
+          "underline",
+          "code",
+          "color"
+        ],
+        "example": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        }
+      },
+      "Annotations5": {
+        "type": "object",
+        "properties": {
+          "bold": {
+            "type": "boolean",
+            "example": false
+          },
+          "italic": {
+            "type": "boolean",
+            "example": false
+          },
+          "strikethrough": {
+            "type": "boolean",
+            "example": false
+          },
+          "underline": {
+            "type": "boolean",
+            "example": false
+          },
+          "code": {
+            "type": "boolean",
+            "example": false
+          },
+          "color": {
+            "type": "string",
+            "example": "default"
+          }
+        },
+        "required": [
+          "bold",
+          "italic",
+          "strikethrough",
+          "underline",
+          "code",
+          "color"
+        ],
+        "example": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        }
+      },
+      "Annotations6": {
+        "type": "object",
+        "properties": {
+          "bold": {
+            "type": "boolean",
+            "example": false
+          },
+          "italic": {
+            "type": "boolean",
+            "example": false
+          },
+          "strikethrough": {
+            "type": "boolean",
+            "example": false
+          },
+          "underline": {
+            "type": "boolean",
+            "example": false
+          },
+          "code": {
+            "type": "boolean",
+            "example": false
+          },
+          "color": {
+            "type": "string",
+            "example": "default"
+          }
+        },
+        "required": [
+          "bold",
+          "italic",
+          "strikethrough",
+          "underline",
+          "code",
+          "color"
+        ],
+        "example": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        }
+      },
+      "Annotations7": {
+        "type": "object",
+        "properties": {
+          "bold": {
+            "type": "boolean",
+            "example": false
+          },
+          "italic": {
+            "type": "boolean",
+            "example": false
+          },
+          "strikethrough": {
+            "type": "boolean",
+            "example": false
+          },
+          "underline": {
+            "type": "boolean",
+            "example": false
+          },
+          "code": {
+            "type": "boolean",
+            "example": false
+          },
+          "color": {
+            "type": "string",
+            "example": "default"
+          }
+        },
+        "required": [
+          "bold",
+          "italic",
+          "strikethrough",
+          "underline",
+          "code",
+          "color"
+        ],
+        "example": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        }
+      },
+      "Annotations8": {
+        "type": "object",
+        "properties": {
+          "bold": {
+            "type": "boolean",
+            "example": false
+          },
+          "italic": {
+            "type": "boolean",
+            "example": false
+          },
+          "strikethrough": {
+            "type": "boolean",
+            "example": false
+          },
+          "underline": {
+            "type": "boolean",
+            "example": false
+          },
+          "code": {
+            "type": "boolean",
+            "example": false
+          },
+          "color": {
+            "type": "string",
+            "example": "default"
+          }
+        },
+        "required": [
+          "bold",
+          "italic",
+          "strikethrough",
+          "underline",
+          "code",
+          "color"
+        ],
+        "example": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        }
+      },
       "Block": {
         "description": "A block object represents content within Notion. Blocks can be text, lists, media, and more. A page is a type of block, too!\n\nThe optional fields are filled depending on the value of `type`.",
         "type": "object",
@@ -1019,7 +1334,7 @@
             "$ref": "#/components/schemas/CalloutRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/CalloutRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/Annotations2"
           },
           "plain_text": {
             "type": "string",
@@ -1052,51 +1367,6 @@
           },
           "plain_text": "Callout with a fire emoji.",
           "href": null
-        }
-      },
-      "CalloutRichTextItemsAnnotations": {
-        "type": "object",
-        "properties": {
-          "bold": {
-            "type": "boolean",
-            "example": false
-          },
-          "italic": {
-            "type": "boolean",
-            "example": false
-          },
-          "strikethrough": {
-            "type": "boolean",
-            "example": false
-          },
-          "underline": {
-            "type": "boolean",
-            "example": false
-          },
-          "code": {
-            "type": "boolean",
-            "example": false
-          },
-          "color": {
-            "type": "string",
-            "example": "default"
-          }
-        },
-        "required": [
-          "bold",
-          "italic",
-          "strikethrough",
-          "underline",
-          "code",
-          "color"
-        ],
-        "example": {
-          "bold": false,
-          "italic": false,
-          "strikethrough": false,
-          "underline": false,
-          "code": false,
-          "color": "default"
         }
       },
       "CalloutRichTextItemsText": {
@@ -1267,7 +1537,7 @@
             "$ref": "#/components/schemas/CodeCaptionItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/CodeCaptionItemsAnnotations"
+            "$ref": "#/components/schemas/Annotations3"
           },
           "plain_text": {
             "type": "string",
@@ -1300,51 +1570,6 @@
           },
           "plain_text": "It even has a caption!",
           "href": null
-        }
-      },
-      "CodeCaptionItemsAnnotations": {
-        "type": "object",
-        "properties": {
-          "bold": {
-            "type": "boolean",
-            "example": false
-          },
-          "italic": {
-            "type": "boolean",
-            "example": false
-          },
-          "strikethrough": {
-            "type": "boolean",
-            "example": false
-          },
-          "underline": {
-            "type": "boolean",
-            "example": false
-          },
-          "code": {
-            "type": "boolean",
-            "example": false
-          },
-          "color": {
-            "type": "string",
-            "example": "default"
-          }
-        },
-        "required": [
-          "bold",
-          "italic",
-          "strikethrough",
-          "underline",
-          "code",
-          "color"
-        ],
-        "example": {
-          "bold": false,
-          "italic": false,
-          "strikethrough": false,
-          "underline": false,
-          "code": false,
-          "color": "default"
         }
       },
       "CodeCaptionItemsText": {
@@ -1439,7 +1664,7 @@
             "$ref": "#/components/schemas/CodeRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/CodeRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/Annotations4"
           },
           "plain_text": {
             "type": "string",
@@ -1474,51 +1699,6 @@
           },
           "plain_text": "func main() {\n\t",
           "href": null
-        }
-      },
-      "CodeRichTextItemsAnnotations": {
-        "type": "object",
-        "properties": {
-          "bold": {
-            "type": "boolean",
-            "example": false
-          },
-          "italic": {
-            "type": "boolean",
-            "example": false
-          },
-          "strikethrough": {
-            "type": "boolean",
-            "example": false
-          },
-          "underline": {
-            "type": "boolean",
-            "example": false
-          },
-          "code": {
-            "type": "boolean",
-            "example": false
-          },
-          "color": {
-            "type": "string",
-            "example": "default"
-          }
-        },
-        "required": [
-          "bold",
-          "italic",
-          "strikethrough",
-          "underline",
-          "code",
-          "color"
-        ],
-        "example": {
-          "bold": false,
-          "italic": false,
-          "strikethrough": false,
-          "underline": false,
-          "code": false,
-          "color": "default"
         }
       },
       "CodeRichTextItemsText": {
@@ -1952,7 +2132,7 @@
             "$ref": "#/components/schemas/Heading1RichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Heading1RichTextItemsAnnotations"
+            "$ref": "#/components/schemas/Annotations5"
           },
           "plain_text": {
             "type": "string",
@@ -1985,51 +2165,6 @@
           },
           "plain_text": "This ",
           "href": null
-        }
-      },
-      "Heading1RichTextItemsAnnotations": {
-        "type": "object",
-        "properties": {
-          "bold": {
-            "type": "boolean",
-            "example": false
-          },
-          "italic": {
-            "type": "boolean",
-            "example": false
-          },
-          "strikethrough": {
-            "type": "boolean",
-            "example": false
-          },
-          "underline": {
-            "type": "boolean",
-            "example": false
-          },
-          "code": {
-            "type": "boolean",
-            "example": false
-          },
-          "color": {
-            "type": "string",
-            "example": "default"
-          }
-        },
-        "required": [
-          "bold",
-          "italic",
-          "strikethrough",
-          "underline",
-          "code",
-          "color"
-        ],
-        "example": {
-          "bold": false,
-          "italic": false,
-          "strikethrough": false,
-          "underline": false,
-          "code": false,
-          "color": "default"
         }
       },
       "Heading1RichTextItemsText": {
@@ -2132,7 +2267,7 @@
             "$ref": "#/components/schemas/Heading2RichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Heading2RichTextItemsAnnotations"
+            "$ref": "#/components/schemas/Annotations6"
           },
           "plain_text": {
             "type": "string",
@@ -2165,51 +2300,6 @@
           },
           "plain_text": "Medium toggle heading ",
           "href": null
-        }
-      },
-      "Heading2RichTextItemsAnnotations": {
-        "type": "object",
-        "properties": {
-          "bold": {
-            "type": "boolean",
-            "example": false
-          },
-          "italic": {
-            "type": "boolean",
-            "example": false
-          },
-          "strikethrough": {
-            "type": "boolean",
-            "example": false
-          },
-          "underline": {
-            "type": "boolean",
-            "example": false
-          },
-          "code": {
-            "type": "boolean",
-            "example": false
-          },
-          "color": {
-            "type": "string",
-            "example": "default"
-          }
-        },
-        "required": [
-          "bold",
-          "italic",
-          "strikethrough",
-          "underline",
-          "code",
-          "color"
-        ],
-        "example": {
-          "bold": false,
-          "italic": false,
-          "strikethrough": false,
-          "underline": false,
-          "code": false,
-          "color": "default"
         }
       },
       "Heading2RichTextItemsText": {
@@ -2312,7 +2402,7 @@
             "$ref": "#/components/schemas/Heading3RichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Heading3RichTextItemsAnnotations"
+            "$ref": "#/components/schemas/Annotations7"
           },
           "plain_text": {
             "type": "string",
@@ -2345,51 +2435,6 @@
           },
           "plain_text": "Small heading",
           "href": null
-        }
-      },
-      "Heading3RichTextItemsAnnotations": {
-        "type": "object",
-        "properties": {
-          "bold": {
-            "type": "boolean",
-            "example": false
-          },
-          "italic": {
-            "type": "boolean",
-            "example": false
-          },
-          "strikethrough": {
-            "type": "boolean",
-            "example": false
-          },
-          "underline": {
-            "type": "boolean",
-            "example": false
-          },
-          "code": {
-            "type": "boolean",
-            "example": false
-          },
-          "color": {
-            "type": "string",
-            "example": "default"
-          }
-        },
-        "required": [
-          "bold",
-          "italic",
-          "strikethrough",
-          "underline",
-          "code",
-          "color"
-        ],
-        "example": {
-          "bold": false,
-          "italic": false,
-          "strikethrough": false,
-          "underline": false,
-          "code": false,
-          "color": "default"
         }
       },
       "Heading3RichTextItemsText": {
@@ -2750,7 +2795,7 @@
             "$ref": "#/components/schemas/Paragraph2RichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Paragraph2RichTextItemsAnnotations"
+            "$ref": "#/components/schemas/Annotations8"
           },
           "plain_text": {
             "type": "string",
@@ -2783,51 +2828,6 @@
           },
           "plain_text": "foo",
           "href": null
-        }
-      },
-      "Paragraph2RichTextItemsAnnotations": {
-        "type": "object",
-        "properties": {
-          "bold": {
-            "type": "boolean",
-            "example": false
-          },
-          "italic": {
-            "type": "boolean",
-            "example": false
-          },
-          "strikethrough": {
-            "type": "boolean",
-            "example": false
-          },
-          "underline": {
-            "type": "boolean",
-            "example": false
-          },
-          "code": {
-            "type": "boolean",
-            "example": false
-          },
-          "color": {
-            "type": "string",
-            "example": "default"
-          }
-        },
-        "required": [
-          "bold",
-          "italic",
-          "strikethrough",
-          "underline",
-          "code",
-          "color"
-        ],
-        "example": {
-          "bold": false,
-          "italic": false,
-          "strikethrough": false,
-          "underline": false,
-          "code": false,
-          "color": "default"
         }
       },
       "Paragraph2RichTextItemsText": {

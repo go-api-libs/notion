@@ -32,6 +32,76 @@ type Annotations struct {
 	Color Color `json:"color,omitzero"`
 }
 
+// Annotations2 defines a model
+type Annotations2 struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// Annotations3 defines a model
+type Annotations3 struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// Annotations4 defines a model
+type Annotations4 struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// Annotations5 defines a model
+type Annotations5 struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// Annotations6 defines a model
+type Annotations6 struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// Annotations7 defines a model
+type Annotations7 struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// Annotations8 defines a model
+type Annotations8 struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
 // A block object represents content within Notion. Blocks can be text, lists, media, and more. A page is a type of block, too!
 //
 // The optional fields are filled depending on the value of `type`.
@@ -180,21 +250,11 @@ type CalloutRichText []CalloutRichTextItems
 
 // CalloutRichTextItems defines a model
 type CalloutRichTextItems struct {
-	Type        string                          `json:"type,omitzero"`
-	Text        CalloutRichTextItemsText        `json:"text"`
-	Annotations CalloutRichTextItemsAnnotations `json:"annotations"`
-	PlainText   string                          `json:"plain_text,omitzero"`
-	Href        struct{}                        `json:"href"`
-}
-
-// CalloutRichTextItemsAnnotations defines a model
-type CalloutRichTextItemsAnnotations struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
+	Type        string                   `json:"type,omitzero"`
+	Text        CalloutRichTextItemsText `json:"text"`
+	Annotations Annotations2             `json:"annotations"`
+	PlainText   string                   `json:"plain_text,omitzero"`
+	Href        struct{}                 `json:"href"`
 }
 
 // CalloutRichTextItemsText defines a model
@@ -220,21 +280,11 @@ type CodeCaption []CodeCaptionItems
 
 // CodeCaptionItems defines a model
 type CodeCaptionItems struct {
-	Type        string                      `json:"type,omitzero"`
-	Text        CodeCaptionItemsText        `json:"text"`
-	Annotations CodeCaptionItemsAnnotations `json:"annotations"`
-	PlainText   string                      `json:"plain_text,omitzero"`
-	Href        struct{}                    `json:"href"`
-}
-
-// CodeCaptionItemsAnnotations defines a model
-type CodeCaptionItemsAnnotations struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
+	Type        string               `json:"type,omitzero"`
+	Text        CodeCaptionItemsText `json:"text"`
+	Annotations Annotations3         `json:"annotations"`
+	PlainText   string               `json:"plain_text,omitzero"`
+	Href        struct{}             `json:"href"`
 }
 
 // CodeCaptionItemsText defines a model
@@ -248,21 +298,11 @@ type CodeRichText []CodeRichTextItems
 
 // CodeRichTextItems defines a model
 type CodeRichTextItems struct {
-	Type        string                       `json:"type,omitzero"`
-	Text        CodeRichTextItemsText        `json:"text"`
-	Annotations CodeRichTextItemsAnnotations `json:"annotations"`
-	PlainText   string                       `json:"plain_text,omitzero"`
-	Href        url.URL                      `json:"href,omitzero"`
-}
-
-// CodeRichTextItemsAnnotations defines a model
-type CodeRichTextItemsAnnotations struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
+	Type        string                `json:"type,omitzero"`
+	Text        CodeRichTextItemsText `json:"text"`
+	Annotations Annotations4          `json:"annotations"`
+	PlainText   string                `json:"plain_text,omitzero"`
+	Href        url.URL               `json:"href,omitzero"`
 }
 
 // CodeRichTextItemsText defines a model
@@ -364,21 +404,11 @@ type Heading1RichText []Heading1RichTextItems
 
 // Heading1RichTextItems defines a model
 type Heading1RichTextItems struct {
-	Type        string                           `json:"type,omitzero"`
-	Text        Heading1RichTextItemsText        `json:"text"`
-	Annotations Heading1RichTextItemsAnnotations `json:"annotations"`
-	PlainText   string                           `json:"plain_text,omitzero"`
-	Href        struct{}                         `json:"href"`
-}
-
-// Heading1RichTextItemsAnnotations defines a model
-type Heading1RichTextItemsAnnotations struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
+	Type        string                    `json:"type,omitzero"`
+	Text        Heading1RichTextItemsText `json:"text"`
+	Annotations Annotations5              `json:"annotations"`
+	PlainText   string                    `json:"plain_text,omitzero"`
+	Href        struct{}                  `json:"href"`
 }
 
 // Heading1RichTextItemsText defines a model
@@ -399,21 +429,11 @@ type Heading2RichText []Heading2RichTextItems
 
 // Heading2RichTextItems defines a model
 type Heading2RichTextItems struct {
-	Type        string                           `json:"type,omitzero"`
-	Text        Heading2RichTextItemsText        `json:"text"`
-	Annotations Heading2RichTextItemsAnnotations `json:"annotations"`
-	PlainText   string                           `json:"plain_text,omitzero"`
-	Href        struct{}                         `json:"href"`
-}
-
-// Heading2RichTextItemsAnnotations defines a model
-type Heading2RichTextItemsAnnotations struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
+	Type        string                    `json:"type,omitzero"`
+	Text        Heading2RichTextItemsText `json:"text"`
+	Annotations Annotations6              `json:"annotations"`
+	PlainText   string                    `json:"plain_text,omitzero"`
+	Href        struct{}                  `json:"href"`
 }
 
 // Heading2RichTextItemsText defines a model
@@ -434,21 +454,11 @@ type Heading3RichText []Heading3RichTextItems
 
 // Heading3RichTextItems defines a model
 type Heading3RichTextItems struct {
-	Type        string                           `json:"type,omitzero"`
-	Text        Heading3RichTextItemsText        `json:"text"`
-	Annotations Heading3RichTextItemsAnnotations `json:"annotations"`
-	PlainText   string                           `json:"plain_text,omitzero"`
-	Href        struct{}                         `json:"href"`
-}
-
-// Heading3RichTextItemsAnnotations defines a model
-type Heading3RichTextItemsAnnotations struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
+	Type        string                    `json:"type,omitzero"`
+	Text        Heading3RichTextItemsText `json:"text"`
+	Annotations Annotations7              `json:"annotations"`
+	PlainText   string                    `json:"plain_text,omitzero"`
+	Href        struct{}                  `json:"href"`
 }
 
 // Heading3RichTextItemsText defines a model
@@ -543,21 +553,11 @@ type Paragraph2RichText []Paragraph2RichTextItems
 
 // Paragraph2RichTextItems defines a model
 type Paragraph2RichTextItems struct {
-	Type        string                             `json:"type,omitzero"`
-	Text        Paragraph2RichTextItemsText        `json:"text"`
-	Annotations Paragraph2RichTextItemsAnnotations `json:"annotations"`
-	PlainText   string                             `json:"plain_text,omitzero"`
-	Href        struct{}                           `json:"href"`
-}
-
-// Paragraph2RichTextItemsAnnotations defines a model
-type Paragraph2RichTextItemsAnnotations struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
+	Type        string                      `json:"type,omitzero"`
+	Text        Paragraph2RichTextItemsText `json:"text"`
+	Annotations Annotations8                `json:"annotations"`
+	PlainText   string                      `json:"plain_text,omitzero"`
+	Href        struct{}                    `json:"href"`
 }
 
 // Paragraph2RichTextItemsText defines a model
