@@ -904,7 +904,8 @@ type RichText struct {
 type RichText2 struct {
 	// Type of this rich text object.
 	Type RichTextType `json:"type,omitzero"`
-	Text Text2        `json:"text"`
+	// Text objects contain this information within the `text` property of a RichText object.
+	Text Text `json:"text"`
 	// Style information which applies to the whole rich text object.
 	Annotations Annotations `json:"annotations"`
 	PlainText   string      `json:"plain_text,omitzero"`
@@ -955,12 +956,6 @@ type Text struct {
 	Content string `json:"content,omitzero"`
 	// An inline link in a text.
 	Link *Link `json:"link,omitempty"`
-}
-
-// Text2 defines a model
-type Text2 struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
 }
 
 // ToDo defines a model

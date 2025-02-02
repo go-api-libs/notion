@@ -4319,7 +4319,7 @@
             "$ref": "#/components/schemas/RichTextType"
           },
           "text": {
-            "$ref": "#/components/schemas/Text2"
+            "$ref": "#/components/schemas/Text"
           },
           "annotations": {
             "$ref": "#/components/schemas/Annotations"
@@ -4550,26 +4550,6 @@
         ],
         "example": {
           "content": "Example Page",
-          "link": null
-        }
-      },
-      "Text2": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "string",
-            "example": "This is the whitepaper introducing "
-          },
-          "link": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "content",
-          "link"
-        ],
-        "example": {
-          "content": "This is the whitepaper introducing ",
           "link": null
         }
       },
