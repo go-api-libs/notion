@@ -32,6 +32,16 @@ type Annotations struct {
 	Color Color `json:"color,omitzero"`
 }
 
+// Annotations2 defines a model
+type Annotations2 struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
 // A block object represents content within Notion. Blocks can be text, lists, media, and more. A page is a type of block, too!
 //
 // The optional fields are filled depending on the value of `type`.
@@ -902,27 +912,12 @@ type RichText struct {
 
 // RichText2 defines a model
 type RichText2 struct {
-	Type        string               `json:"type,omitzero"`
-	Text        RichText2Text        `json:"text"`
-	Annotations RichText2Annotations `json:"annotations"`
-	PlainText   string               `json:"plain_text,omitzero"`
-	Href        struct{}             `json:"href"`
-}
-
-// RichText2Annotations defines a model
-type RichText2Annotations struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
-}
-
-// RichText2Text defines a model
-type RichText2Text struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
+	// Type of this rich text object.
+	Type        RichTextType `json:"type,omitzero"`
+	Text        Text2        `json:"text"`
+	Annotations Annotations2 `json:"annotations"`
+	PlainText   string       `json:"plain_text,omitzero"`
+	Href        struct{}     `json:"href"`
 }
 
 // Type of this rich text object.
@@ -969,6 +964,12 @@ type Text struct {
 	Content string `json:"content,omitzero"`
 	// An inline link in a text.
 	Link *Link `json:"link,omitempty"`
+}
+
+// Text2 defines a model
+type Text2 struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
 }
 
 // ToDo defines a model
