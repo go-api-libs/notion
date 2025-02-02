@@ -74,7 +74,7 @@ type Block struct {
 	File *FileWithCaption `json:"file,omitempty"`
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
 	PDF      *FileWithCaption `json:"pdf,omitempty"`
-	Bookmark *Embed3          `json:"bookmark,omitempty"`
+	Bookmark *Embed2          `json:"bookmark,omitempty"`
 	// Callout block objects contain the following information within the callout field.
 	Callout  *Callout    `json:"callout,omitempty"`
 	Quote    *Paragraph8 `json:"quote,omitempty"`
@@ -306,26 +306,29 @@ type Embed struct {
 	URL     url.URL      `json:"url,omitzero"`
 }
 
-// Embed3 defines a model
-type Embed3 struct {
-	Caption Embed3Caption `json:"caption,omitempty"`
+// Embed2 defines a model
+type Embed2 struct {
+	Caption EmbedCaption2 `json:"caption,omitempty"`
 	URL     url.URL       `json:"url,omitzero"`
 }
 
-// Embed3Caption defines a model
-type Embed3Caption []Embed3CaptionItems
+// EmbedCaption defines a model
+type EmbedCaption []EmbedCaptionItems
 
-// Embed3CaptionItems defines a model
-type Embed3CaptionItems struct {
+// EmbedCaption2 defines a model
+type EmbedCaption2 []EmbedCaption2Items
+
+// EmbedCaption2Items defines a model
+type EmbedCaption2Items struct {
 	Type        string                        `json:"type,omitzero"`
-	Text        Embed3CaptionItemsText        `json:"text"`
-	Annotations Embed3CaptionItemsAnnotations `json:"annotations"`
+	Text        EmbedCaption2ItemsText        `json:"text"`
+	Annotations EmbedCaption2ItemsAnnotations `json:"annotations"`
 	PlainText   string                        `json:"plain_text,omitzero"`
 	Href        struct{}                      `json:"href"`
 }
 
-// Embed3CaptionItemsAnnotations defines a model
-type Embed3CaptionItemsAnnotations struct {
+// EmbedCaption2ItemsAnnotations defines a model
+type EmbedCaption2ItemsAnnotations struct {
 	Bold          bool   `json:"bold,omitzero"`
 	Italic        bool   `json:"italic,omitzero"`
 	Strikethrough bool   `json:"strikethrough,omitzero"`
@@ -334,14 +337,11 @@ type Embed3CaptionItemsAnnotations struct {
 	Color         string `json:"color,omitzero"`
 }
 
-// Embed3CaptionItemsText defines a model
-type Embed3CaptionItemsText struct {
+// EmbedCaption2ItemsText defines a model
+type EmbedCaption2ItemsText struct {
 	Content string   `json:"content,omitzero"`
 	Link    struct{} `json:"link"`
 }
-
-// EmbedCaption defines a model
-type EmbedCaption []EmbedCaptionItems
 
 // EmbedCaptionItems defines a model
 type EmbedCaptionItems struct {

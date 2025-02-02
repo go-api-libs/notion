@@ -217,7 +217,7 @@
             "$ref": "#/components/schemas/FileWithCaption"
           },
           "bookmark": {
-            "$ref": "#/components/schemas/Embed3"
+            "$ref": "#/components/schemas/Embed2"
           },
           "callout": {
             "$ref": "#/components/schemas/Callout"
@@ -1598,11 +1598,11 @@
           "url": "https://twitter.com/elonmusk/status/1519480761749016577"
         }
       },
-      "Embed3": {
+      "Embed2": {
         "type": "object",
         "properties": {
           "caption": {
-            "$ref": "#/components/schemas/Embed3Caption"
+            "$ref": "#/components/schemas/EmbedCaption2"
           },
           "url": {
             "type": "string",
@@ -1637,10 +1637,16 @@
           "url": "https://example.com/"
         }
       },
-      "Embed3Caption": {
+      "EmbedCaption": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Embed3CaptionItems"
+          "$ref": "#/components/schemas/EmbedCaptionItems"
+        }
+      },
+      "EmbedCaption2": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/EmbedCaption2Items"
         },
         "example": [
           {
@@ -1662,7 +1668,7 @@
           }
         ]
       },
-      "Embed3CaptionItems": {
+      "EmbedCaption2Items": {
         "type": "object",
         "properties": {
           "type": {
@@ -1670,10 +1676,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/Embed3CaptionItemsText"
+            "$ref": "#/components/schemas/EmbedCaption2ItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/Embed3CaptionItemsAnnotations"
+            "$ref": "#/components/schemas/EmbedCaption2ItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -1708,7 +1714,7 @@
           "href": null
         }
       },
-      "Embed3CaptionItemsAnnotations": {
+      "EmbedCaption2ItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -1753,7 +1759,7 @@
           "color": "default"
         }
       },
-      "Embed3CaptionItemsText": {
+      "EmbedCaption2ItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -1771,12 +1777,6 @@
         "example": {
           "content": "A bookmark object.",
           "link": null
-        }
-      },
-      "EmbedCaption": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/EmbedCaptionItems"
         }
       },
       "EmbedCaptionItems": {
