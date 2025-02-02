@@ -2018,7 +2018,7 @@
         "type": "object",
         "properties": {
           "caption": {
-            "$ref": "#/components/schemas/RichTexts2"
+            "$ref": "#/components/schemas/RichTexts"
           },
           "type": {
             "type": "string",
@@ -4312,51 +4312,6 @@
           "href": null
         }
       },
-      "RichText2": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "$ref": "#/components/schemas/RichTextType"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "This is the whitepaper introducing "
-          },
-          "href": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "This is the whitepaper introducing ",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "This is the whitepaper introducing ",
-          "href": null
-        }
-      },
       "RichTextType": {
         "description": "Type of this rich text object.",
         "type": "string",
@@ -4388,65 +4343,6 @@
               "color": "default"
             },
             "plain_text": "Example Page",
-            "href": null
-          }
-        ]
-      },
-      "RichTexts2": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/RichText2"
-        },
-        "example": [
-          {
-            "type": "text",
-            "text": {
-              "content": "This is the whitepaper introducing ",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "default"
-            },
-            "plain_text": "This is the whitepaper introducing ",
-            "href": null
-          },
-          {
-            "type": "text",
-            "text": {
-              "content": "bitcoin",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "yellow"
-            },
-            "plain_text": "bitcoin",
-            "href": null
-          },
-          {
-            "type": "text",
-            "text": {
-              "content": ".",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "default"
-            },
-            "plain_text": ".",
             "href": null
           }
         ]

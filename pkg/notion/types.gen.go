@@ -414,8 +414,8 @@ type FileWithCaption4 struct {
 
 // FileWithCaption5 defines a model
 type FileWithCaption5 struct {
-	Caption RichTexts2 `json:"caption,omitempty"`
-	Type    string     `json:"type,omitzero"`
+	Caption RichTexts `json:"caption,omitempty"`
+	Type    string    `json:"type,omitzero"`
 	// An external file is any URL that isn't hosted by Notion.
 	External ExternalFile `json:"external"`
 	File     *NotionFile  `json:"file,omitempty"`
@@ -900,18 +900,6 @@ type RichText struct {
 	Href *url.URL `json:"href,omitempty"`
 }
 
-// RichText2 defines a model
-type RichText2 struct {
-	// Type of this rich text object.
-	Type RichTextType `json:"type,omitzero"`
-	// Text objects contain this information within the `text` property of a RichText object.
-	Text Text `json:"text"`
-	// Style information which applies to the whole rich text object.
-	Annotations Annotations `json:"annotations"`
-	PlainText   string      `json:"plain_text,omitzero"`
-	Href        struct{}    `json:"href"`
-}
-
 // Type of this rich text object.
 type RichTextType string
 
@@ -923,9 +911,6 @@ const (
 
 // RichTexts defines a model
 type RichTexts []RichText
-
-// RichTexts2 defines a model
-type RichTexts2 []RichText2
 
 // SyncedBlock defines a model
 type SyncedBlock struct {
