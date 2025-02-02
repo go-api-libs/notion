@@ -32,11 +32,14 @@ type Annotations struct {
 	Color Color `json:"color,omitzero"`
 }
 
-// Block defines a model
+// A block object represents content within Notion. Blocks can be text, lists, media, and more. A page is a type of block, too!
+//
+// The optional fields are filled depending on the value of `type`.
 type Block struct {
+	// Always "block".
 	Object           string                 `json:"object,omitzero"`
 	ID               uuid.UUID              `json:"id,omitzero"`
-	Parent           BlockParent            `json:"parent"`
+	Parent           Parent2                `json:"parent"`
 	CreatedTime      time.Time              `json:"created_time,omitzero"`
 	LastEditedTime   time.Time              `json:"last_edited_time,omitzero"`
 	CreatedBy        BlockCreatedBy         `json:"created_by"`
@@ -605,12 +608,6 @@ type BlockParagraphRichTextItemsTextLink struct {
 	URL *url.URL `json:"url,omitempty"`
 }
 
-// BlockParent defines a model
-type BlockParent struct {
-	Type   string    `json:"type,omitzero"`
-	PageID uuid.UUID `json:"page_id,omitzero"`
-}
-
 // BlockPdf defines a model
 type BlockPdf struct {
 	Caption  BlockPdfCaption  `json:"caption,omitempty"`
@@ -922,6 +919,12 @@ type Parent struct {
 	// The type of the parent.
 	Type   ParentType `json:"type,omitzero"`
 	PageID *uuid.UUID `json:"page_id,omitempty"`
+}
+
+// Parent2 defines a model
+type Parent2 struct {
+	Type   string    `json:"type,omitzero"`
+	PageID uuid.UUID `json:"page_id,omitzero"`
 }
 
 // The type of the parent.

@@ -116,10 +116,13 @@
         }
       },
       "Block": {
+        "description": "A block object represents content within Notion. Blocks can be text, lists, media, and more. A page is a type of block, too!\n\nThe optional fields are filled depending on the value of `type`.",
         "type": "object",
         "properties": {
           "object": {
+            "description": "Always \"block\".",
             "type": "string",
+            "pattern": "^block$",
             "example": "block"
           },
           "id": {
@@ -128,7 +131,7 @@
             "example": "dad588e3-83ec-430a-bcd3-3cc5dc37d7e9"
           },
           "parent": {
-            "$ref": "#/components/schemas/BlockParent"
+            "$ref": "#/components/schemas/Parent2"
           },
           "created_time": {
             "type": "string",
@@ -2893,28 +2896,6 @@
           }
         }
       },
-      "BlockParent": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "page_id"
-          },
-          "page_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "96245c8f-1784-44a4-82ad-1941127c3ec3"
-          }
-        },
-        "required": [
-          "type",
-          "page_id"
-        ],
-        "example": {
-          "type": "page_id",
-          "page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
-        }
-      },
       "BlockPdf": {
         "type": "object",
         "properties": {
@@ -4762,6 +4743,28 @@
         "example": {
           "type": "page_id",
           "page_id": "11f88fcd-daf4-802e-b645-eb2d041a759b"
+        }
+      },
+      "Parent2": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "page_id"
+          },
+          "page_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "96245c8f-1784-44a4-82ad-1941127c3ec3"
+          }
+        },
+        "required": [
+          "type",
+          "page_id"
+        ],
+        "example": {
+          "type": "page_id",
+          "page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
         }
       },
       "ParentType": {
