@@ -53,24 +53,25 @@ type Block struct {
 	Archived bool `json:"archived,omitzero"`
 	InTrash  bool `json:"in_trash,omitzero"`
 	// Type of block.
-	Type             BlockType         `json:"type,omitzero"`
-	Paragraph        *Paragraph        `json:"paragraph,omitempty"`
-	Heading1         *Heading1         `json:"heading_1,omitempty"`
-	Heading2         *Heading2         `json:"heading_2,omitempty"`
-	Heading3         *Heading3         `json:"heading_3,omitempty"`
-	BulletedListItem *Paragraph2       `json:"bulleted_list_item,omitempty"`
-	NumberedListItem *Paragraph3       `json:"numbered_list_item,omitempty"`
-	ToDo             *ToDo             `json:"to_do,omitempty"`
-	Toggle           *Paragraph4       `json:"toggle,omitempty"`
-	Code             *Code             `json:"code,omitempty"`
-	ChildPage        *Child            `json:"child_page,omitempty"`
-	ChildDatabase    *Child            `json:"child_database,omitempty"`
-	Embed            *Embed            `json:"embed,omitempty"`
-	Video            *FileWithCaption  `json:"video,omitempty"`
-	Audio            *FileWithCaption3 `json:"audio,omitempty"`
-	File             *FileWithCaption4 `json:"file,omitempty"`
-	PDF              *FileWithCaption5 `json:"pdf,omitempty"`
-	Bookmark         *Embed3           `json:"bookmark,omitempty"`
+	Type             BlockType   `json:"type,omitzero"`
+	Paragraph        *Paragraph  `json:"paragraph,omitempty"`
+	Heading1         *Heading1   `json:"heading_1,omitempty"`
+	Heading2         *Heading2   `json:"heading_2,omitempty"`
+	Heading3         *Heading3   `json:"heading_3,omitempty"`
+	BulletedListItem *Paragraph2 `json:"bulleted_list_item,omitempty"`
+	NumberedListItem *Paragraph3 `json:"numbered_list_item,omitempty"`
+	ToDo             *ToDo       `json:"to_do,omitempty"`
+	Toggle           *Paragraph4 `json:"toggle,omitempty"`
+	Code             *Code       `json:"code,omitempty"`
+	ChildPage        *Child      `json:"child_page,omitempty"`
+	ChildDatabase    *Child      `json:"child_database,omitempty"`
+	Embed            *Embed      `json:"embed,omitempty"`
+	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
+	Video    *FileWithCaption  `json:"video,omitempty"`
+	Audio    *FileWithCaption3 `json:"audio,omitempty"`
+	File     *FileWithCaption4 `json:"file,omitempty"`
+	PDF      *FileWithCaption5 `json:"pdf,omitempty"`
+	Bookmark *Embed3           `json:"bookmark,omitempty"`
 	// Callout block objects contain the following information within the callout field.
 	Callout  *Callout    `json:"callout,omitempty"`
 	Quote    *Paragraph8 `json:"quote,omitempty"`
@@ -391,9 +392,9 @@ const (
 	FileTypeExternal FileType = "external"
 )
 
-// FileWithCaption defines a model
+// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
 type FileWithCaption struct {
-	Caption  []struct{}               `json:"caption,omitempty"`
+	Caption  RichTexts                `json:"caption,omitempty"`
 	Type     string                   `json:"type,omitzero"`
 	File     FileWithCaptionFile      `json:"file"`
 	External *FileWithCaptionExternal `json:"external,omitempty"`

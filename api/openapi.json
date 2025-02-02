@@ -1947,13 +1947,11 @@
         "example": "external"
       },
       "FileWithCaption": {
+        "description": "File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.",
         "type": "object",
         "properties": {
           "caption": {
-            "type": "array",
-            "items": {
-              "type": "object"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           },
           "type": {
             "type": "string",
