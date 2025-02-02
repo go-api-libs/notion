@@ -65,7 +65,8 @@ type Block struct {
 	Code             *Code       `json:"code,omitempty"`
 	ChildPage        *Child      `json:"child_page,omitempty"`
 	ChildDatabase    *Child      `json:"child_database,omitempty"`
-	Embed            *Embed      `json:"embed,omitempty"`
+	// Embed blocks include block types that allow displaying another website within Notion.
+	Embed *Embed `json:"embed,omitempty"`
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
 	Video *FileWithCaption `json:"video,omitempty"`
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
@@ -300,72 +301,17 @@ const (
 	ColorRedBackground    Color = "red_background"
 )
 
-// Embed defines a model
+// Embed blocks include block types that allow displaying another website within Notion.
 type Embed struct {
-	Caption EmbedCaption `json:"caption,omitempty"`
-	URL     url.URL      `json:"url,omitzero"`
+	Caption RichTexts2 `json:"caption,omitempty"`
+	// Embedded link.
+	URL url.URL `json:"url,omitzero"`
 }
 
 // Embed2 defines a model
 type Embed2 struct {
-	Caption EmbedCaption2 `json:"caption,omitempty"`
-	URL     url.URL       `json:"url,omitzero"`
-}
-
-// EmbedCaption defines a model
-type EmbedCaption []EmbedCaptionItems
-
-// EmbedCaption2 defines a model
-type EmbedCaption2 []EmbedCaption2Items
-
-// EmbedCaption2Items defines a model
-type EmbedCaption2Items struct {
-	Type        string                        `json:"type,omitzero"`
-	Text        EmbedCaption2ItemsText        `json:"text"`
-	Annotations EmbedCaption2ItemsAnnotations `json:"annotations"`
-	PlainText   string                        `json:"plain_text,omitzero"`
-	Href        struct{}                      `json:"href"`
-}
-
-// EmbedCaption2ItemsAnnotations defines a model
-type EmbedCaption2ItemsAnnotations struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
-}
-
-// EmbedCaption2ItemsText defines a model
-type EmbedCaption2ItemsText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
-}
-
-// EmbedCaptionItems defines a model
-type EmbedCaptionItems struct {
-	Type        string                        `json:"type,omitzero"`
-	Text        *EmbedCaptionItemsText        `json:"text,omitempty"`
-	Annotations *EmbedCaptionItemsAnnotations `json:"annotations,omitempty"`
-	PlainText   string                        `json:"plain_text,omitzero"`
-	Href        *struct{}                     `json:"href,omitempty"`
-}
-
-// EmbedCaptionItemsAnnotations defines a model
-type EmbedCaptionItemsAnnotations struct {
-	Bold          bool   `json:"bold,omitzero"`
-	Italic        bool   `json:"italic,omitzero"`
-	Strikethrough bool   `json:"strikethrough,omitzero"`
-	Underline     bool   `json:"underline,omitzero"`
-	Code          bool   `json:"code,omitzero"`
-	Color         string `json:"color,omitzero"`
-}
-
-// EmbedCaptionItemsText defines a model
-type EmbedCaptionItemsText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
+	Caption RichTexts22 `json:"caption,omitempty"`
+	URL     url.URL     `json:"url,omitzero"`
 }
 
 // Equation defines a model
@@ -896,6 +842,62 @@ const (
 
 // RichTexts defines a model
 type RichTexts []RichText
+
+// RichTexts2 defines a model
+type RichTexts2 []RichTexts2Items
+
+// RichTexts22 defines a model
+type RichTexts22 []RichTexts22Items
+
+// RichTexts22Items defines a model
+type RichTexts22Items struct {
+	Type        string                      `json:"type,omitzero"`
+	Text        RichTexts22ItemsText        `json:"text"`
+	Annotations RichTexts22ItemsAnnotations `json:"annotations"`
+	PlainText   string                      `json:"plain_text,omitzero"`
+	Href        struct{}                    `json:"href"`
+}
+
+// RichTexts22ItemsAnnotations defines a model
+type RichTexts22ItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// RichTexts22ItemsText defines a model
+type RichTexts22ItemsText struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
+
+// RichTexts2Items defines a model
+type RichTexts2Items struct {
+	Type        string                      `json:"type,omitzero"`
+	Text        *RichTexts2ItemsText        `json:"text,omitempty"`
+	Annotations *RichTexts2ItemsAnnotations `json:"annotations,omitempty"`
+	PlainText   string                      `json:"plain_text,omitzero"`
+	Href        *struct{}                   `json:"href,omitempty"`
+}
+
+// RichTexts2ItemsAnnotations defines a model
+type RichTexts2ItemsAnnotations struct {
+	Bold          bool   `json:"bold,omitzero"`
+	Italic        bool   `json:"italic,omitzero"`
+	Strikethrough bool   `json:"strikethrough,omitzero"`
+	Underline     bool   `json:"underline,omitzero"`
+	Code          bool   `json:"code,omitzero"`
+	Color         string `json:"color,omitzero"`
+}
+
+// RichTexts2ItemsText defines a model
+type RichTexts2ItemsText struct {
+	Content string   `json:"content,omitzero"`
+	Link    struct{} `json:"link"`
+}
 
 // SyncedBlock defines a model
 type SyncedBlock struct {

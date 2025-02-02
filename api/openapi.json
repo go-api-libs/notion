@@ -1578,15 +1578,17 @@
         "example": "default"
       },
       "Embed": {
+        "description": "Embed blocks include block types that allow displaying another website within Notion.",
         "type": "object",
         "properties": {
           "caption": {
-            "$ref": "#/components/schemas/EmbedCaption"
+            "$ref": "#/components/schemas/RichTexts2"
           },
           "url": {
+            "description": "Embedded link.",
             "type": "string",
             "format": "uri",
-            "example": "https://twitter.com/elonmusk/status/1519480761749016577"
+            "example": "https://www.youtube.com/watch?v=4aMoKXQ6pXI"
           }
         },
         "required": [
@@ -1595,14 +1597,14 @@
         ],
         "example": {
           "caption": [],
-          "url": "https://twitter.com/elonmusk/status/1519480761749016577"
+          "url": "https://www.youtube.com/watch?v=4aMoKXQ6pXI"
         }
       },
       "Embed2": {
         "type": "object",
         "properties": {
           "caption": {
-            "$ref": "#/components/schemas/EmbedCaption2"
+            "$ref": "#/components/schemas/RichTexts22"
           },
           "url": {
             "type": "string",
@@ -1635,252 +1637,6 @@
             }
           ],
           "url": "https://example.com/"
-        }
-      },
-      "EmbedCaption": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/EmbedCaptionItems"
-        }
-      },
-      "EmbedCaption2": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/EmbedCaption2Items"
-        },
-        "example": [
-          {
-            "type": "text",
-            "text": {
-              "content": "A bookmark object.",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "default"
-            },
-            "plain_text": "A bookmark object.",
-            "href": null
-          }
-        ]
-      },
-      "EmbedCaption2Items": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/EmbedCaption2ItemsText"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/EmbedCaption2ItemsAnnotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "A bookmark object."
-          },
-          "href": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "A bookmark object.",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "A bookmark object.",
-          "href": null
-        }
-      },
-      "EmbedCaption2ItemsAnnotations": {
-        "type": "object",
-        "properties": {
-          "bold": {
-            "type": "boolean",
-            "example": false
-          },
-          "italic": {
-            "type": "boolean",
-            "example": false
-          },
-          "strikethrough": {
-            "type": "boolean",
-            "example": false
-          },
-          "underline": {
-            "type": "boolean",
-            "example": false
-          },
-          "code": {
-            "type": "boolean",
-            "example": false
-          },
-          "color": {
-            "type": "string",
-            "example": "default"
-          }
-        },
-        "required": [
-          "bold",
-          "italic",
-          "strikethrough",
-          "underline",
-          "code",
-          "color"
-        ],
-        "example": {
-          "bold": false,
-          "italic": false,
-          "strikethrough": false,
-          "underline": false,
-          "code": false,
-          "color": "default"
-        }
-      },
-      "EmbedCaption2ItemsText": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "string",
-            "example": "A bookmark object."
-          },
-          "link": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "content",
-          "link"
-        ],
-        "example": {
-          "content": "A bookmark object.",
-          "link": null
-        }
-      },
-      "EmbedCaptionItems": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/EmbedCaptionItemsText"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/EmbedCaptionItemsAnnotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "A "
-          },
-          "href": {
-            "type": "object"
-          }
-        },
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "A ",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "A ",
-          "href": null
-        }
-      },
-      "EmbedCaptionItemsAnnotations": {
-        "type": "object",
-        "properties": {
-          "bold": {
-            "type": "boolean",
-            "example": false
-          },
-          "italic": {
-            "type": "boolean",
-            "example": false
-          },
-          "strikethrough": {
-            "type": "boolean",
-            "example": false
-          },
-          "underline": {
-            "type": "boolean",
-            "example": false
-          },
-          "code": {
-            "type": "boolean",
-            "example": false
-          },
-          "color": {
-            "type": "string",
-            "example": "default"
-          }
-        },
-        "required": [
-          "bold",
-          "italic",
-          "strikethrough",
-          "underline",
-          "code",
-          "color"
-        ],
-        "example": {
-          "bold": false,
-          "italic": false,
-          "strikethrough": false,
-          "underline": false,
-          "code": false,
-          "color": "default"
-        }
-      },
-      "EmbedCaptionItemsText": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "string",
-            "example": "A "
-          },
-          "link": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "content",
-          "link"
-        ],
-        "example": {
-          "content": "A ",
-          "link": null
         }
       },
       "Equation": {
@@ -4230,6 +3986,252 @@
             "href": null
           }
         ]
+      },
+      "RichTexts2": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/RichTexts2Items"
+        }
+      },
+      "RichTexts22": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/RichTexts22Items"
+        },
+        "example": [
+          {
+            "type": "text",
+            "text": {
+              "content": "A bookmark object.",
+              "link": null
+            },
+            "annotations": {
+              "bold": false,
+              "italic": false,
+              "strikethrough": false,
+              "underline": false,
+              "code": false,
+              "color": "default"
+            },
+            "plain_text": "A bookmark object.",
+            "href": null
+          }
+        ]
+      },
+      "RichTexts22Items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/RichTexts22ItemsText"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/RichTexts22ItemsAnnotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": "A bookmark object."
+          },
+          "href": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "type",
+          "text",
+          "annotations",
+          "plain_text",
+          "href"
+        ],
+        "example": {
+          "type": "text",
+          "text": {
+            "content": "A bookmark object.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "A bookmark object.",
+          "href": null
+        }
+      },
+      "RichTexts22ItemsAnnotations": {
+        "type": "object",
+        "properties": {
+          "bold": {
+            "type": "boolean",
+            "example": false
+          },
+          "italic": {
+            "type": "boolean",
+            "example": false
+          },
+          "strikethrough": {
+            "type": "boolean",
+            "example": false
+          },
+          "underline": {
+            "type": "boolean",
+            "example": false
+          },
+          "code": {
+            "type": "boolean",
+            "example": false
+          },
+          "color": {
+            "type": "string",
+            "example": "default"
+          }
+        },
+        "required": [
+          "bold",
+          "italic",
+          "strikethrough",
+          "underline",
+          "code",
+          "color"
+        ],
+        "example": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        }
+      },
+      "RichTexts22ItemsText": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "example": "A bookmark object."
+          },
+          "link": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "content",
+          "link"
+        ],
+        "example": {
+          "content": "A bookmark object.",
+          "link": null
+        }
+      },
+      "RichTexts2Items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/RichTexts2ItemsText"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/RichTexts2ItemsAnnotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": "A "
+          },
+          "href": {
+            "type": "object"
+          }
+        },
+        "example": {
+          "type": "text",
+          "text": {
+            "content": "A ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "A ",
+          "href": null
+        }
+      },
+      "RichTexts2ItemsAnnotations": {
+        "type": "object",
+        "properties": {
+          "bold": {
+            "type": "boolean",
+            "example": false
+          },
+          "italic": {
+            "type": "boolean",
+            "example": false
+          },
+          "strikethrough": {
+            "type": "boolean",
+            "example": false
+          },
+          "underline": {
+            "type": "boolean",
+            "example": false
+          },
+          "code": {
+            "type": "boolean",
+            "example": false
+          },
+          "color": {
+            "type": "string",
+            "example": "default"
+          }
+        },
+        "required": [
+          "bold",
+          "italic",
+          "strikethrough",
+          "underline",
+          "code",
+          "color"
+        ],
+        "example": {
+          "bold": false,
+          "italic": false,
+          "strikethrough": false,
+          "underline": false,
+          "code": false,
+          "color": "default"
+        }
+      },
+      "RichTexts2ItemsText": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "example": "A "
+          },
+          "link": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "content",
+          "link"
+        ],
+        "example": {
+          "content": "A ",
+          "link": null
+        }
       },
       "SyncedBlock": {
         "type": "object",
