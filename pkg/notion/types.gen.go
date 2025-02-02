@@ -397,7 +397,7 @@ type FileWithCaption struct {
 	Caption RichTexts `json:"caption,omitempty"`
 	// Type of this file object.
 	Type     FileType                 `json:"type,omitzero"`
-	File     FileWithCaptionFile      `json:"file"`
+	File     NotionFile               `json:"file"`
 	External *FileWithCaptionExternal `json:"external,omitempty"`
 }
 
@@ -484,12 +484,6 @@ type FileWithCaption5File struct {
 // FileWithCaptionExternal defines a model
 type FileWithCaptionExternal struct {
 	URL url.URL `json:"url,omitzero"`
-}
-
-// FileWithCaptionFile defines a model
-type FileWithCaptionFile struct {
-	URL        url.URL   `json:"url,omitzero"`
-	ExpiryTime time.Time `json:"expiry_time,omitzero"`
 }
 
 // Heading1 defines a model
@@ -626,6 +620,12 @@ type LinkPreview struct {
 type LinkToPage struct {
 	Type   string    `json:"type,omitzero"`
 	PageID uuid.UUID `json:"page_id,omitzero"`
+}
+
+// NotionFile defines a model
+type NotionFile struct {
+	URL        url.URL   `json:"url,omitzero"`
+	ExpiryTime time.Time `json:"expiry_time,omitzero"`
 }
 
 // The Page object contains the [property values](https://developers.notion.com/reference/property-value-object) of a single Notion page.
