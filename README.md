@@ -69,12 +69,12 @@ func main() {
 	}
 
 	ctx := context.Background()
-	getBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse, err := c.GetBlocks(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocksParams{PageSize: 100})
+	blocksList, err := c.GetBlocks(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocksParams{PageSize: 100})
 	if err != nil {
 		panic(err)
 	}
 
-	// Use getBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse object
+	// Use blocksList object
 }
 
 ```

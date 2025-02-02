@@ -114,8 +114,8 @@ func GetPage[R any](ctx context.Context, c *Client, id uuid.UUID) (*R, error) {
 // Returns a paginated array of child [block objects](https://developers.notion.com/reference/block) contained in the block using the ID specified. In order to receive a complete representation of a block, you may need to recursively retrieve the block children of child blocks.
 //
 //	GET /blocks/{id}/children
-func (c *Client) GetBlocks(ctx context.Context, id uuid.UUID, params *GetBlocksParams) (*GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse, error) {
-	return GetBlocks[GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse](ctx, c, id, params)
+func (c *Client) GetBlocks(ctx context.Context, id uuid.UUID, params *GetBlocksParams) (*BlocksList, error) {
+	return GetBlocks[BlocksList](ctx, c, id, params)
 }
 
 // Returns a paginated array of child [block objects](https://developers.notion.com/reference/block) contained in the block using the ID specified. In order to receive a complete representation of a block, you may need to recursively retrieve the block children of child blocks.

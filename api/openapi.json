@@ -115,81 +115,7 @@
           "color": "default"
         }
       },
-      "Color": {
-        "description": "The color of the block.",
-        "type": "string",
-        "enum": [
-          "default",
-          "gray",
-          "brown",
-          "orange",
-          "yellow",
-          "green",
-          "blue",
-          "purple",
-          "pink",
-          "red",
-          "gray_background",
-          "brown_background",
-          "orange_background",
-          "yellow_background",
-          "green_background",
-          "blue_background",
-          "purple_background",
-          "pink_background",
-          "red_background"
-        ],
-        "example": "default"
-      },
-      "ExternalFile": {
-        "description": "An external file is any URL that isn't hosted by Notion.",
-        "type": "object",
-        "properties": {
-          "url": {
-            "description": "Link to the externally hosted content.",
-            "type": "string",
-            "format": "uri",
-            "example": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
-          }
-        },
-        "required": [
-          "url"
-        ],
-        "example": {
-          "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
-        }
-      },
-      "File": {
-        "description": "File objects contain data about files uploaded to Notion as well as external files linked in Notion.",
-        "type": "object",
-        "properties": {
-          "type": {
-            "$ref": "#/components/schemas/FileType"
-          },
-          "external": {
-            "$ref": "#/components/schemas/ExternalFile"
-          }
-        },
-        "required": [
-          "type"
-        ],
-        "example": {
-          "type": "external",
-          "external": {
-            "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
-          }
-        }
-      },
-      "FileType": {
-        "description": "Type of this file object.",
-        "type": "string",
-        "enum": [
-          "file",
-          "external"
-        ],
-        "example": "external"
-      },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse": {
+      "BlocksList": {
         "type": "object",
         "properties": {
           "object": {
@@ -197,7 +123,7 @@
             "example": "list"
           },
           "results": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResults"
+            "$ref": "#/components/schemas/BlocksListResults"
           },
           "next_cursor": {
             "type": "object"
@@ -4641,10 +4567,10 @@
           "request_id": "4fb32baa-18fe-4627-b7db-96292000775f"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResults": {
+      "BlocksListResults": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItems"
+          "$ref": "#/components/schemas/BlocksListResultsItems"
         },
         "example": [
           {
@@ -9051,7 +8977,7 @@
           }
         ]
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItems": {
+      "BlocksListResultsItems": {
         "type": "object",
         "properties": {
           "object": {
@@ -9064,7 +8990,7 @@
             "example": "dad588e3-83ec-430a-bcd3-3cc5dc37d7e9"
           },
           "parent": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParent"
+            "$ref": "#/components/schemas/BlocksListResultsItemsParent"
           },
           "created_time": {
             "type": "string",
@@ -9077,10 +9003,10 @@
             "example": "2022-07-14T05:33:00.000Z"
           },
           "created_by": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCreatedBy"
+            "$ref": "#/components/schemas/BlocksListResultsItemsCreatedBy"
           },
           "last_edited_by": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsLastEditedBy"
+            "$ref": "#/components/schemas/BlocksListResultsItemsLastEditedBy"
           },
           "has_children": {
             "type": "boolean",
@@ -9099,91 +9025,91 @@
             "example": "paragraph"
           },
           "paragraph": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraph"
+            "$ref": "#/components/schemas/BlocksListResultsItemsParagraph"
           },
           "heading_1": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1"
+            "$ref": "#/components/schemas/BlocksListResultsItemsHeading1"
           },
           "heading_2": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2"
+            "$ref": "#/components/schemas/BlocksListResultsItemsHeading2"
           },
           "heading_3": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3"
+            "$ref": "#/components/schemas/BlocksListResultsItemsHeading3"
           },
           "callout": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCallout"
+            "$ref": "#/components/schemas/BlocksListResultsItemsCallout"
           },
           "quote": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuote"
+            "$ref": "#/components/schemas/BlocksListResultsItemsQuote"
           },
           "synced_block": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsSyncedBlock"
+            "$ref": "#/components/schemas/BlocksListResultsItemsSyncedBlock"
           },
           "numbered_list_item": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItem"
+            "$ref": "#/components/schemas/BlocksListResultsItemsNumberedListItem"
           },
           "bulleted_list_item": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItem"
+            "$ref": "#/components/schemas/BlocksListResultsItemsBulletedListItem"
           },
           "to_do": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDo"
+            "$ref": "#/components/schemas/BlocksListResultsItemsToDo"
           },
           "toggle": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggle"
+            "$ref": "#/components/schemas/BlocksListResultsItemsToggle"
           },
           "code": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCode"
+            "$ref": "#/components/schemas/BlocksListResultsItemsCode"
           },
           "child_page": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsChildPage"
+            "$ref": "#/components/schemas/BlocksListResultsItemsChildPage"
           },
           "child_database": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsChildDatabase"
+            "$ref": "#/components/schemas/BlocksListResultsItemsChildDatabase"
           },
           "embed": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbed"
+            "$ref": "#/components/schemas/BlocksListResultsItemsEmbed"
           },
           "pdf": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdf"
+            "$ref": "#/components/schemas/BlocksListResultsItemsPdf"
           },
           "column_list": {
             "type": "object"
           },
           "video": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsVideo"
+            "$ref": "#/components/schemas/BlocksListResultsItemsVideo"
           },
           "file": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsFile"
+            "$ref": "#/components/schemas/BlocksListResultsItemsFile"
           },
           "bookmark": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmark"
+            "$ref": "#/components/schemas/BlocksListResultsItemsBookmark"
           },
           "equation": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEquation"
+            "$ref": "#/components/schemas/BlocksListResultsItemsEquation"
           },
           "divider": {
             "type": "object"
           },
           "table_of_contents": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsTableOfContents"
+            "$ref": "#/components/schemas/BlocksListResultsItemsTableOfContents"
           },
           "breadcrumb": {
             "type": "object"
           },
           "link_preview": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsLinkPreview"
+            "$ref": "#/components/schemas/BlocksListResultsItemsLinkPreview"
           },
           "unsupported": {
             "type": "object"
           },
           "link_to_page": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsLinkToPage"
+            "$ref": "#/components/schemas/BlocksListResultsItemsLinkToPage"
           },
           "table": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsTable"
+            "$ref": "#/components/schemas/BlocksListResultsItemsTable"
           },
           "audio": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsAudio"
+            "$ref": "#/components/schemas/BlocksListResultsItemsAudio"
           }
         },
         "required": [
@@ -9227,7 +9153,7 @@
           }
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsAudio": {
+      "BlocksListResultsItemsAudio": {
         "type": "object",
         "properties": {
           "caption": {
@@ -9241,10 +9167,10 @@
             "example": "external"
           },
           "external": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsAudioExternal"
+            "$ref": "#/components/schemas/BlocksListResultsItemsAudioExternal"
           },
           "file": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsAudioFile"
+            "$ref": "#/components/schemas/BlocksListResultsItemsAudioFile"
           }
         },
         "required": [
@@ -9260,7 +9186,7 @@
           }
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsAudioExternal": {
+      "BlocksListResultsItemsAudioExternal": {
         "type": "object",
         "properties": {
           "url": {
@@ -9276,7 +9202,7 @@
           "url": "https://upload.wikimedia.org/wikipedia/commons/f/f7/En-us-notion.ogg"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsAudioFile": {
+      "BlocksListResultsItemsAudioFile": {
         "type": "object",
         "properties": {
           "url": {
@@ -9299,11 +9225,11 @@
           "expiry_time": "2025-01-31T12:25:21.557Z"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmark": {
+      "BlocksListResultsItemsBookmark": {
         "type": "object",
         "properties": {
           "caption": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaption"
+            "$ref": "#/components/schemas/BlocksListResultsItemsBookmarkCaption"
           },
           "url": {
             "type": "string",
@@ -9338,10 +9264,10 @@
           "url": "https://example.com/"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaption": {
+      "BlocksListResultsItemsBookmarkCaption": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaptionItems"
+          "$ref": "#/components/schemas/BlocksListResultsItemsBookmarkCaptionItems"
         },
         "example": [
           {
@@ -9363,7 +9289,7 @@
           }
         ]
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaptionItems": {
+      "BlocksListResultsItemsBookmarkCaptionItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -9371,10 +9297,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaptionItemsText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsBookmarkCaptionItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaptionItemsAnnotations"
+            "$ref": "#/components/schemas/BlocksListResultsItemsBookmarkCaptionItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -9409,7 +9335,7 @@
           "href": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaptionItemsAnnotations": {
+      "BlocksListResultsItemsBookmarkCaptionItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -9454,7 +9380,7 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBookmarkCaptionItemsText": {
+      "BlocksListResultsItemsBookmarkCaptionItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -9474,11 +9400,11 @@
           "link": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItem": {
+      "BlocksListResultsItemsBulletedListItem": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsBulletedListItemRichText"
           },
           "color": {
             "type": "string",
@@ -9512,10 +9438,10 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichText": {
+      "BlocksListResultsItemsBulletedListItemRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichTextItems"
+          "$ref": "#/components/schemas/BlocksListResultsItemsBulletedListItemRichTextItems"
         },
         "example": [
           {
@@ -9537,7 +9463,7 @@
           }
         ]
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichTextItems": {
+      "BlocksListResultsItemsBulletedListItemRichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -9545,10 +9471,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichTextItemsText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsBulletedListItemRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlocksListResultsItemsBulletedListItemRichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -9583,7 +9509,7 @@
           "href": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichTextItemsAnnotations": {
+      "BlocksListResultsItemsBulletedListItemRichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -9628,7 +9554,7 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsBulletedListItemRichTextItemsText": {
+      "BlocksListResultsItemsBulletedListItemRichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -9648,14 +9574,14 @@
           "link": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCallout": {
+      "BlocksListResultsItemsCallout": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsCalloutRichText"
           },
           "icon": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutIcon"
+            "$ref": "#/components/schemas/BlocksListResultsItemsCalloutIcon"
           },
           "color": {
             "type": "string",
@@ -9694,7 +9620,7 @@
           "color": "gray_background"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutIcon": {
+      "BlocksListResultsItemsCalloutIcon": {
         "type": "object",
         "properties": {
           "type": {
@@ -9706,10 +9632,10 @@
             "example": "🔥"
           },
           "external": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutIconExternal"
+            "$ref": "#/components/schemas/BlocksListResultsItemsCalloutIconExternal"
           },
           "file": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutIconFile"
+            "$ref": "#/components/schemas/BlocksListResultsItemsCalloutIconFile"
           }
         },
         "required": [
@@ -9721,7 +9647,7 @@
           "emoji": "🔥"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutIconExternal": {
+      "BlocksListResultsItemsCalloutIconExternal": {
         "type": "object",
         "properties": {
           "url": {
@@ -9737,7 +9663,7 @@
           "url": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/melting-face_1fae0.png"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutIconFile": {
+      "BlocksListResultsItemsCalloutIconFile": {
         "type": "object",
         "properties": {
           "url": {
@@ -9760,10 +9686,10 @@
           "expiry_time": "2025-01-31T12:25:21.225Z"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichText": {
+      "BlocksListResultsItemsCalloutRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichTextItems"
+          "$ref": "#/components/schemas/BlocksListResultsItemsCalloutRichTextItems"
         },
         "example": [
           {
@@ -9785,7 +9711,7 @@
           }
         ]
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichTextItems": {
+      "BlocksListResultsItemsCalloutRichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -9793,10 +9719,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichTextItemsText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsCalloutRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlocksListResultsItemsCalloutRichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -9831,7 +9757,7 @@
           "href": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichTextItemsAnnotations": {
+      "BlocksListResultsItemsCalloutRichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -9876,7 +9802,7 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCalloutRichTextItemsText": {
+      "BlocksListResultsItemsCalloutRichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -9896,7 +9822,7 @@
           "link": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsChildDatabase": {
+      "BlocksListResultsItemsChildDatabase": {
         "type": "object",
         "properties": {
           "title": {
@@ -9911,7 +9837,7 @@
           "title": "My Child Database"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsChildPage": {
+      "BlocksListResultsItemsChildPage": {
         "type": "object",
         "properties": {
           "title": {
@@ -9926,14 +9852,14 @@
           "title": "My child page"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCode": {
+      "BlocksListResultsItemsCode": {
         "type": "object",
         "properties": {
           "caption": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaption"
+            "$ref": "#/components/schemas/BlocksListResultsItemsCodeCaption"
           },
           "rich_text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsCodeRichText"
           },
           "language": {
             "type": "string",
@@ -10023,10 +9949,10 @@
           "language": "go"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaption": {
+      "BlocksListResultsItemsCodeCaption": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaptionItems"
+          "$ref": "#/components/schemas/BlocksListResultsItemsCodeCaptionItems"
         },
         "example": [
           {
@@ -10048,7 +9974,7 @@
           }
         ]
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaptionItems": {
+      "BlocksListResultsItemsCodeCaptionItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -10056,10 +9982,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaptionItemsText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsCodeCaptionItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaptionItemsAnnotations"
+            "$ref": "#/components/schemas/BlocksListResultsItemsCodeCaptionItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -10094,7 +10020,7 @@
           "href": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaptionItemsAnnotations": {
+      "BlocksListResultsItemsCodeCaptionItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -10139,7 +10065,7 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeCaptionItemsText": {
+      "BlocksListResultsItemsCodeCaptionItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -10159,10 +10085,10 @@
           "link": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichText": {
+      "BlocksListResultsItemsCodeRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItems"
+          "$ref": "#/components/schemas/BlocksListResultsItemsCodeRichTextItems"
         },
         "example": [
           {
@@ -10220,7 +10146,7 @@
           }
         ]
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItems": {
+      "BlocksListResultsItemsCodeRichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -10228,10 +10154,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItemsText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsCodeRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlocksListResultsItemsCodeRichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -10268,7 +10194,7 @@
           "href": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItemsAnnotations": {
+      "BlocksListResultsItemsCodeRichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -10313,7 +10239,7 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItemsText": {
+      "BlocksListResultsItemsCodeRichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -10321,7 +10247,7 @@
             "example": "func main() {\n\t"
           },
           "link": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItemsTextLink"
+            "$ref": "#/components/schemas/BlocksListResultsItemsCodeRichTextItemsTextLink"
           }
         },
         "required": [
@@ -10333,7 +10259,7 @@
           "link": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCodeRichTextItemsTextLink": {
+      "BlocksListResultsItemsCodeRichTextItemsTextLink": {
         "type": "object",
         "properties": {
           "url": {
@@ -10343,7 +10269,7 @@
           }
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsCreatedBy": {
+      "BlocksListResultsItemsCreatedBy": {
         "type": "object",
         "properties": {
           "object": {
@@ -10365,11 +10291,11 @@
           "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbed": {
+      "BlocksListResultsItemsEmbed": {
         "type": "object",
         "properties": {
           "caption": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaption"
+            "$ref": "#/components/schemas/BlocksListResultsItemsEmbedCaption"
           },
           "url": {
             "type": "string",
@@ -10386,13 +10312,13 @@
           "url": "https://twitter.com/elonmusk/status/1519480761749016577"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaption": {
+      "BlocksListResultsItemsEmbedCaption": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaptionItems"
+          "$ref": "#/components/schemas/BlocksListResultsItemsEmbedCaptionItems"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaptionItems": {
+      "BlocksListResultsItemsEmbedCaptionItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -10400,10 +10326,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaptionItemsText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsEmbedCaptionItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaptionItemsAnnotations"
+            "$ref": "#/components/schemas/BlocksListResultsItemsEmbedCaptionItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -10431,7 +10357,7 @@
           "href": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaptionItemsAnnotations": {
+      "BlocksListResultsItemsEmbedCaptionItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -10476,7 +10402,7 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEmbedCaptionItemsText": {
+      "BlocksListResultsItemsEmbedCaptionItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -10496,7 +10422,7 @@
           "link": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsEquation": {
+      "BlocksListResultsItemsEquation": {
         "type": "object",
         "properties": {
           "expression": {
@@ -10511,7 +10437,7 @@
           "expression": "e^{\\pi i}+1 = 0"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsFile": {
+      "BlocksListResultsItemsFile": {
         "type": "object",
         "properties": {
           "caption": {
@@ -10525,7 +10451,7 @@
             "example": "file"
           },
           "file": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsFileFile"
+            "$ref": "#/components/schemas/BlocksListResultsItemsFileFile"
           },
           "name": {
             "type": "string",
@@ -10548,7 +10474,7 @@
           "name": "hd-wallpaper-g6e0a7c1ce_1920.jpeg"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsFileFile": {
+      "BlocksListResultsItemsFileFile": {
         "type": "object",
         "properties": {
           "url": {
@@ -10571,11 +10497,11 @@
           "expiry_time": "2025-01-31T12:25:21.226Z"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1": {
+      "BlocksListResultsItemsHeading1": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsHeading1RichText"
           },
           "is_toggleable": {
             "type": "boolean",
@@ -10683,10 +10609,10 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichText": {
+      "BlocksListResultsItemsHeading1RichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichTextItems"
+          "$ref": "#/components/schemas/BlocksListResultsItemsHeading1RichTextItems"
         },
         "example": [
           {
@@ -10776,7 +10702,7 @@
           }
         ]
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichTextItems": {
+      "BlocksListResultsItemsHeading1RichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -10784,10 +10710,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichTextItemsText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsHeading1RichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlocksListResultsItemsHeading1RichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -10822,7 +10748,7 @@
           "href": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichTextItemsAnnotations": {
+      "BlocksListResultsItemsHeading1RichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -10867,7 +10793,7 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading1RichTextItemsText": {
+      "BlocksListResultsItemsHeading1RichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -10887,11 +10813,11 @@
           "link": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2": {
+      "BlocksListResultsItemsHeading2": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsHeading2RichText"
           },
           "is_toggleable": {
             "type": "boolean",
@@ -10931,10 +10857,10 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichText": {
+      "BlocksListResultsItemsHeading2RichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichTextItems"
+          "$ref": "#/components/schemas/BlocksListResultsItemsHeading2RichTextItems"
         },
         "example": [
           {
@@ -10956,7 +10882,7 @@
           }
         ]
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichTextItems": {
+      "BlocksListResultsItemsHeading2RichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -10964,10 +10890,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichTextItemsText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsHeading2RichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlocksListResultsItemsHeading2RichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -11002,7 +10928,7 @@
           "href": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichTextItemsAnnotations": {
+      "BlocksListResultsItemsHeading2RichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -11047,7 +10973,7 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading2RichTextItemsText": {
+      "BlocksListResultsItemsHeading2RichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -11067,11 +10993,11 @@
           "link": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3": {
+      "BlocksListResultsItemsHeading3": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsHeading3RichText"
           },
           "is_toggleable": {
             "type": "boolean",
@@ -11111,10 +11037,10 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichText": {
+      "BlocksListResultsItemsHeading3RichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichTextItems"
+          "$ref": "#/components/schemas/BlocksListResultsItemsHeading3RichTextItems"
         },
         "example": [
           {
@@ -11136,7 +11062,7 @@
           }
         ]
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichTextItems": {
+      "BlocksListResultsItemsHeading3RichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -11144,10 +11070,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichTextItemsText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsHeading3RichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlocksListResultsItemsHeading3RichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -11182,7 +11108,7 @@
           "href": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichTextItemsAnnotations": {
+      "BlocksListResultsItemsHeading3RichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -11227,7 +11153,7 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsHeading3RichTextItemsText": {
+      "BlocksListResultsItemsHeading3RichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -11247,7 +11173,7 @@
           "link": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsLastEditedBy": {
+      "BlocksListResultsItemsLastEditedBy": {
         "type": "object",
         "properties": {
           "object": {
@@ -11269,7 +11195,7 @@
           "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsLinkPreview": {
+      "BlocksListResultsItemsLinkPreview": {
         "type": "object",
         "properties": {
           "url": {
@@ -11285,7 +11211,7 @@
           "url": "https://github.com/faetools/go-notion"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsLinkToPage": {
+      "BlocksListResultsItemsLinkToPage": {
         "type": "object",
         "properties": {
           "type": {
@@ -11307,11 +11233,11 @@
           "page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItem": {
+      "BlocksListResultsItemsNumberedListItem": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsNumberedListItemRichText"
           },
           "color": {
             "type": "string",
@@ -11345,10 +11271,10 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichText": {
+      "BlocksListResultsItemsNumberedListItemRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichTextItems"
+          "$ref": "#/components/schemas/BlocksListResultsItemsNumberedListItemRichTextItems"
         },
         "example": [
           {
@@ -11370,7 +11296,7 @@
           }
         ]
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichTextItems": {
+      "BlocksListResultsItemsNumberedListItemRichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -11378,10 +11304,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichTextItemsText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsNumberedListItemRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlocksListResultsItemsNumberedListItemRichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -11416,7 +11342,7 @@
           "href": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichTextItemsAnnotations": {
+      "BlocksListResultsItemsNumberedListItemRichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -11461,7 +11387,7 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsNumberedListItemRichTextItemsText": {
+      "BlocksListResultsItemsNumberedListItemRichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -11481,11 +11407,11 @@
           "link": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraph": {
+      "BlocksListResultsItemsParagraph": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsParagraphRichText"
           },
           "color": {
             "type": "string",
@@ -11501,13 +11427,13 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichText": {
+      "BlocksListResultsItemsParagraphRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItems"
+          "$ref": "#/components/schemas/BlocksListResultsItemsParagraphRichTextItems"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItems": {
+      "BlocksListResultsItemsParagraphRichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -11515,10 +11441,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsParagraphRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlocksListResultsItemsParagraphRichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -11530,10 +11456,10 @@
             "example": "https://www.google.com/"
           },
           "mention": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMention"
+            "$ref": "#/components/schemas/BlocksListResultsItemsParagraphRichTextItemsMention"
           },
           "equation": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsEquation"
+            "$ref": "#/components/schemas/BlocksListResultsItemsParagraphRichTextItemsEquation"
           }
         },
         "example": {
@@ -11554,7 +11480,7 @@
           "href": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsAnnotations": {
+      "BlocksListResultsItemsParagraphRichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -11599,7 +11525,7 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsEquation": {
+      "BlocksListResultsItemsParagraphRichTextItemsEquation": {
         "type": "object",
         "properties": {
           "expression": {
@@ -11614,7 +11540,7 @@
           "expression": "e^{\\pi i}+1=0"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMention": {
+      "BlocksListResultsItemsParagraphRichTextItemsMention": {
         "type": "object",
         "properties": {
           "type": {
@@ -11622,19 +11548,19 @@
             "example": "link_mention"
           },
           "link_mention": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionLinkMention"
+            "$ref": "#/components/schemas/BlocksListResultsItemsParagraphRichTextItemsMentionLinkMention"
           },
           "database": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionDatabase"
+            "$ref": "#/components/schemas/BlocksListResultsItemsParagraphRichTextItemsMentionDatabase"
           },
           "user": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionUser"
+            "$ref": "#/components/schemas/BlocksListResultsItemsParagraphRichTextItemsMentionUser"
           },
           "date": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionDate"
+            "$ref": "#/components/schemas/BlocksListResultsItemsParagraphRichTextItemsMentionDate"
           },
           "page": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionPage"
+            "$ref": "#/components/schemas/BlocksListResultsItemsParagraphRichTextItemsMentionPage"
           }
         },
         "required": [
@@ -11650,7 +11576,7 @@
           }
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionDatabase": {
+      "BlocksListResultsItemsParagraphRichTextItemsMentionDatabase": {
         "type": "object",
         "properties": {
           "id": {
@@ -11666,7 +11592,7 @@
           "id": "7a3c647e-4c1e-4c27-bf1d-cfb0105e55ce"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionDate": {
+      "BlocksListResultsItemsParagraphRichTextItemsMentionDate": {
         "type": "object",
         "properties": {
           "start": {
@@ -11691,7 +11617,7 @@
           "time_zone": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionLinkMention": {
+      "BlocksListResultsItemsParagraphRichTextItemsMentionLinkMention": {
         "type": "object",
         "properties": {
           "href": {
@@ -11719,7 +11645,7 @@
           "description": "This domain is for use in illustrative examples in documents. You may use this\n    domain in literature without prior coordination or asking for permission."
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionPage": {
+      "BlocksListResultsItemsParagraphRichTextItemsMentionPage": {
         "type": "object",
         "properties": {
           "id": {
@@ -11735,7 +11661,7 @@
           "id": "2633808e-7e36-4f4e-972a-ccd2d3c49004"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionUser": {
+      "BlocksListResultsItemsParagraphRichTextItemsMentionUser": {
         "type": "object",
         "properties": {
           "object": {
@@ -11761,7 +11687,7 @@
             "example": "person"
           },
           "person": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionUserPerson"
+            "$ref": "#/components/schemas/BlocksListResultsItemsParagraphRichTextItemsMentionUserPerson"
           }
         },
         "required": [
@@ -11783,7 +11709,7 @@
           }
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsMentionUserPerson": {
+      "BlocksListResultsItemsParagraphRichTextItemsMentionUserPerson": {
         "type": "object",
         "properties": {
           "email": {
@@ -11799,7 +11725,7 @@
           "email": "mark@faetools.com"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsText": {
+      "BlocksListResultsItemsParagraphRichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -11807,7 +11733,7 @@
             "example": "This is a simple paragraph."
           },
           "link": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsTextLink"
+            "$ref": "#/components/schemas/BlocksListResultsItemsParagraphRichTextItemsTextLink"
           }
         },
         "required": [
@@ -11819,7 +11745,7 @@
           "link": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParagraphRichTextItemsTextLink": {
+      "BlocksListResultsItemsParagraphRichTextItemsTextLink": {
         "type": "object",
         "properties": {
           "url": {
@@ -11829,7 +11755,7 @@
           }
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsParent": {
+      "BlocksListResultsItemsParent": {
         "type": "object",
         "properties": {
           "type": {
@@ -11851,21 +11777,21 @@
           "page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdf": {
+      "BlocksListResultsItemsPdf": {
         "type": "object",
         "properties": {
           "caption": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaption"
+            "$ref": "#/components/schemas/BlocksListResultsItemsPdfCaption"
           },
           "type": {
             "type": "string",
             "example": "external"
           },
           "external": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfExternal"
+            "$ref": "#/components/schemas/BlocksListResultsItemsPdfExternal"
           },
           "file": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfFile"
+            "$ref": "#/components/schemas/BlocksListResultsItemsPdfFile"
           }
         },
         "required": [
@@ -11933,10 +11859,10 @@
           }
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaption": {
+      "BlocksListResultsItemsPdfCaption": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaptionItems"
+          "$ref": "#/components/schemas/BlocksListResultsItemsPdfCaptionItems"
         },
         "example": [
           {
@@ -11992,7 +11918,7 @@
           }
         ]
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaptionItems": {
+      "BlocksListResultsItemsPdfCaptionItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -12000,10 +11926,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaptionItemsText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsPdfCaptionItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaptionItemsAnnotations"
+            "$ref": "#/components/schemas/BlocksListResultsItemsPdfCaptionItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -12038,7 +11964,7 @@
           "href": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaptionItemsAnnotations": {
+      "BlocksListResultsItemsPdfCaptionItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -12083,7 +12009,7 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfCaptionItemsText": {
+      "BlocksListResultsItemsPdfCaptionItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -12103,7 +12029,7 @@
           "link": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfExternal": {
+      "BlocksListResultsItemsPdfExternal": {
         "type": "object",
         "properties": {
           "url": {
@@ -12119,7 +12045,7 @@
           "url": "https://bitcoin.org/bitcoin.pdf"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsPdfFile": {
+      "BlocksListResultsItemsPdfFile": {
         "type": "object",
         "properties": {
           "url": {
@@ -12142,11 +12068,11 @@
           "expiry_time": "2025-01-31T12:25:21.208Z"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuote": {
+      "BlocksListResultsItemsQuote": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsQuoteRichText"
           },
           "color": {
             "type": "string",
@@ -12214,10 +12140,10 @@
           "color": "green"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichText": {
+      "BlocksListResultsItemsQuoteRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichTextItems"
+          "$ref": "#/components/schemas/BlocksListResultsItemsQuoteRichTextItems"
         },
         "example": [
           {
@@ -12273,7 +12199,7 @@
           }
         ]
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichTextItems": {
+      "BlocksListResultsItemsQuoteRichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -12281,10 +12207,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichTextItemsText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsQuoteRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlocksListResultsItemsQuoteRichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -12319,7 +12245,7 @@
           "href": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichTextItemsAnnotations": {
+      "BlocksListResultsItemsQuoteRichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -12364,7 +12290,7 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsQuoteRichTextItemsText": {
+      "BlocksListResultsItemsQuoteRichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -12384,11 +12310,11 @@
           "link": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsSyncedBlock": {
+      "BlocksListResultsItemsSyncedBlock": {
         "type": "object",
         "properties": {
           "synced_from": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsSyncedBlockSyncedFrom"
+            "$ref": "#/components/schemas/BlocksListResultsItemsSyncedBlockSyncedFrom"
           }
         },
         "required": [
@@ -12401,7 +12327,7 @@
           }
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsSyncedBlockSyncedFrom": {
+      "BlocksListResultsItemsSyncedBlockSyncedFrom": {
         "type": "object",
         "properties": {
           "type": {
@@ -12423,7 +12349,7 @@
           "block_id": "0960b64c-81c9-4f19-a873-e8072b083a40"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsTable": {
+      "BlocksListResultsItemsTable": {
         "type": "object",
         "properties": {
           "table_width": {
@@ -12450,7 +12376,7 @@
           "has_row_header": true
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsTableOfContents": {
+      "BlocksListResultsItemsTableOfContents": {
         "type": "object",
         "properties": {
           "color": {
@@ -12465,11 +12391,11 @@
           "color": "gray"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDo": {
+      "BlocksListResultsItemsToDo": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsToDoRichText"
           },
           "checked": {
             "type": "boolean",
@@ -12509,10 +12435,10 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichText": {
+      "BlocksListResultsItemsToDoRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichTextItems"
+          "$ref": "#/components/schemas/BlocksListResultsItemsToDoRichTextItems"
         },
         "example": [
           {
@@ -12534,7 +12460,7 @@
           }
         ]
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichTextItems": {
+      "BlocksListResultsItemsToDoRichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -12542,10 +12468,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichTextItemsText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsToDoRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlocksListResultsItemsToDoRichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -12580,7 +12506,7 @@
           "href": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichTextItemsAnnotations": {
+      "BlocksListResultsItemsToDoRichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -12625,7 +12551,7 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToDoRichTextItemsText": {
+      "BlocksListResultsItemsToDoRichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -12645,11 +12571,11 @@
           "link": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggle": {
+      "BlocksListResultsItemsToggle": {
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsToggleRichText"
           },
           "color": {
             "type": "string",
@@ -12683,10 +12609,10 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichText": {
+      "BlocksListResultsItemsToggleRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichTextItems"
+          "$ref": "#/components/schemas/BlocksListResultsItemsToggleRichTextItems"
         },
         "example": [
           {
@@ -12708,7 +12634,7 @@
           }
         ]
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichTextItems": {
+      "BlocksListResultsItemsToggleRichTextItems": {
         "type": "object",
         "properties": {
           "type": {
@@ -12716,10 +12642,10 @@
             "example": "text"
           },
           "text": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichTextItemsText"
+            "$ref": "#/components/schemas/BlocksListResultsItemsToggleRichTextItemsText"
           },
           "annotations": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichTextItemsAnnotations"
+            "$ref": "#/components/schemas/BlocksListResultsItemsToggleRichTextItemsAnnotations"
           },
           "plain_text": {
             "type": "string",
@@ -12754,7 +12680,7 @@
           "href": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichTextItemsAnnotations": {
+      "BlocksListResultsItemsToggleRichTextItemsAnnotations": {
         "type": "object",
         "properties": {
           "bold": {
@@ -12799,7 +12725,7 @@
           "color": "default"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsToggleRichTextItemsText": {
+      "BlocksListResultsItemsToggleRichTextItemsText": {
         "type": "object",
         "properties": {
           "content": {
@@ -12819,7 +12745,7 @@
           "link": null
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsVideo": {
+      "BlocksListResultsItemsVideo": {
         "type": "object",
         "properties": {
           "caption": {
@@ -12833,10 +12759,10 @@
             "example": "file"
           },
           "file": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsVideoFile"
+            "$ref": "#/components/schemas/BlocksListResultsItemsVideoFile"
           },
           "external": {
-            "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsVideoExternal"
+            "$ref": "#/components/schemas/BlocksListResultsItemsVideoExternal"
           }
         },
         "required": [
@@ -12853,7 +12779,7 @@
           }
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsVideoExternal": {
+      "BlocksListResultsItemsVideoExternal": {
         "type": "object",
         "properties": {
           "url": {
@@ -12869,7 +12795,7 @@
           "url": "https://www.youtube.com/watch?v=RKhhCYim48g"
         }
       },
-      "GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponseResultsItemsVideoFile": {
+      "BlocksListResultsItemsVideoFile": {
         "type": "object",
         "properties": {
           "url": {
@@ -12891,6 +12817,80 @@
           "url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/1162837c-64dd-401a-aa1d-91f795079052/small.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XIAECK6E%2F20250131%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250131T112521Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQD4UujnejYRkyMDGRuKJbIgo5p1h2yzfv8bb%2BFetXwqqwIgXdwatek%2F8VGbJo48DI2wRajJa6VapXYOw1%2BAXGx%2Fq4gqiAQIvP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDOcsW2%2BPFn5bTbwpjyrcAxOkcesJhzQt06sOaWRNNrpwpNU5VK9v4YJF1P%2B1yQYTGw0L7WurWmW9Z76FTMmoAtrx4D7aMXBpwhTc%2BSw8iEetOwHs9NS%2F%2BPfnPay8JwYr%2F6Ck86H%2FWWVHEdHOqd0b%2Bi5%2FA8olnEDSgWKvM%2B9R618YTMT9UfSmfufVfN9DXXExMIwaI96W8tL2TFJEfbcXAkTlbPWoK4CFyC7fCi7wum7ixTdWKja%2BNpeuETsKXMMlzFgt0oHhDZpJG7Md869uQIZq%2Fv88G5VMqvlQJMZrFH9RMCqrspRRozS%2Fpd9EMa8JyhTaVV1f2viZ8o1v%2FICgPRbXW0L6B7Ty3BPcDq1Cx%2FrKltMy%2B4XDVrKum663pCaxcwhVE37QO6BFIoub4GuFStUQvATrzaNw0oMcFfVLw9JSpAS8h4B3NrwN%2BqPcUKrAKt8cb3TL8%2BHdSzhpyt3o4G2PXEvk%2FVzcVZTi4BzFnBlC%2BFRTEFnw4zT5N%2BrVmJj3s52bv%2FLFOvRnMyyIHDIqXMdWx9UuG6JNR22sYvN3FfvvLx4eIL33lf2eX1xlRi0ft9mjVMQqsNK%2BkkxiwmJKx04QtQRiC0HB%2F3M8kUrnY9ZpExf%2B9ke%2FFRio7xSwkwKCQI%2B4%2B0iAqMtfxIQiMNrW8rwGOqUBbMh4hPgk22nna%2Bi0YlyK54yZTYRc4k%2FLIAsRBXy%2F5PyOO8TzG3JOxFTsG11OjA6JLidms71TrIU22tv0GO5Qe38qP2DEPhZYUPJb7iwW4HMaOwwOxaeDmXgDoRfCskg93uQB52QNEWnweYkAIYXs5n97H5dM3p35Je3KBiv1PY6H6YjeY6Y%2FvPi%2Fsj6uB8lPCYnDIhptx7BVnxgyiAYknXNiSgUx&X-Amz-Signature=fedff21b145ef075388d4715f53fc703181c85c2328ed42ea712c3523d3f136a&X-Amz-SignedHeaders=host&x-id=GetObject",
           "expiry_time": "2025-01-31T12:25:21.209Z"
         }
+      },
+      "Color": {
+        "description": "The color of the block.",
+        "type": "string",
+        "enum": [
+          "default",
+          "gray",
+          "brown",
+          "orange",
+          "yellow",
+          "green",
+          "blue",
+          "purple",
+          "pink",
+          "red",
+          "gray_background",
+          "brown_background",
+          "orange_background",
+          "yellow_background",
+          "green_background",
+          "blue_background",
+          "purple_background",
+          "pink_background",
+          "red_background"
+        ],
+        "example": "default"
+      },
+      "ExternalFile": {
+        "description": "An external file is any URL that isn't hosted by Notion.",
+        "type": "object",
+        "properties": {
+          "url": {
+            "description": "Link to the externally hosted content.",
+            "type": "string",
+            "format": "uri",
+            "example": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "example": {
+          "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
+        }
+      },
+      "File": {
+        "description": "File objects contain data about files uploaded to Notion as well as external files linked in Notion.",
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/FileType"
+          },
+          "external": {
+            "$ref": "#/components/schemas/ExternalFile"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "example": {
+          "type": "external",
+          "external": {
+            "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
+          }
+        }
+      },
+      "FileType": {
+        "description": "Type of this file object.",
+        "type": "string",
+        "enum": [
+          "file",
+          "external"
+        ],
+        "example": "external"
       },
       "Icon": {
         "description": "Page or database icon. It is either an emoji or a file.",
@@ -13346,7 +13346,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/GetBlocks96245c8f178444a482ad1941127c3ec3ChildrenOkJSONResponse"
+              "$ref": "#/components/schemas/BlocksList"
             },
             "example": {
               "object": "list",
