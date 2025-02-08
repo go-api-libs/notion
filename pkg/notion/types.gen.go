@@ -359,7 +359,8 @@ type LinkToPage struct {
 
 // Mention defines a model
 type Mention struct {
-	Type        string             `json:"type,omitzero"`
+	// Type of the inline mention.
+	Type        MentionType        `json:"type,omitzero"`
 	LinkMention MentionLinkMention `json:"link_mention"`
 	Database    *MentionDatabase   `json:"database,omitempty"`
 	User        *MentionUser       `json:"user,omitempty"`
@@ -390,6 +391,13 @@ type MentionLinkMention struct {
 type MentionPage struct {
 	ID uuid.UUID `json:"id,omitzero"`
 }
+
+// Type of the inline mention.
+type MentionType string
+
+const (
+	MentionTypeLinkMention MentionType = "link_mention"
+)
 
 // MentionUser defines a model
 type MentionUser struct {

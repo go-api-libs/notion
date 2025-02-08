@@ -1900,8 +1900,7 @@
         "type": "object",
         "properties": {
           "type": {
-            "type": "string",
-            "example": "link_mention"
+            "$ref": "#/components/schemas/MentionType"
           },
           "link_mention": {
             "$ref": "#/components/schemas/MentionLinkMention"
@@ -2016,6 +2015,14 @@
         "example": {
           "id": "2633808e-7e36-4f4e-972a-ccd2d3c49004"
         }
+      },
+      "MentionType": {
+        "description": "Type of the inline mention.",
+        "type": "string",
+        "enum": [
+          "link_mention"
+        ],
+        "example": "link_mention"
       },
       "MentionUser": {
         "type": "object",
