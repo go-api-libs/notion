@@ -986,7 +986,7 @@
       "CalloutRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/CalloutRichTextItems"
+          "$ref": "#/components/schemas/RichText4"
         },
         "example": [
           {
@@ -1007,52 +1007,6 @@
             "href": null
           }
         ]
-      },
-      "CalloutRichTextItems": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "Callout with a fire emoji."
-          },
-          "href": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "Callout with a fire emoji.",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "Callout with a fire emoji.",
-          "href": null
-        }
       },
       "Child": {
         "type": "object",
@@ -1260,7 +1214,7 @@
       "CodeRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/CodeRichTextItems"
+          "$ref": "#/components/schemas/RichText5"
         },
         "example": [
           {
@@ -1317,54 +1271,6 @@
             "href": null
           }
         ]
-      },
-      "CodeRichTextItems": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "func main() {\n\t"
-          },
-          "href": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://developers.notion.com/reference/block"
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "func main() {\n\t",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "func main() {\n\t",
-          "href": null
-        }
       },
       "Color": {
         "description": "The color of the block.",
@@ -1666,7 +1572,7 @@
       "Heading1RichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Heading1RichTextItems"
+          "$ref": "#/components/schemas/RichText6"
         },
         "example": [
           {
@@ -1756,52 +1662,6 @@
           }
         ]
       },
-      "Heading1RichTextItems": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "This "
-          },
-          "href": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "This ",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "This ",
-          "href": null
-        }
-      },
       "Heading2": {
         "type": "object",
         "properties": {
@@ -1849,7 +1709,7 @@
       "Heading2RichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Heading2RichTextItems"
+          "$ref": "#/components/schemas/RichText7"
         },
         "example": [
           {
@@ -1870,52 +1730,6 @@
             "href": null
           }
         ]
-      },
-      "Heading2RichTextItems": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "Medium toggle heading "
-          },
-          "href": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "Medium toggle heading ",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "Medium toggle heading ",
-          "href": null
-        }
       },
       "Heading3": {
         "type": "object",
@@ -1964,7 +1778,7 @@
       "Heading3RichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Heading3RichTextItems"
+          "$ref": "#/components/schemas/RichText8"
         },
         "example": [
           {
@@ -1985,52 +1799,6 @@
             "href": null
           }
         ]
-      },
-      "Heading3RichTextItems": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "Small heading"
-          },
-          "href": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "Small heading",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "Small heading",
-          "href": null
-        }
       },
       "Icon": {
         "description": "Page or database icon. It is either an emoji or a file.",
@@ -2284,6 +2052,7 @@
         }
       },
       "Paragraph": {
+        "description": "Paragraph, quote, toggle and list item block objects contain this information within their respective property.",
         "type": "object",
         "properties": {
           "rich_text": {
@@ -2344,7 +2113,7 @@
       "Paragraph2RichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Paragraph2RichTextItems"
+          "$ref": "#/components/schemas/RichText9"
         },
         "example": [
           {
@@ -2365,52 +2134,6 @@
             "href": null
           }
         ]
-      },
-      "Paragraph2RichTextItems": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "foo"
-          },
-          "href": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "foo",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "foo",
-          "href": null
-        }
       },
       "Paragraph3": {
         "type": "object",
@@ -2453,7 +2176,7 @@
       "Paragraph3RichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Paragraph3RichTextItems"
+          "$ref": "#/components/schemas/RichText10"
         },
         "example": [
           {
@@ -2474,52 +2197,6 @@
             "href": null
           }
         ]
-      },
-      "Paragraph3RichTextItems": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "Collect underpants."
-          },
-          "href": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "Collect underpants.",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "Collect underpants.",
-          "href": null
-        }
       },
       "Paragraph4": {
         "type": "object",
@@ -2562,7 +2239,7 @@
       "Paragraph4RichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Paragraph4RichTextItems"
+          "$ref": "#/components/schemas/RichText11"
         },
         "example": [
           {
@@ -2583,52 +2260,6 @@
             "href": null
           }
         ]
-      },
-      "Paragraph4RichTextItems": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "Toggle"
-          },
-          "href": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "Toggle",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "Toggle",
-          "href": null
-        }
       },
       "Paragraph8": {
         "type": "object",
@@ -2705,7 +2336,7 @@
       "Paragraph8RichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/Paragraph8RichTextItems"
+          "$ref": "#/components/schemas/RichText12"
         },
         "example": [
           {
@@ -2761,303 +2392,10 @@
           }
         ]
       },
-      "Paragraph8RichTextItems": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": " “The problem with "
-          },
-          "href": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": " “The problem with ",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": " “The problem with ",
-          "href": null
-        }
-      },
       "ParagraphRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/ParagraphRichTextItems"
-        }
-      },
-      "ParagraphRichTextItems": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "This is a simple paragraph."
-          },
-          "href": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://www.google.com/"
-          },
-          "mention": {
-            "$ref": "#/components/schemas/ParagraphRichTextItemsMention"
-          },
-          "equation": {
-            "$ref": "#/components/schemas/ParagraphRichTextItemsEquation"
-          }
-        },
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "This is a simple paragraph.",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "This is a simple paragraph.",
-          "href": null
-        }
-      },
-      "ParagraphRichTextItemsEquation": {
-        "type": "object",
-        "properties": {
-          "expression": {
-            "type": "string",
-            "example": "e^{\\pi i}+1=0"
-          }
-        },
-        "required": [
-          "expression"
-        ],
-        "example": {
-          "expression": "e^{\\pi i}+1=0"
-        }
-      },
-      "ParagraphRichTextItemsMention": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "link_mention"
-          },
-          "link_mention": {
-            "$ref": "#/components/schemas/ParagraphRichTextItemsMentionLinkMention"
-          },
-          "database": {
-            "$ref": "#/components/schemas/ParagraphRichTextItemsMentionDatabase"
-          },
-          "user": {
-            "$ref": "#/components/schemas/ParagraphRichTextItemsMentionUser"
-          },
-          "date": {
-            "$ref": "#/components/schemas/ParagraphRichTextItemsMentionDate"
-          },
-          "page": {
-            "$ref": "#/components/schemas/ParagraphRichTextItemsMentionPage"
-          }
-        },
-        "required": [
-          "type",
-          "link_mention"
-        ],
-        "example": {
-          "type": "link_mention",
-          "link_mention": {
-            "href": "https://example.com/",
-            "title": "Example Domain",
-            "description": "This domain is for use in illustrative examples in documents. You may use this\n    domain in literature without prior coordination or asking for permission."
-          }
-        }
-      },
-      "ParagraphRichTextItemsMentionDatabase": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "7a3c647e-4c1e-4c27-bf1d-cfb0105e55ce"
-          }
-        },
-        "required": [
-          "id"
-        ],
-        "example": {
-          "id": "7a3c647e-4c1e-4c27-bf1d-cfb0105e55ce"
-        }
-      },
-      "ParagraphRichTextItemsMentionDate": {
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "string",
-            "example": "2022-07-14"
-          },
-          "end": {
-            "type": "object"
-          },
-          "time_zone": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "start",
-          "end",
-          "time_zone"
-        ],
-        "example": {
-          "start": "2022-07-14",
-          "end": null,
-          "time_zone": null
-        }
-      },
-      "ParagraphRichTextItemsMentionLinkMention": {
-        "type": "object",
-        "properties": {
-          "href": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://example.com/"
-          },
-          "title": {
-            "type": "string",
-            "example": "Example Domain"
-          },
-          "description": {
-            "type": "string",
-            "example": "This domain is for use in illustrative examples in documents. You may use this\n    domain in literature without prior coordination or asking for permission."
-          }
-        },
-        "required": [
-          "href",
-          "title",
-          "description"
-        ],
-        "example": {
-          "href": "https://example.com/",
-          "title": "Example Domain",
-          "description": "This domain is for use in illustrative examples in documents. You may use this\n    domain in literature without prior coordination or asking for permission."
-        }
-      },
-      "ParagraphRichTextItemsMentionPage": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "2633808e-7e36-4f4e-972a-ccd2d3c49004"
-          }
-        },
-        "required": [
-          "id"
-        ],
-        "example": {
-          "id": "2633808e-7e36-4f4e-972a-ccd2d3c49004"
-        }
-      },
-      "ParagraphRichTextItemsMentionUser": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "type": "string",
-            "example": "user"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-          },
-          "name": {
-            "type": "string",
-            "example": "Fae Tools"
-          },
-          "avatar_url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100"
-          },
-          "type": {
-            "type": "string",
-            "example": "person"
-          },
-          "person": {
-            "$ref": "#/components/schemas/ParagraphRichTextItemsMentionUserPerson"
-          }
-        },
-        "required": [
-          "object",
-          "id",
-          "name",
-          "avatar_url",
-          "type",
-          "person"
-        ],
-        "example": {
-          "object": "user",
-          "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45",
-          "name": "Fae Tools",
-          "avatar_url": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100",
-          "type": "person",
-          "person": {
-            "email": "mark@faetools.com"
-          }
-        }
-      },
-      "ParagraphRichTextItemsMentionUserPerson": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "example": "mark@faetools.com"
-          }
-        },
-        "required": [
-          "email"
-        ],
-        "example": {
-          "email": "mark@faetools.com"
+          "$ref": "#/components/schemas/RichText13"
         }
       },
       "Parent": {
@@ -3244,6 +2582,437 @@
           "href": null
         }
       },
+      "RichText10": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/Text"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/Annotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": "Collect underpants."
+          },
+          "href": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "type",
+          "text",
+          "annotations",
+          "plain_text",
+          "href"
+        ],
+        "example": {
+          "type": "text",
+          "text": {
+            "content": "Collect underpants.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Collect underpants.",
+          "href": null
+        }
+      },
+      "RichText11": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/Text"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/Annotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": "Toggle"
+          },
+          "href": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "type",
+          "text",
+          "annotations",
+          "plain_text",
+          "href"
+        ],
+        "example": {
+          "type": "text",
+          "text": {
+            "content": "Toggle",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Toggle",
+          "href": null
+        }
+      },
+      "RichText12": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/Text"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/Annotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": " “The problem with "
+          },
+          "href": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "type",
+          "text",
+          "annotations",
+          "plain_text",
+          "href"
+        ],
+        "example": {
+          "type": "text",
+          "text": {
+            "content": " “The problem with ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": " “The problem with ",
+          "href": null
+        }
+      },
+      "RichText13": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/Text"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/Annotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": "This is a simple paragraph."
+          },
+          "href": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://www.google.com/"
+          },
+          "mention": {
+            "$ref": "#/components/schemas/RichText13Mention"
+          },
+          "equation": {
+            "$ref": "#/components/schemas/RichText13Equation"
+          }
+        },
+        "example": {
+          "type": "text",
+          "text": {
+            "content": "This is a simple paragraph.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "This is a simple paragraph.",
+          "href": null
+        }
+      },
+      "RichText13Equation": {
+        "type": "object",
+        "properties": {
+          "expression": {
+            "type": "string",
+            "example": "e^{\\pi i}+1=0"
+          }
+        },
+        "required": [
+          "expression"
+        ],
+        "example": {
+          "expression": "e^{\\pi i}+1=0"
+        }
+      },
+      "RichText13Mention": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "link_mention"
+          },
+          "link_mention": {
+            "$ref": "#/components/schemas/RichText13MentionLinkMention"
+          },
+          "database": {
+            "$ref": "#/components/schemas/RichText13MentionDatabase"
+          },
+          "user": {
+            "$ref": "#/components/schemas/RichText13MentionUser"
+          },
+          "date": {
+            "$ref": "#/components/schemas/RichText13MentionDate"
+          },
+          "page": {
+            "$ref": "#/components/schemas/RichText13MentionPage"
+          }
+        },
+        "required": [
+          "type",
+          "link_mention"
+        ],
+        "example": {
+          "type": "link_mention",
+          "link_mention": {
+            "href": "https://example.com/",
+            "title": "Example Domain",
+            "description": "This domain is for use in illustrative examples in documents. You may use this\n    domain in literature without prior coordination or asking for permission."
+          }
+        }
+      },
+      "RichText13MentionDatabase": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "7a3c647e-4c1e-4c27-bf1d-cfb0105e55ce"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "example": {
+          "id": "7a3c647e-4c1e-4c27-bf1d-cfb0105e55ce"
+        }
+      },
+      "RichText13MentionDate": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "example": "2022-07-14"
+          },
+          "end": {
+            "type": "object"
+          },
+          "time_zone": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "start",
+          "end",
+          "time_zone"
+        ],
+        "example": {
+          "start": "2022-07-14",
+          "end": null,
+          "time_zone": null
+        }
+      },
+      "RichText13MentionLinkMention": {
+        "type": "object",
+        "properties": {
+          "href": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://example.com/"
+          },
+          "title": {
+            "type": "string",
+            "example": "Example Domain"
+          },
+          "description": {
+            "type": "string",
+            "example": "This domain is for use in illustrative examples in documents. You may use this\n    domain in literature without prior coordination or asking for permission."
+          }
+        },
+        "required": [
+          "href",
+          "title",
+          "description"
+        ],
+        "example": {
+          "href": "https://example.com/",
+          "title": "Example Domain",
+          "description": "This domain is for use in illustrative examples in documents. You may use this\n    domain in literature without prior coordination or asking for permission."
+        }
+      },
+      "RichText13MentionPage": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "2633808e-7e36-4f4e-972a-ccd2d3c49004"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "example": {
+          "id": "2633808e-7e36-4f4e-972a-ccd2d3c49004"
+        }
+      },
+      "RichText13MentionUser": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "example": "user"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+          },
+          "name": {
+            "type": "string",
+            "example": "Fae Tools"
+          },
+          "avatar_url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100"
+          },
+          "type": {
+            "type": "string",
+            "example": "person"
+          },
+          "person": {
+            "$ref": "#/components/schemas/RichText13MentionUserPerson"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "name",
+          "avatar_url",
+          "type",
+          "person"
+        ],
+        "example": {
+          "object": "user",
+          "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45",
+          "name": "Fae Tools",
+          "avatar_url": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100",
+          "type": "person",
+          "person": {
+            "email": "mark@faetools.com"
+          }
+        }
+      },
+      "RichText13MentionUserPerson": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "mark@faetools.com"
+          }
+        },
+        "required": [
+          "email"
+        ],
+        "example": {
+          "email": "mark@faetools.com"
+        }
+      },
+      "RichText14": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/Text"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/Annotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": "finish this document"
+          },
+          "href": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "type",
+          "text",
+          "annotations",
+          "plain_text",
+          "href"
+        ],
+        "example": {
+          "type": "text",
+          "text": {
+            "content": "finish this document",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "finish this document",
+          "href": null
+        }
+      },
       "RichText2": {
         "type": "object",
         "properties": {
@@ -3367,6 +3136,284 @@
         "example": {
           "content": "A bookmark object.",
           "link": null
+        }
+      },
+      "RichText4": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/Text"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/Annotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": "Callout with a fire emoji."
+          },
+          "href": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "type",
+          "text",
+          "annotations",
+          "plain_text",
+          "href"
+        ],
+        "example": {
+          "type": "text",
+          "text": {
+            "content": "Callout with a fire emoji.",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Callout with a fire emoji.",
+          "href": null
+        }
+      },
+      "RichText5": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/Text"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/Annotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": "func main() {\n\t"
+          },
+          "href": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://developers.notion.com/reference/block"
+          }
+        },
+        "required": [
+          "type",
+          "text",
+          "annotations",
+          "plain_text",
+          "href"
+        ],
+        "example": {
+          "type": "text",
+          "text": {
+            "content": "func main() {\n\t",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "func main() {\n\t",
+          "href": null
+        }
+      },
+      "RichText6": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/Text"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/Annotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": "This "
+          },
+          "href": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "type",
+          "text",
+          "annotations",
+          "plain_text",
+          "href"
+        ],
+        "example": {
+          "type": "text",
+          "text": {
+            "content": "This ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "This ",
+          "href": null
+        }
+      },
+      "RichText7": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/Text"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/Annotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": "Medium toggle heading "
+          },
+          "href": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "type",
+          "text",
+          "annotations",
+          "plain_text",
+          "href"
+        ],
+        "example": {
+          "type": "text",
+          "text": {
+            "content": "Medium toggle heading ",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Medium toggle heading ",
+          "href": null
+        }
+      },
+      "RichText8": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/Text"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/Annotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": "Small heading"
+          },
+          "href": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "type",
+          "text",
+          "annotations",
+          "plain_text",
+          "href"
+        ],
+        "example": {
+          "type": "text",
+          "text": {
+            "content": "Small heading",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "Small heading",
+          "href": null
+        }
+      },
+      "RichText9": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/Text"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/Annotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": "foo"
+          },
+          "href": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "type",
+          "text",
+          "annotations",
+          "plain_text",
+          "href"
+        ],
+        "example": {
+          "type": "text",
+          "text": {
+            "content": "foo",
+            "link": null
+          },
+          "annotations": {
+            "bold": false,
+            "italic": false,
+            "strikethrough": false,
+            "underline": false,
+            "code": false,
+            "color": "default"
+          },
+          "plain_text": "foo",
+          "href": null
         }
       },
       "RichTextType": {
@@ -3584,7 +3631,7 @@
       "ToDoRichText": {
         "type": "array",
         "items": {
-          "$ref": "#/components/schemas/ToDoRichTextItems"
+          "$ref": "#/components/schemas/RichText14"
         },
         "example": [
           {
@@ -3605,52 +3652,6 @@
             "href": null
           }
         ]
-      },
-      "ToDoRichTextItems": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "finish this document"
-          },
-          "href": {
-            "type": "object"
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "finish this document",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "finish this document",
-          "href": null
-        }
       },
       "UserReference": {
         "type": "object",
