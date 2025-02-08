@@ -256,6 +256,11 @@ type Equation struct {
 	Expression string `json:"expression,omitzero"`
 }
 
+// Equation2 defines a model
+type Equation2 struct {
+	Expression string `json:"expression,omitzero"`
+}
+
 // An external file is any URL that isn't hosted by Notion.
 type ExternalFile struct {
 	// Link to the externally hosted content.
@@ -549,9 +554,9 @@ type RichText struct {
 	// Type of this rich text object.
 	Type RichTextType `json:"type,omitzero"`
 	// Text objects contain this information within the `text` property of a RichText object.
-	Text     Text              `json:"text"`
-	Mention  *Mention          `json:"mention,omitempty"`
-	Equation *RichTextEquation `json:"equation,omitempty"`
+	Text     Text       `json:"text"`
+	Mention  *Mention   `json:"mention,omitempty"`
+	Equation *Equation2 `json:"equation,omitempty"`
 	// Style information which applies to the whole rich text object.
 	Annotations Annotations `json:"annotations"`
 	// The plain text without annotations.
@@ -656,11 +661,6 @@ type RichText9 struct {
 	Annotations Annotations `json:"annotations"`
 	PlainText   string      `json:"plain_text,omitzero"`
 	Href        struct{}    `json:"href"`
-}
-
-// RichTextEquation defines a model
-type RichTextEquation struct {
-	Expression string `json:"expression,omitzero"`
 }
 
 // Type of this rich text object.

@@ -1375,6 +1375,21 @@
           "expression": "e^{\\pi i}+1 = 0"
         }
       },
+      "Equation2": {
+        "type": "object",
+        "properties": {
+          "expression": {
+            "type": "string",
+            "example": "e^{\\pi i}+1=0"
+          }
+        },
+        "required": [
+          "expression"
+        ],
+        "example": {
+          "expression": "e^{\\pi i}+1=0"
+        }
+      },
       "ExternalFile": {
         "description": "An external file is any URL that isn't hosted by Notion.",
         "type": "object",
@@ -2733,7 +2748,7 @@
             "$ref": "#/components/schemas/Mention"
           },
           "equation": {
-            "$ref": "#/components/schemas/RichTextEquation"
+            "$ref": "#/components/schemas/Equation2"
           },
           "annotations": {
             "$ref": "#/components/schemas/Annotations"
@@ -3175,21 +3190,6 @@
           },
           "plain_text": "foo",
           "href": null
-        }
-      },
-      "RichTextEquation": {
-        "type": "object",
-        "properties": {
-          "expression": {
-            "type": "string",
-            "example": "e^{\\pi i}+1=0"
-          }
-        },
-        "required": [
-          "expression"
-        ],
-        "example": {
-          "expression": "e^{\\pi i}+1=0"
         }
       },
       "RichTextType": {
