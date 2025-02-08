@@ -412,7 +412,7 @@ type Paragraph3 struct {
 }
 
 // Paragraph3RichText defines a model
-type Paragraph3RichText []RichText10
+type Paragraph3RichText []RichText
 
 // Paragraph4 defines a model
 type Paragraph4 struct {
@@ -421,7 +421,7 @@ type Paragraph4 struct {
 }
 
 // Paragraph4RichText defines a model
-type Paragraph4RichText []RichText11
+type Paragraph4RichText []RichText
 
 // Paragraph8 defines a model
 type Paragraph8 struct {
@@ -430,10 +430,10 @@ type Paragraph8 struct {
 }
 
 // Paragraph8RichText defines a model
-type Paragraph8RichText []RichText12
+type Paragraph8RichText []RichText
 
 // ParagraphRichText defines a model
-type ParagraphRichText []RichText13
+type ParagraphRichText []RichText
 
 // The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
 type Parent struct {
@@ -500,113 +500,15 @@ type RichText struct {
 	// Type of this rich text object.
 	Type RichTextType `json:"type,omitzero"`
 	// Text objects contain this information within the `text` property of a RichText object.
-	Text Text `json:"text"`
+	Text     Text              `json:"text"`
+	Mention  *RichTextMention  `json:"mention,omitempty"`
+	Equation *RichTextEquation `json:"equation,omitempty"`
 	// Style information which applies to the whole rich text object.
 	Annotations Annotations `json:"annotations"`
 	// The plain text without annotations.
 	PlainText string `json:"plain_text,omitzero"`
 	// The URL of any link or internal Notion mention in this text, if any.
 	Href *url.URL `json:"href,omitempty"`
-}
-
-// RichText10 defines a model
-type RichText10 struct {
-	Type string `json:"type,omitzero"`
-	// Text objects contain this information within the `text` property of a RichText object.
-	Text Text `json:"text"`
-	// Style information which applies to the whole rich text object.
-	Annotations Annotations `json:"annotations"`
-	PlainText   string      `json:"plain_text,omitzero"`
-	Href        struct{}    `json:"href"`
-}
-
-// RichText11 defines a model
-type RichText11 struct {
-	Type string `json:"type,omitzero"`
-	// Text objects contain this information within the `text` property of a RichText object.
-	Text Text `json:"text"`
-	// Style information which applies to the whole rich text object.
-	Annotations Annotations `json:"annotations"`
-	PlainText   string      `json:"plain_text,omitzero"`
-	Href        struct{}    `json:"href"`
-}
-
-// RichText12 defines a model
-type RichText12 struct {
-	Type string `json:"type,omitzero"`
-	// Text objects contain this information within the `text` property of a RichText object.
-	Text Text `json:"text"`
-	// Style information which applies to the whole rich text object.
-	Annotations Annotations `json:"annotations"`
-	PlainText   string      `json:"plain_text,omitzero"`
-	Href        struct{}    `json:"href"`
-}
-
-// RichText13 defines a model
-type RichText13 struct {
-	Type string `json:"type,omitzero"`
-	// Text objects contain this information within the `text` property of a RichText object.
-	Text *Text `json:"text,omitempty"`
-	// Style information which applies to the whole rich text object.
-	Annotations *Annotations        `json:"annotations,omitempty"`
-	PlainText   string              `json:"plain_text,omitzero"`
-	Href        *url.URL            `json:"href,omitempty"`
-	Mention     *RichText13Mention  `json:"mention,omitempty"`
-	Equation    *RichText13Equation `json:"equation,omitempty"`
-}
-
-// RichText13Equation defines a model
-type RichText13Equation struct {
-	Expression string `json:"expression,omitzero"`
-}
-
-// RichText13Mention defines a model
-type RichText13Mention struct {
-	Type        string                       `json:"type,omitzero"`
-	LinkMention RichText13MentionLinkMention `json:"link_mention"`
-	Database    *RichText13MentionDatabase   `json:"database,omitempty"`
-	User        *RichText13MentionUser       `json:"user,omitempty"`
-	Date        *RichText13MentionDate       `json:"date,omitempty"`
-	Page        *RichText13MentionPage       `json:"page,omitempty"`
-}
-
-// RichText13MentionDatabase defines a model
-type RichText13MentionDatabase struct {
-	ID uuid.UUID `json:"id,omitzero"`
-}
-
-// RichText13MentionDate defines a model
-type RichText13MentionDate struct {
-	Start    string   `json:"start,omitzero"`
-	End      struct{} `json:"end"`
-	TimeZone struct{} `json:"time_zone"`
-}
-
-// RichText13MentionLinkMention defines a model
-type RichText13MentionLinkMention struct {
-	Href        url.URL `json:"href,omitzero"`
-	Title       string  `json:"title,omitzero"`
-	Description string  `json:"description,omitzero"`
-}
-
-// RichText13MentionPage defines a model
-type RichText13MentionPage struct {
-	ID uuid.UUID `json:"id,omitzero"`
-}
-
-// RichText13MentionUser defines a model
-type RichText13MentionUser struct {
-	Object    string                      `json:"object,omitzero"`
-	ID        uuid.UUID                   `json:"id,omitzero"`
-	Name      string                      `json:"name,omitzero"`
-	AvatarURL url.URL                     `json:"avatar_url,omitzero"`
-	Type      string                      `json:"type,omitzero"`
-	Person    RichText13MentionUserPerson `json:"person"`
-}
-
-// RichText13MentionUserPerson defines a model
-type RichText13MentionUserPerson struct {
-	Email types.Email `json:"email,omitzero"`
 }
 
 // RichText14 defines a model
@@ -716,6 +618,60 @@ type RichText9 struct {
 	Annotations Annotations `json:"annotations"`
 	PlainText   string      `json:"plain_text,omitzero"`
 	Href        struct{}    `json:"href"`
+}
+
+// RichTextEquation defines a model
+type RichTextEquation struct {
+	Expression string `json:"expression,omitzero"`
+}
+
+// RichTextMention defines a model
+type RichTextMention struct {
+	Type        string                     `json:"type,omitzero"`
+	LinkMention RichTextMentionLinkMention `json:"link_mention"`
+	Database    *RichTextMentionDatabase   `json:"database,omitempty"`
+	User        *RichTextMentionUser       `json:"user,omitempty"`
+	Date        *RichTextMentionDate       `json:"date,omitempty"`
+	Page        *RichTextMentionPage       `json:"page,omitempty"`
+}
+
+// RichTextMentionDatabase defines a model
+type RichTextMentionDatabase struct {
+	ID uuid.UUID `json:"id,omitzero"`
+}
+
+// RichTextMentionDate defines a model
+type RichTextMentionDate struct {
+	Start    string   `json:"start,omitzero"`
+	End      struct{} `json:"end"`
+	TimeZone struct{} `json:"time_zone"`
+}
+
+// RichTextMentionLinkMention defines a model
+type RichTextMentionLinkMention struct {
+	Href        url.URL `json:"href,omitzero"`
+	Title       string  `json:"title,omitzero"`
+	Description string  `json:"description,omitzero"`
+}
+
+// RichTextMentionPage defines a model
+type RichTextMentionPage struct {
+	ID uuid.UUID `json:"id,omitzero"`
+}
+
+// RichTextMentionUser defines a model
+type RichTextMentionUser struct {
+	Object    string                    `json:"object,omitzero"`
+	ID        uuid.UUID                 `json:"id,omitzero"`
+	Name      string                    `json:"name,omitzero"`
+	AvatarURL url.URL                   `json:"avatar_url,omitzero"`
+	Type      string                    `json:"type,omitzero"`
+	Person    RichTextMentionUserPerson `json:"person"`
+}
+
+// RichTextMentionUserPerson defines a model
+type RichTextMentionUserPerson struct {
+	Email types.Email `json:"email,omitzero"`
 }
 
 // Type of this rich text object.
