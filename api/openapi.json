@@ -1947,8 +1947,7 @@
           }
         },
         "required": [
-          "type",
-          "link_mention"
+          "type"
         ],
         "example": {
           "type": "link_mention",

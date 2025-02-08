@@ -368,7 +368,7 @@ type LinkToPage struct {
 type Mention struct {
 	// Type of the inline mention.
 	Type        MentionType      `json:"type,omitzero"`
-	LinkMention LinkMention      `json:"link_mention"`
+	LinkMention *LinkMention     `json:"link_mention,omitempty"`
 	Database    *MentionDatabase `json:"database,omitempty"`
 	User        *MentionUser     `json:"user,omitempty"`
 	Date        *MentionDate     `json:"date,omitempty"`
