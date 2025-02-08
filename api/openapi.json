@@ -1858,6 +1858,34 @@
           }
         }
       },
+      "LinkMention": {
+        "type": "object",
+        "properties": {
+          "href": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://example.com/"
+          },
+          "title": {
+            "type": "string",
+            "example": "Example Domain"
+          },
+          "description": {
+            "type": "string",
+            "example": "This domain is for use in illustrative examples in documents. You may use this\n    domain in literature without prior coordination or asking for permission."
+          }
+        },
+        "required": [
+          "href",
+          "title",
+          "description"
+        ],
+        "example": {
+          "href": "https://example.com/",
+          "title": "Example Domain",
+          "description": "This domain is for use in illustrative examples in documents. You may use this\n    domain in literature without prior coordination or asking for permission."
+        }
+      },
       "LinkPreview": {
         "type": "object",
         "properties": {
@@ -1903,7 +1931,7 @@
             "$ref": "#/components/schemas/MentionType"
           },
           "link_mention": {
-            "$ref": "#/components/schemas/MentionLinkMention"
+            "$ref": "#/components/schemas/LinkMention"
           },
           "database": {
             "$ref": "#/components/schemas/MentionDatabase"
@@ -1970,34 +1998,6 @@
           "start": "2022-07-14",
           "end": null,
           "time_zone": null
-        }
-      },
-      "MentionLinkMention": {
-        "type": "object",
-        "properties": {
-          "href": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://example.com/"
-          },
-          "title": {
-            "type": "string",
-            "example": "Example Domain"
-          },
-          "description": {
-            "type": "string",
-            "example": "This domain is for use in illustrative examples in documents. You may use this\n    domain in literature without prior coordination or asking for permission."
-          }
-        },
-        "required": [
-          "href",
-          "title",
-          "description"
-        ],
-        "example": {
-          "href": "https://example.com/",
-          "title": "Example Domain",
-          "description": "This domain is for use in illustrative examples in documents. You may use this\n    domain in literature without prior coordination or asking for permission."
         }
       },
       "MentionPage": {

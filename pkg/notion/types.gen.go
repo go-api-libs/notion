@@ -346,6 +346,13 @@ type Link struct {
 	URL *url.URL `json:"url,omitempty"`
 }
 
+// LinkMention defines a model
+type LinkMention struct {
+	Href        url.URL `json:"href,omitzero"`
+	Title       string  `json:"title,omitzero"`
+	Description string  `json:"description,omitzero"`
+}
+
 // LinkPreview defines a model
 type LinkPreview struct {
 	URL url.URL `json:"url,omitzero"`
@@ -360,12 +367,12 @@ type LinkToPage struct {
 // Mention defines a model
 type Mention struct {
 	// Type of the inline mention.
-	Type        MentionType        `json:"type,omitzero"`
-	LinkMention MentionLinkMention `json:"link_mention"`
-	Database    *MentionDatabase   `json:"database,omitempty"`
-	User        *MentionUser       `json:"user,omitempty"`
-	Date        *MentionDate       `json:"date,omitempty"`
-	Page        *MentionPage       `json:"page,omitempty"`
+	Type        MentionType      `json:"type,omitzero"`
+	LinkMention LinkMention      `json:"link_mention"`
+	Database    *MentionDatabase `json:"database,omitempty"`
+	User        *MentionUser     `json:"user,omitempty"`
+	Date        *MentionDate     `json:"date,omitempty"`
+	Page        *MentionPage     `json:"page,omitempty"`
 }
 
 // MentionDatabase defines a model
@@ -378,13 +385,6 @@ type MentionDate struct {
 	Start    string   `json:"start,omitzero"`
 	End      struct{} `json:"end"`
 	TimeZone struct{} `json:"time_zone"`
-}
-
-// MentionLinkMention defines a model
-type MentionLinkMention struct {
-	Href        url.URL `json:"href,omitzero"`
-	Title       string  `json:"title,omitzero"`
-	Description string  `json:"description,omitzero"`
 }
 
 // MentionPage defines a model
