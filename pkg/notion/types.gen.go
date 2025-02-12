@@ -242,19 +242,21 @@ const (
 type Date struct {
 	// An ISO 8601 format date, with optional time.
 	Start string `json:"start,omitzero"`
-	/*
-	   An ISO 8601 formatted date, with optional time. Represents the end of a date range.
+	// An ISO 8601 formatted date, with optional time. Represents the end of a date range.
 
-	   If `null`, this property's date value is not a range.
-	*/
+	//
+
+	// If `null`, this property's date value is not a range.
 	End *struct{} `json:"end,omitempty"`
-	/*
-	   Time zone information for start and end. Possible values are extracted from the IANA database and they are based on the time zones from Moment.js.
+	// Time zone information for start and end. Possible values are extracted from the IANA database and they are based on the time zones from Moment.js.
 
-	   When time zone is provided, start and end should not have any UTC offset. In addition, when time zone is provided, start and end cannot be dates without time information.
+	//
 
-	   If null, time zone information will be contained in UTC offsets in start and end.
-	*/
+	// When time zone is provided, start and end should not have any UTC offset. In addition, when time zone is provided, start and end cannot be dates without time information.
+
+	//
+
+	// If null, time zone information will be contained in UTC offsets in start and end.
 	TimeZone *struct{} `json:"time_zone,omitempty"`
 }
 
@@ -531,11 +533,11 @@ const (
 
 // A property value defines the identifier, type, and value of a page property in a page object. It's used when retrieving and updating pages ex: Create and Update pages.
 type PropertyValue struct {
-	/*
-	   Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.
+	// Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.
 
-	   The id may be used in place of name when creating or updating pages.
-	*/
+	//
+
+	// The id may be used in place of name when creating or updating pages.
 	ID string `json:"id,omitzero"`
 	// Type of the property.
 	Type  PropertyType `json:"type,omitzero"`
