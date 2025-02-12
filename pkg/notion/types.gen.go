@@ -387,7 +387,7 @@ type Mention struct {
 	LinkMention *LinkMention `json:"link_mention,omitempty"`
 	User        *User2       `json:"user,omitempty"`
 	Page        *Reference   `json:"page,omitempty"`
-	Database    *Reference2  `json:"database,omitempty"`
+	Database    *Reference   `json:"database,omitempty"`
 	Date        *Date        `json:"date,omitempty"`
 }
 
@@ -541,11 +541,6 @@ type PropertyValues map[string]PropertyValue
 
 // Reference defines a model
 type Reference struct {
-	ID uuid.UUID `json:"id,omitzero"`
-}
-
-// Reference2 defines a model
-type Reference2 struct {
 	ID uuid.UUID `json:"id,omitzero"`
 }
 
