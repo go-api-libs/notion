@@ -240,8 +240,21 @@ const (
 
 // Date defines a model
 type Date struct {
-	Start    string   `json:"start,omitzero"`
-	End      struct{} `json:"end"`
+	// An ISO 8601 format date, with optional time.
+	Start string `json:"start,omitzero"`
+	/*
+	   An ISO 8601 formatted date, with optional time. Represents the end of a date range.
+
+	   If `null`, this property's date value is not a range.
+	*/
+	End struct{} `json:"end"`
+	/*
+	   Time zone information for start and end. Possible values are extracted from the IANA database and they are based on the time zones from Moment.js.
+
+	   When time zone is provided, start and end should not have any UTC offset. In addition, when time zone is provided, start and end cannot be dates without time information.
+
+	   If null, time zone information will be contained in UTC offsets in start and end.
+	*/
 	TimeZone struct{} `json:"time_zone"`
 }
 
