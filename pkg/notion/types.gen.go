@@ -55,17 +55,20 @@ type Block struct {
 	// Type of block.
 	Type BlockType `json:"type,omitzero"`
 	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
-	Paragraph        *Paragraph  `json:"paragraph,omitempty"`
-	Heading1         *Heading1   `json:"heading_1,omitempty"`
-	Heading2         *Heading2   `json:"heading_2,omitempty"`
-	Heading3         *Heading3   `json:"heading_3,omitempty"`
-	BulletedListItem *Paragraph2 `json:"bulleted_list_item,omitempty"`
-	NumberedListItem *Paragraph3 `json:"numbered_list_item,omitempty"`
-	ToDo             *ToDo       `json:"to_do,omitempty"`
-	Toggle           *Paragraph4 `json:"toggle,omitempty"`
-	Code             *Code       `json:"code,omitempty"`
-	ChildPage        *Child      `json:"child_page,omitempty"`
-	ChildDatabase    *Child      `json:"child_database,omitempty"`
+	Paragraph *Paragraph `json:"paragraph,omitempty"`
+	Heading1  *Heading1  `json:"heading_1,omitempty"`
+	Heading2  *Heading2  `json:"heading_2,omitempty"`
+	Heading3  *Heading3  `json:"heading_3,omitempty"`
+	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
+	BulletedListItem *Paragraph `json:"bulleted_list_item,omitempty"`
+	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
+	NumberedListItem *Paragraph `json:"numbered_list_item,omitempty"`
+	ToDo             *ToDo      `json:"to_do,omitempty"`
+	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
+	Toggle        *Paragraph `json:"toggle,omitempty"`
+	Code          *Code      `json:"code,omitempty"`
+	ChildPage     *Child     `json:"child_page,omitempty"`
+	ChildDatabase *Child     `json:"child_database,omitempty"`
 	// Embed blocks include block types that allow displaying another website within Notion.
 	Embed *Embed `json:"embed,omitempty"`
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
@@ -78,9 +81,10 @@ type Block struct {
 	PDF      *FileWithCaption `json:"pdf,omitempty"`
 	Bookmark *Embed2          `json:"bookmark,omitempty"`
 	// Callout block objects contain the following information within the callout field.
-	Callout  *Callout    `json:"callout,omitempty"`
-	Quote    *Paragraph8 `json:"quote,omitempty"`
-	Equation *Equation   `json:"equation,omitempty"`
+	Callout *Callout `json:"callout,omitempty"`
+	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
+	Quote    *Paragraph `json:"quote,omitempty"`
+	Equation *Equation  `json:"equation,omitempty"`
 	// Divider block objects do not contain any information within the divider property
 	Divider         *struct{}        `json:"divider,omitempty"`
 	TableOfContents *TableOfContents `json:"table_of_contents,omitempty"`
@@ -441,42 +445,6 @@ type Paragraph struct {
 	RichText ParagraphRichText `json:"rich_text,omitempty"`
 	Color    string            `json:"color,omitzero"`
 }
-
-// Paragraph2 defines a model
-type Paragraph2 struct {
-	RichText Paragraph2RichText `json:"rich_text,omitempty"`
-	Color    string             `json:"color,omitzero"`
-}
-
-// Paragraph2RichText defines a model
-type Paragraph2RichText []RichText9
-
-// Paragraph3 defines a model
-type Paragraph3 struct {
-	RichText Paragraph3RichText `json:"rich_text,omitempty"`
-	Color    string             `json:"color,omitzero"`
-}
-
-// Paragraph3RichText defines a model
-type Paragraph3RichText []RichText
-
-// Paragraph4 defines a model
-type Paragraph4 struct {
-	RichText Paragraph4RichText `json:"rich_text,omitempty"`
-	Color    string             `json:"color,omitzero"`
-}
-
-// Paragraph4RichText defines a model
-type Paragraph4RichText []RichText
-
-// Paragraph8 defines a model
-type Paragraph8 struct {
-	RichText Paragraph8RichText `json:"rich_text,omitempty"`
-	Color    string             `json:"color,omitzero"`
-}
-
-// Paragraph8RichText defines a model
-type Paragraph8RichText []RichText
 
 // ParagraphRichText defines a model
 type ParagraphRichText []RichText
