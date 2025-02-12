@@ -1358,9 +1358,11 @@
         }
       },
       "Equation": {
+        "description": "Equation block objects contain this information within the `equation` property",
         "type": "object",
         "properties": {
           "expression": {
+            "description": "A KaTeX compatible string",
             "type": "string",
             "example": "e^{\\pi i}+1 = 0"
           }
@@ -1370,21 +1372,6 @@
         ],
         "example": {
           "expression": "e^{\\pi i}+1 = 0"
-        }
-      },
-      "Equation2": {
-        "type": "object",
-        "properties": {
-          "expression": {
-            "type": "string",
-            "example": "e^{\\pi i}+1=0"
-          }
-        },
-        "required": [
-          "expression"
-        ],
-        "example": {
-          "expression": "e^{\\pi i}+1=0"
         }
       },
       "ExternalFile": {
@@ -2099,7 +2086,7 @@
             "$ref": "#/components/schemas/Mention"
           },
           "equation": {
-            "$ref": "#/components/schemas/Equation2"
+            "$ref": "#/components/schemas/Equation"
           },
           "annotations": {
             "$ref": "#/components/schemas/Annotations"

@@ -87,8 +87,9 @@ type Block struct {
 	// Callout block objects contain the following information within the callout field.
 	Callout *Callout `json:"callout,omitempty"`
 	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
-	Quote    *Paragraph `json:"quote,omitempty"`
-	Equation *Equation  `json:"equation,omitempty"`
+	Quote *Paragraph `json:"quote,omitempty"`
+	// Equation block objects contain this information within the `equation` property
+	Equation *Equation `json:"equation,omitempty"`
 	// Divider block objects do not contain any information within the divider property
 	Divider         *struct{}        `json:"divider,omitempty"`
 	TableOfContents *TableOfContents `json:"table_of_contents,omitempty"`
@@ -269,13 +270,9 @@ type Embed struct {
 	URL url.URL `json:"url,omitzero"`
 }
 
-// Equation defines a model
+// Equation block objects contain this information within the `equation` property
 type Equation struct {
-	Expression string `json:"expression,omitzero"`
-}
-
-// Equation2 defines a model
-type Equation2 struct {
+	// A KaTeX compatible string
 	Expression string `json:"expression,omitzero"`
 }
 
@@ -493,9 +490,10 @@ type RichText struct {
 	// Type of this rich text object.
 	Type RichTextType `json:"type,omitzero"`
 	// Text objects contain this information within the `text` property of a RichText object.
-	Text     Text       `json:"text"`
-	Mention  *Mention   `json:"mention,omitempty"`
-	Equation *Equation2 `json:"equation,omitempty"`
+	Text    Text     `json:"text"`
+	Mention *Mention `json:"mention,omitempty"`
+	// Equation block objects contain this information within the `equation` property
+	Equation *Equation `json:"equation,omitempty"`
 	// Style information which applies to the whole rich text object.
 	Annotations Annotations `json:"annotations"`
 	// The plain text without annotations.
