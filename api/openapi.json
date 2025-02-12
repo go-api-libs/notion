@@ -881,14 +881,13 @@
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/CalloutRichText"
+            "$ref": "#/components/schemas/RichTexts"
           },
           "icon": {
-            "$ref": "#/components/schemas/CalloutIcon"
+            "$ref": "#/components/schemas/Icon"
           },
           "color": {
-            "type": "string",
-            "example": "gray_background"
+            "$ref": "#/components/schemas/Color"
           }
         },
         "required": [
@@ -923,97 +922,6 @@
           "color": "gray_background"
         }
       },
-      "CalloutIcon": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "emoji"
-          },
-          "emoji": {
-            "type": "string",
-            "example": "🔥"
-          },
-          "external": {
-            "$ref": "#/components/schemas/CalloutIconExternal"
-          },
-          "file": {
-            "$ref": "#/components/schemas/CalloutIconFile"
-          }
-        },
-        "required": [
-          "type",
-          "emoji"
-        ],
-        "example": {
-          "type": "emoji",
-          "emoji": "🔥"
-        }
-      },
-      "CalloutIconExternal": {
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/melting-face_1fae0.png"
-          }
-        },
-        "required": [
-          "url"
-        ],
-        "example": {
-          "url": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/melting-face_1fae0.png"
-        }
-      },
-      "CalloutIconFile": {
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/30d8226f-1494-40f3-898c-4683f6e14a38/sparkles_2728.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XIAECK6E%2F20250131%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250131T112521Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQD4UujnejYRkyMDGRuKJbIgo5p1h2yzfv8bb%2BFetXwqqwIgXdwatek%2F8VGbJo48DI2wRajJa6VapXYOw1%2BAXGx%2Fq4gqiAQIvP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDOcsW2%2BPFn5bTbwpjyrcAxOkcesJhzQt06sOaWRNNrpwpNU5VK9v4YJF1P%2B1yQYTGw0L7WurWmW9Z76FTMmoAtrx4D7aMXBpwhTc%2BSw8iEetOwHs9NS%2F%2BPfnPay8JwYr%2F6Ck86H%2FWWVHEdHOqd0b%2Bi5%2FA8olnEDSgWKvM%2B9R618YTMT9UfSmfufVfN9DXXExMIwaI96W8tL2TFJEfbcXAkTlbPWoK4CFyC7fCi7wum7ixTdWKja%2BNpeuETsKXMMlzFgt0oHhDZpJG7Md869uQIZq%2Fv88G5VMqvlQJMZrFH9RMCqrspRRozS%2Fpd9EMa8JyhTaVV1f2viZ8o1v%2FICgPRbXW0L6B7Ty3BPcDq1Cx%2FrKltMy%2B4XDVrKum663pCaxcwhVE37QO6BFIoub4GuFStUQvATrzaNw0oMcFfVLw9JSpAS8h4B3NrwN%2BqPcUKrAKt8cb3TL8%2BHdSzhpyt3o4G2PXEvk%2FVzcVZTi4BzFnBlC%2BFRTEFnw4zT5N%2BrVmJj3s52bv%2FLFOvRnMyyIHDIqXMdWx9UuG6JNR22sYvN3FfvvLx4eIL33lf2eX1xlRi0ft9mjVMQqsNK%2BkkxiwmJKx04QtQRiC0HB%2F3M8kUrnY9ZpExf%2B9ke%2FFRio7xSwkwKCQI%2B4%2B0iAqMtfxIQiMNrW8rwGOqUBbMh4hPgk22nna%2Bi0YlyK54yZTYRc4k%2FLIAsRBXy%2F5PyOO8TzG3JOxFTsG11OjA6JLidms71TrIU22tv0GO5Qe38qP2DEPhZYUPJb7iwW4HMaOwwOxaeDmXgDoRfCskg93uQB52QNEWnweYkAIYXs5n97H5dM3p35Je3KBiv1PY6H6YjeY6Y%2FvPi%2Fsj6uB8lPCYnDIhptx7BVnxgyiAYknXNiSgUx&X-Amz-Signature=c8a38195c95c7b79c97792d593c9f2ff52cfd5285ad4ba85c536a29d87ef9a9f&X-Amz-SignedHeaders=host&x-id=GetObject"
-          },
-          "expiry_time": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2025-01-31T12:25:21.225Z"
-          }
-        },
-        "required": [
-          "url",
-          "expiry_time"
-        ],
-        "example": {
-          "url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/30d8226f-1494-40f3-898c-4683f6e14a38/sparkles_2728.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XIAECK6E%2F20250131%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250131T112521Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQD4UujnejYRkyMDGRuKJbIgo5p1h2yzfv8bb%2BFetXwqqwIgXdwatek%2F8VGbJo48DI2wRajJa6VapXYOw1%2BAXGx%2Fq4gqiAQIvP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDOcsW2%2BPFn5bTbwpjyrcAxOkcesJhzQt06sOaWRNNrpwpNU5VK9v4YJF1P%2B1yQYTGw0L7WurWmW9Z76FTMmoAtrx4D7aMXBpwhTc%2BSw8iEetOwHs9NS%2F%2BPfnPay8JwYr%2F6Ck86H%2FWWVHEdHOqd0b%2Bi5%2FA8olnEDSgWKvM%2B9R618YTMT9UfSmfufVfN9DXXExMIwaI96W8tL2TFJEfbcXAkTlbPWoK4CFyC7fCi7wum7ixTdWKja%2BNpeuETsKXMMlzFgt0oHhDZpJG7Md869uQIZq%2Fv88G5VMqvlQJMZrFH9RMCqrspRRozS%2Fpd9EMa8JyhTaVV1f2viZ8o1v%2FICgPRbXW0L6B7Ty3BPcDq1Cx%2FrKltMy%2B4XDVrKum663pCaxcwhVE37QO6BFIoub4GuFStUQvATrzaNw0oMcFfVLw9JSpAS8h4B3NrwN%2BqPcUKrAKt8cb3TL8%2BHdSzhpyt3o4G2PXEvk%2FVzcVZTi4BzFnBlC%2BFRTEFnw4zT5N%2BrVmJj3s52bv%2FLFOvRnMyyIHDIqXMdWx9UuG6JNR22sYvN3FfvvLx4eIL33lf2eX1xlRi0ft9mjVMQqsNK%2BkkxiwmJKx04QtQRiC0HB%2F3M8kUrnY9ZpExf%2B9ke%2FFRio7xSwkwKCQI%2B4%2B0iAqMtfxIQiMNrW8rwGOqUBbMh4hPgk22nna%2Bi0YlyK54yZTYRc4k%2FLIAsRBXy%2F5PyOO8TzG3JOxFTsG11OjA6JLidms71TrIU22tv0GO5Qe38qP2DEPhZYUPJb7iwW4HMaOwwOxaeDmXgDoRfCskg93uQB52QNEWnweYkAIYXs5n97H5dM3p35Je3KBiv1PY6H6YjeY6Y%2FvPi%2Fsj6uB8lPCYnDIhptx7BVnxgyiAYknXNiSgUx&X-Amz-Signature=c8a38195c95c7b79c97792d593c9f2ff52cfd5285ad4ba85c536a29d87ef9a9f&X-Amz-SignedHeaders=host&x-id=GetObject",
-          "expiry_time": "2025-01-31T12:25:21.225Z"
-        }
-      },
-      "CalloutRichText": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/RichText4"
-        },
-        "example": [
-          {
-            "type": "text",
-            "text": {
-              "content": "Callout with a fire emoji.",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "default"
-            },
-            "plain_text": "Callout with a fire emoji.",
-            "href": null
-          }
-        ]
-      },
       "Child": {
         "type": "object",
         "properties": {
@@ -1030,21 +938,20 @@
         }
       },
       "Code": {
+        "description": "Code block objects contain this information within the `code` property.",
         "type": "object",
         "properties": {
           "caption": {
-            "$ref": "#/components/schemas/CodeCaption"
+            "$ref": "#/components/schemas/RichTexts"
           },
           "rich_text": {
-            "$ref": "#/components/schemas/CodeRichText"
+            "$ref": "#/components/schemas/RichTexts"
           },
           "language": {
-            "type": "string",
-            "example": "go"
+            "$ref": "#/components/schemas/CodeLanguage"
           }
         },
         "required": [
-          "caption",
           "rich_text",
           "language"
         ],
@@ -1126,159 +1033,84 @@
           "language": "go"
         }
       },
-      "CodeCaption": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/CodeCaptionItems"
-        },
-        "example": [
-          {
-            "type": "text",
-            "text": {
-              "content": "It even has a caption!",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "default"
-            },
-            "plain_text": "It even has a caption!",
-            "href": null
-          }
-        ]
-      },
-      "CodeCaptionItems": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/CodeCaptionItemsText"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "It even has a caption!"
-          },
-          "href": {
-            "type": "object",
-            "example": null
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
+      "CodeLanguage": {
+        "description": "Coding language in code block",
+        "type": "string",
+        "enum": [
+          "abap",
+          "arduino",
+          "bash",
+          "basic",
+          "c",
+          "clojure",
+          "coffeescript",
+          "c++",
+          "c#",
+          "css",
+          "dart",
+          "diff",
+          "docker",
+          "elixir",
+          "elm",
+          "erlang",
+          "flow",
+          "fortran",
+          "f#",
+          "gherkin",
+          "glsl",
+          "go",
+          "graphql",
+          "groovy",
+          "haskell",
+          "html",
+          "java",
+          "javascript",
+          "json",
+          "julia",
+          "kotlin",
+          "latex",
+          "less",
+          "lisp",
+          "livescript",
+          "lua",
+          "makefile",
+          "markdown",
+          "markup",
+          "matlab",
+          "mermaid",
+          "nix",
+          "objective-c",
+          "ocaml",
+          "pascal",
+          "perl",
+          "php",
+          "plain text",
+          "powershell",
+          "prolog",
+          "protobuf",
+          "python",
+          "r",
+          "reason",
+          "ruby",
+          "rust",
+          "sass",
+          "scala",
+          "scheme",
+          "scss",
+          "shell",
+          "sql",
+          "swift",
+          "typescript",
+          "vb.net",
+          "verilog",
+          "vhdl",
+          "visual basic",
+          "webassembly",
+          "xml",
+          "yaml",
+          "java/c/c++/c#"
         ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "It even has a caption!",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "It even has a caption!",
-          "href": null
-        }
-      },
-      "CodeCaptionItemsText": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "string",
-            "example": "It even has a caption!"
-          },
-          "link": {
-            "type": "object",
-            "example": null
-          }
-        },
-        "required": [
-          "content",
-          "link"
-        ],
-        "example": {
-          "content": "It even has a caption!",
-          "link": null
-        }
-      },
-      "CodeRichText": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/RichText5"
-        },
-        "example": [
-          {
-            "type": "text",
-            "text": {
-              "content": "func main() {\n\t",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "default"
-            },
-            "plain_text": "func main() {\n\t",
-            "href": null
-          },
-          {
-            "type": "text",
-            "text": {
-              "content": "startNotion",
-              "link": {
-                "url": "https://developers.notion.com/reference/block"
-              }
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "default"
-            },
-            "plain_text": "startNotion",
-            "href": "https://developers.notion.com/reference/block"
-          },
-          {
-            "type": "text",
-            "text": {
-              "content": "()\n}",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "default"
-            },
-            "plain_text": "()\n}",
-            "href": null
-          }
-        ]
+        "example": "go"
       },
       "Color": {
         "description": "The color of the block.",
@@ -1580,6 +1412,12 @@
             "type": "string",
             "pattern": "^[^\\w\\s]+$",
             "example": "🌄"
+          },
+          "external": {
+            "$ref": "#/components/schemas/IconExternal"
+          },
+          "file": {
+            "$ref": "#/components/schemas/IconFile"
           }
         },
         "required": [
@@ -1588,6 +1426,45 @@
         "example": {
           "type": "emoji",
           "emoji": "🌄"
+        }
+      },
+      "IconExternal": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/melting-face_1fae0.png"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "example": {
+          "url": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/melting-face_1fae0.png"
+        }
+      },
+      "IconFile": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/30d8226f-1494-40f3-898c-4683f6e14a38/sparkles_2728.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XIAECK6E%2F20250131%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250131T112521Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQD4UujnejYRkyMDGRuKJbIgo5p1h2yzfv8bb%2BFetXwqqwIgXdwatek%2F8VGbJo48DI2wRajJa6VapXYOw1%2BAXGx%2Fq4gqiAQIvP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDOcsW2%2BPFn5bTbwpjyrcAxOkcesJhzQt06sOaWRNNrpwpNU5VK9v4YJF1P%2B1yQYTGw0L7WurWmW9Z76FTMmoAtrx4D7aMXBpwhTc%2BSw8iEetOwHs9NS%2F%2BPfnPay8JwYr%2F6Ck86H%2FWWVHEdHOqd0b%2Bi5%2FA8olnEDSgWKvM%2B9R618YTMT9UfSmfufVfN9DXXExMIwaI96W8tL2TFJEfbcXAkTlbPWoK4CFyC7fCi7wum7ixTdWKja%2BNpeuETsKXMMlzFgt0oHhDZpJG7Md869uQIZq%2Fv88G5VMqvlQJMZrFH9RMCqrspRRozS%2Fpd9EMa8JyhTaVV1f2viZ8o1v%2FICgPRbXW0L6B7Ty3BPcDq1Cx%2FrKltMy%2B4XDVrKum663pCaxcwhVE37QO6BFIoub4GuFStUQvATrzaNw0oMcFfVLw9JSpAS8h4B3NrwN%2BqPcUKrAKt8cb3TL8%2BHdSzhpyt3o4G2PXEvk%2FVzcVZTi4BzFnBlC%2BFRTEFnw4zT5N%2BrVmJj3s52bv%2FLFOvRnMyyIHDIqXMdWx9UuG6JNR22sYvN3FfvvLx4eIL33lf2eX1xlRi0ft9mjVMQqsNK%2BkkxiwmJKx04QtQRiC0HB%2F3M8kUrnY9ZpExf%2B9ke%2FFRio7xSwkwKCQI%2B4%2B0iAqMtfxIQiMNrW8rwGOqUBbMh4hPgk22nna%2Bi0YlyK54yZTYRc4k%2FLIAsRBXy%2F5PyOO8TzG3JOxFTsG11OjA6JLidms71TrIU22tv0GO5Qe38qP2DEPhZYUPJb7iwW4HMaOwwOxaeDmXgDoRfCskg93uQB52QNEWnweYkAIYXs5n97H5dM3p35Je3KBiv1PY6H6YjeY6Y%2FvPi%2Fsj6uB8lPCYnDIhptx7BVnxgyiAYknXNiSgUx&X-Amz-Signature=c8a38195c95c7b79c97792d593c9f2ff52cfd5285ad4ba85c536a29d87ef9a9f&X-Amz-SignedHeaders=host&x-id=GetObject"
+          },
+          "expiry_time": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-01-31T12:25:21.225Z"
+          }
+        },
+        "required": [
+          "url",
+          "expiry_time"
+        ],
+        "example": {
+          "url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/30d8226f-1494-40f3-898c-4683f6e14a38/sparkles_2728.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XIAECK6E%2F20250131%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250131T112521Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQD4UujnejYRkyMDGRuKJbIgo5p1h2yzfv8bb%2BFetXwqqwIgXdwatek%2F8VGbJo48DI2wRajJa6VapXYOw1%2BAXGx%2Fq4gqiAQIvP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDOcsW2%2BPFn5bTbwpjyrcAxOkcesJhzQt06sOaWRNNrpwpNU5VK9v4YJF1P%2B1yQYTGw0L7WurWmW9Z76FTMmoAtrx4D7aMXBpwhTc%2BSw8iEetOwHs9NS%2F%2BPfnPay8JwYr%2F6Ck86H%2FWWVHEdHOqd0b%2Bi5%2FA8olnEDSgWKvM%2B9R618YTMT9UfSmfufVfN9DXXExMIwaI96W8tL2TFJEfbcXAkTlbPWoK4CFyC7fCi7wum7ixTdWKja%2BNpeuETsKXMMlzFgt0oHhDZpJG7Md869uQIZq%2Fv88G5VMqvlQJMZrFH9RMCqrspRRozS%2Fpd9EMa8JyhTaVV1f2viZ8o1v%2FICgPRbXW0L6B7Ty3BPcDq1Cx%2FrKltMy%2B4XDVrKum663pCaxcwhVE37QO6BFIoub4GuFStUQvATrzaNw0oMcFfVLw9JSpAS8h4B3NrwN%2BqPcUKrAKt8cb3TL8%2BHdSzhpyt3o4G2PXEvk%2FVzcVZTi4BzFnBlC%2BFRTEFnw4zT5N%2BrVmJj3s52bv%2FLFOvRnMyyIHDIqXMdWx9UuG6JNR22sYvN3FfvvLx4eIL33lf2eX1xlRi0ft9mjVMQqsNK%2BkkxiwmJKx04QtQRiC0HB%2F3M8kUrnY9ZpExf%2B9ke%2FFRio7xSwkwKCQI%2B4%2B0iAqMtfxIQiMNrW8rwGOqUBbMh4hPgk22nna%2Bi0YlyK54yZTYRc4k%2FLIAsRBXy%2F5PyOO8TzG3JOxFTsG11OjA6JLidms71TrIU22tv0GO5Qe38qP2DEPhZYUPJb7iwW4HMaOwwOxaeDmXgDoRfCskg93uQB52QNEWnweYkAIYXs5n97H5dM3p35Je3KBiv1PY6H6YjeY6Y%2FvPi%2Fsj6uB8lPCYnDIhptx7BVnxgyiAYknXNiSgUx&X-Amz-Signature=c8a38195c95c7b79c97792d593c9f2ff52cfd5285ad4ba85c536a29d87ef9a9f&X-Amz-SignedHeaders=host&x-id=GetObject",
+          "expiry_time": "2025-01-31T12:25:21.225Z"
         }
       },
       "IconType": {
@@ -2127,418 +2004,6 @@
           "href": null
         }
       },
-      "RichText2": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/RichText2Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "A "
-          },
-          "href": {
-            "type": "object",
-            "example": null
-          }
-        },
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "A ",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "A ",
-          "href": null
-        }
-      },
-      "RichText2Text": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "string",
-            "example": "A "
-          },
-          "link": {
-            "type": "object",
-            "example": null
-          }
-        },
-        "required": [
-          "content",
-          "link"
-        ],
-        "example": {
-          "content": "A ",
-          "link": null
-        }
-      },
-      "RichText3": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/RichText3Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "A bookmark object."
-          },
-          "href": {
-            "type": "object",
-            "example": null
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "A bookmark object.",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "A bookmark object.",
-          "href": null
-        }
-      },
-      "RichText3Text": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "string",
-            "example": "A bookmark object."
-          },
-          "link": {
-            "type": "object",
-            "example": null
-          }
-        },
-        "required": [
-          "content",
-          "link"
-        ],
-        "example": {
-          "content": "A bookmark object.",
-          "link": null
-        }
-      },
-      "RichText4": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "Callout with a fire emoji."
-          },
-          "href": {
-            "type": "object",
-            "example": null
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "Callout with a fire emoji.",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "Callout with a fire emoji.",
-          "href": null
-        }
-      },
-      "RichText5": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "func main() {\n\t"
-          },
-          "href": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://developers.notion.com/reference/block"
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "func main() {\n\t",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "func main() {\n\t",
-          "href": null
-        }
-      },
-      "RichText6": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "This "
-          },
-          "href": {
-            "type": "object",
-            "example": null
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "This ",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "This ",
-          "href": null
-        }
-      },
-      "RichText7": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "Medium toggle heading "
-          },
-          "href": {
-            "type": "object",
-            "example": null
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "Medium toggle heading ",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "Medium toggle heading ",
-          "href": null
-        }
-      },
-      "RichText8": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "Small heading"
-          },
-          "href": {
-            "type": "object",
-            "example": null
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "Small heading",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "Small heading",
-          "href": null
-        }
-      },
-      "RichText9": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/Text"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/Annotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "foo"
-          },
-          "href": {
-            "type": "object",
-            "example": null
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ],
-        "example": {
-          "type": "text",
-          "text": {
-            "content": "foo",
-            "link": null
-          },
-          "annotations": {
-            "bold": false,
-            "italic": false,
-            "strikethrough": false,
-            "underline": false,
-            "code": false,
-            "color": "default"
-          },
-          "plain_text": "foo",
-          "href": null
-        }
-      },
       "RichTextType": {
         "description": "Type of this rich text object.",
         "type": "string",
@@ -2570,38 +2035,6 @@
               "color": "default"
             },
             "plain_text": "Example Page",
-            "href": null
-          }
-        ]
-      },
-      "RichTexts2": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/RichText2"
-        },
-        "example": []
-      },
-      "RichTexts22": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/RichText3"
-        },
-        "example": [
-          {
-            "type": "text",
-            "text": {
-              "content": "A bookmark object.",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "default"
-            },
-            "plain_text": "A bookmark object.",
             "href": null
           }
         ]

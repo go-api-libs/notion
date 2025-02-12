@@ -68,10 +68,11 @@ type Block struct {
 	NumberedListItem *Paragraph `json:"numbered_list_item,omitempty"`
 	ToDo             *ToDo      `json:"to_do,omitempty"`
 	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
-	Toggle        *Paragraph `json:"toggle,omitempty"`
-	Code          *Code      `json:"code,omitempty"`
-	ChildPage     *Child     `json:"child_page,omitempty"`
-	ChildDatabase *Child     `json:"child_database,omitempty"`
+	Toggle *Paragraph `json:"toggle,omitempty"`
+	// Code block objects contain this information within the `code` property.
+	Code          *Code  `json:"code,omitempty"`
+	ChildPage     *Child `json:"child_page,omitempty"`
+	ChildDatabase *Child `json:"child_database,omitempty"`
 	// Embed blocks include block types that allow displaying another website within Notion.
 	Embed *Embed `json:"embed,omitempty"`
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
@@ -161,66 +162,103 @@ type BlocksList struct {
 
 // Callout block objects contain the following information within the callout field.
 type Callout struct {
-	RichText CalloutRichText `json:"rich_text,omitempty"`
-	Icon     CalloutIcon     `json:"icon"`
-	Color    string          `json:"color,omitzero"`
+	RichText RichTexts `json:"rich_text,omitempty"`
+	// Page or database icon. It is either an emoji or a file.
+	Icon Icon `json:"icon"`
+	// The color of the block.
+	Color Color `json:"color,omitzero"`
 }
-
-// CalloutIcon defines a model
-type CalloutIcon struct {
-	Type     string               `json:"type,omitzero"`
-	Emoji    string               `json:"emoji,omitzero"`
-	External *CalloutIconExternal `json:"external,omitempty"`
-	File     *CalloutIconFile     `json:"file,omitempty"`
-}
-
-// CalloutIconExternal defines a model
-type CalloutIconExternal struct {
-	URL url.URL `json:"url,omitzero"`
-}
-
-// CalloutIconFile defines a model
-type CalloutIconFile struct {
-	URL        url.URL   `json:"url,omitzero"`
-	ExpiryTime time.Time `json:"expiry_time,omitzero"`
-}
-
-// CalloutRichText defines a model
-type CalloutRichText []RichText4
 
 // Child defines a model
 type Child struct {
 	Title string `json:"title,omitzero"`
 }
 
-// Code defines a model
+// Code block objects contain this information within the `code` property.
 type Code struct {
-	Caption  CodeCaption  `json:"caption,omitempty"`
-	RichText CodeRichText `json:"rich_text,omitempty"`
-	Language string       `json:"language,omitzero"`
+	Caption  RichTexts `json:"caption,omitempty"`
+	RichText RichTexts `json:"rich_text,omitempty"`
+	// Coding language in code block
+	Language CodeLanguage `json:"language,omitzero"`
 }
 
-// CodeCaption defines a model
-type CodeCaption []CodeCaptionItems
+// Coding language in code block
+type CodeLanguage string
 
-// CodeCaptionItems defines a model
-type CodeCaptionItems struct {
-	Type string               `json:"type,omitzero"`
-	Text CodeCaptionItemsText `json:"text"`
-	// Style information which applies to the whole rich text object.
-	Annotations Annotations `json:"annotations"`
-	PlainText   string      `json:"plain_text,omitzero"`
-	Href        struct{}    `json:"href"`
-}
-
-// CodeCaptionItemsText defines a model
-type CodeCaptionItemsText struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
-}
-
-// CodeRichText defines a model
-type CodeRichText []RichText5
+const (
+	CodeLanguageAbap                 CodeLanguage = "abap"
+	CodeLanguageArduino              CodeLanguage = "arduino"
+	CodeLanguageBash                 CodeLanguage = "bash"
+	CodeLanguageBasic                CodeLanguage = "basic"
+	CodeLanguageC                    CodeLanguage = "c"
+	CodeLanguageClojure              CodeLanguage = "clojure"
+	CodeLanguageCoffeescript         CodeLanguage = "coffeescript"
+	CodeLanguageCPlusPlus            CodeLanguage = "c++"
+	CodeLanguageCSharp               CodeLanguage = "c#"
+	CodeLanguageCSS                  CodeLanguage = "css"
+	CodeLanguageDart                 CodeLanguage = "dart"
+	CodeLanguageDiff                 CodeLanguage = "diff"
+	CodeLanguageDocker               CodeLanguage = "docker"
+	CodeLanguageElixir               CodeLanguage = "elixir"
+	CodeLanguageElm                  CodeLanguage = "elm"
+	CodeLanguageErlang               CodeLanguage = "erlang"
+	CodeLanguageFlow                 CodeLanguage = "flow"
+	CodeLanguageFortran              CodeLanguage = "fortran"
+	CodeLanguageFSharp               CodeLanguage = "f#"
+	CodeLanguageGherkin              CodeLanguage = "gherkin"
+	CodeLanguageGlsl                 CodeLanguage = "glsl"
+	CodeLanguageGo                   CodeLanguage = "go"
+	CodeLanguageGraphql              CodeLanguage = "graphql"
+	CodeLanguageGroovy               CodeLanguage = "groovy"
+	CodeLanguageHaskell              CodeLanguage = "haskell"
+	CodeLanguageHTML                 CodeLanguage = "html"
+	CodeLanguageJava                 CodeLanguage = "java"
+	CodeLanguageJavascript           CodeLanguage = "javascript"
+	CodeLanguageJSON                 CodeLanguage = "json"
+	CodeLanguageJulia                CodeLanguage = "julia"
+	CodeLanguageKotlin               CodeLanguage = "kotlin"
+	CodeLanguageLatex                CodeLanguage = "latex"
+	CodeLanguageLess                 CodeLanguage = "less"
+	CodeLanguageLisp                 CodeLanguage = "lisp"
+	CodeLanguageLivescript           CodeLanguage = "livescript"
+	CodeLanguageLua                  CodeLanguage = "lua"
+	CodeLanguageMakefile             CodeLanguage = "makefile"
+	CodeLanguageMarkdown             CodeLanguage = "markdown"
+	CodeLanguageMarkup               CodeLanguage = "markup"
+	CodeLanguageMatlab               CodeLanguage = "matlab"
+	CodeLanguageMermaid              CodeLanguage = "mermaid"
+	CodeLanguageNix                  CodeLanguage = "nix"
+	CodeLanguageObjectiveC           CodeLanguage = "objective-c"
+	CodeLanguageOcaml                CodeLanguage = "ocaml"
+	CodeLanguagePascal               CodeLanguage = "pascal"
+	CodeLanguagePerl                 CodeLanguage = "perl"
+	CodeLanguagePhp                  CodeLanguage = "php"
+	CodeLanguagePlainText            CodeLanguage = "plain text"
+	CodeLanguagePowershell           CodeLanguage = "powershell"
+	CodeLanguageProlog               CodeLanguage = "prolog"
+	CodeLanguageProtobuf             CodeLanguage = "protobuf"
+	CodeLanguagePython               CodeLanguage = "python"
+	CodeLanguageR                    CodeLanguage = "r"
+	CodeLanguageReason               CodeLanguage = "reason"
+	CodeLanguageRuby                 CodeLanguage = "ruby"
+	CodeLanguageRust                 CodeLanguage = "rust"
+	CodeLanguageSass                 CodeLanguage = "sass"
+	CodeLanguageScala                CodeLanguage = "scala"
+	CodeLanguageScheme               CodeLanguage = "scheme"
+	CodeLanguageScss                 CodeLanguage = "scss"
+	CodeLanguageShell                CodeLanguage = "shell"
+	CodeLanguageSQL                  CodeLanguage = "sql"
+	CodeLanguageSwift                CodeLanguage = "swift"
+	CodeLanguageTypescript           CodeLanguage = "typescript"
+	CodeLanguageVbNet                CodeLanguage = "vb.net"
+	CodeLanguageVerilog              CodeLanguage = "verilog"
+	CodeLanguageVhdl                 CodeLanguage = "vhdl"
+	CodeLanguageVisualBasic          CodeLanguage = "visual basic"
+	CodeLanguageWebassembly          CodeLanguage = "webassembly"
+	CodeLanguageXML                  CodeLanguage = "xml"
+	CodeLanguageYaml                 CodeLanguage = "yaml"
+	CodeLanguageJavaCCPlusPlusCSharp CodeLanguage = "java/c/c++/c#"
+)
 
 // The color of the block.
 type Color string
@@ -322,7 +360,20 @@ type Icon struct {
 	// Type of icon.
 	Type IconType `json:"type,omitzero"`
 	// Emoji character.
-	Emoji string `json:"emoji,omitzero"`
+	Emoji    string        `json:"emoji,omitzero"`
+	External *IconExternal `json:"external,omitempty"`
+	File     *IconFile     `json:"file,omitempty"`
+}
+
+// IconExternal defines a model
+type IconExternal struct {
+	URL url.URL `json:"url,omitzero"`
+}
+
+// IconFile defines a model
+type IconFile struct {
+	URL        url.URL   `json:"url,omitzero"`
+	ExpiryTime time.Time `json:"expiry_time,omitzero"`
 }
 
 // Type of icon.
@@ -502,104 +553,6 @@ type RichText struct {
 	Href *url.URL `json:"href,omitempty"`
 }
 
-// RichText2 defines a model
-type RichText2 struct {
-	Type string         `json:"type,omitzero"`
-	Text *RichText2Text `json:"text,omitempty"`
-	// Style information which applies to the whole rich text object.
-	Annotations *Annotations `json:"annotations,omitempty"`
-	PlainText   string       `json:"plain_text,omitzero"`
-	Href        *struct{}    `json:"href,omitempty"`
-}
-
-// RichText2Text defines a model
-type RichText2Text struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
-}
-
-// RichText3 defines a model
-type RichText3 struct {
-	Type string        `json:"type,omitzero"`
-	Text RichText3Text `json:"text"`
-	// Style information which applies to the whole rich text object.
-	Annotations Annotations `json:"annotations"`
-	PlainText   string      `json:"plain_text,omitzero"`
-	Href        struct{}    `json:"href"`
-}
-
-// RichText3Text defines a model
-type RichText3Text struct {
-	Content string   `json:"content,omitzero"`
-	Link    struct{} `json:"link"`
-}
-
-// RichText4 defines a model
-type RichText4 struct {
-	Type string `json:"type,omitzero"`
-	// Text objects contain this information within the `text` property of a RichText object.
-	Text Text `json:"text"`
-	// Style information which applies to the whole rich text object.
-	Annotations Annotations `json:"annotations"`
-	PlainText   string      `json:"plain_text,omitzero"`
-	Href        struct{}    `json:"href"`
-}
-
-// RichText5 defines a model
-type RichText5 struct {
-	Type string `json:"type,omitzero"`
-	// Text objects contain this information within the `text` property of a RichText object.
-	Text Text `json:"text"`
-	// Style information which applies to the whole rich text object.
-	Annotations Annotations `json:"annotations"`
-	PlainText   string      `json:"plain_text,omitzero"`
-	Href        url.URL     `json:"href,omitzero"`
-}
-
-// RichText6 defines a model
-type RichText6 struct {
-	Type string `json:"type,omitzero"`
-	// Text objects contain this information within the `text` property of a RichText object.
-	Text Text `json:"text"`
-	// Style information which applies to the whole rich text object.
-	Annotations Annotations `json:"annotations"`
-	PlainText   string      `json:"plain_text,omitzero"`
-	Href        struct{}    `json:"href"`
-}
-
-// RichText7 defines a model
-type RichText7 struct {
-	Type string `json:"type,omitzero"`
-	// Text objects contain this information within the `text` property of a RichText object.
-	Text Text `json:"text"`
-	// Style information which applies to the whole rich text object.
-	Annotations Annotations `json:"annotations"`
-	PlainText   string      `json:"plain_text,omitzero"`
-	Href        struct{}    `json:"href"`
-}
-
-// RichText8 defines a model
-type RichText8 struct {
-	Type string `json:"type,omitzero"`
-	// Text objects contain this information within the `text` property of a RichText object.
-	Text Text `json:"text"`
-	// Style information which applies to the whole rich text object.
-	Annotations Annotations `json:"annotations"`
-	PlainText   string      `json:"plain_text,omitzero"`
-	Href        struct{}    `json:"href"`
-}
-
-// RichText9 defines a model
-type RichText9 struct {
-	Type string `json:"type,omitzero"`
-	// Text objects contain this information within the `text` property of a RichText object.
-	Text Text `json:"text"`
-	// Style information which applies to the whole rich text object.
-	Annotations Annotations `json:"annotations"`
-	PlainText   string      `json:"plain_text,omitzero"`
-	Href        struct{}    `json:"href"`
-}
-
 // Type of this rich text object.
 type RichTextType string
 
@@ -611,12 +564,6 @@ const (
 
 // RichTexts defines a model
 type RichTexts []RichText
-
-// RichTexts2 defines a model
-type RichTexts2 []RichText2
-
-// RichTexts22 defines a model
-type RichTexts22 []RichText3
 
 // SyncedBlock defines a model
 type SyncedBlock struct {
