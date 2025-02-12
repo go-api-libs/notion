@@ -231,7 +231,6 @@
           "divider": {
             "description": "Divider block objects do not contain any information within the divider property",
             "type": "object",
-            "properties": {},
             "example": {}
           },
           "table_of_contents": {
@@ -240,7 +239,6 @@
           "column_list": {
             "description": "Column Lists are parent blocks for column children. They do not contain any information within the column_list property and can only contain children of type column.",
             "type": "object",
-            "properties": {},
             "example": {}
           },
           "link_preview": {
@@ -258,13 +256,11 @@
           "breadcrumb": {
             "description": "Breadcrumb block objects do not contain any information within the breadcrumb property",
             "type": "object",
-            "properties": {},
             "example": {}
           },
           "unsupported": {
             "description": "Some block types aren't available yet",
             "type": "object",
-            "properties": {},
             "example": {}
           }
         },
@@ -725,7 +721,6 @@
           "next_cursor": {
             "description": "A unique identifier for a page, block, database, or user.",
             "type": "object",
-            "properties": {},
             "example": null
           },
           "has_more": {
@@ -739,7 +734,6 @@
           },
           "block": {
             "type": "object",
-            "properties": {},
             "example": {}
           },
           "request_id": {
@@ -1176,7 +1170,6 @@
           },
           "href": {
             "type": "object",
-            "properties": {},
             "example": null
           }
         },
@@ -1214,7 +1207,6 @@
           },
           "link": {
             "type": "object",
-            "properties": {},
             "example": null
           }
         },
@@ -2002,12 +1994,10 @@
           },
           "end": {
             "type": "object",
-            "properties": {},
             "example": null
           },
           "time_zone": {
             "type": "object",
-            "properties": {},
             "example": null
           }
         },
@@ -2838,7 +2828,6 @@
           },
           "href": {
             "type": "object",
-            "properties": {},
             "example": null
           }
         },
@@ -2869,7 +2858,6 @@
           },
           "link": {
             "type": "object",
-            "properties": {},
             "example": null
           }
         },
@@ -2901,7 +2889,6 @@
           },
           "href": {
             "type": "object",
-            "properties": {},
             "example": null
           }
         },
@@ -2939,7 +2926,6 @@
           },
           "link": {
             "type": "object",
-            "properties": {},
             "example": null
           }
         },
@@ -2971,7 +2957,6 @@
           },
           "href": {
             "type": "object",
-            "properties": {},
             "example": null
           }
         },
@@ -3067,7 +3052,6 @@
           },
           "href": {
             "type": "object",
-            "properties": {},
             "example": null
           }
         },
@@ -3115,7 +3099,6 @@
           },
           "href": {
             "type": "object",
-            "properties": {},
             "example": null
           }
         },
@@ -3163,7 +3146,6 @@
           },
           "href": {
             "type": "object",
-            "properties": {},
             "example": null
           }
         },
@@ -3211,7 +3193,6 @@
           },
           "href": {
             "type": "object",
-            "properties": {},
             "example": null
           }
         },
