@@ -247,7 +247,7 @@ type Date struct {
 
 	   If `null`, this property's date value is not a range.
 	*/
-	End struct{} `json:"end"`
+	End *struct{} `json:"end,omitempty"`
 	/*
 	   Time zone information for start and end. Possible values are extracted from the IANA database and they are based on the time zones from Moment.js.
 
@@ -255,7 +255,7 @@ type Date struct {
 
 	   If null, time zone information will be contained in UTC offsets in start and end.
 	*/
-	TimeZone struct{} `json:"time_zone"`
+	TimeZone *struct{} `json:"time_zone,omitempty"`
 }
 
 // Embed blocks include block types that allow displaying another website within Notion.

@@ -1326,9 +1326,7 @@
           }
         },
         "required": [
-          "start",
-          "end",
-          "time_zone"
+          "start"
         ],
         "example": {
           "start": "2022-07-14",
