@@ -1944,11 +1944,11 @@
           "link_mention": {
             "$ref": "#/components/schemas/LinkMention"
           },
+          "user": {
+            "$ref": "#/components/schemas/User2"
+          },
           "database": {
             "$ref": "#/components/schemas/MentionDatabase"
-          },
-          "user": {
-            "$ref": "#/components/schemas/MentionUser"
           },
           "date": {
             "$ref": "#/components/schemas/MentionDate"
@@ -2035,70 +2035,6 @@
           "link_mention"
         ],
         "example": "link_mention"
-      },
-      "MentionUser": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "type": "string",
-            "example": "user"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-          },
-          "name": {
-            "type": "string",
-            "example": "Fae Tools"
-          },
-          "avatar_url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100"
-          },
-          "type": {
-            "type": "string",
-            "example": "person"
-          },
-          "person": {
-            "$ref": "#/components/schemas/MentionUserPerson"
-          }
-        },
-        "required": [
-          "object",
-          "id",
-          "name",
-          "avatar_url",
-          "type",
-          "person"
-        ],
-        "example": {
-          "object": "user",
-          "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45",
-          "name": "Fae Tools",
-          "avatar_url": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100",
-          "type": "person",
-          "person": {
-            "email": "mark@faetools.com"
-          }
-        }
-      },
-      "MentionUserPerson": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "example": "mark@faetools.com"
-          }
-        },
-        "required": [
-          "email"
-        ],
-        "example": {
-          "email": "mark@faetools.com"
-        }
       },
       "NotionFile": {
         "type": "object",
@@ -3458,6 +3394,70 @@
             "href": null
           }
         ]
+      },
+      "User2": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "example": "user"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+          },
+          "name": {
+            "type": "string",
+            "example": "Fae Tools"
+          },
+          "avatar_url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100"
+          },
+          "type": {
+            "type": "string",
+            "example": "person"
+          },
+          "person": {
+            "$ref": "#/components/schemas/User2Person"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "name",
+          "avatar_url",
+          "type",
+          "person"
+        ],
+        "example": {
+          "object": "user",
+          "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45",
+          "name": "Fae Tools",
+          "avatar_url": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100",
+          "type": "person",
+          "person": {
+            "email": "mark@faetools.com"
+          }
+        }
+      },
+      "User2Person": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "mark@faetools.com"
+          }
+        },
+        "required": [
+          "email"
+        ],
+        "example": {
+          "email": "mark@faetools.com"
+        }
       },
       "UserReference": {
         "type": "object",

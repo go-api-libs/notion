@@ -369,8 +369,8 @@ type Mention struct {
 	// Type of the inline mention.
 	Type        MentionType      `json:"type,omitzero"`
 	LinkMention *LinkMention     `json:"link_mention,omitempty"`
+	User        *User2           `json:"user,omitempty"`
 	Database    *MentionDatabase `json:"database,omitempty"`
-	User        *MentionUser     `json:"user,omitempty"`
 	Date        *MentionDate     `json:"date,omitempty"`
 	Page        *MentionPage     `json:"page,omitempty"`
 }
@@ -398,21 +398,6 @@ type MentionType string
 const (
 	MentionTypeLinkMention MentionType = "link_mention"
 )
-
-// MentionUser defines a model
-type MentionUser struct {
-	Object    string            `json:"object,omitzero"`
-	ID        uuid.UUID         `json:"id,omitzero"`
-	Name      string            `json:"name,omitzero"`
-	AvatarURL url.URL           `json:"avatar_url,omitzero"`
-	Type      string            `json:"type,omitzero"`
-	Person    MentionUserPerson `json:"person"`
-}
-
-// MentionUserPerson defines a model
-type MentionUserPerson struct {
-	Email types.Email `json:"email,omitzero"`
-}
 
 // NotionFile defines a model
 type NotionFile struct {
@@ -729,6 +714,21 @@ type ToDo struct {
 
 // ToDoRichText defines a model
 type ToDoRichText []RichText
+
+// User2 defines a model
+type User2 struct {
+	Object    string      `json:"object,omitzero"`
+	ID        uuid.UUID   `json:"id,omitzero"`
+	Name      string      `json:"name,omitzero"`
+	AvatarURL url.URL     `json:"avatar_url,omitzero"`
+	Type      string      `json:"type,omitzero"`
+	Person    User2Person `json:"person"`
+}
+
+// User2Person defines a model
+type User2Person struct {
+	Email types.Email `json:"email,omitzero"`
+}
 
 // UserReference defines a model
 type UserReference struct {
