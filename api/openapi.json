@@ -230,14 +230,18 @@
           },
           "divider": {
             "description": "Divider block objects do not contain any information within the divider property",
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": {}
           },
           "table_of_contents": {
             "$ref": "#/components/schemas/TableOfContents"
           },
           "column_list": {
             "description": "Column Lists are parent blocks for column children. They do not contain any information within the column_list property and can only contain children of type column.",
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": {}
           },
           "link_preview": {
             "$ref": "#/components/schemas/LinkPreview"
@@ -253,11 +257,15 @@
           },
           "breadcrumb": {
             "description": "Breadcrumb block objects do not contain any information within the breadcrumb property",
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": {}
           },
           "unsupported": {
             "description": "Some block types aren't available yet",
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": {}
           }
         },
         "required": [
@@ -716,7 +724,9 @@
           },
           "next_cursor": {
             "description": "A unique identifier for a page, block, database, or user.",
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": null
           },
           "has_more": {
             "type": "boolean",
@@ -728,7 +738,9 @@
             "example": "block"
           },
           "block": {
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": {}
           },
           "request_id": {
             "type": "string",
@@ -1163,7 +1175,9 @@
             "example": "It even has a caption!"
           },
           "href": {
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": null
           }
         },
         "required": [
@@ -1199,7 +1213,9 @@
             "example": "It even has a caption!"
           },
           "link": {
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": null
           }
         },
         "required": [
@@ -1856,6 +1872,9 @@
             "format": "uri",
             "example": "https://developers.notion.com/reference/block"
           }
+        },
+        "example": {
+          "url": "https://www.google.com/"
         }
       },
       "LinkMention": {
@@ -1982,10 +2001,14 @@
             "example": "2022-07-14"
           },
           "end": {
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": null
           },
           "time_zone": {
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": null
           }
         },
         "required": [
@@ -2602,7 +2625,8 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/RichText"
-        }
+        },
+        "example": []
       },
       "Parent": {
         "description": "The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.",
@@ -2813,7 +2837,9 @@
             "example": "A "
           },
           "href": {
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": null
           }
         },
         "example": {
@@ -2842,7 +2868,9 @@
             "example": "A "
           },
           "link": {
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": null
           }
         },
         "required": [
@@ -2872,7 +2900,9 @@
             "example": "A bookmark object."
           },
           "href": {
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": null
           }
         },
         "required": [
@@ -2908,7 +2938,9 @@
             "example": "A bookmark object."
           },
           "link": {
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": null
           }
         },
         "required": [
@@ -2938,7 +2970,9 @@
             "example": "Callout with a fire emoji."
           },
           "href": {
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": null
           }
         },
         "required": [
@@ -3032,7 +3066,9 @@
             "example": "This "
           },
           "href": {
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": null
           }
         },
         "required": [
@@ -3078,7 +3114,9 @@
             "example": "Medium toggle heading "
           },
           "href": {
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": null
           }
         },
         "required": [
@@ -3124,7 +3162,9 @@
             "example": "Small heading"
           },
           "href": {
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": null
           }
         },
         "required": [
@@ -3170,7 +3210,9 @@
             "example": "foo"
           },
           "href": {
-            "type": "object"
+            "type": "object",
+            "properties": {},
+            "example": null
           }
         },
         "required": [
@@ -3237,7 +3279,8 @@
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/RichText2"
-        }
+        },
+        "example": []
       },
       "RichTexts22": {
         "type": "array",
