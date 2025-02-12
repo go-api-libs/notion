@@ -217,7 +217,7 @@
             "$ref": "#/components/schemas/FileWithCaption"
           },
           "bookmark": {
-            "$ref": "#/components/schemas/Embed2"
+            "$ref": "#/components/schemas/Embed"
           },
           "callout": {
             "$ref": "#/components/schemas/Callout"
@@ -1339,7 +1339,7 @@
         "type": "object",
         "properties": {
           "caption": {
-            "$ref": "#/components/schemas/RichTexts2"
+            "$ref": "#/components/schemas/RichTexts"
           },
           "url": {
             "description": "Embedded link.",
@@ -1355,45 +1355,6 @@
         "example": {
           "caption": [],
           "url": "https://www.youtube.com/watch?v=4aMoKXQ6pXI"
-        }
-      },
-      "Embed2": {
-        "type": "object",
-        "properties": {
-          "caption": {
-            "$ref": "#/components/schemas/RichTexts22"
-          },
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://example.com/"
-          }
-        },
-        "required": [
-          "caption",
-          "url"
-        ],
-        "example": {
-          "caption": [
-            {
-              "type": "text",
-              "text": {
-                "content": "A bookmark object.",
-                "link": null
-              },
-              "annotations": {
-                "bold": false,
-                "italic": false,
-                "strikethrough": false,
-                "underline": false,
-                "code": false,
-                "color": "default"
-              },
-              "plain_text": "A bookmark object.",
-              "href": null
-            }
-          ],
-          "url": "https://example.com/"
         }
       },
       "Equation": {

@@ -81,8 +81,9 @@ type Block struct {
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
 	File *FileWithCaption `json:"file,omitempty"`
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
-	PDF      *FileWithCaption `json:"pdf,omitempty"`
-	Bookmark *Embed2          `json:"bookmark,omitempty"`
+	PDF *FileWithCaption `json:"pdf,omitempty"`
+	// Embed blocks include block types that allow displaying another website within Notion.
+	Bookmark *Embed `json:"bookmark,omitempty"`
 	// Callout block objects contain the following information within the callout field.
 	Callout *Callout `json:"callout,omitempty"`
 	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
@@ -263,15 +264,9 @@ type Date struct {
 
 // Embed blocks include block types that allow displaying another website within Notion.
 type Embed struct {
-	Caption RichTexts2 `json:"caption,omitempty"`
+	Caption RichTexts `json:"caption,omitempty"`
 	// Embedded link.
 	URL url.URL `json:"url,omitzero"`
-}
-
-// Embed2 defines a model
-type Embed2 struct {
-	Caption RichTexts22 `json:"caption,omitempty"`
-	URL     url.URL     `json:"url,omitzero"`
 }
 
 // Equation defines a model
