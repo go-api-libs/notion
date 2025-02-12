@@ -56,9 +56,12 @@ type Block struct {
 	Type BlockType `json:"type,omitzero"`
 	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
 	Paragraph *Paragraph `json:"paragraph,omitempty"`
-	Heading1  *Heading1  `json:"heading_1,omitempty"`
-	Heading2  *Heading2  `json:"heading_2,omitempty"`
-	Heading3  *Heading3  `json:"heading_3,omitempty"`
+	// Heading block objects contain this information within their respective property.
+	Heading1 *Heading `json:"heading_1,omitempty"`
+	// Heading block objects contain this information within their respective property.
+	Heading2 *Heading `json:"heading_2,omitempty"`
+	// Heading block objects contain this information within their respective property.
+	Heading3 *Heading `json:"heading_3,omitempty"`
 	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
 	BulletedListItem *Paragraph `json:"bulleted_list_item,omitempty"`
 	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
@@ -314,35 +317,13 @@ type FileWithCaption struct {
 	Name     string        `json:"name,omitzero"`
 }
 
-// Heading1 defines a model
-type Heading1 struct {
-	RichText     Heading1RichText `json:"rich_text,omitempty"`
-	IsToggleable bool             `json:"is_toggleable,omitzero"`
-	Color        string           `json:"color,omitzero"`
+// Heading block objects contain this information within their respective property.
+type Heading struct {
+	RichText     RichTexts `json:"rich_text,omitempty"`
+	IsToggleable bool      `json:"is_toggleable,omitzero"`
+	// The color of the block.
+	Color Color `json:"color,omitzero"`
 }
-
-// Heading1RichText defines a model
-type Heading1RichText []RichText6
-
-// Heading2 defines a model
-type Heading2 struct {
-	RichText     Heading2RichText `json:"rich_text,omitempty"`
-	IsToggleable bool             `json:"is_toggleable,omitzero"`
-	Color        string           `json:"color,omitzero"`
-}
-
-// Heading2RichText defines a model
-type Heading2RichText []RichText7
-
-// Heading3 defines a model
-type Heading3 struct {
-	RichText     Heading3RichText `json:"rich_text,omitempty"`
-	IsToggleable bool             `json:"is_toggleable,omitzero"`
-	Color        string           `json:"color,omitzero"`
-}
-
-// Heading3RichText defines a model
-type Heading3RichText []RichText8
 
 // Page or database icon. It is either an emoji or a file.
 type Icon struct {

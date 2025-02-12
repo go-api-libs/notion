@@ -172,13 +172,13 @@
             "$ref": "#/components/schemas/Paragraph"
           },
           "heading_1": {
-            "$ref": "#/components/schemas/Heading1"
+            "$ref": "#/components/schemas/Heading"
           },
           "heading_2": {
-            "$ref": "#/components/schemas/Heading2"
+            "$ref": "#/components/schemas/Heading"
           },
           "heading_3": {
-            "$ref": "#/components/schemas/Heading3"
+            "$ref": "#/components/schemas/Heading"
           },
           "bulleted_list_item": {
             "$ref": "#/components/schemas/Paragraph"
@@ -1508,19 +1508,19 @@
           }
         }
       },
-      "Heading1": {
+      "Heading": {
+        "description": "Heading block objects contain this information within their respective property.",
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/Heading1RichText"
+            "$ref": "#/components/schemas/RichTexts"
           },
           "is_toggleable": {
             "type": "boolean",
             "example": false
           },
           "color": {
-            "type": "string",
-            "example": "default"
+            "$ref": "#/components/schemas/Color"
           }
         },
         "required": [
@@ -1619,237 +1619,6 @@
           "is_toggleable": false,
           "color": "default"
         }
-      },
-      "Heading1RichText": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/RichText6"
-        },
-        "example": [
-          {
-            "type": "text",
-            "text": {
-              "content": "This ",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "default"
-            },
-            "plain_text": "This ",
-            "href": null
-          },
-          {
-            "type": "text",
-            "text": {
-              "content": "is",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": true,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "purple"
-            },
-            "plain_text": "is",
-            "href": null
-          },
-          {
-            "type": "text",
-            "text": {
-              "content": " a big ",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "purple"
-            },
-            "plain_text": " a big ",
-            "href": null
-          },
-          {
-            "type": "text",
-            "text": {
-              "content": "heading",
-              "link": null
-            },
-            "annotations": {
-              "bold": true,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "purple"
-            },
-            "plain_text": "heading",
-            "href": null
-          },
-          {
-            "type": "text",
-            "text": {
-              "content": " 1",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "default"
-            },
-            "plain_text": " 1",
-            "href": null
-          }
-        ]
-      },
-      "Heading2": {
-        "type": "object",
-        "properties": {
-          "rich_text": {
-            "$ref": "#/components/schemas/Heading2RichText"
-          },
-          "is_toggleable": {
-            "type": "boolean",
-            "example": true
-          },
-          "color": {
-            "type": "string",
-            "example": "default"
-          }
-        },
-        "required": [
-          "rich_text",
-          "is_toggleable",
-          "color"
-        ],
-        "example": {
-          "rich_text": [
-            {
-              "type": "text",
-              "text": {
-                "content": "Medium toggle heading ",
-                "link": null
-              },
-              "annotations": {
-                "bold": false,
-                "italic": false,
-                "strikethrough": false,
-                "underline": false,
-                "code": false,
-                "color": "default"
-              },
-              "plain_text": "Medium toggle heading ",
-              "href": null
-            }
-          ],
-          "is_toggleable": true,
-          "color": "default"
-        }
-      },
-      "Heading2RichText": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/RichText7"
-        },
-        "example": [
-          {
-            "type": "text",
-            "text": {
-              "content": "Medium toggle heading ",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "default"
-            },
-            "plain_text": "Medium toggle heading ",
-            "href": null
-          }
-        ]
-      },
-      "Heading3": {
-        "type": "object",
-        "properties": {
-          "rich_text": {
-            "$ref": "#/components/schemas/Heading3RichText"
-          },
-          "is_toggleable": {
-            "type": "boolean",
-            "example": false
-          },
-          "color": {
-            "type": "string",
-            "example": "default"
-          }
-        },
-        "required": [
-          "rich_text",
-          "is_toggleable",
-          "color"
-        ],
-        "example": {
-          "rich_text": [
-            {
-              "type": "text",
-              "text": {
-                "content": "Small heading",
-                "link": null
-              },
-              "annotations": {
-                "bold": false,
-                "italic": false,
-                "strikethrough": false,
-                "underline": false,
-                "code": false,
-                "color": "default"
-              },
-              "plain_text": "Small heading",
-              "href": null
-            }
-          ],
-          "is_toggleable": false,
-          "color": "default"
-        }
-      },
-      "Heading3RichText": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/RichText8"
-        },
-        "example": [
-          {
-            "type": "text",
-            "text": {
-              "content": "Small heading",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "default"
-            },
-            "plain_text": "Small heading",
-            "href": null
-          }
-        ]
       },
       "Icon": {
         "description": "Page or database icon. It is either an emoji or a file.",
