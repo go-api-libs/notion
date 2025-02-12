@@ -1306,6 +1306,33 @@
         ],
         "example": "default"
       },
+      "Date": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "example": "2022-07-14"
+          },
+          "end": {
+            "type": "object",
+            "example": null
+          },
+          "time_zone": {
+            "type": "object",
+            "example": null
+          }
+        },
+        "required": [
+          "start",
+          "end",
+          "time_zone"
+        ],
+        "example": {
+          "start": "2022-07-14",
+          "end": null,
+          "time_zone": null
+        }
+      },
       "Embed": {
         "description": "Embed blocks include block types that allow displaying another website within Notion.",
         "type": "object",
@@ -1947,14 +1974,14 @@
           "user": {
             "$ref": "#/components/schemas/User2"
           },
+          "page": {
+            "$ref": "#/components/schemas/Reference"
+          },
           "database": {
-            "$ref": "#/components/schemas/MentionDatabase"
+            "$ref": "#/components/schemas/Reference2"
           },
           "date": {
-            "$ref": "#/components/schemas/MentionDate"
-          },
-          "page": {
-            "$ref": "#/components/schemas/MentionPage"
+            "$ref": "#/components/schemas/Date"
           }
         },
         "required": [
@@ -1967,65 +1994,6 @@
             "title": "Example Domain",
             "description": "This domain is for use in illustrative examples in documents. You may use this\n    domain in literature without prior coordination or asking for permission."
           }
-        }
-      },
-      "MentionDatabase": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "7a3c647e-4c1e-4c27-bf1d-cfb0105e55ce"
-          }
-        },
-        "required": [
-          "id"
-        ],
-        "example": {
-          "id": "7a3c647e-4c1e-4c27-bf1d-cfb0105e55ce"
-        }
-      },
-      "MentionDate": {
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "string",
-            "example": "2022-07-14"
-          },
-          "end": {
-            "type": "object",
-            "example": null
-          },
-          "time_zone": {
-            "type": "object",
-            "example": null
-          }
-        },
-        "required": [
-          "start",
-          "end",
-          "time_zone"
-        ],
-        "example": {
-          "start": "2022-07-14",
-          "end": null,
-          "time_zone": null
-        }
-      },
-      "MentionPage": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "2633808e-7e36-4f4e-972a-ccd2d3c49004"
-          }
-        },
-        "required": [
-          "id"
-        ],
-        "example": {
-          "id": "2633808e-7e36-4f4e-972a-ccd2d3c49004"
         }
       },
       "MentionType": {
@@ -2688,6 +2656,38 @@
               }
             ]
           }
+        }
+      },
+      "Reference": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "2633808e-7e36-4f4e-972a-ccd2d3c49004"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "example": {
+          "id": "2633808e-7e36-4f4e-972a-ccd2d3c49004"
+        }
+      },
+      "Reference2": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "7a3c647e-4c1e-4c27-bf1d-cfb0105e55ce"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "example": {
+          "id": "7a3c647e-4c1e-4c27-bf1d-cfb0105e55ce"
         }
       },
       "RichText": {

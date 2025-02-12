@@ -238,6 +238,13 @@ const (
 	ColorRedBackground    Color = "red_background"
 )
 
+// Date defines a model
+type Date struct {
+	Start    string   `json:"start,omitzero"`
+	End      struct{} `json:"end"`
+	TimeZone struct{} `json:"time_zone"`
+}
+
 // Embed blocks include block types that allow displaying another website within Notion.
 type Embed struct {
 	Caption RichTexts2 `json:"caption,omitempty"`
@@ -367,29 +374,12 @@ type LinkToPage struct {
 // Mention defines a model
 type Mention struct {
 	// Type of the inline mention.
-	Type        MentionType      `json:"type,omitzero"`
-	LinkMention *LinkMention     `json:"link_mention,omitempty"`
-	User        *User2           `json:"user,omitempty"`
-	Database    *MentionDatabase `json:"database,omitempty"`
-	Date        *MentionDate     `json:"date,omitempty"`
-	Page        *MentionPage     `json:"page,omitempty"`
-}
-
-// MentionDatabase defines a model
-type MentionDatabase struct {
-	ID uuid.UUID `json:"id,omitzero"`
-}
-
-// MentionDate defines a model
-type MentionDate struct {
-	Start    string   `json:"start,omitzero"`
-	End      struct{} `json:"end"`
-	TimeZone struct{} `json:"time_zone"`
-}
-
-// MentionPage defines a model
-type MentionPage struct {
-	ID uuid.UUID `json:"id,omitzero"`
+	Type        MentionType  `json:"type,omitzero"`
+	LinkMention *LinkMention `json:"link_mention,omitempty"`
+	User        *User2       `json:"user,omitempty"`
+	Page        *Reference   `json:"page,omitempty"`
+	Database    *Reference2  `json:"database,omitempty"`
+	Date        *Date        `json:"date,omitempty"`
 }
 
 // Type of the inline mention.
@@ -541,6 +531,16 @@ type PropertyValue struct {
 
 // Properties of a page or database.
 type PropertyValues map[string]PropertyValue
+
+// Reference defines a model
+type Reference struct {
+	ID uuid.UUID `json:"id,omitzero"`
+}
+
+// Reference2 defines a model
+type Reference2 struct {
+	ID uuid.UUID `json:"id,omitzero"`
+}
 
 // Rich text objects contain data for displaying formatted text, mentions, and equations. A rich text object also contains annotations for style information. Arrays of rich text objects are used [within property objects](https://developers.notion.com/reference/database-property) and [property value objects](https://developers.notion.com/reference/page-property-value) to create what a user sees as a single text value in Notion.
 type RichText struct {
