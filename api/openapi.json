@@ -2213,17 +2213,11 @@
       "User": {
         "allOf": [
           {
+            "$ref": "#/components/schemas/UserReference"
+          },
+          {
             "type": "object",
             "properties": {
-              "object": {
-                "type": "string",
-                "example": "user"
-              },
-              "id": {
-                "type": "string",
-                "format": "uuid",
-                "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-              },
               "name": {
                 "type": "string",
                 "example": "Fae Tools"
@@ -2242,8 +2236,6 @@
               }
             },
             "required": [
-              "object",
-              "id",
               "name",
               "avatar_url",
               "type",

@@ -608,6 +608,7 @@ type ToDoRichText []RichText
 
 // User defines a model
 type User struct {
+	// Always "user"
 	Object    string      `json:"object,omitzero"`
 	ID        uuid.UUID   `json:"id,omitzero"`
 	Name      string      `json:"name,omitzero"`
