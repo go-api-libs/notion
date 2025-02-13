@@ -2211,41 +2211,45 @@
         ]
       },
       "User": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "type": "string",
-            "example": "user"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-          },
-          "name": {
-            "type": "string",
-            "example": "Fae Tools"
-          },
-          "avatar_url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100"
-          },
-          "type": {
-            "type": "string",
-            "example": "person"
-          },
-          "person": {
-            "$ref": "#/components/schemas/User2Person"
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "object": {
+                "type": "string",
+                "example": "user"
+              },
+              "id": {
+                "type": "string",
+                "format": "uuid",
+                "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+              },
+              "name": {
+                "type": "string",
+                "example": "Fae Tools"
+              },
+              "avatar_url": {
+                "type": "string",
+                "format": "uri",
+                "example": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100"
+              },
+              "type": {
+                "type": "string",
+                "example": "person"
+              },
+              "person": {
+                "$ref": "#/components/schemas/User2Person"
+              }
+            },
+            "required": [
+              "object",
+              "id",
+              "name",
+              "avatar_url",
+              "type",
+              "person"
+            ]
           }
-        },
-        "required": [
-          "object",
-          "id",
-          "name",
-          "avatar_url",
-          "type",
-          "person"
         ],
         "example": {
           "object": "user",
