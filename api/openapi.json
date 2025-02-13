@@ -1567,7 +1567,7 @@
             "$ref": "#/components/schemas/LinkMention"
           },
           "user": {
-            "$ref": "#/components/schemas/User2"
+            "$ref": "#/components/schemas/User"
           },
           "page": {
             "$ref": "#/components/schemas/Reference"
@@ -2210,7 +2210,7 @@
           }
         ]
       },
-      "User2": {
+      "User": {
         "type": "object",
         "properties": {
           "object": {

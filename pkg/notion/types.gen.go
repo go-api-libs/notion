@@ -413,7 +413,7 @@ type Mention struct {
 	// Type of the inline mention.
 	Type        MentionType  `json:"type,omitzero"`
 	LinkMention *LinkMention `json:"link_mention,omitempty"`
-	User        *User2       `json:"user,omitempty"`
+	User        *User        `json:"user,omitempty"`
 	Page        *Reference   `json:"page,omitempty"`
 	Database    *Reference   `json:"database,omitempty"`
 	Date        *Date        `json:"date,omitempty"`
@@ -606,8 +606,8 @@ type ToDo struct {
 // ToDoRichText defines a model
 type ToDoRichText []RichText
 
-// User2 defines a model
-type User2 struct {
+// User defines a model
+type User struct {
 	Object    string      `json:"object,omitzero"`
 	ID        uuid.UUID   `json:"id,omitzero"`
 	Name      string      `json:"name,omitzero"`
