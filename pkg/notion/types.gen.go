@@ -490,6 +490,11 @@ const (
 	ParentTypeDatabaseID ParentType = "database_id"
 )
 
+// Person defines a model
+type Person struct {
+	Email types.Email `json:"email,omitzero"`
+}
+
 // Type of the property.
 type PropertyType string
 
@@ -616,13 +621,8 @@ type User struct {
 	// Chosen avatar image.
 	AvatarURL url.URL `json:"avatar_url,omitzero"`
 	// Type of the user.
-	Type   UserType    `json:"type,omitzero"`
-	Person User2Person `json:"person"`
-}
-
-// User2Person defines a model
-type User2Person struct {
-	Email types.Email `json:"email,omitzero"`
+	Type   UserType `json:"type,omitzero"`
+	Person Person   `json:"person"`
 }
 
 // UserReference defines a model

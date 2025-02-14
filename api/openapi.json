@@ -1829,6 +1829,22 @@
         ],
         "example": "page_id"
       },
+      "Person": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "mark@faetools.com"
+          }
+        },
+        "required": [
+          "email"
+        ],
+        "example": {
+          "email": "mark@faetools.com"
+        }
+      },
       "PropertyType": {
         "description": "Type of the property.",
         "type": "string",
@@ -2233,7 +2249,7 @@
                 "$ref": "#/components/schemas/UserType"
               },
               "person": {
-                "$ref": "#/components/schemas/User2Person"
+                "$ref": "#/components/schemas/Person"
               }
             },
             "required": [
@@ -2253,22 +2269,6 @@
           "person": {
             "email": "mark@faetools.com"
           }
-        }
-      },
-      "User2Person": {
-        "type": "object",
-        "properties": {
-          "email": {
-            "type": "string",
-            "format": "email",
-            "example": "mark@faetools.com"
-          }
-        },
-        "required": [
-          "email"
-        ],
-        "example": {
-          "email": "mark@faetools.com"
         }
       },
       "UserReference": {
