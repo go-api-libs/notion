@@ -320,6 +320,11 @@ type ExternalFile struct {
 	URL url.URL `json:"url,omitzero"`
 }
 
+// ExternalFile2 defines a model
+type ExternalFile2 struct {
+	URL url.URL `json:"url,omitzero"`
+}
+
 // File objects contain data about files uploaded to Notion as well as external files linked in Notion.
 type File struct {
 	// Type of this file object.
@@ -364,20 +369,9 @@ type Icon struct {
 	// Type of icon.
 	Type IconType `json:"type,omitzero"`
 	// Emoji character.
-	Emoji    string        `json:"emoji,omitzero"`
-	External *IconExternal `json:"external,omitempty"`
-	File     *IconFile     `json:"file,omitempty"`
-}
-
-// IconExternal defines a model
-type IconExternal struct {
-	URL url.URL `json:"url,omitzero"`
-}
-
-// IconFile defines a model
-type IconFile struct {
-	URL        url.URL   `json:"url,omitzero"`
-	ExpiryTime time.Time `json:"expiry_time,omitzero"`
+	Emoji    string         `json:"emoji,omitzero"`
+	File     *NotionFile2   `json:"file,omitempty"`
+	External *ExternalFile2 `json:"external,omitempty"`
 }
 
 // Type of icon.
@@ -432,6 +426,12 @@ const (
 
 // NotionFile defines a model
 type NotionFile struct {
+	URL        url.URL   `json:"url,omitzero"`
+	ExpiryTime time.Time `json:"expiry_time,omitzero"`
+}
+
+// NotionFile2 defines a model
+type NotionFile2 struct {
 	URL        url.URL   `json:"url,omitzero"`
 	ExpiryTime time.Time `json:"expiry_time,omitzero"`
 }
