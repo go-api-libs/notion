@@ -372,4 +372,26 @@ func TestClient_VCR(t *testing.T) {
 			}
 		}
 	})
+
+	t.Run("2025-02-15", func(t *testing.T) {
+		replay(t, "vcr/2025-02-15")
+
+		{
+			res, err := c.GetPage(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"))
+			if err != nil {
+				t.Fatal(err)
+			} else if res == nil {
+				t.Fatal("result is nil")
+			}
+		}
+
+		{
+			res, err := c.GetBlocks(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocksParams{PageSize: 100})
+			if err != nil {
+				t.Fatal(err)
+			} else if res == nil {
+				t.Fatal("result is nil")
+			}
+		}
+	})
 }
