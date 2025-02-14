@@ -1231,6 +1231,13 @@
           "type": {
             "$ref": "#/components/schemas/FileType"
           },
+          "file": {
+            "$ref": "#/components/schemas/NotionFile"
+          },
+          "name": {
+            "type": "string",
+            "example": "hd-wallpaper-g6e0a7c1ce_1920.jpeg"
+          },
           "external": {
             "$ref": "#/components/schemas/ExternalFile"
           }
@@ -1262,25 +1269,14 @@
             "properties": {
               "caption": {
                 "$ref": "#/components/schemas/RichTexts"
-              },
-              "type": {
-                "$ref": "#/components/schemas/FileType"
-              },
-              "file": {
-                "$ref": "#/components/schemas/NotionFile"
-              },
-              "external": {
-                "$ref": "#/components/schemas/ExternalFile"
-              },
-              "name": {
-                "type": "string",
-                "example": "hd-wallpaper-g6e0a7c1ce_1920.jpeg"
               }
             },
             "required": [
-              "caption",
-              "type"
+              "caption"
             ]
+          },
+          {
+            "$ref": "#/components/schemas/File"
           }
         ],
         "example": {

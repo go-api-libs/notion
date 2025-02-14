@@ -323,7 +323,9 @@ type ExternalFile struct {
 // File objects contain data about files uploaded to Notion as well as external files linked in Notion.
 type File struct {
 	// Type of this file object.
-	Type FileType `json:"type,omitzero"`
+	Type FileType    `json:"type,omitzero"`
+	File *NotionFile `json:"file,omitempty"`
+	Name string      `json:"name,omitzero"`
 	// An external file is any URL that isn't hosted by Notion.
 	External *ExternalFile `json:"external,omitempty"`
 }
@@ -342,9 +344,9 @@ type FileWithCaption struct {
 	// Type of this file object.
 	Type FileType    `json:"type,omitzero"`
 	File *NotionFile `json:"file,omitempty"`
+	Name string      `json:"name,omitzero"`
 	// An external file is any URL that isn't hosted by Notion.
 	External *ExternalFile `json:"external,omitempty"`
-	Name     string        `json:"name,omitzero"`
 }
 
 // Heading block objects contain this information within their respective property.
