@@ -1256,28 +1256,32 @@
       },
       "FileWithCaption": {
         "description": "File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.",
-        "type": "object",
-        "properties": {
-          "caption": {
-            "$ref": "#/components/schemas/RichTexts"
-          },
-          "type": {
-            "$ref": "#/components/schemas/FileType"
-          },
-          "file": {
-            "$ref": "#/components/schemas/NotionFile"
-          },
-          "external": {
-            "$ref": "#/components/schemas/ExternalFile"
-          },
-          "name": {
-            "type": "string",
-            "example": "hd-wallpaper-g6e0a7c1ce_1920.jpeg"
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "caption": {
+                "$ref": "#/components/schemas/RichTexts"
+              },
+              "type": {
+                "$ref": "#/components/schemas/FileType"
+              },
+              "file": {
+                "$ref": "#/components/schemas/NotionFile"
+              },
+              "external": {
+                "$ref": "#/components/schemas/ExternalFile"
+              },
+              "name": {
+                "type": "string",
+                "example": "hd-wallpaper-g6e0a7c1ce_1920.jpeg"
+              }
+            },
+            "required": [
+              "caption",
+              "type"
+            ]
           }
-        },
-        "required": [
-          "caption",
-          "type"
         ],
         "example": {
           "caption": [],
