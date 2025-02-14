@@ -413,8 +413,7 @@ type LinkToPage struct {
 type LinkToPageType string
 
 const (
-	LinkToPageTypePageID     LinkToPageType = "page_id"
-	LinkToPageTypeDatabaseID LinkToPageType = "database_id"
+	LinkToPageTypePageID LinkToPageType = "page_id"
 )
 
 // Mention defines a model

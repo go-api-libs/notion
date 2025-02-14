@@ -1523,8 +1523,7 @@
         "description": "Type of this link to page object.",
         "type": "string",
         "enum": [
-          "page_id",
-          "database_id"
+          "page_id"
         ],
         "example": "page_id"
       },
