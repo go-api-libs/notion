@@ -2230,7 +2230,7 @@
                 "example": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100"
               },
               "type": {
-                "$ref": "#/components/schemas/UserAllOf1Type"
+                "$ref": "#/components/schemas/UserType"
               },
               "person": {
                 "$ref": "#/components/schemas/User2Person"
@@ -2271,15 +2271,6 @@
           "email": "mark@faetools.com"
         }
       },
-      "UserAllOf1Type": {
-        "description": "Type of the user.",
-        "type": "string",
-        "enum": [
-          "person",
-          "bot"
-        ],
-        "example": "person"
-      },
       "UserReference": {
         "type": "object",
         "properties": {
@@ -2303,6 +2294,15 @@
           "object": "user",
           "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
         }
+      },
+      "UserType": {
+        "description": "Type of the user.",
+        "type": "string",
+        "enum": [
+          "person",
+          "bot"
+        ],
+        "example": "person"
       }
     },
     "responses": {

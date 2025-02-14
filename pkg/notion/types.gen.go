@@ -616,8 +616,8 @@ type User struct {
 	// Chosen avatar image.
 	AvatarURL url.URL `json:"avatar_url,omitzero"`
 	// Type of the user.
-	Type   UserAllOf1Type `json:"type,omitzero"`
-	Person User2Person    `json:"person"`
+	Type   UserType    `json:"type,omitzero"`
+	Person User2Person `json:"person"`
 }
 
 // User2Person defines a model
@@ -625,17 +625,17 @@ type User2Person struct {
 	Email types.Email `json:"email,omitzero"`
 }
 
-// Type of the user.
-type UserAllOf1Type string
-
-const (
-	UserAllOf1TypePerson UserAllOf1Type = "person"
-	UserAllOf1TypeBot    UserAllOf1Type = "bot"
-)
-
 // UserReference defines a model
 type UserReference struct {
 	// Always "user"
 	Object string    `json:"object,omitzero"`
 	ID     uuid.UUID `json:"id,omitzero"`
 }
+
+// Type of the user.
+type UserType string
+
+const (
+	UserTypePerson UserType = "person"
+	UserTypeBot    UserType = "bot"
+)
