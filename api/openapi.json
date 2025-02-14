@@ -2219,17 +2219,18 @@
             "type": "object",
             "properties": {
               "name": {
+                "description": "User's name, as displayed in Notion.",
                 "type": "string",
                 "example": "Fae Tools"
               },
               "avatar_url": {
+                "description": "Chosen avatar image.",
                 "type": "string",
                 "format": "uri",
                 "example": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100"
               },
               "type": {
-                "type": "string",
-                "example": "person"
+                "$ref": "#/components/schemas/UserAllOf1Type"
               },
               "person": {
                 "$ref": "#/components/schemas/User2Person"
@@ -2269,6 +2270,15 @@
         "example": {
           "email": "mark@faetools.com"
         }
+      },
+      "UserAllOf1Type": {
+        "description": "Type of the user.",
+        "type": "string",
+        "enum": [
+          "person",
+          "bot"
+        ],
+        "example": "person"
       },
       "UserReference": {
         "type": "object",

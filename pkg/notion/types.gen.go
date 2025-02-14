@@ -609,18 +609,29 @@ type ToDoRichText []RichText
 // User defines a model
 type User struct {
 	// Always "user"
-	Object    string      `json:"object,omitzero"`
-	ID        uuid.UUID   `json:"id,omitzero"`
-	Name      string      `json:"name,omitzero"`
-	AvatarURL url.URL     `json:"avatar_url,omitzero"`
-	Type      string      `json:"type,omitzero"`
-	Person    User2Person `json:"person"`
+	Object string    `json:"object,omitzero"`
+	ID     uuid.UUID `json:"id,omitzero"`
+	// User's name, as displayed in Notion.
+	Name string `json:"name,omitzero"`
+	// Chosen avatar image.
+	AvatarURL url.URL `json:"avatar_url,omitzero"`
+	// Type of the user.
+	Type   UserAllOf1Type `json:"type,omitzero"`
+	Person User2Person    `json:"person"`
 }
 
 // User2Person defines a model
 type User2Person struct {
 	Email types.Email `json:"email,omitzero"`
 }
+
+// Type of the user.
+type UserAllOf1Type string
+
+const (
+	UserAllOf1TypePerson UserAllOf1Type = "person"
+	UserAllOf1TypeBot    UserAllOf1Type = "bot"
+)
 
 // UserReference defines a model
 type UserReference struct {
