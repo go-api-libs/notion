@@ -1503,8 +1503,7 @@
         "type": "object",
         "properties": {
           "type": {
-            "type": "string",
-            "example": "page_id"
+            "$ref": "#/components/schemas/LinkToPageType"
           },
           "page_id": {
             "type": "string",
@@ -1513,13 +1512,21 @@
           }
         },
         "required": [
-          "type",
-          "page_id"
+          "type"
         ],
         "example": {
           "type": "page_id",
           "page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
         }
+      },
+      "LinkToPageType": {
+        "description": "Type of this link to page object.",
+        "type": "string",
+        "enum": [
+          "page_id",
+          "database_id"
+        ],
+        "example": "page_id"
       },
       "Mention": {
         "type": "object",

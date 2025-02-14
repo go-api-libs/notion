@@ -404,9 +404,18 @@ type LinkPreview struct {
 
 // LinkToPage defines a model
 type LinkToPage struct {
-	Type   string    `json:"type,omitzero"`
-	PageID uuid.UUID `json:"page_id,omitzero"`
+	// Type of this link to page object.
+	Type   LinkToPageType `json:"type,omitzero"`
+	PageID *uuid.UUID     `json:"page_id,omitempty"`
 }
+
+// Type of this link to page object.
+type LinkToPageType string
+
+const (
+	LinkToPageTypePageID     LinkToPageType = "page_id"
+	LinkToPageTypeDatabaseID LinkToPageType = "database_id"
+)
 
 // Mention defines a model
 type Mention struct {
