@@ -1747,11 +1747,10 @@
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/ParagraphRichText"
+            "$ref": "#/components/schemas/RichTexts"
           },
           "color": {
-            "type": "string",
-            "example": "default"
+            "$ref": "#/components/schemas/Color"
           }
         },
         "required": [
@@ -1762,13 +1761,6 @@
           "rich_text": [],
           "color": "default"
         }
-      },
-      "ParagraphRichText": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/RichText"
-        },
-        "example": []
       },
       "Parent": {
         "description": "The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.",

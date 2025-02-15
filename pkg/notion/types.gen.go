@@ -479,12 +479,10 @@ type Page struct {
 
 // Paragraph, quote, toggle and list item block objects contain this information within their respective property.
 type Paragraph struct {
-	RichText ParagraphRichText `json:"rich_text,omitempty"`
-	Color    string            `json:"color,omitzero"`
+	RichText RichTexts `json:"rich_text,omitempty"`
+	// The color of the block.
+	Color Color `json:"color,omitzero"`
 }
-
-// ParagraphRichText defines a model
-type ParagraphRichText []RichText
 
 // The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
 type Parent struct {
