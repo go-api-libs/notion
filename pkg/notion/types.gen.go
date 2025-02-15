@@ -13,6 +13,7 @@ import (
 )
 
 type GetBlocksParams struct {
+	// The number of items from the full list desired in the response.
 	PageSize int
 }
 

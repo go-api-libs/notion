@@ -2464,6 +2464,7 @@
       "Notion-Version": {
         "name": "Notion-Version",
         "in": "header",
+        "description": "Specifies the Notion API version",
         "required": true,
         "schema": {
           "type": "string",
@@ -2474,6 +2475,7 @@
       "id": {
         "name": "id",
         "in": "path",
+        "description": "Identifier for a block, page, or user.",
         "required": true,
         "schema": {
           "type": "string",
@@ -2485,6 +2487,7 @@
       "page_size": {
         "name": "page_size",
         "in": "query",
+        "description": "The number of items from the full list desired in the response.",
         "schema": {
           "type": "integer",
           "example": 100
