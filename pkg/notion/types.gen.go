@@ -159,7 +159,7 @@ type BlocksList struct {
 	Object  string `json:"object,omitzero"`
 	Results Blocks `json:"results,omitempty"`
 	// A unique identifier for a page, block, database, or user.
-	NextCursor struct{}  `json:"next_cursor"`
+	NextCursor uuid.UUID `json:"next_cursor,omitzero"`
 	HasMore    bool      `json:"has_more,omitzero"`
 	Type       string    `json:"type,omitzero"`
 	Block      struct{}  `json:"block"`

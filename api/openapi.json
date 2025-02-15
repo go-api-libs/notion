@@ -720,8 +720,9 @@
           },
           "next_cursor": {
             "description": "A unique identifier for a page, block, database, or user.",
-            "type": "object",
-            "example": null
+            "type": "string",
+            "format": "uuid",
+            "example": "d05aa478-397e-4954-b694-b7c1c6c78956"
           },
           "has_more": {
             "type": "boolean",

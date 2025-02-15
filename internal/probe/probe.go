@@ -30,16 +30,22 @@ func probe() error {
 		return fmt.Errorf("getting page %q: %w", examplePageID, err)
 	}
 
-	fmt.Printf("Title: %q\n", p.Title())
-
-	list, err := c.GetBlocks(ctx, examplePageID, &notion.GetBlocksParams{
-		PageSize: 101,
-	})
-	if err != nil {
-		return err
+	if want := examplePageID; p.ID != want {
+		return fmt.Errorf("unexpected page ID: got %v, want %v", p.ID, want)
 	}
 
-	fmt.Printf("list.Block: %v\n", list.Block)
+	if want := "Example Page"; p.Title() != want {
+		return fmt.Errorf("unexpected page title: got %q, want %q", p.Title(), want)
+	}
+
+	// list, err := c.GetBlocks(ctx, examplePageID, &notion.GetBlocksParams{
+	// 	PageSize: 10,
+	// })
+	// if err != nil {
+	// 	return err
+	// }
+
+	// fmt.Printf("num results: %v\n", len(list.Results))
 
 	bearer := os.Getenv("NOTION_API_KEY")
 	if bearer == "" {
@@ -56,7 +62,7 @@ func probe() error {
 		req.Header.Set("Notion-Version", "2022-06-28")
 	}
 
-	req, err := http.NewRequest(http.MethodGet, "https://api.notion.com/v1/blocks/"+examplePageID.String()+"/children?page_size=100", nil)
+	req, err := http.NewRequest(http.MethodGet, "https://api.notion.com/v1/blocks/"+examplePageID.String()+"/children?page_size=10", nil)
 	if err != nil {
 		return err
 	}
