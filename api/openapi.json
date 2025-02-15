@@ -14,7 +14,7 @@
     "/pages/{id}": {
       "parameters": [
         {
-          "$ref": "#/components/parameters/Notion-Version"
+          "$ref": "#/components/parameters/NotionVersionHeader"
         },
         {
           "$ref": "#/components/parameters/id"
@@ -37,7 +37,7 @@
     "/blocks/{id}/children": {
       "parameters": [
         {
-          "$ref": "#/components/parameters/Notion-Version"
+          "$ref": "#/components/parameters/NotionVersionHeader"
         },
         {
           "$ref": "#/components/parameters/id"
@@ -2461,7 +2461,7 @@
       }
     },
     "parameters": {
-      "Notion-Version": {
+      "NotionVersionHeader": {
         "name": "Notion-Version",
         "in": "header",
         "description": "Specifies the Notion API version",
