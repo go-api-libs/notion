@@ -38,14 +38,14 @@ func probe() error {
 		return fmt.Errorf("unexpected page title: got %q, want %q", p.Title(), want)
 	}
 
-	// list, err := c.GetBlocks(ctx, examplePageID, &notion.GetBlocksParams{
-	// 	PageSize: 10,
-	// })
-	// if err != nil {
-	// 	return err
-	// }
+	list, err := c.GetBlocks(ctx, examplePageID, &notion.GetBlocksParams{
+		PageSize: 10,
+	})
+	if err != nil {
+		return err
+	}
 
-	// fmt.Printf("num results: %v\n", len(list.Results))
+	fmt.Printf("num results: %v\n", len(list.Results))
 
 	bearer := os.Getenv("NOTION_API_KEY")
 	if bearer == "" {
