@@ -74,7 +74,7 @@ func main() {
 		panic(err)
 	}
 
-	// Use blocksList
+	// Use blocksList object
 }
 
 ```
