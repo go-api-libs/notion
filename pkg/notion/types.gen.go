@@ -428,18 +428,6 @@ const (
 	LinkToPageTypePageID LinkToPageType = "page_id"
 )
 
-// List defines a model
-type List struct {
-	// Always `list`.
-	Object string `json:"object,omitzero"`
-	// Only available when has_more is true.
-	//
-	// Used to retrieve the next page of results by passing the value as the `start_cursor` parameter to the same endpoint.
-	NextCursor uuid.UUID `json:"next_cursor,omitzero"`
-	// When the response includes the end of the list, `false`. Otherwise, `true`.
-	HasMore bool `json:"has_more,omitzero"`
-}
-
 // Mention defines a model
 type Mention struct {
 	// Type of the inline mention.
