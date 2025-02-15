@@ -13,6 +13,7 @@ import (
 )
 
 type GetBlocksParams struct {
+	StartCursor uuid.UUID
 	// The number of items from the full list desired in the response.
 	PageSize int
 }

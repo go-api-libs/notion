@@ -125,8 +125,18 @@ func (c *Client) GetBlocks(ctx context.Context, id uuid.UUID, params *GetBlocksP
 func GetBlocks[R any](ctx context.Context, c *Client, id uuid.UUID, params *GetBlocksParams) (*R, error) {
 	u := baseURL.JoinPath("blocks", id.String(), "children")
 
-	if params != nil && params.PageSize != 0 {
-		u.RawQuery = url.Values{"page_size": []string{strconv.Itoa(params.PageSize)}}.Encode()
+	if params != nil {
+		q := make(url.Values, 2)
+
+		if params.StartCursor != uuid.Nil {
+			q["start_cursor"] = []string{params.StartCursor.String()}
+		}
+
+		if params.PageSize != 0 {
+			q["page_size"] = []string{strconv.Itoa(params.PageSize)}
+		}
+
+		u.RawQuery = q.Encode()
 	}
 
 	req := (&http.Request{

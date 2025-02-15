@@ -62,7 +62,7 @@ func probe() error {
 		req.Header.Set("Notion-Version", "2022-06-28")
 	}
 
-	req, err := http.NewRequest(http.MethodGet, "https://api.notion.com/v1/blocks/"+examplePageID.String()+"/children?page_size=10", nil)
+	req, err := http.NewRequest(http.MethodGet, "https://api.notion.com/v1/blocks/"+examplePageID.String()+"/children?page_size=10&start_cursor="+list.NextCursor.String(), nil)
 	if err != nil {
 		return err
 	}

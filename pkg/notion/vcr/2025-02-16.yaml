@@ -221,3 +221,75 @@ interactions:
         status: 200 OK
         code: 200
         duration: 2.248240209s
+    - id: 3
+      request:
+        proto: HTTP/1.1
+        proto_major: 1
+        proto_minor: 1
+        content_length: 0
+        transfer_encoding: []
+        trailer: {}
+        host: api.notion.com
+        remote_addr: ""
+        request_uri: ""
+        body: ""
+        form: {}
+        headers:
+            Authorization:
+                - Bearer **************************************************
+            Notion-Version:
+                - "2022-06-28"
+        url: https://api.notion.com/v1/blocks/96245c8f-1784-44a4-82ad-1941127c3ec3/children?page_size=10&start_cursor=d05aa478-397e-4954-b694-b7c1c6c78956
+        method: GET
+      response:
+        proto: HTTP/2.0
+        proto_major: 2
+        proto_minor: 0
+        transfer_encoding: []
+        trailer: {}
+        content_length: -1
+        uncompressed: true
+        body: "{\"object\":\"list\",\"results\":[{\"object\":\"block\",\"id\":\"d05aa478-397e-4954-b694-b7c1c6c78956\",\"parent\":{\"type\":\"page_id\",\"page_id\":\"96245c8f-1784-44a4-82ad-1941127c3ec3\"},\"created_time\":\"2022-07-14T17:46:00.000Z\",\"last_edited_time\":\"2022-10-08T21:16:00.000Z\",\"created_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"last_edited_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"has_children\":true,\"archived\":false,\"in_trash\":false,\"type\":\"heading_2\",\"heading_2\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"Medium toggle heading \",\"link\":null},\"annotations\":{\"bold\":false,\"italic\":false,\"strikethrough\":false,\"underline\":false,\"code\":false,\"color\":\"default\"},\"plain_text\":\"Medium toggle heading \",\"href\":null}],\"is_toggleable\":true,\"color\":\"default\"}},{\"object\":\"block\",\"id\":\"b7950ba9-e8a0-4b2f-a069-5cafcd6ed6ad\",\"parent\":{\"type\":\"page_id\",\"page_id\":\"96245c8f-1784-44a4-82ad-1941127c3ec3\"},\"created_time\":\"2022-07-14T17:46:00.000Z\",\"last_edited_time\":\"2022-10-08T21:16:00.000Z\",\"created_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"last_edited_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"has_children\":false,\"archived\":false,\"in_trash\":false,\"type\":\"heading_3\",\"heading_3\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"Small heading\",\"link\":null},\"annotations\":{\"bold\":false,\"italic\":false,\"strikethrough\":false,\"underline\":false,\"code\":false,\"color\":\"default\"},\"plain_text\":\"Small heading\",\"href\":null}],\"is_toggleable\":false,\"color\":\"default\"}},{\"object\":\"block\",\"id\":\"0377f15d-c60f-4643-87b9-467e4814fe46\",\"parent\":{\"type\":\"page_id\",\"page_id\":\"96245c8f-1784-44a4-82ad-1941127c3ec3\"},\"created_time\":\"2022-07-14T17:49:00.000Z\",\"last_edited_time\":\"2022-10-08T21:16:00.000Z\",\"created_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"last_edited_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"has_children\":false,\"archived\":false,\"in_trash\":false,\"type\":\"callout\",\"callout\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"Callout with a fire emoji.\",\"link\":null},\"annotations\":{\"bold\":false,\"italic\":false,\"strikethrough\":false,\"underline\":false,\"code\":false,\"color\":\"default\"},\"plain_text\":\"Callout with a fire emoji.\",\"href\":null}],\"icon\":{\"type\":\"emoji\",\"emoji\":\"\U0001F525\"},\"color\":\"gray_background\"}},{\"object\":\"block\",\"id\":\"12a1a2cc-9ce7-414e-9fd3-db016419174c\",\"parent\":{\"type\":\"page_id\",\"page_id\":\"96245c8f-1784-44a4-82ad-1941127c3ec3\"},\"created_time\":\"2022-07-14T17:49:00.000Z\",\"last_edited_time\":\"2022-10-08T21:16:00.000Z\",\"created_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"last_edited_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"has_children\":true,\"archived\":false,\"in_trash\":false,\"type\":\"callout\",\"callout\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"Orange callout with a custom melting face.\",\"link\":null},\"annotations\":{\"bold\":false,\"italic\":false,\"strikethrough\":false,\"underline\":false,\"code\":false,\"color\":\"default\"},\"plain_text\":\"Orange callout with a custom melting face.\",\"href\":null}],\"icon\":{\"type\":\"external\",\"external\":{\"url\":\"https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/melting-face_1fae0.png\"}},\"color\":\"orange\"}},{\"object\":\"block\",\"id\":\"3b4d96f0-a5e2-4e47-90eb-dbc3f95f936d\",\"parent\":{\"type\":\"page_id\",\"page_id\":\"96245c8f-1784-44a4-82ad-1941127c3ec3\"},\"created_time\":\"2022-07-14T17:52:00.000Z\",\"last_edited_time\":\"2022-10-08T21:16:00.000Z\",\"created_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"last_edited_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"has_children\":false,\"archived\":false,\"in_trash\":false,\"type\":\"callout\",\"callout\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"Callout with uploaded sparkles.\",\"link\":null},\"annotations\":{\"bold\":false,\"italic\":false,\"strikethrough\":false,\"underline\":false,\"code\":false,\"color\":\"default\"},\"plain_text\":\"Callout with uploaded sparkles.\",\"href\":null}],\"icon\":{\"type\":\"file\",\"file\":{\"url\":\"https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/30d8226f-1494-40f3-898c-4683f6e14a38/sparkles_2728.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB46627324L3G%2F20250215%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250215T232114Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECcaCXVzLXdlc3QtMiJHMEUCIQDIk02Yb6eXa2WAyfH%2BaNgtP7ZbejtdVJxzde4lJTeUlwIgPqQod1VVOzM9pzbV%2Fy5UHrdRNE8BfQRCi0X6p8LV%2Bqgq%2FwMIUBAAGgw2Mzc0MjMxODM4MDUiDMDcwXSW2mk1%2BwhglyrcA4ceqFvfDEzrX61pc5kXu2E%2BpLTd3ZKHcLT7LTTmXdVQAuHEM1EomP%2BEo1X6FwuneogEpwHStQhAoFkwyW2ZWZFY2r72uoPLiZ55X1V9G6kCG56Qp9lEVIq0KvXAlKMQnf%2BLW8PV9GC7Uy8Wh5Hf1R1I3FCLLMrc7Jzq7YeAdtrWGsCtYV5FlvjY9SlFFD72p6Oca2hwxsX6%2FE6DH%2FpWtcEvWxs6sxvh3E9OjgAHDxlds9wnauXDhaw4EoUsGEevPn5FiDkV27hNygPYg7Aok7l2xnGDmggTU385UVUOElnAtTfTbPUUpRDHwD97HOZCQbDiA08flPvLDf6HLFEV4tZoWRd0XlvENvk%2BcVZYTDt97BEhkwdR3Tb6XBDQ996qIR7BTsg1u4%2BXci%2F9DWPPC7pltzVETqXSgTgFhCuibnqoOiTTHKEUYviuunUgpxcEDt93lOT1cm8ETGhMBcEo81Fd%2Fdg%2BpLAWwFZ6NHUo3JQ2TXiPklI9KGz7v4bq%2FKZgHG%2B0aGRlgM4q2TicH8MKhOgg05s5eqZC2%2FN1SsO2QpCMG9O6WeoTb7UbxlYskp8%2FRMlg0%2BA70qLv71wl25S3JKNomec4PiMcjqAQOZb5eFvb%2Bp9HH6TQIGhLmluPMLitxL0GOqUBsa6Ph2%2Fsfw2K%2FKjL63O%2F5mgHOlakKqND4avqBaZWNpXicoMkWPj9tAl1z4KdbvrIYs4CPAhtFeyyQDfuakeOp1IX%2BFxhrU1U7PSSHEkHk24lya%2BBMInJvNY1bi4u%2B5SF%2Bt07ymtSFzsVru4Gc0aMhYj%2BcKgpRQobHmloRHEfSkWhTvcC%2FPYvjuzsq1L6HsAN0ydxZg5J7kGLrSFxZzU2SvECnvSV&X-Amz-Signature=46e1e346a6918c86e4c4b94deba9e3e6c8eafce5ba7cf07b1c0b53a00d466587&X-Amz-SignedHeaders=host&x-id=GetObject\",\"expiry_time\":\"2025-02-16T00:21:14.341Z\"}},\"color\":\"gray_background\"}},{\"object\":\"block\",\"id\":\"7e4b229d-b2eb-45df-b272-a07f88b7722e\",\"parent\":{\"type\":\"page_id\",\"page_id\":\"96245c8f-1784-44a4-82ad-1941127c3ec3\"},\"created_time\":\"2022-07-14T17:54:00.000Z\",\"last_edited_time\":\"2022-10-08T21:16:00.000Z\",\"created_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"last_edited_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"has_children\":false,\"archived\":false,\"in_trash\":false,\"type\":\"quote\",\"quote\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\" “The problem with \",\"link\":null},\"annotations\":{\"bold\":false,\"italic\":false,\"strikethrough\":false,\"underline\":false,\"code\":false,\"color\":\"default\"},\"plain_text\":\" “The problem with \",\"href\":null},{\"type\":\"text\",\"text\":{\"content\":\"internet\",\"link\":null},\"annotations\":{\"bold\":false,\"italic\":false,\"strikethrough\":false,\"underline\":false,\"code\":true,\"color\":\"default\"},\"plain_text\":\"internet\",\"href\":null},{\"type\":\"text\",\"text\":{\"content\":\" quotes is that you cannot always depend on their accuracy.” — Abraham Lincoln, 1864\",\"link\":null},\"annotations\":{\"bold\":false,\"italic\":false,\"strikethrough\":false,\"underline\":false,\"code\":false,\"color\":\"default\"},\"plain_text\":\" quotes is that you cannot always depend on their accuracy.” — Abraham Lincoln, 1864\",\"href\":null}],\"color\":\"green\"}},{\"object\":\"block\",\"id\":\"2503b13d-2eda-4f95-af02-785522aa7bb7\",\"parent\":{\"type\":\"page_id\",\"page_id\":\"96245c8f-1784-44a4-82ad-1941127c3ec3\"},\"created_time\":\"2022-07-14T18:32:00.000Z\",\"last_edited_time\":\"2022-10-08T21:16:00.000Z\",\"created_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"last_edited_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"has_children\":true,\"archived\":false,\"in_trash\":false,\"type\":\"synced_block\",\"synced_block\":{\"synced_from\":{\"type\":\"block_id\",\"block_id\":\"0960b64c-81c9-4f19-a873-e8072b083a40\"}}},{\"object\":\"block\",\"id\":\"d0827327-11cf-4ada-98a3-3b07361cd38b\",\"parent\":{\"type\":\"page_id\",\"page_id\":\"96245c8f-1784-44a4-82ad-1941127c3ec3\"},\"created_time\":\"2022-07-14T18:32:00.000Z\",\"last_edited_time\":\"2022-10-08T21:16:00.000Z\",\"created_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"last_edited_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"has_children\":false,\"archived\":false,\"in_trash\":false,\"type\":\"paragraph\",\"paragraph\":{\"rich_text\":[],\"color\":\"default\"}},{\"object\":\"block\",\"id\":\"111ff69f-1d43-448e-aa4c-881b3524ec86\",\"parent\":{\"type\":\"page_id\",\"page_id\":\"96245c8f-1784-44a4-82ad-1941127c3ec3\"},\"created_time\":\"2022-07-14T17:55:00.000Z\",\"last_edited_time\":\"2022-10-08T21:16:00.000Z\",\"created_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"last_edited_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"has_children\":false,\"archived\":false,\"in_trash\":false,\"type\":\"numbered_list_item\",\"numbered_list_item\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"Collect underpants.\",\"link\":null},\"annotations\":{\"bold\":false,\"italic\":false,\"strikethrough\":false,\"underline\":false,\"code\":false,\"color\":\"default\"},\"plain_text\":\"Collect underpants.\",\"href\":null}],\"color\":\"default\"}},{\"object\":\"block\",\"id\":\"a3663617-fef0-4254-8567-8265a5cf7564\",\"parent\":{\"type\":\"page_id\",\"page_id\":\"96245c8f-1784-44a4-82ad-1941127c3ec3\"},\"created_time\":\"2022-07-14T17:57:00.000Z\",\"last_edited_time\":\"2022-10-08T21:16:00.000Z\",\"created_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"last_edited_by\":{\"object\":\"user\",\"id\":\"af171d5d-c36f-45bc-a0a3-6086c0dafa45\"},\"has_children\":false,\"archived\":false,\"in_trash\":false,\"type\":\"numbered_list_item\",\"numbered_list_item\":{\"rich_text\":[{\"type\":\"text\",\"text\":{\"content\":\"???\",\"link\":null},\"annotations\":{\"bold\":false,\"italic\":false,\"strikethrough\":false,\"underline\":false,\"code\":false,\"color\":\"default\"},\"plain_text\":\"???\",\"href\":null}],\"color\":\"red_background\"}}],\"next_cursor\":\"71b8d554-4bb0-4257-955d-191369cc9257\",\"has_more\":true,\"type\":\"block\",\"block\":{},\"request_id\":\"fb1032c0-21fa-4ee5-899a-e4e465b3b40e\"}"
+        headers:
+            Alt-Svc:
+                - h3=":443"; ma=86400
+            Cf-Cache-Status:
+                - DYNAMIC
+            Cf-Ray:
+                - 91290876ca19f5b5-AMS
+            Content-Security-Policy:
+                - default-src 'none'
+            Content-Type:
+                - application/json; charset=utf-8
+            Date:
+                - Sat, 15 Feb 2025 23:21:14 GMT
+            Etag:
+                - W/"25c8-EKimPrqRmn3aD6WMDpxxQg2IY48"
+            Referrer-Policy:
+                - strict-origin-when-cross-origin
+            Server:
+                - cloudflare
+            Set-Cookie:
+                - __cf_bm=xzrULDW1Chr2oDSpmogTLn0Hwn.uR5CyLUyRhwj22ow-1739661674-1.0.1.1-Oe9e5ng_AfJ30Fytp8iQraLpXXncJTuoBbjDazbvEEXYac5OjTTggiH25YLSyt1QxVGIKFQsx83YGBpxp3O_eQ; path=/; expires=Sat, 15-Feb-25 23:51:14 GMT; domain=.notion.com; HttpOnly; Secure; SameSite=None
+                - _cfuvid=1khDAQ9ApJSu8u7RCivJiGhDWwmko2Y6iY0Py__EX8o-1739661674440-0.0.1.1-604800000; path=/; domain=.notion.com; HttpOnly; Secure; SameSite=None
+            Strict-Transport-Security:
+                - max-age=31536000; includeSubDomains; preload
+            Vary:
+                - Accept-Encoding
+            X-Content-Type-Options:
+                - nosniff
+            X-Dns-Prefetch-Control:
+                - "off"
+            X-Download-Options:
+                - noopen
+            X-Frame-Options:
+                - SAMEORIGIN
+            X-Notion-Request-Id:
+                - fb1032c0-21fa-4ee5-899a-e4e465b3b40e
+            X-Permitted-Cross-Domain-Policies:
+                - none
+            X-Xss-Protection:
+                - "0"
+        status: 200 OK
+        code: 200
+        duration: 480.819458ms

@@ -41,6 +41,9 @@
         },
         {
           "$ref": "#/components/parameters/id"
+        },
+        {
+          "$ref": "#/components/parameters/start_cursor"
         }
       ],
       "get": {
@@ -2512,6 +2515,16 @@
           "example": 100
         },
         "example": 100
+      },
+      "start_cursor": {
+        "name": "start_cursor",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "example": "d05aa478-397e-4954-b694-b7c1c6c78956"
+        },
+        "example": "d05aa478-397e-4954-b694-b7c1c6c78956"
       }
     },
     "securitySchemes": {
