@@ -66,7 +66,8 @@ type Block struct {
 	BulletedListItem *Paragraph `json:"bulleted_list_item,omitempty"`
 	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
 	NumberedListItem *Paragraph `json:"numbered_list_item,omitempty"`
-	ToDo             *ToDo      `json:"to_do,omitempty"`
+	// To do block objects contain this information within the `to_do` property.
+	ToDo *ToDo `json:"to_do,omitempty"`
 	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
 	Toggle *Paragraph `json:"toggle,omitempty"`
 	// Code block objects contain this information within the `code` property.
@@ -625,7 +626,7 @@ type Text struct {
 	Link *Link `json:"link,omitempty"`
 }
 
-// ToDo defines a model
+// To do block objects contain this information within the `to_do` property.
 type ToDo struct {
 	RichText ToDoRichText `json:"rich_text,omitempty"`
 	Checked  bool         `json:"checked,omitzero"`

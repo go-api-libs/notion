@@ -2133,6 +2133,7 @@
         }
       },
       "ToDo": {
+        "description": "To do block objects contain this information within the `to_do` property.",
         "type": "object",
         "properties": {
           "rich_text": {
