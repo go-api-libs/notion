@@ -584,11 +584,11 @@ type RichTexts []RichText
 
 // SyncedBlock defines a model
 type SyncedBlock struct {
-	SyncedFrom SyncedBlockSyncedFrom `json:"synced_from"`
+	SyncedFrom SyncedFrom `json:"synced_from"`
 }
 
-// SyncedBlockSyncedFrom defines a model
-type SyncedBlockSyncedFrom struct {
+// SyncedFrom defines a model
+type SyncedFrom struct {
 	Type    string    `json:"type,omitzero"`
 	BlockID uuid.UUID `json:"block_id,omitzero"`
 }
