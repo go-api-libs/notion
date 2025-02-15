@@ -628,13 +628,12 @@ type Text struct {
 
 // To do block objects contain this information within the `to_do` property.
 type ToDo struct {
-	RichText ToDoRichText `json:"rich_text,omitempty"`
-	Checked  bool         `json:"checked,omitzero"`
-	Color    string       `json:"color,omitzero"`
+	RichText RichTexts `json:"rich_text,omitempty"`
+	// Whether the to_do is checked or not.
+	Checked bool `json:"checked,omitzero"`
+	// The color of the block.
+	Color Color `json:"color,omitzero"`
 }
-
-// ToDoRichText defines a model
-type ToDoRichText []RichText
 
 // User defines a model
 type User struct {

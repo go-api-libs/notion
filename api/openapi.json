@@ -2137,15 +2137,15 @@
         "type": "object",
         "properties": {
           "rich_text": {
-            "$ref": "#/components/schemas/ToDoRichText"
+            "$ref": "#/components/schemas/RichTexts"
           },
           "checked": {
+            "description": "Whether the to_do is checked or not.",
             "type": "boolean",
             "example": false
           },
           "color": {
-            "type": "string",
-            "example": "default"
+            "$ref": "#/components/schemas/Color"
           }
         },
         "required": [
@@ -2176,31 +2176,6 @@
           "checked": false,
           "color": "default"
         }
-      },
-      "ToDoRichText": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/RichText"
-        },
-        "example": [
-          {
-            "type": "text",
-            "text": {
-              "content": "finish this document",
-              "link": null
-            },
-            "annotations": {
-              "bold": false,
-              "italic": false,
-              "strikethrough": false,
-              "underline": false,
-              "code": false,
-              "color": "default"
-            },
-            "plain_text": "finish this document",
-            "href": null
-          }
-        ]
       },
       "User": {
         "allOf": [
