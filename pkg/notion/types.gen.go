@@ -501,8 +501,9 @@ const (
 	ParentTypeDatabaseID ParentType = "database_id"
 )
 
-// Person defines a model
+// User objects that represent people have the `type` property set to `person`. These objects also have these properties.
 type Person struct {
+	// Email address of the person. This is only present if an integration has user capabilities that allow access to email addresses.
 	Email types.Email `json:"email,omitzero"`
 }
 
@@ -632,8 +633,9 @@ type User struct {
 	// Chosen avatar image.
 	AvatarURL url.URL `json:"avatar_url,omitzero"`
 	// Type of the user.
-	Type   UserType `json:"type,omitzero"`
-	Person Person   `json:"person"`
+	Type UserType `json:"type,omitzero"`
+	// User objects that represent people have the `type` property set to `person`. These objects also have these properties.
+	Person Person `json:"person"`
 }
 
 // UserReference defines a model

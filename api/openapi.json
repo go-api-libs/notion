@@ -1795,9 +1795,11 @@
         "example": "page_id"
       },
       "Person": {
+        "description": "User objects that represent people have the `type` property set to `person`. These objects also have these properties.",
         "type": "object",
         "properties": {
           "email": {
+            "description": "Email address of the person. This is only present if an integration has user capabilities that allow access to email addresses.",
             "type": "string",
             "format": "email",
             "example": "mark@faetools.com"
