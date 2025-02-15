@@ -1,59 +1,69 @@
 package notion
 
-// import (
-// 	"context"
-// 	"fmt"
-// 	"iter"
+import (
+	"context"
+	"fmt"
+	"iter"
 
-// 	"github.com/google/uuid"
-// )
+	"github.com/google/uuid"
+)
 
-// type BlocksIterator struct {
-// 	cli  *Client
-// 	id   uuid.UUID
-// 	next *string
-// 	err  error
-// }
+// BlocksIter is an iterator for blocks in a Notion page.
+type BlocksIter struct {
+	c    *Client   // Client to interact with the Notion API
+	id   uuid.UUID // ID of the Notion page
+	next uuid.UUID // Cursor for the next page of results
+	err  error     // Error encountered during iteration
+}
 
-// func (c *Client) BlocksIterator(id uuid.UUID) BlocksIterator {
-// 	return BlocksIterator{cli: c, id: id}
-// }
+// ListBlocks creates a new BlocksIter for the given page ID.
+func (c *Client) ListBlocks(id uuid.UUID) BlocksIter {
+	return BlocksIter{c: c, id: id}
+}
 
-// func (it *BlocksIterator) All(ctx context.Context) iter.Seq2[int, Block] {
-// 	it.err = nil // reset the error
+const maxPageSizeInt = 100 // Maximum number of blocks per page
 
-// 	i := 0
-// 	return func(yield func(int, Block) bool) {
-// 		// reset the next cursor when the iterator is done
-// 		// so that the iterator can be reused
-// 		defer func() { it.next = nil }()
+// All returns an iterator that yields all blocks in the Notion page.
+func (it *BlocksIter) All(ctx context.Context) iter.Seq2[int, Block] {
+	it.err = nil // Reset the error
 
-// 		for page := 0; ; page++ {
-// 			list, err := it.cli.GetBlocks(ctx, it.id, &GetBlocksParams{
-// 				PageSize:    &maxPageSizeInt,
-// 				StartCursor: it.next,
-// 			})
-// 			if err != nil {
-// 				it.err = fmt.Errorf("page %d of getting blocks for %s: %w", page, it.id, err)
-// 				return
-// 			}
+	i := 0
+	return func(yield func(int, Block) bool) {
+		// Reset the next cursor when the iterator is done
+		// so that the iterator can be reused
+		defer func() { it.next = uuid.Nil }()
 
-// 			for _, block := range list.Results {
-// 				if !yield(i, block) {
-// 					return
-// 				}
+		for page := 0; ; page++ {
+			// Get a page of blocks from the Notion API
+			list, err := it.c.GetBlocks(ctx, it.id, &GetBlocksParams{
+				PageSize:    maxPageSizeInt,
+				StartCursor: it.next,
+			})
+			if err != nil {
+				it.err = fmt.Errorf("page %d of getting blocks for %s: %w", page, it.id, err)
+				return
+			}
 
-// 				i++
-// 			}
+			// Yield each block to the caller
+			for _, block := range list.Results {
+				if !yield(i, block) {
+					return
+				}
 
-// 			if !list.HasMore {
-// 				return
-// 			}
+				i++
+			}
 
-// 			s := list.NextCursor.String()
-// 			it.next = &s
-// 		}
-// 	}
-// }
+			// If there are no more blocks, stop iterating
+			if !list.HasMore {
+				return
+			}
 
-// func (it *BlocksIterator) Err() error { return it.err }
+			// Update the cursor for the next page of results
+			it.next = list.NextCursor
+		}
+	}
+}
+
+// Err returns the error encountered during iteration, if any.
+// It must be inspected after All returns.
+func (it *BlocksIter) Err() error { return it.err }

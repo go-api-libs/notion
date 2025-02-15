@@ -3,9 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"net/http"
-	"os"
-	"strings"
 
 	"github.com/go-api-libs/notion/pkg/notion"
 	"github.com/google/uuid"
@@ -38,39 +35,50 @@ func probe() error {
 		return fmt.Errorf("unexpected page title: got %q, want %q", p.Title(), want)
 	}
 
-	list, err := c.GetBlocks(ctx, examplePageID, &notion.GetBlocksParams{
-		PageSize: 10,
-	})
-	if err != nil {
-		return err
+	blocksIter := c.ListBlocks(examplePageID)
+	for _, b := range blocksIter.All(ctx) {
+		fmt.Printf("block: %v\n", b.Type)
 	}
 
-	fmt.Printf("num results: %v\n", len(list.Results))
-
-	bearer := os.Getenv("NOTION_API_KEY")
-	if bearer == "" {
-		return fmt.Errorf("missing bearer token, set NOTION_API_KEY")
+	if err := blocksIter.Err(); err != nil {
+		return fmt.Errorf("listing blocks: %w", err)
 	}
 
-	if !strings.HasPrefix(bearer, "Bearer ") {
-		bearer = "Bearer " + bearer
-	}
+	return nil
 
-	reqEditor := func(req *http.Request) {
-		req.Header.Set("Authorization", bearer)
-		// Specifies the Notion API version
-		req.Header.Set("Notion-Version", "2022-06-28")
-	}
+	// list, err := c.GetBlocks(ctx, examplePageID, &notion.GetBlocksParams{
+	// 	PageSize: 10,
+	// })
+	// if err != nil {
+	// 	return err
+	// }
 
-	req, err := http.NewRequest(http.MethodGet, "https://api.notion.com/v1/blocks/"+examplePageID.String()+"/children?page_size=10&start_cursor="+list.NextCursor.String(), nil)
-	if err != nil {
-		return err
-	}
+	// fmt.Printf("num results: %v\n", len(list.Results))
 
-	reqEditor(req)
+	// bearer := os.Getenv("NOTION_API_KEY")
+	// if bearer == "" {
+	// 	return fmt.Errorf("missing bearer token, set NOTION_API_KEY")
+	// }
 
-	_, err = http.DefaultClient.Do(req)
-	return err
+	// if !strings.HasPrefix(bearer, "Bearer ") {
+	// 	bearer = "Bearer " + bearer
+	// }
+
+	// reqEditor := func(req *http.Request) {
+	// 	req.Header.Set("Authorization", bearer)
+	// 	// Specifies the Notion API version
+	// 	req.Header.Set("Notion-Version", "2022-06-28")
+	// }
+
+	// req, err := http.NewRequest(http.MethodGet, "https://api.notion.com/v1/blocks/"+examplePageID.String()+"/children?page_size=10&start_cursor="+list.NextCursor.String(), nil)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// reqEditor(req)
+
+	// _, err = http.DefaultClient.Do(req)
+	// return err
 }
 
 // mask any secrets the API might return, e.g. in the response body
