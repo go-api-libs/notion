@@ -13,6 +13,7 @@ import (
 )
 
 type GetBlocksParams struct {
+	// If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results.
 	StartCursor uuid.UUID
 	// The number of items from the full list desired in the response.
 	PageSize int
