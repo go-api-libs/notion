@@ -2043,8 +2043,7 @@
         "type": "object",
         "properties": {
           "type": {
-            "type": "string",
-            "example": "block_id"
+            "$ref": "#/components/schemas/SyncedFromType"
           },
           "block_id": {
             "type": "string",
@@ -2053,13 +2052,19 @@
           }
         },
         "required": [
-          "type",
-          "block_id"
+          "type"
         ],
         "example": {
           "type": "block_id",
           "block_id": "0960b64c-81c9-4f19-a873-e8072b083a40"
         }
+      },
+      "SyncedFromType": {
+        "type": "string",
+        "enum": [
+          "block_id"
+        ],
+        "example": "block_id"
       },
       "Table": {
         "type": "object",

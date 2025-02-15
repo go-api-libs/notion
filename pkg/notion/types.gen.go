@@ -589,9 +589,16 @@ type SyncedBlock struct {
 
 // SyncedFrom defines a model
 type SyncedFrom struct {
-	Type    string    `json:"type,omitzero"`
-	BlockID uuid.UUID `json:"block_id,omitzero"`
+	Type    SyncedFromType `json:"type,omitzero"`
+	BlockID *uuid.UUID     `json:"block_id,omitempty"`
 }
+
+// SyncedFromType defines a model
+type SyncedFromType string
+
+const (
+	SyncedFromTypeBlockID SyncedFromType = "block_id"
+)
 
 // Table defines a model
 type Table struct {
