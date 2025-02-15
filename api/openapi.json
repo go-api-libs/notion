@@ -2097,11 +2097,11 @@
         }
       },
       "TableOfContents": {
+        "description": "Table of contents block objects contain the following information within the `table_of_contents` property.",
         "type": "object",
         "properties": {
           "color": {
-            "type": "string",
-            "example": "gray"
+            "$ref": "#/components/schemas/Color"
           }
         },
         "required": [

@@ -92,7 +92,8 @@ type Block struct {
 	// Equation block objects contain this information within the `equation` property
 	Equation *Equation `json:"equation,omitempty"`
 	// Divider block objects do not contain any information within the divider property
-	Divider         *struct{}        `json:"divider,omitempty"`
+	Divider *struct{} `json:"divider,omitempty"`
+	// Table of contents block objects contain the following information within the `table_of_contents` property.
 	TableOfContents *TableOfContents `json:"table_of_contents,omitempty"`
 	// Column Lists are parent blocks for column children. They do not contain any information within the column_list property and can only contain children of type column.
 	ColumnList *struct{} `json:"column_list,omitempty"`
@@ -610,9 +611,10 @@ type Table struct {
 	HasRowHeader bool `json:"has_row_header,omitzero"`
 }
 
-// TableOfContents defines a model
+// Table of contents block objects contain the following information within the `table_of_contents` property.
 type TableOfContents struct {
-	Color string `json:"color,omitzero"`
+	// The color of the block.
+	Color Color `json:"color,omitzero"`
 }
 
 // Text objects contain this information within the `text` property of a RichText object.
