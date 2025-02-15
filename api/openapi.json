@@ -2070,14 +2070,17 @@
         "type": "object",
         "properties": {
           "table_width": {
+            "description": "Number of columns in the table. Note that this cannot be changed via the public API once a table is created.",
             "type": "integer",
             "example": 2
           },
           "has_column_header": {
+            "description": "Whether or not the table has a column header. If true, the first row in the table will appear visually distinct from the other rows.",
             "type": "boolean",
             "example": true
           },
           "has_row_header": {
+            "description": "Whether or not the table has a header row. If true, the first column in the table will appear visually distinct from the other columns.",
             "type": "boolean",
             "example": true
           }

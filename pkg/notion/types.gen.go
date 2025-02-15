@@ -602,9 +602,12 @@ const (
 
 // Table defines a model
 type Table struct {
-	TableWidth      int  `json:"table_width,omitzero"`
+	// Number of columns in the table. Note that this cannot be changed via the public API once a table is created.
+	TableWidth int `json:"table_width,omitzero"`
+	// Whether or not the table has a column header. If true, the first row in the table will appear visually distinct from the other rows.
 	HasColumnHeader bool `json:"has_column_header,omitzero"`
-	HasRowHeader    bool `json:"has_row_header,omitzero"`
+	// Whether or not the table has a header row. If true, the first column in the table will appear visually distinct from the other columns.
+	HasRowHeader bool `json:"has_row_header,omitzero"`
 }
 
 // TableOfContents defines a model
