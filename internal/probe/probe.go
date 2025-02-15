@@ -32,6 +32,12 @@ func probe() error {
 
 	fmt.Printf("Title: %q\n", p.Title())
 
+	list, err := c.GetBlocks(ctx, examplePageID, nil)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("list.Block: %v\n", list.Block)
 
 	bearer := os.Getenv("NOTION_API_KEY")
 	if bearer == "" {

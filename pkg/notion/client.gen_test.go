@@ -393,5 +393,14 @@ func TestClient_VCR(t *testing.T) {
 				t.Fatal("result is nil")
 			}
 		}
+
+		{
+			res, err := c.GetBlocks(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), nil)
+			if err != nil {
+				t.Fatal(err)
+			} else if res == nil {
+				t.Fatal("result is nil")
+			}
+		}
 	})
 }
