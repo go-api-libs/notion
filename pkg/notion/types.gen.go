@@ -326,7 +326,8 @@ type ExternalFile struct {
 // File objects contain data about files uploaded to Notion as well as external files linked in Notion.
 type File struct {
 	// Type of this file object.
-	Type FileType    `json:"type,omitzero"`
+	Type FileType `json:"type,omitzero"`
+	// File objects contain this information within the `file` property.
 	File *NotionFile `json:"file,omitempty"`
 	// An external file is any URL that isn't hosted by Notion.
 	External *ExternalFile `json:"external,omitempty"`
@@ -346,7 +347,8 @@ const (
 type FileWithCaption struct {
 	Caption RichTexts `json:"caption,omitempty"`
 	// Type of this file object.
-	Type FileType    `json:"type,omitzero"`
+	Type FileType `json:"type,omitzero"`
+	// File objects contain this information within the `file` property.
 	File *NotionFile `json:"file,omitempty"`
 	// An external file is any URL that isn't hosted by Notion.
 	External *ExternalFile `json:"external,omitempty"`
@@ -367,8 +369,9 @@ type Icon struct {
 	// Type of icon.
 	Type IconType `json:"type,omitzero"`
 	// Emoji character.
-	Emoji string      `json:"emoji,omitzero"`
-	File  *NotionFile `json:"file,omitempty"`
+	Emoji string `json:"emoji,omitzero"`
+	// File objects contain this information within the `file` property.
+	File *NotionFile `json:"file,omitempty"`
 	// An external file is any URL that isn't hosted by Notion.
 	External *ExternalFile `json:"external,omitempty"`
 }
@@ -434,9 +437,11 @@ const (
 	MentionTypeLinkMention MentionType = "link_mention"
 )
 
-// NotionFile defines a model
+// File objects contain this information within the `file` property.
 type NotionFile struct {
-	URL        url.URL   `json:"url,omitzero"`
+	// Authenticated S3 URL to the file. The file URL will be valid for 1 hour but updated links can be requested if required.
+	URL url.URL `json:"url,omitzero"`
+	// Date and time when the URL will expire.
 	ExpiryTime time.Time `json:"expiry_time,omitzero"`
 }
 
