@@ -32,7 +32,9 @@ func probe() error {
 
 	fmt.Printf("Title: %q\n", p.Title())
 
-	list, err := c.GetBlocks(ctx, examplePageID, nil)
+	list, err := c.GetBlocks(ctx, examplePageID, &notion.GetBlocksParams{
+		PageSize: 101,
+	})
 	if err != nil {
 		return err
 	}
