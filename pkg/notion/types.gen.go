@@ -156,14 +156,20 @@ type Blocks []Block
 
 // BlocksList defines a model
 type BlocksList struct {
-	Object  string `json:"object,omitzero"`
-	Results Blocks `json:"results,omitempty"`
-	// A unique identifier for a page, block, database, or user.
+	// Always `list`.
+	Object string `json:"object,omitzero"`
+	// Only available when has_more is true.
+	//
+	// Used to retrieve the next page of results by passing the value as the `start_cursor` parameter to the same endpoint.
 	NextCursor uuid.UUID `json:"next_cursor,omitzero"`
-	HasMore    bool      `json:"has_more,omitzero"`
-	Type       string    `json:"type,omitzero"`
-	Block      struct{}  `json:"block"`
-	RequestID  uuid.UUID `json:"request_id,omitzero"`
+	// When the response includes the end of the list, `false`. Otherwise, `true`.
+	HasMore bool `json:"has_more,omitzero"`
+	// The result, an array of block objects.
+	Results Blocks `json:"results,omitempty"`
+	// Type of the objects in results. Always `block`.
+	Type      string    `json:"type,omitzero"`
+	Block     struct{}  `json:"block"`
+	RequestID uuid.UUID `json:"request_id,omitzero"`
 }
 
 // Callout block objects contain the following information within the callout field.
@@ -421,6 +427,18 @@ type LinkToPageType string
 const (
 	LinkToPageTypePageID LinkToPageType = "page_id"
 )
+
+// List defines a model
+type List struct {
+	// Always `list`.
+	Object string `json:"object,omitzero"`
+	// Only available when has_more is true.
+	//
+	// Used to retrieve the next page of results by passing the value as the `start_cursor` parameter to the same endpoint.
+	NextCursor uuid.UUID `json:"next_cursor,omitzero"`
+	// When the response includes the end of the list, `false`. Otherwise, `true`.
+	HasMore bool `json:"has_more,omitzero"`
+}
 
 // Mention defines a model
 type Mention struct {

@@ -708,49 +708,40 @@
         ]
       },
       "BlocksList": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "type": "string",
-            "pattern": "^list$",
-            "example": "list"
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/List"
           },
-          "results": {
-            "$ref": "#/components/schemas/Blocks"
-          },
-          "next_cursor": {
-            "description": "A unique identifier for a page, block, database, or user.",
-            "type": "string",
-            "format": "uuid",
-            "example": "d05aa478-397e-4954-b694-b7c1c6c78956"
-          },
-          "has_more": {
-            "type": "boolean",
-            "example": false
-          },
-          "type": {
-            "type": "string",
-            "pattern": "^block$",
-            "example": "block"
-          },
-          "block": {
+          {
             "type": "object",
-            "example": {}
-          },
-          "request_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "4fb32baa-18fe-4627-b7db-96292000775f"
+            "properties": {
+              "results": {
+                "$ref": "#/components/schemas/Blocks",
+                "description": "The result, an array of block objects."
+              },
+              "type": {
+                "description": "Type of the objects in results. Always `block`.",
+                "type": "string",
+                "pattern": "^block$",
+                "example": "block"
+              },
+              "block": {
+                "type": "object",
+                "example": {}
+              },
+              "request_id": {
+                "type": "string",
+                "format": "uuid",
+                "example": "4fb32baa-18fe-4627-b7db-96292000775f"
+              }
+            },
+            "required": [
+              "results",
+              "type",
+              "block",
+              "request_id"
+            ]
           }
-        },
-        "required": [
-          "object",
-          "results",
-          "next_cursor",
-          "has_more",
-          "type",
-          "block",
-          "request_id"
         ],
         "example": {
           "object": "list",
@@ -1527,6 +1518,33 @@
           "page_id"
         ],
         "example": "page_id"
+      },
+      "List": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `list`.",
+            "type": "string",
+            "pattern": "^list$",
+            "example": "list"
+          },
+          "next_cursor": {
+            "description": "Only available when has_more is true.\n\nUsed to retrieve the next page of results by passing the value as the `start_cursor` parameter to the same endpoint.",
+            "type": "string",
+            "format": "uuid",
+            "example": "d05aa478-397e-4954-b694-b7c1c6c78956"
+          },
+          "has_more": {
+            "description": "When the response includes the end of the list, `false`. Otherwise, `true`.",
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": [
+          "object",
+          "next_cursor",
+          "has_more"
+        ]
       },
       "Mention": {
         "type": "object",
