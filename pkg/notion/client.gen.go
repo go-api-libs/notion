@@ -6,6 +6,7 @@ package notion
 
 import (
 	"context"
+	"encoding/json/v2"
 	"errors"
 	"net/http"
 	"net/url"
@@ -15,7 +16,6 @@ import (
 
 	"github.com/MarkRosemaker/jsonutil"
 	"github.com/go-api-libs/api"
-	"github.com/go-json-experiment/json"
 	"github.com/google/uuid"
 )
 

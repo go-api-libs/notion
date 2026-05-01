@@ -264,7 +264,7 @@ const (
 	CodeLanguageSQL                  CodeLanguage = "sql"
 	CodeLanguageSwift                CodeLanguage = "swift"
 	CodeLanguageTypescript           CodeLanguage = "typescript"
-	CodeLanguageVbNet                CodeLanguage = "vb.net"
+	CodeLanguageVbDotNet             CodeLanguage = "vb.net"
 	CodeLanguageVerilog              CodeLanguage = "verilog"
 	CodeLanguageVhdl                 CodeLanguage = "vhdl"
 	CodeLanguageVisualBasic          CodeLanguage = "visual basic"
