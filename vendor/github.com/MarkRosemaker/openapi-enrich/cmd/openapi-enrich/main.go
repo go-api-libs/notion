@@ -16,6 +16,7 @@ import (
 	"github.com/MarkRosemaker/openapi"
 	enrich "github.com/MarkRosemaker/openapi-enrich"
 	"github.com/MarkRosemaker/openapi-enrich/cassette"
+	"github.com/MarkRosemaker/openapi-enrich/recorder"
 )
 
 var jsonOpts = json.JoinOptions(
@@ -51,17 +52,15 @@ func run(ctx context.Context) error {
 		doc = enrich.NewDocument()
 	}
 
-	ias, err := jsonutil.ReadFile[cassette.Interactions](iaPath, jsonOpts)
-	if err != nil {
-		if !errors.Is(err, fs.ErrNotExist) {
-			return err
-		}
-
-		ias = cassette.Interactions{}
+	prevIas, err := jsonutil.ReadFile[cassette.Interactions](iaPath, jsonOpts)
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return err
 	}
 
+	tr := recorder.NewTransport(http.DefaultTransport, prevIas)
+
 	// Call requests that don't have a response yet
-	for i, ia := range ias {
+	for _, ia := range prevIas {
 		if ia.Response.StatusCode > 0 {
 			continue
 		}
@@ -71,18 +70,12 @@ func run(ctx context.Context) error {
 			return err
 		}
 
-		resp, err := http.DefaultClient.Do(req)
-		if err != nil {
-			return err
-		}
-
-		ias[i].Response, err = cassette.NewResponse(resp)
-		if err != nil {
+		if _, err := tr.RoundTrip(req); err != nil {
 			return err
 		}
 	}
 
-	if err := enrich.Enrich(doc, ias); err != nil {
+	if err := enrich.Enrich(doc, tr.Interactions); err != nil {
 		return err
 	}
 
@@ -102,7 +95,7 @@ func run(ctx context.Context) error {
 		return err
 	}
 
-	if err := jsonutil.WriteFile(iaPath, ias, jsonOpts); err != nil {
+	if err := jsonutil.WriteFile(iaPath, tr.Interactions, jsonOpts); err != nil {
 		return err
 	}
 

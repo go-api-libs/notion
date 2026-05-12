@@ -15,6 +15,12 @@ paths, operations, parameters, request bodies, and response schemas inferred
 from the traffic.  Schemas are left inline — the caller composes any
 post-processing (flatten, tidy, sort) as needed.
 
+## Install
+
+```bash
+go get -tool github.com/MarkRosemaker/openapi-enrich/cmd/openapi-enrich
+```
+
 ## Usage
 
 ```go

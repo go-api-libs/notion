@@ -70,7 +70,7 @@ func (r Request) Create(ctx context.Context) (*http.Request, error) {
 
 // Response represents an observed HTTP response.
 type Response struct {
-	StatusCode int         `json:"status_code"`
+	StatusCode int         `json:"statusCode"`
 	Headers    http.Header `json:"header,omitempty"`
 	Body       Body        `json:"body,omitempty"`
 }
