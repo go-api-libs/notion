@@ -1,9 +1,42 @@
 # cloud.google.com/go v0.123.0
 ## explicit; go 1.24.0
 cloud.google.com/go/civil
-# github.com/MarkRosemaker/jsonutil v0.0.0-20260430214806-0148dd52cfa9
+# github.com/MarkRosemaker/errpath v0.0.0-20260425165607-bbd4959d04d9
+## explicit; go 1.23.2
+github.com/MarkRosemaker/errpath
+# github.com/MarkRosemaker/json2yaml v0.0.0-20260507220148-d6cc0d01bff0
+## explicit; go 1.23.4
+github.com/MarkRosemaker/json2yaml
+# github.com/MarkRosemaker/jsonutil v0.0.0-20260504210623-75122b64cb24
 ## explicit; go 1.24.0
 github.com/MarkRosemaker/jsonutil
+# github.com/MarkRosemaker/openapi v0.0.0-20260509040156-9010bc7422f8
+## explicit; go 1.25.0
+github.com/MarkRosemaker/openapi
+# github.com/MarkRosemaker/openapi-codegen v0.0.0-20260512221823-2d5c7ce8fc5b
+## explicit; go 1.26.2
+github.com/MarkRosemaker/openapi-codegen
+github.com/MarkRosemaker/openapi-codegen/cmd/openapi-codegen
+github.com/MarkRosemaker/openapi-codegen/ir
+github.com/MarkRosemaker/openapi-codegen/render
+# github.com/MarkRosemaker/openapi-compress v0.0.0-20260506201107-08a2b463eb16
+## explicit; go 1.26.2
+github.com/MarkRosemaker/openapi-compress
+# github.com/MarkRosemaker/openapi-flatten v0.0.0-20260509040417-b99bfd84a0a8
+## explicit; go 1.25.0
+github.com/MarkRosemaker/openapi-flatten
+# github.com/MarkRosemaker/ordmap v0.0.0-20260509040032-a6e3e1e4bd8a
+## explicit; go 1.25.0
+github.com/MarkRosemaker/ordmap
+# github.com/MarkRosemaker/yaml v0.0.0-20260508005758-fe21a538b084
+## explicit; go 1.23.4
+github.com/MarkRosemaker/yaml
+# github.com/MarkRosemaker/yaml2json v0.0.0-20260507220136-7748efc522b2
+## explicit; go 1.23.4
+github.com/MarkRosemaker/yaml2json
+# github.com/ettle/strcase v0.2.0
+## explicit; go 1.12
+github.com/ettle/strcase
 # github.com/go-api-libs/api v0.0.0-20241220213325-f2e74c88e4c9
 ## explicit; go 1.23.2
 github.com/go-api-libs/api
@@ -13,6 +46,39 @@ github.com/go-api-libs/types
 # github.com/google/uuid v1.6.0
 ## explicit
 github.com/google/uuid
+# github.com/spf13/afero v1.15.0
+## explicit; go 1.23.0
+github.com/spf13/afero
+github.com/spf13/afero/internal/common
+github.com/spf13/afero/mem
+# golang.org/x/exp v0.0.0-20260508232706-74f9aab9d74a
+## explicit; go 1.25.0
+golang.org/x/exp/maps
+# golang.org/x/mod v0.36.0
+## explicit; go 1.25.0
+golang.org/x/mod/internal/lazyregexp
+golang.org/x/mod/module
+golang.org/x/mod/semver
+# golang.org/x/sync v0.20.0
+## explicit; go 1.25.0
+golang.org/x/sync/errgroup
+# golang.org/x/text v0.37.0
+## explicit; go 1.25.0
+golang.org/x/text/runes
+golang.org/x/text/transform
+golang.org/x/text/unicode/norm
+# golang.org/x/tools v0.45.0
+## explicit; go 1.25.0
+golang.org/x/tools/go/ast/astutil
+golang.org/x/tools/imports
+golang.org/x/tools/internal/event
+golang.org/x/tools/internal/event/core
+golang.org/x/tools/internal/event/keys
+golang.org/x/tools/internal/event/label
+golang.org/x/tools/internal/gocommand
+golang.org/x/tools/internal/gopathwalk
+golang.org/x/tools/internal/imports
+golang.org/x/tools/internal/stdlib
 # gopkg.in/dnaeon/go-vcr.v3 v3.2.0
 ## explicit; go 1.19
 gopkg.in/dnaeon/go-vcr.v3/cassette
@@ -20,3 +86,10 @@ gopkg.in/dnaeon/go-vcr.v3/recorder
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
+# mvdan.cc/gofumpt v0.10.0
+## explicit; go 1.25.0
+mvdan.cc/gofumpt/format
+mvdan.cc/gofumpt/internal/govendor/go/doc/comment
+mvdan.cc/gofumpt/internal/govendor/go/format
+mvdan.cc/gofumpt/internal/govendor/go/printer
+mvdan.cc/gofumpt/internal/version
