@@ -65,7 +65,7 @@ func (c *Client) GetPage(ctx context.Context, id uuid.UUID) (*Page, error) {
 //
 //	GET /pages/{id}
 func GetPage[R any](ctx context.Context, c *Client, id uuid.UUID) (*R, error) {
-	u := c.baseURL.JoinPath("pages", params.ID.String())
+	u := c.baseURL.JoinPath("pages", id.String())
 
 	req := (&http.Request{
 		Header: http.Header{
@@ -118,7 +118,7 @@ func (c *Client) GetBlocks(ctx context.Context, id uuid.UUID, params *GetBlocksP
 //
 //	GET /blocks/{id}/children
 func GetBlocks[R any](ctx context.Context, c *Client, id uuid.UUID, params *GetBlocksParams) (*R, error) {
-	u := c.baseURL.JoinPath("blocks", params.ID.String(), "children")
+	u := c.baseURL.JoinPath("blocks", id.String(), "children")
 
 	if params != nil {
 		q := make(url.Values, 2)

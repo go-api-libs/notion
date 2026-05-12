@@ -2,6 +2,12 @@
 
 Parses an OpenAPI 3.x spec, flattens it, and generates idiomatic Go code — types, HTTP client, HTTP server, and tests.
 
+## Install
+
+```bash
+go get -tool github.com/MarkRosemaker/openapi-codegen/cmd/openapi-codegen
+```
+
 ## Usage
 
 ```sh

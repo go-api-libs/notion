@@ -135,6 +135,10 @@ func fromParam(p *openapi.Parameter) (Param, error) {
 	fieldName := strcase.ToGoPascal(p.Name)
 	paramName := "params." + fieldName
 
+	if p.In == openapi.ParameterLocationPath {
+		paramName = p.Name
+	}
+
 	return Param{
 		GoName:       goName,
 		FieldName:    fieldName,
@@ -204,6 +208,7 @@ func buildJoinPathArgs(parsed openapi.ParsedPath, params map[string]Param) []str
 		if seg == "" {
 			continue
 		}
+
 		if strings.HasPrefix(seg, "{") && strings.HasSuffix(seg, "}") {
 			paramName := seg[1 : len(seg)-1]
 			if p, ok := params[paramName]; ok {
@@ -215,6 +220,7 @@ func buildJoinPathArgs(parsed openapi.ParsedPath, params map[string]Param) []str
 			args = append(args, strconv.Quote(seg))
 		}
 	}
+
 	return args
 }
 
