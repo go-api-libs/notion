@@ -7,7 +7,6 @@ require (
 	github.com/go-api-libs/api v0.0.0-20241220213325-f2e74c88e4c9
 	github.com/go-api-libs/types v0.0.0-20251210072721-82754f56609d
 	github.com/google/uuid v1.6.0
-	gopkg.in/dnaeon/go-vcr.v3 v3.2.0
 )
 
 require (
@@ -17,7 +16,9 @@ require (
 	github.com/MarkRosemaker/openapi v0.0.0-20260509040156-9010bc7422f8 // indirect
 	github.com/MarkRosemaker/openapi-codegen v0.0.0-20260512221823-2d5c7ce8fc5b // indirect
 	github.com/MarkRosemaker/openapi-compress v0.0.0-20260506201107-08a2b463eb16 // indirect
+	github.com/MarkRosemaker/openapi-enrich v0.0.0-20260512225845-292ec048fbe0 // indirect
 	github.com/MarkRosemaker/openapi-flatten v0.0.0-20260509040417-b99bfd84a0a8 // indirect
+	github.com/MarkRosemaker/openapi-merge v0.0.0-20260407204112-9f1d04e2667e // indirect
 	github.com/MarkRosemaker/ordmap v0.0.0-20260509040032-a6e3e1e4bd8a // indirect
 	github.com/MarkRosemaker/yaml v0.0.0-20260508005758-fe21a538b084 // indirect
 	github.com/MarkRosemaker/yaml2json v0.0.0-20260507220136-7748efc522b2 // indirect
@@ -32,4 +33,7 @@ require (
 	mvdan.cc/gofumpt v0.10.0 // indirect
 )
 
-tool github.com/MarkRosemaker/openapi-codegen/cmd/openapi-codegen
+tool (
+	github.com/MarkRosemaker/openapi-codegen/cmd/openapi-codegen
+	github.com/MarkRosemaker/openapi-enrich/cmd/openapi-enrich
+)
