@@ -14,7 +14,7 @@ type Interactions []Interaction
 // Interaction represents a single observed HTTP request/response pair.
 type Interaction struct {
 	Request  Request  `json:"request"`
-	Response Response `json:"response"`
+	Response Response `json:"response,omitzero"`
 }
 
 // Request represents an observed HTTP request.
@@ -63,7 +63,10 @@ func (r Request) Create(ctx context.Context) (*http.Request, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header = r.Headers.Clone()
+
+	if r.Headers != nil {
+		req.Header = r.Headers.Clone()
+	}
 
 	return req, nil
 }

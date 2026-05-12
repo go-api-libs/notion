@@ -60,8 +60,14 @@ func run(ctx context.Context) error {
 	tr := recorder.NewTransport(http.DefaultTransport, prevIas)
 
 	// Call requests that don't have a response yet
+	scaffoldNext := false
 	for _, ia := range prevIas {
 		if ia.Response.StatusCode > 0 {
+			continue
+		}
+
+		if ia.Request.URL == "" {
+			scaffoldNext = true
 			continue
 		}
 
@@ -93,6 +99,10 @@ func run(ctx context.Context) error {
 
 	if err := doc.WriteToFile(specPath); err != nil {
 		return err
+	}
+
+	if scaffoldNext {
+		tr.Interactions = append(tr.Interactions, cassette.Interaction{})
 	}
 
 	if err := jsonutil.WriteFile(iaPath, tr.Interactions, jsonOpts); err != nil {
