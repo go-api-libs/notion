@@ -87,6 +87,10 @@ golang.org/x/tools/internal/gocommand
 golang.org/x/tools/internal/gopathwalk
 golang.org/x/tools/internal/imports
 golang.org/x/tools/internal/stdlib
+# gopkg.in/dnaeon/go-vcr.v3 v3.2.0
+## explicit; go 1.19
+gopkg.in/dnaeon/go-vcr.v3/cassette
+gopkg.in/dnaeon/go-vcr.v3/recorder
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3

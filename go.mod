@@ -7,6 +7,7 @@ require (
 	github.com/go-api-libs/api v0.0.0-20241220213325-f2e74c88e4c9
 	github.com/go-api-libs/types v0.0.0-20251210072721-82754f56609d
 	github.com/google/uuid v1.6.0
+	gopkg.in/dnaeon/go-vcr.v3 v3.2.0
 )
 
 require (
