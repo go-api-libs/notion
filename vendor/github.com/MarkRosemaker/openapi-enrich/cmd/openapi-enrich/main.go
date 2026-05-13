@@ -95,7 +95,7 @@ func run(ctx context.Context) error {
 
 	ias := tr.Interactions
 	ias.Mask()
-	// TODO: remove header vals from response
+	ias.TrimResponseHeaders()
 
 	if scaffoldNext {
 		ias = append(ias, cassette.Interaction{})
