@@ -13,7 +13,7 @@ github.com/MarkRosemaker/jsonutil
 # github.com/MarkRosemaker/openapi v0.0.0-20260509040156-9010bc7422f8
 ## explicit; go 1.25.0
 github.com/MarkRosemaker/openapi
-# github.com/MarkRosemaker/openapi-codegen v0.0.0-20260512233356-c16869b7af49
+# github.com/MarkRosemaker/openapi-codegen v0.0.0-20260513142729-11e4d4e147f9
 ## explicit; go 1.26.2
 github.com/MarkRosemaker/openapi-codegen
 github.com/MarkRosemaker/openapi-codegen/cmd/openapi-codegen
@@ -22,7 +22,7 @@ github.com/MarkRosemaker/openapi-codegen/render
 # github.com/MarkRosemaker/openapi-compress v0.0.0-20260506201107-08a2b463eb16
 ## explicit; go 1.26.2
 github.com/MarkRosemaker/openapi-compress
-# github.com/MarkRosemaker/openapi-enrich v0.0.0-20260512234514-bb1c712a9aa3
+# github.com/MarkRosemaker/openapi-enrich v0.0.0-20260513161219-598f02bc541c
 ## explicit; go 1.26.0
 github.com/MarkRosemaker/openapi-enrich
 github.com/MarkRosemaker/openapi-enrich/cassette
@@ -88,10 +88,6 @@ golang.org/x/tools/internal/gocommand
 golang.org/x/tools/internal/gopathwalk
 golang.org/x/tools/internal/imports
 golang.org/x/tools/internal/stdlib
-# gopkg.in/dnaeon/go-vcr.v3 v3.2.0
-## explicit; go 1.19
-gopkg.in/dnaeon/go-vcr.v3/cassette
-gopkg.in/dnaeon/go-vcr.v3/recorder
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3

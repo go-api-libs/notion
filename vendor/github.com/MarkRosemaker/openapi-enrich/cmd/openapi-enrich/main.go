@@ -3,8 +3,6 @@ package main
 
 import (
 	"context"
-	"encoding/json/jsontext"
-	"encoding/json/v2"
 	"errors"
 	"flag"
 	"fmt"
@@ -12,17 +10,10 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/MarkRosemaker/jsonutil"
 	"github.com/MarkRosemaker/openapi"
 	enrich "github.com/MarkRosemaker/openapi-enrich"
 	"github.com/MarkRosemaker/openapi-enrich/cassette"
 	"github.com/MarkRosemaker/openapi-enrich/recorder"
-)
-
-var jsonOpts = json.JoinOptions(
-	jsontext.Multiline(true),
-	json.WithMarshalers(json.MarshalToFunc(jsonutil.HTTPHeaderMarshal)),
-	json.WithUnmarshalers(json.UnmarshalFromFunc(jsonutil.HTTPHeaderUnmarshal)),
 )
 
 func main() {
@@ -34,13 +25,10 @@ func main() {
 }
 
 func run(ctx context.Context) error {
-	var (
-		specPath string
-		iaPath   string
-	)
-
+	var specPath, iaPath, auth string
 	flag.StringVar(&specPath, "spec", "api/openapi.json", "path to OpenAPI spec file")
 	flag.StringVar(&iaPath, "ia", "api/interactions.json", "path to interactions file")
+	flag.StringVar(&auth, "auth", "", "authorization header")
 	flag.Parse()
 
 	doc, err := openapi.LoadFromFile(specPath)
@@ -52,7 +40,7 @@ func run(ctx context.Context) error {
 		doc = enrich.NewDocument()
 	}
 
-	prevIas, err := jsonutil.ReadFile[cassette.Interactions](iaPath, jsonOpts)
+	prevIas, err := cassette.InteractionsReadFile(iaPath)
 	if err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return err
 	}
@@ -74,6 +62,10 @@ func run(ctx context.Context) error {
 		req, err := ia.Request.Create(ctx)
 		if err != nil {
 			return err
+		}
+
+		if auth != "" {
+			req.Header.Set("Authorization", auth)
 		}
 
 		if _, err := tr.RoundTrip(req); err != nil {
@@ -101,11 +93,15 @@ func run(ctx context.Context) error {
 		return err
 	}
 
+	ias := tr.Interactions
+	ias.Mask()
+	// TODO: remove header vals from response
+
 	if scaffoldNext {
-		tr.Interactions = append(tr.Interactions, cassette.Interaction{})
+		ias = append(ias, cassette.Interaction{})
 	}
 
-	if err := jsonutil.WriteFile(iaPath, tr.Interactions, jsonOpts); err != nil {
+	if err := ias.WriteFile(iaPath); err != nil {
 		return err
 	}
 

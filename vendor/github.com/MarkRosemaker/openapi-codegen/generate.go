@@ -4,11 +4,14 @@ package codegen
 import (
 	"errors"
 	"fmt"
+	"io/fs"
 	"os"
+	"path/filepath"
 
 	"github.com/MarkRosemaker/openapi"
 	"github.com/MarkRosemaker/openapi-codegen/ir"
 	"github.com/MarkRosemaker/openapi-codegen/render"
+	"github.com/MarkRosemaker/openapi-enrich/cassette"
 	"github.com/spf13/afero"
 )
 
@@ -25,6 +28,21 @@ func Generate(cfg Config) error {
 		}
 
 		cfg.Spec = doc
+	}
+
+	if cfg.Interactions == nil {
+		if cfg.InteractionsPath == "" && cfg.SpecPath != "" {
+			cfg.InteractionsPath = filepath.Join(filepath.Dir(cfg.SpecPath), "interactions.json")
+		}
+
+		if cfg.InteractionsPath != "" {
+			var err error
+			cfg.Interactions, err = cassette.ReadInteractionsFile(cfg.InteractionsPath)
+			if err != nil && !errors.Is(err, fs.ErrNotExist) {
+				return err
+			}
+		}
+
 	}
 
 	if cfg.PackageName == "" {

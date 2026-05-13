@@ -4,10 +4,10 @@ go 1.26.2
 
 require (
 	github.com/MarkRosemaker/jsonutil v0.0.0-20260504210623-75122b64cb24
+	github.com/MarkRosemaker/openapi-enrich v0.0.0-20260513161219-598f02bc541c
 	github.com/go-api-libs/api v0.0.0-20241220213325-f2e74c88e4c9
 	github.com/go-api-libs/types v0.0.0-20251210072721-82754f56609d
 	github.com/google/uuid v1.6.0
-	gopkg.in/dnaeon/go-vcr.v3 v3.2.0
 )
 
 require (
@@ -15,9 +15,8 @@ require (
 	github.com/MarkRosemaker/errpath v0.0.0-20260425165607-bbd4959d04d9 // indirect
 	github.com/MarkRosemaker/json2yaml v0.0.0-20260507220148-d6cc0d01bff0 // indirect
 	github.com/MarkRosemaker/openapi v0.0.0-20260509040156-9010bc7422f8 // indirect
-	github.com/MarkRosemaker/openapi-codegen v0.0.0-20260512233356-c16869b7af49 // indirect
+	github.com/MarkRosemaker/openapi-codegen v0.0.0-20260513142729-11e4d4e147f9 // indirect
 	github.com/MarkRosemaker/openapi-compress v0.0.0-20260506201107-08a2b463eb16 // indirect
-	github.com/MarkRosemaker/openapi-enrich v0.0.0-20260512234514-bb1c712a9aa3 // indirect
 	github.com/MarkRosemaker/openapi-flatten v0.0.0-20260509040417-b99bfd84a0a8 // indirect
 	github.com/MarkRosemaker/openapi-merge v0.0.0-20260407204112-9f1d04e2667e // indirect
 	github.com/MarkRosemaker/ordmap v0.0.0-20260509040032-a6e3e1e4bd8a // indirect

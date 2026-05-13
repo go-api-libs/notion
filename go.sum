@@ -8,12 +8,12 @@ github.com/MarkRosemaker/jsonutil v0.0.0-20260504210623-75122b64cb24 h1:3fU3gbs8
 github.com/MarkRosemaker/jsonutil v0.0.0-20260504210623-75122b64cb24/go.mod h1:YMxjqWLxzxIzplnktbXq9020ZJNjf1/43A5NVJzY9mQ=
 github.com/MarkRosemaker/openapi v0.0.0-20260509040156-9010bc7422f8 h1:fcTbAzGu+emRpQ1dCVMHppiicV+7k3wbMDhhQM9sRm4=
 github.com/MarkRosemaker/openapi v0.0.0-20260509040156-9010bc7422f8/go.mod h1:6pssvyC+w3jttIg/gZKkZ29mEhMW7w1noJ2UmWErv+4=
-github.com/MarkRosemaker/openapi-codegen v0.0.0-20260512233356-c16869b7af49 h1:vdW6XHVZb1Z36ds+sDmdUMNwyonJi7glQ5X7N56hjtc=
-github.com/MarkRosemaker/openapi-codegen v0.0.0-20260512233356-c16869b7af49/go.mod h1:MyZcUqXnW/24SOHbQJ5HX/eWtVJrT65kH9i6s8QNObo=
+github.com/MarkRosemaker/openapi-codegen v0.0.0-20260513142729-11e4d4e147f9 h1:3Rc43hUaibsjzmE24YKYynPzASGY/M/zfmXAlmaQQ/8=
+github.com/MarkRosemaker/openapi-codegen v0.0.0-20260513142729-11e4d4e147f9/go.mod h1:CNxoHSDN9TRCJhuIrOVohnfxO5TJiblsxNMk3JQuUwY=
 github.com/MarkRosemaker/openapi-compress v0.0.0-20260506201107-08a2b463eb16 h1:pqAMgNE+V/J+IbMjh1Q/o9FDS8pgyArVApVBDIAEeKo=
 github.com/MarkRosemaker/openapi-compress v0.0.0-20260506201107-08a2b463eb16/go.mod h1:CtwZLRKRtbbdhSX0jvx+FyFVmKdWRVNIGpbVk56E0W8=
-github.com/MarkRosemaker/openapi-enrich v0.0.0-20260512234514-bb1c712a9aa3 h1:S7zAb3GtbzuE5mTNnPnurudITTfhr6iTQCbFsBSVBp0=
-github.com/MarkRosemaker/openapi-enrich v0.0.0-20260512234514-bb1c712a9aa3/go.mod h1:ydkLHkOycM7Ifqz8YwwgsZCW+1rC9E61zDnrDFfdpCE=
+github.com/MarkRosemaker/openapi-enrich v0.0.0-20260513161219-598f02bc541c h1:amFupq8XZD7y1AXqtxmjqG9PI32Kl32ks+wck5zCZVE=
+github.com/MarkRosemaker/openapi-enrich v0.0.0-20260513161219-598f02bc541c/go.mod h1:ydkLHkOycM7Ifqz8YwwgsZCW+1rC9E61zDnrDFfdpCE=
 github.com/MarkRosemaker/openapi-flatten v0.0.0-20260509040417-b99bfd84a0a8 h1:xGpYdXIMbsTGfT7zgbsXC1otIv4UfMZ/igP7GrDBJE4=
 github.com/MarkRosemaker/openapi-flatten v0.0.0-20260509040417-b99bfd84a0a8/go.mod h1:/t/GPLldIosY9QO3gJJMAK/Ti8xnyB/P4hkqfXqzp7Q=
 github.com/MarkRosemaker/openapi-merge v0.0.0-20260407204112-9f1d04e2667e h1:woMWTr+p4QB7oMp0oBNyGPeNa9BY7c8ujtIlNt4z8i4=
@@ -63,8 +63,6 @@ golang.org/x/tools v0.45.0/go.mod h1:LuUGqqaXcXMEFEruIVJVm5mgDD8vww/z/SR1gQ4uE/0
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c h1:Hei/4ADfdWqJk1ZMxUNpqntNwaWcugrBjAiHlqqRiVk=
 gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c/go.mod h1:JHkPIbrfpd72SG/EVd6muEfDQjcINNoR0C8j2r3qZ4Q=
-gopkg.in/dnaeon/go-vcr.v3 v3.2.0 h1:Rltp0Vf+Aq0u4rQXgmXgtgoRDStTnFN83cWgSGSoRzM=
-gopkg.in/dnaeon/go-vcr.v3 v3.2.0/go.mod h1:2IMOnnlx9I6u9x+YBsM3tAMx6AlOxnJ0pWxQAzZ79Ag=
 gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
 gopkg.in/yaml.v3 v3.0.1/go.mod h1:K4uyk7z7BCEPqu6E+C64Yfv1cQ7kz7rIZviUmN+EgEM=
 mvdan.cc/gofumpt v0.10.0 h1:yGGpRS2pBN2OQIi7b21IXknJna7faPkFaVfHLrN6Euo=
