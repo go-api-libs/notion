@@ -37,7 +37,7 @@ func Generate(cfg Config) error {
 
 		if cfg.InteractionsPath != "" {
 			var err error
-			cfg.Interactions, err = cassette.ReadInteractionsFile(cfg.InteractionsPath)
+			cfg.Interactions, err = cassette.InteractionsReadFile(cfg.InteractionsPath)
 			if err != nil && !errors.Is(err, fs.ErrNotExist) {
 				return err
 			}
