@@ -564,9 +564,11 @@ type Page struct {
 	// Properties of a page or database.
 	Properties PropertyValues `json:"properties"`
 	// The URL of the Notion page.
-	URL       url.URL   `json:"url,omitzero"`
-	PublicURL url.URL   `json:"public_url,omitzero"`
-	RequestID uuid.UUID `json:"request_id,omitzero"`
+	URL        url.URL   `json:"url,omitzero"`
+	PublicURL  url.URL   `json:"public_url,omitzero"`
+	RequestID  uuid.UUID `json:"request_id,omitzero"`
+	IsArchived bool      `json:"is_archived,omitempty"`
+	IsLocked   bool      `json:"is_locked,omitempty"`
 }
 
 // Paragraph, quote, toggle and list item block objects contain this information within their respective property.

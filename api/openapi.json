@@ -1686,6 +1686,14 @@
             "type": "string",
             "format": "uuid",
             "example": "3620d8d3-11e4-473b-87c9-fddfa7801d6d"
+          },
+          "is_archived": {
+            "type": "boolean",
+            "example": false
+          },
+          "is_locked": {
+            "type": "boolean",
+            "example": false
           }
         },
         "required": [
@@ -2528,7 +2536,7 @@
       }
     },
     "securitySchemes": {
-      "BearerToken": {
+      "bearerAuth": {
         "type": "http",
         "name": "NOTION_API_KEY",
         "scheme": "bearer",
@@ -2538,7 +2546,7 @@
   },
   "security": [
     {
-      "BearerToken": []
+      "bearerAuth": []
     }
   ]
 }
