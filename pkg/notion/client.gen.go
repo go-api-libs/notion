@@ -89,7 +89,7 @@ func GetPage[R any](ctx context.Context, c *Client, id uuid.UUID) (*R, error) {
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
-			"Notion-Version": []string{"2022-06-28"},
+			"Notion-Version": []string{"2026-03-11"},
 			"User-Agent":     []string{c.userAgent},
 		},
 		Host:       u.Host,
@@ -156,7 +156,7 @@ func GetBlocks[R any](ctx context.Context, c *Client, id uuid.UUID, params *GetB
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
-			"Notion-Version": []string{"2022-06-28"},
+			"Notion-Version": []string{"2026-03-11"},
 			"User-Agent":     []string{c.userAgent},
 		},
 		Host:       u.Host,
