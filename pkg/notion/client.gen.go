@@ -38,19 +38,38 @@ type Client struct {
 	userAgent string
 }
 
-// NewClient creates a new Client with default settings, setting the bearer token to [os.Getenv]("NOTION_API_KEY").
-func NewClient() (*Client, error) {
+// ClientOption configures a [Client].
+type ClientOption func(*Client)
+
+// WithBaseURL returns a [ClientOption] that overrides the default base URL.
+func WithBaseURL(baseURL *url.URL) ClientOption {
+	return func(c *Client) { c.baseURL = baseURL }
+}
+
+// WithHTTPClient returns a [ClientOption] that sets a custom HTTP client.
+func WithHTTPClient(cli *http.Client) ClientOption {
+	return func(c *Client) { c.cli = cli }
+}
+
+// NewClient creates a new Client, reading the bearer token from [os.Getenv]("NOTION_API_KEY").
+func NewClient(opts ...ClientOption) (*Client, error) {
 	bearer := os.Getenv("NOTION_API_KEY")
 	if bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_KEY not provided")
 	}
 
-	return &Client{
+	c := &Client{
 		bearer:    "Bearer " + strings.TrimPrefix(bearer, "Bearer "),
 		cli:       http.DefaultClient,
 		baseURL:   defaultBaseURL,
 		userAgent: defaultUserAgent,
-	}, nil
+	}
+
+	for _, opt := range opts {
+		opt(c)
+	}
+
+	return c, nil
 }
 
 // Retrieves a Page object using the ID in the request path. This endpoint exposes page properties, not page content.
