@@ -42,7 +42,12 @@ type Client struct {
 type ClientOption func(*Client)
 
 // WithBaseURL returns a [ClientOption] that overrides the default base URL.
+// It will prefix a leading slash to the path if there is none.
 func WithBaseURL(baseURL *url.URL) ClientOption {
+	if !strings.HasPrefix(baseURL.Path, "/") {
+		baseURL.Path = "/" + baseURL.Path
+	}
+
 	return func(c *Client) { c.baseURL = baseURL }
 }
 
