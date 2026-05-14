@@ -6,6 +6,7 @@ package notion
 
 import (
 	"bytes"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"io"
@@ -71,12 +72,12 @@ func TestClient_Error(t *testing.T) {
 
 			if _, err := c.GetPage(t.Context(), uuid.Nil); err == nil {
 				t.Fatal("expected error")
-			} else if got, ok := errors.AsType[*api.Error](err); !ok {
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
-			} else if got.Err != api.ErrUnknownStatusCode {
-				t.Fatalf("got: %v, want: %v", err, api.ErrUnknownStatusCode)
-			} else if got.Response.StatusCode != http.StatusTeapot {
-				t.Fatalf("got: %v, want: %v", got.Response.StatusCode, http.StatusTeapot)
+			} else if apiErr.Err != api.ErrUnknownStatusCode {
+				t.Fatalf("got: %v, want: %v", apiErr.Err, api.ErrUnknownStatusCode)
+			} else if apiErr.Response.StatusCode != http.StatusTeapot {
+				t.Fatalf("got: %v, want: %v", apiErr.Response.StatusCode, http.StatusTeapot)
 			}
 		})
 
@@ -124,6 +125,10 @@ func TestClient_Error(t *testing.T) {
 
 			if _, err := c.GetPage(t.Context(), uuid.Nil); err == nil {
 				t.Fatal("expected error")
+			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
+				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
 		})
 	})
@@ -161,12 +166,12 @@ func TestClient_Error(t *testing.T) {
 
 			if _, err := c.GetBlocks(t.Context(), uuid.Nil, nil); err == nil {
 				t.Fatal("expected error")
-			} else if got, ok := errors.AsType[*api.Error](err); !ok {
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
-			} else if got.Err != api.ErrUnknownStatusCode {
-				t.Fatalf("got: %v, want: %v", err, api.ErrUnknownStatusCode)
-			} else if got.Response.StatusCode != http.StatusTeapot {
-				t.Fatalf("got: %v, want: %v", got.Response.StatusCode, http.StatusTeapot)
+			} else if apiErr.Err != api.ErrUnknownStatusCode {
+				t.Fatalf("got: %v, want: %v", apiErr.Err, api.ErrUnknownStatusCode)
+			} else if apiErr.Response.StatusCode != http.StatusTeapot {
+				t.Fatalf("got: %v, want: %v", apiErr.Response.StatusCode, http.StatusTeapot)
 			}
 		})
 
@@ -214,6 +219,10 @@ func TestClient_Error(t *testing.T) {
 
 			if _, err := c.GetBlocks(t.Context(), uuid.Nil, nil); err == nil {
 				t.Fatal("expected error")
+			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
+				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
 		})
 	})
