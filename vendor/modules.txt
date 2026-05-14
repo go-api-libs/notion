@@ -23,7 +23,7 @@ github.com/MarkRosemaker/openapi-codegen/render
 ## explicit; go 1.26.3
 github.com/MarkRosemaker/openapi-compress
 github.com/MarkRosemaker/openapi-compress/cmd/openapi-compress
-# github.com/MarkRosemaker/openapi-enrich v0.0.0-20260514134831-e356a7e2f3b5
+# github.com/MarkRosemaker/openapi-enrich v0.0.0-20260514144714-6fcc45798a9b
 ## explicit; go 1.26.0
 github.com/MarkRosemaker/openapi-enrich
 github.com/MarkRosemaker/openapi-enrich/cassette

@@ -91,7 +91,7 @@ func analyzeInteraction(doc *openapi.Document, ia *cassette.Interaction) error {
 
 	// 6. Process request headers.
 	var contentType string
-	if err := processRequestHeaders(doc, op, ia.Request.Headers, &contentType); err != nil {
+	if err := processRequestHeaders(doc, pi.Parameters, op, ia.Request.Headers, &contentType); err != nil {
 		return fmt.Errorf("request headers: %w", err)
 	}
 
@@ -164,17 +164,9 @@ func processQueryParams(doc *openapi.Document, pi *openapi.PathItem, op *openapi
 			incoming.Explode = &f
 		}
 
-		// Check path-level params first, then op-level.
-		if existing := findParam(pi.Parameters, name, openapi.ParameterLocationQuery); existing != nil {
+		if existing := findParam(pi.Parameters, op.Parameters, name, openapi.ParameterLocationQuery); existing != nil {
 			if err := merge.Parameter(existing, incoming); err != nil {
 				return fmt.Errorf("merging path-level param %q: %w", name, err)
-			}
-			continue
-		}
-
-		if existing := findParam(op.Parameters, name, openapi.ParameterLocationQuery); existing != nil {
-			if err := merge.Parameter(existing, incoming); err != nil {
-				return fmt.Errorf("merging op-level param %q: %w", name, err)
 			}
 			continue
 		}
@@ -185,7 +177,7 @@ func processQueryParams(doc *openapi.Document, pi *openapi.PathItem, op *openapi
 	return nil
 }
 
-func processRequestHeaders(doc *openapi.Document, op *openapi.Operation, h http.Header, contentType *string) error {
+func processRequestHeaders(doc *openapi.Document, piParams openapi.ParameterList, op *openapi.Operation, h http.Header, contentType *string) error {
 	for key := range h {
 		// assume all keys are stored in canonical form
 		if canonical := http.CanonicalHeaderKey(key); canonical != key {
@@ -210,7 +202,7 @@ func processRequestHeaders(doc *openapi.Document, op *openapi.Operation, h http.
 			// ignored
 		default:
 			if isCustomHeader(key) {
-				if err := processCustomHeader(op, key, val); err != nil {
+				if err := processCustomHeader(piParams, op, key, val); err != nil {
 					return fmt.Errorf("header %q: %w", key, err)
 				}
 			}
@@ -267,7 +259,7 @@ func processAuth(doc *openapi.Document, op *openapi.Operation, v string) error {
 	return nil
 }
 
-func processCustomHeader(op *openapi.Operation, name, value string) error {
+func processCustomHeader(piParams openapi.ParameterList, op *openapi.Operation, name, value string) error {
 	schema, err := scalarSchema(value)
 	if err != nil {
 		return err
@@ -280,7 +272,7 @@ func processCustomHeader(op *openapi.Operation, name, value string) error {
 		Schema:   schema,
 	}
 
-	if existing := findParam(op.Parameters, name, openapi.ParameterLocationHeader); existing != nil {
+	if existing := findParam(piParams, op.Parameters, name, openapi.ParameterLocationHeader); existing != nil {
 		return merge.Parameter(existing, incoming)
 	}
 
@@ -340,8 +332,8 @@ func processResponse(op *openapi.Operation, resp *cassette.Response) error {
 }
 
 // findParam finds a parameter by name and location in a ParameterList.
-func findParam(params openapi.ParameterList, name string, in openapi.ParameterLocation) *openapi.Parameter {
-	for _, p := range params {
+func findParam(piParams, opParams openapi.ParameterList, name string, in openapi.ParameterLocation) *openapi.Parameter {
+	for _, p := range append(opParams, piParams...) {
 		if p.Value != nil && p.Value.Name == name && p.Value.In == in {
 			return p.Value
 		}

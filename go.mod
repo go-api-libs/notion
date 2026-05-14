@@ -4,7 +4,7 @@ go 1.26.3
 
 require (
 	github.com/MarkRosemaker/jsonutil v0.0.0-20260504210623-75122b64cb24
-	github.com/MarkRosemaker/openapi-enrich v0.0.0-20260514134831-e356a7e2f3b5
+	github.com/MarkRosemaker/openapi-enrich v0.0.0-20260514144714-6fcc45798a9b
 	github.com/go-api-libs/api v0.0.0-20241220213325-f2e74c88e4c9
 	github.com/go-api-libs/types v0.0.0-20251210072721-82754f56609d
 	github.com/google/uuid v1.6.0
