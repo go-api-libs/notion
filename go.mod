@@ -4,7 +4,7 @@ go 1.26.3
 
 require (
 	github.com/MarkRosemaker/jsonutil v0.0.0-20260504210623-75122b64cb24
-	github.com/MarkRosemaker/openapi-enrich v0.0.0-20260514144714-6fcc45798a9b
+	github.com/MarkRosemaker/openapi-enrich v0.0.0-20260514163700-0426656d24c5
 	github.com/go-api-libs/api v0.0.0-20241220213325-f2e74c88e4c9
 	github.com/go-api-libs/types v0.0.0-20251210072721-82754f56609d
 	github.com/google/uuid v1.6.0
@@ -17,7 +17,7 @@ require (
 	github.com/MarkRosemaker/openapi v0.0.0-20260509040156-9010bc7422f8 // indirect
 	github.com/MarkRosemaker/openapi-codegen v0.0.0-20260514140455-507571971925 // indirect
 	github.com/MarkRosemaker/openapi-compress v0.0.0-20260514135916-f3d628a00f40 // indirect
-	github.com/MarkRosemaker/openapi-flatten v0.0.0-20260514133343-585f9eb06e18 // indirect
+	github.com/MarkRosemaker/openapi-flatten v0.0.0-20260514170106-b00f70b9d138 // indirect
 	github.com/MarkRosemaker/openapi-merge v0.0.0-20260407204112-9f1d04e2667e // indirect
 	github.com/MarkRosemaker/ordmap v0.0.0-20260509040032-a6e3e1e4bd8a // indirect
 	github.com/MarkRosemaker/yaml v0.0.0-20260508005758-fe21a538b084 // indirect
