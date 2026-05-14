@@ -17,7 +17,7 @@ func FromDocument(doc *openapi.Document, packageName, userAgent string) (*Docume
 		return nil, fmt.Errorf("flatten: %w", err)
 	}
 
-	if err := compress.Document(doc); err != nil {
+	if err := compress.Document(doc, compress.Config{}); err != nil {
 		return nil, fmt.Errorf("compress: %w", err)
 	}
 

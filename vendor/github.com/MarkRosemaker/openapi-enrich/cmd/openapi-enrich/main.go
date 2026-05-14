@@ -1,4 +1,3 @@
-// Command openapi-codegen generates Go client, server, and type code from an OpenAPI spec.
 package main
 
 import (
