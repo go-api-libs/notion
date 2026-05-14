@@ -39,6 +39,8 @@ func run(ctx context.Context) error {
 		doc = enrich.NewDocument()
 	}
 
+	wasValid := doc.Validate() == nil
+
 	prevIas, err := cassette.InteractionsReadFile(iaPath)
 	if err != nil && !errors.Is(err, fs.ErrNotExist) {
 		return err
@@ -46,8 +48,9 @@ func run(ctx context.Context) error {
 
 	tr := recorder.NewTransport(http.DefaultTransport, prevIas)
 
+	scaffoldNext := len(prevIas) == 0
+
 	// Call requests that don't have a response yet
-	scaffoldNext := false
 	for _, ia := range prevIas {
 		if ia.Response.StatusCode > 0 {
 			continue
@@ -84,8 +87,10 @@ func run(ctx context.Context) error {
 	}
 	doc.Components.SortMaps()
 
-	if err := doc.Validate(); err != nil {
-		return fmt.Errorf("produced invalid doc: %w", err)
+	if wasValid {
+		if err := doc.Validate(); err != nil {
+			return fmt.Errorf("produced invalid doc: %w", err)
+		}
 	}
 
 	if err := doc.WriteToFile(specPath); err != nil {
