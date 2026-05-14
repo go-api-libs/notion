@@ -12,11 +12,7 @@ import (
 // It does so by merging schemas that have the exact same definition.
 // Furthermore, schemas with significant overlap are merged according to cfg.
 // After compression, long names of merged schemas are shortened.
-func Document(d *openapi.Document, cfgs ...Config) error {
-	cfg := Config{}
-	if len(cfgs) > 0 {
-		cfg = cfgs[0]
-	}
+func Document(d *openapi.Document, cfg Config) error {
 	cfg.setDefaults()
 
 	// Step down from exact equality to MinSimilarity, running each threshold
