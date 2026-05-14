@@ -71,8 +71,12 @@ func TestClient_Error(t *testing.T) {
 
 			if _, err := c.GetPage(t.Context(), uuid.Nil); err == nil {
 				t.Fatal("expected error")
-			} else if !errors.Is(err, api.ErrUnknownStatusCode) {
-				t.Fatalf("want: %v, got: %v", api.ErrUnknownStatusCode, err)
+			} else if got, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if got.Err != api.ErrUnknownStatusCode {
+				t.Fatalf("got: %v, want: %v", err, api.ErrUnknownStatusCode)
+			} else if got.Response.StatusCode != http.StatusTeapot {
+				t.Fatalf("got: %v, want: %v", got.Response.StatusCode, http.StatusTeapot)
 			}
 		})
 
@@ -157,8 +161,12 @@ func TestClient_Error(t *testing.T) {
 
 			if _, err := c.GetBlocks(t.Context(), uuid.Nil, nil); err == nil {
 				t.Fatal("expected error")
-			} else if !errors.Is(err, api.ErrUnknownStatusCode) {
-				t.Fatalf("want: %v, got: %v", api.ErrUnknownStatusCode, err)
+			} else if got, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if got.Err != api.ErrUnknownStatusCode {
+				t.Fatalf("got: %v, want: %v", err, api.ErrUnknownStatusCode)
+			} else if got.Response.StatusCode != http.StatusTeapot {
+				t.Fatalf("got: %v, want: %v", got.Response.StatusCode, http.StatusTeapot)
 			}
 		})
 
