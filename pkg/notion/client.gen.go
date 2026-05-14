@@ -56,22 +56,31 @@ func WithHTTPClient(cli *http.Client) ClientOption {
 	return func(c *Client) { c.cli = cli }
 }
 
+// WithBearer returns a [ClientOption] that sets a custom bearer.
+func WithBearer(bearer string) ClientOption {
+	return func(c *Client) {
+		if bearer != "" {
+			c.bearer = "Bearer " + strings.TrimPrefix(bearer, "Bearer ")
+		}
+	}
+}
+
 // NewClient creates a new Client, reading the bearer token from [os.Getenv]("NOTION_API_KEY").
 func NewClient(opts ...ClientOption) (*Client, error) {
-	bearer := os.Getenv("NOTION_API_KEY")
-	if bearer == "" {
-		return nil, errors.New("bearer token NOTION_API_KEY not provided")
-	}
-
 	c := &Client{
-		bearer:    "Bearer " + strings.TrimPrefix(bearer, "Bearer "),
 		cli:       http.DefaultClient,
 		baseURL:   defaultBaseURL,
 		userAgent: defaultUserAgent,
 	}
 
+	WithBearer(os.Getenv("NOTION_API_KEY"))(c)
+
 	for _, opt := range opts {
 		opt(c)
+	}
+
+	if c.bearer == "" {
+		return nil, errors.New("bearer token NOTION_API_KEY not provided")
 	}
 
 	return c, nil
