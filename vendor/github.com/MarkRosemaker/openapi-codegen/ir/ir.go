@@ -11,6 +11,23 @@ type Document struct {
 	HasURLFields      bool
 	HasDurationFields bool
 	HasDateFields     bool
+
+	// InteractionCalls holds one entry per matched interaction.
+	// Populated at code-gen time; not serialized to ir.json (too noisy).
+	InteractionCalls []InteractionCall `json:"-"`
+}
+
+// InteractionCall is one operation call extracted from a recorded interaction.
+type InteractionCall struct {
+	Op        *Operation         // matched operation
+	PathArgs  []string           // Go literal per path param, same order as Op.PathParams
+	QueryArgs []InteractionParam // set query params only (omitted = use nil params)
+}
+
+// InteractionParam is one query param with its Go literal value.
+type InteractionParam struct {
+	FieldName string // PascalCase field name on the params struct
+	Literal   string // Go expression, e.g. `3` or `"abc"`
 }
 
 // URLParts holds a decomposed server URL.
@@ -136,6 +153,8 @@ func (t GoType) ZeroValue() string {
 		return "false"
 	case "int", "int32", "int64", "uint", "uint32", "uint64", "float32", "float64":
 		return "0"
+	case "uuid.UUID":
+		return "uuid.Nil"
 	default:
 		return t.Name + "{}"
 	}

@@ -38,13 +38,31 @@ type Client struct {
 	// The bearer token
 	bearer string
 	// The base URL
-	baseURL    *url.URL
+	baseURL   *url.URL
 	// The user agent
-	userAgent  string
+	userAgent string
 }
 
-// NewClient creates a new Client with default settings{{ with .Security.Bearer.Name }}, setting the bearer token to [os.Getenv]("{{ . }}"){{ end }}.
-func NewClient() (*Client, error) {
+// ClientOption configures a [Client].
+type ClientOption func(*Client)
+
+// WithBaseURL returns a [ClientOption] that overrides the default base URL.
+// It will prefix a leading slash to the path if there is none.
+func WithBaseURL(baseURL *url.URL) ClientOption {
+	if !strings.HasPrefix(baseURL.Path, "/") {
+		baseURL.Path = "/" + baseURL.Path
+	}
+	
+	return func(c *Client) { c.baseURL = baseURL }
+}
+
+// WithHTTPClient returns a [ClientOption] that sets a custom HTTP client.
+func WithHTTPClient(cli *http.Client) ClientOption {
+	return func(c *Client) { c.cli = cli }
+}
+
+// NewClient creates a new Client{{ with .Security.Bearer.Name }}, reading the bearer token from [os.Getenv]("{{ . }}"){{ end }}.
+func NewClient(opts ...ClientOption) (*Client, error) {
 	{{ with .Security.Bearer.Name }}
 	bearer := os.Getenv("{{ . }}")
 	if bearer == "" {
@@ -52,14 +70,20 @@ func NewClient() (*Client, error) {
 	}
 	{{ end }}
 
-	return &Client{
+	c := &Client{
 		{{ if .Security.Bearer.Name -}}
-		bearer: "Bearer " + strings.TrimPrefix(bearer, "Bearer "),
+		bearer:    "Bearer " + strings.TrimPrefix(bearer, "Bearer "),
 		{{ end -}}
-		cli: http.DefaultClient,
-		baseURL:    defaultBaseURL,
-		userAgent:  defaultUserAgent,
-	}, nil
+		cli:       http.DefaultClient,
+		baseURL:   defaultBaseURL,
+		userAgent: defaultUserAgent,
+	}
+
+	for _, opt := range opts {
+		opt(c)
+	}
+
+	return c, nil
 }
 
 {{range .Operations}}
@@ -175,7 +199,7 @@ func {{.Name}}{{ if .SuccessReturn }}[R any]{{ end }}(ctx context.Context, c *Cl
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 {{- else}}
-		return {{if $op.SuccessReturn}}nil, {{end}}fmt.Errorf("{{$op.Name}}: status %s", resp.Status)
+		return {{if $op.SuccessReturn}}nil, {{end}}fmt.Errorf("{{$op.Name}}: status %s", rsp.Status)
 {{- end}}
 {{- end}}
 	default:

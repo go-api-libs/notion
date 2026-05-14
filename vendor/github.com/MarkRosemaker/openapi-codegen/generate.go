@@ -31,14 +31,15 @@ func Generate(cfg Config) error {
 	}
 
 	if cfg.Interactions == nil {
-		if cfg.InteractionsPath == "" && cfg.SpecPath != "" {
+		pathProvided := cfg.InteractionsPath != ""
+		if !pathProvided && cfg.SpecPath != "" {
 			cfg.InteractionsPath = filepath.Join(filepath.Dir(cfg.SpecPath), "interactions.json")
 		}
 
 		if cfg.InteractionsPath != "" {
 			var err error
-			cfg.Interactions, err = cassette.ReadInteractionsFile(cfg.InteractionsPath)
-			if err != nil && !errors.Is(err, fs.ErrNotExist) {
+			cfg.Interactions, err = cassette.InteractionsReadFile(cfg.InteractionsPath)
+			if err != nil && (pathProvided || !errors.Is(err, fs.ErrNotExist)) {
 				return err
 			}
 		}
@@ -70,6 +71,12 @@ func Generate(cfg Config) error {
 	irDoc, err := ir.FromDocument(cfg.Spec, cfg.PackageName, cfg.UserAgent)
 	if err != nil {
 		return fmt.Errorf("build IR: %w", err)
+	}
+
+	if len(cfg.Interactions) > 0 {
+		if err := matchInteractions(irDoc, cfg.Interactions); err != nil {
+			return fmt.Errorf("matching interactions: %w", err)
+		}
 	}
 
 	files, err := render.Files(irDoc)
