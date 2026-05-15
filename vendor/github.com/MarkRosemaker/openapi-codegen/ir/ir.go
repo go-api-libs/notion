@@ -100,12 +100,12 @@ type EnumValue struct {
 
 // Param represents a path or query parameter.
 type Param struct {
+	VarName      string
 	GoName       string // camelCase, used as local variable name
 	FieldName    string // PascalCase, used as exported struct field name
 	JSONName     string
 	Type         string
 	Required     bool
-	NotZero      string
 	FormatExpr   string
 	ParseExpr    string // server-side: expression to parse string `s` into the param type
 	ParseCast    string // server-side: optional cast after ParseExpr, e.g. "int32"

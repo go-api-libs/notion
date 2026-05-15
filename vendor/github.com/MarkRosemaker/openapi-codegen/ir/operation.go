@@ -119,46 +119,42 @@ func mergeParams(pathItem, operation openapi.ParameterList) openapi.ParameterLis
 }
 
 func fromParam(p *openapi.Parameter) (Param, error) {
-	if p.Schema == nil {
-		return Param{}, fmt.Errorf("schema is required")
+	param := Param{
+		JSONName:    p.Name,
+		Required:    p.Required,
+		Description: p.Description,
 	}
+	if p.Schema == nil {
+		return param, fmt.Errorf("schema is required")
+	}
+
+	param.IsEnum = len(p.Schema.Enum) > 0
 
 	tp, err := SchemaGoType(p.Schema)
 	if err != nil {
-		return Param{}, err
+		return param, err
 	}
+	param.Type = tp.String()
 
-	goName := strcase.ToGoCamel(p.Name)
-	parseExpr, parseCast, parseErrFree := tp.serverParseExpr()
+	param.GoName = strcase.ToGoCamel(p.Name)
+	param.ParseExpr, param.ParseCast, param.ParseErrFree = tp.serverParseExpr()
 
-	v := ""
 	if p.Required && p.In == openapi.ParameterLocationHeader &&
 		tp.Name == "string" && p.Schema != nil {
-		v = string(p.Schema.Example)
+		param.Value = string(p.Schema.Example)
 	}
 
-	fieldName := strcase.ToGoPascal(p.Name)
-	varName := "params." + fieldName
+	param.FieldName = strcase.ToGoPascal(p.Name)
 
 	if p.In == openapi.ParameterLocationPath {
-		varName = p.Name
+		param.VarName = p.Name
+	} else {
+		param.VarName = "params." + param.FieldName
 	}
 
-	return Param{
-		GoName:       goName,
-		FieldName:    fieldName,
-		JSONName:     p.Name,
-		Type:         tp.String(),
-		Required:     p.Required,
-		NotZero:      tp.NotZero(varName),
-		FormatExpr:   tp.formatExpr(varName),
-		ParseExpr:    parseExpr,
-		ParseCast:    parseCast,
-		ParseErrFree: parseErrFree,
-		IsEnum:       len(p.Schema.Enum) > 0,
-		Description:  p.Description,
-		Value:        v,
-	}, nil
+	param.FormatExpr = tp.formatExpr(param.VarName)
+
+	return param, nil
 }
 
 // serverParseExpr returns the expression that parses a string variable `s` into goType.
@@ -230,29 +226,29 @@ func buildJoinPathArgs(parsed openapi.ParsedPath, params map[string]Param) []str
 }
 
 // NotZero returns the Go boolean expression that is true when param is not the zero value.
-func (tp GoType) NotZero(varName string) string {
-	switch tp.Name {
+func (p Param) NotZero() string {
+	switch p.Type {
 	case "string":
-		return varName + ` != ""`
+		return p.VarName + ` != ""`
 	case "types.Email":
-		return varName + ` != ""`
+		return p.VarName + ` != ""`
 	case "bool":
-		return varName
+		return p.VarName
 	case "uuid.UUID":
-		return varName + " != uuid.Nil"
+		return p.VarName + " != uuid.Nil"
 	case "net.IP":
-		return varName + " != nil"
+		return p.VarName + " != nil"
 	case "url.URL":
-		return varName + `.Host != ""`
+		return p.VarName + `.Host != ""`
 	case "time.Time":
-		return "!" + varName + ".IsZero()"
+		return "!" + p.VarName + ".IsZero()"
 	case "civil.Date":
-		return varName + " != (civil.Date{})"
+		return p.VarName + " != (civil.Date{})"
 	case "time.Duration":
-		return varName + " != 0"
+		return p.VarName + " != 0"
 	default:
 		// int, int32, int64, uint*, float32, float64
-		return varName + " != 0"
+		return p.VarName + " != 0"
 	}
 }
 
