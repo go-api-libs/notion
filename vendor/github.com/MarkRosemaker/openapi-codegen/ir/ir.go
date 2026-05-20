@@ -1,6 +1,7 @@
 package ir
 
 import (
+	"fmt"
 	"slices"
 )
 
@@ -24,9 +25,10 @@ type Document struct {
 
 // InteractionCall is one operation call extracted from a recorded interaction.
 type InteractionCall struct {
-	Op        *Operation         // matched operation
-	PathArgs  []string           // Go literal per path param, same order as Op.PathParams
-	QueryArgs []InteractionParam // set query params only (omitted = use nil params)
+	Op         *Operation         // matched operation
+	PathArgs   []string           // Go literal per path param, same order as Op.PathParams
+	QueryArgs  []InteractionParam // set query params only (omitted = use nil params)
+	HeaderArgs []InteractionParam // set query params only (omitted = use nil params)
 }
 
 // InteractionParam is one query param with its Go literal value.
@@ -59,6 +61,23 @@ type Operation struct {
 	Responses       []Response `json:"Responses,omitempty"`
 	SuccessReturn   *GoType    `json:"SuccessReturn,omitempty"`
 	Deprecated      bool       `json:"Deprecated,omitzero"`
+}
+
+func (op Operation) ParamsInStruct() Params {
+	return append(op.QueryParams, op.HeaderParams...)
+}
+
+func (op Operation) NilParamsExpr() string {
+	params := op.ParamsInStruct()
+	if len(params) == 0 {
+		return ""
+	}
+
+	if params.Required() {
+		return fmt.Sprintf("%s{}", op.ParamStructName)
+	}
+
+	return "nil"
 }
 
 // Schema represents a named component schema.
@@ -104,10 +123,23 @@ type EnumValue struct {
 type GlobalType string
 
 const (
-	GlobalAPIKey GlobalType = "APIKey"
+	GlobalAPIKey    GlobalType = "APIKey"
+	GlobalVersion   GlobalType = "Version"
+	GlobalClient    GlobalType = "Client"
+	GlobalUserAgent GlobalType = "User-Agent"
 )
 
 type Params []Param
+
+func (ps Params) Required() bool {
+	for _, p := range ps {
+		if p.Required {
+			return true
+		}
+	}
+
+	return false
+}
 
 // Param represents a path or query parameter.
 type Param struct {
@@ -130,6 +162,10 @@ type Param struct {
 
 func (doc Document) APIKey() *Param {
 	return doc.getGlobal(GlobalAPIKey)
+}
+
+func (doc Document) Client() *Param {
+	return doc.getGlobal(GlobalClient)
 }
 
 func (doc Document) getGlobal(tp GlobalType) *Param {

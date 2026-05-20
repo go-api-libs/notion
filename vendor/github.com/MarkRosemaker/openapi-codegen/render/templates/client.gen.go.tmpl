@@ -47,6 +47,12 @@ type Client struct {
 		{{ end -}}
 	{{ .VarName }} string
 	{{ end -}}
+	{{ with .Client -}}
+		{{ with or .Description "The client parameter" -}}
+			{{ toGoComment . }}
+		{{ end -}}
+	{{ .VarName }} string
+	{{ end -}}
 	// The base URL
 	baseURL   *url.URL
 	// The user agent
@@ -89,11 +95,21 @@ func WithAPIKey({{ .VarName }} string) ClientOption {
 }
 {{ end }}
 
+{{ with .Client }}
+// WithClient returns a [ClientOption] that sets a custom client parameter.
+func WithClient({{ .VarName }} string) ClientOption {
+	return func(c *Client) { {{ .FormatExpr }} = {{ .VarName }} }
+}
+{{ end }}
+
 // NewClient creates a new Client{{ with .Auth.Bearer.Name }}, reading the bearer token from [os.Getenv]("{{ . }}"){{ end }}.
 func NewClient(opts ...ClientOption) (*Client, error) {
 	c := &Client{
 		cli:       http.DefaultClient,
 		baseURL:   defaultBaseURL,
+		{{ with .Client }}{{ if .Example -}}
+		{{ .VarName }}: {{ .Example }},
+		{{ end }}{{ end -}}
 		userAgent: defaultUserAgent,
 	}
 
@@ -125,6 +141,12 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 	}
 	{{ end }}
 
+	{{ with .Client }}
+	if {{ .FormatExpr }} == "" {
+		return nil, errors.New("client parameter not provided")
+	}
+	{{ end }}
+
 	return c, nil
 }
 
@@ -146,7 +168,7 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 //
 // Deprecated.
 {{- end}}
-func (c *Client) {{.Name}}(ctx context.Context{{range .PathParams}}, {{.GoName}} {{.Type}}{{end}}{{if .QueryParams}}, params *{{.ParamStructName}}{{end}}{{if .RequestBody}}, body {{if .RequestBody.Required}}{{.RequestBody.TypeName}}{{else}}*{{.RequestBody.TypeName}}{{end}}{{end}}) ({{.SuccessReturn.Nilable}}, error) {
+func (c *Client) {{.Name}}(ctx context.Context{{range .PathParams}}, {{.GoName}} {{.Type}}{{end}}{{if .QueryParams}}, params {{ if not .ParamsInStruct.Required }}*{{ end }}{{.ParamStructName}}{{end}}{{if .RequestBody}}, body {{if .RequestBody.Required}}{{.RequestBody.TypeName}}{{else}}*{{.RequestBody.TypeName}}{{end}}{{end}}) ({{.SuccessReturn.Nilable}}, error) {
 	return {{.Name}}[{{.SuccessReturn}}](ctx, c{{range .PathParams}}, {{.GoName}}{{end}}{{if .QueryParams}}, params{{end}}{{if .RequestBody}}, body{{end}})
 }
 {{ end }}
@@ -167,12 +189,14 @@ func (c *Client) {{.Name}}(ctx context.Context{{range .PathParams}}, {{.GoName}}
 //
 // Deprecated.
 {{- end}}
-func {{.Name}}{{ if .SuccessReturn }}[R any]{{ end }}(ctx context.Context, c *Client{{range .PathParams}}, {{.GoName}} {{.Type}}{{end}}{{if .QueryParams}}, params *{{.ParamStructName}}{{end}}{{if .RequestBody}}, body {{if .RequestBody.Required}}{{.RequestBody.TypeName}}{{else}}*{{.RequestBody.TypeName}}{{end}}{{end}}) ({{if .SuccessReturn}}*R, {{end}}error) {
+func {{.Name}}{{ if .SuccessReturn }}[R any]{{ end }}(ctx context.Context, c *Client{{range .PathParams}}, {{.GoName}} {{.Type}}{{end}}{{if .QueryParams}}, params {{ if not .ParamsInStruct.Required }}*{{ end }}{{.ParamStructName}}{{end}}{{if .RequestBody}}, body {{if .RequestBody.Required}}{{.RequestBody.TypeName}}{{else}}*{{.RequestBody.TypeName}}{{end}}{{end}}) ({{if .SuccessReturn}}*R, {{end}}error) {
 {{- if .JoinPathArgs}}
 	u := c.baseURL.JoinPath({{range $i, $a := .JoinPathArgs}}{{if $i}}, {{end}}{{$a}}{{end}})
 {{- end}}
 {{ if .QueryParams}}
+	{{ if not .ParamsInStruct.Required -}}
 	if params != nil {
+	{{- end }}
 		q := make(url.Values, {{ len .QueryParams }})
 {{- range .QueryParams }}
 	{{ if .Required }}
@@ -185,7 +209,9 @@ func {{.Name}}{{ if .SuccessReturn }}[R any]{{ end }}(ctx context.Context, c *Cl
 {{- end }}
 
 		u.RawQuery = q.Encode()
+	{{ if not .ParamsInStruct.Required -}}
 	}
+	{{- end }}
 {{ end }}
 {{- if .RequestBody}}
 	var buf bytes.Buffer
