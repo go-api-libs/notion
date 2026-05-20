@@ -280,7 +280,6 @@ func replay(t *testing.T) http.RoundTripper {
 
 func TestClient_Interactions(t *testing.T) {
 	ctx := t.Context()
-
 	t.Setenv("NOTION_API_KEY", "**************************************************")
 
 	c, err := NewClient(WithHTTPClient(&http.Client{Transport: replay(t)}))
