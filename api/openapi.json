@@ -29,7 +29,7 @@
         "operationId": "GetPage",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/PageResponse"
+            "$ref": "#/components/responses/Page"
           }
         }
       }
@@ -58,7 +58,7 @@
         "operationId": "GetBlocks",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/BlocksResponse"
+            "$ref": "#/components/responses/Blocks"
           }
         }
       }
@@ -78,7 +78,7 @@
         "operationId": "GetDatabase",
         "responses": {
           "200": {
-            "$ref": "#/components/responses/DatabaseResponse"
+            "$ref": "#/components/responses/Database"
           }
         }
       }
@@ -2418,7 +2418,7 @@
       }
     },
     "responses": {
-      "BlocksResponse": {
+      "Blocks": {
         "description": "Returns a list of blocks for the specified page.",
         "content": {
           "application/json": {
@@ -2552,7 +2552,7 @@
           }
         }
       },
-      "DatabaseResponse": {
+      "Database": {
         "description": "Returns the database that was requested or created.",
         "content": {
           "application/json": {
@@ -2562,7 +2562,7 @@
           }
         }
       },
-      "PageResponse": {
+      "Page": {
         "description": "Returns the page that was requested or created.",
         "content": {
           "application/json": {
