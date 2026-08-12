@@ -335,6 +335,40 @@ func (e Color) Valid() bool {
 	}
 }
 
+// DataSource defines a model
+type DataSource struct {
+	ID   uuid.UUID `json:"id,omitzero"`
+	Name string    `json:"name,omitzero"`
+}
+
+// DataSources defines a model
+type DataSources []DataSource
+
+// Database defines a model
+type Database struct {
+	// Always "database".
+	Object      string    `json:"object,omitzero"`
+	ID          uuid.UUID `json:"id,omitzero"`
+	Title       RichTexts `json:"title,omitempty"`
+	Description RichTexts `json:"description,omitempty"`
+	// The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
+	Parent         Parent      `json:"parent"`
+	IsInline       bool        `json:"is_inline,omitzero"`
+	InTrash        bool        `json:"in_trash,omitzero"`
+	IsLocked       bool        `json:"is_locked,omitzero"`
+	CreatedTime    time.Time   `json:"created_time,omitzero"`
+	LastEditedTime time.Time   `json:"last_edited_time,omitzero"`
+	DataSources    DataSources `json:"data_sources,omitempty"`
+	// Page or database icon. It is either an emoji or a file.
+	Icon Icon `json:"icon"`
+	// File objects contain data about files uploaded to Notion as well as external files linked in Notion.
+	Cover File `json:"cover"`
+	// The URL of the Notion page.
+	URL       url.URL   `json:"url,omitzero"`
+	PublicURL struct{}  `json:"public_url"`
+	RequestID uuid.UUID `json:"request_id,omitzero"`
+}
+
 // Date defines a model
 type Date struct {
 	// An ISO 8601 format date, with optional time.

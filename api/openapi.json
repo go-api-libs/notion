@@ -62,6 +62,26 @@
           }
         }
       }
+    },
+    "/databases/{id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/id"
+        },
+        {
+          "$ref": "#/components/parameters/NotionVersionHeader"
+        }
+      ],
+      "get": {
+        "summary": "Retrieve a database",
+        "description": "Retrieves a database object using the ID specified in the request path.",
+        "operationId": "GetDatabase",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/DatabaseResponse"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1130,6 +1150,119 @@
           "red_background"
         ],
         "example": "default"
+      },
+      "DataSource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "9201f6db-2895-4450-9435-041541a181dd"
+          },
+          "name": {
+            "type": "string",
+            "example": "Intentions"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "DataSources": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/DataSource"
+        }
+      },
+      "Database": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always \"database\".",
+            "type": "string",
+            "pattern": "^database$",
+            "example": "database"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+          },
+          "title": {
+            "$ref": "#/components/schemas/RichTexts"
+          },
+          "description": {
+            "$ref": "#/components/schemas/RichTexts"
+          },
+          "parent": {
+            "$ref": "#/components/schemas/Parent"
+          },
+          "is_inline": {
+            "type": "boolean",
+            "example": false
+          },
+          "in_trash": {
+            "type": "boolean",
+            "example": false
+          },
+          "is_locked": {
+            "type": "boolean",
+            "example": false
+          },
+          "created_time": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-03-19T08:28:01.083+00:00"
+          },
+          "last_edited_time": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-08-12T20:15:11.370+00:00"
+          },
+          "data_sources": {
+            "$ref": "#/components/schemas/DataSources"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/Icon"
+          },
+          "cover": {
+            "$ref": "#/components/schemas/File"
+          },
+          "url": {
+            "description": "The URL of the Notion page.",
+            "type": "string",
+            "format": "uri",
+            "example": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0"
+          },
+          "public_url": {
+            "type": "object",
+            "example": null
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "c5c61591-fc21-49ab-8d61-d6d84b37147d"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "title",
+          "description",
+          "parent",
+          "is_inline",
+          "in_trash",
+          "is_locked",
+          "created_time",
+          "last_edited_time",
+          "data_sources",
+          "icon",
+          "cover",
+          "url",
+          "public_url",
+          "request_id"
+        ]
       },
       "Date": {
         "type": "object",
@@ -2415,6 +2548,16 @@
               "type": "block",
               "block": {},
               "request_id": "4fb32baa-18fe-4627-b7db-96292000775f"
+            }
+          }
+        }
+      },
+      "DatabaseResponse": {
+        "description": "Returns the database that was requested or created.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Database"
             }
           }
         }

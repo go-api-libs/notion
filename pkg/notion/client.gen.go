@@ -203,3 +203,55 @@ func GetBlocks[R any](ctx context.Context, c *Client, id uuid.UUID, params *GetB
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
+
+// Retrieves a database object using the ID specified in the request path.
+//
+//	GET /databases/{id}
+func (c *Client) GetDatabase(ctx context.Context, id uuid.UUID) (*Database, error) {
+	return GetDatabase[Database](ctx, c, id)
+}
+
+// Retrieves a database object using the ID specified in the request path.
+// You can define a custom result to unmarshal the response into.
+//
+//	GET /databases/{id}
+func GetDatabase[R any](ctx context.Context, c *Client, id uuid.UUID) (*R, error) {
+	u := c.baseURL.JoinPath("databases", id.String())
+	req := (&http.Request{
+		Header: http.Header{
+			"Authorization":  []string{c.bearer},
+			"Notion-Version": []string{"2026-03-11"},
+			"User-Agent":     []string{c.userAgent},
+		},
+		Host:       u.Host,
+		Method:     http.MethodGet,
+		Proto:      "HTTP/1.1",
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		URL:        u,
+	}).WithContext(ctx)
+
+	rsp, err := c.cli.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer rsp.Body.Close()
+
+	switch rsp.StatusCode {
+	case http.StatusOK:
+		// Returns the database that was requested or created.
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out R
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				return nil, api.WrapDecodingError(rsp, err)
+			}
+
+			return &out, nil
+		default:
+			return nil, api.NewErrUnknownContentType(rsp)
+		}
+	default:
+		return nil, api.NewErrUnknownStatusCode(rsp)
+	}
+}
