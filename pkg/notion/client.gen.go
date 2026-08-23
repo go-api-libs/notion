@@ -90,14 +90,14 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 //
 //	GET /pages/{id}
 func (c *Client) GetPage(ctx context.Context, id uuid.UUID) (*Page, error) {
-	return GetPage[Page](ctx, c, id)
+	return c.GetPageWithResult[Page](ctx, id)
 }
 
 // Retrieves a Page object using the ID in the request path. This endpoint exposes page properties, not page content.
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /pages/{id}
-func GetPage[R any](ctx context.Context, c *Client, id uuid.UUID) (*R, error) {
+func (c *Client) GetPageWithResult[R any](ctx context.Context, id uuid.UUID) (*R, error) {
 	u := c.baseURL.JoinPath("pages", id.String())
 	req := (&http.Request{
 		Header: http.Header{
@@ -142,14 +142,14 @@ func GetPage[R any](ctx context.Context, c *Client, id uuid.UUID) (*R, error) {
 //
 //	GET /blocks/{id}/children
 func (c *Client) GetBlocks(ctx context.Context, id uuid.UUID, params *GetBlocksParams) (*BlocksList, error) {
-	return GetBlocks[BlocksList](ctx, c, id, params)
+	return c.GetBlocksWithResult[BlocksList](ctx, id, params)
 }
 
 // Returns a paginated array of child [block objects](https://developers.notion.com/reference/block) contained in the block using the ID specified. In order to receive a complete representation of a block, you may need to recursively retrieve the block children of child blocks.
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /blocks/{id}/children
-func GetBlocks[R any](ctx context.Context, c *Client, id uuid.UUID, params *GetBlocksParams) (*R, error) {
+func (c *Client) GetBlocksWithResult[R any](ctx context.Context, id uuid.UUID, params *GetBlocksParams) (*R, error) {
 	u := c.baseURL.JoinPath("blocks", id.String(), "children")
 	if params != nil {
 		q := make(url.Values, 2)
@@ -208,14 +208,14 @@ func GetBlocks[R any](ctx context.Context, c *Client, id uuid.UUID, params *GetB
 //
 //	GET /databases/{id}
 func (c *Client) GetDatabase(ctx context.Context, id uuid.UUID) (*Database, error) {
-	return GetDatabase[Database](ctx, c, id)
+	return c.GetDatabaseWithResult[Database](ctx, id)
 }
 
 // Retrieves a database object using the ID specified in the request path.
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /databases/{id}
-func GetDatabase[R any](ctx context.Context, c *Client, id uuid.UUID) (*R, error) {
+func (c *Client) GetDatabaseWithResult[R any](ctx context.Context, id uuid.UUID) (*R, error) {
 	u := c.baseURL.JoinPath("databases", id.String())
 	req := (&http.Request{
 		Header: http.Header{

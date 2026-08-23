@@ -53,7 +53,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if {{if .SuccessReturn}}_, {{end}}err := {{/* A method exists only when the operation returns a value; otherwise the client is an ordinary argument. */}}{{if .SuccessReturn}}c.{{end}}{{.Name}}(t.Context(){{if not .SuccessReturn}}, c{{end}}{{range .PathParams}}, {{typeZeroVal .Type}}{{end}}
+			if {{if .SuccessReturn}}_, {{end}}err := c.{{.Name}}(t.Context(){{range .PathParams}}, {{typeZeroVal .Type}}{{end}}
 			{{- with .NilParamsExpr}}, {{ . }}{{ end -}}
 			{{- if .RequestBody}}, {{if .RequestBody.Required}}{{.RequestBody.TypeName}}{}{{else}}nil{{end}}{{end}}); err == nil {
 				t.Fatal("expected error")
@@ -75,7 +75,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if {{if .SuccessReturn}}_, {{end}}err := {{/* A method exists only when the operation returns a value; otherwise the client is an ordinary argument. */}}{{if .SuccessReturn}}c.{{end}}{{.Name}}(t.Context(){{if not .SuccessReturn}}, c{{end}}{{range .PathParams}}, {{typeZeroVal .Type}}{{end}}
+			if {{if .SuccessReturn}}_, {{end}}err := c.{{.Name}}(t.Context(){{range .PathParams}}, {{typeZeroVal .Type}}{{end}}
 			{{- with .NilParamsExpr}}, {{ . }}{{ end -}}
 			{{if .RequestBody}}, {{if .RequestBody.Required}}{{.RequestBody.TypeName}}{}{{else}}nil{{end}}{{end}}); err == nil {
 				t.Fatal("expected error")
@@ -245,7 +245,7 @@ func TestClient_Interactions(t *testing.T) {
 	{{- end}}
 	{{- end}}
 	{{else}}
-	if err := {{.Op.Name}}(ctx, c{{range .PathArgs}}, {{.}}{{end}}{{if .QueryArgs}}, &{{.Op.ParamStructName}}{
+	if err := c.{{.Op.Name}}(ctx{{range .PathArgs}}, {{.}}{{end}}{{if .QueryArgs}}, &{{.Op.ParamStructName}}{
 		{{range .QueryArgs}}{{.FieldName}}: {{.Literal}},
 		{{end}}}{{else if .Op.QueryParams}}, nil{{end}}{{if .Op.RequestBody}}, {{if .Op.RequestBody.Required}}{{.Op.RequestBody.TypeName}}{}{{else}}nil{{end}}{{end}});
 	{{- if .IsSuccess}} err != nil {
