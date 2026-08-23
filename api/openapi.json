@@ -3,13 +3,11 @@
   "info": {
     "title": "Notion API",
     "description": "[Create an integration](https://www.notion.so/my-integrations) to retrieve an API token, add your database and page ID's as variables in the collection, and start making your requests!\n\nFor our full documentation, including sample integrations and guides, visit [developers.notion.com](developers.notion.com)\n\nNeed more help? Join our [developer community on Slack](https://join.slack.com/t/notiondevs/shared_invite/zt-lkrnk74h-YmPRroySRFGiqgjI193AqA/)",
-    "version": "2026-03-11",
-    "Extensions": null
+    "version": "2026-03-11"
   },
   "servers": [
     {
-      "url": "https://api.notion.com/v1",
-      "Extensions": null
+      "url": "https://api.notion.com/v1"
     }
   ],
   "paths": {
@@ -33,10 +31,8 @@
           "200": {
             "$ref": "#/components/responses/Page"
           }
-        },
-        "Extensions": null
-      },
-      "Extensions": null
+        }
+      }
     },
     "/blocks/{id}/children": {
       "parameters": [
@@ -64,10 +60,8 @@
           "200": {
             "$ref": "#/components/responses/Blocks"
           }
-        },
-        "Extensions": null
-      },
-      "Extensions": null
+        }
+      }
     },
     "/databases/{id}": {
       "parameters": [
@@ -86,10 +80,8 @@
           "200": {
             "$ref": "#/components/responses/Database"
           }
-        },
-        "Extensions": null
-      },
-      "Extensions": null
+        }
+      }
     }
   },
   "components": {
@@ -101,32 +93,27 @@
           "bold": {
             "description": "Whether the text is **bolded**.",
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           },
           "italic": {
             "description": "Whether the text is *italicized*.",
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           },
           "strikethrough": {
             "description": "Whether the text is struck through.",
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           },
           "underline": {
             "description": "Whether the text is underlined.",
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           },
           "code": {
             "description": "Whether the text is code `style`.",
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           },
           "color": {
             "$ref": "#/components/schemas/Color"
@@ -147,8 +134,7 @@
           "underline": false,
           "code": false,
           "color": "default"
-        },
-        "Extensions": null
+        }
       },
       "Block": {
         "description": "A block object represents content within Notion. Blocks can be text, lists, media, and more. A page is a type of block, too!\n\nThe optional fields are filled depending on the value of `type`.",
@@ -158,14 +144,12 @@
             "description": "Always \"block\".",
             "type": "string",
             "pattern": "^block$",
-            "example": "block",
-            "Extensions": null
+            "example": "block"
           },
           "id": {
             "type": "string",
             "format": "uuid",
-            "example": "dad588e3-83ec-430a-bcd3-3cc5dc37d7e9",
-            "Extensions": null
+            "example": "dad588e3-83ec-430a-bcd3-3cc5dc37d7e9"
           },
           "parent": {
             "$ref": "#/components/schemas/Parent"
@@ -174,15 +158,13 @@
             "description": "Date and time when this block was created. Formatted as an ISO 8601 date time string.",
             "type": "string",
             "format": "date-time",
-            "example": "2022-07-14T05:31:00.000Z",
-            "Extensions": null
+            "example": "2022-07-14T05:31:00.000Z"
           },
           "last_edited_time": {
             "description": "Date and time when this block was last updated. Formatted as an ISO 8601 date time string.",
             "type": "string",
             "format": "date-time",
-            "example": "2022-07-14T05:33:00.000Z",
-            "Extensions": null
+            "example": "2022-07-14T05:33:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/UserReference"
@@ -193,19 +175,16 @@
           "has_children": {
             "description": "Whether or not the block has children blocks nested within it.",
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           },
           "archived": {
             "description": "The archived status of the block.",
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           },
           "in_trash": {
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           },
           "type": {
             "$ref": "#/components/schemas/BlockType"
@@ -273,8 +252,7 @@
           "divider": {
             "description": "Divider block objects do not contain any information within the divider property",
             "type": "object",
-            "example": {},
-            "Extensions": null
+            "example": {}
           },
           "table_of_contents": {
             "$ref": "#/components/schemas/TableOfContents"
@@ -282,11 +260,10 @@
           "column_list": {
             "description": "Column Lists are parent blocks for column children. They do not contain any information within the column_list property and can only contain children of type column.",
             "type": "object",
-            "example": {},
-            "Extensions": null
+            "example": {}
           },
           "link_preview": {
-            "$ref": "#/components/schemas/LinkPreview"
+            "$ref": "#/components/schemas/ExternalFile"
           },
           "synced_block": {
             "$ref": "#/components/schemas/SyncedBlock"
@@ -300,14 +277,12 @@
           "breadcrumb": {
             "description": "Breadcrumb block objects do not contain any information within the breadcrumb property",
             "type": "object",
-            "example": {},
-            "Extensions": null
+            "example": {}
           },
           "unsupported": {
             "description": "Some block types aren't available yet",
             "type": "object",
-            "example": {},
-            "Extensions": null
+            "example": {}
           }
         },
         "required": [
@@ -348,8 +323,7 @@
             "rich_text": [],
             "color": "default"
           }
-        },
-        "Extensions": null
+        }
       },
       "BlockType": {
         "description": "Type of block.",
@@ -389,8 +363,7 @@
           "audio",
           "unsupported"
         ],
-        "example": "paragraph",
-        "Extensions": null
+        "example": "paragraph"
       },
       "Blocks": {
         "type": "array",
@@ -753,8 +726,7 @@
               "color": "default"
             }
           }
-        ],
-        "Extensions": null
+        ]
       },
       "BlocksList": {
         "allOf": [
@@ -772,19 +744,16 @@
                 "description": "Type of the objects in results. Always `block`.",
                 "type": "string",
                 "pattern": "^block$",
-                "example": "block",
-                "Extensions": null
+                "example": "block"
               },
               "block": {
                 "type": "object",
-                "example": {},
-                "Extensions": null
+                "example": {}
               },
               "request_id": {
                 "type": "string",
                 "format": "uuid",
-                "example": "4fb32baa-18fe-4627-b7db-96292000775f",
-                "Extensions": null
+                "example": "4fb32baa-18fe-4627-b7db-96292000775f"
               }
             },
             "required": [
@@ -792,8 +761,7 @@
               "type",
               "block",
               "request_id"
-            ],
-            "Extensions": null
+            ]
           }
         ],
         "example": {
@@ -919,8 +887,7 @@
           "type": "block",
           "block": {},
           "request_id": "4fb32baa-18fe-4627-b7db-96292000775f"
-        },
-        "Extensions": null
+        }
       },
       "Callout": {
         "description": "Callout block objects contain the following information within the callout field.",
@@ -966,16 +933,14 @@
             "emoji": "🔥"
           },
           "color": "gray_background"
-        },
-        "Extensions": null
+        }
       },
       "Child": {
         "type": "object",
         "properties": {
           "title": {
             "type": "string",
-            "example": "My child page",
-            "Extensions": null
+            "example": "My child page"
           }
         },
         "required": [
@@ -983,8 +948,7 @@
         ],
         "example": {
           "title": "My child page"
-        },
-        "Extensions": null
+        }
       },
       "Code": {
         "description": "Code block objects contain this information within the `code` property.",
@@ -1080,8 +1044,7 @@
             }
           ],
           "language": "go"
-        },
-        "Extensions": null
+        }
       },
       "CodeLanguage": {
         "description": "Coding language in code block",
@@ -1160,8 +1123,7 @@
           "yaml",
           "java/c/c++/c#"
         ],
-        "example": "go",
-        "Extensions": null
+        "example": "go"
       },
       "Color": {
         "description": "The color of the block.",
@@ -1187,8 +1149,7 @@
           "pink_background",
           "red_background"
         ],
-        "example": "default",
-        "Extensions": null
+        "example": "default"
       },
       "DataSource": {
         "type": "object",
@@ -1196,27 +1157,23 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "example": "9201f6db-2895-4450-9435-041541a181dd",
-            "Extensions": null
+            "example": "9201f6db-2895-4450-9435-041541a181dd"
           },
           "name": {
             "type": "string",
-            "example": "Intentions",
-            "Extensions": null
+            "example": "Intentions"
           }
         },
         "required": [
           "id",
           "name"
-        ],
-        "Extensions": null
+        ]
       },
       "DataSources": {
         "type": "array",
         "items": {
           "$ref": "#/components/schemas/DataSource"
-        },
-        "Extensions": null
+        }
       },
       "Database": {
         "type": "object",
@@ -1225,14 +1182,12 @@
             "description": "Always \"database\".",
             "type": "string",
             "pattern": "^database$",
-            "example": "database",
-            "Extensions": null
+            "example": "database"
           },
           "id": {
             "type": "string",
             "format": "uuid",
-            "example": "457d00dc-fc3a-4ddb-a42f-fe376530bee0",
-            "Extensions": null
+            "example": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
           },
           "title": {
             "$ref": "#/components/schemas/RichTexts"
@@ -1245,30 +1200,25 @@
           },
           "is_inline": {
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           },
           "in_trash": {
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           },
           "is_locked": {
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           },
           "created_time": {
             "type": "string",
             "format": "date-time",
-            "example": "2024-03-19T08:28:01.083+00:00",
-            "Extensions": null
+            "example": "2024-03-19T08:28:01.083+00:00"
           },
           "last_edited_time": {
             "type": "string",
             "format": "date-time",
-            "example": "2026-08-12T20:15:11.370+00:00",
-            "Extensions": null
+            "example": "2026-08-12T20:15:11.370+00:00"
           },
           "data_sources": {
             "$ref": "#/components/schemas/DataSources"
@@ -1283,19 +1233,16 @@
             "description": "The URL of the Notion page.",
             "type": "string",
             "format": "uri",
-            "example": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0",
-            "Extensions": null
+            "example": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0"
           },
           "public_url": {
             "type": "object",
-            "example": null,
-            "Extensions": null
+            "example": null
           },
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "c5c61591-fc21-49ab-8d61-d6d84b37147d",
-            "Extensions": null
+            "example": "c5c61591-fc21-49ab-8d61-d6d84b37147d"
           }
         },
         "required": [
@@ -1315,8 +1262,7 @@
           "url",
           "public_url",
           "request_id"
-        ],
-        "Extensions": null
+        ]
       },
       "Date": {
         "type": "object",
@@ -1324,20 +1270,17 @@
           "start": {
             "description": "An ISO 8601 format date, with optional time.",
             "type": "string",
-            "example": "2022-07-14",
-            "Extensions": null
+            "example": "2022-07-14"
           },
           "end": {
             "description": "An ISO 8601 formatted date, with optional time. Represents the end of a date range.\n\nIf `null`, this property's date value is not a range.",
             "type": "object",
-            "example": null,
-            "Extensions": null
+            "example": null
           },
           "time_zone": {
             "description": "Time zone information for start and end. Possible values are extracted from the IANA database and they are based on the time zones from Moment.js.\n\nWhen time zone is provided, start and end should not have any UTC offset. In addition, when time zone is provided, start and end cannot be dates without time information.\n\nIf null, time zone information will be contained in UTC offsets in start and end.",
             "type": "object",
-            "example": null,
-            "Extensions": null
+            "example": null
           }
         },
         "required": [
@@ -1347,8 +1290,7 @@
           "start": "2022-07-14",
           "end": null,
           "time_zone": null
-        },
-        "Extensions": null
+        }
       },
       "Embed": {
         "description": "Embed blocks include block types that allow displaying another website within Notion.",
@@ -1361,8 +1303,7 @@
             "description": "Embedded link.",
             "type": "string",
             "format": "uri",
-            "example": "https://www.youtube.com/watch?v=4aMoKXQ6pXI",
-            "Extensions": null
+            "example": "https://www.youtube.com/watch?v=4aMoKXQ6pXI"
           }
         },
         "required": [
@@ -1372,8 +1313,7 @@
         "example": {
           "caption": [],
           "url": "https://www.youtube.com/watch?v=4aMoKXQ6pXI"
-        },
-        "Extensions": null
+        }
       },
       "Equation": {
         "description": "Equation block objects contain this information within the `equation` property",
@@ -1382,8 +1322,7 @@
           "expression": {
             "description": "A KaTeX compatible string",
             "type": "string",
-            "example": "e^{\\pi i}+1 = 0",
-            "Extensions": null
+            "example": "e^{\\pi i}+1 = 0"
           }
         },
         "required": [
@@ -1391,8 +1330,7 @@
         ],
         "example": {
           "expression": "e^{\\pi i}+1 = 0"
-        },
-        "Extensions": null
+        }
       },
       "ExternalFile": {
         "description": "An external file is any URL that isn't hosted by Notion.",
@@ -1402,8 +1340,7 @@
             "description": "Link to the externally hosted content.",
             "type": "string",
             "format": "uri",
-            "example": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg",
-            "Extensions": null
+            "example": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
           }
         },
         "required": [
@@ -1411,8 +1348,7 @@
         ],
         "example": {
           "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
-        },
-        "Extensions": null
+        }
       },
       "File": {
         "description": "File objects contain data about files uploaded to Notion as well as external files linked in Notion.",
@@ -1430,8 +1366,7 @@
           "name": {
             "description": "A string value corresponding to a filename of the original file upload",
             "type": "string",
-            "example": "hd-wallpaper-g6e0a7c1ce_1920.jpeg",
-            "Extensions": null
+            "example": "hd-wallpaper-g6e0a7c1ce_1920.jpeg"
           }
         },
         "required": [
@@ -1442,8 +1377,7 @@
           "external": {
             "url": "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
           }
-        },
-        "Extensions": null
+        }
       },
       "FileType": {
         "description": "Type of this file object.",
@@ -1452,8 +1386,7 @@
           "file",
           "external"
         ],
-        "example": "external",
-        "Extensions": null
+        "example": "external"
       },
       "FileWithCaption": {
         "description": "File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.",
@@ -1467,8 +1400,7 @@
             },
             "required": [
               "caption"
-            ],
-            "Extensions": null
+            ]
           },
           {
             "$ref": "#/components/schemas/File"
@@ -1481,8 +1413,7 @@
             "url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/1162837c-64dd-401a-aa1d-91f795079052/small.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XIAECK6E%2F20250131%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250131T112521Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQD4UujnejYRkyMDGRuKJbIgo5p1h2yzfv8bb%2BFetXwqqwIgXdwatek%2F8VGbJo48DI2wRajJa6VapXYOw1%2BAXGx%2Fq4gqiAQIvP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDOcsW2%2BPFn5bTbwpjyrcAxOkcesJhzQt06sOaWRNNrpwpNU5VK9v4YJF1P%2B1yQYTGw0L7WurWmW9Z76FTMmoAtrx4D7aMXBpwhTc%2BSw8iEetOwHs9NS%2F%2BPfnPay8JwYr%2F6Ck86H%2FWWVHEdHOqd0b%2Bi5%2FA8olnEDSgWKvM%2B9R618YTMT9UfSmfufVfN9DXXExMIwaI96W8tL2TFJEfbcXAkTlbPWoK4CFyC7fCi7wum7ixTdWKja%2BNpeuETsKXMMlzFgt0oHhDZpJG7Md869uQIZq%2Fv88G5VMqvlQJMZrFH9RMCqrspRRozS%2Fpd9EMa8JyhTaVV1f2viZ8o1v%2FICgPRbXW0L6B7Ty3BPcDq1Cx%2FrKltMy%2B4XDVrKum663pCaxcwhVE37QO6BFIoub4GuFStUQvATrzaNw0oMcFfVLw9JSpAS8h4B3NrwN%2BqPcUKrAKt8cb3TL8%2BHdSzhpyt3o4G2PXEvk%2FVzcVZTi4BzFnBlC%2BFRTEFnw4zT5N%2BrVmJj3s52bv%2FLFOvRnMyyIHDIqXMdWx9UuG6JNR22sYvN3FfvvLx4eIL33lf2eX1xlRi0ft9mjVMQqsNK%2BkkxiwmJKx04QtQRiC0HB%2F3M8kUrnY9ZpExf%2B9ke%2FFRio7xSwkwKCQI%2B4%2B0iAqMtfxIQiMNrW8rwGOqUBbMh4hPgk22nna%2Bi0YlyK54yZTYRc4k%2FLIAsRBXy%2F5PyOO8TzG3JOxFTsG11OjA6JLidms71TrIU22tv0GO5Qe38qP2DEPhZYUPJb7iwW4HMaOwwOxaeDmXgDoRfCskg93uQB52QNEWnweYkAIYXs5n97H5dM3p35Je3KBiv1PY6H6YjeY6Y%2FvPi%2Fsj6uB8lPCYnDIhptx7BVnxgyiAYknXNiSgUx&X-Amz-Signature=fedff21b145ef075388d4715f53fc703181c85c2328ed42ea712c3523d3f136a&X-Amz-SignedHeaders=host&x-id=GetObject",
             "expiry_time": "2025-01-31T12:25:21.209Z"
           }
-        },
-        "Extensions": null
+        }
       },
       "Heading": {
         "description": "Heading block objects contain this information within their respective property.",
@@ -1493,8 +1424,7 @@
           },
           "is_toggleable": {
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           },
           "color": {
             "$ref": "#/components/schemas/Color"
@@ -1595,8 +1525,7 @@
           ],
           "is_toggleable": false,
           "color": "default"
-        },
-        "Extensions": null
+        }
       },
       "Icon": {
         "description": "Page or database icon. It is either an emoji or a file.",
@@ -1609,8 +1538,7 @@
             "description": "Emoji character.",
             "type": "string",
             "pattern": "^[^\\w\\s]+$",
-            "example": "🌄",
-            "Extensions": null
+            "example": "🌄"
           },
           "file": {
             "$ref": "#/components/schemas/NotionFile"
@@ -1625,8 +1553,7 @@
         "example": {
           "type": "emoji",
           "emoji": "🌄"
-        },
-        "Extensions": null
+        }
       },
       "IconType": {
         "description": "Type of icon.",
@@ -1636,8 +1563,7 @@
           "file",
           "external"
         ],
-        "example": "emoji",
-        "Extensions": null
+        "example": "emoji"
       },
       "Link": {
         "description": "An inline link in a text.",
@@ -1646,14 +1572,12 @@
           "url": {
             "type": "string",
             "format": "uri",
-            "example": "https://developers.notion.com/reference/block",
-            "Extensions": null
+            "example": "https://developers.notion.com/reference/block"
           }
         },
         "example": {
           "url": "https://www.google.com/"
-        },
-        "Extensions": null
+        }
       },
       "LinkMention": {
         "type": "object",
@@ -1661,18 +1585,15 @@
           "href": {
             "type": "string",
             "format": "uri",
-            "example": "https://example.com/",
-            "Extensions": null
+            "example": "https://example.com/"
           },
           "title": {
             "type": "string",
-            "example": "Example Domain",
-            "Extensions": null
+            "example": "Example Domain"
           },
           "description": {
             "type": "string",
-            "example": "This domain is for use in illustrative examples in documents. You may use this domain in literature without prior coordination or asking for permission.",
-            "Extensions": null
+            "example": "This domain is for use in illustrative examples in documents. You may use this domain in literature without prior coordination or asking for permission."
           }
         },
         "required": [
@@ -1684,28 +1605,7 @@
           "href": "https://example.com/",
           "title": "Example Domain",
           "description": "This domain is for use in illustrative examples in documents. You may use this\n    domain in literature without prior coordination or asking for permission."
-        },
-        "Extensions": null
-      },
-      "LinkPreview": {
-        "description": "Link Preview block objects return the originally pasted url.\n\nNOTE: The link_preview block will only be returned as part of a response. It cannot be created via the API.",
-        "type": "object",
-        "properties": {
-          "url": {
-            "description": "The originally pasted url used to create the mention",
-            "type": "string",
-            "format": "uri",
-            "example": "https://github.com/go-api-libs/notion",
-            "Extensions": null
-          }
-        },
-        "required": [
-          "url"
-        ],
-        "example": {
-          "url": "https://github.com/go-api-libs/notion"
-        },
-        "Extensions": null
+        }
       },
       "LinkToPage": {
         "type": "object",
@@ -1716,8 +1616,7 @@
           "page_id": {
             "type": "string",
             "format": "uuid",
-            "example": "96245c8f-1784-44a4-82ad-1941127c3ec3",
-            "Extensions": null
+            "example": "96245c8f-1784-44a4-82ad-1941127c3ec3"
           }
         },
         "required": [
@@ -1726,8 +1625,7 @@
         "example": {
           "type": "page_id",
           "page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
-        },
-        "Extensions": null
+        }
       },
       "LinkToPageType": {
         "description": "Type of this link to page object.",
@@ -1735,8 +1633,7 @@
         "enum": [
           "page_id"
         ],
-        "example": "page_id",
-        "Extensions": null
+        "example": "page_id"
       },
       "List": {
         "type": "object",
@@ -1745,29 +1642,25 @@
             "description": "Always `list`.",
             "type": "string",
             "pattern": "^list$",
-            "example": "list",
-            "Extensions": null
+            "example": "list"
           },
           "next_cursor": {
             "description": "Only available when has_more is true.\n\nUsed to retrieve the next page of results by passing the value as the `start_cursor` parameter to the same endpoint.",
             "type": "string",
             "format": "uuid",
-            "example": "d05aa478-397e-4954-b694-b7c1c6c78956",
-            "Extensions": null
+            "example": "d05aa478-397e-4954-b694-b7c1c6c78956"
           },
           "has_more": {
             "description": "When the response includes the end of the list, `false`. Otherwise, `true`.",
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           }
         },
         "required": [
           "object",
           "next_cursor",
           "has_more"
-        ],
-        "Extensions": null
+        ]
       },
       "Mention": {
         "type": "object",
@@ -1801,8 +1694,7 @@
             "title": "Example Domain",
             "description": "This domain is for use in illustrative examples in documents. You may use this\n    domain in literature without prior coordination or asking for permission."
           }
-        },
-        "Extensions": null
+        }
       },
       "MentionType": {
         "description": "Type of the inline mention.",
@@ -1810,8 +1702,7 @@
         "enum": [
           "link_mention"
         ],
-        "example": "link_mention",
-        "Extensions": null
+        "example": "link_mention"
       },
       "NotionFile": {
         "description": "File objects contain this information within the `file` property.",
@@ -1821,15 +1712,13 @@
             "description": "Authenticated S3 URL to the file. The file URL will be valid for 1 hour but updated links can be requested if required.",
             "type": "string",
             "format": "uri",
-            "example": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/1162837c-64dd-401a-aa1d-91f795079052/small.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XIAECK6E%2F20250131%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250131T112521Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQD4UujnejYRkyMDGRuKJbIgo5p1h2yzfv8bb%2BFetXwqqwIgXdwatek%2F8VGbJo48DI2wRajJa6VapXYOw1%2BAXGx%2Fq4gqiAQIvP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDOcsW2%2BPFn5bTbwpjyrcAxOkcesJhzQt06sOaWRNNrpwpNU5VK9v4YJF1P%2B1yQYTGw0L7WurWmW9Z76FTMmoAtrx4D7aMXBpwhTc%2BSw8iEetOwHs9NS%2F%2BPfnPay8JwYr%2F6Ck86H%2FWWVHEdHOqd0b%2Bi5%2FA8olnEDSgWKvM%2B9R618YTMT9UfSmfufVfN9DXXExMIwaI96W8tL2TFJEfbcXAkTlbPWoK4CFyC7fCi7wum7ixTdWKja%2BNpeuETsKXMMlzFgt0oHhDZpJG7Md869uQIZq%2Fv88G5VMqvlQJMZrFH9RMCqrspRRozS%2Fpd9EMa8JyhTaVV1f2viZ8o1v%2FICgPRbXW0L6B7Ty3BPcDq1Cx%2FrKltMy%2B4XDVrKum663pCaxcwhVE37QO6BFIoub4GuFStUQvATrzaNw0oMcFfVLw9JSpAS8h4B3NrwN%2BqPcUKrAKt8cb3TL8%2BHdSzhpyt3o4G2PXEvk%2FVzcVZTi4BzFnBlC%2BFRTEFnw4zT5N%2BrVmJj3s52bv%2FLFOvRnMyyIHDIqXMdWx9UuG6JNR22sYvN3FfvvLx4eIL33lf2eX1xlRi0ft9mjVMQqsNK%2BkkxiwmJKx04QtQRiC0HB%2F3M8kUrnY9ZpExf%2B9ke%2FFRio7xSwkwKCQI%2B4%2B0iAqMtfxIQiMNrW8rwGOqUBbMh4hPgk22nna%2Bi0YlyK54yZTYRc4k%2FLIAsRBXy%2F5PyOO8TzG3JOxFTsG11OjA6JLidms71TrIU22tv0GO5Qe38qP2DEPhZYUPJb7iwW4HMaOwwOxaeDmXgDoRfCskg93uQB52QNEWnweYkAIYXs5n97H5dM3p35Je3KBiv1PY6H6YjeY6Y%2FvPi%2Fsj6uB8lPCYnDIhptx7BVnxgyiAYknXNiSgUx&X-Amz-Signature=fedff21b145ef075388d4715f53fc703181c85c2328ed42ea712c3523d3f136a&X-Amz-SignedHeaders=host&x-id=GetObject",
-            "Extensions": null
+            "example": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/1162837c-64dd-401a-aa1d-91f795079052/small.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XIAECK6E%2F20250131%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250131T112521Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQD4UujnejYRkyMDGRuKJbIgo5p1h2yzfv8bb%2BFetXwqqwIgXdwatek%2F8VGbJo48DI2wRajJa6VapXYOw1%2BAXGx%2Fq4gqiAQIvP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDOcsW2%2BPFn5bTbwpjyrcAxOkcesJhzQt06sOaWRNNrpwpNU5VK9v4YJF1P%2B1yQYTGw0L7WurWmW9Z76FTMmoAtrx4D7aMXBpwhTc%2BSw8iEetOwHs9NS%2F%2BPfnPay8JwYr%2F6Ck86H%2FWWVHEdHOqd0b%2Bi5%2FA8olnEDSgWKvM%2B9R618YTMT9UfSmfufVfN9DXXExMIwaI96W8tL2TFJEfbcXAkTlbPWoK4CFyC7fCi7wum7ixTdWKja%2BNpeuETsKXMMlzFgt0oHhDZpJG7Md869uQIZq%2Fv88G5VMqvlQJMZrFH9RMCqrspRRozS%2Fpd9EMa8JyhTaVV1f2viZ8o1v%2FICgPRbXW0L6B7Ty3BPcDq1Cx%2FrKltMy%2B4XDVrKum663pCaxcwhVE37QO6BFIoub4GuFStUQvATrzaNw0oMcFfVLw9JSpAS8h4B3NrwN%2BqPcUKrAKt8cb3TL8%2BHdSzhpyt3o4G2PXEvk%2FVzcVZTi4BzFnBlC%2BFRTEFnw4zT5N%2BrVmJj3s52bv%2FLFOvRnMyyIHDIqXMdWx9UuG6JNR22sYvN3FfvvLx4eIL33lf2eX1xlRi0ft9mjVMQqsNK%2BkkxiwmJKx04QtQRiC0HB%2F3M8kUrnY9ZpExf%2B9ke%2FFRio7xSwkwKCQI%2B4%2B0iAqMtfxIQiMNrW8rwGOqUBbMh4hPgk22nna%2Bi0YlyK54yZTYRc4k%2FLIAsRBXy%2F5PyOO8TzG3JOxFTsG11OjA6JLidms71TrIU22tv0GO5Qe38qP2DEPhZYUPJb7iwW4HMaOwwOxaeDmXgDoRfCskg93uQB52QNEWnweYkAIYXs5n97H5dM3p35Je3KBiv1PY6H6YjeY6Y%2FvPi%2Fsj6uB8lPCYnDIhptx7BVnxgyiAYknXNiSgUx&X-Amz-Signature=fedff21b145ef075388d4715f53fc703181c85c2328ed42ea712c3523d3f136a&X-Amz-SignedHeaders=host&x-id=GetObject"
           },
           "expiry_time": {
             "description": "Date and time when the URL will expire.",
             "type": "string",
             "format": "date-time",
-            "example": "2025-01-31T12:25:21.209Z",
-            "Extensions": null
+            "example": "2025-01-31T12:25:21.209Z"
           }
         },
         "required": [
@@ -1839,8 +1728,7 @@
         "example": {
           "url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/1162837c-64dd-401a-aa1d-91f795079052/small.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466XIAECK6E%2F20250131%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20250131T112521Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjELP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEaCXVzLXdlc3QtMiJHMEUCIQD4UujnejYRkyMDGRuKJbIgo5p1h2yzfv8bb%2BFetXwqqwIgXdwatek%2F8VGbJo48DI2wRajJa6VapXYOw1%2BAXGx%2Fq4gqiAQIvP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDOcsW2%2BPFn5bTbwpjyrcAxOkcesJhzQt06sOaWRNNrpwpNU5VK9v4YJF1P%2B1yQYTGw0L7WurWmW9Z76FTMmoAtrx4D7aMXBpwhTc%2BSw8iEetOwHs9NS%2F%2BPfnPay8JwYr%2F6Ck86H%2FWWVHEdHOqd0b%2Bi5%2FA8olnEDSgWKvM%2B9R618YTMT9UfSmfufVfN9DXXExMIwaI96W8tL2TFJEfbcXAkTlbPWoK4CFyC7fCi7wum7ixTdWKja%2BNpeuETsKXMMlzFgt0oHhDZpJG7Md869uQIZq%2Fv88G5VMqvlQJMZrFH9RMCqrspRRozS%2Fpd9EMa8JyhTaVV1f2viZ8o1v%2FICgPRbXW0L6B7Ty3BPcDq1Cx%2FrKltMy%2B4XDVrKum663pCaxcwhVE37QO6BFIoub4GuFStUQvATrzaNw0oMcFfVLw9JSpAS8h4B3NrwN%2BqPcUKrAKt8cb3TL8%2BHdSzhpyt3o4G2PXEvk%2FVzcVZTi4BzFnBlC%2BFRTEFnw4zT5N%2BrVmJj3s52bv%2FLFOvRnMyyIHDIqXMdWx9UuG6JNR22sYvN3FfvvLx4eIL33lf2eX1xlRi0ft9mjVMQqsNK%2BkkxiwmJKx04QtQRiC0HB%2F3M8kUrnY9ZpExf%2B9ke%2FFRio7xSwkwKCQI%2B4%2B0iAqMtfxIQiMNrW8rwGOqUBbMh4hPgk22nna%2Bi0YlyK54yZTYRc4k%2FLIAsRBXy%2F5PyOO8TzG3JOxFTsG11OjA6JLidms71TrIU22tv0GO5Qe38qP2DEPhZYUPJb7iwW4HMaOwwOxaeDmXgDoRfCskg93uQB52QNEWnweYkAIYXs5n97H5dM3p35Je3KBiv1PY6H6YjeY6Y%2FvPi%2Fsj6uB8lPCYnDIhptx7BVnxgyiAYknXNiSgUx&X-Amz-Signature=fedff21b145ef075388d4715f53fc703181c85c2328ed42ea712c3523d3f136a&X-Amz-SignedHeaders=host&x-id=GetObject",
           "expiry_time": "2025-01-31T12:25:21.209Z"
-        },
-        "Extensions": null
+        }
       },
       "Page": {
         "description": "The Page object contains the [property values](https://developers.notion.com/reference/property-value-object) of a single Notion page.\n\nAll pages have a parent. If the parent is a [database](https://developers.notion.com/reference/database), the property values conform to the schema laid out database's [properties](https://developers.notion.com/reference/property-object). Otherwise, the only property value is the `title`.\n\nPage content is available as [blocks](https://developers.notion.com/reference/block). The content can be read using [retrieve block children](https://developers.notion.com/reference/get-block-children) and appended using [append block children](https://developers.notion.com/reference/patch-block-children).",
@@ -1850,28 +1738,24 @@
             "description": "Always \"page\".",
             "type": "string",
             "pattern": "^page$",
-            "example": "page",
-            "Extensions": null
+            "example": "page"
           },
           "id": {
             "type": "string",
             "format": "uuid",
-            "example": "96245c8f-1784-44a4-82ad-1941127c3ec3",
-            "Extensions": null
+            "example": "96245c8f-1784-44a4-82ad-1941127c3ec3"
           },
           "created_time": {
             "description": "Date and time when this page was created. Formatted as an ISO 8601 date time string.",
             "type": "string",
             "format": "date-time",
-            "example": "2022-07-14T05:31:00.000Z",
-            "Extensions": null
+            "example": "2022-07-14T05:31:00.000Z"
           },
           "last_edited_time": {
             "description": "Date and time when this page was updated. Formatted as an ISO 8601 date time string.",
             "type": "string",
             "format": "date-time",
-            "example": "2024-10-14T11:26:00.000Z",
-            "Extensions": null
+            "example": "2024-10-14T11:26:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/UserReference"
@@ -1891,13 +1775,11 @@
           "archived": {
             "description": "The archived status of the page.",
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           },
           "in_trash": {
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           },
           "properties": {
             "$ref": "#/components/schemas/PropertyValues"
@@ -1906,30 +1788,25 @@
             "description": "The URL of the Notion page.",
             "type": "string",
             "format": "uri",
-            "example": "https://www.notion.so/Example-Page-96245c8f178444a482ad1941127c3ec3",
-            "Extensions": null
+            "example": "https://www.notion.so/Example-Page-96245c8f178444a482ad1941127c3ec3"
           },
           "public_url": {
             "type": "string",
             "format": "uri",
-            "example": "https://fae-tools.notion.site/Example-Page-96245c8f178444a482ad1941127c3ec3",
-            "Extensions": null
+            "example": "https://fae-tools.notion.site/Example-Page-96245c8f178444a482ad1941127c3ec3"
           },
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "3620d8d3-11e4-473b-87c9-fddfa7801d6d",
-            "Extensions": null
+            "example": "3620d8d3-11e4-473b-87c9-fddfa7801d6d"
           },
           "is_archived": {
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           },
           "is_locked": {
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           }
         },
         "required": [
@@ -2006,8 +1883,7 @@
           "url": "https://www.notion.so/Example-Page-96245c8f178444a482ad1941127c3ec3",
           "public_url": "https://fae-tools.notion.site/Example-Page-96245c8f178444a482ad1941127c3ec3",
           "request_id": "3620d8d3-11e4-473b-87c9-fddfa7801d6d"
-        },
-        "Extensions": null
+        }
       },
       "Paragraph": {
         "description": "Paragraph, quote, toggle and list item block objects contain this information within their respective property.",
@@ -2027,8 +1903,7 @@
         "example": {
           "rich_text": [],
           "color": "default"
-        },
-        "Extensions": null
+        }
       },
       "Parent": {
         "description": "The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.",
@@ -2040,8 +1915,7 @@
           "page_id": {
             "type": "string",
             "format": "uuid",
-            "example": "11f88fcd-daf4-802e-b645-eb2d041a759b",
-            "Extensions": null
+            "example": "11f88fcd-daf4-802e-b645-eb2d041a759b"
           }
         },
         "required": [
@@ -2050,8 +1924,7 @@
         "example": {
           "type": "page_id",
           "page_id": "11f88fcd-daf4-802e-b645-eb2d041a759b"
-        },
-        "Extensions": null
+        }
       },
       "ParentType": {
         "description": "The type of the parent.",
@@ -2062,8 +1935,7 @@
           "block_id",
           "database_id"
         ],
-        "example": "page_id",
-        "Extensions": null
+        "example": "page_id"
       },
       "Person": {
         "description": "User objects that represent people have the `type` property set to `person`. These objects also have these properties.",
@@ -2073,8 +1945,7 @@
             "description": "Email address of the person. This is only present if an integration has user capabilities that allow access to email addresses.",
             "type": "string",
             "format": "email",
-            "example": "mark@faetools.com",
-            "Extensions": null
+            "example": "mark@faetools.com"
           }
         },
         "required": [
@@ -2082,8 +1953,7 @@
         ],
         "example": {
           "email": "mark@faetools.com"
-        },
-        "Extensions": null
+        }
       },
       "PropertyType": {
         "description": "Type of the property.",
@@ -2111,8 +1981,7 @@
           "last_edited_by",
           "button"
         ],
-        "example": "title",
-        "Extensions": null
+        "example": "title"
       },
       "PropertyValue": {
         "description": "A property value defines the identifier, type, and value of a page property in a page object. It's used when retrieving and updating pages ex: Create and Update pages.",
@@ -2121,8 +1990,7 @@
           "id": {
             "description": "Underlying identifier for the property. This identifier is guaranteed to remain constant when the property name changes. It may be a UUID, but is often a short random string.\n\nThe id may be used in place of name when creating or updating pages.",
             "type": "string",
-            "example": "title",
-            "Extensions": null
+            "example": "title"
           },
           "type": {
             "$ref": "#/components/schemas/PropertyType"
@@ -2157,8 +2025,7 @@
               "href": null
             }
           ]
-        },
-        "Extensions": null
+        }
       },
       "PropertyValues": {
         "description": "Properties of a page or database.",
@@ -2190,8 +2057,7 @@
               }
             ]
           }
-        },
-        "Extensions": null
+        }
       },
       "Reference": {
         "type": "object",
@@ -2199,8 +2065,7 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "example": "2633808e-7e36-4f4e-972a-ccd2d3c49004",
-            "Extensions": null
+            "example": "2633808e-7e36-4f4e-972a-ccd2d3c49004"
           }
         },
         "required": [
@@ -2208,8 +2073,7 @@
         ],
         "example": {
           "id": "2633808e-7e36-4f4e-972a-ccd2d3c49004"
-        },
-        "Extensions": null
+        }
       },
       "RichText": {
         "description": "Rich text objects contain data for displaying formatted text, mentions, and equations. A rich text object also contains annotations for style information. Arrays of rich text objects are used [within property objects](https://developers.notion.com/reference/database-property) and [property value objects](https://developers.notion.com/reference/page-property-value) to create what a user sees as a single text value in Notion.",
@@ -2233,15 +2097,13 @@
           "plain_text": {
             "description": "The plain text without annotations.",
             "type": "string",
-            "example": "Example Page",
-            "Extensions": null
+            "example": "Example Page"
           },
           "href": {
             "description": "The URL of any link or internal Notion mention in this text, if any.",
             "type": "string",
             "format": "uri",
-            "example": "https://www.google.com/",
-            "Extensions": null
+            "example": "https://www.google.com/"
           }
         },
         "required": [
@@ -2266,8 +2128,7 @@
           },
           "plain_text": "Example Page",
           "href": null
-        },
-        "Extensions": null
+        }
       },
       "RichTextType": {
         "description": "Type of this rich text object.",
@@ -2277,8 +2138,7 @@
           "mention",
           "equation"
         ],
-        "example": "text",
-        "Extensions": null
+        "example": "text"
       },
       "RichTexts": {
         "type": "array",
@@ -2303,8 +2163,7 @@
             "plain_text": "Example Page",
             "href": null
           }
-        ],
-        "Extensions": null
+        ]
       },
       "SyncedBlock": {
         "type": "object",
@@ -2321,8 +2180,7 @@
             "type": "block_id",
             "block_id": "0960b64c-81c9-4f19-a873-e8072b083a40"
           }
-        },
-        "Extensions": null
+        }
       },
       "SyncedFrom": {
         "type": "object",
@@ -2333,8 +2191,7 @@
           "block_id": {
             "type": "string",
             "format": "uuid",
-            "example": "0960b64c-81c9-4f19-a873-e8072b083a40",
-            "Extensions": null
+            "example": "0960b64c-81c9-4f19-a873-e8072b083a40"
           }
         },
         "required": [
@@ -2343,16 +2200,14 @@
         "example": {
           "type": "block_id",
           "block_id": "0960b64c-81c9-4f19-a873-e8072b083a40"
-        },
-        "Extensions": null
+        }
       },
       "SyncedFromType": {
         "type": "string",
         "enum": [
           "block_id"
         ],
-        "example": "block_id",
-        "Extensions": null
+        "example": "block_id"
       },
       "Table": {
         "type": "object",
@@ -2360,20 +2215,17 @@
           "table_width": {
             "description": "Number of columns in the table. Note that this cannot be changed via the public API once a table is created.",
             "type": "integer",
-            "example": 2,
-            "Extensions": null
+            "example": 2
           },
           "has_column_header": {
             "description": "Whether or not the table has a column header. If true, the first row in the table will appear visually distinct from the other rows.",
             "type": "boolean",
-            "example": true,
-            "Extensions": null
+            "example": true
           },
           "has_row_header": {
             "description": "Whether or not the table has a header row. If true, the first column in the table will appear visually distinct from the other columns.",
             "type": "boolean",
-            "example": true,
-            "Extensions": null
+            "example": true
           }
         },
         "required": [
@@ -2385,8 +2237,7 @@
           "table_width": 2,
           "has_column_header": true,
           "has_row_header": true
-        },
-        "Extensions": null
+        }
       },
       "TableOfContents": {
         "description": "Table of contents block objects contain the following information within the `table_of_contents` property.",
@@ -2401,8 +2252,7 @@
         ],
         "example": {
           "color": "gray"
-        },
-        "Extensions": null
+        }
       },
       "Text": {
         "description": "Text objects contain this information within the `text` property of a RichText object.",
@@ -2411,8 +2261,7 @@
           "content": {
             "description": "Text content. This field contains the actual content of your text and is probably the field you'll use most often.",
             "type": "string",
-            "example": "Example Page",
-            "Extensions": null
+            "example": "Example Page"
           },
           "link": {
             "$ref": "#/components/schemas/Link"
@@ -2424,8 +2273,7 @@
         "example": {
           "content": "Example Page",
           "link": null
-        },
-        "Extensions": null
+        }
       },
       "ToDo": {
         "description": "To do block objects contain this information within the `to_do` property.",
@@ -2437,8 +2285,7 @@
           "checked": {
             "description": "Whether the to_do is checked or not.",
             "type": "boolean",
-            "example": false,
-            "Extensions": null
+            "example": false
           },
           "color": {
             "$ref": "#/components/schemas/Color"
@@ -2471,8 +2318,7 @@
           ],
           "checked": false,
           "color": "default"
-        },
-        "Extensions": null
+        }
       },
       "User": {
         "allOf": [
@@ -2485,15 +2331,13 @@
               "name": {
                 "description": "User's name, as displayed in Notion.",
                 "type": "string",
-                "example": "Fae Tools",
-                "Extensions": null
+                "example": "Fae Tools"
               },
               "avatar_url": {
                 "description": "Chosen avatar image.",
                 "type": "string",
                 "format": "uri",
-                "example": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100",
-                "Extensions": null
+                "example": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100"
               },
               "type": {
                 "$ref": "#/components/schemas/UserType"
@@ -2507,8 +2351,7 @@
               "avatar_url",
               "type",
               "person"
-            ],
-            "Extensions": null
+            ]
           }
         ],
         "example": {
@@ -2520,8 +2363,7 @@
           "person": {
             "email": "mark@faetools.com"
           }
-        },
-        "Extensions": null
+        }
       },
       "UserReference": {
         "type": "object",
@@ -2530,14 +2372,12 @@
             "description": "Always \"user\"",
             "type": "string",
             "pattern": "^user$",
-            "example": "user",
-            "Extensions": null
+            "example": "user"
           },
           "id": {
             "type": "string",
             "format": "uuid",
-            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45",
-            "Extensions": null
+            "example": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
           }
         },
         "required": [
@@ -2547,8 +2387,7 @@
         "example": {
           "object": "user",
           "id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-        },
-        "Extensions": null
+        }
       },
       "UserType": {
         "description": "Type of the user.",
@@ -2557,8 +2396,7 @@
           "person",
           "bot"
         ],
-        "example": "person",
-        "Extensions": null
+        "example": "person"
       }
     },
     "responses": {
@@ -2692,11 +2530,9 @@
               "type": "block",
               "block": {},
               "request_id": "4fb32baa-18fe-4627-b7db-96292000775f"
-            },
-            "Extensions": null
+            }
           }
-        },
-        "Extensions": null
+        }
       },
       "Database": {
         "description": "Returns the database that was requested or created.",
@@ -2704,11 +2540,9 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Database"
-            },
-            "Extensions": null
+            }
           }
-        },
-        "Extensions": null
+        }
       },
       "Page": {
         "description": "Returns the page that was requested or created.",
@@ -2774,11 +2608,9 @@
               "url": "https://www.notion.so/Example-Page-96245c8f178444a482ad1941127c3ec3",
               "public_url": "https://fae-tools.notion.site/Example-Page-96245c8f178444a482ad1941127c3ec3",
               "request_id": "3620d8d3-11e4-473b-87c9-fddfa7801d6d"
-            },
-            "Extensions": null
+            }
           }
-        },
-        "Extensions": null
+        }
       }
     },
     "parameters": {
@@ -2789,10 +2621,8 @@
         "required": true,
         "schema": {
           "type": "string",
-          "example": "2026-03-11",
-          "Extensions": null
-        },
-        "Extensions": null
+          "example": "2026-03-11"
+        }
       },
       "id": {
         "name": "id",
@@ -2802,11 +2632,9 @@
         "schema": {
           "type": "string",
           "format": "uuid",
-          "example": "96245c8f-1784-44a4-82ad-1941127c3ec3",
-          "Extensions": null
+          "example": "96245c8f-1784-44a4-82ad-1941127c3ec3"
         },
-        "example": "96245c8f-1784-44a4-82ad-1941127c3ec3",
-        "Extensions": null
+        "example": "96245c8f-1784-44a4-82ad-1941127c3ec3"
       },
       "page_size": {
         "name": "page_size",
@@ -2814,11 +2642,9 @@
         "description": "The number of items from the full list desired in the response.",
         "schema": {
           "type": "integer",
-          "example": 100,
-          "Extensions": null
+          "example": 100
         },
-        "example": 100,
-        "Extensions": null
+        "example": 100
       },
       "start_cursor": {
         "name": "start_cursor",
@@ -2827,11 +2653,9 @@
         "schema": {
           "type": "string",
           "format": "uuid",
-          "example": "d05aa478-397e-4954-b694-b7c1c6c78956",
-          "Extensions": null
+          "example": "d05aa478-397e-4954-b694-b7c1c6c78956"
         },
-        "example": "d05aa478-397e-4954-b694-b7c1c6c78956",
-        "Extensions": null
+        "example": "d05aa478-397e-4954-b694-b7c1c6c78956"
       }
     },
     "securitySchemes": {
@@ -2839,16 +2663,13 @@
         "type": "http",
         "name": "NOTION_API_KEY",
         "scheme": "bearer",
-        "bearerFormat": "Bearer",
-        "Extensions": null
+        "bearerFormat": "Bearer"
       }
-    },
-    "Extensions": null
+    }
   },
   "security": [
     {
       "bearerAuth": []
     }
-  ],
-  "Extensions": null
+  ]
 }

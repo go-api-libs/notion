@@ -114,13 +114,11 @@ type Block struct {
 	TableOfContents *TableOfContents `json:"table_of_contents,omitempty"`
 	// Column Lists are parent blocks for column children. They do not contain any information within the column_list property and can only contain children of type column.
 	ColumnList *struct{} `json:"column_list,omitempty"`
-	// Link Preview block objects return the originally pasted url.
-	//
-	// NOTE: The link_preview block will only be returned as part of a response. It cannot be created via the API.
-	LinkPreview *LinkPreview `json:"link_preview,omitempty"`
-	SyncedBlock *SyncedBlock `json:"synced_block,omitempty"`
-	LinkToPage  *LinkToPage  `json:"link_to_page,omitempty"`
-	Table       *Table       `json:"table,omitempty"`
+	// An external file is any URL that isn't hosted by Notion.
+	LinkPreview *ExternalFile `json:"link_preview,omitempty"`
+	SyncedBlock *SyncedBlock  `json:"synced_block,omitempty"`
+	LinkToPage  *LinkToPage   `json:"link_to_page,omitempty"`
+	Table       *Table        `json:"table,omitempty"`
 	// Breadcrumb block objects do not contain any information within the breadcrumb property
 	Breadcrumb *struct{} `json:"breadcrumb,omitempty"`
 	// Some block types aren't available yet
@@ -489,14 +487,6 @@ type LinkMention struct {
 	Href        url.URL `json:"href,omitzero"`
 	Title       string  `json:"title,omitzero"`
 	Description string  `json:"description,omitzero"`
-}
-
-// Link Preview block objects return the originally pasted url.
-//
-// NOTE: The link_preview block will only be returned as part of a response. It cannot be created via the API.
-type LinkPreview struct {
-	// The originally pasted url used to create the mention
-	URL url.URL `json:"url,omitzero"`
 }
 
 // LinkToPage defines a model

@@ -126,7 +126,7 @@ func TestClient_Error(t *testing.T) {
 			if _, err := c.GetPage(t.Context(), uuid.Nil); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
-				t.Fatalf("got: %T, want: *api.Error", err)
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
 			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
 				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
@@ -220,7 +220,7 @@ func TestClient_Error(t *testing.T) {
 			if _, err := c.GetBlocks(t.Context(), uuid.Nil, nil); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
-				t.Fatalf("got: %T, want: *api.Error", err)
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
 			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
 				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
@@ -314,7 +314,7 @@ func TestClient_Error(t *testing.T) {
 			if _, err := c.GetDatabase(t.Context(), uuid.Nil); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
-				t.Fatalf("got: %T, want: *api.Error", err)
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
 			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
 				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
 			}
@@ -359,8 +359,10 @@ func replay(t *testing.T) http.RoundTripper {
 			ia.Request.Headers = http.Header{}
 		}
 
-		if ia.Request.Headers.Get("User-Agent") == "" {
-			ia.Request.Headers.Set("User-Agent", defaultUserAgent)
+		ia.Request.Headers.Set("User-Agent", defaultUserAgent)
+
+		if len(ia.Request.Body) == 0 {
+			ia.Request.Headers.Del("Content-Type")
 		}
 
 		if !maps.EqualFunc(r.Headers, ia.Request.Headers, slices.Equal) {
