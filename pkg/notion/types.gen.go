@@ -35,15 +35,15 @@ type GetBlocksParams struct {
 // Style information which applies to the whole rich text object.
 type Annotations struct {
 	// Whether the text is **bolded**.
-	Bold bool `json:"bold,omitzero"`
+	Bold bool `json:"bold"`
 	// Whether the text is *italicized*.
-	Italic bool `json:"italic,omitzero"`
+	Italic bool `json:"italic"`
 	// Whether the text is struck through.
-	Strikethrough bool `json:"strikethrough,omitzero"`
+	Strikethrough bool `json:"strikethrough"`
 	// Whether the text is underlined.
-	Underline bool `json:"underline,omitzero"`
+	Underline bool `json:"underline"`
 	// Whether the text is code `style`.
-	Code bool `json:"code,omitzero"`
+	Code bool `json:"code"`
 	// The color of the block.
 	Color Color `json:"color,omitzero"`
 }
@@ -64,10 +64,10 @@ type Block struct {
 	CreatedBy      UserReference `json:"created_by"`
 	LastEditedBy   UserReference `json:"last_edited_by"`
 	// Whether or not the block has children blocks nested within it.
-	HasChildren bool `json:"has_children,omitzero"`
+	HasChildren bool `json:"has_children"`
 	// The archived status of the block.
-	Archived bool `json:"archived,omitzero"`
-	InTrash  bool `json:"in_trash,omitzero"`
+	Archived bool `json:"archived"`
+	InTrash  bool `json:"in_trash"`
 	// Type of block.
 	Type BlockType `json:"type,omitzero"`
 	// Paragraph, quote, toggle and list item block objects contain this information within their respective property.
@@ -181,7 +181,7 @@ type Blocks []Block
 type BlocksList struct {
 	List
 	// The result, an array of block objects.
-	Results Blocks `json:"results,omitempty"`
+	Results Blocks `json:"results"`
 	// Type of the objects in results. Always `block`.
 	Type      string    `json:"type,omitzero"`
 	Block     struct{}  `json:"block"`
@@ -190,7 +190,7 @@ type BlocksList struct {
 
 // Callout block objects contain the following information within the callout field.
 type Callout struct {
-	RichText RichTexts `json:"rich_text,omitempty"`
+	RichText RichTexts `json:"rich_text"`
 	// Page or database icon. It is either an emoji or a file.
 	Icon Icon `json:"icon"`
 	// The color of the block.
@@ -204,8 +204,8 @@ type Child struct {
 
 // Code block objects contain this information within the `code` property.
 type Code struct {
-	Caption  RichTexts `json:"caption,omitempty"`
-	RichText RichTexts `json:"rich_text,omitempty"`
+	Caption  RichTexts `json:"caption,omitzero"`
+	RichText RichTexts `json:"rich_text"`
 	// Coding language in code block
 	Language CodeLanguage `json:"language,omitzero"`
 }
@@ -347,16 +347,16 @@ type Database struct {
 	// Always "database".
 	Object      string    `json:"object,omitzero"`
 	ID          uuid.UUID `json:"id,omitzero"`
-	Title       RichTexts `json:"title,omitempty"`
-	Description RichTexts `json:"description,omitempty"`
+	Title       RichTexts `json:"title"`
+	Description RichTexts `json:"description"`
 	// The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
 	Parent         Parent      `json:"parent"`
-	IsInline       bool        `json:"is_inline,omitzero"`
-	InTrash        bool        `json:"in_trash,omitzero"`
-	IsLocked       bool        `json:"is_locked,omitzero"`
+	IsInline       bool        `json:"is_inline"`
+	InTrash        bool        `json:"in_trash"`
+	IsLocked       bool        `json:"is_locked"`
 	CreatedTime    time.Time   `json:"created_time,omitzero"`
 	LastEditedTime time.Time   `json:"last_edited_time,omitzero"`
-	DataSources    DataSources `json:"data_sources,omitempty"`
+	DataSources    DataSources `json:"data_sources"`
 	// Page or database icon. It is either an emoji or a file.
 	Icon Icon `json:"icon"`
 	// File objects contain data about files uploaded to Notion as well as external files linked in Notion.
@@ -385,7 +385,7 @@ type Date struct {
 
 // Embed blocks include block types that allow displaying another website within Notion.
 type Embed struct {
-	Caption RichTexts `json:"caption,omitempty"`
+	Caption RichTexts `json:"caption"`
 	// Embedded link.
 	URL url.URL `json:"url,omitzero"`
 }
@@ -434,14 +434,14 @@ func (e FileType) Valid() bool {
 
 // File objects contain data about files uploaded to Notion as well as external files linked in Notion. A PDF can also have a caption.
 type FileWithCaption struct {
-	Caption RichTexts `json:"caption,omitempty"`
+	Caption RichTexts `json:"caption"`
 	File
 }
 
 // Heading block objects contain this information within their respective property.
 type Heading struct {
-	RichText     RichTexts `json:"rich_text,omitempty"`
-	IsToggleable bool      `json:"is_toggleable,omitzero"`
+	RichText     RichTexts `json:"rich_text"`
+	IsToggleable bool      `json:"is_toggleable"`
 	// The color of the block.
 	Color Color `json:"color,omitzero"`
 }
@@ -522,7 +522,7 @@ type List struct {
 	// Used to retrieve the next page of results by passing the value as the `start_cursor` parameter to the same endpoint.
 	NextCursor uuid.UUID `json:"next_cursor,omitzero"`
 	// When the response includes the end of the list, `false`. Otherwise, `true`.
-	HasMore bool `json:"has_more,omitzero"`
+	HasMore bool `json:"has_more"`
 }
 
 // Mention defines a model
@@ -583,8 +583,8 @@ type Page struct {
 	// The `parent` property of a page or database contains these keys. Mandatory when creating, must be missing when updating.
 	Parent Parent `json:"parent"`
 	// The archived status of the page.
-	Archived bool `json:"archived,omitzero"`
-	InTrash  bool `json:"in_trash,omitzero"`
+	Archived bool `json:"archived"`
+	InTrash  bool `json:"in_trash"`
 	// Properties of a page or database.
 	Properties PropertyValues `json:"properties"`
 	// The URL of the Notion page.
@@ -597,7 +597,7 @@ type Page struct {
 
 // Paragraph, quote, toggle and list item block objects contain this information within their respective property.
 type Paragraph struct {
-	RichText RichTexts `json:"rich_text,omitempty"`
+	RichText RichTexts `json:"rich_text"`
 	// The color of the block.
 	Color Color `json:"color,omitzero"`
 }
@@ -680,7 +680,7 @@ type PropertyValue struct {
 	ID string `json:"id,omitzero"`
 	// Type of the property.
 	Type  PropertyType `json:"type,omitzero"`
-	Title RichTexts    `json:"title,omitempty"`
+	Title RichTexts    `json:"title,omitzero"`
 }
 
 // Properties of a page or database.
@@ -761,11 +761,11 @@ func (e SyncedFromType) Valid() bool {
 // Table defines a model
 type Table struct {
 	// Number of columns in the table. Note that this cannot be changed via the public API once a table is created.
-	TableWidth int `json:"table_width,omitzero"`
+	TableWidth int `json:"table_width"`
 	// Whether or not the table has a column header. If true, the first row in the table will appear visually distinct from the other rows.
-	HasColumnHeader bool `json:"has_column_header,omitzero"`
+	HasColumnHeader bool `json:"has_column_header"`
 	// Whether or not the table has a header row. If true, the first column in the table will appear visually distinct from the other columns.
-	HasRowHeader bool `json:"has_row_header,omitzero"`
+	HasRowHeader bool `json:"has_row_header"`
 }
 
 // Table of contents block objects contain the following information within the `table_of_contents` property.
@@ -784,9 +784,9 @@ type Text struct {
 
 // To do block objects contain this information within the `to_do` property.
 type ToDo struct {
-	RichText RichTexts `json:"rich_text,omitempty"`
+	RichText RichTexts `json:"rich_text"`
 	// Whether the to_do is checked or not.
-	Checked bool `json:"checked,omitzero"`
+	Checked bool `json:"checked"`
 	// The color of the block.
 	Color Color `json:"color,omitzero"`
 }
