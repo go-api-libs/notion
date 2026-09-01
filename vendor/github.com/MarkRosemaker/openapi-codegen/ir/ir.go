@@ -9,6 +9,8 @@ import (
 
 // Document is the top-level IR type passed to templates.
 type Document struct {
+	// If enabled, debug mode will record responses that failed to unmarshal.
+	Debug                  bool        `json:"debug,omitzero"`
 	Title                  string      `json:"title,omitzero"`
 	Production             bool        `json:"production,omitzero"`
 	PackageName            string      `json:"packageName,omitzero"`
@@ -29,7 +31,23 @@ type Document struct {
 
 	// InteractionCalls holds one entry per matched interaction.
 	// Populated at code-gen time; not serialized to ir.json (too noisy).
-	InteractionCalls []InteractionCall `json:"-"`
+	InteractionCalls InteractionCalls `json:"-"`
+}
+
+func (d Document) NeedMustDecodeBody() bool {
+	return d.InteractionCalls.UseMustDecodeBody()
+}
+
+type InteractionCalls []InteractionCall
+
+func (ics InteractionCalls) UseMustDecodeBody() bool {
+	for _, ic := range ics {
+		if ic.UsesMustDecodeBody() {
+			return true
+		}
+	}
+
+	return false
 }
 
 // InteractionCall is one operation call extracted from a recorded interaction.
@@ -44,6 +62,18 @@ type InteractionCall struct {
 	// StatusCode, empty when the operation has no schema for that status (the
 	// client falls back to a generic status-string error in that case).
 	ErrorType string
+	// BodyLiteral is a Go expression for the recorded request body, set
+	// whenever Op.RequestBody is non-nil: a composite literal of the
+	// request body's type when every field could be expressed that way,
+	// falling back to a runtime JSON decode (mustDecodeBody) for values a
+	// literal can't cleanly represent. Either way the replayed request
+	// carries the same body the interaction was recorded with, instead of
+	// a zero value.
+	BodyLiteral string
+}
+
+func (ic InteractionCall) UsesMustDecodeBody() bool {
+	return strings.HasPrefix(ic.BodyLiteral, "mustDecodeBody")
 }
 
 // InteractionParam is one query param with its Go literal value.
@@ -63,22 +93,22 @@ type URLParts struct {
 type Operation struct {
 	// BaseURL is set when the path item names a server of its own, overriding
 	// the document's for this operation only.
-	BaseURL         *URLParts  `json:"baseURL,omitzero"`
-	Name            string     `json:"name,omitzero"`
-	Description     string     `json:"description,omitzero"`
-	Summary         string     `json:"summary,omitzero"`
-	Method          string     `json:"method,omitzero"`
-	PathTemplate    string     `json:"pathTemplate,omitzero"`
-	JoinPathArgs    []string   `json:"joinPathArgs,omitempty"`
-	PathParams      Params     `json:"pathParams,omitempty"`
-	QueryParams     Params     `json:"queryParams,omitempty"`
-	HeaderParams    Params     `json:"headerParams,omitempty"`
-	HasParams       bool       `json:"hasParams,omitzero"`
-	ParamStructName string     `json:"paramStructName,omitzero"`
-	RequestBody     *ReqBody   `json:"requestBody,omitempty"`
-	Responses       []Response `json:"responses,omitempty"`
-	SuccessReturn   *GoType    `json:"successReturn,omitempty"`
-	Deprecated      bool       `json:"deprecated,omitzero"`
+	BaseURL         *URLParts `json:"baseURL,omitzero"`
+	Name            string    `json:"name,omitzero"`
+	Description     string    `json:"description,omitzero"`
+	Summary         string    `json:"summary,omitzero"`
+	Method          string    `json:"method,omitzero"`
+	PathTemplate    string    `json:"pathTemplate,omitzero"`
+	JoinPathArgs    []string  `json:"joinPathArgs,omitempty"`
+	PathParams      Params    `json:"pathParams,omitempty"`
+	QueryParams     Params    `json:"queryParams,omitempty"`
+	HeaderParams    Params    `json:"headerParams,omitempty"`
+	HasParams       bool      `json:"hasParams,omitzero"`
+	ParamStructName string    `json:"paramStructName,omitzero"`
+	RequestBody     *ReqBody  `json:"requestBody,omitempty"`
+	Responses       Responses `json:"responses,omitempty"`
+	SuccessReturn   *GoType   `json:"successReturn,omitempty"`
+	Deprecated      bool      `json:"deprecated,omitzero"`
 	// RawBytesSuccess is true when the operation's success response has no
 	// JSON media type, so SuccessReturn is a raw []byte read directly from
 	// the response body rather than a JSON-decoded type. Such operations
@@ -289,6 +319,12 @@ func (t GoType) ZeroValue() string {
 	default:
 		return t.Name + "{}"
 	}
+}
+
+type Responses []Response
+
+func (rs Responses) HasDefault() bool {
+	return slices.ContainsFunc(rs, func(r Response) bool { return r.StatusCode == "default" })
 }
 
 // Response represents one expected HTTP response from an operation.
