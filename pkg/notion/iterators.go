@@ -4,8 +4,7 @@ import (
 	"context"
 	"fmt"
 	"iter"
-
-	"github.com/google/uuid"
+	"uuid"
 )
 
 // BlocksIter is an iterator for blocks in a Notion page.
@@ -31,7 +30,7 @@ func (it *BlocksIter) All(ctx context.Context) iter.Seq2[int, Block] {
 	return func(yield func(int, Block) bool) {
 		// Reset the next cursor when the iterator is done
 		// so that the iterator can be reused
-		defer func() { it.next = uuid.Nil }()
+		defer func() { it.next = uuid.Nil() }()
 
 		for page := 0; ; page++ {
 			// Get a page of blocks from the Notion API
