@@ -27,6 +27,7 @@ func (it *BlocksIter) All(ctx context.Context) iter.Seq2[int, Block] {
 	it.err = nil // Reset the error
 
 	i := 0
+
 	return func(yield func(int, Block) bool) {
 		// Reset the next cursor when the iterator is done
 		// so that the iterator can be reused
