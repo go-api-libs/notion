@@ -4,8 +4,8 @@ github.com/MarkRosemaker/errpath v0.0.0-20260912160056-9298ed1b795e h1:72fvwJxZF
 github.com/MarkRosemaker/errpath v0.0.0-20260912160056-9298ed1b795e/go.mod h1:VnXpUlsS3n1gSToedcQl2FCARGoA16CyitbCanUIv+I=
 github.com/MarkRosemaker/json2yaml v0.0.0-20260912160057-3c62312bbda3 h1:xBubeHMt8jiSxiF4JMrJ57Fs4T96Pxct2bE4EvyfzCQ=
 github.com/MarkRosemaker/json2yaml v0.0.0-20260912160057-3c62312bbda3/go.mod h1:eUwIjjooIESK1Ymw4bbMdSDF6feAblyZjxyoo5o/W6U=
-github.com/MarkRosemaker/jsonutil v0.0.0-20260912181517-05207bc8c39d h1:aCLlCNRPQcefcBDV4bEqDRqwvFvybpf4kOuvfmoTDwo=
-github.com/MarkRosemaker/jsonutil v0.0.0-20260912181517-05207bc8c39d/go.mod h1:SzjJlgYFlzpbFGvUUoQgfEsWlbai63bvhDPK8J0MNYM=
+github.com/MarkRosemaker/jsonutil v0.0.0-20260912220108-605a158152eb h1:o0RjTh1JFkDkUlrJata21oNqexZH8cnTgZXTzaNnLj4=
+github.com/MarkRosemaker/jsonutil v0.0.0-20260912220108-605a158152eb/go.mod h1:SzjJlgYFlzpbFGvUUoQgfEsWlbai63bvhDPK8J0MNYM=
 github.com/MarkRosemaker/openapi v0.0.0-20260912181534-70243a686b96 h1:7OYoMlf4+yAVpp8gtd22m12eyw+LmnX7nHQPJL+iENs=
 github.com/MarkRosemaker/openapi v0.0.0-20260912181534-70243a686b96/go.mod h1:3KS7dfy3n4pFYSW2Tx5Q/jW//VaPHgIBQqGdXcm8vaQ=
 github.com/MarkRosemaker/openapi-codegen v0.0.0-20260912183106-b585b43ad4d3 h1:nN+F9A84PetIyAI5zaTAH9+VkCVWP/8ryqIGyLTEzf8=
@@ -30,8 +30,8 @@ github.com/MarkRosemaker/yaml2json v0.0.0-20260912160057-6a907898c821 h1:e9TLwKa
 github.com/MarkRosemaker/yaml2json v0.0.0-20260912160057-6a907898c821/go.mod h1:DxNA9SDFrzw+RHsnxjIxjUzHy0I4+3hZg7R13u3SBvE=
 github.com/ettle/strcase v0.2.0 h1:fGNiVF21fHXpX1niBgk0aROov1LagYsOwV/xqKDKR/Q=
 github.com/ettle/strcase v0.2.0/go.mod h1:DajmHElDSaX76ITe3/VHVyMin4LWSJN5Z909Wp+ED1A=
-github.com/go-api-libs/api v0.0.0-20260912160058-6b64791d6cc6 h1:z972jSbheyVDxM0u/pWv0HOgISDHXHgW+REg6BjIsfY=
-github.com/go-api-libs/api v0.0.0-20260912160058-6b64791d6cc6/go.mod h1:masFyl4XifxjXg66pLLUGz9RbDPS3EWo6NVIm/B0CEM=
+github.com/go-api-libs/api v0.0.0-20260912220107-54681e75338d h1:9ka+1hmb+kdZR2NE3yh5uaEC+0x6zsx7fghXaBuG42M=
+github.com/go-api-libs/api v0.0.0-20260912220107-54681e75338d/go.mod h1:masFyl4XifxjXg66pLLUGz9RbDPS3EWo6NVIm/B0CEM=
 github.com/go-api-libs/types v0.0.0-20260821232109-0cf45378823e h1:phyqsoQmuYpVxgTPIvqp4khoJ1EnAH3Us0zS7rocNYA=
 github.com/go-api-libs/types v0.0.0-20260821232109-0cf45378823e/go.mod h1:z0z6qkZc45AvoRnluq7PkVSlSSF25sT0diJ+vrubYfA=
 github.com/go-quicktest/qt v1.102.0 h1:HSQxCeh5YZH3EL3W39ixjtyaEhcWSXQHtHnMBzSs474=
