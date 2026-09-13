@@ -3,9 +3,9 @@ module github.com/go-api-libs/notion
 go 1.27
 
 require (
-	github.com/MarkRosemaker/jsonutil v0.0.0-20260912220108-605a158152eb
+	github.com/MarkRosemaker/jsonutil v0.0.0-20260913220107-791f7c6e5447
 	github.com/MarkRosemaker/openapi-enrich v0.0.0-20260912231504-ce3cd618543b
-	github.com/go-api-libs/api v0.0.0-20260912220107-54681e75338d
+	github.com/go-api-libs/api v0.0.0-20260913220106-6cad7b297846
 	github.com/go-api-libs/types v0.0.0-20260821232109-0cf45378823e
 )
 
