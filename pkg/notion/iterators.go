@@ -9,10 +9,11 @@ import (
 
 // BlocksIter is an iterator for blocks in a Notion page.
 type BlocksIter struct {
+	// NOTE: this way, the struct fields are aligned
+	err  error     // Error encountered during iteration
 	c    *Client   // Client to interact with the Notion API
 	id   uuid.UUID // ID of the Notion page
 	next uuid.UUID // Cursor for the next page of results
-	err  error     // Error encountered during iteration
 }
 
 // ListBlocks creates a new BlocksIter for the given page ID.
