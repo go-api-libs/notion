@@ -4,7 +4,7 @@ go 1.27
 
 require (
 	github.com/MarkRosemaker/jsonutil v0.0.0-20260920172211-f6e22a1a8311
-	github.com/MarkRosemaker/openapi-enrich v0.0.0-20260924204444-4c458745d0fd
+	github.com/MarkRosemaker/openapi-enrich v0.0.0-20260924220249-4897701195d5
 	github.com/go-api-libs/api v0.0.0-20260920172211-2e5733e71b56
 	github.com/go-api-libs/types v0.0.0-20260821232109-0cf45378823e
 )
@@ -14,7 +14,7 @@ require (
 	github.com/MarkRosemaker/errpath v0.0.0-20260920172209-24fb928433b3 // indirect
 	github.com/MarkRosemaker/json2yaml v0.0.0-20260920172209-522898d8cbe9 // indirect
 	github.com/MarkRosemaker/openapi v0.0.0-20260924204055-ab21ca1ec2da // indirect
-	github.com/MarkRosemaker/openapi-codegen v0.0.0-20260924204928-5475458e8765 // indirect
+	github.com/MarkRosemaker/openapi-codegen v0.0.0-20260924220618-491cde13500a // indirect
 	github.com/MarkRosemaker/openapi-compare v0.0.0-20260924204333-8165569366a9 // indirect
 	github.com/MarkRosemaker/openapi-compress v0.0.0-20260924204625-bfef88893442 // indirect
 	github.com/MarkRosemaker/openapi-edit v0.0.0-20260924204333-5d7e8653d08b // indirect
