@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json/v2"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"os"
@@ -15,6 +16,7 @@ import (
 	"strings"
 	"uuid"
 
+	"github.com/MarkRosemaker/openapi-enrich/cassette"
 	"github.com/go-api-libs/api"
 )
 
@@ -36,6 +38,8 @@ type Client struct {
 	baseURL *url.URL
 	// The user agent
 	userAgent string
+	// Enable debug mode
+	debug bool
 }
 
 // ClientOption configures a [Client].
@@ -64,6 +68,9 @@ func WithBearer(bearer string) ClientOption {
 		}
 	}
 }
+
+// WithDebug is a [ClientOption] that sets the debug mode to true.
+func WithDebug(c *Client) { c.debug = true }
 
 // NewClient creates a new Client, reading the bearer token from [os.Getenv]("NOTION_API_KEY").
 func NewClient(opts ...ClientOption) (*Client, error) {
@@ -113,11 +120,28 @@ func (c *Client) GetPageWithResult[R any](ctx context.Context, id uuid.UUID) (*R
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -126,6 +150,12 @@ func (c *Client) GetPageWithResult[R any](ctx context.Context, id uuid.UUID) (*R
 		case "application/json":
 			var out R
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if c.debug {
+					if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+						return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+					}
+				}
+
 				return nil, api.WrapDecodingError(rsp, err)
 			}
 
@@ -179,11 +209,28 @@ func (c *Client) GetBlocksWithResult[R any](ctx context.Context, id uuid.UUID, p
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -192,6 +239,12 @@ func (c *Client) GetBlocksWithResult[R any](ctx context.Context, id uuid.UUID, p
 		case "application/json":
 			var out R
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if c.debug {
+					if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+						return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+					}
+				}
+
 				return nil, api.WrapDecodingError(rsp, err)
 			}
 
@@ -231,11 +284,28 @@ func (c *Client) GetDatabaseWithResult[R any](ctx context.Context, id uuid.UUID)
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -244,6 +314,12 @@ func (c *Client) GetDatabaseWithResult[R any](ctx context.Context, id uuid.UUID)
 		case "application/json":
 			var out R
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if c.debug {
+					if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+						return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+					}
+				}
+
 				return nil, api.WrapDecodingError(rsp, err)
 			}
 
