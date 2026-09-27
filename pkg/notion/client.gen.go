@@ -331,3 +331,100 @@ func (c *Client) GetDatabaseWithResult[R any](ctx context.Context, id uuid.UUID)
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
+
+// List all views in a database.
+//
+//	GET /views
+func (c *Client) ListViews(ctx context.Context, params *ListViewsParams) (*ListViewsOk, error) {
+	return c.ListViewsWithResult[ListViewsOk](ctx, params)
+}
+
+// List all views in a database.
+// You can define a custom result to unmarshal the response into.
+//
+//	GET /views
+func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListViewsParams) (*R, error) {
+	u := c.baseURL.JoinPath("views")
+	if params != nil {
+		q := make(url.Values, 4)
+
+		if params.DatabaseID != uuid.Nil() {
+			q["database_id"] = []string{params.DatabaseID.String()}
+		}
+
+		if params.DataSourceID != uuid.Nil() {
+			q["data_source_id"] = []string{params.DataSourceID.String()}
+		}
+
+		if params.StartCursor != uuid.Nil() {
+			q["start_cursor"] = []string{params.StartCursor.String()}
+		}
+
+		if params.PageSize != 0 {
+			q["page_size"] = []string{strconv.Itoa(params.PageSize)}
+		}
+
+		u.RawQuery = q.Encode()
+	}
+
+	req := (&http.Request{
+		Header: http.Header{
+			"Authorization":  []string{c.bearer},
+			"Notion-Version": []string{"2026-03-11"},
+			"User-Agent":     []string{c.userAgent},
+		},
+		Host:       u.Host,
+		Method:     http.MethodGet,
+		Proto:      "HTTP/1.1",
+		ProtoMajor: 1,
+		ProtoMinor: 1,
+		URL:        u,
+	}).WithContext(ctx)
+
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
+	rsp, err := c.cli.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
+
+	switch rsp.StatusCode {
+	case http.StatusOK:
+		// OK
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out R
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if c.debug {
+					if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+						return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+					}
+				}
+
+				return nil, api.WrapDecodingError(rsp, err)
+			}
+
+			return &out, nil
+		default:
+			return nil, api.NewErrUnknownContentType(rsp)
+		}
+	default:
+		return nil, api.NewErrUnknownStatusCode(rsp)
+	}
+}

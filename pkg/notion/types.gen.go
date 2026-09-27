@@ -32,6 +32,18 @@ type GetBlocksParams struct {
 	PageSize int
 }
 
+// ListViewsParams holds the query parameters for ListViews.
+type ListViewsParams struct {
+	// ID of a Notion database (collection view block) to list views for. At least one of database_id or data_source_id is required.
+	DatabaseID uuid.UUID
+	// ID of a data source (collection) to list all views for, including linked views across the workspace. At least one of database_id or data_source_id is required.
+	DataSourceID uuid.UUID
+	// If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results.
+	StartCursor uuid.UUID
+	// The number of items from the full list desired in the response. Maximum: 100
+	PageSize int
+}
+
 // Style information which applies to the whole rich text object.
 type Annotations struct {
 	// Whether the text is **bolded**.
@@ -523,6 +535,26 @@ type List struct {
 	NextCursor uuid.UUID `json:"next_cursor,omitzero"`
 	// When the response includes the end of the list, `false`. Otherwise, `true`.
 	HasMore bool `json:"has_more"`
+}
+
+// ListViewsOk defines a model
+type ListViewsOk struct {
+	Object     string             `json:"object,omitzero"`
+	Results    ListViewsOkResults `json:"results"`
+	NextCursor struct{}           `json:"next_cursor"`
+	HasMore    bool               `json:"has_more"`
+	Type       string             `json:"type,omitzero"`
+	View       struct{}           `json:"view"`
+	RequestID  uuid.UUID          `json:"request_id,omitzero"`
+}
+
+// ListViewsOkResults defines a model
+type ListViewsOkResults []ListViewsOkResultsItem
+
+// ListViewsOkResultsItem defines a model
+type ListViewsOkResultsItem struct {
+	Object string    `json:"object,omitzero"`
+	ID     uuid.UUID `json:"id,omitzero"`
 }
 
 // Mention defines a model

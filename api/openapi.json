@@ -66,10 +66,10 @@
     "/databases/{id}": {
       "parameters": [
         {
-          "$ref": "#/components/parameters/id"
+          "$ref": "#/components/parameters/NotionVersionHeader"
         },
         {
-          "$ref": "#/components/parameters/NotionVersionHeader"
+          "$ref": "#/components/parameters/id"
         }
       ],
       "get": {
@@ -79,6 +79,39 @@
         "responses": {
           "200": {
             "$ref": "#/components/responses/Database"
+          }
+        }
+      }
+    },
+    "/views": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/NotionVersionHeader"
+        },
+        {
+          "$ref": "#/components/parameters/database_id",
+          "description": "ID of a Notion database (collection view block) to list views for. At least one of database_id or data_source_id is required."
+        },
+        {
+          "$ref": "#/components/parameters/data_source_id",
+          "description": "ID of a data source (collection) to list all views for, including linked views across the workspace. At least one of database_id or data_source_id is required."
+        },
+        {
+          "$ref": "#/components/parameters/start_cursor",
+          "description": "If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results."
+        },
+        {
+          "$ref": "#/components/parameters/page_size",
+          "description": "The number of items from the full list desired in the response. Maximum: 100"
+        }
+      ],
+      "get": {
+        "summary": "List views",
+        "description": "List all views in a database.",
+        "operationId": "ListViews",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ListViewsOkResponse"
           }
         }
       }
@@ -1662,6 +1695,70 @@
           "has_more"
         ]
       },
+      "ListViewsOk": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "example": "list"
+          },
+          "results": {
+            "$ref": "#/components/schemas/ListViewsOkResults"
+          },
+          "next_cursor": {
+            "type": "object",
+            "example": null
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "type": {
+            "type": "string",
+            "example": "view"
+          },
+          "view": {
+            "type": "object"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "09e00f09-8036-4d09-81d5-3e3efd0afc6e"
+          }
+        },
+        "required": [
+          "object",
+          "results",
+          "next_cursor",
+          "has_more",
+          "type",
+          "view",
+          "request_id"
+        ]
+      },
+      "ListViewsOkResults": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ListViewsOkResultsItem"
+        }
+      },
+      "ListViewsOkResultsItem": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "example": "view"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "cb3265bc-5d5e-488f-bd8a-69221c107915"
+          }
+        },
+        "required": [
+          "object",
+          "id"
+        ]
+      },
       "Mention": {
         "type": "object",
         "properties": {
@@ -2544,6 +2641,16 @@
           }
         }
       },
+      "ListViewsOkResponse": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ListViewsOk"
+            }
+          }
+        }
+      },
       "Page": {
         "description": "Returns the page that was requested or created.",
         "content": {
@@ -2624,6 +2731,23 @@
           "example": "2026-03-11"
         }
       },
+      "data_source_id": {
+        "name": "data_source_id",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "database_id": {
+        "name": "database_id",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "example": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+        }
+      },
       "id": {
         "name": "id",
         "in": "path",
@@ -2642,7 +2766,9 @@
         "description": "The number of items from the full list desired in the response.",
         "schema": {
           "type": "integer",
-          "example": 100
+          "example": 100,
+          "minLength": 1,
+          "maxLength": 100
         },
         "example": 100
       },

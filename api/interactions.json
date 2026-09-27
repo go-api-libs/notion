@@ -159,5 +159,67 @@
 				"request_id": "c5c61591-fc21-49ab-8d61-d6d84b37147d"
 			}
 		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/views?database_id=457d00dc-fc3a-4ddb-a42f-fe376530bee0",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [
+					{
+						"object": "view",
+						"id": "cb3265bc-5d5e-488f-bd8a-69221c107915"
+					},
+					{
+						"object": "view",
+						"id": "2b688fcd-daf4-8083-8796-000c5e457268"
+					},
+					{
+						"object": "view",
+						"id": "f946222a-31f9-4f6b-b4bb-0dd774bbb495"
+					},
+					{
+						"object": "view",
+						"id": "27b88fcd-daf4-8045-966b-000cb24e0c62"
+					},
+					{
+						"object": "view",
+						"id": "d1d93da1-21a7-43aa-a45e-d540fc2ba9e8"
+					},
+					{
+						"object": "view",
+						"id": "404b9b46-212d-4514-a269-14386e083e34"
+					},
+					{
+						"object": "view",
+						"id": "fe7627c8-b32d-480e-9f1d-6f160729c324"
+					},
+					{
+						"object": "view",
+						"id": "12a88fcd-daf4-80ac-a655-000caaba220e"
+					},
+					{
+						"object": "view",
+						"id": "12e88fcd-daf4-8047-ba8e-000cf6d38b1a"
+					}
+				],
+				"next_cursor": null,
+				"has_more": false,
+				"type": "view",
+				"view": {},
+				"request_id": "09e00f09-8036-4d09-81d5-3e3efd0afc6e"
+			}
+		}
 	}
 ]
