@@ -10,16 +10,24 @@ import (
 	"encoding/json/v2"
 	"errors"
 	"fmt"
+	"net/url"
 	"slices"
 	"strconv"
 	"time"
 	"uuid"
 
 	"cloud.google.com/go/civil"
+	"github.com/MarkRosemaker/jsonutil"
 )
 
 var jsonOpts = json.JoinOptions(
 	json.RejectUnknownMembers(true),
+	json.WithMarshalers(json.JoinMarshalers(
+		json.MarshalToFunc(jsonutil.URLMarshal),
+	)),
+	json.WithUnmarshalers(json.JoinUnmarshalers(
+		json.UnmarshalFromFunc(jsonutil.URLUnmarshal),
+	)),
 )
 
 // GetUsersParams holds the query parameters for GetUsers.
@@ -8534,6 +8542,7 @@ type ListViewsOk struct {
 	Type          string                 `json:"type,omitzero"`
 	View          emptyObject            `json:"view"`
 	RequestStatus *requestStatusResponse `json:"request_status,omitempty"`
+	RequestID     *uuid.UUID             `json:"request_id,omitempty"`
 }
 
 // Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.
@@ -10045,6 +10054,84 @@ func (v *Paragraph5) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bo
 	}
 
 	return false, nil
+}
+
+// PartialDatabaseObjectCover defines a model
+type PartialDatabaseObjectCover struct {
+	Type     string                             `json:"type,omitzero"`
+	External PartialDatabaseObjectCoverExternal `json:"external"`
+}
+
+// PartialDatabaseObjectCoverExternal defines a model
+type PartialDatabaseObjectCoverExternal struct {
+	URL url.URL `json:"url,omitzero"`
+}
+
+// PartialDatabaseObjectDescription defines a model
+type PartialDatabaseObjectDescription []PartialDatabaseObjectDescriptionItem
+
+// PartialDatabaseObjectDescriptionItem defines a model
+type PartialDatabaseObjectDescriptionItem struct {
+	Type        string                                          `json:"type,omitzero"`
+	Text        PartialDatabaseObjectDescriptionItemText        `json:"text"`
+	Annotations PartialDatabaseObjectDescriptionItemAnnotations `json:"annotations"`
+	PlainText   string                                          `json:"plain_text,omitzero"`
+	Href        *struct{}                                       `json:"href"`
+}
+
+// PartialDatabaseObjectDescriptionItemAnnotations defines a model
+type PartialDatabaseObjectDescriptionItemAnnotations struct {
+	Bold          bool   `json:"bold"`
+	Italic        bool   `json:"italic"`
+	Strikethrough bool   `json:"strikethrough"`
+	Underline     bool   `json:"underline"`
+	Code          bool   `json:"code"`
+	Color         string `json:"color,omitzero"`
+}
+
+// PartialDatabaseObjectDescriptionItemText defines a model
+type PartialDatabaseObjectDescriptionItemText struct {
+	Content string    `json:"content,omitzero"`
+	Link    *struct{} `json:"link"`
+}
+
+// PartialDatabaseObjectIcon defines a model
+type PartialDatabaseObjectIcon struct {
+	Type  string `json:"type,omitzero"`
+	Emoji string `json:"emoji,omitzero"`
+}
+
+// PartialDatabaseObjectParent defines a model
+type PartialDatabaseObjectParent struct {
+	Type   string    `json:"type,omitzero"`
+	PageID uuid.UUID `json:"page_id,omitzero"`
+}
+
+// PartialDatabaseObjectResponseDataSources defines a model
+type PartialDatabaseObjectResponseDataSources []PartialDatabaseObjectResponseDataSourcesItem
+
+// PartialDatabaseObjectResponseDataSourcesItem defines a model
+type PartialDatabaseObjectResponseDataSourcesItem struct {
+	ID   uuid.UUID `json:"id,omitzero"`
+	Name string    `json:"name,omitzero"`
+}
+
+// PartialPageObjectCreatedBy defines a model
+type PartialPageObjectCreatedBy struct {
+	Object string    `json:"object,omitzero"`
+	ID     uuid.UUID `json:"id,omitzero"`
+}
+
+// PartialPageObjectResponseProperties defines a model
+type PartialPageObjectResponseProperties struct {
+	Title PartialPageObjectResponsePropertiesTitle `json:"title"`
+}
+
+// PartialPageObjectResponsePropertiesTitle defines a model
+type PartialPageObjectResponsePropertiesTitle struct {
+	ID    string                           `json:"id,omitzero"`
+	Type  string                           `json:"type,omitzero"`
+	Title PartialDatabaseObjectDescription `json:"title"`
 }
 
 // One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
@@ -32318,7 +32405,21 @@ type partialDatabaseObjectResponse struct {
 	// The database object type name.
 	Object string `json:"object,omitzero"`
 	// The ID of the database.
-	ID idResponse `json:"id,omitzero"`
+	ID             idResponse                               `json:"id,omitzero"`
+	Title          PartialDatabaseObjectDescription         `json:"title,omitzero"`
+	Description    PartialDatabaseObjectDescription         `json:"description,omitzero"`
+	Parent         *PartialDatabaseObjectParent             `json:"parent,omitempty"`
+	IsInline       bool                                     `json:"is_inline,omitempty"`
+	InTrash        bool                                     `json:"in_trash,omitempty"`
+	IsLocked       bool                                     `json:"is_locked,omitempty"`
+	CreatedTime    time.Time                                `json:"created_time,omitempty"`
+	LastEditedTime time.Time                                `json:"last_edited_time,omitempty"`
+	DataSources    PartialDatabaseObjectResponseDataSources `json:"data_sources,omitzero"`
+	Icon           *PartialDatabaseObjectIcon               `json:"icon,omitempty"`
+	Cover          *PartialDatabaseObjectCover              `json:"cover,omitempty"`
+	URL            *url.URL                                 `json:"url,omitempty"`
+	PublicURL      *struct{}                                `json:"public_url,omitempty"`
+	RequestID      *uuid.UUID                               `json:"request_id,omitempty"`
 }
 
 // partialPageObjectResponse defines a model
@@ -32326,7 +32427,21 @@ type partialPageObjectResponse struct {
 	// The page object type name.
 	Object string `json:"object,omitzero"`
 	// The ID of the page.
-	ID idResponse `json:"id,omitzero"`
+	ID             idResponse                           `json:"id,omitzero"`
+	CreatedTime    time.Time                            `json:"created_time,omitempty"`
+	LastEditedTime time.Time                            `json:"last_edited_time,omitempty"`
+	CreatedBy      *PartialPageObjectCreatedBy          `json:"created_by,omitempty"`
+	LastEditedBy   *PartialPageObjectCreatedBy          `json:"last_edited_by,omitempty"`
+	Cover          *PartialDatabaseObjectCover          `json:"cover,omitempty"`
+	Icon           *PartialDatabaseObjectIcon           `json:"icon,omitempty"`
+	Parent         *PartialDatabaseObjectParent         `json:"parent,omitempty"`
+	InTrash        bool                                 `json:"in_trash,omitempty"`
+	IsArchived     bool                                 `json:"is_archived,omitempty"`
+	IsLocked       bool                                 `json:"is_locked,omitempty"`
+	Properties     *PartialPageObjectResponseProperties `json:"properties,omitempty"`
+	URL            *url.URL                             `json:"url,omitempty"`
+	PublicURL      *url.URL                             `json:"public_url,omitempty"`
+	RequestID      *uuid.UUID                           `json:"request_id,omitempty"`
 }
 
 // partialRollupPropertyResponse defines a model
