@@ -770,6 +770,9 @@
       "parameters": [
         {
           "$ref": "#/components/parameters/notionVersion"
+        },
+        {
+          "$ref": "#/components/parameters/block_id"
         }
       ],
       "get": {
@@ -778,11 +781,6 @@
         ],
         "summary": "Retrieve a block",
         "operationId": "retrieve-a-block",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/block_id"
-          }
-        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/RetrieveABlockOk"
@@ -839,11 +837,6 @@
         ],
         "summary": "Delete a block",
         "operationId": "delete-a-block",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/block_id"
-          }
-        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/DeleteABlockOk"
@@ -900,11 +893,6 @@
         ],
         "summary": "Update a block",
         "operationId": "update-a-block",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/block_id"
-          }
-        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/UpdateABlock"
         },
@@ -963,6 +951,9 @@
       "parameters": [
         {
           "$ref": "#/components/parameters/notionVersion"
+        },
+        {
+          "$ref": "#/components/parameters/block_id"
         }
       ],
       "get": {
@@ -972,9 +963,6 @@
         "summary": "Retrieve block children",
         "operationId": "get-block-children",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/block_id"
-          },
           {
             "$ref": "#/components/parameters/start_cursor3"
           },
@@ -1038,11 +1026,6 @@
         ],
         "summary": "Append block children",
         "operationId": "patch-block-children",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/block_id"
-          }
-        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/PatchBlockChildren"
         },
@@ -1101,6 +1084,9 @@
       "parameters": [
         {
           "$ref": "#/components/parameters/notionVersion"
+        },
+        {
+          "$ref": "#/components/parameters/data_source_id"
         }
       ],
       "get": {
@@ -1109,11 +1095,6 @@
         ],
         "summary": "Retrieve a data source",
         "operationId": "retrieve-a-data-source",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/data_source_id"
-          }
-        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/RetrieveADataSourceOk"
@@ -1170,11 +1151,6 @@
         ],
         "summary": "Update a data source",
         "operationId": "update-a-data-source",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/data_source_id"
-          }
-        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/UpdateADataSource"
         },
@@ -1446,6 +1422,9 @@
       "parameters": [
         {
           "$ref": "#/components/parameters/notionVersion"
+        },
+        {
+          "$ref": "#/components/parameters/database_id"
         }
       ],
       "get": {
@@ -1454,11 +1433,6 @@
         ],
         "summary": "Retrieve a database",
         "operationId": "retrieve-database",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/database_id"
-          }
-        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/RetrieveDatabaseOk"
@@ -1515,11 +1489,6 @@
         ],
         "summary": "Update a database",
         "operationId": "update-database",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/database_id"
-          }
-        ],
         "requestBody": {
           "$ref": "#/components/requestBodies/UpdateDatabase"
         },
@@ -2819,6 +2788,12 @@
       "parameters": [
         {
           "$ref": "#/components/parameters/notionVersion"
+        },
+        {
+          "$ref": "#/components/parameters/view_id4"
+        },
+        {
+          "$ref": "#/components/parameters/query_id"
         }
       ],
       "get": {
@@ -2828,12 +2803,6 @@
         "summary": "Get view query results",
         "operationId": "get-view-query-results",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/view_id4"
-          },
-          {
-            "$ref": "#/components/parameters/query_id"
-          },
           {
             "$ref": "#/components/parameters/start_cursor9"
           },
@@ -2894,14 +2863,6 @@
         ],
         "summary": "Delete a view query",
         "operationId": "delete-view-query",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/view_id4"
-          },
-          {
-            "$ref": "#/components/parameters/query_id"
-          }
-        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/DeleteViewQueryOk"
@@ -3144,6 +3105,9 @@
       "parameters": [
         {
           "$ref": "#/components/parameters/notionVersion"
+        },
+        {
+          "$ref": "#/components/parameters/agent_id"
         }
       ],
       "get": {
@@ -3153,9 +3117,6 @@
         "summary": "Get agent",
         "operationId": "get-agent",
         "parameters": [
-          {
-            "$ref": "#/components/parameters/agent_id"
-          },
           {
             "$ref": "#/components/parameters/verbose"
           }
@@ -3214,11 +3175,6 @@
         ],
         "summary": "Delete agent",
         "operationId": "delete-agent",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/agent_id"
-          }
-        ],
         "responses": {
           "200": {
             "$ref": "#/components/responses/DeleteAgentOk"
