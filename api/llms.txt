@@ -6,7 +6,7 @@
 - [Internal connections](https://developers.notion.com/guides/get-started/internal-connections.md): Learn how internal connections work, how permissions are managed, and how to create one.
 - [Public connections](https://developers.notion.com/guides/get-started/public-connections.md): Learn how public connections work, how users authorize them, and how to create one.
 - [Authorization](https://developers.notion.com/guides/get-started/authorization.md): This guide describes the authorization flows for Notion connections and personal access tokens.
-- [Secure API tokens](https://developers.notion.com/guides/get-started/handling-api-keys.md): Learn how to manage and secure your Notion API tokens.
+- [Secure API credentials](https://developers.notion.com/guides/get-started/handling-api-keys.md): Learn how to manage and secure credentials for the Notion API.
 - [Preparing your connection for users](https://developers.notion.com/guides/get-started/preparing-for-users.md): Learn how to create databases, pages, and views in a user's workspace right after they install your public connection.
 - [List on the Marketplace](https://developers.notion.com/guides/get-started/marketplace-listing.md): Learn how to list your public connection on the Notion Marketplace.
 - [Overview](https://developers.notion.com/guides/notion-agent-apis/overview.md): Power apps and integrations with Custom Agents.
@@ -135,7 +135,7 @@
 - [Search optimizations and limitations](https://developers.notion.com/reference/search-optimizations-and-limitations.md)
 - [List all users](https://developers.notion.com/reference/get-users.md): Returns a paginated list of [Users](/reference/user) for the workspace. The response may contain fewer than `page_size` of results.
 - [Retrieve a user](https://developers.notion.com/reference/get-user.md): Retrieves a [User](/reference/user) using the ID specified.
-- [Retrieve your token's bot user](https://developers.notion.com/reference/get-self.md): Retrieves the [User](/reference/user) associated with the API token provided in the authorization header.
+- [Retrieve your token's bot user](https://developers.notion.com/reference/get-self.md): Retrieves the [User](/reference/user) associated with the token provided in the authorization header.
 - [List custom emojis](https://developers.notion.com/reference/list-custom-emojis.md): Retrieves a list of custom emojis in the workspace.
 - [Query agents](https://developers.notion.com/reference/notion-agent-apis/query-agents.md): Find Custom Agents that an integration can access.
 - [Retrieve an agent](https://developers.notion.com/reference/notion-agent-apis/retrieve-agent.md): Retrieve metadata for one accessible Custom Agent.
@@ -251,6 +251,7 @@
 - [Changelog](https://developers.notion.com/page/changelog.md)
 - [Examples](https://developers.notion.com/page/examples.md)
 - [Set up Notion for your agent](https://developers.notion.com/prompts/setup.md): Set up Notion as durable, shared context for your agents.
+- [Notion MCP setup prompt changelog](https://developers.notion.com/prompts/setup/changelog.md): See what changed in each version of the Notion MCP setup prompt.
 
 ## OpenAPI Specs
 

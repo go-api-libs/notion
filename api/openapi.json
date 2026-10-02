@@ -14546,11 +14546,11 @@
 			},
 			"quickFilterConditionRequest": {
 				"type": "object",
-				"description": "A property filter condition. Same shape as a property filter but without the \"property\" field (the hashmap key identifies the property). For example: { \"select\": { \"equals\": \"High\" } }."
+				"description": "A property filter condition. Same shape as a property filter but without the \"property\" field (the hashmap key identifies the property). For example: { \"select\": { \"equals\": \"High\" } }. Pass an empty object to add the property to the filter bar without criteria."
 			},
 			"quickFilterConditionResponse": {
 				"type": "object",
-				"description": "A property filter condition. Same shape as a property filter but without the \"property\" field. For example: { \"select\": { \"equals\": \"High\" } }."
+				"description": "A property filter condition. Same shape as a property filter but without the \"property\" field. For example: { \"select\": { \"equals\": \"High\" } }. An empty object means the quick filter has no criteria yet."
 			},
 			"quoteBlockObjectResponse": {
 				"title": "Quote",
@@ -46796,6 +46796,9 @@
 													}
 												},
 												"required": ["key", "name"]
+											},
+											"ema_issuer": {
+												"type": "string"
 											}
 										},
 										"required": ["grant_type", "code"]
