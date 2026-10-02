@@ -133,5 +133,12 @@ func fixOpenAPI() error {
 		}
 	}
 
+	// TODO: apply
+	// - openapi-enrich
+	// - openapi-flatten
+	// - openapi-compress
+	// - openapi-flatten
+	// - openapi-codegen -client -debug
+
 	return doc.WriteToFile(path)
 }
