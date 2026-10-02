@@ -1,12 +1,14 @@
 package main
 
 import (
+	"cmp"
 	"context"
 	"io"
 	"log"
 	"net/http"
 	"os"
 
+	"github.com/MarkRosemaker/openapi"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -18,6 +20,10 @@ func main() {
 	eg.Go(func() error { return fetchOpenAPI(ctx) })
 
 	if err := eg.Wait(); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := fixOpenAPI(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -68,4 +74,44 @@ func fetchOpenAPI(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func fixOpenAPI() error {
+	doc, err := openapi.LoadFromFile("api/openapi.json")
+	if err != nil {
+		return err
+	}
+
+	for _, p := range doc.Paths.ByIndex() {
+		for _, op := range p.Operations {
+			for code, override := range map[openapi.StatusCode]string{
+				"200": "",
+				"202": "",
+				"400": "",
+				"401": "",
+				"403": "",
+				"404": "",
+				"406": "",
+				"409": "",
+				"429": "",
+				"500": "",
+				"503": "",
+				"504": "",
+				"529": "",
+			} {
+				rsp := op.Responses[code]
+				if rsp == nil {
+					continue
+				}
+
+				rsp.Value.Description = cmp.Or(
+					rsp.Value.Description,
+					override,
+					code.StatusText(),
+				)
+			}
+		}
+	}
+
+	return doc.WriteToFile("api/openapi.json")
 }
