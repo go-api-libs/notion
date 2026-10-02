@@ -8280,9 +8280,6 @@
           },
           "external_account": {
             "$ref": "#/components/schemas/CreateATokenAnyOf0ExternalAccount"
-          },
-          "ema_issuer": {
-            "type": "string"
           }
         },
         "required": [

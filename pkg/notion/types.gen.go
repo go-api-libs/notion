@@ -4025,7 +4025,6 @@ type CreateATokenAnyOf0 struct {
 	Code            string                             `json:"code,omitzero"`
 	RedirectURI     string                             `json:"redirect_uri,omitzero"`
 	ExternalAccount *CreateATokenAnyOf0ExternalAccount `json:"external_account,omitempty"`
-	EmaIssuer       string                             `json:"ema_issuer,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether CreateATokenAnyOf0 declares it.
@@ -4039,8 +4038,6 @@ func (v *CreateATokenAnyOf0) unmarshalJSONMember(dec *jsontext.Decoder, name str
 		return true, json.UnmarshalDecode(dec, &v.RedirectURI, jsonOpts)
 	case "external_account":
 		return true, json.UnmarshalDecode(dec, &v.ExternalAccount, jsonOpts)
-	case "ema_issuer":
-		return true, json.UnmarshalDecode(dec, &v.EmaIssuer, jsonOpts)
 	}
 
 	return false, nil
