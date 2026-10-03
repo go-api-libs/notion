@@ -10,24 +10,16 @@ import (
 	"encoding/json/v2"
 	"errors"
 	"fmt"
-	"net/url"
 	"slices"
 	"strconv"
 	"time"
 	"uuid"
 
 	"cloud.google.com/go/civil"
-	"github.com/MarkRosemaker/jsonutil"
 )
 
 var jsonOpts = json.JoinOptions(
 	json.RejectUnknownMembers(true),
-	json.WithMarshalers(json.JoinMarshalers(
-		json.MarshalToFunc(jsonutil.URLMarshal),
-	)),
-	json.WithUnmarshalers(json.JoinUnmarshalers(
-		json.UnmarshalFromFunc(jsonutil.URLUnmarshal),
-	)),
 )
 
 // GetUsersParams holds the query parameters for GetUsers.
@@ -5978,352 +5970,63 @@ type Error2 struct {
 	StatusCode *int `json:"status_code"`
 }
 
-// ErrorAPI400AllOf1Code defines a model
-type ErrorAPI400AllOf1Code string
+// ErrorAPI defines a model
+type ErrorAPI struct {
+	publicApiCommonErrorResponse
+	Code   ErrorCode `json:"code,omitzero"`
+	Status int       `json:"status"`
+}
+
+// ErrorCode defines a model
+type ErrorCode string
 
 const (
-	ErrorAPI400AllOf1CodeInvalidJSON        ErrorAPI400AllOf1Code = "invalid_json"
-	ErrorAPI400AllOf1CodeInvalidRequestURL  ErrorAPI400AllOf1Code = "invalid_request_url"
-	ErrorAPI400AllOf1CodeInvalidRequest     ErrorAPI400AllOf1Code = "invalid_request"
-	ErrorAPI400AllOf1CodeMissingVersion     ErrorAPI400AllOf1Code = "missing_version"
-	ErrorAPI400AllOf1CodeInvalidBeta        ErrorAPI400AllOf1Code = "invalid_beta"
-	ErrorAPI400AllOf1CodeValidationError    ErrorAPI400AllOf1Code = "validation_error"
-	ErrorAPI400AllOf1CodeInvalidCreditLimit ErrorAPI400AllOf1Code = "invalid_credit_limit"
+	ErrorCodeInvalidJSON               ErrorCode = "invalid_json"
+	ErrorCodeInvalidRequestURL         ErrorCode = "invalid_request_url"
+	ErrorCodeInvalidRequest            ErrorCode = "invalid_request"
+	ErrorCodeMissingVersion            ErrorCode = "missing_version"
+	ErrorCodeInvalidBeta               ErrorCode = "invalid_beta"
+	ErrorCodeValidationError           ErrorCode = "validation_error"
+	ErrorCodeInvalidCreditLimit        ErrorCode = "invalid_credit_limit"
+	ErrorCodeUnauthorized              ErrorCode = "unauthorized"
+	ErrorCodeRestrictedResource        ErrorCode = "restricted_resource"
+	ErrorCodeStatusChangeNotAllowed    ErrorCode = "status_change_not_allowed"
+	ErrorCodeWorkspaceCreditsExhausted ErrorCode = "workspace_credits_exhausted"
+	ErrorCodeAgentCreditLimitReached   ErrorCode = "agent_credit_limit_reached"
+	ErrorCodeObjectNotFound            ErrorCode = "object_not_found"
+	ErrorCodeDirectoryNotFound         ErrorCode = "directory_not_found"
+	ErrorCodeRowLimitExceeded          ErrorCode = "row_limit_exceeded"
+	ErrorCodeConflictError             ErrorCode = "conflict_error"
+	ErrorCodeIdempotencyKeyReused      ErrorCode = "idempotency_key_reused"
+	ErrorCodeAgentDeleted              ErrorCode = "agent_deleted"
+	ErrorCodeRateLimited               ErrorCode = "rate_limited"
+	ErrorCodeInternalServerError       ErrorCode = "internal_server_error"
+	ErrorCodeServiceUnavailable        ErrorCode = "service_unavailable"
+	ErrorCodeGatewayTimeout            ErrorCode = "gateway_timeout"
+	ErrorCodeServiceOverload           ErrorCode = "service_overload"
+	ErrorCodeInvalidGrant              ErrorCode = "invalid_grant"
+	ErrorCodeUnauthorizedClient        ErrorCode = "unauthorized_client"
+	ErrorCodeUnsupportedGrantType      ErrorCode = "unsupported_grant_type"
+	ErrorCodeInvalidScope              ErrorCode = "invalid_scope"
+	ErrorCodeInvalidClient             ErrorCode = "invalid_client"
+	ErrorCodeTestEnvError              ErrorCode = "test_env_error"
 )
 
-// Valid indicates whether the value is a known member of the ErrorAPI400AllOf1Code enum.
-func (e ErrorAPI400AllOf1Code) Valid() bool {
+// Valid indicates whether the value is a known member of the ErrorCode enum.
+func (e ErrorCode) Valid() bool {
 	switch e {
-	case ErrorAPI400AllOf1CodeInvalidJSON, ErrorAPI400AllOf1CodeInvalidRequestURL, ErrorAPI400AllOf1CodeInvalidRequest, ErrorAPI400AllOf1CodeMissingVersion, ErrorAPI400AllOf1CodeInvalidBeta, ErrorAPI400AllOf1CodeValidationError, ErrorAPI400AllOf1CodeInvalidCreditLimit:
+	case ErrorCodeInvalidJSON, ErrorCodeInvalidRequestURL, ErrorCodeInvalidRequest, ErrorCodeMissingVersion, ErrorCodeInvalidBeta, ErrorCodeValidationError, ErrorCodeInvalidCreditLimit, ErrorCodeUnauthorized, ErrorCodeRestrictedResource, ErrorCodeStatusChangeNotAllowed, ErrorCodeWorkspaceCreditsExhausted, ErrorCodeAgentCreditLimitReached, ErrorCodeObjectNotFound, ErrorCodeDirectoryNotFound, ErrorCodeRowLimitExceeded, ErrorCodeConflictError, ErrorCodeIdempotencyKeyReused, ErrorCodeAgentDeleted, ErrorCodeRateLimited, ErrorCodeInternalServerError, ErrorCodeServiceUnavailable, ErrorCodeGatewayTimeout, ErrorCodeServiceOverload, ErrorCodeInvalidGrant, ErrorCodeUnauthorizedClient, ErrorCodeUnsupportedGrantType, ErrorCodeInvalidScope, ErrorCodeInvalidClient, ErrorCodeTestEnvError:
 		return true
 	default:
 		return false
 	}
 }
 
-// ErrorAPI401AllOf1Code defines a model
-type ErrorAPI401AllOf1Code string
-
-const (
-	ErrorAPI401AllOf1CodeUnauthorized ErrorAPI401AllOf1Code = "unauthorized"
-)
-
-// Valid indicates whether the value is a known member of the ErrorAPI401AllOf1Code enum.
-func (e ErrorAPI401AllOf1Code) Valid() bool {
-	switch e {
-	case ErrorAPI401AllOf1CodeUnauthorized:
-		return true
-	default:
-		return false
-	}
-}
-
-// ErrorAPI403OneOf0AllOf1Code defines a model
-type ErrorAPI403OneOf0AllOf1Code string
-
-const (
-	ErrorAPI403OneOf0AllOf1CodeRestrictedResource     ErrorAPI403OneOf0AllOf1Code = "restricted_resource"
-	ErrorAPI403OneOf0AllOf1CodeStatusChangeNotAllowed ErrorAPI403OneOf0AllOf1Code = "status_change_not_allowed"
-)
-
-// Valid indicates whether the value is a known member of the ErrorAPI403OneOf0AllOf1Code enum.
-func (e ErrorAPI403OneOf0AllOf1Code) Valid() bool {
-	switch e {
-	case ErrorAPI403OneOf0AllOf1CodeRestrictedResource, ErrorAPI403OneOf0AllOf1CodeStatusChangeNotAllowed:
-		return true
-	default:
-		return false
-	}
-}
-
-// ErrorAPI403OneOf1AllOf1AdditionalData defines a model
-type ErrorAPI403OneOf1AllOf1AdditionalData map[string]ErrorAPIOneOfAllOfAdditionalDataValue
-
-// ErrorAPI403OneOf2AllOf1AdditionalData defines a model
-type ErrorAPI403OneOf2AllOf1AdditionalData map[string]ErrorAPIOneOfAllOfAdditionalDataValue
-
-// ErrorAPI404AllOf1Code defines a model
-type ErrorAPI404AllOf1Code string
-
-const (
-	ErrorAPI404AllOf1CodeObjectNotFound    ErrorAPI404AllOf1Code = "object_not_found"
-	ErrorAPI404AllOf1CodeDirectoryNotFound ErrorAPI404AllOf1Code = "directory_not_found"
-)
-
-// Valid indicates whether the value is a known member of the ErrorAPI404AllOf1Code enum.
-func (e ErrorAPI404AllOf1Code) Valid() bool {
-	switch e {
-	case ErrorAPI404AllOf1CodeObjectNotFound, ErrorAPI404AllOf1CodeDirectoryNotFound:
-		return true
-	default:
-		return false
-	}
-}
-
-// ErrorAPI406AllOf1Code defines a model
-type ErrorAPI406AllOf1Code string
-
-const (
-	ErrorAPI406AllOf1CodeRowLimitExceeded ErrorAPI406AllOf1Code = "row_limit_exceeded"
-)
-
-// Valid indicates whether the value is a known member of the ErrorAPI406AllOf1Code enum.
-func (e ErrorAPI406AllOf1Code) Valid() bool {
-	switch e {
-	case ErrorAPI406AllOf1CodeRowLimitExceeded:
-		return true
-	default:
-		return false
-	}
-}
-
-// ErrorAPI409AllOf1Code defines a model
-type ErrorAPI409AllOf1Code string
-
-const (
-	ErrorAPI409AllOf1CodeConflictError        ErrorAPI409AllOf1Code = "conflict_error"
-	ErrorAPI409AllOf1CodeIdempotencyKeyReused ErrorAPI409AllOf1Code = "idempotency_key_reused"
-	ErrorAPI409AllOf1CodeAgentDeleted         ErrorAPI409AllOf1Code = "agent_deleted"
-)
-
-// Valid indicates whether the value is a known member of the ErrorAPI409AllOf1Code enum.
-func (e ErrorAPI409AllOf1Code) Valid() bool {
-	switch e {
-	case ErrorAPI409AllOf1CodeConflictError, ErrorAPI409AllOf1CodeIdempotencyKeyReused, ErrorAPI409AllOf1CodeAgentDeleted:
-		return true
-	default:
-		return false
-	}
-}
-
-// ErrorAPI429AllOf1Code defines a model
-type ErrorAPI429AllOf1Code string
-
-const (
-	ErrorAPI429AllOf1CodeRateLimited ErrorAPI429AllOf1Code = "rate_limited"
-)
-
-// Valid indicates whether the value is a known member of the ErrorAPI429AllOf1Code enum.
-func (e ErrorAPI429AllOf1Code) Valid() bool {
-	switch e {
-	case ErrorAPI429AllOf1CodeRateLimited:
-		return true
-	default:
-		return false
-	}
-}
-
-// ErrorAPI503AllOf1Code defines a model
-type ErrorAPI503AllOf1Code string
-
-const (
-	ErrorAPI503AllOf1CodeServiceUnavailable ErrorAPI503AllOf1Code = "service_unavailable"
-)
-
-// Valid indicates whether the value is a known member of the ErrorAPI503AllOf1Code enum.
-func (e ErrorAPI503AllOf1Code) Valid() bool {
-	switch e {
-	case ErrorAPI503AllOf1CodeServiceUnavailable:
-		return true
-	default:
-		return false
-	}
-}
-
-// ErrorAPI504AllOf1Code defines a model
-type ErrorAPI504AllOf1Code string
-
-const (
-	ErrorAPI504AllOf1CodeGatewayTimeout ErrorAPI504AllOf1Code = "gateway_timeout"
-)
-
-// Valid indicates whether the value is a known member of the ErrorAPI504AllOf1Code enum.
-func (e ErrorAPI504AllOf1Code) Valid() bool {
-	switch e {
-	case ErrorAPI504AllOf1CodeGatewayTimeout:
-		return true
-	default:
-		return false
-	}
-}
-
-// ErrorAPI529AllOf1Code defines a model
-type ErrorAPI529AllOf1Code string
-
-const (
-	ErrorAPI529AllOf1CodeServiceOverload ErrorAPI529AllOf1Code = "service_overload"
-)
-
-// Valid indicates whether the value is a known member of the ErrorAPI529AllOf1Code enum.
-func (e ErrorAPI529AllOf1Code) Valid() bool {
-	switch e {
-	case ErrorAPI529AllOf1CodeServiceOverload:
-		return true
-	default:
-		return false
-	}
-}
-
-// ErrorAPIAllOfCode defines a model
-type ErrorAPIAllOfCode string
-
-const (
-	ErrorAPIAllOfCodeInternalServerError ErrorAPIAllOfCode = "internal_server_error"
-)
-
-// Valid indicates whether the value is a known member of the ErrorAPIAllOfCode enum.
-func (e ErrorAPIAllOfCode) Valid() bool {
-	switch e {
-	case ErrorAPIAllOfCodeInternalServerError:
-		return true
-	default:
-		return false
-	}
-}
-
-// ErrorAPIOneOfAllOfAdditionalDataValue defines a model
-// ErrorAPIOneOfAllOfAdditionalDataValue is an untagged oneOf union: exactly one field is set after unmarshaling.
-type ErrorAPIOneOfAllOfAdditionalDataValue struct {
-	String  *string
-	String2 *[]string
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *ErrorAPIOneOfAllOfAdditionalDataValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv string
-		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
-			v.String = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv []string
-		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
-			v.String2 = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *ErrorAPIOneOfAllOfAdditionalDataValue) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.String != nil:
-		return json.MarshalEncode(enc, v.String, jsonOpts)
-	case v.String2 != nil:
-		return json.MarshalEncode(enc, v.String2, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// The recovery action selected by Notion for the caller.
-type ErrorApi403OneOf1AllOf1AdditionalDataRecoveryKind string
-
-const (
-	ErrorApi403OneOf1AllOf1AdditionalDataRecoveryKindContactWorkspaceOwner       ErrorApi403OneOf1AllOf1AdditionalDataRecoveryKind = "contact_workspace_owner"
-	ErrorApi403OneOf1AllOf1AdditionalDataRecoveryKindOpenWorkspaceCreditSettings ErrorApi403OneOf1AllOf1AdditionalDataRecoveryKind = "open_workspace_credit_settings"
-)
-
-// Valid indicates whether the value is a known member of the ErrorApi403OneOf1AllOf1AdditionalDataRecoveryKind enum.
-func (e ErrorApi403OneOf1AllOf1AdditionalDataRecoveryKind) Valid() bool {
-	switch e {
-	case ErrorApi403OneOf1AllOf1AdditionalDataRecoveryKindContactWorkspaceOwner, ErrorApi403OneOf1AllOf1AdditionalDataRecoveryKindOpenWorkspaceCreditSettings:
-		return true
-	default:
-		return false
-	}
-}
-
-// The recovery action selected by Notion for the caller.
-type ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKind string
-
-const (
-	ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKindContactWorkspaceOwner     ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKind = "contact_workspace_owner"
-	ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKindNone                      ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKind = "none"
-	ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKindOpenAgentSettings         ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKind = "open_agent_settings"
-	ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKindRequestAgentLimitIncrease ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKind = "request_agent_limit_increase"
-	ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKindRequestPending            ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKind = "request_pending"
-)
-
-// Valid indicates whether the value is a known member of the ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKind enum.
-func (e ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKind) Valid() bool {
-	switch e {
-	case ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKindContactWorkspaceOwner, ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKindNone, ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKindOpenAgentSettings, ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKindRequestAgentLimitIncrease, ErrorApi403OneOf2AllOf1AdditionalDataRecoveryKindRequestPending:
-		return true
-	default:
-		return false
-	}
-}
-
-// ErrorOauth400AllOf1Code defines a model
-type ErrorOauth400AllOf1Code string
-
-const (
-	ErrorOauth400AllOf1CodeInvalidRequest       ErrorOauth400AllOf1Code = "invalid_request"
-	ErrorOauth400AllOf1CodeInvalidGrant         ErrorOauth400AllOf1Code = "invalid_grant"
-	ErrorOauth400AllOf1CodeUnauthorizedClient   ErrorOauth400AllOf1Code = "unauthorized_client"
-	ErrorOauth400AllOf1CodeUnsupportedGrantType ErrorOauth400AllOf1Code = "unsupported_grant_type"
-	ErrorOauth400AllOf1CodeInvalidScope         ErrorOauth400AllOf1Code = "invalid_scope"
-)
-
-// Valid indicates whether the value is a known member of the ErrorOauth400AllOf1Code enum.
-func (e ErrorOauth400AllOf1Code) Valid() bool {
-	switch e {
-	case ErrorOauth400AllOf1CodeInvalidRequest, ErrorOauth400AllOf1CodeInvalidGrant, ErrorOauth400AllOf1CodeUnauthorizedClient, ErrorOauth400AllOf1CodeUnsupportedGrantType, ErrorOauth400AllOf1CodeInvalidScope:
-		return true
-	default:
-		return false
-	}
-}
-
-// ErrorOauth401AllOf1Code defines a model
-type ErrorOauth401AllOf1Code string
-
-const (
-	ErrorOauth401AllOf1CodeInvalidClient ErrorOauth401AllOf1Code = "invalid_client"
-)
-
-// Valid indicates whether the value is a known member of the ErrorOauth401AllOf1Code enum.
-func (e ErrorOauth401AllOf1Code) Valid() bool {
-	switch e {
-	case ErrorOauth401AllOf1CodeInvalidClient:
-		return true
-	default:
-		return false
-	}
-}
-
-// ErrorOauth403AllOf1Code defines a model
-type ErrorOauth403AllOf1Code string
-
-const (
-	ErrorOauth403AllOf1CodeTestEnvError ErrorOauth403AllOf1Code = "test_env_error"
-)
-
-// Valid indicates whether the value is a known member of the ErrorOauth403AllOf1Code enum.
-func (e ErrorOauth403AllOf1Code) Valid() bool {
-	switch e {
-	case ErrorOauth403AllOf1CodeTestEnvError:
-		return true
-	default:
-		return false
-	}
+// ErrorOAuth defines a model
+type ErrorOAuth struct {
+	publicApiCommonErrorResponse
+	Code   ErrorCode `json:"code,omitzero"`
+	Status int       `json:"status"`
 }
 
 // The type of error that occurred during file import.
@@ -8542,7 +8245,6 @@ type ListViewsOk struct {
 	Type          string                 `json:"type,omitzero"`
 	View          emptyObject            `json:"view"`
 	RequestStatus *requestStatusResponse `json:"request_status,omitempty"`
-	RequestID     *uuid.UUID             `json:"request_id,omitempty"`
 }
 
 // Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.
@@ -9255,23 +8957,6 @@ type MultiSelectPropertyConfigurationMultiSelectItem struct {
 	Color PartialSelectPropertyValueColor `json:"color,omitzero"`
 	// The name of the bot's workspace.
 	Description *string `json:"description,omitempty"`
-}
-
-// NotionVersion defines a model
-type NotionVersion string
-
-const (
-	NotionVersionTwoZeroTwoSix0311 NotionVersion = "2026-03-11"
-)
-
-// Valid indicates whether the value is a known member of the NotionVersion enum.
-func (e NotionVersion) Valid() bool {
-	switch e {
-	case NotionVersionTwoZeroTwoSix0311:
-		return true
-	default:
-		return false
-	}
 }
 
 // Number defines a model
@@ -10054,84 +9739,6 @@ func (v *Paragraph5) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bo
 	}
 
 	return false, nil
-}
-
-// PartialDatabaseObjectCover defines a model
-type PartialDatabaseObjectCover struct {
-	Type     string                             `json:"type,omitzero"`
-	External PartialDatabaseObjectCoverExternal `json:"external"`
-}
-
-// PartialDatabaseObjectCoverExternal defines a model
-type PartialDatabaseObjectCoverExternal struct {
-	URL url.URL `json:"url,omitzero"`
-}
-
-// PartialDatabaseObjectDescription defines a model
-type PartialDatabaseObjectDescription []PartialDatabaseObjectDescriptionItem
-
-// PartialDatabaseObjectDescriptionItem defines a model
-type PartialDatabaseObjectDescriptionItem struct {
-	Type        string                                          `json:"type,omitzero"`
-	Text        PartialDatabaseObjectDescriptionItemText        `json:"text"`
-	Annotations PartialDatabaseObjectDescriptionItemAnnotations `json:"annotations"`
-	PlainText   string                                          `json:"plain_text,omitzero"`
-	Href        *struct{}                                       `json:"href"`
-}
-
-// PartialDatabaseObjectDescriptionItemAnnotations defines a model
-type PartialDatabaseObjectDescriptionItemAnnotations struct {
-	Bold          bool   `json:"bold"`
-	Italic        bool   `json:"italic"`
-	Strikethrough bool   `json:"strikethrough"`
-	Underline     bool   `json:"underline"`
-	Code          bool   `json:"code"`
-	Color         string `json:"color,omitzero"`
-}
-
-// PartialDatabaseObjectDescriptionItemText defines a model
-type PartialDatabaseObjectDescriptionItemText struct {
-	Content string    `json:"content,omitzero"`
-	Link    *struct{} `json:"link"`
-}
-
-// PartialDatabaseObjectIcon defines a model
-type PartialDatabaseObjectIcon struct {
-	Type  string `json:"type,omitzero"`
-	Emoji string `json:"emoji,omitzero"`
-}
-
-// PartialDatabaseObjectParent defines a model
-type PartialDatabaseObjectParent struct {
-	Type   string    `json:"type,omitzero"`
-	PageID uuid.UUID `json:"page_id,omitzero"`
-}
-
-// PartialDatabaseObjectResponseDataSources defines a model
-type PartialDatabaseObjectResponseDataSources []PartialDatabaseObjectResponseDataSourcesItem
-
-// PartialDatabaseObjectResponseDataSourcesItem defines a model
-type PartialDatabaseObjectResponseDataSourcesItem struct {
-	ID   uuid.UUID `json:"id,omitzero"`
-	Name string    `json:"name,omitzero"`
-}
-
-// PartialPageObjectCreatedBy defines a model
-type PartialPageObjectCreatedBy struct {
-	Object string    `json:"object,omitzero"`
-	ID     uuid.UUID `json:"id,omitzero"`
-}
-
-// PartialPageObjectResponseProperties defines a model
-type PartialPageObjectResponseProperties struct {
-	Title PartialPageObjectResponsePropertiesTitle `json:"title"`
-}
-
-// PartialPageObjectResponsePropertiesTitle defines a model
-type PartialPageObjectResponsePropertiesTitle struct {
-	ID    string                           `json:"id,omitzero"`
-	Type  string                           `json:"type,omitzero"`
-	Title PartialDatabaseObjectDescription `json:"title"`
 }
 
 // One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
@@ -11407,6 +11014,57 @@ func (v *PropertyItemPropertyItemListResponsePropertyItem) MarshalJSONTo(enc *js
 	}
 
 	return enc.WriteValue(out)
+}
+
+// PublicAPICommonErrorAdditionalDataValue defines a model
+// PublicAPICommonErrorAdditionalDataValue is an untagged oneOf union: exactly one field is set after unmarshaling.
+type PublicAPICommonErrorAdditionalDataValue struct {
+	String  *string
+	String2 *[]string
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *PublicAPICommonErrorAdditionalDataValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv string
+		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
+			v.String = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv []string
+		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
+			v.String2 = &vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *PublicAPICommonErrorAdditionalDataValue) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.String != nil:
+		return json.MarshalEncode(enc, v.String, jsonOpts)
+	case v.String2 != nil:
+		return json.MarshalEncode(enc, v.String2, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
 // QueryAgents defines a model
@@ -15771,11 +15429,11 @@ func (v *RetrieveAsyncTaskOkOneOf2Error) MarshalJSONTo(enc *jsontext.Encoder) er
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf0 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf0 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf0 declares it.
@@ -15798,11 +15456,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf0) unmarshalJSONMember(dec *jsontext
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf1 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf1 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf1 declares it.
@@ -15825,11 +15483,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf1) unmarshalJSONMember(dec *jsontext
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf10 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf10 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf10 declares it.
@@ -15852,11 +15510,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf10) unmarshalJSONMember(dec *jsontex
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf11 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf11 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf11 declares it.
@@ -15879,11 +15537,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf11) unmarshalJSONMember(dec *jsontex
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf12 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf12 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf12 declares it.
@@ -15906,11 +15564,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf12) unmarshalJSONMember(dec *jsontex
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf13 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf13 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf13 declares it.
@@ -15933,11 +15591,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf13) unmarshalJSONMember(dec *jsontex
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf14 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf14 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf14 declares it.
@@ -15960,11 +15618,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf14) unmarshalJSONMember(dec *jsontex
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf15 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf15 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf15 declares it.
@@ -15987,11 +15645,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf15) unmarshalJSONMember(dec *jsontex
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf16 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf16 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf16 declares it.
@@ -16014,11 +15672,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf16) unmarshalJSONMember(dec *jsontex
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf17 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf17 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf17 declares it.
@@ -16041,11 +15699,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf17) unmarshalJSONMember(dec *jsontex
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf18 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf18 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf18 declares it.
@@ -16068,11 +15726,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf18) unmarshalJSONMember(dec *jsontex
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf19 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf19 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf19 declares it.
@@ -16095,11 +15753,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf19) unmarshalJSONMember(dec *jsontex
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf2 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf2 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf2 declares it.
@@ -16122,11 +15780,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf2) unmarshalJSONMember(dec *jsontext
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf20 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf20 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf20 declares it.
@@ -16149,11 +15807,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf20) unmarshalJSONMember(dec *jsontex
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf21 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf21 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf21 declares it.
@@ -16176,11 +15834,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf21) unmarshalJSONMember(dec *jsontex
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf22 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf22 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf22 declares it.
@@ -16203,11 +15861,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf22) unmarshalJSONMember(dec *jsontex
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf3 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf3 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf3 declares it.
@@ -16230,11 +15888,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf3) unmarshalJSONMember(dec *jsontext
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf4 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf4 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf4 declares it.
@@ -16257,11 +15915,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf4) unmarshalJSONMember(dec *jsontext
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf5 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf5 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf5 declares it.
@@ -16284,11 +15942,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf5) unmarshalJSONMember(dec *jsontext
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf6 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf6 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf6 declares it.
@@ -16311,11 +15969,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf6) unmarshalJSONMember(dec *jsontext
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf7 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf7 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf7 declares it.
@@ -16338,11 +15996,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf7) unmarshalJSONMember(dec *jsontext
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf8 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf8 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf8 declares it.
@@ -16365,11 +16023,11 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf8) unmarshalJSONMember(dec *jsontext
 
 // RetrieveAsyncTaskOkOneOf2ErrorOneOf9 defines a model
 type RetrieveAsyncTaskOkOneOf2ErrorOneOf9 struct {
-	Object         string                                            `json:"object,omitzero"`
-	Status         int                                               `json:"status"`
-	Code           string                                            `json:"code,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         string                                              `json:"object,omitzero"`
+	Status         int                                                 `json:"status"`
+	Code           string                                              `json:"code,omitzero"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf9 declares it.
@@ -26927,182 +26585,6 @@ func (v *equationRichTextItemResponse) unmarshalJSONMember(dec *jsontext.Decoder
 	return false, nil
 }
 
-// error_api_ defines a model
-type error_api_ struct {
-	publicApiCommonErrorResponse
-	Code   ErrorAPIAllOfCode `json:"code,omitzero"`
-	Status int               `json:"status"`
-}
-
-// error_api_400 defines a model
-type error_api_400 struct {
-	publicApiCommonErrorResponse
-	Code   ErrorAPI400AllOf1Code `json:"code,omitzero"`
-	Status int                   `json:"status"`
-}
-
-// error_api_401 defines a model
-type error_api_401 struct {
-	publicApiCommonErrorResponse
-	Code   ErrorAPI401AllOf1Code `json:"code,omitzero"`
-	Status int                   `json:"status"`
-}
-
-// error_api_403 defines a model
-// error_api_403 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type error_api_403 struct {
-	ErrorAPI403OneOf0 *error_api_403OneOf0
-	ErrorAPI403OneOf1 *error_api_403OneOf1
-	ErrorAPI403OneOf2 *error_api_403OneOf2
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *error_api_403) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv error_api_403OneOf0
-		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
-			v.ErrorAPI403OneOf0 = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv error_api_403OneOf1
-		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
-			v.ErrorAPI403OneOf1 = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv error_api_403OneOf2
-		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
-			v.ErrorAPI403OneOf2 = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *error_api_403) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.ErrorAPI403OneOf0 != nil:
-		return json.MarshalEncode(enc, v.ErrorAPI403OneOf0, jsonOpts)
-	case v.ErrorAPI403OneOf1 != nil:
-		return json.MarshalEncode(enc, v.ErrorAPI403OneOf1, jsonOpts)
-	case v.ErrorAPI403OneOf2 != nil:
-		return json.MarshalEncode(enc, v.ErrorAPI403OneOf2, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// error_api_403OneOf0 defines a model
-type error_api_403OneOf0 struct {
-	publicApiCommonErrorResponse
-	Code   ErrorAPI403OneOf0AllOf1Code `json:"code,omitzero"`
-	Status int                         `json:"status"`
-}
-
-// error_api_403OneOf1 defines a model
-type error_api_403OneOf1 struct {
-	publicApiCommonErrorResponse
-	Code           string                                `json:"code,omitzero"`
-	Status         int                                   `json:"status"`
-	AdditionalData ErrorAPI403OneOf1AllOf1AdditionalData `json:"additional_data"`
-}
-
-// error_api_403OneOf2 defines a model
-type error_api_403OneOf2 struct {
-	publicApiCommonErrorResponse
-	Code           string                                `json:"code,omitzero"`
-	Status         int                                   `json:"status"`
-	AdditionalData ErrorAPI403OneOf2AllOf1AdditionalData `json:"additional_data"`
-}
-
-// error_api_404 defines a model
-type error_api_404 struct {
-	publicApiCommonErrorResponse
-	Code   ErrorAPI404AllOf1Code `json:"code,omitzero"`
-	Status int                   `json:"status"`
-}
-
-// error_api_406 defines a model
-type error_api_406 struct {
-	publicApiCommonErrorResponse
-	Code   ErrorAPI406AllOf1Code `json:"code,omitzero"`
-	Status int                   `json:"status"`
-}
-
-// error_api_409 defines a model
-type error_api_409 struct {
-	publicApiCommonErrorResponse
-	Code   ErrorAPI409AllOf1Code `json:"code,omitzero"`
-	Status int                   `json:"status"`
-}
-
-// error_api_429 defines a model
-type error_api_429 struct {
-	publicApiCommonErrorResponse
-	Code   ErrorAPI429AllOf1Code `json:"code,omitzero"`
-	Status int                   `json:"status"`
-}
-
-// error_api_503 defines a model
-type error_api_503 struct {
-	publicApiCommonErrorResponse
-	Code   ErrorAPI503AllOf1Code `json:"code,omitzero"`
-	Status int                   `json:"status"`
-}
-
-// error_api_504 defines a model
-type error_api_504 struct {
-	publicApiCommonErrorResponse
-	Code   ErrorAPI504AllOf1Code `json:"code,omitzero"`
-	Status int                   `json:"status"`
-}
-
-// error_api_529 defines a model
-type error_api_529 struct {
-	publicApiCommonErrorResponse
-	Code   ErrorAPI529AllOf1Code `json:"code,omitzero"`
-	Status int                   `json:"status"`
-}
-
-// error_oauth_400 defines a model
-type error_oauth_400 struct {
-	publicApiCommonErrorResponse
-	Code   ErrorOauth400AllOf1Code `json:"code,omitzero"`
-	Status int                     `json:"status"`
-}
-
-// error_oauth_401 defines a model
-type error_oauth_401 struct {
-	publicApiCommonErrorResponse
-	Code   ErrorOauth401AllOf1Code `json:"code,omitzero"`
-	Status int                     `json:"status"`
-}
-
-// error_oauth_403 defines a model
-type error_oauth_403 struct {
-	publicApiCommonErrorResponse
-	Code   ErrorOauth403AllOf1Code `json:"code,omitzero"`
-	Status int                     `json:"status"`
-}
-
 // existencePropertyFilter defines a model
 // existencePropertyFilter is an untagged anyOf union: at least one field is set after unmarshaling.
 type existencePropertyFilter struct {
@@ -32405,21 +31887,7 @@ type partialDatabaseObjectResponse struct {
 	// The database object type name.
 	Object string `json:"object,omitzero"`
 	// The ID of the database.
-	ID             idResponse                               `json:"id,omitzero"`
-	Title          PartialDatabaseObjectDescription         `json:"title,omitzero"`
-	Description    PartialDatabaseObjectDescription         `json:"description,omitzero"`
-	Parent         *PartialDatabaseObjectParent             `json:"parent,omitempty"`
-	IsInline       bool                                     `json:"is_inline,omitempty"`
-	InTrash        bool                                     `json:"in_trash,omitempty"`
-	IsLocked       bool                                     `json:"is_locked,omitempty"`
-	CreatedTime    time.Time                                `json:"created_time,omitempty"`
-	LastEditedTime time.Time                                `json:"last_edited_time,omitempty"`
-	DataSources    PartialDatabaseObjectResponseDataSources `json:"data_sources,omitzero"`
-	Icon           *PartialDatabaseObjectIcon               `json:"icon,omitempty"`
-	Cover          *PartialDatabaseObjectCover              `json:"cover,omitempty"`
-	URL            *url.URL                                 `json:"url,omitempty"`
-	PublicURL      *struct{}                                `json:"public_url,omitempty"`
-	RequestID      *uuid.UUID                               `json:"request_id,omitempty"`
+	ID idResponse `json:"id,omitzero"`
 }
 
 // partialPageObjectResponse defines a model
@@ -32427,21 +31895,7 @@ type partialPageObjectResponse struct {
 	// The page object type name.
 	Object string `json:"object,omitzero"`
 	// The ID of the page.
-	ID             idResponse                           `json:"id,omitzero"`
-	CreatedTime    time.Time                            `json:"created_time,omitempty"`
-	LastEditedTime time.Time                            `json:"last_edited_time,omitempty"`
-	CreatedBy      *PartialPageObjectCreatedBy          `json:"created_by,omitempty"`
-	LastEditedBy   *PartialPageObjectCreatedBy          `json:"last_edited_by,omitempty"`
-	Cover          *PartialDatabaseObjectCover          `json:"cover,omitempty"`
-	Icon           *PartialDatabaseObjectIcon           `json:"icon,omitempty"`
-	Parent         *PartialDatabaseObjectParent         `json:"parent,omitempty"`
-	InTrash        bool                                 `json:"in_trash,omitempty"`
-	IsArchived     bool                                 `json:"is_archived,omitempty"`
-	IsLocked       bool                                 `json:"is_locked,omitempty"`
-	Properties     *PartialPageObjectResponseProperties `json:"properties,omitempty"`
-	URL            *url.URL                             `json:"url,omitempty"`
-	PublicURL      *url.URL                             `json:"public_url,omitempty"`
-	RequestID      *uuid.UUID                           `json:"request_id,omitempty"`
+	ID idResponse `json:"id,omitzero"`
 }
 
 // partialRollupPropertyResponse defines a model
@@ -35078,9 +34532,9 @@ func (v *publicApiAsyncTaskStatusResultJsonValue) MarshalJSONTo(enc *jsontext.En
 
 // publicApiCommonErrorResponse defines a model
 type publicApiCommonErrorResponse struct {
-	Object         string                                            `json:"object,omitzero"`
-	Message        string                                            `json:"message,omitzero"`
-	AdditionalData *map[string]ErrorAPIOneOfAllOfAdditionalDataValue `json:"additional_data,omitempty"`
+	Object         any                                                 `json:"object"`
+	Message        string                                              `json:"message,omitzero"`
+	AdditionalData *map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitempty"`
 }
 
 // A property filter condition. Same shape as a property filter but without the "property" field (the hashmap key identifies the property). For example: { "select": { "equals": "High" } }. Pass an empty object to add the property to the filter bar without criteria.

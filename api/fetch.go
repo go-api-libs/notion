@@ -3,19 +3,26 @@ package main
 import (
 	"cmp"
 	"context"
+	"encoding/json/jsontext"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
+	"github.com/MarkRosemaker/errpath"
 	"github.com/MarkRosemaker/openapi"
+	codegen "github.com/MarkRosemaker/openapi-codegen"
 	edit "github.com/MarkRosemaker/openapi-edit"
-	merge "github.com/MarkRosemaker/openapi-merge"
 	"golang.org/x/sync/errgroup"
 )
 
-const pathOpenAPI = "api/openapi.json"
+const (
+	pathOpenAPI     = "api/openapi.json"
+	schemaRefPrefix = "#/components/schemas/"
+)
 
 var isClaudeCode = os.Getenv("CLAUDECODE") != ""
 
@@ -30,7 +37,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := fixOpenAPI(); err != nil {
+	doc, err := fixOpenAPI()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := generateCode(doc); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -120,10 +132,127 @@ func persistOpenAPI(ctx context.Context) error {
 	return doc.WriteJSON(w)
 }
 
-func fixOpenAPI() error {
+// consolidateErrors replaces the schemas whose names start with prefix, each an allOf of the common error and a code
+// and status, with one schema called name that allows every status they did. Their codes are added to codes, which
+// the schema's code refers to as codeName.
+func consolidateErrors(doc *openapi.Document, prefix, name, common, codeName string, codes *jsonSet) error {
+	var names []string
+
+	for n := range doc.Components.Schemas.ByIndex() {
+		if strings.HasPrefix(n, prefix) {
+			names = append(names, n)
+		}
+	}
+
+	if len(names) == 0 {
+		return fmt.Errorf("no schemas start with %q", prefix)
+	}
+
+	commonSchema, ok := doc.Components.Schemas[common]
+	if !ok {
+		return fmt.Errorf("schema %q not found", common)
+	}
+
+	statuses := &jsonSet{}
+
+	for _, n := range names {
+		if err := collectError(doc.Components.Schemas[n], common, codes, statuses); err != nil {
+			return &errpath.ErrField{Field: "components", Err: &errpath.ErrField{
+				Field: "schemas", Err: &errpath.ErrKey{Key: n, Err: err},
+			}}
+		}
+	}
+
+	first := names[0]
+	// set one by one, since a map literal leaves their order to chance
+	props := openapi.Schemas{}
+	props.Set("code", &openapi.Schema{Ref: &openapi.SchemaRef{
+		Identifier: schemaRefPrefix + codeName, Value: doc.Components.Schemas[codeName],
+	}})
+	props.Set("status", &openapi.Schema{Type: openapi.TypeInteger, Enum: statuses.values})
+
+	doc.Components.Schemas[first].Replace(&openapi.Schema{AllOf: openapi.SchemaList{
+		{Ref: &openapi.SchemaRef{Identifier: schemaRefPrefix + common, Value: commonSchema}},
+		{Type: openapi.TypeObject, Properties: props, Required: []string{"code", "status"}},
+	}})
+
+	redirect := map[string]string{}
+	for _, n := range names[1:] {
+		redirect[n] = first
+	}
+
+	if err := edit.RedirectSchemas(doc, redirect); err != nil {
+		return fmt.Errorf("redirecting schemas: %w", err)
+	}
+
+	if err := edit.RenameSchema(doc, first, name); err != nil {
+		return fmt.Errorf("renaming %s to %s: %w", first, name, err)
+	}
+
+	return nil
+}
+
+// collectError adds the codes and statuses s allows to codes and statuses, failing on anything it would not keep.
+func collectError(s *openapi.Schema, common string, codes, statuses *jsonSet) error {
+	if len(s.OneOf) > 0 {
+		for i, alt := range s.OneOf {
+			if err := collectError(alt, common, codes, statuses); err != nil {
+				return &errpath.ErrField{Field: "oneOf", Err: &errpath.ErrIndex{Index: i, Err: err}}
+			}
+		}
+
+		return nil
+	}
+
+	if len(s.AllOf) != 2 || s.AllOf[0].Ref == nil || s.AllOf[0].Ref.Identifier != schemaRefPrefix+common {
+		return &errpath.ErrField{Field: "allOf", Err: fmt.Errorf("want %s and one schema", common)}
+	}
+
+	for prop, p := range s.AllOf[1].Properties.ByIndex() {
+		switch prop {
+		case "code":
+			codes.add(p)
+		case "status":
+			statuses.add(p)
+		case "additional_data": // a narrower shape of what the common error already allows
+		default:
+			return &errpath.ErrField{Field: "allOf", Err: &errpath.ErrIndex{Index: 1, Err: &errpath.ErrField{
+				Field: "properties", Err: &errpath.ErrKey{Key: prop, Err: errors.New("unexpected property")},
+			}}}
+		}
+	}
+
+	return nil
+}
+
+// jsonSet holds the distinct values of a const or enum, in the order first seen.
+type jsonSet struct {
+	seen   map[string]bool
+	values []jsontext.Value
+}
+
+func (s *jsonSet) add(p *openapi.Schema) {
+	if s.seen == nil {
+		s.seen = map[string]bool{}
+	}
+
+	vals := p.Enum
+	if p.Const != nil {
+		vals = append(vals, p.Const)
+	}
+
+	for _, v := range vals {
+		if !s.seen[string(v)] {
+			s.seen[string(v)] = true
+			s.values = append(s.values, v)
+		}
+	}
+}
+
+func fixOpenAPI() (*openapi.Document, error) {
 	doc, err := openapi.LoadFromFile(pathOpenAPI)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	for _, p := range doc.Paths.ByIndex() {
@@ -157,15 +286,22 @@ func fixOpenAPI() error {
 		}
 	}
 
-	// TODO(Claude): use merge and edit to transform the spec
-	_ = merge.Schema
-	// if err := = merge.Schema(doc.Components.Schemas["foo"], doc.Components.Schemas["bar"], false); err != nil {
-	// return fmt.Errorf("merging bar and foo: %w", err)
-	// }
+	const errorCode = "ErrorCode"
 
-	if err := edit.RedirectSchemas(doc, map[string]string{}); err != nil {
-		return fmt.Errorf("redirecting schemas: %w", err)
+	codes := &jsonSet{}
+	codeSchema := &openapi.Schema{Type: openapi.TypeString}
+	doc.Components.Schemas.Set(errorCode, codeSchema)
+
+	for _, e := range []struct{ prefix, name string }{
+		{"error_api_", "ErrorAPI"},
+		{"error_oauth_", "ErrorOAuth"},
+	} {
+		if err := consolidateErrors(doc, e.prefix, e.name, "publicApiCommonErrorResponse", errorCode, codes); err != nil {
+			return nil, err
+		}
 	}
+
+	codeSchema.Enum = codes.values
 
 	// TODO: apply
 	// - openapi-enrich
@@ -175,12 +311,23 @@ func fixOpenAPI() error {
 	// - openapi-codegen -client -debug
 
 	if err := doc.Validate(); err != nil {
-		return fmt.Errorf("validating schema: %w", err)
+		return nil, fmt.Errorf("validating schema: %w", err)
 	}
 
 	if err := doc.WriteToFile(pathOpenAPI); err != nil {
-		return fmt.Errorf("writing to file: %w", err)
+		return nil, fmt.Errorf("writing to file: %w", err)
 	}
 
-	return nil
+	return doc, nil
+}
+
+func generateCode(doc *openapi.Document) error {
+	return codegen.Generate(codegen.Config{
+		Spec:        doc,
+		PackageName: "notion",
+		OutputDir:   "pkg/notion",
+		Types:       true,
+		Client:      true,
+		ClientTest:  true,
+	})
 }
