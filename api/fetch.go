@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"cmp"
 	"context"
 	"encoding/json/jsontext"
@@ -254,6 +255,132 @@ func nameEnum(s *openapi.Schema, names ...string) error {
 	return nil
 }
 
+// mergeTaggedUnion turns the schema name, a union of objects told apart by the property tag, into one object: the
+// properties the variants share, tag as an enum of their values, and each variant's own properties, optional. The
+// variants are removed once nothing refers to them. It fails if a variant is not a reference to an object, has no
+// single value for tag, or disagrees with another on a property they share, so a change upstream is noticed.
+func mergeTaggedUnion(doc *openapi.Document, name, tag string) error {
+	s, ok := doc.Components.Schemas[name]
+	if !ok {
+		return componentErr(name, errors.New("not found"))
+	}
+
+	alts, field := s.OneOf, "oneOf"
+	if len(alts) == 0 {
+		alts, field = s.AnyOf, "anyOf"
+	}
+
+	if len(alts) == 0 {
+		return componentErr(name, errors.New("not a union"))
+	}
+
+	names := make([]string, len(alts))
+	variants := make([]*openapi.Schema, len(alts))
+
+	for i, alt := range alts {
+		if alt.Ref == nil || alt.Ref.Value == nil || alt.Ref.Value.Type != openapi.TypeObject {
+			return componentErr(name, &errpath.ErrField{Field: field, Err: &errpath.ErrIndex{
+				Index: i, Err: errors.New("not a reference to an object"),
+			}})
+		}
+
+		names[i] = strings.TrimPrefix(alt.Ref.Identifier, schemaRefPrefix)
+		variants[i] = alt.Ref.Value
+	}
+
+	tags := &jsonSet{}
+	seen := map[string][]byte{}
+	shared := map[string]int{tag: len(variants)}
+	required := map[string]int{}
+
+	for i, v := range variants {
+		if t, ok := v.Properties[tag]; !ok || len(t.Const) == 0 {
+			return componentErr(names[i], &errpath.ErrField{Field: "properties", Err: &errpath.ErrKey{
+				Key: tag, Err: errors.New("has no single value"),
+			}})
+		} else {
+			tags.add(t)
+		}
+
+		for prop, p := range v.Properties.ByIndex() {
+			if prop == tag {
+				continue
+			}
+
+			b, err := json.Marshal(p)
+			if err != nil {
+				return err
+			}
+
+			if prev, ok := seen[prop]; ok && !bytes.Equal(prev, b) {
+				return componentErr(names[i], &errpath.ErrField{Field: "properties", Err: &errpath.ErrKey{
+					Key: prop, Err: errors.New("differs from another variant's"),
+				}})
+			}
+
+			seen[prop] = b
+			shared[prop]++
+		}
+
+		for _, r := range v.Required {
+			required[r]++
+		}
+	}
+
+	// what they share first, in the first variant's order, then each variant's own
+	props := openapi.Schemas{}
+
+	for _, own := range []bool{false, true} {
+		for _, v := range variants {
+			for prop, p := range v.Properties.ByIndex() {
+				switch _, done := props[prop]; {
+				case done, own == (shared[prop] == len(variants)):
+				case prop == tag:
+					props.Set(tag, &openapi.Schema{Type: openapi.TypeString, Enum: tags.values})
+				default:
+					props.Set(prop, p)
+				}
+			}
+		}
+	}
+
+	var req []string
+
+	for prop := range props.ByIndex() {
+		if required[prop] == len(variants) {
+			req = append(req, prop)
+		}
+	}
+
+	s.Replace(&openapi.Schema{
+		Title:       s.Title,
+		Description: s.Description,
+		Type:        openapi.TypeObject,
+		Properties:  props,
+		Required:    req,
+	})
+
+	spec := &bytes.Buffer{}
+	if err := doc.WriteJSON(spec); err != nil {
+		return err
+	}
+
+	for _, n := range names {
+		if !bytes.Contains(spec.Bytes(), []byte(`"`+schemaRefPrefix+n+`"`)) {
+			delete(doc.Components.Schemas, n)
+		}
+	}
+
+	return nil
+}
+
+// componentErr reports err as one of the component schema name.
+func componentErr(name string, err error) error {
+	return &errpath.ErrField{Field: "components", Err: &errpath.ErrField{
+		Field: "schemas", Err: &errpath.ErrKey{Key: name, Err: err},
+	}}
+}
+
 // addRequestID adds the request_id Notion returns on every top-level object, but the official spec leaves out, to the
 // schemas names.
 func addRequestID(doc *openapi.Document, names ...string) error {
@@ -420,6 +547,10 @@ func fixOpenAPI() (*openapi.Document, error) {
 	}
 
 	if err := allowDateTimes(doc, "dateResponse", "start", "end"); err != nil {
+		return nil, err
+	}
+
+	if err := mergeTaggedUnion(doc, "Block", "type"); err != nil {
 		return nil, err
 	}
 

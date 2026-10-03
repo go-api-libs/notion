@@ -6471,115 +6471,162 @@
         "additionalProperties": false
       },
       "Block": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/paragraphBlockObjectResponse"
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/BlockType"
           },
-          {
-            "$ref": "#/components/schemas/heading1BlockObjectResponse"
+          "parent": {
+            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
           },
-          {
-            "$ref": "#/components/schemas/heading2BlockObjectResponse"
+          "object": {
+            "type": "string",
+            "const": "block"
           },
-          {
-            "$ref": "#/components/schemas/heading3BlockObjectResponse"
+          "id": {
+            "type": "string",
+            "format": "uuid"
           },
-          {
-            "$ref": "#/components/schemas/heading4BlockObjectResponse"
+          "created_time": {
+            "type": "string",
+            "format": "date-time"
           },
-          {
-            "$ref": "#/components/schemas/bulletedListItemBlockObjectResponse"
+          "created_by": {
+            "$ref": "#/components/schemas/partialUserObjectResponse"
           },
-          {
-            "$ref": "#/components/schemas/numberedListItemBlockObjectResponse"
+          "last_edited_time": {
+            "type": "string",
+            "format": "date-time"
           },
-          {
-            "$ref": "#/components/schemas/quoteBlockObjectResponse"
+          "last_edited_by": {
+            "$ref": "#/components/schemas/partialUserObjectResponse"
           },
-          {
-            "$ref": "#/components/schemas/toDoBlockObjectResponse"
+          "has_children": {
+            "type": "boolean"
           },
-          {
-            "$ref": "#/components/schemas/toggleBlockObjectResponse"
+          "in_trash": {
+            "type": "boolean"
           },
-          {
-            "$ref": "#/components/schemas/templateBlockObjectResponse"
+          "paragraph": {
+            "$ref": "#/components/schemas/BlockCallout"
           },
-          {
-            "$ref": "#/components/schemas/syncedBlockBlockObjectResponse"
+          "heading_1": {
+            "$ref": "#/components/schemas/headerContentWithRichTextAndColorResponse"
           },
-          {
-            "$ref": "#/components/schemas/childPageBlockObjectResponse"
+          "heading_2": {
+            "$ref": "#/components/schemas/headerContentWithRichTextAndColorResponse"
           },
-          {
-            "$ref": "#/components/schemas/childDatabaseBlockObjectResponse"
+          "heading_3": {
+            "$ref": "#/components/schemas/headerContentWithRichTextAndColorResponse"
           },
-          {
-            "$ref": "#/components/schemas/equationBlockObjectResponse"
+          "heading_4": {
+            "$ref": "#/components/schemas/headerContentWithRichTextAndColorResponse"
           },
-          {
-            "$ref": "#/components/schemas/codeBlockObjectResponse"
+          "bulleted_list_item": {
+            "$ref": "#/components/schemas/contentWithRichTextAndColorResponse"
           },
-          {
-            "$ref": "#/components/schemas/calloutBlockObjectResponse"
+          "numbered_list_item": {
+            "$ref": "#/components/schemas/contentWithRichTextAndColorAndListResponse"
           },
-          {
-            "$ref": "#/components/schemas/dividerBlockObjectResponse"
+          "quote": {
+            "$ref": "#/components/schemas/contentWithRichTextAndColorResponse"
           },
-          {
-            "$ref": "#/components/schemas/breadcrumbBlockObjectResponse"
+          "to_do": {
+            "$ref": "#/components/schemas/BlockToDo"
           },
-          {
-            "$ref": "#/components/schemas/tableOfContentsBlockObjectResponse"
+          "toggle": {
+            "$ref": "#/components/schemas/contentWithRichTextAndColorResponse"
           },
-          {
-            "$ref": "#/components/schemas/tabBlockObjectResponse"
+          "template": {
+            "$ref": "#/components/schemas/BlockTemplate"
           },
-          {
-            "$ref": "#/components/schemas/columnListBlockObjectResponse"
+          "synced_block": {
+            "$ref": "#/components/schemas/BlockSyncedBlock"
           },
-          {
-            "$ref": "#/components/schemas/columnBlockObjectResponse"
+          "child_page": {
+            "$ref": "#/components/schemas/titleObject"
           },
-          {
-            "$ref": "#/components/schemas/linkToPageBlockObjectResponse"
+          "child_database": {
+            "$ref": "#/components/schemas/titleObject"
           },
-          {
-            "$ref": "#/components/schemas/tableBlockObjectResponse"
+          "equation": {
+            "$ref": "#/components/schemas/expressionObject"
           },
-          {
-            "$ref": "#/components/schemas/tableRowBlockObjectResponse"
+          "code": {
+            "$ref": "#/components/schemas/BlockCode"
           },
-          {
-            "$ref": "#/components/schemas/meetingNotesBlockObjectResponse"
+          "callout": {
+            "$ref": "#/components/schemas/BlockCallout"
           },
-          {
-            "$ref": "#/components/schemas/embedBlockObjectResponse"
+          "divider": {
+            "$ref": "#/components/schemas/emptyObject"
           },
-          {
-            "$ref": "#/components/schemas/bookmarkBlockObjectResponse"
+          "breadcrumb": {
+            "$ref": "#/components/schemas/emptyObject"
           },
-          {
-            "$ref": "#/components/schemas/imageBlockObjectResponse"
+          "table_of_contents": {
+            "$ref": "#/components/schemas/BlockTableOfContents"
           },
-          {
-            "$ref": "#/components/schemas/videoBlockObjectResponse"
+          "tab": {
+            "$ref": "#/components/schemas/emptyObject"
           },
-          {
-            "$ref": "#/components/schemas/pdfBlockObjectResponse"
+          "column_list": {
+            "$ref": "#/components/schemas/emptyObject"
           },
-          {
-            "$ref": "#/components/schemas/fileBlockObjectResponse"
+          "column": {
+            "$ref": "#/components/schemas/columnResponse"
           },
-          {
-            "$ref": "#/components/schemas/audioBlockObjectResponse"
+          "link_to_page": {
+            "$ref": "#/components/schemas/BlockLinkToPage"
           },
-          {
-            "$ref": "#/components/schemas/linkPreviewBlockObjectResponse"
+          "table": {
+            "$ref": "#/components/schemas/contentWithTableResponse"
           },
-          {
-            "$ref": "#/components/schemas/unsupportedBlockObjectResponse"
+          "table_row": {
+            "$ref": "#/components/schemas/contentWithTableRowResponse"
+          },
+          "meeting_notes": {
+            "$ref": "#/components/schemas/transcriptionBlockResponse"
+          },
+          "embed": {
+            "$ref": "#/components/schemas/mediaContentWithUrlAndCaptionResponse"
+          },
+          "bookmark": {
+            "$ref": "#/components/schemas/mediaContentWithUrlAndCaptionResponse"
+          },
+          "image": {
+            "$ref": "#/components/schemas/mediaContentWithFileAndCaptionResponse"
+          },
+          "video": {
+            "$ref": "#/components/schemas/mediaContentWithFileAndCaptionResponse"
+          },
+          "pdf": {
+            "$ref": "#/components/schemas/mediaContentWithFileAndCaptionResponse"
+          },
+          "file": {
+            "$ref": "#/components/schemas/mediaContentWithFileNameAndCaptionResponse"
+          },
+          "audio": {
+            "$ref": "#/components/schemas/mediaContentWithFileAndCaptionResponse"
+          },
+          "link_preview": {
+            "$ref": "#/components/schemas/mediaContentWithUrl"
+          },
+          "unsupported": {
+            "$ref": "#/components/schemas/BlockUnsupported"
           }
+        },
+        "required": [
+          "type",
+          "parent",
+          "object",
+          "id",
+          "created_time",
+          "created_by",
+          "last_edited_time",
+          "last_edited_by",
+          "has_children",
+          "in_trash"
         ]
       },
       "Block2": {
@@ -6665,6 +6712,192 @@
           "next_cursor",
           "has_more",
           "results"
+        ]
+      },
+      "BlockCallout": {
+        "type": "object",
+        "properties": {
+          "rich_text": {
+            "$ref": "#/components/schemas/RichTexts"
+          },
+          "color": {
+            "$ref": "#/components/schemas/apiColor"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/BlockCalloutIcon"
+          }
+        },
+        "required": [
+          "rich_text",
+          "color",
+          "icon"
+        ]
+      },
+      "BlockCalloutIcon": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/pageIconResponse"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "BlockCode": {
+        "type": "object",
+        "properties": {
+          "rich_text": {
+            "$ref": "#/components/schemas/RichTexts"
+          },
+          "caption": {
+            "$ref": "#/components/schemas/RichTexts"
+          },
+          "language": {
+            "$ref": "#/components/schemas/languageRequest"
+          }
+        },
+        "required": [
+          "rich_text",
+          "caption",
+          "language"
+        ]
+      },
+      "BlockLinkToPage": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/PageID2"
+          },
+          {
+            "$ref": "#/components/schemas/DatabaseID5"
+          },
+          {
+            "$ref": "#/components/schemas/CommentID4"
+          }
+        ]
+      },
+      "BlockSyncedBlock": {
+        "type": "object",
+        "properties": {
+          "synced_from": {
+            "$ref": "#/components/schemas/BlockSyncedBlockSyncedFrom"
+          }
+        },
+        "required": [
+          "synced_from"
+        ]
+      },
+      "BlockSyncedBlockSyncedFrom": {
+        "title": "Block Id",
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "block_id"
+          },
+          "block_id": {
+            "$ref": "#/components/schemas/idRequest"
+          }
+        },
+        "required": [
+          "type",
+          "block_id"
+        ]
+      },
+      "BlockTableOfContents": {
+        "type": "object",
+        "properties": {
+          "color": {
+            "$ref": "#/components/schemas/apiColor"
+          }
+        },
+        "required": [
+          "color"
+        ]
+      },
+      "BlockTemplate": {
+        "type": "object",
+        "properties": {
+          "rich_text": {
+            "$ref": "#/components/schemas/RichTexts"
+          }
+        },
+        "required": [
+          "rich_text"
+        ]
+      },
+      "BlockToDo": {
+        "type": "object",
+        "properties": {
+          "rich_text": {
+            "$ref": "#/components/schemas/RichTexts"
+          },
+          "color": {
+            "$ref": "#/components/schemas/apiColor"
+          },
+          "checked": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "rich_text",
+          "color",
+          "checked"
+        ]
+      },
+      "BlockType": {
+        "type": "string",
+        "enum": [
+          "paragraph",
+          "heading_1",
+          "heading_2",
+          "heading_3",
+          "heading_4",
+          "bulleted_list_item",
+          "numbered_list_item",
+          "quote",
+          "to_do",
+          "toggle",
+          "template",
+          "synced_block",
+          "child_page",
+          "child_database",
+          "equation",
+          "code",
+          "callout",
+          "divider",
+          "breadcrumb",
+          "table_of_contents",
+          "tab",
+          "column_list",
+          "column",
+          "link_to_page",
+          "table",
+          "table_row",
+          "meeting_notes",
+          "embed",
+          "bookmark",
+          "image",
+          "video",
+          "pdf",
+          "file",
+          "audio",
+          "link_preview",
+          "unsupported"
+        ]
+      },
+      "BlockUnsupported": {
+        "type": "object",
+        "properties": {
+          "block_type": {
+            "description": "The underlying block type that is not currently supported by the Public API. Example values include: form, button, drive.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "block_type"
         ]
       },
       "BoardViewConfigCardLayout": {
@@ -7086,35 +7319,6 @@
           "rich_text"
         ],
         "additionalProperties": false
-      },
-      "CalloutBlockObjectCallout": {
-        "type": "object",
-        "properties": {
-          "rich_text": {
-            "$ref": "#/components/schemas/RichTexts"
-          },
-          "color": {
-            "$ref": "#/components/schemas/apiColor"
-          },
-          "icon": {
-            "$ref": "#/components/schemas/CalloutBlockObjectCalloutIcon"
-          }
-        },
-        "required": [
-          "rich_text",
-          "color",
-          "icon"
-        ]
-      },
-      "CalloutBlockObjectCalloutIcon": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/pageIconResponse"
-          },
-          {
-            "type": "null"
-          }
-        ]
       },
       "CancelSession": {
         "type": "object",
@@ -7646,25 +7850,6 @@
         ],
         "additionalProperties": false
       },
-      "CodeBlockObjectResponseCode": {
-        "type": "object",
-        "properties": {
-          "rich_text": {
-            "$ref": "#/components/schemas/RichTexts"
-          },
-          "caption": {
-            "$ref": "#/components/schemas/RichTexts"
-          },
-          "language": {
-            "$ref": "#/components/schemas/languageRequest"
-          }
-        },
-        "required": [
-          "rich_text",
-          "caption",
-          "language"
-        ]
-      },
       "CodeCode": {
         "type": "object",
         "properties": {
@@ -7806,7 +7991,7 @@
         ],
         "additionalProperties": false
       },
-      "CommentID5": {
+      "CommentID4": {
         "title": "Comment Id",
         "type": "object",
         "properties": {
@@ -9191,7 +9376,7 @@
         ],
         "additionalProperties": false
       },
-      "DatabaseID6": {
+      "DatabaseID5": {
         "title": "Database Id",
         "type": "object",
         "properties": {
@@ -11475,19 +11660,6 @@
           "link_to_page"
         ],
         "additionalProperties": false
-      },
-      "LinkToPageBlockObjectResponseLinkToPage": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/PageID2"
-          },
-          {
-            "$ref": "#/components/schemas/DatabaseID6"
-          },
-          {
-            "$ref": "#/components/schemas/CommentID5"
-          }
-        ]
       },
       "LinkToPageLinkToPage": {
         "anyOf": [
@@ -19893,37 +20065,6 @@
         ],
         "additionalProperties": false
       },
-      "SyncedBlockBlockObjectResponseSyncedBlock": {
-        "type": "object",
-        "properties": {
-          "synced_from": {
-            "$ref": "#/components/schemas/SyncedBlockBlockObjectResponseSyncedBlockSyncedFrom"
-          }
-        },
-        "required": [
-          "synced_from"
-        ]
-      },
-      "SyncedBlockBlockObjectResponseSyncedBlockSyncedFrom": {
-        "title": "Block Id",
-        "type": [
-          "object",
-          "null"
-        ],
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "block_id"
-          },
-          "block_id": {
-            "$ref": "#/components/schemas/idRequest"
-          }
-        },
-        "required": [
-          "type",
-          "block_id"
-        ]
-      },
       "SyncedBlockSyncedBlock": {
         "type": "object",
         "properties": {
@@ -20159,17 +20300,6 @@
         ],
         "additionalProperties": false
       },
-      "TableOfContentsBlockObjectResponseTableOfContents": {
-        "type": "object",
-        "properties": {
-          "color": {
-            "$ref": "#/components/schemas/apiColor"
-          }
-        },
-        "required": [
-          "color"
-        ]
-      },
       "TableOfContentsTableOfContents": {
         "type": "object",
         "properties": {
@@ -20325,17 +20455,6 @@
           "template"
         ],
         "additionalProperties": false
-      },
-      "TemplateBlockObjectResponseTemplate": {
-        "type": "object",
-        "properties": {
-          "rich_text": {
-            "$ref": "#/components/schemas/RichTexts"
-          }
-        },
-        "required": [
-          "rich_text"
-        ]
       },
       "TemplateMention": {
         "title": "Template Mention",
@@ -20722,25 +20841,6 @@
         ],
         "additionalProperties": false
       },
-      "ToDoBlockObjectResponseToDo": {
-        "type": "object",
-        "properties": {
-          "rich_text": {
-            "$ref": "#/components/schemas/RichTexts"
-          },
-          "color": {
-            "$ref": "#/components/schemas/apiColor"
-          },
-          "checked": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "rich_text",
-          "color",
-          "checked"
-        ]
-      },
       "ToDoToDo": {
         "type": "object",
         "properties": {
@@ -21086,18 +21186,6 @@
           "type",
           "unsupported",
           "function"
-        ]
-      },
-      "UnsupportedBlockObjectResponseUnsupported": {
-        "type": "object",
-        "properties": {
-          "block_type": {
-            "description": "The underlying block type that is not currently supported by the Public API. Example values include: form, button, drive.",
-            "type": "string"
-          }
-        },
-        "required": [
-          "block_type"
         ]
       },
       "UpdateABlock": {
@@ -22729,63 +22817,6 @@
           "PATCH /v1/pages/:page_id/markdown"
         ]
       },
-      "audioBlockObjectResponse": {
-        "title": "Audio",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "audio"
-          },
-          "audio": {
-            "$ref": "#/components/schemas/mediaContentWithFileAndCaptionResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "audio",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
       "baseWebhookPayload": {
         "type": "object",
         "properties": {
@@ -23229,63 +23260,6 @@
         ],
         "additionalProperties": false
       },
-      "bookmarkBlockObjectResponse": {
-        "title": "Bookmark",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "bookmark"
-          },
-          "bookmark": {
-            "$ref": "#/components/schemas/mediaContentWithUrlAndCaptionResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "bookmark",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
       "booleanFormulaPropertyResponse": {
         "title": "Boolean",
         "type": "object",
@@ -23372,120 +23346,6 @@
         "required": [
           "type",
           "bot"
-        ]
-      },
-      "breadcrumbBlockObjectResponse": {
-        "title": "Breadcrumb",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "breadcrumb"
-          },
-          "breadcrumb": {
-            "$ref": "#/components/schemas/emptyObject"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "breadcrumb",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
-      "bulletedListItemBlockObjectResponse": {
-        "title": "Bulleted List Item",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "bulleted_list_item"
-          },
-          "bulleted_list_item": {
-            "$ref": "#/components/schemas/contentWithRichTextAndColorResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "bulleted_list_item",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
         ]
       },
       "buttonPropertyConfigurationRequest": {
@@ -23617,63 +23477,6 @@
           "date_property_id"
         ],
         "additionalProperties": false
-      },
-      "calloutBlockObjectResponse": {
-        "title": "Callout",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "callout"
-          },
-          "callout": {
-            "$ref": "#/components/schemas/CalloutBlockObjectCallout"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "callout",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
       },
       "chartAggregationRequest": {
         "type": "object",
@@ -24148,291 +23951,6 @@
           "checkbox"
         ],
         "additionalProperties": false
-      },
-      "childDatabaseBlockObjectResponse": {
-        "title": "Child Database",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "child_database"
-          },
-          "child_database": {
-            "$ref": "#/components/schemas/titleObject"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "child_database",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
-      "childPageBlockObjectResponse": {
-        "title": "Child Page",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "child_page"
-          },
-          "child_page": {
-            "$ref": "#/components/schemas/titleObject"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "child_page",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
-      "codeBlockObjectResponse": {
-        "title": "Code",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "code"
-          },
-          "code": {
-            "$ref": "#/components/schemas/CodeBlockObjectResponseCode"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "code",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
-      "columnBlockObjectResponse": {
-        "title": "Column",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "column"
-          },
-          "column": {
-            "$ref": "#/components/schemas/columnResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "column",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
-      "columnListBlockObjectResponse": {
-        "title": "Column List",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "column_list"
-          },
-          "column_list": {
-            "$ref": "#/components/schemas/emptyObject"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "column_list",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
       },
       "columnListRequest": {
         "type": "object",
@@ -26361,63 +25879,6 @@
         ],
         "additionalProperties": false
       },
-      "dividerBlockObjectResponse": {
-        "title": "Divider",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "divider"
-          },
-          "divider": {
-            "$ref": "#/components/schemas/emptyObject"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "divider",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
       "dualPropertyDatabasePropertyRelationConfigResponse": {
         "title": "Dual Property",
         "type": "object",
@@ -26500,63 +25961,6 @@
           "email"
         ],
         "additionalProperties": false
-      },
-      "embedBlockObjectResponse": {
-        "title": "Embed",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "embed"
-          },
-          "embed": {
-            "$ref": "#/components/schemas/mediaContentWithUrlAndCaptionResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "embed",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
       },
       "embedFileUpload": {
         "type": "object",
@@ -26643,63 +26047,6 @@
           }
         },
         "additionalProperties": false
-      },
-      "equationBlockObjectResponse": {
-        "title": "Equation",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "equation"
-          },
-          "equation": {
-            "$ref": "#/components/schemas/expressionObject"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "equation",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
       },
       "equationRichTextItemRequest": {
         "title": "Equation",
@@ -26899,63 +26246,6 @@
           "external"
         ],
         "additionalProperties": false
-      },
-      "fileBlockObjectResponse": {
-        "title": "File",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "file"
-          },
-          "file": {
-            "$ref": "#/components/schemas/mediaContentWithFileNameAndCaptionResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "file",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
       },
       "fileInternalOrExternalFileWithNameResponse": {
         "title": "File",
@@ -28135,234 +27425,6 @@
         ],
         "additionalProperties": false
       },
-      "heading1BlockObjectResponse": {
-        "title": "Heading 1",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "heading_1"
-          },
-          "heading_1": {
-            "$ref": "#/components/schemas/headerContentWithRichTextAndColorResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "heading_1",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
-      "heading2BlockObjectResponse": {
-        "title": "Heading 2",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "heading_2"
-          },
-          "heading_2": {
-            "$ref": "#/components/schemas/headerContentWithRichTextAndColorResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "heading_2",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
-      "heading3BlockObjectResponse": {
-        "title": "Heading 3",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "heading_3"
-          },
-          "heading_3": {
-            "$ref": "#/components/schemas/headerContentWithRichTextAndColorResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "heading_3",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
-      "heading4BlockObjectResponse": {
-        "title": "Heading 4",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "heading_4"
-          },
-          "heading_4": {
-            "$ref": "#/components/schemas/headerContentWithRichTextAndColorResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "heading_4",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
       "iconPageIconRequest": {
         "title": "Icon",
         "type": "object",
@@ -28420,63 +27482,6 @@
         "type": "string",
         "format": "uuid",
         "example": "cb3265bc-5d5e-488f-bd8a-69221c107915"
-      },
-      "imageBlockObjectResponse": {
-        "title": "Image",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "image"
-          },
-          "image": {
-            "$ref": "#/components/schemas/mediaContentWithFileAndCaptionResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "image",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
       },
       "initialDataSourceRequest": {
         "type": "object",
@@ -28861,63 +27866,6 @@
         ],
         "additionalProperties": false
       },
-      "linkPreviewBlockObjectResponse": {
-        "title": "Link Preview",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "link_preview"
-          },
-          "link_preview": {
-            "$ref": "#/components/schemas/mediaContentWithUrl"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "link_preview",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
       "linkPreviewMention": {
         "type": "object",
         "properties": {
@@ -28933,63 +27881,6 @@
           "url"
         ],
         "additionalProperties": false
-      },
-      "linkToPageBlockObjectResponse": {
-        "title": "Link To Page",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "link_to_page"
-          },
-          "link_to_page": {
-            "$ref": "#/components/schemas/LinkToPageBlockObjectResponseLinkToPage"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "link_to_page",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
       },
       "listViewConfigRequest": {
         "type": "object",
@@ -29189,63 +28080,6 @@
         "required": [
           "url",
           "caption"
-        ]
-      },
-      "meetingNotesBlockObjectResponse": {
-        "title": "Meeting Notes",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "meeting_notes"
-          },
-          "meeting_notes": {
-            "$ref": "#/components/schemas/transcriptionBlockResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "meeting_notes",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
         ]
       },
       "mentionRichTextItemRequest": {
@@ -29774,63 +28608,6 @@
           "roman"
         ]
       },
-      "numberedListItemBlockObjectResponse": {
-        "title": "Numbered List Item",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "numbered_list_item"
-          },
-          "numbered_list_item": {
-            "$ref": "#/components/schemas/contentWithRichTextAndColorAndListResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "numbered_list_item",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
       "pageContentUpdatedWebhookPayload": {
         "allOf": [
           {
@@ -30303,63 +29080,6 @@
           "type",
           "entity",
           "data"
-        ]
-      },
-      "paragraphBlockObjectResponse": {
-        "title": "Paragraph",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "paragraph"
-          },
-          "paragraph": {
-            "$ref": "#/components/schemas/CalloutBlockObjectCallout"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "paragraph",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
         ]
       },
       "paragraphWithSingleLevelOfChildren": {
@@ -30964,63 +29684,6 @@
           "object"
         ],
         "additionalProperties": false
-      },
-      "pdfBlockObjectResponse": {
-        "title": "Pdf",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "pdf"
-          },
-          "pdf": {
-            "$ref": "#/components/schemas/mediaContentWithFileAndCaptionResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "pdf",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
       },
       "peopleArrayBasedPropertyValueResponse": {
         "title": "People",
@@ -31741,63 +30404,6 @@
         "required": [
           "object",
           "message"
-        ]
-      },
-      "quoteBlockObjectResponse": {
-        "title": "Quote",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "quote"
-          },
-          "quote": {
-            "$ref": "#/components/schemas/contentWithRichTextAndColorResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "quote",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
         ]
       },
       "relationArrayBasedPropertyValueResponse": {
@@ -33034,120 +31640,6 @@
         },
         "additionalProperties": false
       },
-      "syncedBlockBlockObjectResponse": {
-        "title": "Synced Block",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "synced_block"
-          },
-          "synced_block": {
-            "$ref": "#/components/schemas/SyncedBlockBlockObjectResponseSyncedBlock"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "synced_block",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
-      "tabBlockObjectResponse": {
-        "title": "Tab",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "tab"
-          },
-          "tab": {
-            "$ref": "#/components/schemas/emptyObject"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "tab",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
       "tabRequestWithNestedTabItemChildren": {
         "type": "object",
         "properties": {
@@ -33182,120 +31674,6 @@
         ],
         "additionalProperties": false
       },
-      "tableBlockObjectResponse": {
-        "title": "Table",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "table"
-          },
-          "table": {
-            "$ref": "#/components/schemas/contentWithTableResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "table",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
-      "tableOfContentsBlockObjectResponse": {
-        "title": "Table Of Contents",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "table_of_contents"
-          },
-          "table_of_contents": {
-            "$ref": "#/components/schemas/TableOfContentsBlockObjectResponseTableOfContents"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "table_of_contents",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
       "tableRequestWithTableRowChildren": {
         "type": "object",
         "properties": {
@@ -33323,63 +31701,6 @@
           "children"
         ],
         "additionalProperties": false
-      },
-      "tableRowBlockObjectResponse": {
-        "title": "Table Row",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "table_row"
-          },
-          "table_row": {
-            "$ref": "#/components/schemas/contentWithTableRowResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "table_row",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
       },
       "tableViewConfigRequest": {
         "type": "object",
@@ -33460,63 +31781,6 @@
           "type"
         ],
         "additionalProperties": false
-      },
-      "templateBlockObjectResponse": {
-        "title": "Template",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "template"
-          },
-          "template": {
-            "$ref": "#/components/schemas/TemplateBlockObjectResponseTemplate"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "template",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
       },
       "templateMentionDateTemplateMentionRequest": {
         "title": "Template Mention Date",
@@ -34138,120 +32402,6 @@
           "id"
         ]
       },
-      "toDoBlockObjectResponse": {
-        "title": "To Do",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "to_do"
-          },
-          "to_do": {
-            "$ref": "#/components/schemas/ToDoBlockObjectResponseToDo"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "to_do",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
-      "toggleBlockObjectResponse": {
-        "title": "Toggle",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "toggle"
-          },
-          "toggle": {
-            "$ref": "#/components/schemas/contentWithRichTextAndColorResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "toggle",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
-      },
       "transcriptionBlockResponse": {
         "type": "object",
         "properties": {
@@ -34401,63 +32551,6 @@
           "unique_id"
         ],
         "additionalProperties": false
-      },
-      "unsupportedBlockObjectResponse": {
-        "title": "Unsupported",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "unsupported"
-          },
-          "unsupported": {
-            "$ref": "#/components/schemas/UnsupportedBlockObjectResponseUnsupported"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "unsupported",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
       },
       "unsupportedFormulaProperty": {
         "title": "Unsupported",
@@ -34858,63 +32951,6 @@
           "verification"
         ],
         "additionalProperties": false
-      },
-      "videoBlockObjectResponse": {
-        "title": "Video",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "video"
-          },
-          "video": {
-            "$ref": "#/components/schemas/mediaContentWithFileAndCaptionResponse"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "object": {
-            "type": "string",
-            "const": "block"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "video",
-          "parent",
-          "object",
-          "id",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "has_children",
-          "in_trash"
-        ]
       },
       "viewConfigRequest": {
         "description": "View configuration, discriminated by the type field.",
