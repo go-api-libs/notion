@@ -156,7 +156,7 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -169,7 +169,7 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -182,7 +182,7 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -195,7 +195,7 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -208,7 +208,7 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -221,7 +221,7 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -234,7 +234,7 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -247,7 +247,7 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -260,7 +260,7 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -273,7 +273,7 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -286,7 +286,7 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -355,7 +355,7 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID idRequest)
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -368,7 +368,7 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID idRequest)
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -381,7 +381,7 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID idRequest)
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -394,7 +394,7 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID idRequest)
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -407,7 +407,7 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID idRequest)
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -420,7 +420,7 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID idRequest)
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -433,7 +433,7 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID idRequest)
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -446,7 +446,7 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID idRequest)
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -459,7 +459,7 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID idRequest)
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -472,7 +472,7 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID idRequest)
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -485,7 +485,7 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID idRequest)
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -568,7 +568,7 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -581,7 +581,7 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -594,7 +594,7 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -607,7 +607,7 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -620,7 +620,7 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -633,7 +633,7 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -646,7 +646,7 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -659,7 +659,7 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -672,7 +672,7 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -685,7 +685,7 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -698,7 +698,7 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -797,7 +797,7 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -810,7 +810,7 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -823,7 +823,7 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -836,7 +836,7 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -849,7 +849,7 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -862,7 +862,7 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -875,7 +875,7 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -888,7 +888,7 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -901,7 +901,7 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -914,7 +914,7 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -927,7 +927,7 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1006,7 +1006,7 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID idRe
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1019,7 +1019,7 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID idRe
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1032,7 +1032,7 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID idRe
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1045,7 +1045,7 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID idRe
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1058,7 +1058,7 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID idRe
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1071,7 +1071,7 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID idRe
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1084,7 +1084,7 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID idRe
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1097,7 +1097,7 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID idRe
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1110,7 +1110,7 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID idRe
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1123,7 +1123,7 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID idRe
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1136,7 +1136,7 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID idRe
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1222,7 +1222,7 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID idReques
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1235,7 +1235,7 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID idReques
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1248,7 +1248,7 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID idReques
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1261,7 +1261,7 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID idReques
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1274,7 +1274,7 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID idReques
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1287,7 +1287,7 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID idReques
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1300,7 +1300,7 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID idReques
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1313,7 +1313,7 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID idReques
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1326,7 +1326,7 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID idReques
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1339,7 +1339,7 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID idReques
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1352,7 +1352,7 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID idReques
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1428,7 +1428,7 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID idRequest
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1441,7 +1441,7 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID idRequest
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1454,7 +1454,7 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID idRequest
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1467,7 +1467,7 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID idRequest
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1480,7 +1480,7 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID idRequest
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1493,7 +1493,7 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID idRequest
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1506,7 +1506,7 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID idRequest
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1519,7 +1519,7 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID idRequest
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1532,7 +1532,7 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID idRequest
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1545,7 +1545,7 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID idRequest
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1558,7 +1558,7 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID idRequest
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1641,7 +1641,7 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1654,7 +1654,7 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1667,7 +1667,7 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1680,7 +1680,7 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1693,7 +1693,7 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1706,7 +1706,7 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1719,7 +1719,7 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1732,7 +1732,7 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1745,7 +1745,7 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1758,7 +1758,7 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1771,7 +1771,7 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1850,7 +1850,7 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1863,7 +1863,7 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1876,7 +1876,7 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1889,7 +1889,7 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1902,7 +1902,7 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1915,7 +1915,7 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1928,7 +1928,7 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1941,7 +1941,7 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1954,7 +1954,7 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1967,7 +1967,7 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -1980,7 +1980,7 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2069,7 +2069,7 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2082,7 +2082,7 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2095,7 +2095,7 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2108,7 +2108,7 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2121,7 +2121,7 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2134,7 +2134,7 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2147,7 +2147,7 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2160,7 +2160,7 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2173,7 +2173,7 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2186,7 +2186,7 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2199,7 +2199,7 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2268,7 +2268,7 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2281,7 +2281,7 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2294,7 +2294,7 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2307,7 +2307,7 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2320,7 +2320,7 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2333,7 +2333,7 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2346,7 +2346,7 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2359,7 +2359,7 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2372,7 +2372,7 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2385,7 +2385,7 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2398,7 +2398,7 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2467,7 +2467,7 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID id
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2480,7 +2480,7 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID id
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2493,7 +2493,7 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID id
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2506,7 +2506,7 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID id
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2519,7 +2519,7 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID id
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2532,7 +2532,7 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID id
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2545,7 +2545,7 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID id
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2558,7 +2558,7 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID id
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2571,7 +2571,7 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID id
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2584,7 +2584,7 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID id
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2597,7 +2597,7 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID id
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2666,7 +2666,7 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2679,7 +2679,7 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2692,7 +2692,7 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2705,7 +2705,7 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2718,7 +2718,7 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2731,7 +2731,7 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2744,7 +2744,7 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2757,7 +2757,7 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2770,7 +2770,7 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2783,7 +2783,7 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2796,7 +2796,7 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID idRe
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2872,7 +2872,7 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2885,7 +2885,7 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2898,7 +2898,7 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2911,7 +2911,7 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2924,7 +2924,7 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2937,7 +2937,7 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2950,7 +2950,7 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2963,7 +2963,7 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2976,7 +2976,7 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -2989,7 +2989,7 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID idRe
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3002,7 +3002,7 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID idRe
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3085,7 +3085,7 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3098,7 +3098,7 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3111,7 +3111,7 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3124,7 +3124,7 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3137,7 +3137,7 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3150,7 +3150,7 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3163,7 +3163,7 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3176,7 +3176,7 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3189,7 +3189,7 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3202,7 +3202,7 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3215,7 +3215,7 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3291,7 +3291,7 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3304,7 +3304,7 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3317,7 +3317,7 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3330,7 +3330,7 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3343,7 +3343,7 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3356,7 +3356,7 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3369,7 +3369,7 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3382,7 +3382,7 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3395,7 +3395,7 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3408,7 +3408,7 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3421,7 +3421,7 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3490,7 +3490,7 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3503,7 +3503,7 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3516,7 +3516,7 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3529,7 +3529,7 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3542,7 +3542,7 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3555,7 +3555,7 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3568,7 +3568,7 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3581,7 +3581,7 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3594,7 +3594,7 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3607,7 +3607,7 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3620,7 +3620,7 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3696,7 +3696,7 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3709,7 +3709,7 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3722,7 +3722,7 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3735,7 +3735,7 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3748,7 +3748,7 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3761,7 +3761,7 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3774,7 +3774,7 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3787,7 +3787,7 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3800,7 +3800,7 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3813,7 +3813,7 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3826,7 +3826,7 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3912,7 +3912,7 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3925,7 +3925,7 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3938,7 +3938,7 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3951,7 +3951,7 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3964,7 +3964,7 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3977,7 +3977,7 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -3990,7 +3990,7 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4003,7 +4003,7 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4016,7 +4016,7 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4029,7 +4029,7 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4042,7 +4042,7 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4118,7 +4118,7 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4131,7 +4131,7 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4144,7 +4144,7 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4157,7 +4157,7 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4170,7 +4170,7 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4183,7 +4183,7 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4196,7 +4196,7 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4209,7 +4209,7 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4222,7 +4222,7 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4235,7 +4235,7 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4248,7 +4248,7 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4335,7 +4335,7 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4348,7 +4348,7 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4361,7 +4361,7 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4374,7 +4374,7 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4387,7 +4387,7 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4400,7 +4400,7 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4413,7 +4413,7 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4426,7 +4426,7 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4439,7 +4439,7 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4452,7 +4452,7 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4465,7 +4465,7 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4534,7 +4534,7 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4547,7 +4547,7 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4560,7 +4560,7 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4573,7 +4573,7 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4586,7 +4586,7 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4599,7 +4599,7 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4612,7 +4612,7 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4625,7 +4625,7 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4638,7 +4638,7 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4651,7 +4651,7 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4664,7 +4664,7 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4740,7 +4740,7 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4753,7 +4753,7 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4766,7 +4766,7 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4779,7 +4779,7 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4792,7 +4792,7 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4805,7 +4805,7 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4818,7 +4818,7 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4831,7 +4831,7 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4844,7 +4844,7 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4857,7 +4857,7 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4870,7 +4870,7 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4946,7 +4946,7 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4959,7 +4959,7 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4972,7 +4972,7 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4985,7 +4985,7 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -4998,7 +4998,7 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5011,7 +5011,7 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5024,7 +5024,7 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5037,7 +5037,7 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5050,7 +5050,7 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5063,7 +5063,7 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5076,7 +5076,7 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5152,7 +5152,7 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5165,7 +5165,7 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5178,7 +5178,7 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5191,7 +5191,7 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5204,7 +5204,7 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5217,7 +5217,7 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5230,7 +5230,7 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5243,7 +5243,7 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5256,7 +5256,7 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5269,7 +5269,7 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5282,7 +5282,7 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5366,7 +5366,7 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5379,7 +5379,7 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5392,7 +5392,7 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5405,7 +5405,7 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5418,7 +5418,7 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5431,7 +5431,7 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5444,7 +5444,7 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5457,7 +5457,7 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5470,7 +5470,7 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5483,7 +5483,7 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5496,7 +5496,7 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5572,7 +5572,7 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5585,7 +5585,7 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5598,7 +5598,7 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5611,7 +5611,7 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5624,7 +5624,7 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5637,7 +5637,7 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5650,7 +5650,7 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5663,7 +5663,7 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5676,7 +5676,7 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5689,7 +5689,7 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5702,7 +5702,7 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5771,7 +5771,7 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5784,7 +5784,7 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5797,7 +5797,7 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5810,7 +5810,7 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5823,7 +5823,7 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5836,7 +5836,7 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5849,7 +5849,7 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5862,7 +5862,7 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5875,7 +5875,7 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5888,7 +5888,7 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5901,7 +5901,7 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5970,7 +5970,7 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5983,7 +5983,7 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -5996,7 +5996,7 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6009,7 +6009,7 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6022,7 +6022,7 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6035,7 +6035,7 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6048,7 +6048,7 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6061,7 +6061,7 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6074,7 +6074,7 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6087,7 +6087,7 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6100,7 +6100,7 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6176,7 +6176,7 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6189,7 +6189,7 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6202,7 +6202,7 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6215,7 +6215,7 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6228,7 +6228,7 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6241,7 +6241,7 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6254,7 +6254,7 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6267,7 +6267,7 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6280,7 +6280,7 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6293,7 +6293,7 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6306,7 +6306,7 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6393,7 +6393,7 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6406,7 +6406,7 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6419,7 +6419,7 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6432,7 +6432,7 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6445,7 +6445,7 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6458,7 +6458,7 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6471,7 +6471,7 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6484,7 +6484,7 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6497,7 +6497,7 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6510,7 +6510,7 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6523,7 +6523,7 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6599,7 +6599,7 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6612,7 +6612,7 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6625,7 +6625,7 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6638,7 +6638,7 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6651,7 +6651,7 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6664,7 +6664,7 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6677,7 +6677,7 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6690,7 +6690,7 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6703,7 +6703,7 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6716,7 +6716,7 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6729,7 +6729,7 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6805,7 +6805,7 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID i
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6818,7 +6818,7 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID i
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6831,7 +6831,7 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID i
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6844,7 +6844,7 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID i
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6857,7 +6857,7 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID i
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6870,7 +6870,7 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID i
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6883,7 +6883,7 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID i
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6896,7 +6896,7 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID i
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6909,7 +6909,7 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID i
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6922,7 +6922,7 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID i
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -6935,7 +6935,7 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID i
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7004,7 +7004,7 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7017,7 +7017,7 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7030,7 +7030,7 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7043,7 +7043,7 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7056,7 +7056,7 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7069,7 +7069,7 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7082,7 +7082,7 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7095,7 +7095,7 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7108,7 +7108,7 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7121,7 +7121,7 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7134,7 +7134,7 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7203,7 +7203,7 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7216,7 +7216,7 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7229,7 +7229,7 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7242,7 +7242,7 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7255,7 +7255,7 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7268,7 +7268,7 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7281,7 +7281,7 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7294,7 +7294,7 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7307,7 +7307,7 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7320,7 +7320,7 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7333,7 +7333,7 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7420,7 +7420,7 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7433,7 +7433,7 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7446,7 +7446,7 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7459,7 +7459,7 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7472,7 +7472,7 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7485,7 +7485,7 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7498,7 +7498,7 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7511,7 +7511,7 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7524,7 +7524,7 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7537,7 +7537,7 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7550,7 +7550,7 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7641,7 +7641,7 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7654,7 +7654,7 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7667,7 +7667,7 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7680,7 +7680,7 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7693,7 +7693,7 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7706,7 +7706,7 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7719,7 +7719,7 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7732,7 +7732,7 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7745,7 +7745,7 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7758,7 +7758,7 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7771,7 +7771,7 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7847,7 +7847,7 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body createVie
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7860,7 +7860,7 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body createVie
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7873,7 +7873,7 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body createVie
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7886,7 +7886,7 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body createVie
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7899,7 +7899,7 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body createVie
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7912,7 +7912,7 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body createVie
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7925,7 +7925,7 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body createVie
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7938,7 +7938,7 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body createVie
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7951,7 +7951,7 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body createVie
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7964,7 +7964,7 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body createVie
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -7977,7 +7977,7 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body createVie
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8046,7 +8046,7 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID idRe
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8059,7 +8059,7 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID idRe
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8072,7 +8072,7 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID idRe
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8085,7 +8085,7 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID idRe
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8098,7 +8098,7 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID idRe
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8111,7 +8111,7 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID idRe
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8124,7 +8124,7 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID idRe
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8137,7 +8137,7 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID idRe
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8150,7 +8150,7 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID idRe
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8163,7 +8163,7 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID idRe
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8176,7 +8176,7 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID idRe
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8245,7 +8245,7 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID idReque
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8258,7 +8258,7 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID idReque
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8271,7 +8271,7 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID idReque
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8284,7 +8284,7 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID idReque
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8297,7 +8297,7 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID idReque
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8310,7 +8310,7 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID idReque
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8323,7 +8323,7 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID idReque
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8336,7 +8336,7 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID idReque
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8349,7 +8349,7 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID idReque
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8362,7 +8362,7 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID idReque
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8375,7 +8375,7 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID idReque
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8451,7 +8451,7 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID idRequ
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8464,7 +8464,7 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID idRequ
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8477,7 +8477,7 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID idRequ
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8490,7 +8490,7 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID idRequ
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8503,7 +8503,7 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID idRequ
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8516,7 +8516,7 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID idRequ
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8529,7 +8529,7 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID idRequ
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8542,7 +8542,7 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID idRequ
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8555,7 +8555,7 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID idRequ
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8568,7 +8568,7 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID idRequ
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8581,7 +8581,7 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID idRequ
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8657,7 +8657,7 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8670,7 +8670,7 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8683,7 +8683,7 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8696,7 +8696,7 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8709,7 +8709,7 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8722,7 +8722,7 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8735,7 +8735,7 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8748,7 +8748,7 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8761,7 +8761,7 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8774,7 +8774,7 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8787,7 +8787,7 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID id
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8870,7 +8870,7 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8883,7 +8883,7 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8896,7 +8896,7 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8909,7 +8909,7 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8922,7 +8922,7 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8935,7 +8935,7 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8948,7 +8948,7 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8961,7 +8961,7 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8974,7 +8974,7 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -8987,7 +8987,7 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9000,7 +9000,7 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9069,7 +9069,7 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9082,7 +9082,7 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9095,7 +9095,7 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9108,7 +9108,7 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9121,7 +9121,7 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9134,7 +9134,7 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9147,7 +9147,7 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9160,7 +9160,7 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9173,7 +9173,7 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9186,7 +9186,7 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID id
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9199,7 +9199,7 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID id
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9275,7 +9275,7 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9288,7 +9288,7 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9301,7 +9301,7 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9314,7 +9314,7 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9327,7 +9327,7 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9340,7 +9340,7 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9353,7 +9353,7 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9366,7 +9366,7 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9379,7 +9379,7 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9392,7 +9392,7 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9405,7 +9405,7 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9481,7 +9481,7 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9494,7 +9494,7 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9507,7 +9507,7 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9520,7 +9520,7 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9533,7 +9533,7 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9546,7 +9546,7 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9559,7 +9559,7 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9572,7 +9572,7 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9585,7 +9585,7 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9598,7 +9598,7 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9611,7 +9611,7 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9687,7 +9687,7 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9700,7 +9700,7 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9713,7 +9713,7 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9726,7 +9726,7 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9739,7 +9739,7 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9752,7 +9752,7 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9765,7 +9765,7 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9778,7 +9778,7 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9791,7 +9791,7 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9804,7 +9804,7 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9817,7 +9817,7 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9896,7 +9896,7 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9909,7 +9909,7 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9922,7 +9922,7 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9935,7 +9935,7 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9948,7 +9948,7 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9961,7 +9961,7 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9974,7 +9974,7 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -9987,7 +9987,7 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10000,7 +10000,7 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10013,7 +10013,7 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10026,7 +10026,7 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10095,7 +10095,7 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10108,7 +10108,7 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10121,7 +10121,7 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10134,7 +10134,7 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10147,7 +10147,7 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10160,7 +10160,7 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10173,7 +10173,7 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10186,7 +10186,7 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10199,7 +10199,7 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10212,7 +10212,7 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10225,7 +10225,7 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10308,7 +10308,7 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10321,7 +10321,7 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10334,7 +10334,7 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10347,7 +10347,7 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10360,7 +10360,7 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10373,7 +10373,7 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10386,7 +10386,7 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10399,7 +10399,7 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10412,7 +10412,7 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10425,7 +10425,7 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10438,7 +10438,7 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10514,7 +10514,7 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10527,7 +10527,7 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10540,7 +10540,7 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10553,7 +10553,7 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10566,7 +10566,7 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10579,7 +10579,7 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10592,7 +10592,7 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10605,7 +10605,7 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10618,7 +10618,7 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10631,7 +10631,7 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10644,7 +10644,7 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10720,7 +10720,7 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10733,7 +10733,7 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10746,7 +10746,7 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10759,7 +10759,7 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10772,7 +10772,7 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10785,7 +10785,7 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10798,7 +10798,7 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10811,7 +10811,7 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10824,7 +10824,7 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10837,7 +10837,7 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10850,7 +10850,7 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10926,7 +10926,7 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10939,7 +10939,7 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10952,7 +10952,7 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10965,7 +10965,7 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10978,7 +10978,7 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -10991,7 +10991,7 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11004,7 +11004,7 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11017,7 +11017,7 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11030,7 +11030,7 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11043,7 +11043,7 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11056,7 +11056,7 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11139,7 +11139,7 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11152,7 +11152,7 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11165,7 +11165,7 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11178,7 +11178,7 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11191,7 +11191,7 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11204,7 +11204,7 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11217,7 +11217,7 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11230,7 +11230,7 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11243,7 +11243,7 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11256,7 +11256,7 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11269,7 +11269,7 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11338,7 +11338,7 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11351,7 +11351,7 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11364,7 +11364,7 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11377,7 +11377,7 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11390,7 +11390,7 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11403,7 +11403,7 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11416,7 +11416,7 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11429,7 +11429,7 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11442,7 +11442,7 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11455,7 +11455,7 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11468,7 +11468,7 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11537,7 +11537,7 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id idRe
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11550,7 +11550,7 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id idRe
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11563,7 +11563,7 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id idRe
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11576,7 +11576,7 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id idRe
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11589,7 +11589,7 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id idRe
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11602,7 +11602,7 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id idRe
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11615,7 +11615,7 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id idRe
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11628,7 +11628,7 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id idRe
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11641,7 +11641,7 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id idRe
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11654,7 +11654,7 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id idRe
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11667,7 +11667,7 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id idRe
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11743,7 +11743,7 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11756,7 +11756,7 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11769,7 +11769,7 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11782,7 +11782,7 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11795,7 +11795,7 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11808,7 +11808,7 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11821,7 +11821,7 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11834,7 +11834,7 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11847,7 +11847,7 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11860,7 +11860,7 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11873,7 +11873,7 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11942,7 +11942,7 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11955,7 +11955,7 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11968,7 +11968,7 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11981,7 +11981,7 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -11994,7 +11994,7 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12007,7 +12007,7 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12020,7 +12020,7 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12033,7 +12033,7 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12046,7 +12046,7 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12059,7 +12059,7 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12072,7 +12072,7 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12148,7 +12148,7 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12161,7 +12161,7 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12174,7 +12174,7 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12187,7 +12187,7 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12200,7 +12200,7 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12213,7 +12213,7 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12226,7 +12226,7 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12239,7 +12239,7 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12252,7 +12252,7 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12265,7 +12265,7 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12278,7 +12278,7 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12354,7 +12354,7 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12367,7 +12367,7 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12380,7 +12380,7 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12393,7 +12393,7 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12406,7 +12406,7 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12419,7 +12419,7 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12432,7 +12432,7 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12445,7 +12445,7 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12458,7 +12458,7 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12471,7 +12471,7 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12484,7 +12484,7 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12560,7 +12560,7 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID i
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12573,7 +12573,7 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID i
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12586,7 +12586,7 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID i
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12599,7 +12599,7 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID i
 		// Not Found
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12612,7 +12612,7 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID i
 		// Not Acceptable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12625,7 +12625,7 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID i
 		// Conflict
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12638,7 +12638,7 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID i
 		// Too Many Requests
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12651,7 +12651,7 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID i
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12664,7 +12664,7 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID i
 		// Service Unavailable
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12677,7 +12677,7 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID i
 		// Gateway Timeout
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12690,7 +12690,7 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID i
 		// The Service Is Overloaded
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorAPI
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12766,7 +12766,7 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOAuth
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12779,7 +12779,7 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOAuth
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12792,7 +12792,7 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOAuth
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12805,7 +12805,7 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOAuth
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12881,7 +12881,7 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body Introspe
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOAuth
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12894,7 +12894,7 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body Introspe
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOAuth
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12907,7 +12907,7 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body Introspe
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOAuth
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12920,7 +12920,7 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body Introspe
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOAuth
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12996,7 +12996,7 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Intr
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOAuth
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -13009,7 +13009,7 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Intr
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOAuth
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -13022,7 +13022,7 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Intr
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOAuth
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -13035,7 +13035,7 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Intr
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOAuth
+			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}

@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"slices"
 	"strings"
 
 	"github.com/MarkRosemaker/errpath"
@@ -132,20 +133,20 @@ func persistOpenAPI(ctx context.Context) error {
 	return doc.WriteJSON(w)
 }
 
-// consolidateErrors replaces the schemas whose names start with prefix, each an allOf of the common error and a code
-// and status, with one schema called name that allows every status they did. Their codes are added to codes, which
-// the schema's code refers to as codeName.
-func consolidateErrors(doc *openapi.Document, prefix, name, common, codeName string, codes *jsonSet) error {
+// consolidateErrors replaces the schemas whose names start with any of prefixes, each an allOf of the common error and
+// a code and status, with one schema called name that allows every code and status they did. Its code refers to a
+// schema of its own, called codeName.
+func consolidateErrors(doc *openapi.Document, prefixes []string, name, common, codeName string) error {
 	var names []string
 
 	for n := range doc.Components.Schemas.ByIndex() {
-		if strings.HasPrefix(n, prefix) {
+		if slices.ContainsFunc(prefixes, func(p string) bool { return strings.HasPrefix(n, p) }) {
 			names = append(names, n)
 		}
 	}
 
 	if len(names) == 0 {
-		return fmt.Errorf("no schemas start with %q", prefix)
+		return fmt.Errorf("no schemas start with any of %q", prefixes)
 	}
 
 	commonSchema, ok := doc.Components.Schemas[common]
@@ -153,7 +154,7 @@ func consolidateErrors(doc *openapi.Document, prefix, name, common, codeName str
 		return fmt.Errorf("schema %q not found", common)
 	}
 
-	statuses := &jsonSet{}
+	codes, statuses := &jsonSet{}, &jsonSet{}
 
 	for _, n := range names {
 		if err := collectError(doc.Components.Schemas[n], common, codes, statuses); err != nil {
@@ -163,14 +164,15 @@ func consolidateErrors(doc *openapi.Document, prefix, name, common, codeName str
 		}
 	}
 
-	first := names[0]
+	codeSchema := &openapi.Schema{Type: openapi.TypeString, Enum: codes.values}
+	doc.Components.Schemas.Set(codeName, codeSchema)
+
 	// set one by one, since a map literal leaves their order to chance
 	props := openapi.Schemas{}
-	props.Set("code", &openapi.Schema{Ref: &openapi.SchemaRef{
-		Identifier: schemaRefPrefix + codeName, Value: doc.Components.Schemas[codeName],
-	}})
+	props.Set("code", &openapi.Schema{Ref: &openapi.SchemaRef{Identifier: schemaRefPrefix + codeName, Value: codeSchema}})
 	props.Set("status", &openapi.Schema{Type: openapi.TypeInteger, Enum: statuses.values})
 
+	first := names[0]
 	doc.Components.Schemas[first].Replace(&openapi.Schema{AllOf: openapi.SchemaList{
 		{Ref: &openapi.SchemaRef{Identifier: schemaRefPrefix + common, Value: commonSchema}},
 		{Type: openapi.TypeObject, Properties: props, Required: []string{"code", "status"}},
@@ -286,22 +288,10 @@ func fixOpenAPI() (*openapi.Document, error) {
 		}
 	}
 
-	const errorCode = "ErrorCode"
-
-	codes := &jsonSet{}
-	codeSchema := &openapi.Schema{Type: openapi.TypeString}
-	doc.Components.Schemas.Set(errorCode, codeSchema)
-
-	for _, e := range []struct{ prefix, name string }{
-		{"error_api_", "ErrorAPI"},
-		{"error_oauth_", "ErrorOAuth"},
-	} {
-		if err := consolidateErrors(doc, e.prefix, e.name, "publicApiCommonErrorResponse", errorCode, codes); err != nil {
-			return nil, err
-		}
+	if err := consolidateErrors(doc, []string{"error_api_", "error_oauth_"},
+		"Error", "publicApiCommonErrorResponse", "ErrorCode"); err != nil {
+		return nil, err
 	}
-
-	codeSchema.Enum = codes.values
 
 	// TODO: apply
 	// - openapi-enrich

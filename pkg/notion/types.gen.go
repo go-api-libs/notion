@@ -5938,14 +5938,23 @@ type EquationRichTextItemEquation2 struct {
 
 // Error defines a model
 type Error struct {
+	Object         any                                                `json:"object"`
+	Message        string                                             `json:"message"`
+	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Code           ErrorCode                                          `json:"code"`
+	Status         int                                                `json:"status"`
+}
+
+// Error2 defines a model
+type Error2 struct {
 	// Indicates an error occurred during import.
 	Type string `json:"type"`
 	// Details about the error that occurred during file import.
-	Err Error2 `json:"error"`
+	Err Error3 `json:"error"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether Error declares it.
-func (v *Error) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether Error2 declares it.
+func (v *Error2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
@@ -5957,7 +5966,7 @@ func (v *Error) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, e
 }
 
 // Details about the error that occurred during file import.
-type Error2 struct {
+type Error3 struct {
 	// The type of error that occurred during file import.
 	Type ErrorType `json:"type"`
 	// A short string code representing the error.
@@ -5968,13 +5977,6 @@ type Error2 struct {
 	Parameter string `json:"parameter"`
 	// The HTTP status code associated with the error, if available. Null if not applicable.
 	StatusCode *int `json:"status_code"`
-}
-
-// ErrorAPI defines a model
-type ErrorAPI struct {
-	publicApiCommonErrorResponse
-	Code   ErrorCode `json:"code"`
-	Status int       `json:"status"`
 }
 
 // ErrorCode defines a model
@@ -6020,13 +6022,6 @@ func (e ErrorCode) Valid() bool {
 	default:
 		return false
 	}
-}
-
-// ErrorOAuth defines a model
-type ErrorOAuth struct {
-	publicApiCommonErrorResponse
-	Code   ErrorCode `json:"code"`
-	Status int       `json:"status"`
 }
 
 // The type of error that occurred during file import.
@@ -6324,7 +6319,7 @@ func (v *FileUploadObjectResponseFileImportResult) UnmarshalJSONFrom(dec *jsonte
 
 		v.FileUploadObjectResponseFileImportResultAllOf1.Success = &vv
 	case "error":
-		var vv Error
+		var vv Error2
 		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
 			{membersOfFileUploadObjectResponseFileImportResult, v.unmarshalJSONMember},
 			{variantsOfFileUploadObjectResponseFileImportResult[1].members, vv.unmarshalJSONMember},
@@ -6332,7 +6327,7 @@ func (v *FileUploadObjectResponseFileImportResult) UnmarshalJSONFrom(dec *jsonte
 			return err
 		}
 
-		v.FileUploadObjectResponseFileImportResultAllOf1.Error = &vv
+		v.FileUploadObjectResponseFileImportResultAllOf1.Error2 = &vv
 	default:
 		return jsonUnknownValue("type", tag)
 	}
@@ -6367,10 +6362,10 @@ func (v *FileUploadObjectResponseFileImportResult) MarshalJSONTo(enc *jsontext.E
 		set++
 	}
 
-	if v.FileUploadObjectResponseFileImportResultAllOf1.Error != nil {
+	if v.FileUploadObjectResponseFileImportResultAllOf1.Error2 != nil {
 		tag = "error"
 
-		variant, err := json.Marshal(v.FileUploadObjectResponseFileImportResultAllOf1.Error, jsonOpts)
+		variant, err := json.Marshal(v.FileUploadObjectResponseFileImportResultAllOf1.Error2, jsonOpts)
 		if err != nil {
 			return err
 		}
@@ -6398,7 +6393,7 @@ func (v *FileUploadObjectResponseFileImportResult) MarshalJSONTo(enc *jsontext.E
 // FileUploadObjectResponseFileImportResultAllOf1 is an untagged oneOf union: exactly one field is set after unmarshaling.
 type FileUploadObjectResponseFileImportResultAllOf1 struct {
 	Success *Success
-	Error   *Error
+	Error2  *Error2
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its first member must be type, which names the
@@ -6418,12 +6413,12 @@ func (v *FileUploadObjectResponseFileImportResultAllOf1) UnmarshalJSONFrom(dec *
 
 		v.Success = &vv
 	case "error":
-		var vv Error
+		var vv Error2
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.Error = &vv
+		v.Error2 = &vv
 	default:
 		return jsonUnknownValue("type", tag)
 	}
@@ -6441,8 +6436,8 @@ func (v *FileUploadObjectResponseFileImportResultAllOf1) MarshalJSONTo(enc *json
 	switch {
 	case v.Success != nil:
 		variant, tag = v.Success, "success"
-	case v.Error != nil:
-		variant, tag = v.Error, "error"
+	case v.Error2 != nil:
+		variant, tag = v.Error2, "error"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -6603,7 +6598,7 @@ type FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResultOneOf1 struct
 	// ISO 8601 timestamp of when the import was attempted.
 	ImportedTime string `json:"imported_time"`
 	// Details about the error that occurred during file import.
-	Err Error2 `json:"error"`
+	Err Error3 `json:"error"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResultOneOf1 declares it.
@@ -34528,13 +34523,6 @@ func (v *publicApiAsyncTaskStatusResultJsonValue) MarshalJSONTo(enc *jsontext.En
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// publicApiCommonErrorResponse defines a model
-type publicApiCommonErrorResponse struct {
-	Object         any                                                `json:"object"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // A property filter condition. Same shape as a property filter but without the "property" field (the hashmap key identifies the property). For example: { "select": { "equals": "High" } }. Pass an empty object to add the property to the filter bar without criteria.
