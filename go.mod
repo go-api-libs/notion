@@ -6,9 +6,9 @@ require (
 	cloud.google.com/go v0.123.0
 	github.com/MarkRosemaker/jsonutil v0.0.0-20260929233335-a0222d53b745
 	github.com/MarkRosemaker/openapi v0.0.0-20261001203346-42d50de94f07
-	github.com/MarkRosemaker/openapi-edit v0.0.0-20261002084608-32f8b4643215
-	github.com/MarkRosemaker/openapi-enrich v0.0.0-20261002084648-62eb42fab2c6
-	github.com/MarkRosemaker/openapi-merge v0.0.0-20261001204032-a7db179ce542
+	github.com/MarkRosemaker/openapi-edit v0.0.0-20261003173102-00134cee25dc
+	github.com/MarkRosemaker/openapi-enrich v0.0.0-20261003172823-33ac7b2dd57c
+	github.com/MarkRosemaker/openapi-merge v0.0.0-20261003173029-9da177fe57df
 	golang.org/x/sync v0.23.0
 )
 
