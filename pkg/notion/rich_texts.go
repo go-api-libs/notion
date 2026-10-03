@@ -1,11 +1,13 @@
 package notion
 
-// plainText returns the plain text of all the rich texts.
-// func (ts RichTexts) plainText() string {
-// 	ss := make([]string, len(ts))
-// 	for i, t := range ts {
-// 		ss[i] = t.PlainText
-// 	}
+import "strings"
 
-// 	return strings.Join(ss, "")
-// }
+// PlainText returns the plain text of all the rich texts.
+func (ts RichTexts) PlainText() string {
+	b := &strings.Builder{}
+	for _, t := range ts {
+		b.WriteString(t.PlainText)
+	}
+
+	return b.String()
+}

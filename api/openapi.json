@@ -6528,6 +6528,118 @@
         "additionalProperties": false
       },
       "Block": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/paragraphBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/heading1BlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/heading2BlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/heading3BlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/heading4BlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/bulletedListItemBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/numberedListItemBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/quoteBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/toDoBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/toggleBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/templateBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/syncedBlockBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/childPageBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/childDatabaseBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/equationBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/codeBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/calloutBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/dividerBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/breadcrumbBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/tableOfContentsBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/tabBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/columnListBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/columnBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/linkToPageBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/tableBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/tableRowBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/meetingNotesBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/embedBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/bookmarkBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/imageBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/videoBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/pdfBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/fileBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/audioBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/linkPreviewBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/unsupportedBlockObjectResponse"
+          }
+        ]
+      },
+      "Block3": {
         "title": "Block",
         "type": "object",
         "properties": {
@@ -6573,7 +6685,7 @@
             "$ref": "#/components/schemas/partialBlockObjectResponse"
           },
           {
-            "$ref": "#/components/schemas/blockObjectResponse"
+            "$ref": "#/components/schemas/Block"
           }
         ]
       },
@@ -7125,11 +7237,7 @@
         "type": "object",
         "properties": {
           "rich_text": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           },
           "color": {
             "$ref": "#/components/schemas/apiColor"
@@ -7726,18 +7834,10 @@
         "type": "object",
         "properties": {
           "rich_text": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           },
           "caption": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           },
           "language": {
             "$ref": "#/components/schemas/languageRequest"
@@ -8443,7 +8543,7 @@
             "$ref": "#/components/schemas/partialDatabaseObjectResponse"
           },
           {
-            "$ref": "#/components/schemas/databaseObjectResponse"
+            "$ref": "#/components/schemas/Database"
           }
         ]
       },
@@ -8835,11 +8935,7 @@
         "properties": {
           "title": {
             "description": "Title of the meeting note as rich text.",
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           },
           "status": {
             "$ref": "#/components/schemas/CreateMeetingNoteOneOfMeetingNotesStatus"
@@ -9350,6 +9446,101 @@
         ]
       },
       "Database": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "The database object type name.",
+            "type": "string",
+            "const": "database"
+          },
+          "id": {
+            "description": "The ID of the database.",
+            "$ref": "#/components/schemas/idResponse"
+          },
+          "title": {
+            "description": "The title of the database.",
+            "$ref": "#/components/schemas/RichTexts"
+          },
+          "description": {
+            "description": "The description of the database.",
+            "$ref": "#/components/schemas/RichTexts"
+          },
+          "parent": {
+            "description": "The parent of the database. This is typically a page, block, or workspace, but can be another database in the case of wikis.",
+            "$ref": "#/components/schemas/parentOfDatabaseResponse"
+          },
+          "is_inline": {
+            "description": "Whether the database is inline.",
+            "type": "boolean"
+          },
+          "database_type": {
+            "$ref": "#/components/schemas/DataSourceObjectDatabaseType"
+          },
+          "in_trash": {
+            "description": "Whether the database is in the trash.",
+            "type": "boolean"
+          },
+          "is_locked": {
+            "description": "Whether the database is locked from editing in the Notion app UI.",
+            "type": "boolean"
+          },
+          "created_time": {
+            "description": "The time when the database was created.",
+            "type": "string",
+            "format": "date-time"
+          },
+          "last_edited_time": {
+            "description": "The time when the database was last edited.",
+            "type": "string",
+            "format": "date-time"
+          },
+          "data_sources": {
+            "description": "The data sources of the database.",
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/dataSourceReferenceResponse"
+            }
+          },
+          "icon": {
+            "$ref": "#/components/schemas/DataSourceObjectIcon"
+          },
+          "cover": {
+            "$ref": "#/components/schemas/DataSourceObjectCover"
+          },
+          "url": {
+            "description": "The URL of the database.",
+            "type": "string"
+          },
+          "public_url": {
+            "$ref": "#/components/schemas/BotInfoWorkspaceName"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "title",
+          "description",
+          "parent",
+          "is_inline",
+          "database_type",
+          "in_trash",
+          "is_locked",
+          "created_time",
+          "last_edited_time",
+          "data_sources",
+          "icon",
+          "cover",
+          "url",
+          "public_url"
+        ],
+        "additionalProperties": false
+      },
+      "Database2": {
         "title": "Database",
         "type": "object",
         "properties": {
@@ -9366,7 +9557,7 @@
           "database"
         ]
       },
-      "Database2": {
+      "Database3": {
         "title": "Database",
         "type": "object",
         "properties": {
@@ -9376,7 +9567,7 @@
             "const": "database"
           },
           "database": {
-            "$ref": "#/components/schemas/Database3"
+            "$ref": "#/components/schemas/Database4"
           }
         },
         "required": [
@@ -9385,7 +9576,7 @@
         ],
         "additionalProperties": false
       },
-      "Database3": {
+      "Database4": {
         "description": "Details of the database mention.",
         "type": "object",
         "properties": {
@@ -12102,10 +12293,10 @@
             "$ref": "#/components/schemas/Date4"
           },
           {
-            "$ref": "#/components/schemas/Page"
+            "$ref": "#/components/schemas/Page2"
           },
           {
-            "$ref": "#/components/schemas/Database"
+            "$ref": "#/components/schemas/Database2"
           },
           {
             "$ref": "#/components/schemas/TemplateMention"
@@ -12131,10 +12322,10 @@
             "$ref": "#/components/schemas/LinkMention"
           },
           {
-            "$ref": "#/components/schemas/Page2"
+            "$ref": "#/components/schemas/Page3"
           },
           {
-            "$ref": "#/components/schemas/Database2"
+            "$ref": "#/components/schemas/Database3"
           },
           {
             "$ref": "#/components/schemas/TemplateMention2"
@@ -12161,7 +12352,7 @@
             "$ref": "#/components/schemas/partialPageObjectResponse"
           },
           {
-            "$ref": "#/components/schemas/pageObjectResponse"
+            "$ref": "#/components/schemas/Page"
           }
         ]
       },
@@ -12629,6 +12820,96 @@
         "additionalProperties": false
       },
       "Page": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "The page object type name.",
+            "type": "string",
+            "const": "page"
+          },
+          "id": {
+            "description": "The ID of the page.",
+            "$ref": "#/components/schemas/idResponse"
+          },
+          "created_time": {
+            "description": "Date and time when this page was created.",
+            "type": "string",
+            "format": "date-time"
+          },
+          "last_edited_time": {
+            "description": "Date and time when this page was last edited.",
+            "type": "string",
+            "format": "date-time"
+          },
+          "in_trash": {
+            "description": "Whether the page is in trash.",
+            "type": "boolean"
+          },
+          "is_archived": {
+            "description": "Whether the page has been archived.",
+            "type": "boolean"
+          },
+          "is_locked": {
+            "description": "Whether the page is locked from editing in the Notion app UI.",
+            "type": "boolean"
+          },
+          "url": {
+            "description": "The URL of the Notion page.",
+            "type": "string"
+          },
+          "public_url": {
+            "$ref": "#/components/schemas/BotInfoWorkspaceName"
+          },
+          "parent": {
+            "description": "Information about the page's parent.",
+            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
+          },
+          "properties": {
+            "description": "Property values of this page.",
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/PropertyValue"
+            }
+          },
+          "icon": {
+            "$ref": "#/components/schemas/DataSourceObjectIcon"
+          },
+          "cover": {
+            "$ref": "#/components/schemas/DataSourceObjectCover"
+          },
+          "created_by": {
+            "description": "User who created the page.",
+            "$ref": "#/components/schemas/partialUserObjectResponse"
+          },
+          "last_edited_by": {
+            "description": "User who last edited the page.",
+            "$ref": "#/components/schemas/partialUserObjectResponse"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "created_time",
+          "last_edited_time",
+          "in_trash",
+          "is_archived",
+          "is_locked",
+          "url",
+          "public_url",
+          "parent",
+          "properties",
+          "icon",
+          "cover",
+          "created_by",
+          "last_edited_by"
+        ],
+        "additionalProperties": false
+      },
+      "Page2": {
         "title": "Page",
         "type": "object",
         "properties": {
@@ -12645,7 +12926,7 @@
           "page"
         ]
       },
-      "Page2": {
+      "Page3": {
         "title": "Page",
         "type": "object",
         "properties": {
@@ -12655,7 +12936,7 @@
             "const": "page"
           },
           "page": {
-            "$ref": "#/components/schemas/Database3"
+            "$ref": "#/components/schemas/Database4"
           }
         },
         "required": [
@@ -12757,7 +13038,7 @@
       "PageOrDataSourceResultsItemAnyOf": {
         "anyOf": [
           {
-            "$ref": "#/components/schemas/pageObjectResponse"
+            "$ref": "#/components/schemas/Page"
           },
           {
             "$ref": "#/components/schemas/partialPageObjectResponse"
@@ -12830,7 +13111,7 @@
             "$ref": "#/components/schemas/Title"
           },
           {
-            "$ref": "#/components/schemas/RichText"
+            "$ref": "#/components/schemas/RichText3"
           },
           {
             "$ref": "#/components/schemas/Number"
@@ -13850,13 +14131,90 @@
           "relevance"
         ]
       },
+      "PropertyConfig": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/databasePropertyConfigResponseCommon"
+          },
+          {
+            "$ref": "#/components/schemas/PropertyConfigAllOf1"
+          }
+        ]
+      },
+      "PropertyConfigAllOf1": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/numberDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/formulaDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/selectDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/multiSelectDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/statusDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/relationDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/rollupDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/uniqueIdDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/titleDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/richTextDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/urlDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/peopleDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/filesDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/emailDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/phoneNumberDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/dateDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/checkboxDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/createdByDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/createdTimeDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/lastEditedByDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/lastEditedTimeDatabasePropertyConfigResponse"
+          }
+        ]
+      },
       "PropertyItemPropertyItemListResponsePropertyItem": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/Title5"
           },
           {
-            "$ref": "#/components/schemas/RichText5"
+            "$ref": "#/components/schemas/RichText6"
           },
           {
             "$ref": "#/components/schemas/People5"
@@ -13866,6 +14224,26 @@
           },
           {
             "$ref": "#/components/schemas/Rollup3"
+          }
+        ]
+      },
+      "PropertyValue": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/FileUploadPageCoverFileUpload"
+          },
+          {
+            "$ref": "#/components/schemas/PropertyValueAllOf1"
+          }
+        ]
+      },
+      "PropertyValueAllOf1": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/simpleOrArrayPropertyValueResponse"
+          },
+          {
+            "$ref": "#/components/schemas/partialRollupPropertyResponse"
           }
         ]
       },
@@ -18098,6 +18476,33 @@
         }
       },
       "RichText": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/richTextItemResponseCommon"
+          },
+          {
+            "$ref": "#/components/schemas/RichTextAllOf1"
+          }
+        ]
+      },
+      "RichText2": {
+        "title": "Rich Text",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `rich_text`",
+            "type": "string",
+            "const": "rich_text"
+          },
+          "rich_text": {
+            "$ref": "#/components/schemas/emptyObject"
+          }
+        },
+        "required": [
+          "rich_text"
+        ]
+      },
+      "RichText3": {
         "title": "Rich Text",
         "type": "object",
         "properties": {
@@ -18118,24 +18523,7 @@
         ],
         "additionalProperties": false
       },
-      "RichText2": {
-        "title": "Rich Text",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `rich_text`",
-            "type": "string",
-            "const": "rich_text"
-          },
-          "rich_text": {
-            "$ref": "#/components/schemas/emptyObject"
-          }
-        },
-        "required": [
-          "rich_text"
-        ]
-      },
-      "RichText4": {
+      "RichText5": {
         "title": "Rich Text",
         "type": "object",
         "properties": {
@@ -18156,7 +18544,7 @@
         ],
         "additionalProperties": false
       },
-      "RichText5": {
+      "RichText6": {
         "title": "Rich Text",
         "type": "object",
         "properties": {
@@ -18183,6 +18571,26 @@
           "next_url",
           "id"
         ]
+      },
+      "RichTextAllOf1": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/textRichTextItemResponse"
+          },
+          {
+            "$ref": "#/components/schemas/mentionRichTextItemResponse"
+          },
+          {
+            "$ref": "#/components/schemas/equationRichTextItemResponse"
+          }
+        ]
+      },
+      "RichTexts": {
+        "type": "array",
+        "maxItems": 100,
+        "items": {
+          "$ref": "#/components/schemas/RichText"
+        }
       },
       "Rollup": {
         "title": "Rollup",
@@ -19191,11 +19599,7 @@
         "type": "object",
         "properties": {
           "rich_text": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           }
         },
         "required": [
@@ -19574,11 +19978,7 @@
         "type": "object",
         "properties": {
           "rich_text": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           },
           "color": {
             "$ref": "#/components/schemas/apiColor"
@@ -21842,118 +22242,6 @@
           }
         ]
       },
-      "blockObjectResponse": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/paragraphBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/heading1BlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/heading2BlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/heading3BlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/heading4BlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/bulletedListItemBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/numberedListItemBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/quoteBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/toDoBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/toggleBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/templateBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/syncedBlockBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/childPageBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/childDatabaseBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/equationBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/codeBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/calloutBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/dividerBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/breadcrumbBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/tableOfContentsBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/tabBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/columnListBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/columnBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/linkToPageBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/tableBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/tableRowBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/meetingNotesBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/embedBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/bookmarkBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/imageBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/videoBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/pdfBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/fileBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/audioBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/linkPreviewBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/unsupportedBlockObjectResponse"
-          }
-        ]
-      },
       "blockObjectWithSingleLevelOfChildrenRequest": {
         "anyOf": [
           {
@@ -23441,11 +23729,7 @@
           },
           "rich_text": {
             "description": "The rich text content of the comment.",
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           },
           "display_name": {
             "$ref": "#/components/schemas/CommentObjectResponseDisplayName"
@@ -23552,11 +23836,7 @@
         "type": "object",
         "properties": {
           "rich_text": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           },
           "color": {
             "$ref": "#/components/schemas/apiColor"
@@ -23597,11 +23877,7 @@
         "type": "object",
         "properties": {
           "rich_text": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           },
           "color": {
             "$ref": "#/components/schemas/apiColor"
@@ -23701,11 +23977,7 @@
             "type": "array",
             "maxItems": 100,
             "items": {
-              "type": "array",
-              "maxItems": 100,
-              "items": {
-                "$ref": "#/components/schemas/richTextItemResponse"
-              }
+              "$ref": "#/components/schemas/RichTexts"
             }
           }
         },
@@ -24198,19 +24470,11 @@
           },
           "title": {
             "description": "The title of the data source.",
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           },
           "description": {
             "description": "The description of the data source.",
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           },
           "parent": {
             "description": "The parent of the data source.",
@@ -24253,7 +24517,7 @@
             "description": "The properties schema of the data source.",
             "type": "object",
             "additionalProperties": {
-              "$ref": "#/components/schemas/databasePropertyConfigResponse"
+              "$ref": "#/components/schemas/PropertyConfig"
             }
           },
           "icon": {
@@ -24620,105 +24884,6 @@
           "data"
         ]
       },
-      "databaseObjectResponse": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "The database object type name.",
-            "type": "string",
-            "const": "database"
-          },
-          "id": {
-            "description": "The ID of the database.",
-            "$ref": "#/components/schemas/idResponse"
-          },
-          "title": {
-            "description": "The title of the database.",
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
-          },
-          "description": {
-            "description": "The description of the database.",
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
-          },
-          "parent": {
-            "description": "The parent of the database. This is typically a page, block, or workspace, but can be another database in the case of wikis.",
-            "$ref": "#/components/schemas/parentOfDatabaseResponse"
-          },
-          "is_inline": {
-            "description": "Whether the database is inline.",
-            "type": "boolean"
-          },
-          "database_type": {
-            "$ref": "#/components/schemas/DataSourceObjectDatabaseType"
-          },
-          "in_trash": {
-            "description": "Whether the database is in the trash.",
-            "type": "boolean"
-          },
-          "is_locked": {
-            "description": "Whether the database is locked from editing in the Notion app UI.",
-            "type": "boolean"
-          },
-          "created_time": {
-            "description": "The time when the database was created.",
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_time": {
-            "description": "The time when the database was last edited.",
-            "type": "string",
-            "format": "date-time"
-          },
-          "data_sources": {
-            "description": "The data sources of the database.",
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/dataSourceReferenceResponse"
-            }
-          },
-          "icon": {
-            "$ref": "#/components/schemas/DataSourceObjectIcon"
-          },
-          "cover": {
-            "$ref": "#/components/schemas/DataSourceObjectCover"
-          },
-          "url": {
-            "description": "The URL of the database.",
-            "type": "string"
-          },
-          "public_url": {
-            "$ref": "#/components/schemas/BotInfoWorkspaceName"
-          }
-        },
-        "required": [
-          "object",
-          "id",
-          "title",
-          "description",
-          "parent",
-          "is_inline",
-          "database_type",
-          "in_trash",
-          "is_locked",
-          "created_time",
-          "last_edited_time",
-          "data_sources",
-          "icon",
-          "cover",
-          "url",
-          "public_url"
-        ],
-        "additionalProperties": false
-      },
       "databaseParentResponse": {
         "type": "object",
         "properties": {
@@ -24737,83 +24902,6 @@
           "database_id"
         ],
         "additionalProperties": false
-      },
-      "databasePropertyConfigResponse": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/databasePropertyConfigResponseCommon"
-          },
-          {
-            "$ref": "#/components/schemas/databasePropertyConfigResponseAllOf1"
-          }
-        ]
-      },
-      "databasePropertyConfigResponseAllOf1": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/numberDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/formulaDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/selectDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/multiSelectDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/statusDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/relationDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/rollupDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/uniqueIdDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/titleDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/richTextDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/urlDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/peopleDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/filesDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/emailDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/phoneNumberDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/dateDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/checkboxDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/createdByDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/createdTimeDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/lastEditedByDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/lastEditedTimeDatabasePropertyConfigResponse"
-          }
-        ]
       },
       "databasePropertyConfigResponseCommon": {
         "type": "object",
@@ -25784,11 +25872,7 @@
             "$ref": "#/components/schemas/ExternalMediaContentWithFileAndCaptionExternal"
           },
           "caption": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           }
         },
         "required": [
@@ -25809,11 +25893,7 @@
             "$ref": "#/components/schemas/ExternalMediaContentWithFileAndCaptionExternal"
           },
           "caption": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           },
           "name": {
             "type": "string"
@@ -25950,11 +26030,7 @@
             "$ref": "#/components/schemas/internalFileResponse"
           },
           "caption": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           }
         },
         "required": [
@@ -25975,11 +26051,7 @@
             "$ref": "#/components/schemas/internalFileResponse"
           },
           "caption": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           },
           "name": {
             "type": "string"
@@ -27074,11 +27146,7 @@
         "type": "object",
         "properties": {
           "rich_text": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           },
           "color": {
             "$ref": "#/components/schemas/apiColor"
@@ -28124,11 +28192,7 @@
             "type": "string"
           },
           "caption": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           }
         },
         "required": [
@@ -29017,92 +29081,6 @@
           "data"
         ]
       },
-      "pageObjectResponse": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "The page object type name.",
-            "type": "string",
-            "const": "page"
-          },
-          "id": {
-            "description": "The ID of the page.",
-            "$ref": "#/components/schemas/idResponse"
-          },
-          "created_time": {
-            "description": "Date and time when this page was created.",
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_time": {
-            "description": "Date and time when this page was last edited.",
-            "type": "string",
-            "format": "date-time"
-          },
-          "in_trash": {
-            "description": "Whether the page is in trash.",
-            "type": "boolean"
-          },
-          "is_archived": {
-            "description": "Whether the page has been archived.",
-            "type": "boolean"
-          },
-          "is_locked": {
-            "description": "Whether the page is locked from editing in the Notion app UI.",
-            "type": "boolean"
-          },
-          "url": {
-            "description": "The URL of the Notion page.",
-            "type": "string"
-          },
-          "public_url": {
-            "$ref": "#/components/schemas/BotInfoWorkspaceName"
-          },
-          "parent": {
-            "description": "Information about the page's parent.",
-            "$ref": "#/components/schemas/parentForBlockBasedObjectResponse"
-          },
-          "properties": {
-            "description": "Property values of this page.",
-            "type": "object",
-            "additionalProperties": {
-              "$ref": "#/components/schemas/pagePropertyValueWithIdResponse"
-            }
-          },
-          "icon": {
-            "$ref": "#/components/schemas/DataSourceObjectIcon"
-          },
-          "cover": {
-            "$ref": "#/components/schemas/DataSourceObjectCover"
-          },
-          "created_by": {
-            "description": "User who created the page.",
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          "last_edited_by": {
-            "description": "User who last edited the page.",
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          }
-        },
-        "required": [
-          "object",
-          "id",
-          "created_time",
-          "last_edited_time",
-          "in_trash",
-          "is_archived",
-          "is_locked",
-          "url",
-          "public_url",
-          "parent",
-          "properties",
-          "icon",
-          "cover",
-          "created_by",
-          "last_edited_by"
-        ],
-        "additionalProperties": false
-      },
       "pagePositionSchema": {
         "anyOf": [
           {
@@ -29170,26 +29148,6 @@
           "type",
           "entity",
           "data"
-        ]
-      },
-      "pagePropertyValueWithIdResponse": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/FileUploadPageCoverFileUpload"
-          },
-          {
-            "$ref": "#/components/schemas/pagePropertyValueWithIdResponseAllOf1"
-          }
-        ]
-      },
-      "pagePropertyValueWithIdResponseAllOf1": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/simpleOrArrayPropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/partialRollupPropertyResponse"
-          }
         ]
       },
       "pageReferenceResponse": {
@@ -29482,7 +29440,7 @@
             "description": "The properties schema of the data source.",
             "type": "object",
             "additionalProperties": {
-              "$ref": "#/components/schemas/databasePropertyConfigResponse"
+              "$ref": "#/components/schemas/PropertyConfig"
             }
           }
         },
@@ -30190,7 +30148,7 @@
             "$ref": "#/components/schemas/Title4"
           },
           {
-            "$ref": "#/components/schemas/RichText4"
+            "$ref": "#/components/schemas/RichText5"
           },
           {
             "$ref": "#/components/schemas/Number4"
@@ -30713,11 +30671,7 @@
             "const": "rich_text"
           },
           "rich_text": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           }
         },
         "required": [
@@ -30776,29 +30730,6 @@
           }
         }
       },
-      "richTextItemResponse": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/richTextItemResponseCommon"
-          },
-          {
-            "$ref": "#/components/schemas/richTextItemResponseAllOf1"
-          }
-        ]
-      },
-      "richTextItemResponseAllOf1": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/textRichTextItemResponse"
-          },
-          {
-            "$ref": "#/components/schemas/mentionRichTextItemResponse"
-          },
-          {
-            "$ref": "#/components/schemas/equationRichTextItemResponse"
-          }
-        ]
-      },
       "richTextItemResponseCommon": {
         "type": "object",
         "properties": {
@@ -30830,7 +30761,7 @@
             "const": "rich_text"
           },
           "rich_text": {
-            "$ref": "#/components/schemas/richTextItemResponse"
+            "$ref": "#/components/schemas/RichText"
           },
           "object": {
             "type": "string",
@@ -32726,11 +32657,7 @@
             "const": "title"
           },
           "title": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           }
         },
         "required": [
@@ -32777,7 +32704,7 @@
             "const": "title"
           },
           "title": {
-            "$ref": "#/components/schemas/richTextItemResponse"
+            "$ref": "#/components/schemas/RichText"
           },
           "object": {
             "type": "string",
@@ -32912,11 +32839,7 @@
         "type": "object",
         "properties": {
           "title": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/richTextItemResponse"
-            }
+            "$ref": "#/components/schemas/RichTexts"
           },
           "status": {
             "$ref": "#/components/schemas/CreateMeetingNoteOneOfMeetingNotesStatus"
@@ -36309,7 +36232,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/Block"
+              "$ref": "#/components/schemas/Block3"
             }
           }
         }
@@ -38039,7 +37962,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/Block"
+              "$ref": "#/components/schemas/Block3"
             }
           }
         }

@@ -3019,8 +3019,8 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID idRe
 // Retrieve block children
 //
 //	GET /blocks/{block_id}/children
-func (c *Client) GetBlockChildren(ctx context.Context, blockID idRequest, params *GetBlockChildrenParams) (*Block, error) {
-	return c.GetBlockChildrenWithResult[Block](ctx, blockID, params)
+func (c *Client) GetBlockChildren(ctx context.Context, blockID idRequest, params *GetBlockChildrenParams) (*Block3, error) {
+	return c.GetBlockChildrenWithResult[Block3](ctx, blockID, params)
 }
 
 // Retrieve block children
@@ -3232,8 +3232,8 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 // Append block children
 //
 //	PATCH /blocks/{block_id}/children
-func (c *Client) PatchBlockChildren(ctx context.Context, blockID idRequest, body PatchBlockChildren) (*Block, error) {
-	return c.PatchBlockChildrenWithResult[Block](ctx, blockID, body)
+func (c *Client) PatchBlockChildren(ctx context.Context, blockID idRequest, body PatchBlockChildren) (*Block3, error) {
+	return c.PatchBlockChildrenWithResult[Block3](ctx, blockID, body)
 }
 
 // Append block children

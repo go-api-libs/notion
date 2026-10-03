@@ -1,17 +1,23 @@
 package notion
 
-// // Title returns the page title.
-// func (p Page) Title() string {
-// 	return p.Properties.title()
-// }
+// Title returns the plain text of the page's title property.
+func (p *Page) Title() string {
+	for _, prop := range p.Properties {
+		if t := prop.title(); t != nil {
+			return t.PlainText()
+		}
+	}
 
-// // Title returns the title of the page.
-// func (props PropertyValues) title() string {
-// 	for _, prop := range props {
-// 		if prop.Type == PropertyTypeTitle {
-// 			return prop.Title.plainText()
-// 		}
-// 	}
+	return ""
+}
 
-// 	return ""
-// }
+// title returns the property's title, or nil if it is not a title property.
+func (v *PropertyValue) title() RichTexts {
+	sa := v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse
+	if sa == nil || sa.ArrayBasedPropertyValueResponse == nil ||
+		sa.ArrayBasedPropertyValueResponse.TitleArrayBasedPropertyValueResponse == nil {
+		return nil
+	}
+
+	return sa.ArrayBasedPropertyValueResponse.TitleArrayBasedPropertyValueResponse.Title
+}
