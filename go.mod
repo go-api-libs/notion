@@ -8,7 +8,7 @@ require (
 	github.com/MarkRosemaker/openapi v0.0.0-20261001203346-42d50de94f07
 	github.com/MarkRosemaker/openapi-edit v0.0.0-20261003182522-ad6005f55d2c
 	github.com/MarkRosemaker/openapi-enrich v0.0.0-20261003182555-1d519367e5a0
-	github.com/MarkRosemaker/openapi-merge v0.0.0-20261003182522-5d44c7c5c5f5
+	github.com/MarkRosemaker/openapi-merge v0.0.0-20261003221756-2016de20d554
 	golang.org/x/sync v0.23.0
 )
 
