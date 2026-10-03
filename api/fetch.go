@@ -232,11 +232,16 @@ func collectError(s *openapi.Schema, common string, codes, statuses *jsonSet) er
 	return nil
 }
 
-// nameEnum gives s's enum values the Go names names, which must match them one for one.
+// nameEnum gives s's enum values the Go names names, which must match them one for one. It fails if s already has
+// extensions, so a change upstream that adds some is noticed instead of overwritten.
 // See https://github.com/oapi-codegen/oapi-codegen/blob/main/docs/extensions.md#x-enum-varnames--x-enumnames.
 func nameEnum(s *openapi.Schema, names ...string) error {
 	if len(s.Enum) != len(names) {
 		return &errpath.ErrField{Field: "enum", Err: fmt.Errorf("has %d values, want %d", len(s.Enum), len(names))}
+	}
+
+	if len(s.Extensions) > 0 {
+		return fmt.Errorf("already has extensions: %s", s.Extensions)
 	}
 
 	ext, err := json.Marshal(map[string][]string{"x-enum-varnames": names})
