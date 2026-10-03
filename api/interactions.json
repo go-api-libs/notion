@@ -33,7 +33,1977 @@
 				"has_more": false,
 				"type": "view",
 				"view": {},
-				"request_id": "fa563603-1e61-49a6-91a2-f3d0d20f8ef1"
+				"request_id": "6cc5e987-9254-45c5-a971-b776ccefe223"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/views/cb3265bc-5d5e-488f-bd8a-69221c107915",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "view",
+				"id": "cb3265bc-5d5e-488f-bd8a-69221c107915",
+				"parent": {
+					"type": "database_id",
+					"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+				},
+				"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
+				"name": "Board",
+				"type": "board",
+				"created_time": "2026-09-25T10:10:19.197+00:00",
+				"created_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"last_edited_time": "2026-10-03T15:37:46.207+00:00",
+				"last_edited_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"url": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0?v=cb3265bc5d5e488fbd8a69221c107915",
+				"filter": {
+					"or": [
+						{
+							"or": [
+								{
+									"property": "Blch",
+									"date": {
+										"equals": "today"
+									}
+								},
+								{
+									"and": [
+										{
+											"property": "Blch",
+											"date": {
+												"equals": "yesterday"
+											}
+										},
+										{
+											"property": ";pl:",
+											"formula": {
+												"number": {
+													"less_than": 24
+												}
+											}
+										}
+									]
+								}
+							]
+						},
+						{
+							"and": [
+								{
+									"property": "@F<W",
+									"select": {
+										"does_not_equal": "Done"
+									}
+								},
+								{
+									"property": "kF@C",
+									"created_time": {
+										"on_or_after": "2024-04-13"
+									}
+								}
+							]
+						}
+					]
+				},
+				"sorts": [
+					{
+						"property": "mFVH",
+						"direction": "ascending"
+					},
+					{
+						"property": "Blch",
+						"direction": "descending"
+					},
+					{
+						"property": "kF@C",
+						"direction": "ascending"
+					}
+				],
+				"quick_filters": null,
+				"configuration": {
+					"type": "board",
+					"group_by": {
+						"type": "select",
+						"property_id": "@F<W",
+						"sort": {
+							"type": "manual"
+						},
+						"property_name": "Status",
+						"hide_empty_groups": false
+					},
+					"properties": [
+						{
+							"property_id": "title",
+							"property_name": "Name",
+							"visible": true
+						},
+						{
+							"property_id": "mFVH",
+							"property_name": "Priority If Not Started",
+							"visible": true
+						},
+						{
+							"property_id": "r:=^",
+							"property_name": "Time without Date",
+							"visible": true
+						}
+					]
+				},
+				"request_id": "8816a2e1-d092-4511-b1e9-c742c8957df5"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/databases/457d00dc-fc3a-4ddb-a42f-fe376530bee0",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "database",
+				"id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0",
+				"title": [
+					{
+						"type": "text",
+						"text": {
+							"content": "Intentions",
+							"link": null
+						},
+						"annotations": {
+							"bold": false,
+							"italic": false,
+							"strikethrough": false,
+							"underline": false,
+							"code": false,
+							"color": "default"
+						},
+						"plain_text": "Intentions",
+						"href": null
+					}
+				],
+				"description": [
+					{
+						"type": "text",
+						"text": {
+							"content": "TODO: connect to Habitica, Toggl, Google Calendar, replace with Living Your Best Year Ever - and then this could be the master board",
+							"link": null
+						},
+						"annotations": {
+							"bold": false,
+							"italic": false,
+							"strikethrough": false,
+							"underline": false,
+							"code": false,
+							"color": "default"
+						},
+						"plain_text": "TODO: connect to Habitica, Toggl, Google Calendar, replace with Living Your Best Year Ever - and then this could be the master board",
+						"href": null
+					}
+				],
+				"parent": {
+					"type": "page_id",
+					"page_id": "11788fcd-daf4-80e7-a530-c2e25a86328e"
+				},
+				"is_inline": false,
+				"database_type": null,
+				"in_trash": false,
+				"is_locked": false,
+				"created_time": "2024-03-19T08:28:01.083+00:00",
+				"last_edited_time": "2026-10-03T15:37:46.207+00:00",
+				"data_sources": [
+					{
+						"id": "9201f6db-2895-4450-9435-041541a181dd",
+						"name": "Intentions"
+					}
+				],
+				"icon": {
+					"type": "emoji",
+					"emoji": "🤹"
+				},
+				"cover": {
+					"type": "external",
+					"external": {
+						"url": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb"
+					}
+				},
+				"url": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0",
+				"public_url": null,
+				"request_id": "0aa393b2-0705-493f-bd6d-947157665746"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/data_sources/9201f6db-2895-4450-9435-041541a181dd",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "data_source",
+				"id": "9201f6db-2895-4450-9435-041541a181dd",
+				"cover": {
+					"type": "external",
+					"external": {
+						"url": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb"
+					}
+				},
+				"icon": {
+					"type": "emoji",
+					"emoji": "🤹"
+				},
+				"created_time": "2024-03-19T08:28:00.000Z",
+				"created_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"last_edited_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"last_edited_time": "2026-10-03T15:37:00.000Z",
+				"title": [
+					{
+						"type": "text",
+						"text": {
+							"content": "Intentions",
+							"link": null
+						},
+						"annotations": {
+							"bold": false,
+							"italic": false,
+							"strikethrough": false,
+							"underline": false,
+							"code": false,
+							"color": "default"
+						},
+						"plain_text": "Intentions",
+						"href": null
+					}
+				],
+				"description": [
+					{
+						"type": "text",
+						"text": {
+							"content": "TODO: connect to Habitica, Toggl, Google Calendar, replace with Living Your Best Year Ever - and then this could be the master board",
+							"link": null
+						},
+						"annotations": {
+							"bold": false,
+							"italic": false,
+							"strikethrough": false,
+							"underline": false,
+							"code": false,
+							"color": "default"
+						},
+						"plain_text": "TODO: connect to Habitica, Toggl, Google Calendar, replace with Living Your Best Year Ever - and then this could be the master board",
+						"href": null
+					}
+				],
+				"is_inline": false,
+				"database_type": null,
+				"properties": {
+					"Duration": {
+						"id": "%3ANHe",
+						"name": "Duration",
+						"description": null,
+						"type": "formula",
+						"formula": {
+							"expression": "dateBetween(prop(\"End Fallback\"),prop(\"Start\"),\"minutes\")"
+						}
+					},
+					"Started Hours Ago": {
+						"id": "%3Bpl%3A",
+						"name": "Started Hours Ago",
+						"description": null,
+						"type": "formula",
+						"formula": {
+							"expression": "dateBetween(now(),prop(\"Start\"), \"minutes\")/60"
+						}
+					},
+					"Start Fallback": {
+						"id": "%3FjhJ",
+						"name": "Start Fallback",
+						"description": null,
+						"type": "formula",
+						"formula": {
+							"expression": "parseDate(if(prop(\"Start\").empty(),now(),prop(\"Start\")).formatDate(\"YYYY-MM-DD HH:mm\"))"
+						}
+					},
+					"Status": {
+						"id": "%40F%3CW",
+						"name": "Status",
+						"description": null,
+						"type": "select",
+						"select": {
+							"options": [
+								{
+									"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
+									"name": "Not Started",
+									"color": "gray",
+									"description": null
+								},
+								{
+									"id": "7cc827cd-2b85-4f5d-abc6-a08930dc7653",
+									"name": "In Progress",
+									"color": "orange",
+									"description": null
+								},
+								{
+									"id": "a41e503a-3739-419f-ac25-10ca4a1e9ced",
+									"name": "Done",
+									"color": "green",
+									"description": null
+								}
+							]
+						}
+					},
+					"Start": {
+						"id": "Blch",
+						"name": "Start",
+						"description": null,
+						"type": "date",
+						"date": {}
+					},
+					"End": {
+						"id": "_Y%3BI",
+						"name": "End",
+						"description": null,
+						"type": "date",
+						"date": {}
+					},
+					"Time": {
+						"id": "%60G%7Bc",
+						"name": "Time",
+						"description": null,
+						"type": "formula",
+						"formula": {
+							"expression": "dateRange(prop(\"Start Fallback\"),prop(\"End Fallback\"))"
+						}
+					},
+					"End Fallback": {
+						"id": "c%3A%5DA",
+						"name": "End Fallback",
+						"description": null,
+						"type": "formula",
+						"formula": {
+							"expression": "parseDate(if(prop(\"End\").empty(),if(dateBetween(now(),prop(\"Start Fallback\"),\"minutes\")>0,now(),prop(\"Start Fallback\").dateAdd(1, \"hours\")),prop(\"End\")).formatDate(\"YYYY-MM-DD HH:mm\"))"
+						}
+					},
+					"Human Duration": {
+						"id": "dAuV",
+						"name": "Human Duration",
+						"description": null,
+						"type": "formula",
+						"formula": {
+							"expression": "if(prop(\"Duration\")>=60,floor(prop(\"Duration\")/60)+\"h \",\"\")+prop(\"Duration\")%60+\"m\""
+						}
+					},
+					"Created time": {
+						"id": "kF%40C",
+						"name": "Created time",
+						"description": null,
+						"type": "created_time",
+						"created_time": {}
+					},
+					"Priority If Not Started": {
+						"id": "mFVH",
+						"name": "Priority If Not Started",
+						"description": null,
+						"type": "formula",
+						"formula": {
+							"expression": "if(prop(\"Status\")==\"Not Started\",prop(\"Priority\"),\"\")"
+						}
+					},
+					"Time without Date": {
+						"id": "r%3A%3D%5E",
+						"name": "Time without Date",
+						"description": null,
+						"type": "formula",
+						"formula": {
+							"expression": "formatDate(prop(\"Start\"),\"HH:mm\")+if(prop(\"End\").empty(),\"\",\"-\"+formatDate(prop(\"End\"),\"HH:mm\"))"
+						}
+					},
+					"Name": {
+						"id": "title",
+						"name": "Name",
+						"description": null,
+						"type": "title",
+						"title": {}
+					}
+				},
+				"parent": {
+					"type": "database_id",
+					"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+				},
+				"database_parent": {
+					"type": "page_id",
+					"page_id": "11788fcd-daf4-80e7-a530-c2e25a86328e"
+				},
+				"url": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0",
+				"public_url": null,
+				"in_trash": false,
+				"request_id": "9fdf6fc0-f506-4d02-8e6e-342acc770c4f"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/blocks/457d00dc-fc3a-4ddb-a42f-fe376530bee0",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "block",
+				"id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0",
+				"parent": {
+					"type": "page_id",
+					"page_id": "11788fcd-daf4-80e7-a530-c2e25a86328e"
+				},
+				"created_time": "2024-03-19T08:28:00.000Z",
+				"last_edited_time": "2026-10-03T15:37:00.000Z",
+				"created_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"last_edited_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"has_children": false,
+				"in_trash": false,
+				"type": "child_database",
+				"child_database": {
+					"title": "Intentions"
+				},
+				"request_id": "466c960f-ce62-4648-9b60-5dce07df1dcb"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/users/me",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "user",
+				"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff",
+				"name": "Fae",
+				"avatar_url": null,
+				"type": "bot",
+				"bot": {
+					"owner": {
+						"type": "workspace",
+						"workspace": true
+					},
+					"workspace_name": "Mark Rösler's Notion",
+					"workspace_id": "0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a",
+					"workspace_limits": {
+						"max_file_upload_size_in_bytes": 5368709120
+					}
+				},
+				"request_id": "d4f7e5ef-9813-408a-9d5f-343805e2ad48"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/users?page_size=3",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [
+					{
+						"object": "user",
+						"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45",
+						"name": "Fae Tools",
+						"avatar_url": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100",
+						"type": "person",
+						"person": {
+							"email": "john.doe@example.com",
+							"email_verified": true
+						}
+					},
+					{
+						"object": "user",
+						"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff",
+						"name": "Fae",
+						"avatar_url": null,
+						"type": "bot",
+						"bot": {
+							"owner": {
+								"type": "workspace",
+								"workspace": true
+							},
+							"workspace_name": "Mark Rösler's Notion",
+							"workspace_id": "0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a",
+							"workspace_limits": {
+								"max_file_upload_size_in_bytes": 5368709120
+							}
+						}
+					},
+					{
+						"object": "user",
+						"id": "3ee88fcd-daf4-812b-bb1f-00278da6c840",
+						"name": "Notion MCP",
+						"avatar_url": "https://s3-us-west-2.amazonaws.com/public.notion-static.com/71948896-b1ca-44ee-91c4-152f541964ab/notion-logo-block-main.svg",
+						"type": "bot",
+						"bot": {}
+					}
+				],
+				"next_cursor": null,
+				"has_more": false,
+				"type": "user",
+				"user": {},
+				"request_id": "c0a1d99b-a0df-44ab-8717-71ca857cdf8e"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "https://api.notion.com/v1/search",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Content-Type": "application/json",
+				"Notion-Version": "2026-03-11"
+			},
+			"body": {
+				"page_size": 3
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [
+					{
+						"object": "page",
+						"id": "3ee88fcd-daf4-8170-8b9e-f5270e82e4e6",
+						"created_time": "2026-10-03T16:15:00.000Z",
+						"last_edited_time": "2026-10-03T16:15:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"last_edited_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"cover": null,
+						"icon": {
+							"type": "emoji",
+							"emoji": "🧽"
+						},
+						"parent": {
+							"type": "data_source_id",
+							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
+							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+						},
+						"in_trash": false,
+						"is_archived": false,
+						"is_locked": false,
+						"properties": {
+							"Duration": {
+								"id": "%3ANHe",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": null
+								}
+							},
+							"Started Hours Ago": {
+								"id": "%3Bpl%3A",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": null
+								}
+							},
+							"Start Fallback": {
+								"id": "%3FjhJ",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T17:11:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Status": {
+								"id": "%40F%3CW",
+								"type": "select",
+								"select": {
+									"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
+									"name": "Not Started",
+									"color": "gray"
+								}
+							},
+							"Start": {
+								"id": "Blch",
+								"type": "date",
+								"date": null
+							},
+							"Recurring": {
+								"id": "TIII",
+								"type": "relation",
+								"relation": [],
+								"has_more": false
+							},
+							"End": {
+								"id": "_Y%3BI",
+								"type": "date",
+								"date": null
+							},
+							"Time": {
+								"id": "%60G%7Bc",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T17:11:00.000+00:00",
+										"end": "2026-10-03T18:11:00.000+00:00",
+										"time_zone": null
+									}
+								}
+							},
+							"End Fallback": {
+								"id": "c%3A%5DA",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T18:11:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Human Duration": {
+								"id": "dAuV",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Priority": {
+								"id": "ePdI",
+								"type": "rollup",
+								"rollup": {
+									"type": "array",
+									"array": [],
+									"function": "show_original"
+								}
+							},
+							"Created time": {
+								"id": "kF%40C",
+								"type": "created_time",
+								"created_time": "2026-10-03T16:15:00.000Z"
+							},
+							"Priority If Not Started": {
+								"id": "mFVH",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Time without Date": {
+								"id": "r%3A%3D%5E",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Name": {
+								"id": "title",
+								"type": "title",
+								"title": [
+									{
+										"type": "text",
+										"text": {
+											"content": "Clean Up",
+											"link": null
+										},
+										"annotations": {
+											"bold": false,
+											"italic": false,
+											"strikethrough": false,
+											"underline": false,
+											"code": false,
+											"color": "default"
+										},
+										"plain_text": "Clean Up",
+										"href": null
+									}
+								]
+							}
+						},
+						"url": "https://app.notion.com/p/Clean-Up-3ee88fcddaf481708b9ef5270e82e4e6",
+						"public_url": null
+					},
+					{
+						"object": "page",
+						"id": "3ee88fcd-daf4-8152-8d3d-c091c9fc80d6",
+						"created_time": "2026-10-03T16:00:00.000Z",
+						"last_edited_time": "2026-10-03T16:00:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"last_edited_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"cover": null,
+						"icon": {
+							"type": "emoji",
+							"emoji": "🍲"
+						},
+						"parent": {
+							"type": "data_source_id",
+							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
+							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+						},
+						"in_trash": false,
+						"is_archived": false,
+						"is_locked": false,
+						"properties": {
+							"Duration": {
+								"id": "%3ANHe",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": null
+								}
+							},
+							"Started Hours Ago": {
+								"id": "%3Bpl%3A",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": null
+								}
+							},
+							"Start Fallback": {
+								"id": "%3FjhJ",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T17:11:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Status": {
+								"id": "%40F%3CW",
+								"type": "select",
+								"select": {
+									"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
+									"name": "Not Started",
+									"color": "gray"
+								}
+							},
+							"Start": {
+								"id": "Blch",
+								"type": "date",
+								"date": null
+							},
+							"Recurring": {
+								"id": "TIII",
+								"type": "relation",
+								"relation": [],
+								"has_more": false
+							},
+							"End": {
+								"id": "_Y%3BI",
+								"type": "date",
+								"date": null
+							},
+							"Time": {
+								"id": "%60G%7Bc",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T17:11:00.000+00:00",
+										"end": "2026-10-03T18:11:00.000+00:00",
+										"time_zone": null
+									}
+								}
+							},
+							"End Fallback": {
+								"id": "c%3A%5DA",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T18:11:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Human Duration": {
+								"id": "dAuV",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Priority": {
+								"id": "ePdI",
+								"type": "rollup",
+								"rollup": {
+									"type": "array",
+									"array": [],
+									"function": "show_original"
+								}
+							},
+							"Created time": {
+								"id": "kF%40C",
+								"type": "created_time",
+								"created_time": "2026-10-03T16:00:00.000Z"
+							},
+							"Priority If Not Started": {
+								"id": "mFVH",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Time without Date": {
+								"id": "r%3A%3D%5E",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Name": {
+								"id": "title",
+								"type": "title",
+								"title": [
+									{
+										"type": "text",
+										"text": {
+											"content": "Dinner",
+											"link": null
+										},
+										"annotations": {
+											"bold": false,
+											"italic": false,
+											"strikethrough": false,
+											"underline": false,
+											"code": false,
+											"color": "default"
+										},
+										"plain_text": "Dinner",
+										"href": null
+									}
+								]
+							}
+						},
+						"url": "https://app.notion.com/p/Dinner-3ee88fcddaf481528d3dc091c9fc80d6",
+						"public_url": null
+					},
+					{
+						"object": "page",
+						"id": "3e888fcd-daf4-81a8-b21f-c0e3d49fb52b",
+						"created_time": "2026-09-27T06:00:00.000Z",
+						"last_edited_time": "2026-10-03T15:37:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"last_edited_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"cover": null,
+						"icon": {
+							"type": "emoji",
+							"emoji": "👨‍💻"
+						},
+						"parent": {
+							"type": "data_source_id",
+							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
+							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+						},
+						"in_trash": false,
+						"is_archived": false,
+						"is_locked": false,
+						"properties": {
+							"Duration": {
+								"id": "%3ANHe",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": 94
+								}
+							},
+							"Started Hours Ago": {
+								"id": "%3Bpl%3A",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": 1.566666666667
+								}
+							},
+							"Start Fallback": {
+								"id": "%3FjhJ",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T15:37:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Status": {
+								"id": "%40F%3CW",
+								"type": "select",
+								"select": {
+									"id": "7cc827cd-2b85-4f5d-abc6-a08930dc7653",
+									"name": "In Progress",
+									"color": "orange"
+								}
+							},
+							"Start": {
+								"id": "Blch",
+								"type": "date",
+								"date": {
+									"start": "2026-10-03T17:37:00.000+02:00",
+									"end": null,
+									"time_zone": null
+								}
+							},
+							"Recurring": {
+								"id": "TIII",
+								"type": "relation",
+								"relation": [],
+								"has_more": false
+							},
+							"End": {
+								"id": "_Y%3BI",
+								"type": "date",
+								"date": null
+							},
+							"Time": {
+								"id": "%60G%7Bc",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T15:37:00.000+00:00",
+										"end": "2026-10-03T17:11:00.000+00:00",
+										"time_zone": null
+									}
+								}
+							},
+							"End Fallback": {
+								"id": "c%3A%5DA",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T17:11:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Human Duration": {
+								"id": "dAuV",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": "1h 34m"
+								}
+							},
+							"Priority": {
+								"id": "ePdI",
+								"type": "rollup",
+								"rollup": {
+									"type": "array",
+									"array": [],
+									"function": "show_original"
+								}
+							},
+							"Created time": {
+								"id": "kF%40C",
+								"type": "created_time",
+								"created_time": "2026-09-27T06:00:00.000Z"
+							},
+							"Priority If Not Started": {
+								"id": "mFVH",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": ""
+								}
+							},
+							"Time without Date": {
+								"id": "r%3A%3D%5E",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": "15:37"
+								}
+							},
+							"Name": {
+								"id": "title",
+								"type": "title",
+								"title": [
+									{
+										"type": "text",
+										"text": {
+											"content": "Coding",
+											"link": null
+										},
+										"annotations": {
+											"bold": false,
+											"italic": false,
+											"strikethrough": false,
+											"underline": false,
+											"code": false,
+											"color": "default"
+										},
+										"plain_text": "Coding",
+										"href": null
+									}
+								]
+							}
+						},
+						"url": "https://app.notion.com/p/Coding-3e888fcddaf481a8b21fc0e3d49fb52b",
+						"public_url": null
+					}
+				],
+				"next_cursor": "9201f6db-2895-4450-9435-041541a181dd",
+				"has_more": true,
+				"type": "page_or_data_source",
+				"page_or_data_source": {},
+				"request_id": "34d96cb8-8293-4906-8347-a54d7fa88e34"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/pages/00000000-0000-0000-0000-000000000000",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 404,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "error",
+				"status": 404,
+				"code": "object_not_found",
+				"message": "Could not find page with ID: 00000000-0000-0000-0000-000000000000. Make sure the relevant pages and databases are shared with your integration \"Fae\".",
+				"additional_data": {
+					"integration_id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+				},
+				"request_id": "9e1aef9a-66e7-461d-89d2-2072f799276a"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "https://api.notion.com/v1/data_sources/9201f6db-2895-4450-9435-041541a181dd/query",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Content-Type": "application/json",
+				"Notion-Version": "2026-03-11"
+			},
+			"body": {
+				"page_size": 3
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [
+					{
+						"object": "page",
+						"id": "3ee88fcd-daf4-8170-8b9e-f5270e82e4e6",
+						"created_time": "2026-10-03T16:15:00.000Z",
+						"last_edited_time": "2026-10-03T16:15:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"last_edited_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"cover": null,
+						"icon": {
+							"type": "emoji",
+							"emoji": "🧽"
+						},
+						"parent": {
+							"type": "data_source_id",
+							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
+							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+						},
+						"in_trash": false,
+						"is_archived": false,
+						"is_locked": false,
+						"properties": {
+							"Duration": {
+								"id": "%3ANHe",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": null
+								}
+							},
+							"Started Hours Ago": {
+								"id": "%3Bpl%3A",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": null
+								}
+							},
+							"Start Fallback": {
+								"id": "%3FjhJ",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T17:11:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Status": {
+								"id": "%40F%3CW",
+								"type": "select",
+								"select": {
+									"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
+									"name": "Not Started",
+									"color": "gray"
+								}
+							},
+							"Start": {
+								"id": "Blch",
+								"type": "date",
+								"date": null
+							},
+							"Recurring": {
+								"id": "TIII",
+								"type": "relation",
+								"relation": [],
+								"has_more": false
+							},
+							"End": {
+								"id": "_Y%3BI",
+								"type": "date",
+								"date": null
+							},
+							"Time": {
+								"id": "%60G%7Bc",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T17:11:00.000+00:00",
+										"end": "2026-10-03T18:11:00.000+00:00",
+										"time_zone": null
+									}
+								}
+							},
+							"End Fallback": {
+								"id": "c%3A%5DA",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T18:11:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Human Duration": {
+								"id": "dAuV",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Priority": {
+								"id": "ePdI",
+								"type": "rollup",
+								"rollup": {
+									"type": "array",
+									"array": [],
+									"function": "show_original"
+								}
+							},
+							"Created time": {
+								"id": "kF%40C",
+								"type": "created_time",
+								"created_time": "2026-10-03T16:15:00.000Z"
+							},
+							"Priority If Not Started": {
+								"id": "mFVH",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Time without Date": {
+								"id": "r%3A%3D%5E",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Name": {
+								"id": "title",
+								"type": "title",
+								"title": [
+									{
+										"type": "text",
+										"text": {
+											"content": "Clean Up",
+											"link": null
+										},
+										"annotations": {
+											"bold": false,
+											"italic": false,
+											"strikethrough": false,
+											"underline": false,
+											"code": false,
+											"color": "default"
+										},
+										"plain_text": "Clean Up",
+										"href": null
+									}
+								]
+							}
+						},
+						"url": "https://app.notion.com/p/Clean-Up-3ee88fcddaf481708b9ef5270e82e4e6",
+						"public_url": null
+					},
+					{
+						"object": "page",
+						"id": "3ee88fcd-daf4-8152-8d3d-c091c9fc80d6",
+						"created_time": "2026-10-03T16:00:00.000Z",
+						"last_edited_time": "2026-10-03T16:00:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"last_edited_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"cover": null,
+						"icon": {
+							"type": "emoji",
+							"emoji": "🍲"
+						},
+						"parent": {
+							"type": "data_source_id",
+							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
+							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+						},
+						"in_trash": false,
+						"is_archived": false,
+						"is_locked": false,
+						"properties": {
+							"Duration": {
+								"id": "%3ANHe",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": null
+								}
+							},
+							"Started Hours Ago": {
+								"id": "%3Bpl%3A",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": null
+								}
+							},
+							"Start Fallback": {
+								"id": "%3FjhJ",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T17:11:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Status": {
+								"id": "%40F%3CW",
+								"type": "select",
+								"select": {
+									"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
+									"name": "Not Started",
+									"color": "gray"
+								}
+							},
+							"Start": {
+								"id": "Blch",
+								"type": "date",
+								"date": null
+							},
+							"Recurring": {
+								"id": "TIII",
+								"type": "relation",
+								"relation": [],
+								"has_more": false
+							},
+							"End": {
+								"id": "_Y%3BI",
+								"type": "date",
+								"date": null
+							},
+							"Time": {
+								"id": "%60G%7Bc",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T17:11:00.000+00:00",
+										"end": "2026-10-03T18:11:00.000+00:00",
+										"time_zone": null
+									}
+								}
+							},
+							"End Fallback": {
+								"id": "c%3A%5DA",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T18:11:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Human Duration": {
+								"id": "dAuV",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Priority": {
+								"id": "ePdI",
+								"type": "rollup",
+								"rollup": {
+									"type": "array",
+									"array": [],
+									"function": "show_original"
+								}
+							},
+							"Created time": {
+								"id": "kF%40C",
+								"type": "created_time",
+								"created_time": "2026-10-03T16:00:00.000Z"
+							},
+							"Priority If Not Started": {
+								"id": "mFVH",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Time without Date": {
+								"id": "r%3A%3D%5E",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Name": {
+								"id": "title",
+								"type": "title",
+								"title": [
+									{
+										"type": "text",
+										"text": {
+											"content": "Dinner",
+											"link": null
+										},
+										"annotations": {
+											"bold": false,
+											"italic": false,
+											"strikethrough": false,
+											"underline": false,
+											"code": false,
+											"color": "default"
+										},
+										"plain_text": "Dinner",
+										"href": null
+									}
+								]
+							}
+						},
+						"url": "https://app.notion.com/p/Dinner-3ee88fcddaf481528d3dc091c9fc80d6",
+						"public_url": null
+					},
+					{
+						"object": "page",
+						"id": "3ee88fcd-daf4-81a9-855c-fb0e23e4d071",
+						"created_time": "2026-10-03T06:00:00.000Z",
+						"last_edited_time": "2026-10-03T06:00:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"last_edited_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"cover": null,
+						"icon": {
+							"type": "emoji",
+							"emoji": "👨‍💻"
+						},
+						"parent": {
+							"type": "data_source_id",
+							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
+							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+						},
+						"in_trash": false,
+						"is_archived": false,
+						"is_locked": false,
+						"properties": {
+							"Duration": {
+								"id": "%3ANHe",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": null
+								}
+							},
+							"Started Hours Ago": {
+								"id": "%3Bpl%3A",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": null
+								}
+							},
+							"Start Fallback": {
+								"id": "%3FjhJ",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T17:11:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Status": {
+								"id": "%40F%3CW",
+								"type": "select",
+								"select": {
+									"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
+									"name": "Not Started",
+									"color": "gray"
+								}
+							},
+							"Start": {
+								"id": "Blch",
+								"type": "date",
+								"date": null
+							},
+							"Recurring": {
+								"id": "TIII",
+								"type": "relation",
+								"relation": [],
+								"has_more": false
+							},
+							"End": {
+								"id": "_Y%3BI",
+								"type": "date",
+								"date": null
+							},
+							"Time": {
+								"id": "%60G%7Bc",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T17:11:00.000+00:00",
+										"end": "2026-10-03T18:11:00.000+00:00",
+										"time_zone": null
+									}
+								}
+							},
+							"End Fallback": {
+								"id": "c%3A%5DA",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-03T18:11:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Human Duration": {
+								"id": "dAuV",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Priority": {
+								"id": "ePdI",
+								"type": "rollup",
+								"rollup": {
+									"type": "array",
+									"array": [],
+									"function": "show_original"
+								}
+							},
+							"Created time": {
+								"id": "kF%40C",
+								"type": "created_time",
+								"created_time": "2026-10-03T06:00:00.000Z"
+							},
+							"Priority If Not Started": {
+								"id": "mFVH",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Time without Date": {
+								"id": "r%3A%3D%5E",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Name": {
+								"id": "title",
+								"type": "title",
+								"title": [
+									{
+										"type": "text",
+										"text": {
+											"content": "Coding",
+											"link": null
+										},
+										"annotations": {
+											"bold": false,
+											"italic": false,
+											"strikethrough": false,
+											"underline": false,
+											"code": false,
+											"color": "default"
+										},
+										"plain_text": "Coding",
+										"href": null
+									}
+								]
+							}
+						},
+						"url": "https://app.notion.com/p/Coding-3ee88fcddaf481a9855cfb0e23e4d071",
+						"public_url": null
+					}
+				],
+				"next_cursor": "s:12c4cdac-434e-4d5b-9164-619098206e05:3ee88fcd-daf4-813f-97c1-d9a875c22962",
+				"has_more": true,
+				"type": "page_or_data_source",
+				"page_or_data_source": {},
+				"request_id": "56db361f-2bf2-43e6-8170-5fb7bcaebf3d"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/pages/3ee88fcd-daf4-8170-8b9e-f5270e82e4e6",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "page",
+				"id": "3ee88fcd-daf4-8170-8b9e-f5270e82e4e6",
+				"created_time": "2026-10-03T16:15:00.000Z",
+				"last_edited_time": "2026-10-03T16:15:00.000Z",
+				"created_by": {
+					"object": "user",
+					"id": "00000000-0000-0000-0000-000000000003"
+				},
+				"last_edited_by": {
+					"object": "user",
+					"id": "00000000-0000-0000-0000-000000000003"
+				},
+				"cover": null,
+				"icon": {
+					"type": "emoji",
+					"emoji": "🧽"
+				},
+				"parent": {
+					"type": "data_source_id",
+					"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
+					"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+				},
+				"in_trash": false,
+				"is_archived": false,
+				"is_locked": false,
+				"properties": {
+					"Duration": {
+						"id": "%3ANHe",
+						"type": "formula",
+						"formula": {
+							"type": "number",
+							"number": null
+						}
+					},
+					"Started Hours Ago": {
+						"id": "%3Bpl%3A",
+						"type": "formula",
+						"formula": {
+							"type": "number",
+							"number": null
+						}
+					},
+					"Start Fallback": {
+						"id": "%3FjhJ",
+						"type": "formula",
+						"formula": {
+							"type": "date",
+							"date": {
+								"start": "2026-10-03T17:11:00.000+00:00",
+								"end": null,
+								"time_zone": null
+							}
+						}
+					},
+					"Status": {
+						"id": "%40F%3CW",
+						"type": "select",
+						"select": {
+							"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
+							"name": "Not Started",
+							"color": "gray"
+						}
+					},
+					"Start": {
+						"id": "Blch",
+						"type": "date",
+						"date": null
+					},
+					"Recurring": {
+						"id": "TIII",
+						"type": "relation",
+						"relation": [],
+						"has_more": false
+					},
+					"End": {
+						"id": "_Y%3BI",
+						"type": "date",
+						"date": null
+					},
+					"Time": {
+						"id": "%60G%7Bc",
+						"type": "formula",
+						"formula": {
+							"type": "date",
+							"date": {
+								"start": "2026-10-03T17:11:00.000+00:00",
+								"end": "2026-10-03T18:11:00.000+00:00",
+								"time_zone": null
+							}
+						}
+					},
+					"End Fallback": {
+						"id": "c%3A%5DA",
+						"type": "formula",
+						"formula": {
+							"type": "date",
+							"date": {
+								"start": "2026-10-03T18:11:00.000+00:00",
+								"end": null,
+								"time_zone": null
+							}
+						}
+					},
+					"Human Duration": {
+						"id": "dAuV",
+						"type": "formula",
+						"formula": {
+							"type": "string",
+							"string": null
+						}
+					},
+					"Priority": {
+						"id": "ePdI",
+						"type": "rollup",
+						"rollup": {
+							"type": "array",
+							"array": [],
+							"function": "show_original"
+						}
+					},
+					"Created time": {
+						"id": "kF%40C",
+						"type": "created_time",
+						"created_time": "2026-10-03T16:15:00.000Z"
+					},
+					"Priority If Not Started": {
+						"id": "mFVH",
+						"type": "formula",
+						"formula": {
+							"type": "string",
+							"string": null
+						}
+					},
+					"Time without Date": {
+						"id": "r%3A%3D%5E",
+						"type": "formula",
+						"formula": {
+							"type": "string",
+							"string": null
+						}
+					},
+					"Name": {
+						"id": "title",
+						"type": "title",
+						"title": [
+							{
+								"type": "text",
+								"text": {
+									"content": "Clean Up",
+									"link": null
+								},
+								"annotations": {
+									"bold": false,
+									"italic": false,
+									"strikethrough": false,
+									"underline": false,
+									"code": false,
+									"color": "default"
+								},
+								"plain_text": "Clean Up",
+								"href": null
+							}
+						]
+					}
+				},
+				"url": "https://app.notion.com/p/Clean-Up-3ee88fcddaf481708b9ef5270e82e4e6",
+				"public_url": null,
+				"request_id": "230f9a46-65f4-4ed6-9e5e-11f13f409e2a"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/pages/3ee88fcd-daf4-8170-8b9e-f5270e82e4e6/properties/title",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [
+					{
+						"object": "property_item",
+						"type": "title",
+						"id": "title",
+						"title": {
+							"type": "text",
+							"text": {
+								"content": "Clean Up",
+								"link": null
+							},
+							"annotations": {
+								"bold": false,
+								"italic": false,
+								"strikethrough": false,
+								"underline": false,
+								"code": false,
+								"color": "default"
+							},
+							"plain_text": "Clean Up",
+							"href": null
+						}
+					}
+				],
+				"next_cursor": null,
+				"has_more": false,
+				"type": "property_item",
+				"property_item": {
+					"id": "title",
+					"next_url": null,
+					"type": "title",
+					"title": {}
+				},
+				"request_id": "a1b61f9e-fd59-46c0-b5c9-1286696c0518"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/blocks/3ee88fcd-daf4-8170-8b9e-f5270e82e4e6/children?page_size=3",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [],
+				"next_cursor": null,
+				"has_more": false,
+				"type": "block",
+				"block": {},
+				"request_id": "baa8866e-795b-4ffe-be96-04fba930dc8a"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/comments?block_id=3ee88fcd-daf4-8170-8b9e-f5270e82e4e6",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 403,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "error",
+				"status": 403,
+				"code": "restricted_resource",
+				"message": "Insufficient permissions for this endpoint.",
+				"request_id": "e53a388c-c1e4-4dc2-a258-5f295e21c4c1"
 			}
 		}
 	}
