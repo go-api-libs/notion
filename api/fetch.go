@@ -146,5 +146,13 @@ func fixOpenAPI() error {
 	// - openapi-flatten
 	// - openapi-codegen -client -debug
 
-	return doc.WriteToFile(path)
+	if err := doc.Validate(); err != nil {
+		return fmt.Errorf("validating schema: %w", err)
+	}
+
+	if err := doc.WriteToFile(path); err != nil {
+		return fmt.Errorf("writing to file: %w", err)
+	}
+
+	return nil
 }
