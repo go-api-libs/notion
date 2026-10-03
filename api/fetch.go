@@ -3,12 +3,14 @@ package main
 import (
 	"cmp"
 	"context"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/MarkRosemaker/openapi"
+	edit "github.com/MarkRosemaker/openapi-edit"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -131,6 +133,10 @@ func fixOpenAPI() error {
 				)
 			}
 		}
+	}
+
+	if err := edit.RedirectSchemas(doc, map[string]string{}); err != nil {
+		return fmt.Errorf("redirecting schemas: %w", err)
 	}
 
 	// TODO: apply
