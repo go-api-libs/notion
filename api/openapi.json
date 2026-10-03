@@ -12159,7 +12159,7 @@
               "null"
             ],
             "format": "double",
-            "example": 1.566666666667
+            "example": 94
           },
           {
             "type": "null"
@@ -24680,7 +24680,7 @@
         "properties": {
           "expression": {
             "type": "string",
-            "example": "formatDate(prop(\"Start\"),\"HH:mm\")+if(prop(\"End\").empty(),\"\",\"-\"+formatDate(prop(\"End\"),\"HH:mm\"))",
+            "example": "dateBetween(prop(\"End Fallback\"),prop(\"Start\"),\"minutes\")",
             "examples": [
               "e=mc^2"
             ]
@@ -25801,12 +25801,12 @@
           "id": {
             "description": "The ID of the property.",
             "type": "string",
-            "example": "r%3A%3D%5E"
+            "example": "%3ANHe"
           },
           "name": {
             "description": "The name of the property.",
             "type": "string",
-            "example": "Time without Date"
+            "example": "Duration"
           },
           "description": {
             "$ref": "#/components/schemas/PropertyConfigurationCommonDescription"
@@ -28405,7 +28405,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "example": "mFVH"
+            "example": "%3ANHe"
           }
         },
         "required": [
