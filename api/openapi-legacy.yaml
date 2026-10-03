@@ -1,0 +1,554 @@
+paths:
+  /databases/:
+    post:
+      responses:
+        "200":
+          $ref: "#/components/responses/DatabaseResponse"
+  /pages/:
+    post:
+      summary: Create a Page
+      operationId: CreatePage
+      responses:
+        "200":
+          $ref: "#/components/responses/PageResponse"
+        "502":
+          $ref: "#/components/responses/HTMLErrorResponse"
+        "504":
+          $ref: "#/components/responses/HTMLErrorResponse"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Page"
+            example: |-
+              {
+                  "parent": {
+                      "database_id": "{{DATABASE_ID}}"
+                  },
+                  "properties": {
+                      "Type": {
+                          "select": {
+                              "id": "f96d0d0a-5564-4a20-ab15-5f040d49759e",
+                              "name": "Article",
+                              "color": "default"
+                          }
+                      },
+                      "Score /5": {
+                          "select": {
+                              "id": "5c944de7-3f4b-4567-b3a1-fa2c71c540b6",
+                              "name": "⭐️⭐️⭐️⭐️⭐️",
+                              "color": "default"
+                          }
+                      },
+                      "Name": {
+                          "title": [
+                              {
+                                  "text": {
+                                      "content": "New Media Article"
+                                  }
+                              }
+                          ]
+                      },
+                      "Status": {
+                          "select": {
+                              "id": "8c4a056e-6709-4dd1-ba58-d34d9480855a",
+                              "name": "Ready to Start",
+                              "color": "yellow"
+                          }
+                      },
+                      "Publisher": {
+                          "select": {
+                              "id": "01f82d08-aa1f-4884-a4e0-3bc32f909ec4",
+                              "name": "The Atlantic",
+                              "color": "red"
+                          }
+                      },
+                      "Publishing/Release Date": {
+                          "date": {
+                              "start": "2020-12-08T12:00:00Z",
+                              "end": null
+                          }
+                      },
+                      "Link": {
+                          "url": "https://www.nytimes.com/2018/10/21/opinion/who-will-teach-silicon-valley-to-be-ethical.html"
+                      },
+                      "Summary": {
+                          "rich_text": [
+                              {
+                                  "type": "text",
+                                  "text": {
+                                      "content": "Some think chief ethics officers could help technology companies navigate political and social questions.",
+                                      "link": null
+                                  },
+                                  "annotations": {
+                                      "bold": false,
+                                      "italic": false,
+                                      "strikethrough": false,
+                                      "underline": false,
+                                      "code": false,
+                                      "color": "default"
+                                  },
+                                  "plain_text": "Some think chief ethics officers could help technology companies navigate political and social questions.",
+                                  "href": null
+                              }
+                          ]
+                      },
+                      "Read": {
+                          "checkbox": false
+                      }
+                  }
+              }
+      tags:
+        - Pages
+  "/pages/{id}":
+  
+    delete:
+      summary: Delete a page
+      operationId: DeletePage
+      responses:
+        "200":
+          $ref: "#/components/responses/PageResponse"
+        "502":
+          $ref: "#/components/responses/HTMLErrorResponse"
+        "504":
+          $ref: "#/components/responses/HTMLErrorResponse"
+  /search:
+    post:
+      summary: Search
+      operationId: Search
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchResult"
+              examples: {}
+        "502":
+          $ref: "#/components/responses/HTMLErrorResponse"
+        "504":
+          $ref: "#/components/responses/HTMLErrorResponse"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Search"
+      description: "Searches all *original* pages, databases, and child pages/databases that are shared with the integration. It will not return linked databases, since these duplicate their source databases."
+components:
+  parameters:
+    id:
+      schema:
+        $ref: "#/components/schemas/UUID"
+  schemas:
+    # Page:
+    # TODO: object PageOrDatabase (they have things in common)
+    Title:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        title:
+          $ref: "#/components/schemas/RichTexts"
+      required:
+        - id
+        - type
+        - title
+
+
+    PropertyValues:
+      description: Properties of a page or database.
+      oneOf:
+        - properties:
+            title:
+              $ref: "#/components/schemas/Title"
+          required:
+            - title
+        - properties:
+            title:
+              $ref: "#/components/schemas/Title"
+            customField:
+              $ref: "#/components/schemas/PropertyValue"
+        - {}
+      type: object
+    Database:
+      required:
+        - object
+        - id
+        - last_edited_time
+        - title
+        - description
+        - is_inline
+        - properties
+        - url
+        - archived
+    # UUID:
+    #   type: string
+    #   format: uuid
+    #   x-go-type: string
+    #   description: "A unique identifier for a page, block, database, user, or option."
+    # NextCursor:
+    #   x-omitempty: false
+    #   x-go-type: string
+    PropertyMeta:
+      # type: object
+      x-examples:
+        rich_text:
+          id: A%5C%3Au
+          name: Slug
+          type: rich_text
+          rich_text: {}
+        multi_select:
+          id: IYs%7D
+          name: Outputs
+          type: multi_select
+          multi_select:
+            options:
+              - id: 0f1c15fd-ba51-45bf-95f9-9f4d598bb91e
+                name: HTML
+                color: pink
+              - id: a2a854ce-de01-4a9a-a437-ba371ca84e59
+                name: AMP
+                color: brown
+              - id: 0e7c6b78-9024-4b8a-8734-6a222539eca4
+                name: CSS
+                color: yellow
+              - id: 1b6d4b26-aa06-4a5a-90fa-c6cd36dca582
+                name: CSV
+                color: red
+              - id: 96630827-d55e-4e05-9c86-ef2872a24238
+                name: Calendar
+                color: blue
+              - id: 615d45a1-4594-458d-a646-1a707f585faa
+                name: JSON
+                color: orange
+              - id: 99039cc0-258f-4131-87f0-9f12a48e2359
+                name: ROBOTS
+                color: gray
+              - id: 8d39db15-b7cd-43f1-bf24-231cb4fbd7d2
+                name: RSS
+                color: default
+              - id: 03dd45f9-7a10-4004-beb9-a048ccb23f80
+                name: Sitemap
+                color: purple
+              - id: 49443240-155b-4047-b15a-ebccb52b4ebd
+                name: WebAppManifest
+                color: green
+        checkbox:
+          id: ~s%7Dd
+          name: Draft
+          type: checkbox
+          checkbox: {}
+        files:
+          id: hteR
+          name: Files
+          type: files
+          files: {}
+        date:
+          id: m%5Bc%7C
+          name: Expires
+          type: date
+          date: {}
+        title:
+          id: title
+          name: Name
+          type: title
+          title: {}
+    # Error:
+      # x-examples:
+      #   not-found:
+      #     object: error
+      #     status: 404
+      #     code: object_not_found
+      #     message: "Could not find page with ID: b8cc5dc7-9204-45f0-b996-e48514357b0f. Make sure the relevant pages and databases are shared with your integration."
+
+    # DatabaseQuery:
+    #   type: object
+    #   properties:
+        # filter:
+        #   $ref: "#/components/schemas/Filter"
+      #   sorts:
+      #     $ref: "#/components/schemas/Sorts"
+      #   start_cursor:
+      #     $ref: "#/components/schemas/UUID"
+      #   page_size:
+      #     type: integer
+      #     description: The number of items from the full list desired in the response.
+      #     maximum: 100
+      # required:
+      #   - page_size
+    # PropertyValue:
+    #   type: object
+    #   properties:
+        # select:
+        #   $ref: "#/components/schemas/SelectValue"
+        # multi_select:
+        #   $ref: "#/components/schemas/SelectValues"
+        # checkbox:
+        #   type: boolean
+        # relation:
+        #   $ref: "#/components/schemas/References"
+        # date:
+        #   $ref: "#/components/schemas/Date"
+        # number:
+        #   type: number
+        #   format: double
+        #   description: Number property value objects contain a number within the `number` property.
+        # files:
+        #   $ref: "#/components/schemas/Files"
+        # created_by:
+        #   $ref: "#/components/schemas/UserReference"
+        # last_edited_by:
+        #   $ref: "#/components/schemas/UserReference"
+        # people:
+        #   type: array
+        #   items:
+        #     $ref: "#/components/schemas/UserReference"
+        # created_time:
+        #   type: string
+        #   format: date-time
+        # url:
+        #   type: string
+        #   description: URL property value objects contain a non-empty string within the url property. The string describes a web address.
+        #   format: uri
+        #   example: "http://worrydream.com/EarlyHistoryOfSmalltalk/"
+        # formula:
+        #   $ref: "#/components/schemas/Formula"
+        # rollup:
+        #   $ref: "#/components/schemas/Rollup"
+        # phone_number:
+        #   type: string
+        # email:
+        #   type: string
+        # status:
+        #   $ref: "#/components/schemas/SelectValue"
+        has_more:
+          type: boolean
+      required:
+        - id
+        - type
+        - has_more
+    # Date:
+    #   properties:
+    #     end:
+    #       x-omitempty: false
+    #     time_zone:
+    #       x-omitempty: false
+    #   required:
+    #     - start
+    Link:
+      # type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          description: The web address
+      required:
+        - url
+
+    
+    Search:
+      type: object
+      description: |-
+        This body determines what you search for.
+
+        The `query` parameter matches against the page titles. If the `query` parameter is not provided, the response will contain all pages (and child pages) in the results.
+
+        The `filter` parameter can be used to query specifically for only pages or only databases.
+
+        The response may contain fewer than `page_size` of results.
+      properties:
+        query:
+          type: string
+        filter:
+          $ref: "#/components/schemas/SearchFilter"
+        start_cursor:
+          type: string
+        page_size:
+          type: integer
+    SearchFilter:
+      type: object
+      properties:
+        value:
+          type: string
+          enum:
+            - page
+            - database
+        property:
+          type: string
+          enum:
+            - object
+      required:
+        - value
+        - property
+    PageOrDatabase:
+      oneOf:
+        - $ref: "#/components/schemas/Page"
+        - $ref: "#/components/schemas/Database"
+    SearchResult:
+      type: object
+      x-examples:
+        example:
+          object: list
+          results:
+            - object: page
+              id: 96245c8f-1784-44a4-82ad-1941127c3ec3
+              created_time: "2022-07-14T05:31:00.000Z"
+              last_edited_time: "2022-08-19T13:26:00.000Z"
+              created_by:
+                object: user
+                id: af171d5d-c36f-45bc-a0a3-6086c0dafa45
+              last_edited_by:
+                object: user
+                id: af171d5d-c36f-45bc-a0a3-6086c0dafa45
+              cover:
+                type: external
+                external:
+                  url: "https://www.notion.so/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
+              icon:
+                type: emoji
+                emoji: "\U0001F304"
+              parent:
+                type: page_id
+                page_id: b8cc5dc7-9204-45f0-b996-e48514357b0f
+              archived: false
+              properties:
+                title:
+                  id: title
+                  type: title
+                  title:
+                    - type: text
+                      text:
+                        content: Example Page
+                        link: null
+                      annotations:
+                        bold: false
+                        italic: false
+                        strikethrough: false
+                        underline: false
+                        code: false
+                        color: default
+                      plain_text: Example Page
+                      href: null
+              url: "https://www.notion.so/Example-Page-96245c8f178444a482ad1941127c3ec3"
+            - object: page
+              id: 5de9f82f-f228-4386-937f-b3490c62f6e5
+              created_time: "2022-08-03T19:23:00.000Z"
+              last_edited_time: "2022-08-03T19:23:00.000Z"
+              created_by:
+                object: user
+                id: af171d5d-c36f-45bc-a0a3-6086c0dafa45
+              last_edited_by:
+                object: user
+                id: af171d5d-c36f-45bc-a0a3-6086c0dafa45
+              cover: null
+              icon: null
+              parent:
+                type: page_id
+                page_id: b8cc5dc7-9204-45f0-b996-e48514357b0f
+              archived: false
+              properties:
+                title:
+                  id: title
+                  type: title
+                  title:
+                    - type: text
+                      text:
+                        content: Example Page with unsupported element
+                        link: null
+                      annotations:
+                        bold: false
+                        italic: false
+                        strikethrough: false
+                        underline: false
+                        code: false
+                        color: default
+                      plain_text: Example Page with unsupported element
+                      href: null
+              url: "https://www.notion.so/Example-Page-with-unsupported-element-5de9f82ff2284386937fb3490c62f6e5"
+          next_cursor: null
+          has_more: false
+          type: page_or_database
+          page_or_database: {}
+      properties:
+        object:
+          type: string
+          enum:
+            - list
+        results:
+          type: array
+          items:
+            $ref: "#/components/schemas/PageOrDatabase"
+        next_cursor:
+          $ref: "#/components/schemas/NextCursor"
+        has_more:
+          type: boolean
+        type:
+          type: string
+        page_or_database:
+          type: object
+      required:
+        - object
+        - results
+        - has_more
+    Databases:
+      type: array
+      items:
+        $ref: "#/components/schemas/Database"
+    StatusConfig:
+      x-examples:
+        example:
+          groups:
+            - color: gray
+              id: 3872a41e-0e9a-4684-8a93-83e310e627da
+              name: To-do
+              option_ids:
+                - "t|{j"
+                - cc97d59f-488d-4290-adb3-f174ec5da0f3
+            - color: blue
+              id: 9246f0ba-1efa-44fa-8ecb-b66e2a16e3d3
+              name: In progress
+              option_ids:
+                - ketX
+                - 1b58b969-49fa-4973-b868-f0de3388f051
+            - color: green
+              id: e39d6f59-ed5f-4d4f-a3db-797b6efb512c
+              name: Complete
+              option_ids:
+                - XQLM
+                - 8ccf4d06-8d53-471a-b51a-fe5a664c6160
+          options:
+            - color: gray
+              id: "t|{j"
+              name: no idea
+            - color: blue
+              id: ketX
+              name: I've actually written some code
+            - color: green
+              id: XQLM
+              name: Almost done
+            - color: default
+              id: cc97d59f-488d-4290-adb3-f174ec5da0f3
+              name: Not started at all
+            - color: blue
+              id: 1b58b969-49fa-4973-b868-f0de3388f051
+              name: I've taken a look
+            - color: green
+              id: 8ccf4d06-8d53-471a-b51a-fe5a664c6160
+              name: Done
+      responses:
+    HTMLErrorResponse:
+      description: Something went wrong.
+      content:
+        text/html:
+          schema:
+            type: string
+            format: html
+    UsersResponse:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UsersList"
