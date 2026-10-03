@@ -10,7 +10,7 @@ import (
 
 func (e *ErrorAPI) Error() string { return e.format(e.Status, string(e.Code)) }
 
-func (e *ErrorOauth) Error() string { return e.format(e.Status, string(e.Code)) }
+func (e *ErrorOAuth) Error() string { return e.format(e.Status, string(e.Code)) }
 
 func (e *publicApiCommonErrorResponse) format(status int, code string) string {
 	b := &strings.Builder{}

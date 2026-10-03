@@ -29539,7 +29539,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorOauth"
+                  "$ref": "#/components/schemas/ErrorOAuth"
                 }
               }
             }
@@ -29549,7 +29549,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorOauth"
+                  "$ref": "#/components/schemas/ErrorOAuth"
                 }
               }
             }
@@ -29559,7 +29559,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorOauth"
+                  "$ref": "#/components/schemas/ErrorOAuth"
                 }
               }
             }
@@ -29569,7 +29569,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorOauth"
+                  "$ref": "#/components/schemas/ErrorOAuth"
                 }
               }
             }
@@ -29645,7 +29645,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorOauth"
+                  "$ref": "#/components/schemas/ErrorOAuth"
                 }
               }
             }
@@ -29655,7 +29655,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorOauth"
+                  "$ref": "#/components/schemas/ErrorOAuth"
                 }
               }
             }
@@ -29665,7 +29665,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorOauth"
+                  "$ref": "#/components/schemas/ErrorOAuth"
                 }
               }
             }
@@ -29675,7 +29675,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorOauth"
+                  "$ref": "#/components/schemas/ErrorOAuth"
                 }
               }
             }
@@ -29763,7 +29763,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorOauth"
+                  "$ref": "#/components/schemas/ErrorOAuth"
                 }
               }
             }
@@ -29773,7 +29773,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorOauth"
+                  "$ref": "#/components/schemas/ErrorOAuth"
                 }
               }
             }
@@ -29783,7 +29783,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorOauth"
+                  "$ref": "#/components/schemas/ErrorOAuth"
                 }
               }
             }
@@ -29793,7 +29793,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorOauth"
+                  "$ref": "#/components/schemas/ErrorOAuth"
                 }
               }
             }
@@ -51841,7 +51841,7 @@
           }
         ]
       },
-      "ErrorOauth": {
+      "ErrorOAuth": {
         "allOf": [
           {
             "$ref": "#/components/schemas/publicApiCommonErrorResponse"

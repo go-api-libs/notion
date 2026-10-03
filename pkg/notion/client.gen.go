@@ -12766,7 +12766,7 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOauth
+			var out ErrorOAuth
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12779,7 +12779,7 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOauth
+			var out ErrorOAuth
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12792,7 +12792,7 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOauth
+			var out ErrorOAuth
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12805,7 +12805,7 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOauth
+			var out ErrorOAuth
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12881,7 +12881,7 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body Introspe
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOauth
+			var out ErrorOAuth
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12894,7 +12894,7 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body Introspe
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOauth
+			var out ErrorOAuth
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12907,7 +12907,7 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body Introspe
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOauth
+			var out ErrorOAuth
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12920,7 +12920,7 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body Introspe
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOauth
+			var out ErrorOAuth
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -12996,7 +12996,7 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Intr
 		// Bad Request
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOauth
+			var out ErrorOAuth
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -13009,7 +13009,7 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Intr
 		// Unauthorized
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOauth
+			var out ErrorOAuth
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -13022,7 +13022,7 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Intr
 		// Forbidden
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOauth
+			var out ErrorOAuth
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}
@@ -13035,7 +13035,7 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Intr
 		// Internal Server Error
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ErrorOauth
+			var out ErrorOAuth
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				return nil, api.WrapDecodingError(rsp, err)
 			}

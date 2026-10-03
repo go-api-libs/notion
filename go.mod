@@ -9,7 +9,6 @@ require (
 	github.com/MarkRosemaker/openapi-codegen v0.0.0-20261002221413-50fbe2429079
 	github.com/MarkRosemaker/openapi-edit v0.0.0-20261002084608-32f8b4643215
 	github.com/MarkRosemaker/openapi-enrich v0.0.0-20261002084648-62eb42fab2c6
-	github.com/ettle/strcase v0.2.0
 	github.com/go-api-libs/api v0.0.0-20260929233335-2095d151ac30
 	golang.org/x/sync v0.23.0
 )
@@ -24,6 +23,7 @@ require (
 	github.com/MarkRosemaker/ordmap v0.0.0-20260929233348-fabf15af2b14 // indirect
 	github.com/MarkRosemaker/yaml v0.0.0-20260929233352-7d1e6061a63c // indirect
 	github.com/MarkRosemaker/yaml2json v0.0.0-20260929233333-2e4b34c28c94 // indirect
+	github.com/ettle/strcase v0.2.0 // indirect
 	github.com/go-api-libs/types v0.0.0-20260821232109-0cf45378823e // indirect
 	github.com/spf13/afero v1.15.0 // indirect
 	golang.org/x/exp v0.0.0-20260908205506-85c1c2202aba // indirect

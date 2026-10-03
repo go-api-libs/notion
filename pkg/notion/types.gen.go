@@ -5973,8 +5973,8 @@ type Error2 struct {
 // ErrorAPI defines a model
 type ErrorAPI struct {
 	publicApiCommonErrorResponse
-	Status int                `json:"status"`
 	Code   ErrorAPIAllOf1Code `json:"code,omitzero"`
+	Status int                `json:"status"`
 }
 
 // ErrorAPIAllOf1Code defines a model
@@ -6016,31 +6016,31 @@ func (e ErrorAPIAllOf1Code) Valid() bool {
 	}
 }
 
-// ErrorOauth defines a model
-type ErrorOauth struct {
+// ErrorOAuth defines a model
+type ErrorOAuth struct {
 	publicApiCommonErrorResponse
-	Code   ErrorOauthAllOf1Code `json:"code,omitzero"`
+	Code   ErrorOAuthAllOf1Code `json:"code,omitzero"`
 	Status int                  `json:"status"`
 }
 
-// ErrorOauthAllOf1Code defines a model
-type ErrorOauthAllOf1Code string
+// ErrorOAuthAllOf1Code defines a model
+type ErrorOAuthAllOf1Code string
 
 const (
-	ErrorOauthAllOf1CodeInvalidRequest       ErrorOauthAllOf1Code = "invalid_request"
-	ErrorOauthAllOf1CodeInvalidGrant         ErrorOauthAllOf1Code = "invalid_grant"
-	ErrorOauthAllOf1CodeUnauthorizedClient   ErrorOauthAllOf1Code = "unauthorized_client"
-	ErrorOauthAllOf1CodeUnsupportedGrantType ErrorOauthAllOf1Code = "unsupported_grant_type"
-	ErrorOauthAllOf1CodeInvalidScope         ErrorOauthAllOf1Code = "invalid_scope"
-	ErrorOauthAllOf1CodeInvalidClient        ErrorOauthAllOf1Code = "invalid_client"
-	ErrorOauthAllOf1CodeTestEnvError         ErrorOauthAllOf1Code = "test_env_error"
-	ErrorOauthAllOf1CodeInternalServerError  ErrorOauthAllOf1Code = "internal_server_error"
+	ErrorOAuthAllOf1CodeInvalidRequest       ErrorOAuthAllOf1Code = "invalid_request"
+	ErrorOAuthAllOf1CodeInvalidGrant         ErrorOAuthAllOf1Code = "invalid_grant"
+	ErrorOAuthAllOf1CodeUnauthorizedClient   ErrorOAuthAllOf1Code = "unauthorized_client"
+	ErrorOAuthAllOf1CodeUnsupportedGrantType ErrorOAuthAllOf1Code = "unsupported_grant_type"
+	ErrorOAuthAllOf1CodeInvalidScope         ErrorOAuthAllOf1Code = "invalid_scope"
+	ErrorOAuthAllOf1CodeInvalidClient        ErrorOAuthAllOf1Code = "invalid_client"
+	ErrorOAuthAllOf1CodeTestEnvError         ErrorOAuthAllOf1Code = "test_env_error"
+	ErrorOAuthAllOf1CodeInternalServerError  ErrorOAuthAllOf1Code = "internal_server_error"
 )
 
-// Valid indicates whether the value is a known member of the ErrorOauthAllOf1Code enum.
-func (e ErrorOauthAllOf1Code) Valid() bool {
+// Valid indicates whether the value is a known member of the ErrorOAuthAllOf1Code enum.
+func (e ErrorOAuthAllOf1Code) Valid() bool {
 	switch e {
-	case ErrorOauthAllOf1CodeInvalidRequest, ErrorOauthAllOf1CodeInvalidGrant, ErrorOauthAllOf1CodeUnauthorizedClient, ErrorOauthAllOf1CodeUnsupportedGrantType, ErrorOauthAllOf1CodeInvalidScope, ErrorOauthAllOf1CodeInvalidClient, ErrorOauthAllOf1CodeTestEnvError, ErrorOauthAllOf1CodeInternalServerError:
+	case ErrorOAuthAllOf1CodeInvalidRequest, ErrorOAuthAllOf1CodeInvalidGrant, ErrorOAuthAllOf1CodeUnauthorizedClient, ErrorOAuthAllOf1CodeUnsupportedGrantType, ErrorOAuthAllOf1CodeInvalidScope, ErrorOAuthAllOf1CodeInvalidClient, ErrorOAuthAllOf1CodeTestEnvError, ErrorOAuthAllOf1CodeInternalServerError:
 		return true
 	default:
 		return false

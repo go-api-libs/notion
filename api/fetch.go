@@ -16,7 +16,6 @@ import (
 	"github.com/MarkRosemaker/openapi"
 	codegen "github.com/MarkRosemaker/openapi-codegen"
 	edit "github.com/MarkRosemaker/openapi-edit"
-	"github.com/ettle/strcase"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -134,10 +133,8 @@ func persistOpenAPI(ctx context.Context) error {
 }
 
 // consolidateErrors replaces the schemas whose names start with prefix, each an allOf of the common error and a code
-// and status, with one schema named after prefix that allows every code and status they did.
-func consolidateErrors(doc *openapi.Document, prefix, common string) error {
-	name := strcase.ToGoPascal(strings.TrimSuffix(prefix, "_"))
-
+// and status, with one schema called name that allows every code and status they did.
+func consolidateErrors(doc *openapi.Document, prefix, name, common string) error {
 	var names []string
 
 	for n := range doc.Components.Schemas.ByIndex() {
@@ -288,8 +285,11 @@ func fixOpenAPI() (*openapi.Document, error) {
 		}
 	}
 
-	for _, prefix := range []string{"error_api_", "error_oauth_"} {
-		if err := consolidateErrors(doc, prefix, "publicApiCommonErrorResponse"); err != nil {
+	for prefix, name := range map[string]string{
+		"error_api_":   "ErrorAPI",
+		"error_oauth_": "ErrorOAuth",
+	} {
+		if err := consolidateErrors(doc, prefix, name, "publicApiCommonErrorResponse"); err != nil {
 			return nil, err
 		}
 	}
