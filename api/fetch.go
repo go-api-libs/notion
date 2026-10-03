@@ -11,10 +11,11 @@ import (
 
 	"github.com/MarkRosemaker/openapi"
 	edit "github.com/MarkRosemaker/openapi-edit"
+	merge "github.com/MarkRosemaker/openapi-merge"
 	"golang.org/x/sync/errgroup"
 )
 
-const path = "api/openapi.json"
+const pathOpenAPI = "api/openapi.json"
 
 var isClaudeCode = os.Getenv("CLAUDECODE") != ""
 
@@ -23,7 +24,7 @@ func main() {
 
 	ctx := context.Background()
 	eg.Go(func() error { return fetchLLMs(ctx) })
-	eg.Go(func() error { return fetchOpenAPI(ctx) })
+	eg.Go(func() error { return persistOpenAPI(ctx) })
 
 	if err := eg.Wait(); err != nil {
 		log.Fatal(err)
@@ -62,44 +63,65 @@ func fetchLLMs(ctx context.Context) error {
 	return nil
 }
 
-func fetchOpenAPI(ctx context.Context) error {
-	var body io.ReadCloser
+func readOfficial(ctx context.Context) (io.ReadCloser, error) {
 	if isClaudeCode {
-		var err error
-
-		body, err = os.Open("api/openapi-official.json")
-		if err != nil {
-			return err
-		}
-	} else {
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://developers.notion.com/openapi.json", nil)
-		if err != nil {
-			return err
-		}
-
-		rsp, err := http.DefaultClient.Do(req)
-		if err != nil {
-			return err
-		}
-
-		body = rsp.Body
+		return os.Open("api/openapi-official.json")
 	}
-	defer body.Close()
 
-	f, err := os.Create(path)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://developers.notion.com/openapi.json", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	rsp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return rsp.Body, nil
+}
+
+func fetchOpenAPI(ctx context.Context) (*openapi.Document, error) {
+	rc, err := readOfficial(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer rc.Close()
+
+	return openapi.LoadFromReader(rc)
+}
+
+func persistOpenAPI(ctx context.Context) error {
+	doc, err := fetchOpenAPI(ctx)
 	if err != nil {
 		return err
 	}
 
-	if _, err := io.Copy(f, body); err != nil {
+	var w io.Writer
+
+	f, err := os.Create(pathOpenAPI)
+	if err != nil {
 		return err
 	}
+	defer f.Close()
 
-	return nil
+	if isClaudeCode {
+		w = f
+	} else {
+		f2, err := os.Create("api/openapi-official.json")
+		if err != nil {
+			return err
+		}
+		defer f2.Close()
+
+		w = io.MultiWriter(f, f2)
+	}
+
+	return doc.WriteJSON(w)
 }
 
 func fixOpenAPI() error {
-	doc, err := openapi.LoadFromFile(path)
+	doc, err := openapi.LoadFromFile(pathOpenAPI)
 	if err != nil {
 		return err
 	}
@@ -135,6 +157,12 @@ func fixOpenAPI() error {
 		}
 	}
 
+	// TODO(Claude): use merge and edit to transform the spec
+	_ = merge.Schema
+	// if err := = merge.Schema(doc.Components.Schemas["foo"], doc.Components.Schemas["bar"], false); err != nil {
+	// return fmt.Errorf("merging bar and foo: %w", err)
+	// }
+
 	if err := edit.RedirectSchemas(doc, map[string]string{}); err != nil {
 		return fmt.Errorf("redirecting schemas: %w", err)
 	}
@@ -150,7 +178,7 @@ func fixOpenAPI() error {
 		return fmt.Errorf("validating schema: %w", err)
 	}
 
-	if err := doc.WriteToFile(path); err != nil {
+	if err := doc.WriteToFile(pathOpenAPI); err != nil {
 		return fmt.Errorf("writing to file: %w", err)
 	}
 
