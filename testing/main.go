@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json/v2"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -42,51 +44,69 @@ func run(ctx context.Context) error {
 
 	ias = slices.DeleteFunc(ias, eqTo(cassette.Interaction{}))
 
-	for _, r := range []cassette.Request{
-		{Method: http.MethodGet, URL: "https://api.notion.com/v1/views?database_id=" + dbID.String()},
-		// TODO: add more here
-	} {
-		var reqBody io.Reader
-		if len(r.Body) > 0 {
-			reqBody = bytes.NewReader(r.Body)
-		}
-
-		req, err := http.NewRequestWithContext(ctx, r.Method, r.URL, reqBody)
+	record := func(r cassette.Request) (cassette.Interaction, error) {
+		ia, err := do(ctx, r)
 		if err != nil {
-			return err
-		}
-
-		if len(r.Headers) > 0 {
-			req.Header = r.Headers.Clone()
-		}
-
-		apiKey := os.Getenv("NOTION_API_KEY")
-		req.Header.Set("Authorization", "Bearer "+apiKey)
-		req.Header.Set("Notion-Version", "2026-03-11")
-
-		if reqBody != nil {
-			req.Header.Add("Content-Type", "application/json")
-		}
-
-		r, err = cassette.NewRequest(req)
-		if err != nil {
-			return err
-		}
-
-		ia := cassette.Interaction{Request: r}
-
-		rsp, err := http.DefaultClient.Do(req)
-		if err != nil {
-			return err
-		}
-
-		ia.Response, err = cassette.NewResponse(rsp)
-		if err != nil {
-			return fmt.Errorf("recording response: %w", err)
+			return ia, fmt.Errorf("%s %s: %w", r.Method, r.URL, err)
 		}
 
 		ias = slices.DeleteFunc(ias, eqTo(ia))
 		ias = append(ias, ia)
+
+		return ia, nil
+	}
+
+	for _, r := range []cassette.Request{
+		{Method: http.MethodGet, URL: "https://api.notion.com/v1/views?database_id=" + dbID.String()},
+		{Method: http.MethodGet, URL: "https://api.notion.com/v1/views/" + viewID.String()},
+		{Method: http.MethodGet, URL: "https://api.notion.com/v1/databases/" + dbID.String()},
+		{Method: http.MethodGet, URL: "https://api.notion.com/v1/data_sources/" + dataSourceID.String()},
+		{Method: http.MethodGet, URL: "https://api.notion.com/v1/blocks/" + dbID.String()},
+		{Method: http.MethodGet, URL: "https://api.notion.com/v1/users/me"},
+		{Method: http.MethodGet, URL: "https://api.notion.com/v1/users?page_size=3"},
+		{Method: http.MethodPost, URL: "https://api.notion.com/v1/search", Body: []byte(`{"page_size":3}`)},
+		// an error, for the order of its members
+		{Method: http.MethodGet, URL: "https://api.notion.com/v1/pages/" + uuid.Nil().String()},
+	} {
+		if _, err := record(r); err != nil {
+			return err
+		}
+	}
+
+	query, err := record(cassette.Request{
+		Method: http.MethodPost,
+		URL:    "https://api.notion.com/v1/data_sources/" + dataSourceID.String() + "/query",
+		Body:   []byte(`{"page_size":3}`),
+	})
+	if err != nil {
+		return err
+	}
+
+	// the first page of the data source, to record a page with its properties and blocks
+	var list struct {
+		Results []struct {
+			ID string `json:"id"`
+		} `json:"results"`
+	}
+	if err := json.Unmarshal(query.Response.Body, &list); err != nil {
+		return fmt.Errorf("decoding query: %w", err)
+	}
+
+	if len(list.Results) == 0 {
+		return errors.New("data source has no pages")
+	}
+
+	pageID := list.Results[0].ID
+
+	for _, r := range []cassette.Request{
+		{Method: http.MethodGet, URL: "https://api.notion.com/v1/pages/" + pageID},
+		{Method: http.MethodGet, URL: "https://api.notion.com/v1/pages/" + pageID + "/properties/title"},
+		{Method: http.MethodGet, URL: "https://api.notion.com/v1/blocks/" + pageID + "/children?page_size=3"},
+		{Method: http.MethodGet, URL: "https://api.notion.com/v1/comments?block_id=" + pageID},
+	} {
+		if _, err := record(r); err != nil {
+			return err
+		}
 	}
 
 	ias.Mask()
@@ -94,6 +114,50 @@ func run(ctx context.Context) error {
 	ias.TrimResponseBodies(3)
 
 	return ias.WriteFile(pathInteractions)
+}
+
+// do sends r to Notion and records the interaction.
+func do(ctx context.Context, r cassette.Request) (cassette.Interaction, error) {
+	var reqBody io.Reader
+	if len(r.Body) > 0 {
+		reqBody = bytes.NewReader(r.Body)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, r.Method, r.URL, reqBody)
+	if err != nil {
+		return cassette.Interaction{}, err
+	}
+
+	if len(r.Headers) > 0 {
+		req.Header = r.Headers.Clone()
+	}
+
+	apiKey := os.Getenv("NOTION_API_KEY")
+	req.Header.Set("Authorization", "Bearer "+apiKey)
+	req.Header.Set("Notion-Version", "2026-03-11")
+
+	if reqBody != nil {
+		req.Header.Add("Content-Type", "application/json")
+	}
+
+	r, err = cassette.NewRequest(req)
+	if err != nil {
+		return cassette.Interaction{}, err
+	}
+
+	ia := cassette.Interaction{Request: r}
+
+	rsp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return ia, err
+	}
+
+	ia.Response, err = cassette.NewResponse(rsp)
+	if err != nil {
+		return ia, fmt.Errorf("recording response: %w", err)
+	}
+
+	return ia, nil
 }
 
 func cmp(a, b cassette.Interaction) int { return strings.Compare(a.Request.URL, b.Request.URL) }
