@@ -8,11 +8,11 @@ import (
 	"strings"
 )
 
-func (e *ErrorAPI) Error() string { return e.format(e.Status, string(e.Code)) }
+func (e *ErrorAPI) Error() string { return e.format(e.Status, e.Code) }
 
-func (e *ErrorOAuth) Error() string { return e.format(e.Status, string(e.Code)) }
+func (e *ErrorOAuth) Error() string { return e.format(e.Status, e.Code) }
 
-func (e *publicApiCommonErrorResponse) format(status int, code string) string {
+func (e *publicApiCommonErrorResponse) format(status int, code ErrorCode) string {
 	b := &strings.Builder{}
 	fmt.Fprintf(b, "%d %s - %s: obj - %s; msg - %s", status, http.StatusText(status), code, e.Object, e.Message)
 
