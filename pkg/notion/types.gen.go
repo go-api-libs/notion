@@ -8958,13 +8958,13 @@ type MultiSelectPropertyConfigurationMultiSelectItem struct {
 type NotionVersion string
 
 const (
-	NotionVersionTwoZeroTwoSix0311 NotionVersion = "2026-03-11"
+	NotionVersionCurrent NotionVersion = "2026-03-11"
 )
 
 // Valid indicates whether the value is a known member of the NotionVersion enum.
 func (e NotionVersion) Valid() bool {
 	switch e {
-	case NotionVersionTwoZeroTwoSix0311:
+	case NotionVersionCurrent:
 		return true
 	default:
 		return false

@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"context"
 	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"errors"
 	"fmt"
 	"io"
@@ -231,6 +232,23 @@ func collectError(s *openapi.Schema, common string, codes, statuses *jsonSet) er
 	return nil
 }
 
+// nameEnum gives s's enum values the Go names names, which must match them one for one.
+// See https://github.com/oapi-codegen/oapi-codegen/blob/main/docs/extensions.md#x-enum-varnames--x-enumnames.
+func nameEnum(s *openapi.Schema, names ...string) error {
+	if len(s.Enum) != len(names) {
+		return &errpath.ErrField{Field: "enum", Err: fmt.Errorf("has %d values, want %d", len(s.Enum), len(names))}
+	}
+
+	ext, err := json.Marshal(map[string][]string{"x-enum-varnames": names})
+	if err != nil {
+		return err
+	}
+
+	s.Extensions = ext
+
+	return nil
+}
+
 // jsonSet holds the distinct values of a const or enum, in the order first seen.
 type jsonSet struct {
 	seen   map[string]bool
@@ -297,6 +315,17 @@ func fixOpenAPI() (*openapi.Document, error) {
 		return nil, err
 	}
 
+	notionVersion, ok := doc.Components.Parameters["notionVersion"]
+	if !ok {
+		return nil, errors.New("parameter notionVersion not found")
+	}
+
+	if err := nameEnum(notionVersion.Value.Schema, "Current"); err != nil {
+		return nil, &errpath.ErrField{Field: "components", Err: &errpath.ErrField{
+			Field: "parameters", Err: &errpath.ErrKey{Key: "notionVersion", Err: &errpath.ErrField{Field: "schema", Err: err}},
+		}}
+	}
+
 	if err := applyPasses(doc); err != nil {
 		return nil, err
 	}
@@ -313,7 +342,7 @@ func fixOpenAPI() (*openapi.Document, error) {
 }
 
 // applyPasses runs, after the edits above, the passes the openapi-* commands would, in the order a spec goes through
-// them.
+// them, then sorts as they do.
 func applyPasses(doc *openapi.Document) error {
 	ias, err := cassette.InteractionsReadFile("api/interactions.json")
 	if err != nil {
@@ -335,15 +364,15 @@ func applyPasses(doc *openapi.Document) error {
 		if err := pass.run(doc); err != nil {
 			return fmt.Errorf("%s: %w", pass.name, err)
 		}
-
-		for _, path := range doc.Paths {
-			for _, op := range path.Operations {
-				op.Responses.Sort()
-			}
-		}
-
-		doc.Components.SortMaps()
 	}
+
+	for _, path := range doc.Paths {
+		for _, op := range path.Operations {
+			op.Responses.Sort()
+		}
+	}
+
+	doc.Components.SortMaps()
 
 	return nil
 }

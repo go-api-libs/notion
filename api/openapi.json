@@ -12437,6 +12437,9 @@
         "type": "string",
         "enum": [
           "2026-03-11"
+        ],
+        "x-enum-varnames": [
+          "Current"
         ]
       },
       "Number": {
