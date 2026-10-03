@@ -8682,6 +8682,7 @@ type ListViewsOk struct {
 	Type          string                `json:"type"`
 	View          emptyObject           `json:"view"`
 	RequestStatus requestStatusResponse `json:"request_status,omitzero"`
+	RequestID     uuid.UUID             `json:"request_id,omitzero"`
 }
 
 // Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.

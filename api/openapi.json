@@ -12247,7 +12247,8 @@
           "object": {
             "description": "Always `list`",
             "type": "string",
-            "const": "list"
+            "const": "list",
+            "example": "list"
           },
           "next_cursor": {
             "$ref": "#/components/schemas/AgentInstructionsPageID"
@@ -12264,13 +12265,19 @@
           "type": {
             "description": "Always `view`",
             "type": "string",
-            "const": "view"
+            "const": "view",
+            "example": "view"
           },
           "view": {
             "$ref": "#/components/schemas/emptyObject"
           },
           "request_status": {
             "$ref": "#/components/schemas/requestStatusResponse"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "a2709f97-8ca9-4d39-9ceb-fa5f6ab85691"
           }
         },
         "required": [
@@ -12629,6 +12636,7 @@
         "enum": [
           "2026-03-11"
         ],
+        "example": "2026-03-11",
         "x-enum-varnames": [
           "Current"
         ]
@@ -24743,7 +24751,8 @@
           "object": {
             "description": "The object type name.",
             "type": "string",
-            "const": "view"
+            "const": "view",
+            "example": "view"
           },
           "id": {
             "description": "The ID of the view.",
@@ -27456,11 +27465,13 @@
         "additionalProperties": false
       },
       "idRequest": {
-        "type": "string"
+        "type": "string",
+        "example": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
       },
       "idResponse": {
         "type": "string",
-        "format": "uuid"
+        "format": "uuid",
+        "example": "cb3265bc-5d5e-488f-bd8a-69221c107915"
       },
       "imageBlockObjectResponse": {
         "title": "Image",
