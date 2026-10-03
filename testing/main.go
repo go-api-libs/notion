@@ -19,6 +19,10 @@ var (
 	viewID       = uuid.MustParse("cb3265bc5d5e488fbd8a69221c107915")
 )
 
+const (
+	pathInteractions = "api/interactions.json"
+)
+
 func main() {
 	if err := run(context.Background()); err != nil {
 		log.Fatal(err)
@@ -62,9 +66,16 @@ func run(ctx context.Context) error {
 		return fmt.Errorf("recording response: %w", err)
 	}
 
-	if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+	if err := cassette.AddInteraction(pathInteractions, ia); err != nil {
 		return err
 	}
 
-	return nil
+	ias, err := cassette.InteractionsReadFile(pathInteractions)
+	if err != nil {
+		return err
+	}
+
+	ias.Mask()
+
+	return ias.WriteFile(pathInteractions)
 }
