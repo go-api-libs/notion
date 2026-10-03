@@ -715,8 +715,8 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 // Create a page
 //
 //	POST /pages
-func (c *Client) PostPage(ctx context.Context, params *PostPageParams, body PostPage) (*PageOrDataSourceResultsItemAnyOf, error) {
-	return c.PostPageWithResult[PageOrDataSourceResultsItemAnyOf](ctx, params, body)
+func (c *Client) PostPage(ctx context.Context, params *PostPageParams, body PostPage) (*Page5, error) {
+	return c.PostPageWithResult[Page5](ctx, params, body)
 }
 
 // Create a page
@@ -1153,8 +1153,8 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRe
 // Update page
 //
 //	PATCH /pages/{page_id}
-func (c *Client) PatchPage(ctx context.Context, pageID IDRequest, params *PatchPageParams, body PatchPage) (*PageOrDataSourceResultsItemAnyOf, error) {
-	return c.PatchPageWithResult[PageOrDataSourceResultsItemAnyOf](ctx, pageID, params, body)
+func (c *Client) PatchPage(ctx context.Context, pageID IDRequest, params *PatchPageParams, body PatchPage) (*Page5, error) {
+	return c.PatchPageWithResult[Page5](ctx, pageID, params, body)
 }
 
 // Update page
@@ -2415,8 +2415,8 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 // Retrieve a block
 //
 //	GET /blocks/{block_id}
-func (c *Client) RetrieveABlock(ctx context.Context, blockID IDRequest) (*BlockResultsItem, error) {
-	return c.RetrieveABlockWithResult[BlockResultsItem](ctx, blockID)
+func (c *Client) RetrieveABlock(ctx context.Context, blockID IDRequest) (*ABlock, error) {
+	return c.RetrieveABlockWithResult[ABlock](ctx, blockID)
 }
 
 // Retrieve a block
@@ -2614,8 +2614,8 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 // Delete a block
 //
 //	DELETE /blocks/{block_id}
-func (c *Client) DeleteABlock(ctx context.Context, blockID IDRequest) (*BlockResultsItem, error) {
-	return c.DeleteABlockWithResult[BlockResultsItem](ctx, blockID)
+func (c *Client) DeleteABlock(ctx context.Context, blockID IDRequest) (*ABlock, error) {
+	return c.DeleteABlockWithResult[ABlock](ctx, blockID)
 }
 
 // Delete a block
@@ -2813,8 +2813,8 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID IDRe
 // Update a block
 //
 //	PATCH /blocks/{block_id}
-func (c *Client) UpdateABlock(ctx context.Context, blockID IDRequest, body UpdateABlock) (*BlockResultsItem, error) {
-	return c.UpdateABlockWithResult[BlockResultsItem](ctx, blockID, body)
+func (c *Client) UpdateABlock(ctx context.Context, blockID IDRequest, body UpdateABlock) (*ABlock, error) {
+	return c.UpdateABlockWithResult[ABlock](ctx, blockID, body)
 }
 
 // Update a block
@@ -3019,8 +3019,8 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID IDRe
 // Retrieve block children
 //
 //	GET /blocks/{block_id}/children
-func (c *Client) GetBlockChildren(ctx context.Context, blockID IDRequest, params *GetBlockChildrenParams) (*Block3, error) {
-	return c.GetBlockChildrenWithResult[Block3](ctx, blockID, params)
+func (c *Client) GetBlockChildren(ctx context.Context, blockID IDRequest, params *GetBlockChildrenParams) (*Block2, error) {
+	return c.GetBlockChildrenWithResult[Block2](ctx, blockID, params)
 }
 
 // Retrieve block children
@@ -10455,7 +10455,7 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 // Update agent status
 //
 //	PATCH /agents/{agent_id}/status
-func (c *Client) UpdateAgentStatus(ctx context.Context, agentID string, body AgentBatchOperationsItemOneOfFields) (*UpdateAgentStatusOk, error) {
+func (c *Client) UpdateAgentStatus(ctx context.Context, agentID string, body UpdateAgentStatus) (*UpdateAgentStatusOk, error) {
 	return c.UpdateAgentStatusWithResult[UpdateAgentStatusOk](ctx, agentID, body)
 }
 
@@ -10463,7 +10463,7 @@ func (c *Client) UpdateAgentStatus(ctx context.Context, agentID string, body Age
 // You can define a custom result to unmarshal the response into.
 //
 //	PATCH /agents/{agent_id}/status
-func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID string, body AgentBatchOperationsItemOneOfFields) (*R, error) {
+func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID string, body UpdateAgentStatus) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -10661,7 +10661,7 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 // Update agent credit limit
 //
 //	PATCH /agents/{agent_id}/credit_limit
-func (c *Client) UpdateAgentCreditLimit(ctx context.Context, agentID string, body AgentBatchOperationsItemOneOfFields2) (*UpdateAgentCreditLimitOk, error) {
+func (c *Client) UpdateAgentCreditLimit(ctx context.Context, agentID string, body UpdateAgentCreditLimit) (*UpdateAgentCreditLimitOk, error) {
 	return c.UpdateAgentCreditLimitWithResult[UpdateAgentCreditLimitOk](ctx, agentID, body)
 }
 
@@ -10669,7 +10669,7 @@ func (c *Client) UpdateAgentCreditLimit(ctx context.Context, agentID string, bod
 // You can define a custom result to unmarshal the response into.
 //
 //	PATCH /agents/{agent_id}/credit_limit
-func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, agentID string, body AgentBatchOperationsItemOneOfFields2) (*R, error) {
+func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, agentID string, body UpdateAgentCreditLimit) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -12822,15 +12822,15 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 // Revoke a token
 //
 //	POST /oauth/revoke
-func (c *Client) RevokeToken(ctx context.Context, body IntrospectToken) (*RevokeTokenOk, error) {
-	return c.RevokeTokenWithResult[RevokeTokenOk](ctx, body)
+func (c *Client) RevokeToken(ctx context.Context, body RevokeToken) (*ErrorAllOf, error) {
+	return c.RevokeTokenWithResult[ErrorAllOf](ctx, body)
 }
 
 // Revoke a token
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /oauth/revoke
-func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body IntrospectToken) (*R, error) {
+func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body RevokeToken) (*R, error) {
 	if c.basic == "" {
 		return nil, errors.New("basic auth NOTION_API_USERNAME / NOTION_API_PASSWORD not provided")
 	}
@@ -12937,7 +12937,7 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body Introspe
 // Introspect a token
 //
 //	POST /oauth/introspect
-func (c *Client) IntrospectToken(ctx context.Context, body IntrospectToken) (*IntrospectTokenOk, error) {
+func (c *Client) IntrospectToken(ctx context.Context, body RevokeToken) (*IntrospectTokenOk, error) {
 	return c.IntrospectTokenWithResult[IntrospectTokenOk](ctx, body)
 }
 
@@ -12945,7 +12945,7 @@ func (c *Client) IntrospectToken(ctx context.Context, body IntrospectToken) (*In
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /oauth/introspect
-func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body IntrospectToken) (*R, error) {
+func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body RevokeToken) (*R, error) {
 	if c.basic == "" {
 		return nil, errors.New("basic auth NOTION_API_USERNAME / NOTION_API_PASSWORD not provided")
 	}
