@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.123.0
 	github.com/MarkRosemaker/errpath v0.0.0-20260929233333-1f3585d128eb
 	github.com/MarkRosemaker/openapi v0.0.0-20261001203346-42d50de94f07
-	github.com/MarkRosemaker/openapi-codegen v0.0.0-20261003162231-dd3b471161d2
+	github.com/MarkRosemaker/openapi-codegen v0.0.0-20261003170548-1dea5c457d37
 	github.com/MarkRosemaker/openapi-compress v0.0.0-20261002085142-7d353d5e9368
 	github.com/MarkRosemaker/openapi-edit v0.0.0-20261002084608-32f8b4643215
 	github.com/MarkRosemaker/openapi-enrich v0.0.0-20261002084648-62eb42fab2c6
