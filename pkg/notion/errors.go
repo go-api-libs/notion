@@ -16,19 +16,17 @@ func (e *publicApiCommonErrorResponse) format(status int, code ErrorCode) string
 	b := &strings.Builder{}
 	fmt.Fprintf(b, "%d %s - %s: obj - %s; msg - %s", status, http.StatusText(status), code, e.Object, e.Message)
 
-	if e.AdditionalData != nil {
-		// sorted, so the same error always reads the same
-		for _, key := range slices.Sorted(maps.Keys(*e.AdditionalData)) {
-			data := (*e.AdditionalData)[key]
-			fmt.Fprintf(b, "; %s - ", key)
+	// sorted, so the same error always reads the same
+	for _, key := range slices.Sorted(maps.Keys(e.AdditionalData)) {
+		data := e.AdditionalData[key]
+		fmt.Fprintf(b, "; %s - ", key)
 
-			if data.String != nil {
-				b.WriteString(*data.String)
-			}
+		if data.String != "" {
+			b.WriteString(data.String)
+		}
 
-			if data.String2 != nil {
-				b.WriteString(strings.Join(*data.String2, ", "))
-			}
+		if len(data.String2) > 0 {
+			b.WriteString(strings.Join(data.String2, ", "))
 		}
 	}
 
