@@ -254,106 +254,6 @@ func nameEnum(s *openapi.Schema, names ...string) error {
 	return nil
 }
 
-// nameArrays replaces every array of item, as the official spec spells it out inline, with a reference to a new schema
-// called name. It fails if there is none, so a change upstream is noticed.
-func nameArrays(doc *openapi.Document, name, item string) error {
-	itemRef := schemaRefPrefix + item
-
-	var array *openapi.Schema
-
-	walkSchemas(doc, func(s *openapi.Schema) {
-		if s.Type != openapi.TypeArray || s.Items == nil || s.Items.Ref == nil || s.Items.Ref.Identifier != itemRef {
-			return
-		}
-
-		if array == nil {
-			array = &openapi.Schema{Type: openapi.TypeArray, MaxItems: s.MaxItems, Items: s.Items}
-		}
-
-		s.Replace(&openapi.Schema{
-			Description: s.Description,
-			Ref:         &openapi.SchemaRef{Identifier: schemaRefPrefix + name, Value: array},
-		})
-	})
-
-	if array == nil {
-		return fmt.Errorf("no array of %s found", item)
-	}
-
-	doc.Components.Schemas.Set(name, array)
-
-	return nil
-}
-
-// walkSchemas calls fn for every schema in the components' schemas and in the paths' parameters, request bodies and
-// responses, and for every schema within them, but does not follow references.
-func walkSchemas(doc *openapi.Document, fn func(*openapi.Schema)) {
-	visited := map[*openapi.Schema]bool{}
-
-	var walk func(*openapi.Schema)
-
-	walk = func(s *openapi.Schema) {
-		if s == nil || visited[s] {
-			return
-		}
-
-		visited[s] = true
-
-		fn(s)
-
-		if s.Ref != nil {
-			return
-		}
-
-		for _, p := range s.Properties {
-			walk(p)
-		}
-
-		for _, l := range []openapi.SchemaList{s.AllOf, s.OneOf, s.AnyOf, s.PrefixItems} {
-			for _, sub := range l {
-				walk(sub)
-			}
-		}
-
-		walk(s.Items)
-		walk(s.Not)
-
-		if s.AdditionalProperties != nil {
-			walk(s.AdditionalProperties.Schema)
-		}
-	}
-
-	walkContent := func(c openapi.Content) {
-		for _, mt := range c {
-			walk(mt.Schema)
-		}
-	}
-
-	for _, s := range doc.Components.Schemas {
-		walk(s)
-	}
-
-	for _, p := range doc.Paths {
-		for _, op := range p.Operations {
-			for _, param := range op.Parameters {
-				if param.Value != nil {
-					walk(param.Value.Schema)
-				}
-			}
-
-			if op.RequestBody != nil && op.RequestBody.Value != nil {
-				walkContent(op.RequestBody.Value.Content)
-			}
-
-			for _, rsp := range op.Responses {
-				if rsp.Value != nil {
-					walkContent(rsp.Value.Content)
-				}
-			}
-		}
-	}
-}
-
 // addRequestID adds the request_id Notion returns on every top-level object, but the official spec leaves out, to the
 // schemas names.
 func addRequestID(doc *openapi.Document, names ...string) error {
@@ -507,8 +407,12 @@ func fixOpenAPI() (*openapi.Document, error) {
 		return nil, fmt.Errorf("renaming schemas: %w", err)
 	}
 
-	if err := nameArrays(doc, "RichTexts", "RichText"); err != nil {
-		return nil, err
+	// the official spec spells out every array of RichText inline
+	if err := edit.ExtractSchema(doc, "RichTexts", func(s *openapi.Schema) bool {
+		return s.Type == openapi.TypeArray && s.Items != nil && s.Items.Ref != nil &&
+			s.Items.Ref.Identifier == schemaRefPrefix+"RichText"
+	}); err != nil {
+		return nil, fmt.Errorf("naming the arrays of RichText: %w", err)
 	}
 
 	if err := addRequestID(doc, "Page", "Database"); err != nil {
