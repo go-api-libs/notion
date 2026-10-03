@@ -5973,43 +5973,49 @@ type Error2 struct {
 // ErrorAPI defines a model
 type ErrorAPI struct {
 	publicApiCommonErrorResponse
-	Code   ErrorAPIAllOf1Code `json:"code,omitzero"`
-	Status int                `json:"status"`
+	Code   ErrorCode `json:"code,omitzero"`
+	Status int       `json:"status"`
 }
 
-// ErrorAPIAllOf1Code defines a model
-type ErrorAPIAllOf1Code string
+// ErrorCode defines a model
+type ErrorCode string
 
 const (
-	ErrorAPIAllOf1CodeInvalidJSON               ErrorAPIAllOf1Code = "invalid_json"
-	ErrorAPIAllOf1CodeInvalidRequestURL         ErrorAPIAllOf1Code = "invalid_request_url"
-	ErrorAPIAllOf1CodeInvalidRequest            ErrorAPIAllOf1Code = "invalid_request"
-	ErrorAPIAllOf1CodeMissingVersion            ErrorAPIAllOf1Code = "missing_version"
-	ErrorAPIAllOf1CodeInvalidBeta               ErrorAPIAllOf1Code = "invalid_beta"
-	ErrorAPIAllOf1CodeValidationError           ErrorAPIAllOf1Code = "validation_error"
-	ErrorAPIAllOf1CodeInvalidCreditLimit        ErrorAPIAllOf1Code = "invalid_credit_limit"
-	ErrorAPIAllOf1CodeUnauthorized              ErrorAPIAllOf1Code = "unauthorized"
-	ErrorAPIAllOf1CodeRestrictedResource        ErrorAPIAllOf1Code = "restricted_resource"
-	ErrorAPIAllOf1CodeStatusChangeNotAllowed    ErrorAPIAllOf1Code = "status_change_not_allowed"
-	ErrorAPIAllOf1CodeWorkspaceCreditsExhausted ErrorAPIAllOf1Code = "workspace_credits_exhausted"
-	ErrorAPIAllOf1CodeAgentCreditLimitReached   ErrorAPIAllOf1Code = "agent_credit_limit_reached"
-	ErrorAPIAllOf1CodeObjectNotFound            ErrorAPIAllOf1Code = "object_not_found"
-	ErrorAPIAllOf1CodeDirectoryNotFound         ErrorAPIAllOf1Code = "directory_not_found"
-	ErrorAPIAllOf1CodeRowLimitExceeded          ErrorAPIAllOf1Code = "row_limit_exceeded"
-	ErrorAPIAllOf1CodeConflictError             ErrorAPIAllOf1Code = "conflict_error"
-	ErrorAPIAllOf1CodeIdempotencyKeyReused      ErrorAPIAllOf1Code = "idempotency_key_reused"
-	ErrorAPIAllOf1CodeAgentDeleted              ErrorAPIAllOf1Code = "agent_deleted"
-	ErrorAPIAllOf1CodeRateLimited               ErrorAPIAllOf1Code = "rate_limited"
-	ErrorAPIAllOf1CodeInternalServerError       ErrorAPIAllOf1Code = "internal_server_error"
-	ErrorAPIAllOf1CodeServiceUnavailable        ErrorAPIAllOf1Code = "service_unavailable"
-	ErrorAPIAllOf1CodeGatewayTimeout            ErrorAPIAllOf1Code = "gateway_timeout"
-	ErrorAPIAllOf1CodeServiceOverload           ErrorAPIAllOf1Code = "service_overload"
+	ErrorCodeInvalidJSON               ErrorCode = "invalid_json"
+	ErrorCodeInvalidRequestURL         ErrorCode = "invalid_request_url"
+	ErrorCodeInvalidRequest            ErrorCode = "invalid_request"
+	ErrorCodeMissingVersion            ErrorCode = "missing_version"
+	ErrorCodeInvalidBeta               ErrorCode = "invalid_beta"
+	ErrorCodeValidationError           ErrorCode = "validation_error"
+	ErrorCodeInvalidCreditLimit        ErrorCode = "invalid_credit_limit"
+	ErrorCodeUnauthorized              ErrorCode = "unauthorized"
+	ErrorCodeRestrictedResource        ErrorCode = "restricted_resource"
+	ErrorCodeStatusChangeNotAllowed    ErrorCode = "status_change_not_allowed"
+	ErrorCodeWorkspaceCreditsExhausted ErrorCode = "workspace_credits_exhausted"
+	ErrorCodeAgentCreditLimitReached   ErrorCode = "agent_credit_limit_reached"
+	ErrorCodeObjectNotFound            ErrorCode = "object_not_found"
+	ErrorCodeDirectoryNotFound         ErrorCode = "directory_not_found"
+	ErrorCodeRowLimitExceeded          ErrorCode = "row_limit_exceeded"
+	ErrorCodeConflictError             ErrorCode = "conflict_error"
+	ErrorCodeIdempotencyKeyReused      ErrorCode = "idempotency_key_reused"
+	ErrorCodeAgentDeleted              ErrorCode = "agent_deleted"
+	ErrorCodeRateLimited               ErrorCode = "rate_limited"
+	ErrorCodeInternalServerError       ErrorCode = "internal_server_error"
+	ErrorCodeServiceUnavailable        ErrorCode = "service_unavailable"
+	ErrorCodeGatewayTimeout            ErrorCode = "gateway_timeout"
+	ErrorCodeServiceOverload           ErrorCode = "service_overload"
+	ErrorCodeInvalidGrant              ErrorCode = "invalid_grant"
+	ErrorCodeUnauthorizedClient        ErrorCode = "unauthorized_client"
+	ErrorCodeUnsupportedGrantType      ErrorCode = "unsupported_grant_type"
+	ErrorCodeInvalidScope              ErrorCode = "invalid_scope"
+	ErrorCodeInvalidClient             ErrorCode = "invalid_client"
+	ErrorCodeTestEnvError              ErrorCode = "test_env_error"
 )
 
-// Valid indicates whether the value is a known member of the ErrorAPIAllOf1Code enum.
-func (e ErrorAPIAllOf1Code) Valid() bool {
+// Valid indicates whether the value is a known member of the ErrorCode enum.
+func (e ErrorCode) Valid() bool {
 	switch e {
-	case ErrorAPIAllOf1CodeInvalidJSON, ErrorAPIAllOf1CodeInvalidRequestURL, ErrorAPIAllOf1CodeInvalidRequest, ErrorAPIAllOf1CodeMissingVersion, ErrorAPIAllOf1CodeInvalidBeta, ErrorAPIAllOf1CodeValidationError, ErrorAPIAllOf1CodeInvalidCreditLimit, ErrorAPIAllOf1CodeUnauthorized, ErrorAPIAllOf1CodeRestrictedResource, ErrorAPIAllOf1CodeStatusChangeNotAllowed, ErrorAPIAllOf1CodeWorkspaceCreditsExhausted, ErrorAPIAllOf1CodeAgentCreditLimitReached, ErrorAPIAllOf1CodeObjectNotFound, ErrorAPIAllOf1CodeDirectoryNotFound, ErrorAPIAllOf1CodeRowLimitExceeded, ErrorAPIAllOf1CodeConflictError, ErrorAPIAllOf1CodeIdempotencyKeyReused, ErrorAPIAllOf1CodeAgentDeleted, ErrorAPIAllOf1CodeRateLimited, ErrorAPIAllOf1CodeInternalServerError, ErrorAPIAllOf1CodeServiceUnavailable, ErrorAPIAllOf1CodeGatewayTimeout, ErrorAPIAllOf1CodeServiceOverload:
+	case ErrorCodeInvalidJSON, ErrorCodeInvalidRequestURL, ErrorCodeInvalidRequest, ErrorCodeMissingVersion, ErrorCodeInvalidBeta, ErrorCodeValidationError, ErrorCodeInvalidCreditLimit, ErrorCodeUnauthorized, ErrorCodeRestrictedResource, ErrorCodeStatusChangeNotAllowed, ErrorCodeWorkspaceCreditsExhausted, ErrorCodeAgentCreditLimitReached, ErrorCodeObjectNotFound, ErrorCodeDirectoryNotFound, ErrorCodeRowLimitExceeded, ErrorCodeConflictError, ErrorCodeIdempotencyKeyReused, ErrorCodeAgentDeleted, ErrorCodeRateLimited, ErrorCodeInternalServerError, ErrorCodeServiceUnavailable, ErrorCodeGatewayTimeout, ErrorCodeServiceOverload, ErrorCodeInvalidGrant, ErrorCodeUnauthorizedClient, ErrorCodeUnsupportedGrantType, ErrorCodeInvalidScope, ErrorCodeInvalidClient, ErrorCodeTestEnvError:
 		return true
 	default:
 		return false
@@ -6019,32 +6025,8 @@ func (e ErrorAPIAllOf1Code) Valid() bool {
 // ErrorOAuth defines a model
 type ErrorOAuth struct {
 	publicApiCommonErrorResponse
-	Code   ErrorOAuthAllOf1Code `json:"code,omitzero"`
-	Status int                  `json:"status"`
-}
-
-// ErrorOAuthAllOf1Code defines a model
-type ErrorOAuthAllOf1Code string
-
-const (
-	ErrorOAuthAllOf1CodeInvalidRequest       ErrorOAuthAllOf1Code = "invalid_request"
-	ErrorOAuthAllOf1CodeInvalidGrant         ErrorOAuthAllOf1Code = "invalid_grant"
-	ErrorOAuthAllOf1CodeUnauthorizedClient   ErrorOAuthAllOf1Code = "unauthorized_client"
-	ErrorOAuthAllOf1CodeUnsupportedGrantType ErrorOAuthAllOf1Code = "unsupported_grant_type"
-	ErrorOAuthAllOf1CodeInvalidScope         ErrorOAuthAllOf1Code = "invalid_scope"
-	ErrorOAuthAllOf1CodeInvalidClient        ErrorOAuthAllOf1Code = "invalid_client"
-	ErrorOAuthAllOf1CodeTestEnvError         ErrorOAuthAllOf1Code = "test_env_error"
-	ErrorOAuthAllOf1CodeInternalServerError  ErrorOAuthAllOf1Code = "internal_server_error"
-)
-
-// Valid indicates whether the value is a known member of the ErrorOAuthAllOf1Code enum.
-func (e ErrorOAuthAllOf1Code) Valid() bool {
-	switch e {
-	case ErrorOAuthAllOf1CodeInvalidRequest, ErrorOAuthAllOf1CodeInvalidGrant, ErrorOAuthAllOf1CodeUnauthorizedClient, ErrorOAuthAllOf1CodeUnsupportedGrantType, ErrorOAuthAllOf1CodeInvalidScope, ErrorOAuthAllOf1CodeInvalidClient, ErrorOAuthAllOf1CodeTestEnvError, ErrorOAuthAllOf1CodeInternalServerError:
-		return true
-	default:
-		return false
-	}
+	Code   ErrorCode `json:"code,omitzero"`
+	Status int       `json:"status"`
 }
 
 // The type of error that occurred during file import.

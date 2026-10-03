@@ -39137,6 +39137,69 @@
           "equation"
         ]
       },
+      "ErrorAPI": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/publicApiCommonErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "$ref": "#/components/schemas/ErrorCode"
+              },
+              "status": {
+                "type": "integer",
+                "enum": [
+                  400,
+                  401,
+                  403,
+                  404,
+                  406,
+                  409,
+                  429,
+                  500,
+                  503,
+                  504,
+                  529
+                ]
+              }
+            },
+            "required": [
+              "code",
+              "status"
+            ]
+          }
+        ]
+      },
+      "ErrorOAuth": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/publicApiCommonErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "$ref": "#/components/schemas/ErrorCode"
+              },
+              "status": {
+                "type": "integer",
+                "enum": [
+                  400,
+                  401,
+                  403,
+                  500
+                ]
+              }
+            },
+            "required": [
+              "code",
+              "status"
+            ]
+          }
+        ]
+      },
       "existencePropertyFilter": {
         "anyOf": [
           {
@@ -51781,102 +51844,38 @@
         ],
         "additionalProperties": false
       },
-      "ErrorAPI": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/publicApiCommonErrorResponse"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "code": {
-                "type": "string",
-                "enum": [
-                  "invalid_json",
-                  "invalid_request_url",
-                  "invalid_request",
-                  "missing_version",
-                  "invalid_beta",
-                  "validation_error",
-                  "invalid_credit_limit",
-                  "unauthorized",
-                  "restricted_resource",
-                  "status_change_not_allowed",
-                  "workspace_credits_exhausted",
-                  "agent_credit_limit_reached",
-                  "object_not_found",
-                  "directory_not_found",
-                  "row_limit_exceeded",
-                  "conflict_error",
-                  "idempotency_key_reused",
-                  "agent_deleted",
-                  "rate_limited",
-                  "internal_server_error",
-                  "service_unavailable",
-                  "gateway_timeout",
-                  "service_overload"
-                ]
-              },
-              "status": {
-                "type": "integer",
-                "enum": [
-                  400,
-                  401,
-                  403,
-                  404,
-                  406,
-                  409,
-                  429,
-                  500,
-                  503,
-                  504,
-                  529
-                ]
-              }
-            },
-            "required": [
-              "code",
-              "status"
-            ]
-          }
-        ]
-      },
-      "ErrorOAuth": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/publicApiCommonErrorResponse"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "code": {
-                "type": "string",
-                "enum": [
-                  "invalid_request",
-                  "invalid_grant",
-                  "unauthorized_client",
-                  "unsupported_grant_type",
-                  "invalid_scope",
-                  "invalid_client",
-                  "test_env_error",
-                  "internal_server_error"
-                ]
-              },
-              "status": {
-                "type": "integer",
-                "enum": [
-                  400,
-                  401,
-                  403,
-                  500
-                ]
-              }
-            },
-            "required": [
-              "code",
-              "status"
-            ]
-          }
+      "ErrorCode": {
+        "type": "string",
+        "enum": [
+          "invalid_json",
+          "invalid_request_url",
+          "invalid_request",
+          "missing_version",
+          "invalid_beta",
+          "validation_error",
+          "invalid_credit_limit",
+          "unauthorized",
+          "restricted_resource",
+          "status_change_not_allowed",
+          "workspace_credits_exhausted",
+          "agent_credit_limit_reached",
+          "object_not_found",
+          "directory_not_found",
+          "row_limit_exceeded",
+          "conflict_error",
+          "idempotency_key_reused",
+          "agent_deleted",
+          "rate_limited",
+          "internal_server_error",
+          "service_unavailable",
+          "gateway_timeout",
+          "service_overload",
+          "invalid_grant",
+          "unauthorized_client",
+          "unsupported_grant_type",
+          "invalid_scope",
+          "invalid_client",
+          "test_env_error"
         ]
       }
     },
