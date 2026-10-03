@@ -5973,8 +5973,8 @@ type Error2 struct {
 // ErrorAPI defines a model
 type ErrorAPI struct {
 	publicApiCommonErrorResponse
-	Code   ErrorAPIAllOf1Code `json:"code,omitzero"`
 	Status int                `json:"status"`
+	Code   ErrorAPIAllOf1Code `json:"code,omitzero"`
 }
 
 // ErrorAPIAllOf1Code defines a model
@@ -6010,6 +6010,37 @@ const (
 func (e ErrorAPIAllOf1Code) Valid() bool {
 	switch e {
 	case ErrorAPIAllOf1CodeInvalidJSON, ErrorAPIAllOf1CodeInvalidRequestURL, ErrorAPIAllOf1CodeInvalidRequest, ErrorAPIAllOf1CodeMissingVersion, ErrorAPIAllOf1CodeInvalidBeta, ErrorAPIAllOf1CodeValidationError, ErrorAPIAllOf1CodeInvalidCreditLimit, ErrorAPIAllOf1CodeUnauthorized, ErrorAPIAllOf1CodeRestrictedResource, ErrorAPIAllOf1CodeStatusChangeNotAllowed, ErrorAPIAllOf1CodeWorkspaceCreditsExhausted, ErrorAPIAllOf1CodeAgentCreditLimitReached, ErrorAPIAllOf1CodeObjectNotFound, ErrorAPIAllOf1CodeDirectoryNotFound, ErrorAPIAllOf1CodeRowLimitExceeded, ErrorAPIAllOf1CodeConflictError, ErrorAPIAllOf1CodeIdempotencyKeyReused, ErrorAPIAllOf1CodeAgentDeleted, ErrorAPIAllOf1CodeRateLimited, ErrorAPIAllOf1CodeInternalServerError, ErrorAPIAllOf1CodeServiceUnavailable, ErrorAPIAllOf1CodeGatewayTimeout, ErrorAPIAllOf1CodeServiceOverload:
+		return true
+	default:
+		return false
+	}
+}
+
+// ErrorOauth defines a model
+type ErrorOauth struct {
+	publicApiCommonErrorResponse
+	Code   ErrorOauthAllOf1Code `json:"code,omitzero"`
+	Status int                  `json:"status"`
+}
+
+// ErrorOauthAllOf1Code defines a model
+type ErrorOauthAllOf1Code string
+
+const (
+	ErrorOauthAllOf1CodeInvalidRequest       ErrorOauthAllOf1Code = "invalid_request"
+	ErrorOauthAllOf1CodeInvalidGrant         ErrorOauthAllOf1Code = "invalid_grant"
+	ErrorOauthAllOf1CodeUnauthorizedClient   ErrorOauthAllOf1Code = "unauthorized_client"
+	ErrorOauthAllOf1CodeUnsupportedGrantType ErrorOauthAllOf1Code = "unsupported_grant_type"
+	ErrorOauthAllOf1CodeInvalidScope         ErrorOauthAllOf1Code = "invalid_scope"
+	ErrorOauthAllOf1CodeInvalidClient        ErrorOauthAllOf1Code = "invalid_client"
+	ErrorOauthAllOf1CodeTestEnvError         ErrorOauthAllOf1Code = "test_env_error"
+	ErrorOauthAllOf1CodeInternalServerError  ErrorOauthAllOf1Code = "internal_server_error"
+)
+
+// Valid indicates whether the value is a known member of the ErrorOauthAllOf1Code enum.
+func (e ErrorOauthAllOf1Code) Valid() bool {
+	switch e {
+	case ErrorOauthAllOf1CodeInvalidRequest, ErrorOauthAllOf1CodeInvalidGrant, ErrorOauthAllOf1CodeUnauthorizedClient, ErrorOauthAllOf1CodeUnsupportedGrantType, ErrorOauthAllOf1CodeInvalidScope, ErrorOauthAllOf1CodeInvalidClient, ErrorOauthAllOf1CodeTestEnvError, ErrorOauthAllOf1CodeInternalServerError:
 		return true
 	default:
 		return false
@@ -26570,34 +26601,6 @@ func (v *equationRichTextItemResponse) unmarshalJSONMember(dec *jsontext.Decoder
 	}
 
 	return false, nil
-}
-
-// error_oauth_400 defines a model
-type error_oauth_400 struct {
-	publicApiCommonErrorResponse
-	Code   any `json:"code"`
-	Status any `json:"status"`
-}
-
-// error_oauth_401 defines a model
-type error_oauth_401 struct {
-	publicApiCommonErrorResponse
-	Code   any `json:"code"`
-	Status any `json:"status"`
-}
-
-// error_oauth_403 defines a model
-type error_oauth_403 struct {
-	publicApiCommonErrorResponse
-	Code   any `json:"code"`
-	Status any `json:"status"`
-}
-
-// error_oauth_500 defines a model
-type error_oauth_500 struct {
-	publicApiCommonErrorResponse
-	Code   any `json:"code"`
-	Status any `json:"status"`
 }
 
 // existencePropertyFilter defines a model

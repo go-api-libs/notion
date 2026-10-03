@@ -288,8 +288,10 @@ func fixOpenAPI() (*openapi.Document, error) {
 		}
 	}
 
-	if err := consolidateErrors(doc, "error_api_", "publicApiCommonErrorResponse"); err != nil {
-		return nil, err
+	for _, prefix := range []string{"error_api_", "error_oauth_"} {
+		if err := consolidateErrors(doc, prefix, "publicApiCommonErrorResponse"); err != nil {
+			return nil, err
+		}
 	}
 
 	// TODO: apply

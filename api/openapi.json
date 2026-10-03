@@ -29539,7 +29539,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/error_oauth_400"
+                  "$ref": "#/components/schemas/ErrorOauth"
                 }
               }
             }
@@ -29549,7 +29549,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/error_oauth_401"
+                  "$ref": "#/components/schemas/ErrorOauth"
                 }
               }
             }
@@ -29559,7 +29559,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/error_oauth_403"
+                  "$ref": "#/components/schemas/ErrorOauth"
                 }
               }
             }
@@ -29569,7 +29569,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/error_oauth_500"
+                  "$ref": "#/components/schemas/ErrorOauth"
                 }
               }
             }
@@ -29645,7 +29645,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/error_oauth_400"
+                  "$ref": "#/components/schemas/ErrorOauth"
                 }
               }
             }
@@ -29655,7 +29655,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/error_oauth_401"
+                  "$ref": "#/components/schemas/ErrorOauth"
                 }
               }
             }
@@ -29665,7 +29665,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/error_oauth_403"
+                  "$ref": "#/components/schemas/ErrorOauth"
                 }
               }
             }
@@ -29675,7 +29675,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/error_oauth_500"
+                  "$ref": "#/components/schemas/ErrorOauth"
                 }
               }
             }
@@ -29763,7 +29763,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/error_oauth_400"
+                  "$ref": "#/components/schemas/ErrorOauth"
                 }
               }
             }
@@ -29773,7 +29773,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/error_oauth_401"
+                  "$ref": "#/components/schemas/ErrorOauth"
                 }
               }
             }
@@ -29783,7 +29783,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/error_oauth_403"
+                  "$ref": "#/components/schemas/ErrorOauth"
                 }
               }
             }
@@ -29793,7 +29793,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/error_oauth_500"
+                  "$ref": "#/components/schemas/ErrorOauth"
                 }
               }
             }
@@ -39135,110 +39135,6 @@
         "required": [
           "type",
           "equation"
-        ]
-      },
-      "error_oauth_400": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/publicApiCommonErrorResponse"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "code": {
-                "enum": [
-                  "invalid_request",
-                  "invalid_grant",
-                  "unauthorized_client",
-                  "unsupported_grant_type",
-                  "invalid_scope"
-                ]
-              },
-              "status": {
-                "const": 400
-              }
-            },
-            "required": [
-              "code",
-              "status"
-            ],
-            "additionalProperties": false
-          }
-        ]
-      },
-      "error_oauth_401": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/publicApiCommonErrorResponse"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "code": {
-                "enum": [
-                  "invalid_client"
-                ]
-              },
-              "status": {
-                "const": 401
-              }
-            },
-            "required": [
-              "code",
-              "status"
-            ],
-            "additionalProperties": false
-          }
-        ]
-      },
-      "error_oauth_403": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/publicApiCommonErrorResponse"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "code": {
-                "enum": [
-                  "test_env_error"
-                ]
-              },
-              "status": {
-                "const": 403
-              }
-            },
-            "required": [
-              "code",
-              "status"
-            ],
-            "additionalProperties": false
-          }
-        ]
-      },
-      "error_oauth_500": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/publicApiCommonErrorResponse"
-          },
-          {
-            "type": "object",
-            "properties": {
-              "code": {
-                "enum": [
-                  "internal_server_error"
-                ]
-              },
-              "status": {
-                "const": 500
-              }
-            },
-            "required": [
-              "code",
-              "status"
-            ],
-            "additionalProperties": false
-          }
         ]
       },
       "existencePropertyFilter": {
@@ -51935,6 +51831,44 @@
                   503,
                   504,
                   529
+                ]
+              }
+            },
+            "required": [
+              "code",
+              "status"
+            ]
+          }
+        ]
+      },
+      "ErrorOauth": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/publicApiCommonErrorResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "invalid_request",
+                  "invalid_grant",
+                  "unauthorized_client",
+                  "unsupported_grant_type",
+                  "invalid_scope",
+                  "invalid_client",
+                  "test_env_error",
+                  "internal_server_error"
+                ]
+              },
+              "status": {
+                "type": "integer",
+                "enum": [
+                  400,
+                  401,
+                  403,
+                  500
                 ]
               }
             },
