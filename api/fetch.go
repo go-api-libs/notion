@@ -16,7 +16,11 @@ import (
 	"github.com/MarkRosemaker/errpath"
 	"github.com/MarkRosemaker/openapi"
 	codegen "github.com/MarkRosemaker/openapi-codegen"
+	compress "github.com/MarkRosemaker/openapi-compress"
 	edit "github.com/MarkRosemaker/openapi-edit"
+	enrich "github.com/MarkRosemaker/openapi-enrich"
+	"github.com/MarkRosemaker/openapi-enrich/cassette"
+	flatten "github.com/MarkRosemaker/openapi-flatten"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -293,12 +297,9 @@ func fixOpenAPI() (*openapi.Document, error) {
 		return nil, err
 	}
 
-	// TODO: apply
-	// - openapi-enrich
-	// - openapi-flatten
-	// - openapi-compress
-	// - openapi-flatten
-	// - openapi-codegen -client -debug
+	if err := applyPasses(doc); err != nil {
+		return nil, err
+	}
 
 	if err := doc.Validate(); err != nil {
 		return nil, fmt.Errorf("validating schema: %w", err)
@@ -309,6 +310,42 @@ func fixOpenAPI() (*openapi.Document, error) {
 	}
 
 	return doc, nil
+}
+
+// applyPasses runs, after the edits above, the passes the openapi-* commands would, in the order a spec goes through
+// them.
+func applyPasses(doc *openapi.Document) error {
+	ias, err := cassette.InteractionsReadFile("api/interactions.json")
+	if err != nil {
+		return err
+	}
+
+	// the placeholder for the next interaction to record has no response
+	ias = slices.DeleteFunc(ias, func(ia cassette.Interaction) bool { return ia.Response.StatusCode == 0 })
+
+	for _, pass := range []struct {
+		name string
+		run  func(*openapi.Document) error
+	}{
+		{"enrich", func(d *openapi.Document) error { return enrich.Enrich(d, ias) }},
+		{"flatten", flatten.Document},
+		{"compress", func(d *openapi.Document) error { return compress.Document(d, compress.Config{}) }},
+		{"flatten again", flatten.Document},
+	} {
+		if err := pass.run(doc); err != nil {
+			return fmt.Errorf("%s: %w", pass.name, err)
+		}
+
+		for _, path := range doc.Paths {
+			for _, op := range path.Operations {
+				op.Responses.Sort()
+			}
+		}
+
+		doc.Components.SortMaps()
+	}
+
+	return nil
 }
 
 func generateCode(doc *openapi.Document) error {

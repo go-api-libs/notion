@@ -5938,7 +5938,7 @@ type EquationRichTextItemEquation2 struct {
 
 // Error defines a model
 type Error struct {
-	Object         any                                                `json:"object"`
+	Object         string                                             `json:"object"`
 	Message        string                                             `json:"message"`
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 	Code           ErrorCode                                          `json:"code"`
@@ -8952,6 +8952,23 @@ type MultiSelectPropertyConfigurationMultiSelectItem struct {
 	Color PartialSelectPropertyValueColor `json:"color,omitzero"`
 	// The name of the bot's workspace.
 	Description string `json:"description,omitzero"`
+}
+
+// NotionVersion defines a model
+type NotionVersion string
+
+const (
+	NotionVersionTwoZeroTwoSix0311 NotionVersion = "2026-03-11"
+)
+
+// Valid indicates whether the value is a known member of the NotionVersion enum.
+func (e NotionVersion) Valid() bool {
+	switch e {
+	case NotionVersionTwoZeroTwoSix0311:
+		return true
+	default:
+		return false
+	}
 }
 
 // Number defines a model
