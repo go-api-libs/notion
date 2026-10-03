@@ -4,6 +4,7 @@ import (
 	"cmp"
 	"context"
 	"encoding/json/jsontext"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -11,8 +12,10 @@ import (
 	"os"
 	"strings"
 
+	"github.com/MarkRosemaker/errpath"
 	"github.com/MarkRosemaker/openapi"
 	edit "github.com/MarkRosemaker/openapi-edit"
+	"github.com/ettle/strcase"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -125,8 +128,10 @@ func persistOpenAPI(ctx context.Context) error {
 }
 
 // consolidateErrors replaces the schemas whose names start with prefix, each an allOf of the common error and a code
-// and status, with one schema called name that allows every code and status they did.
-func consolidateErrors(doc *openapi.Document, prefix, name, common string) error {
+// and status, with one schema named after prefix that allows every code and status they did.
+func consolidateErrors(doc *openapi.Document, prefix, common string) error {
+	name := strcase.ToGoPascal(strings.TrimSuffix(prefix, "_"))
+
 	var names []string
 
 	for n := range doc.Components.Schemas.ByIndex() {
@@ -148,7 +153,9 @@ func consolidateErrors(doc *openapi.Document, prefix, name, common string) error
 
 	for _, n := range names {
 		if err := collectError(doc.Components.Schemas[n], common, codes, statuses); err != nil {
-			return fmt.Errorf("%s: %w", n, err)
+			return &errpath.ErrField{Field: "components", Err: &errpath.ErrField{
+				Field: "schemas", Err: &errpath.ErrKey{Key: n, Err: err},
+			}}
 		}
 	}
 
@@ -186,7 +193,7 @@ func collectError(s *openapi.Schema, common string, codes, statuses *jsonSet) er
 	if len(s.OneOf) > 0 {
 		for i, alt := range s.OneOf {
 			if err := collectError(alt, common, codes, statuses); err != nil {
-				return fmt.Errorf("oneOf[%d]: %w", i, err)
+				return &errpath.ErrField{Field: "oneOf", Err: &errpath.ErrIndex{Index: i, Err: err}}
 			}
 		}
 
@@ -194,7 +201,7 @@ func collectError(s *openapi.Schema, common string, codes, statuses *jsonSet) er
 	}
 
 	if len(s.AllOf) != 2 || s.AllOf[0].Ref == nil || s.AllOf[0].Ref.Identifier != schemaRefPrefix+common {
-		return fmt.Errorf("want allOf of %s and one schema", common)
+		return &errpath.ErrField{Field: "allOf", Err: fmt.Errorf("want %s and one schema", common)}
 	}
 
 	for prop, p := range s.AllOf[1].Properties.ByIndex() {
@@ -205,7 +212,9 @@ func collectError(s *openapi.Schema, common string, codes, statuses *jsonSet) er
 			statuses.add(p)
 		case "additional_data": // a narrower shape of what the common error already allows
 		default:
-			return fmt.Errorf("unexpected property %q", prop)
+			return &errpath.ErrField{Field: "allOf", Err: &errpath.ErrIndex{Index: 1, Err: &errpath.ErrField{
+				Field: "properties", Err: &errpath.ErrKey{Key: prop, Err: errors.New("unexpected property")},
+			}}}
 		}
 	}
 
@@ -273,7 +282,7 @@ func fixOpenAPI() error {
 		}
 	}
 
-	if err := consolidateErrors(doc, "error_api_", "error_api", "publicApiCommonErrorResponse"); err != nil {
+	if err := consolidateErrors(doc, "error_api_", "publicApiCommonErrorResponse"); err != nil {
 		return err
 	}
 
