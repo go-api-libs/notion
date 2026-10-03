@@ -377,6 +377,48 @@ func addRequestID(doc *openapi.Document, names ...string) error {
 	return nil
 }
 
+// allowDateTimes drops the date format from the properties of the schema name, which Notion declares as dates but
+// sends as a date or a date-time: "an ISO 8601 date, with optional time". It fails unless each of them is, or is one
+// of, a string with the date format, so a change upstream is noticed.
+func allowDateTimes(doc *openapi.Document, name string, props ...string) error {
+	s, ok := doc.Components.Schemas[name]
+	if !ok {
+		return &errpath.ErrField{Field: "components", Err: &errpath.ErrField{
+			Field: "schemas", Err: &errpath.ErrKey{Key: name, Err: errors.New("not found")},
+		}}
+	}
+
+	for _, prop := range props {
+		p, ok := s.Properties[prop]
+		if !ok {
+			return &errpath.ErrField{Field: "components", Err: &errpath.ErrField{
+				Field: "schemas", Err: &errpath.ErrKey{Key: name, Err: &errpath.ErrField{
+					Field: "properties", Err: &errpath.ErrKey{Key: prop, Err: errors.New("not found")},
+				}},
+			}}
+		}
+
+		dates := 0
+
+		for _, alt := range append(openapi.SchemaList{p}, p.OneOf...) {
+			if alt.Type == openapi.TypeString && alt.Format == openapi.FormatDate {
+				alt.Format = ""
+				dates++
+			}
+		}
+
+		if dates == 0 {
+			return &errpath.ErrField{Field: "components", Err: &errpath.ErrField{
+				Field: "schemas", Err: &errpath.ErrKey{Key: name, Err: &errpath.ErrField{
+					Field: "properties", Err: &errpath.ErrKey{Key: prop, Err: errors.New("is not a date")},
+				}},
+			}}
+		}
+	}
+
+	return nil
+}
+
 // jsonSet holds the distinct values of a const or enum, in the order first seen.
 type jsonSet struct {
 	seen   map[string]bool
@@ -470,6 +512,10 @@ func fixOpenAPI() (*openapi.Document, error) {
 	}
 
 	if err := addRequestID(doc, "Page", "Database"); err != nil {
+		return nil, err
+	}
+
+	if err := allowDateTimes(doc, "dateResponse", "start", "end"); err != nil {
 		return nil, err
 	}
 
