@@ -14,6 +14,7 @@ import (
 
 	"github.com/MarkRosemaker/errpath"
 	"github.com/MarkRosemaker/openapi"
+	codegen "github.com/MarkRosemaker/openapi-codegen"
 	edit "github.com/MarkRosemaker/openapi-edit"
 	"github.com/ettle/strcase"
 	"golang.org/x/sync/errgroup"
@@ -37,7 +38,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := fixOpenAPI(); err != nil {
+	doc, err := fixOpenAPI()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := generateCode(doc); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -245,10 +251,10 @@ func (s *jsonSet) add(p *openapi.Schema) {
 	}
 }
 
-func fixOpenAPI() error {
+func fixOpenAPI() (*openapi.Document, error) {
 	doc, err := openapi.LoadFromFile(pathOpenAPI)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	for _, p := range doc.Paths.ByIndex() {
@@ -283,7 +289,7 @@ func fixOpenAPI() error {
 	}
 
 	if err := consolidateErrors(doc, "error_api_", "publicApiCommonErrorResponse"); err != nil {
-		return err
+		return nil, err
 	}
 
 	// TODO: apply
@@ -294,12 +300,23 @@ func fixOpenAPI() error {
 	// - openapi-codegen -client -debug
 
 	if err := doc.Validate(); err != nil {
-		return fmt.Errorf("validating schema: %w", err)
+		return nil, fmt.Errorf("validating schema: %w", err)
 	}
 
 	if err := doc.WriteToFile(pathOpenAPI); err != nil {
-		return fmt.Errorf("writing to file: %w", err)
+		return nil, fmt.Errorf("writing to file: %w", err)
 	}
 
-	return nil
+	return doc, nil
+}
+
+func generateCode(doc *openapi.Document) error {
+	return codegen.Generate(codegen.Config{
+		Spec:        doc,
+		PackageName: "notion",
+		OutputDir:   "pkg/notion",
+		Types:       true,
+		Client:      true,
+		ClientTest:  true,
+	})
 }

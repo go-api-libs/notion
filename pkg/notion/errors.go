@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func (e *error_api_400) Error() string {
+func (e *ErrorAPI) Error() string {
 	b := &strings.Builder{}
 	fmt.Fprintf(b, "%d %s - %s: obj - %s; msg - %s", e.Status, http.StatusText(e.Status), e.Code, e.Object, e.Message)
 
@@ -26,3 +26,9 @@ func (e *error_api_400) Error() string {
 
 	return b.String()
 }
+
+// TODO: after consolidating error_oauth_*, replace the following with a real error implementation
+func (e *error_oauth_400) Error() string { return "" }
+func (e *error_oauth_401) Error() string { return "" }
+func (e *error_oauth_403) Error() string { return "" }
+func (e *error_oauth_500) Error() string { return "" }
