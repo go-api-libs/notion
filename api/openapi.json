@@ -523,6 +523,8 @@
           {
             "name": "filter_properties",
             "in": "query",
+            "style": "form",
+            "explode": true,
             "schema": {
               "type": "array",
               "items": {
@@ -1553,6 +1555,8 @@
           {
             "name": "filter_properties",
             "in": "query",
+            "style": "form",
+            "explode": true,
             "schema": {
               "description": "Supply a list of property IDs to filter properties in the response. Note that if a page doesn't have a property, it won't be included in the filtered response.",
               "type": "array",
@@ -1725,6 +1729,8 @@
           {
             "name": "filter_properties",
             "in": "query",
+            "style": "form",
+            "explode": true,
             "schema": {
               "type": "array",
               "items": {
@@ -7744,6 +7750,8 @@
           {
             "name": "filter_properties",
             "in": "query",
+            "style": "form",
+            "explode": true,
             "schema": {
               "type": "array",
               "items": {
