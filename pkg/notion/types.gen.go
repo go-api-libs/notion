@@ -10,24 +10,16 @@ import (
 	"encoding/json/v2"
 	"errors"
 	"fmt"
-	"net/url"
 	"slices"
 	"strconv"
 	"time"
 	"uuid"
 
 	"cloud.google.com/go/civil"
-	"github.com/MarkRosemaker/jsonutil"
 )
 
 var jsonOpts = json.JoinOptions(
 	json.RejectUnknownMembers(true),
-	json.WithMarshalers(json.JoinMarshalers(
-		json.MarshalToFunc(jsonutil.URLMarshal),
-	)),
-	json.WithUnmarshalers(json.JoinUnmarshalers(
-		json.UnmarshalFromFunc(jsonutil.URLUnmarshal),
-	)),
 )
 
 // GetUsersParams holds the query parameters for GetUsers.
@@ -2413,8 +2405,8 @@ type Block struct {
 	Toggle           ContentWithRichTextAndColorResponse        `json:"toggle,omitzero"`
 	Template         BlockTemplate                              `json:"template,omitzero"`
 	SyncedBlock      BlockSyncedBlock                           `json:"synced_block,omitzero"`
-	ChildPage        TitleObject                                `json:"child_page,omitzero"`
-	ChildDatabase    TitleObject                                `json:"child_database,omitzero"`
+	ChildPage        TitleObjectResponse                        `json:"child_page,omitzero"`
+	ChildDatabase    TitleObjectResponse                        `json:"child_database,omitzero"`
 	Equation         ExpressionObject                           `json:"equation,omitzero"`
 	Code             BlockCode                                  `json:"code,omitzero"`
 	Callout          BlockCallout                               `json:"callout,omitzero"`
@@ -2437,6 +2429,7 @@ type Block struct {
 	Audio            MediaContentWithFileAndCaptionResponse     `json:"audio,omitzero"`
 	LinkPreview      MediaContentWithURL                        `json:"link_preview,omitzero"`
 	Unsupported      BlockUnsupported                           `json:"unsupported,omitzero"`
+	RequestID        uuid.UUID                                  `json:"request_id,omitzero"`
 }
 
 // Block2 defines a model
@@ -7786,7 +7779,8 @@ type DataSourceObjectResponse struct {
 	// The URL of the data source.
 	URL string `json:"url"`
 	// The public URL of the data source if it is publicly accessible.
-	PublicURL string `json:"public_url"`
+	PublicURL string    `json:"public_url"`
+	RequestID uuid.UUID `json:"request_id,omitzero"`
 }
 
 // DataSourceParentResponse defines a model
@@ -7876,7 +7870,8 @@ type DataSourceViewObjectResponse struct {
 	// View presentation configuration.
 	Configuration ViewConfigResponse `json:"configuration,omitzero"`
 	// For dashboard widget views, the ID of the parent dashboard view. Only present when this view is a widget inside a dashboard.
-	DashboardViewID string `json:"dashboard_view_id,omitzero"`
+	DashboardViewID string    `json:"dashboard_view_id,omitzero"`
+	RequestID       uuid.UUID `json:"request_id,omitzero"`
 }
 
 // DataSourceViewReferenceResponse defines a model
@@ -17182,26 +17177,10 @@ func (v *ParentOfDatabaseResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// PartialBlockObjectParent defines a model
-type PartialBlockObjectParent struct {
-	Type   string    `json:"type"`
-	PageID uuid.UUID `json:"page_id"`
-}
-
 // PartialBlockObjectResponse defines a model
 type PartialBlockObjectResponse struct {
-	Object         string                     `json:"object"`
-	ID             uuid.UUID                  `json:"id"`
-	Parent         PartialBlockObjectParent   `json:"parent,omitzero"`
-	CreatedTime    time.Time                  `json:"created_time,omitzero"`
-	LastEditedTime time.Time                  `json:"last_edited_time,omitzero"`
-	CreatedBy      PartialPageObjectCreatedBy `json:"created_by,omitzero"`
-	LastEditedBy   PartialPageObjectCreatedBy `json:"last_edited_by,omitzero"`
-	HasChildren    *bool                      `json:"has_children,omitzero"`
-	InTrash        *bool                      `json:"in_trash,omitzero"`
-	Type           string                     `json:"type,omitzero"`
-	ChildDatabase  TitleObject                `json:"child_database,omitzero"`
-	RequestID      uuid.UUID                  `json:"request_id,omitzero"`
+	Object string    `json:"object"`
+	ID     uuid.UUID `json:"id"`
 }
 
 // PartialCommentObjectResponse defines a model
@@ -17219,29 +17198,7 @@ type PartialDataSourceObjectResponse struct {
 	// The ID of the data source.
 	ID IDResponse `json:"id"`
 	// The properties schema of the data source.
-	Properties     map[string]PropertyConfig             `json:"properties"`
-	Cover          PartialDatabaseObjectCover            `json:"cover,omitzero"`
-	Icon           PartialPageObjectIcon                 `json:"icon,omitzero"`
-	CreatedTime    time.Time                             `json:"created_time,omitzero"`
-	CreatedBy      PartialPageObjectCreatedBy            `json:"created_by,omitzero"`
-	LastEditedBy   PartialPageObjectCreatedBy            `json:"last_edited_by,omitzero"`
-	LastEditedTime time.Time                             `json:"last_edited_time,omitzero"`
-	Title          PartialDatabaseObjectTitle            `json:"title,omitzero"`
-	Description    PartialDatabaseObjectTitle            `json:"description,omitzero"`
-	IsInline       *bool                                 `json:"is_inline,omitzero"`
-	DatabaseType   *struct{}                             `json:"database_type,omitzero"`
-	Parent         PartialDataSourceObjectResponseParent `json:"parent,omitzero"`
-	DatabaseParent PartialBlockObjectParent              `json:"database_parent,omitzero"`
-	URL            url.URL                               `json:"url,omitzero"`
-	PublicURL      *struct{}                             `json:"public_url,omitzero"`
-	InTrash        *bool                                 `json:"in_trash,omitzero"`
-	RequestID      uuid.UUID                             `json:"request_id,omitzero"`
-}
-
-// PartialDataSourceObjectResponseParent defines a model
-type PartialDataSourceObjectResponseParent struct {
-	Type       string    `json:"type"`
-	DatabaseID uuid.UUID `json:"database_id"`
+	Properties map[string]PropertyConfig `json:"properties"`
 }
 
 // PartialDataSourceViewObjectResponse defines a model
@@ -17253,129 +17210,7 @@ type PartialDataSourceViewObjectResponse struct {
 	// The parent database of the view.
 	Parent DatabaseParentResponse `json:"parent"`
 	// The view type.
-	Type           ViewType                                         `json:"type"`
-	DataSourceID   uuid.UUID                                        `json:"data_source_id,omitzero"`
-	Name           string                                           `json:"name,omitzero"`
-	CreatedTime    time.Time                                        `json:"created_time,omitzero"`
-	CreatedBy      PartialPageObjectCreatedBy                       `json:"created_by,omitzero"`
-	LastEditedTime time.Time                                        `json:"last_edited_time,omitzero"`
-	LastEditedBy   PartialPageObjectCreatedBy                       `json:"last_edited_by,omitzero"`
-	URL            url.URL                                          `json:"url,omitzero"`
-	Filter         PartialDataSourceViewObjectResponseFilter        `json:"filter,omitzero"`
-	Sorts          PartialDataSourceViewObjectResponseSorts         `json:"sorts,omitzero"`
-	QuickFilters   *struct{}                                        `json:"quick_filters,omitzero"`
-	Configuration  PartialDataSourceViewObjectResponseConfiguration `json:"configuration,omitzero"`
-	RequestID      uuid.UUID                                        `json:"request_id,omitzero"`
-}
-
-// PartialDataSourceViewObjectResponseConfiguration defines a model
-type PartialDataSourceViewObjectResponseConfiguration struct {
-	Type       string                                                     `json:"type"`
-	GroupBy    PartialDataSourceViewObjectResponseConfigurationGroupBy    `json:"group_by"`
-	Properties PartialDataSourceViewObjectResponseConfigurationProperties `json:"properties"`
-}
-
-// PartialDataSourceViewObjectResponseConfigurationGroupBy defines a model
-type PartialDataSourceViewObjectResponseConfigurationGroupBy struct {
-	Type            string                                                      `json:"type"`
-	PropertyID      string                                                      `json:"property_id"`
-	Sort            PartialDataSourceViewObjectResponseConfigurationGroupBySort `json:"sort"`
-	PropertyName    string                                                      `json:"property_name"`
-	HideEmptyGroups bool                                                        `json:"hide_empty_groups"`
-}
-
-// PartialDataSourceViewObjectResponseConfigurationGroupBySort defines a model
-type PartialDataSourceViewObjectResponseConfigurationGroupBySort struct {
-	Type string `json:"type"`
-}
-
-// PartialDataSourceViewObjectResponseConfigurationProperties defines a model
-type PartialDataSourceViewObjectResponseConfigurationProperties []PartialDataSourceViewObjectResponseConfigurationPropertiesItem
-
-// PartialDataSourceViewObjectResponseConfigurationPropertiesItem defines a model
-type PartialDataSourceViewObjectResponseConfigurationPropertiesItem struct {
-	PropertyID   string `json:"property_id"`
-	PropertyName string `json:"property_name"`
-	Visible      bool   `json:"visible"`
-}
-
-// PartialDataSourceViewObjectResponseFilter defines a model
-type PartialDataSourceViewObjectResponseFilter struct {
-	Or PartialDataSourceViewObjectResponseFilterOr `json:"or"`
-}
-
-// PartialDataSourceViewObjectResponseFilterOr defines a model
-type PartialDataSourceViewObjectResponseFilterOr []PartialDataSourceViewObjectResponseFilterOrItem
-
-// PartialDataSourceViewObjectResponseFilterOrItem defines a model
-type PartialDataSourceViewObjectResponseFilterOrItem struct {
-	Or  PartialDataSourceViewObjectResponseFilterOrItemOr  `json:"or"`
-	And PartialDataSourceViewObjectResponseFilterOrItemAnd `json:"and,omitzero"`
-}
-
-// PartialDataSourceViewObjectResponseFilterOrItemAnd defines a model
-type PartialDataSourceViewObjectResponseFilterOrItemAnd []PartialDataSourceViewObjectResponseFilterOrItemAndItem
-
-// PartialDataSourceViewObjectResponseFilterOrItemAndItem defines a model
-type PartialDataSourceViewObjectResponseFilterOrItemAndItem struct {
-	Property    string                                                            `json:"property"`
-	Select      TextPropertyFilterAnyOfAnyOf2                                     `json:"select"`
-	CreatedTime PartialDataSourceViewObjectResponseFilterOrItemAndItemCreatedTime `json:"created_time,omitzero"`
-}
-
-// PartialDataSourceViewObjectResponseFilterOrItemAndItemCreatedTime defines a model
-type PartialDataSourceViewObjectResponseFilterOrItemAndItemCreatedTime struct {
-	OnOrAfter string `json:"on_or_after"`
-}
-
-// PartialDataSourceViewObjectResponseFilterOrItemOr defines a model
-type PartialDataSourceViewObjectResponseFilterOrItemOr []PartialDataSourceViewObjectResponseFilterOrItemOrItem
-
-// PartialDataSourceViewObjectResponseFilterOrItemOrItem defines a model
-type PartialDataSourceViewObjectResponseFilterOrItemOrItem struct {
-	Property string                                                   `json:"property"`
-	Date     TextPropertyFilterAnyOfAnyOf                             `json:"date"`
-	And      PartialDataSourceViewObjectResponseFilterOrItemOrItemAnd `json:"and,omitzero"`
-}
-
-// PartialDataSourceViewObjectResponseFilterOrItemOrItemAnd defines a model
-type PartialDataSourceViewObjectResponseFilterOrItemOrItemAnd []PartialDataSourceViewObjectResponseFilterOrItemOrItemAndItem
-
-// PartialDataSourceViewObjectResponseFilterOrItemOrItemAndItem defines a model
-type PartialDataSourceViewObjectResponseFilterOrItemOrItemAndItem struct {
-	Property string                                                              `json:"property"`
-	Date     TextPropertyFilterAnyOfAnyOf                                        `json:"date"`
-	Formula  PartialDataSourceViewObjectResponseFilterOrItemOrItemAndItemFormula `json:"formula,omitzero"`
-}
-
-// PartialDataSourceViewObjectResponseFilterOrItemOrItemAndItemFormula defines a model
-type PartialDataSourceViewObjectResponseFilterOrItemOrItemAndItemFormula struct {
-	Number PartialDataSourceViewObjectResponseFilterOrItemOrItemAndItemFormulaNumber `json:"number"`
-}
-
-// PartialDataSourceViewObjectResponseFilterOrItemOrItemAndItemFormulaNumber defines a model
-type PartialDataSourceViewObjectResponseFilterOrItemOrItemAndItemFormulaNumber struct {
-	LessThan int `json:"less_than"`
-}
-
-// PartialDataSourceViewObjectResponseSorts defines a model
-type PartialDataSourceViewObjectResponseSorts []PartialDataSourceViewObjectResponseSortsItem
-
-// PartialDataSourceViewObjectResponseSortsItem defines a model
-type PartialDataSourceViewObjectResponseSortsItem struct {
-	Property  string `json:"property"`
-	Direction string `json:"direction"`
-}
-
-// PartialDatabaseObjectCover defines a model
-type PartialDatabaseObjectCover struct {
-	Type     string                             `json:"type"`
-	External PartialDatabaseObjectCoverExternal `json:"external"`
-}
-
-// PartialDatabaseObjectCoverExternal defines a model
-type PartialDatabaseObjectCoverExternal struct {
-	URL url.URL `json:"url"`
+	Type ViewType `json:"type"`
 }
 
 // PartialDatabaseObjectResponse defines a model
@@ -17383,124 +17218,7 @@ type PartialDatabaseObjectResponse struct {
 	// The database object type name.
 	Object string `json:"object"`
 	// The ID of the database.
-	ID             IDResponse                               `json:"id"`
-	Title          PartialDatabaseObjectTitle               `json:"title,omitzero"`
-	Description    PartialDatabaseObjectTitle               `json:"description,omitzero"`
-	Parent         PartialBlockObjectParent                 `json:"parent,omitzero"`
-	IsInline       *bool                                    `json:"is_inline,omitzero"`
-	DatabaseType   *struct{}                                `json:"database_type,omitzero"`
-	InTrash        *bool                                    `json:"in_trash,omitzero"`
-	IsLocked       *bool                                    `json:"is_locked,omitzero"`
-	CreatedTime    time.Time                                `json:"created_time,omitzero"`
-	LastEditedTime time.Time                                `json:"last_edited_time,omitzero"`
-	DataSources    PartialDatabaseObjectResponseDataSources `json:"data_sources,omitzero"`
-	Icon           PartialPageObjectIcon                    `json:"icon,omitzero"`
-	Cover          PartialDatabaseObjectCover               `json:"cover,omitzero"`
-	URL            url.URL                                  `json:"url,omitzero"`
-	PublicURL      *struct{}                                `json:"public_url,omitzero"`
-	RequestID      uuid.UUID                                `json:"request_id,omitzero"`
-}
-
-// PartialDatabaseObjectResponseDataSources defines a model
-type PartialDatabaseObjectResponseDataSources []PartialDatabaseObjectResponseDataSourcesItem
-
-// PartialDatabaseObjectResponseDataSourcesItem defines a model
-type PartialDatabaseObjectResponseDataSourcesItem struct {
-	ID   uuid.UUID `json:"id"`
-	Name string    `json:"name"`
-}
-
-// PartialDatabaseObjectTitle defines a model
-type PartialDatabaseObjectTitle []PartialDatabaseObjectTitleItem
-
-// PartialDatabaseObjectTitleItem defines a model
-type PartialDatabaseObjectTitleItem struct {
-	Type        string                                    `json:"type"`
-	Text        PartialDatabaseObjectTitleItemText        `json:"text"`
-	Annotations PartialDatabaseObjectTitleItemAnnotations `json:"annotations"`
-	PlainText   string                                    `json:"plain_text"`
-	Href        *struct{}                                 `json:"href"`
-}
-
-// PartialDatabaseObjectTitleItemAnnotations defines a model
-type PartialDatabaseObjectTitleItemAnnotations struct {
-	Bold          bool   `json:"bold"`
-	Italic        bool   `json:"italic"`
-	Strikethrough bool   `json:"strikethrough"`
-	Underline     bool   `json:"underline"`
-	Code          bool   `json:"code"`
-	Color         string `json:"color"`
-}
-
-// PartialDatabaseObjectTitleItemText defines a model
-type PartialDatabaseObjectTitleItemText struct {
-	Content string    `json:"content"`
-	Link    *struct{} `json:"link"`
-}
-
-// PartialPageObjectCreatedBy defines a model
-type PartialPageObjectCreatedBy struct {
-	Object string    `json:"object"`
-	ID     uuid.UUID `json:"id"`
-}
-
-// PartialPageObjectIcon defines a model
-type PartialPageObjectIcon struct {
-	Type  string `json:"type"`
-	Emoji string `json:"emoji"`
-}
-
-// PartialPageObjectPropertiesDuration defines a model
-type PartialPageObjectPropertiesDuration struct {
-	ID      string                                     `json:"id"`
-	Type    string                                     `json:"type"`
-	Formula PartialPageObjectPropertiesDurationFormula `json:"formula"`
-}
-
-// PartialPageObjectPropertiesDurationFormula defines a model
-type PartialPageObjectPropertiesDurationFormula struct {
-	Type   string    `json:"type"`
-	Number *struct{} `json:"number"`
-}
-
-// PartialPageObjectPropertiesEnd defines a model
-type PartialPageObjectPropertiesEnd struct {
-	ID   string    `json:"id"`
-	Type string    `json:"type"`
-	Date *struct{} `json:"date"`
-}
-
-// PartialPageObjectPropertiesEndFallback defines a model
-type PartialPageObjectPropertiesEndFallback struct {
-	ID      string                                        `json:"id"`
-	Type    string                                        `json:"type"`
-	Formula PartialPageObjectPropertiesEndFallbackFormula `json:"formula"`
-}
-
-// PartialPageObjectPropertiesEndFallbackFormula defines a model
-type PartialPageObjectPropertiesEndFallbackFormula struct {
-	Type string                                            `json:"type"`
-	Date PartialPageObjectPropertiesEndFallbackFormulaDate `json:"date"`
-}
-
-// PartialPageObjectPropertiesEndFallbackFormulaDate defines a model
-type PartialPageObjectPropertiesEndFallbackFormulaDate struct {
-	Start    time.Time `json:"start"`
-	End      *struct{} `json:"end"`
-	TimeZone *struct{} `json:"time_zone"`
-}
-
-// PartialPageObjectPropertiesHumanDuration defines a model
-type PartialPageObjectPropertiesHumanDuration struct {
-	ID      string                                          `json:"id"`
-	Type    string                                          `json:"type"`
-	Formula PartialPageObjectPropertiesHumanDurationFormula `json:"formula"`
-}
-
-// PartialPageObjectPropertiesHumanDurationFormula defines a model
-type PartialPageObjectPropertiesHumanDurationFormula struct {
-	Type   string    `json:"type"`
-	String *struct{} `json:"string"`
+	ID IDResponse `json:"id"`
 }
 
 // PartialPageObjectResponse defines a model
@@ -17508,117 +17226,7 @@ type PartialPageObjectResponse struct {
 	// The page object type name.
 	Object string `json:"object"`
 	// The ID of the page.
-	ID             IDResponse                          `json:"id"`
-	CreatedTime    time.Time                           `json:"created_time,omitzero"`
-	LastEditedTime time.Time                           `json:"last_edited_time,omitzero"`
-	CreatedBy      PartialPageObjectCreatedBy          `json:"created_by,omitzero"`
-	LastEditedBy   PartialPageObjectCreatedBy          `json:"last_edited_by,omitzero"`
-	Cover          *struct{}                           `json:"cover,omitzero"`
-	Icon           PartialPageObjectIcon               `json:"icon,omitzero"`
-	Parent         PartialPageObjectResponseParent     `json:"parent,omitzero"`
-	InTrash        *bool                               `json:"in_trash,omitzero"`
-	IsArchived     *bool                               `json:"is_archived,omitzero"`
-	IsLocked       *bool                               `json:"is_locked,omitzero"`
-	Properties     PartialPageObjectResponseProperties `json:"properties,omitzero"`
-	URL            url.URL                             `json:"url,omitzero"`
-	PublicURL      *struct{}                           `json:"public_url,omitzero"`
-	RequestID      uuid.UUID                           `json:"request_id,omitzero"`
-}
-
-// PartialPageObjectResponseParent defines a model
-type PartialPageObjectResponseParent struct {
-	Type         string    `json:"type"`
-	DataSourceID uuid.UUID `json:"data_source_id"`
-	DatabaseID   uuid.UUID `json:"database_id"`
-}
-
-// PartialPageObjectResponseProperties defines a model
-type PartialPageObjectResponseProperties struct {
-	Duration             PartialPageObjectPropertiesDuration            `json:"Duration"`
-	StartedHoursAgo      PartialPageObjectPropertiesDuration            `json:"Started Hours Ago"`
-	StartFallback        PartialPageObjectPropertiesEndFallback         `json:"Start Fallback"`
-	Status               PartialPageObjectResponsePropertiesStatus      `json:"Status"`
-	Start                PartialPageObjectPropertiesEnd                 `json:"Start"`
-	Recurring            PartialPageObjectResponsePropertiesRecurring   `json:"Recurring"`
-	End                  PartialPageObjectPropertiesEnd                 `json:"End"`
-	Time                 PartialPageObjectResponsePropertiesTime        `json:"Time"`
-	EndFallback          PartialPageObjectPropertiesEndFallback         `json:"End Fallback"`
-	HumanDuration        PartialPageObjectPropertiesHumanDuration       `json:"Human Duration"`
-	Priority             PartialPageObjectResponsePropertiesPriority    `json:"Priority"`
-	CreatedTime          PartialPageObjectResponsePropertiesCreatedTime `json:"Created time"`
-	PriorityIfNotStarted PartialPageObjectPropertiesHumanDuration       `json:"Priority If Not Started"`
-	TimeWithoutDate      PartialPageObjectPropertiesHumanDuration       `json:"Time without Date"`
-	Name                 PartialPageObjectResponsePropertiesName        `json:"Name"`
-}
-
-// PartialPageObjectResponsePropertiesCreatedTime defines a model
-type PartialPageObjectResponsePropertiesCreatedTime struct {
-	ID          string    `json:"id"`
-	Type        string    `json:"type"`
-	CreatedTime time.Time `json:"created_time"`
-}
-
-// PartialPageObjectResponsePropertiesName defines a model
-type PartialPageObjectResponsePropertiesName struct {
-	ID    string                     `json:"id"`
-	Type  string                     `json:"type"`
-	Title PartialDatabaseObjectTitle `json:"title"`
-}
-
-// PartialPageObjectResponsePropertiesPriority defines a model
-type PartialPageObjectResponsePropertiesPriority struct {
-	ID     string                                            `json:"id"`
-	Type   string                                            `json:"type"`
-	Rollup PartialPageObjectResponsePropertiesPriorityRollup `json:"rollup"`
-}
-
-// PartialPageObjectResponsePropertiesPriorityRollup defines a model
-type PartialPageObjectResponsePropertiesPriorityRollup struct {
-	Type     string `json:"type"`
-	Array    []any  `json:"array"`
-	Function string `json:"function"`
-}
-
-// PartialPageObjectResponsePropertiesRecurring defines a model
-type PartialPageObjectResponsePropertiesRecurring struct {
-	ID       string `json:"id"`
-	Type     string `json:"type"`
-	Relation []any  `json:"relation"`
-	HasMore  bool   `json:"has_more"`
-}
-
-// PartialPageObjectResponsePropertiesStatus defines a model
-type PartialPageObjectResponsePropertiesStatus struct {
-	ID     string                                          `json:"id"`
-	Type   string                                          `json:"type"`
-	Select PartialPageObjectResponsePropertiesStatusSelect `json:"select"`
-}
-
-// PartialPageObjectResponsePropertiesStatusSelect defines a model
-type PartialPageObjectResponsePropertiesStatusSelect struct {
-	ID    uuid.UUID `json:"id"`
-	Name  string    `json:"name"`
-	Color string    `json:"color"`
-}
-
-// PartialPageObjectResponsePropertiesTime defines a model
-type PartialPageObjectResponsePropertiesTime struct {
-	ID      string                                         `json:"id"`
-	Type    string                                         `json:"type"`
-	Formula PartialPageObjectResponsePropertiesTimeFormula `json:"formula"`
-}
-
-// PartialPageObjectResponsePropertiesTimeFormula defines a model
-type PartialPageObjectResponsePropertiesTimeFormula struct {
-	Type string                                             `json:"type"`
-	Date PartialPageObjectResponsePropertiesTimeFormulaDate `json:"date"`
-}
-
-// PartialPageObjectResponsePropertiesTimeFormulaDate defines a model
-type PartialPageObjectResponsePropertiesTimeFormulaDate struct {
-	Start    time.Time `json:"start"`
-	End      time.Time `json:"end"`
-	TimeZone *struct{} `json:"time_zone"`
+	ID IDResponse `json:"id"`
 }
 
 // PartialRollupPropertyResponse defines a model
@@ -33102,8 +32710,8 @@ func (v *TitleDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.
 	return false, nil
 }
 
-// TitleObject defines a model
-type TitleObject struct {
+// TitleObjectResponse defines a model
+type TitleObjectResponse struct {
 	Title string `json:"title"`
 }
 
@@ -37162,14 +36770,8 @@ type ViewDeletedWebhookPayload struct {
 // ViewFilter defines a model
 type ViewFilter struct{}
 
-// A filter condition on a specific property. The property field specifies which property to filter, and an additional field specifies the filter type and condition (e.g., title, rich_text, number, checkbox, select, multi_select, date, people, files, relation, formula, rollup, etc.).
-type ViewFilterOneOf struct {
-	// The name or ID of the property to filter on.
-	Property string `json:"property"`
-}
-
 // A filter condition on a timestamp (created_time or last_edited_time). The timestamp field specifies which timestamp, and a matching field contains the date filter condition.
-type ViewFilterOneOf2 struct {
+type ViewFilterOneOf struct {
 	// The timestamp to filter on.
 	Timestamp TimestampSortTimestamp `json:"timestamp"`
 }
@@ -37177,9 +36779,9 @@ type ViewFilterOneOf2 struct {
 // A filter that can be a property filter, timestamp filter, or nested compound filter.
 // ViewFilterOneOfOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
 type ViewFilterOneOfOrItem struct {
-	ViewFilterOneOf            *ViewFilterOneOf
-	ViewFilterOneOf2           *ViewFilterOneOf2
-	ViewFilterOneOfOrItemOneOf *ViewFilterOneOfOrItemOneOf
+	ViewFilterOneOfOrItemOneOf  *ViewFilterOneOfOrItemOneOf
+	ViewFilterOneOf             *ViewFilterOneOf
+	ViewFilterOneOfOrItemOneOf2 *ViewFilterOneOfOrItemOneOf2
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -37192,6 +36794,14 @@ func (v *ViewFilterOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
+		var vv ViewFilterOneOfOrItemOneOf
+		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
+			v.ViewFilterOneOfOrItemOneOf = &vv
+			matched++
+		}
+	}
+
+	{
 		var vv ViewFilterOneOf
 		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
 			v.ViewFilterOneOf = &vv
@@ -37200,17 +36810,9 @@ func (v *ViewFilterOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	{
-		var vv ViewFilterOneOf2
+		var vv ViewFilterOneOfOrItemOneOf2
 		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
-			v.ViewFilterOneOf2 = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv ViewFilterOneOfOrItemOneOf
-		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
-			v.ViewFilterOneOfOrItemOneOf = &vv
+			v.ViewFilterOneOfOrItemOneOf2 = &vv
 			matched++
 		}
 	}
@@ -37225,19 +36827,25 @@ func (v *ViewFilterOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *ViewFilterOneOfOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.ViewFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.ViewFilterOneOf, jsonOpts)
-	case v.ViewFilterOneOf2 != nil:
-		return json.MarshalEncode(enc, v.ViewFilterOneOf2, jsonOpts)
 	case v.ViewFilterOneOfOrItemOneOf != nil:
 		return json.MarshalEncode(enc, v.ViewFilterOneOfOrItemOneOf, jsonOpts)
+	case v.ViewFilterOneOf != nil:
+		return json.MarshalEncode(enc, v.ViewFilterOneOf, jsonOpts)
+	case v.ViewFilterOneOfOrItemOneOf2 != nil:
+		return json.MarshalEncode(enc, v.ViewFilterOneOfOrItemOneOf2, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// A compound filter at the deepest nesting level. Can only contain property or timestamp filters (no further nesting).
+// A filter condition on a specific property. The property field specifies which property to filter, and an additional field specifies the filter type and condition (e.g., title, rich_text, number, checkbox, select, multi_select, date, people, files, relation, formula, rollup, etc.).
 type ViewFilterOneOfOrItemOneOf struct {
+	// The name or ID of the property to filter on.
+	Property string `json:"property"`
+}
+
+// A compound filter at the deepest nesting level. Can only contain property or timestamp filters (no further nesting).
+type ViewFilterOneOfOrItemOneOf2 struct {
 	// Filters combined with OR logic.
 	Or []ViewFilterOneOfOrItemOneOfOrItem `json:"or,omitzero"`
 	// Filters combined with AND logic.
@@ -37247,8 +36855,8 @@ type ViewFilterOneOfOrItemOneOf struct {
 // A property filter or timestamp filter.
 // ViewFilterOneOfOrItemOneOfOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
 type ViewFilterOneOfOrItemOneOfOrItem struct {
-	ViewFilterOneOf  *ViewFilterOneOf
-	ViewFilterOneOf2 *ViewFilterOneOf2
+	ViewFilterOneOfOrItemOneOf *ViewFilterOneOfOrItemOneOf
+	ViewFilterOneOf            *ViewFilterOneOf
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -37261,17 +36869,17 @@ func (v *ViewFilterOneOfOrItemOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decod
 	var matched int
 
 	{
-		var vv ViewFilterOneOf
+		var vv ViewFilterOneOfOrItemOneOf
 		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
-			v.ViewFilterOneOf = &vv
+			v.ViewFilterOneOfOrItemOneOf = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv ViewFilterOneOf2
+		var vv ViewFilterOneOf
 		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
-			v.ViewFilterOneOf2 = &vv
+			v.ViewFilterOneOf = &vv
 			matched++
 		}
 	}
@@ -37286,10 +36894,10 @@ func (v *ViewFilterOneOfOrItemOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decod
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *ViewFilterOneOfOrItemOneOfOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
+	case v.ViewFilterOneOfOrItemOneOf != nil:
+		return json.MarshalEncode(enc, v.ViewFilterOneOfOrItemOneOf, jsonOpts)
 	case v.ViewFilterOneOf != nil:
 		return json.MarshalEncode(enc, v.ViewFilterOneOf, jsonOpts)
-	case v.ViewFilterOneOf2 != nil:
-		return json.MarshalEncode(enc, v.ViewFilterOneOf2, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -37298,8 +36906,8 @@ func (v *ViewFilterOneOfOrItemOneOfOrItem) MarshalJSONTo(enc *jsontext.Encoder) 
 // Filter for the view. Can be a property filter (filter by property value), timestamp filter (filter by created_time or last_edited_time), or compound filter (combine filters with and/or logic). Compound filters support up to 2 levels of nesting.
 // ViewFilterResponse is an untagged oneOf union: exactly one field is set after unmarshaling.
 type ViewFilterResponse struct {
+	ViewFilterResponseOneOf0 *ViewFilterResponseOneOf0
 	ViewFilterOneOf          *ViewFilterOneOf
-	ViewFilterOneOf2         *ViewFilterOneOf2
 	ViewFilterResponseOneOf2 *ViewFilterResponseOneOf2
 }
 
@@ -37313,17 +36921,17 @@ func (v *ViewFilterResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv ViewFilterOneOf
+		var vv ViewFilterResponseOneOf0
 		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
-			v.ViewFilterOneOf = &vv
+			v.ViewFilterResponseOneOf0 = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv ViewFilterOneOf2
+		var vv ViewFilterOneOf
 		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
-			v.ViewFilterOneOf2 = &vv
+			v.ViewFilterOneOf = &vv
 			matched++
 		}
 	}
@@ -37346,15 +36954,76 @@ func (v *ViewFilterResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *ViewFilterResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
+	case v.ViewFilterResponseOneOf0 != nil:
+		return json.MarshalEncode(enc, v.ViewFilterResponseOneOf0, jsonOpts)
 	case v.ViewFilterOneOf != nil:
 		return json.MarshalEncode(enc, v.ViewFilterOneOf, jsonOpts)
-	case v.ViewFilterOneOf2 != nil:
-		return json.MarshalEncode(enc, v.ViewFilterOneOf2, jsonOpts)
 	case v.ViewFilterResponseOneOf2 != nil:
 		return json.MarshalEncode(enc, v.ViewFilterResponseOneOf2, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// A filter condition on a specific property. The property field specifies which property to filter, and an additional field specifies the filter type and condition (e.g., title, rich_text, number, checkbox, select, multi_select, date, people, files, relation, formula, rollup, etc.).
+type ViewFilterResponseOneOf0 struct {
+	// The name or ID of the property to filter on.
+	Property string                     `json:"property"`
+	Or       ViewFilterResponseOneOf0Or `json:"or,omitzero"`
+}
+
+// ViewFilterResponseOneOf0Or defines a model
+type ViewFilterResponseOneOf0Or []ViewFilterResponseOneOf0OrItem
+
+// ViewFilterResponseOneOf0OrItem defines a model
+type ViewFilterResponseOneOf0OrItem struct {
+	Or  ViewFilterResponseOneOf0OrItemOr  `json:"or"`
+	And ViewFilterResponseOneOf0OrItemAnd `json:"and,omitzero"`
+}
+
+// ViewFilterResponseOneOf0OrItemAnd defines a model
+type ViewFilterResponseOneOf0OrItemAnd []ViewFilterResponseOneOf0OrItemAndItem
+
+// ViewFilterResponseOneOf0OrItemAndItem defines a model
+type ViewFilterResponseOneOf0OrItemAndItem struct {
+	Property    string                                           `json:"property"`
+	Select      TextPropertyFilterAnyOfAnyOf2                    `json:"select"`
+	CreatedTime ViewFilterResponseOneOf0OrItemAndItemCreatedTime `json:"created_time,omitzero"`
+}
+
+// ViewFilterResponseOneOf0OrItemAndItemCreatedTime defines a model
+type ViewFilterResponseOneOf0OrItemAndItemCreatedTime struct {
+	OnOrAfter string `json:"on_or_after"`
+}
+
+// ViewFilterResponseOneOf0OrItemOr defines a model
+type ViewFilterResponseOneOf0OrItemOr []ViewFilterResponseOneOf0OrItemOrItem
+
+// ViewFilterResponseOneOf0OrItemOrItem defines a model
+type ViewFilterResponseOneOf0OrItemOrItem struct {
+	Property string                                  `json:"property"`
+	Date     TextPropertyFilterAnyOfAnyOf            `json:"date"`
+	And      ViewFilterResponseOneOf0OrItemOrItemAnd `json:"and,omitzero"`
+}
+
+// ViewFilterResponseOneOf0OrItemOrItemAnd defines a model
+type ViewFilterResponseOneOf0OrItemOrItemAnd []ViewFilterResponseOneOf0OrItemOrItemAndItem
+
+// ViewFilterResponseOneOf0OrItemOrItemAndItem defines a model
+type ViewFilterResponseOneOf0OrItemOrItemAndItem struct {
+	Property string                                             `json:"property"`
+	Date     TextPropertyFilterAnyOfAnyOf                       `json:"date"`
+	Formula  ViewFilterResponseOneOf0OrItemOrItemAndItemFormula `json:"formula,omitzero"`
+}
+
+// ViewFilterResponseOneOf0OrItemOrItemAndItemFormula defines a model
+type ViewFilterResponseOneOf0OrItemOrItemAndItemFormula struct {
+	Number ViewFilterResponseOneOf0OrItemOrItemAndItemFormulaNumber `json:"number"`
+}
+
+// ViewFilterResponseOneOf0OrItemOrItemAndItemFormulaNumber defines a model
+type ViewFilterResponseOneOf0OrItemOrItemAndItemFormulaNumber struct {
+	LessThan int `json:"less_than"`
 }
 
 // A compound filter that combines multiple filters with AND or OR logic. Supports up to 2 levels of nesting.

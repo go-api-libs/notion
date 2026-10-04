@@ -6485,18 +6485,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2024-03-19T08:28:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-03T15:37:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -6544,10 +6547,10 @@
             "$ref": "#/components/schemas/BlockSyncedBlock"
           },
           "child_page": {
-            "$ref": "#/components/schemas/titleObject"
+            "$ref": "#/components/schemas/titleObjectResponse"
           },
           "child_database": {
-            "$ref": "#/components/schemas/titleObject"
+            "$ref": "#/components/schemas/titleObjectResponse"
           },
           "equation": {
             "$ref": "#/components/schemas/expressionObject"
@@ -6614,6 +6617,11 @@
           },
           "unsupported": {
             "$ref": "#/components/schemas/BlockUnsupported"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "466c960f-ce62-4648-9b60-5dce07df1dcb"
           }
         },
         "required": [
@@ -6886,7 +6894,8 @@
           "audio",
           "link_preview",
           "unsupported"
-        ]
+        ],
+        "example": "child_database"
       },
       "BlockUnsupported": {
         "type": "object",
@@ -9212,7 +9221,6 @@
         "oneOf": [
           {
             "type": "array",
-            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/viewSortResponse"
             }
@@ -9265,17 +9273,18 @@
           "created_time": {
             "description": "The time when the database was created.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2024-03-19T08:28:01.083+00:00"
           },
           "last_edited_time": {
             "description": "The time when the database was last edited.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-03T15:37:46.207+00:00"
           },
           "data_sources": {
             "description": "The data sources of the database.",
             "type": "array",
-            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/dataSourceReferenceResponse"
             }
@@ -9290,7 +9299,8 @@
           },
           "url": {
             "description": "The URL of the database.",
-            "type": "string"
+            "type": "string",
+            "example": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0"
           },
           "public_url": {
             "description": "The public URL of the database if it is publicly accessible.",
@@ -9298,7 +9308,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "0aa393b2-0705-493f-bd6d-947157665746"
           }
         },
         "required": [
@@ -10974,7 +10985,8 @@
           "manual",
           "ascending",
           "descending"
-        ]
+        ],
+        "example": "manual"
       },
       "Heading": {
         "type": "object",
@@ -12495,7 +12507,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "230f9a46-65f4-4ed6-9e5e-11f13f409e2a"
           }
         },
         "required": [
@@ -12998,927 +13011,6 @@
           "paragraph"
         ],
         "additionalProperties": false
-      },
-      "PartialBlockObjectParent": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "page_id"
-          },
-          "page_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "11788fcd-daf4-80e7-a530-c2e25a86328e"
-          }
-        },
-        "required": [
-          "type",
-          "page_id"
-        ]
-      },
-      "PartialDataSourceObjectResponseParent": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "database_id"
-          },
-          "database_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
-          }
-        },
-        "required": [
-          "type",
-          "database_id"
-        ]
-      },
-      "PartialDataSourceViewObjectResponseConfiguration": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "board"
-          },
-          "group_by": {
-            "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseConfigurationGroupBy"
-          },
-          "properties": {
-            "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseConfigurationProperties"
-          }
-        },
-        "required": [
-          "type",
-          "group_by",
-          "properties"
-        ]
-      },
-      "PartialDataSourceViewObjectResponseConfigurationGroupBy": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "select"
-          },
-          "property_id": {
-            "type": "string",
-            "example": "@F<W"
-          },
-          "sort": {
-            "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseConfigurationGroupBySort"
-          },
-          "property_name": {
-            "type": "string",
-            "example": "Status"
-          },
-          "hide_empty_groups": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "property_id",
-          "sort",
-          "property_name",
-          "hide_empty_groups"
-        ]
-      },
-      "PartialDataSourceViewObjectResponseConfigurationGroupBySort": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "manual"
-          }
-        },
-        "required": [
-          "type"
-        ]
-      },
-      "PartialDataSourceViewObjectResponseConfigurationProperties": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseConfigurationPropertiesItem"
-        }
-      },
-      "PartialDataSourceViewObjectResponseConfigurationPropertiesItem": {
-        "type": "object",
-        "properties": {
-          "property_id": {
-            "type": "string",
-            "example": "title"
-          },
-          "property_name": {
-            "type": "string",
-            "example": "Name"
-          },
-          "visible": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "property_id",
-          "property_name",
-          "visible"
-        ]
-      },
-      "PartialDataSourceViewObjectResponseFilter": {
-        "type": "object",
-        "properties": {
-          "or": {
-            "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseFilterOr"
-          }
-        },
-        "required": [
-          "or"
-        ]
-      },
-      "PartialDataSourceViewObjectResponseFilterOr": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseFilterOrItem"
-        }
-      },
-      "PartialDataSourceViewObjectResponseFilterOrItem": {
-        "type": "object",
-        "properties": {
-          "or": {
-            "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseFilterOrItemOr"
-          },
-          "and": {
-            "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseFilterOrItemAnd"
-          }
-        },
-        "required": [
-          "or"
-        ]
-      },
-      "PartialDataSourceViewObjectResponseFilterOrItemAnd": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseFilterOrItemAndItem"
-        }
-      },
-      "PartialDataSourceViewObjectResponseFilterOrItemAndItem": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "type": "string",
-            "example": "@F<W"
-          },
-          "select": {
-            "$ref": "#/components/schemas/textPropertyFilterAnyOfAnyOf2"
-          },
-          "created_time": {
-            "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseFilterOrItemAndItemCreatedTime"
-          }
-        },
-        "required": [
-          "property",
-          "select"
-        ]
-      },
-      "PartialDataSourceViewObjectResponseFilterOrItemAndItemCreatedTime": {
-        "type": "object",
-        "properties": {
-          "on_or_after": {
-            "type": "string",
-            "example": "2024-04-13"
-          }
-        },
-        "required": [
-          "on_or_after"
-        ]
-      },
-      "PartialDataSourceViewObjectResponseFilterOrItemOr": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseFilterOrItemOrItem"
-        }
-      },
-      "PartialDataSourceViewObjectResponseFilterOrItemOrItem": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "type": "string",
-            "example": "Blch"
-          },
-          "date": {
-            "$ref": "#/components/schemas/textPropertyFilterAnyOfAnyOf"
-          },
-          "and": {
-            "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseFilterOrItemOrItemAnd"
-          }
-        },
-        "required": [
-          "property",
-          "date"
-        ]
-      },
-      "PartialDataSourceViewObjectResponseFilterOrItemOrItemAnd": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseFilterOrItemOrItemAndItem"
-        }
-      },
-      "PartialDataSourceViewObjectResponseFilterOrItemOrItemAndItem": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "type": "string",
-            "example": "Blch"
-          },
-          "date": {
-            "$ref": "#/components/schemas/textPropertyFilterAnyOfAnyOf"
-          },
-          "formula": {
-            "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseFilterOrItemOrItemAndItemFormula"
-          }
-        },
-        "required": [
-          "property",
-          "date"
-        ]
-      },
-      "PartialDataSourceViewObjectResponseFilterOrItemOrItemAndItemFormula": {
-        "type": "object",
-        "properties": {
-          "number": {
-            "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseFilterOrItemOrItemAndItemFormulaNumber"
-          }
-        },
-        "required": [
-          "number"
-        ]
-      },
-      "PartialDataSourceViewObjectResponseFilterOrItemOrItemAndItemFormulaNumber": {
-        "type": "object",
-        "properties": {
-          "less_than": {
-            "type": "integer",
-            "example": 24
-          }
-        },
-        "required": [
-          "less_than"
-        ]
-      },
-      "PartialDataSourceViewObjectResponseSorts": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseSortsItem"
-        }
-      },
-      "PartialDataSourceViewObjectResponseSortsItem": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "type": "string",
-            "example": "mFVH"
-          },
-          "direction": {
-            "type": "string",
-            "example": "ascending"
-          }
-        },
-        "required": [
-          "property",
-          "direction"
-        ]
-      },
-      "PartialDatabaseObjectCover": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "external"
-          },
-          "external": {
-            "$ref": "#/components/schemas/PartialDatabaseObjectCoverExternal"
-          }
-        },
-        "required": [
-          "type",
-          "external"
-        ]
-      },
-      "PartialDatabaseObjectCoverExternal": {
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb"
-          }
-        },
-        "required": [
-          "url"
-        ]
-      },
-      "PartialDatabaseObjectResponseDataSources": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/PartialDatabaseObjectResponseDataSourcesItem"
-        }
-      },
-      "PartialDatabaseObjectResponseDataSourcesItem": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "9201f6db-2895-4450-9435-041541a181dd"
-          },
-          "name": {
-            "type": "string",
-            "example": "Intentions"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "PartialDatabaseObjectTitle": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/PartialDatabaseObjectTitleItem"
-        }
-      },
-      "PartialDatabaseObjectTitleItem": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/PartialDatabaseObjectTitleItemText"
-          },
-          "annotations": {
-            "$ref": "#/components/schemas/PartialDatabaseObjectTitleItemAnnotations"
-          },
-          "plain_text": {
-            "type": "string",
-            "example": "Intentions"
-          },
-          "href": {
-            "type": "null"
-          }
-        },
-        "required": [
-          "type",
-          "text",
-          "annotations",
-          "plain_text",
-          "href"
-        ]
-      },
-      "PartialDatabaseObjectTitleItemAnnotations": {
-        "type": "object",
-        "properties": {
-          "bold": {
-            "type": "boolean"
-          },
-          "italic": {
-            "type": "boolean"
-          },
-          "strikethrough": {
-            "type": "boolean"
-          },
-          "underline": {
-            "type": "boolean"
-          },
-          "code": {
-            "type": "boolean"
-          },
-          "color": {
-            "type": "string",
-            "example": "default"
-          }
-        },
-        "required": [
-          "bold",
-          "italic",
-          "strikethrough",
-          "underline",
-          "code",
-          "color"
-        ]
-      },
-      "PartialDatabaseObjectTitleItemText": {
-        "type": "object",
-        "properties": {
-          "content": {
-            "type": "string",
-            "example": "Intentions"
-          },
-          "link": {
-            "type": "null"
-          }
-        },
-        "required": [
-          "content",
-          "link"
-        ]
-      },
-      "PartialPageObjectCreatedBy": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "type": "string",
-            "example": "user"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "00000000-0000-0000-0000-000000000003"
-          }
-        },
-        "required": [
-          "object",
-          "id"
-        ]
-      },
-      "PartialPageObjectIcon": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "emoji"
-          },
-          "emoji": {
-            "type": "string",
-            "example": "🧽"
-          }
-        },
-        "required": [
-          "type",
-          "emoji"
-        ]
-      },
-      "PartialPageObjectPropertiesDuration": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "%3ANHe"
-          },
-          "type": {
-            "type": "string",
-            "example": "formula"
-          },
-          "formula": {
-            "$ref": "#/components/schemas/PartialPageObjectPropertiesDurationFormula"
-          }
-        },
-        "required": [
-          "id",
-          "type",
-          "formula"
-        ]
-      },
-      "PartialPageObjectPropertiesDurationFormula": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "number"
-          },
-          "number": {
-            "type": "null"
-          }
-        },
-        "required": [
-          "type",
-          "number"
-        ]
-      },
-      "PartialPageObjectPropertiesEnd": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "_Y%3BI"
-          },
-          "type": {
-            "type": "string",
-            "example": "date"
-          },
-          "date": {
-            "type": "null"
-          }
-        },
-        "required": [
-          "id",
-          "type",
-          "date"
-        ]
-      },
-      "PartialPageObjectPropertiesEndFallback": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "c%3A%5DA"
-          },
-          "type": {
-            "type": "string",
-            "example": "formula"
-          },
-          "formula": {
-            "$ref": "#/components/schemas/PartialPageObjectPropertiesEndFallbackFormula"
-          }
-        },
-        "required": [
-          "id",
-          "type",
-          "formula"
-        ]
-      },
-      "PartialPageObjectPropertiesEndFallbackFormula": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "date"
-          },
-          "date": {
-            "$ref": "#/components/schemas/PartialPageObjectPropertiesEndFallbackFormulaDate"
-          }
-        },
-        "required": [
-          "type",
-          "date"
-        ]
-      },
-      "PartialPageObjectPropertiesEndFallbackFormulaDate": {
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2026-10-03T18:11:00.000+00:00"
-          },
-          "end": {
-            "type": "null"
-          },
-          "time_zone": {
-            "type": "null"
-          }
-        },
-        "required": [
-          "start",
-          "end",
-          "time_zone"
-        ]
-      },
-      "PartialPageObjectPropertiesHumanDuration": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "dAuV"
-          },
-          "type": {
-            "type": "string",
-            "example": "formula"
-          },
-          "formula": {
-            "$ref": "#/components/schemas/PartialPageObjectPropertiesHumanDurationFormula"
-          }
-        },
-        "required": [
-          "id",
-          "type",
-          "formula"
-        ]
-      },
-      "PartialPageObjectPropertiesHumanDurationFormula": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "string"
-          },
-          "string": {
-            "type": "null"
-          }
-        },
-        "required": [
-          "type",
-          "string"
-        ]
-      },
-      "PartialPageObjectResponseParent": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "data_source_id"
-          },
-          "data_source_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "9201f6db-2895-4450-9435-041541a181dd"
-          },
-          "database_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
-          }
-        },
-        "required": [
-          "type",
-          "data_source_id",
-          "database_id"
-        ]
-      },
-      "PartialPageObjectResponseProperties": {
-        "type": "object",
-        "properties": {
-          "Duration": {
-            "$ref": "#/components/schemas/PartialPageObjectPropertiesDuration"
-          },
-          "Started Hours Ago": {
-            "$ref": "#/components/schemas/PartialPageObjectPropertiesDuration"
-          },
-          "Start Fallback": {
-            "$ref": "#/components/schemas/PartialPageObjectPropertiesEndFallback"
-          },
-          "Status": {
-            "$ref": "#/components/schemas/PartialPageObjectResponsePropertiesStatus"
-          },
-          "Start": {
-            "$ref": "#/components/schemas/PartialPageObjectPropertiesEnd"
-          },
-          "Recurring": {
-            "$ref": "#/components/schemas/PartialPageObjectResponsePropertiesRecurring"
-          },
-          "End": {
-            "$ref": "#/components/schemas/PartialPageObjectPropertiesEnd"
-          },
-          "Time": {
-            "$ref": "#/components/schemas/PartialPageObjectResponsePropertiesTime"
-          },
-          "End Fallback": {
-            "$ref": "#/components/schemas/PartialPageObjectPropertiesEndFallback"
-          },
-          "Human Duration": {
-            "$ref": "#/components/schemas/PartialPageObjectPropertiesHumanDuration"
-          },
-          "Priority": {
-            "$ref": "#/components/schemas/PartialPageObjectResponsePropertiesPriority"
-          },
-          "Created time": {
-            "$ref": "#/components/schemas/PartialPageObjectResponsePropertiesCreatedTime"
-          },
-          "Priority If Not Started": {
-            "$ref": "#/components/schemas/PartialPageObjectPropertiesHumanDuration"
-          },
-          "Time without Date": {
-            "$ref": "#/components/schemas/PartialPageObjectPropertiesHumanDuration"
-          },
-          "Name": {
-            "$ref": "#/components/schemas/PartialPageObjectResponsePropertiesName"
-          }
-        },
-        "required": [
-          "Duration",
-          "Started Hours Ago",
-          "Start Fallback",
-          "Status",
-          "Start",
-          "Recurring",
-          "End",
-          "Time",
-          "End Fallback",
-          "Human Duration",
-          "Priority",
-          "Created time",
-          "Priority If Not Started",
-          "Time without Date",
-          "Name"
-        ]
-      },
-      "PartialPageObjectResponsePropertiesCreatedTime": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "kF%40C"
-          },
-          "type": {
-            "type": "string",
-            "example": "created_time"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2026-10-03T16:15:00.000Z"
-          }
-        },
-        "required": [
-          "id",
-          "type",
-          "created_time"
-        ]
-      },
-      "PartialPageObjectResponsePropertiesName": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "title"
-          },
-          "type": {
-            "type": "string",
-            "example": "title"
-          },
-          "title": {
-            "$ref": "#/components/schemas/PartialDatabaseObjectTitle"
-          }
-        },
-        "required": [
-          "id",
-          "type",
-          "title"
-        ]
-      },
-      "PartialPageObjectResponsePropertiesPriority": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "ePdI"
-          },
-          "type": {
-            "type": "string",
-            "example": "rollup"
-          },
-          "rollup": {
-            "$ref": "#/components/schemas/PartialPageObjectResponsePropertiesPriorityRollup"
-          }
-        },
-        "required": [
-          "id",
-          "type",
-          "rollup"
-        ]
-      },
-      "PartialPageObjectResponsePropertiesPriorityRollup": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "array"
-          },
-          "array": {
-            "type": "array",
-            "maxItems": 0
-          },
-          "function": {
-            "type": "string",
-            "example": "show_original"
-          }
-        },
-        "required": [
-          "type",
-          "array",
-          "function"
-        ]
-      },
-      "PartialPageObjectResponsePropertiesRecurring": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "TIII"
-          },
-          "type": {
-            "type": "string",
-            "example": "relation"
-          },
-          "relation": {
-            "type": "array",
-            "maxItems": 0
-          },
-          "has_more": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "id",
-          "type",
-          "relation",
-          "has_more"
-        ]
-      },
-      "PartialPageObjectResponsePropertiesStatus": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "%40F%3CW"
-          },
-          "type": {
-            "type": "string",
-            "example": "select"
-          },
-          "select": {
-            "$ref": "#/components/schemas/PartialPageObjectResponsePropertiesStatusSelect"
-          }
-        },
-        "required": [
-          "id",
-          "type",
-          "select"
-        ]
-      },
-      "PartialPageObjectResponsePropertiesStatusSelect": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "78673949-50fe-41c5-8cdb-ce44acb4b59f"
-          },
-          "name": {
-            "type": "string",
-            "example": "Not Started"
-          },
-          "color": {
-            "type": "string",
-            "example": "gray"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "color"
-        ]
-      },
-      "PartialPageObjectResponsePropertiesTime": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "%60G%7Bc"
-          },
-          "type": {
-            "type": "string",
-            "example": "formula"
-          },
-          "formula": {
-            "$ref": "#/components/schemas/PartialPageObjectResponsePropertiesTimeFormula"
-          }
-        },
-        "required": [
-          "id",
-          "type",
-          "formula"
-        ]
-      },
-      "PartialPageObjectResponsePropertiesTimeFormula": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "date"
-          },
-          "date": {
-            "$ref": "#/components/schemas/PartialPageObjectResponsePropertiesTimeFormulaDate"
-          }
-        },
-        "required": [
-          "type",
-          "date"
-        ]
-      },
-      "PartialPageObjectResponsePropertiesTimeFormulaDate": {
-        "type": "object",
-        "properties": {
-          "start": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2026-10-03T17:11:00.000+00:00"
-          },
-          "end": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2026-10-03T18:11:00.000+00:00"
-          },
-          "time_zone": {
-            "type": "null"
-          }
-        },
-        "required": [
-          "start",
-          "end",
-          "time_zone"
-        ]
       },
       "PatchBlockChildren": {
         "type": "object",
@@ -19674,7 +18766,8 @@
         "enum": [
           "select",
           "multi_select"
-        ]
+        ],
+        "example": "select"
       },
       "SelectItem": {
         "allOf": [
@@ -20604,7 +19697,7 @@
             "description": "The actual text content of the text.",
             "type": "string",
             "maxLength": 2000,
-            "example": "Clean Up"
+            "example": "Intentions"
           },
           "link": {
             "$ref": "#/components/schemas/TextRichTextItemResponseTextLink"
@@ -22469,17 +21562,31 @@
         "description": "A filter that can be a property filter, timestamp filter, or nested compound filter.",
         "oneOf": [
           {
+            "$ref": "#/components/schemas/ViewFilterOneOfOrItemOneOf"
+          },
+          {
             "$ref": "#/components/schemas/viewFilterOneOf"
           },
           {
-            "$ref": "#/components/schemas/viewFilterOneOf2"
-          },
-          {
-            "$ref": "#/components/schemas/ViewFilterOneOfOrItemOneOf"
+            "$ref": "#/components/schemas/ViewFilterOneOfOrItemOneOf2"
           }
         ]
       },
       "ViewFilterOneOfOrItemOneOf": {
+        "description": "A filter condition on a specific property. The property field specifies which property to filter, and an additional field specifies the filter type and condition (e.g., title, rich_text, number, checkbox, select, multi_select, date, people, files, relation, formula, rollup, etc.).",
+        "type": "object",
+        "properties": {
+          "property": {
+            "description": "The name or ID of the property to filter on.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "property"
+        ],
+        "additionalProperties": true
+      },
+      "ViewFilterOneOfOrItemOneOf2": {
         "description": "A compound filter at the deepest nesting level. Can only contain property or timestamp filters (no further nesting).",
         "type": "object",
         "properties": {
@@ -22503,11 +21610,141 @@
         "description": "A property filter or timestamp filter.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/viewFilterOneOf"
+            "$ref": "#/components/schemas/ViewFilterOneOfOrItemOneOf"
           },
           {
-            "$ref": "#/components/schemas/viewFilterOneOf2"
+            "$ref": "#/components/schemas/viewFilterOneOf"
           }
+        ]
+      },
+      "ViewFilterResponseOneOf0Or": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ViewFilterResponseOneOf0OrItem"
+        }
+      },
+      "ViewFilterResponseOneOf0OrItem": {
+        "type": "object",
+        "properties": {
+          "or": {
+            "$ref": "#/components/schemas/ViewFilterResponseOneOf0OrItemOr"
+          },
+          "and": {
+            "$ref": "#/components/schemas/ViewFilterResponseOneOf0OrItemAnd"
+          }
+        },
+        "required": [
+          "or"
+        ]
+      },
+      "ViewFilterResponseOneOf0OrItemAnd": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ViewFilterResponseOneOf0OrItemAndItem"
+        }
+      },
+      "ViewFilterResponseOneOf0OrItemAndItem": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "type": "string",
+            "example": "@F<W"
+          },
+          "select": {
+            "$ref": "#/components/schemas/textPropertyFilterAnyOfAnyOf2"
+          },
+          "created_time": {
+            "$ref": "#/components/schemas/ViewFilterResponseOneOf0OrItemAndItemCreatedTime"
+          }
+        },
+        "required": [
+          "property",
+          "select"
+        ]
+      },
+      "ViewFilterResponseOneOf0OrItemAndItemCreatedTime": {
+        "type": "object",
+        "properties": {
+          "on_or_after": {
+            "type": "string",
+            "example": "2024-04-13"
+          }
+        },
+        "required": [
+          "on_or_after"
+        ]
+      },
+      "ViewFilterResponseOneOf0OrItemOr": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ViewFilterResponseOneOf0OrItemOrItem"
+        }
+      },
+      "ViewFilterResponseOneOf0OrItemOrItem": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "type": "string",
+            "example": "Blch"
+          },
+          "date": {
+            "$ref": "#/components/schemas/textPropertyFilterAnyOfAnyOf"
+          },
+          "and": {
+            "$ref": "#/components/schemas/ViewFilterResponseOneOf0OrItemOrItemAnd"
+          }
+        },
+        "required": [
+          "property",
+          "date"
+        ]
+      },
+      "ViewFilterResponseOneOf0OrItemOrItemAnd": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/ViewFilterResponseOneOf0OrItemOrItemAndItem"
+        }
+      },
+      "ViewFilterResponseOneOf0OrItemOrItemAndItem": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "type": "string",
+            "example": "Blch"
+          },
+          "date": {
+            "$ref": "#/components/schemas/textPropertyFilterAnyOfAnyOf"
+          },
+          "formula": {
+            "$ref": "#/components/schemas/ViewFilterResponseOneOf0OrItemOrItemAndItemFormula"
+          }
+        },
+        "required": [
+          "property",
+          "date"
+        ]
+      },
+      "ViewFilterResponseOneOf0OrItemOrItemAndItemFormula": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "$ref": "#/components/schemas/ViewFilterResponseOneOf0OrItemOrItemAndItemFormulaNumber"
+          }
+        },
+        "required": [
+          "number"
+        ]
+      },
+      "ViewFilterResponseOneOf0OrItemOrItemAndItemFormulaNumber": {
+        "type": "object",
+        "properties": {
+          "less_than": {
+            "type": "integer",
+            "example": 24
+          }
+        },
+        "required": [
+          "less_than"
         ]
       },
       "ViewPropertyConfigCardPropertyWidthMode": {
@@ -23232,7 +22469,6 @@
           "properties": {
             "description": "Properties to display on each card.",
             "type": "array",
-            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/viewPropertyConfigResponse"
             }
@@ -24901,12 +24137,14 @@
           "created_time": {
             "description": "The time when the data source was created.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2024-03-19T08:28:00.000Z"
           },
           "last_edited_time": {
             "description": "The time when the data source was last edited.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-03T15:37:00.000Z"
           },
           "created_by": {
             "description": "The user who created the data source.",
@@ -24933,11 +24171,17 @@
           },
           "url": {
             "description": "The URL of the data source.",
-            "type": "string"
+            "type": "string",
+            "example": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0"
           },
           "public_url": {
             "description": "The public URL of the data source if it is publicly accessible.",
             "$ref": "#/components/schemas/PagePublicURL"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "9fdf6fc0-f506-4d02-8e6e-342acc770c4f"
           }
         },
         "required": [
@@ -24995,7 +24239,8 @@
           },
           "name": {
             "description": "The name of the data source.",
-            "type": "string"
+            "type": "string",
+            "example": "Intentions"
           }
         },
         "required": [
@@ -25086,7 +24331,8 @@
           },
           "name": {
             "description": "The name of the view.",
-            "type": "string"
+            "type": "string",
+            "example": "Board"
           },
           "type": {
             "description": "The view type.",
@@ -25095,16 +24341,19 @@
           "created_time": {
             "description": "The time when the view was created.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-09-25T10:10:19.197+00:00"
           },
           "last_edited_time": {
             "description": "The time when the view was last edited.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-03T15:37:46.207+00:00"
           },
           "url": {
             "description": "Canonical deep link to the view in Notion.",
-            "type": "string"
+            "type": "string",
+            "example": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0?v=cb3265bc5d5e488fbd8a69221c107915"
           },
           "data_source_id": {
             "description": "The ID of the data source this view is scoped to, or null for dashboard views.",
@@ -25133,6 +24382,11 @@
           "dashboard_view_id": {
             "description": "For dashboard widget views, the ID of the parent dashboard view. Only present when this view is a widget inside a dashboard.",
             "type": "string"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "8816a2e1-d092-4511-b1e9-c742c8957df5"
           }
         },
         "required": [
@@ -27872,6 +27126,7 @@
           "url": {
             "description": "The URL of the link preview mention.",
             "type": "string",
+            "example": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb",
             "examples": [
               "https://www.notion.com"
             ]
@@ -29187,45 +28442,7 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid",
-            "example": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/PartialBlockObjectParent"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2024-03-19T08:28:00.000Z"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2026-10-03T15:37:00.000Z"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/PartialPageObjectCreatedBy"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/PartialPageObjectCreatedBy"
-          },
-          "has_children": {
-            "type": "boolean"
-          },
-          "in_trash": {
-            "type": "boolean"
-          },
-          "type": {
-            "type": "string",
-            "example": "child_database"
-          },
-          "child_database": {
-            "$ref": "#/components/schemas/titleObject"
-          },
-          "request_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "466c960f-ce62-4648-9b60-5dce07df1dcb"
+            "format": "uuid"
           }
         },
         "required": [
@@ -29270,62 +28487,6 @@
             "additionalProperties": {
               "$ref": "#/components/schemas/PropertyConfig"
             }
-          },
-          "cover": {
-            "$ref": "#/components/schemas/PartialDatabaseObjectCover"
-          },
-          "icon": {
-            "$ref": "#/components/schemas/PartialPageObjectIcon"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2024-03-19T08:28:00.000Z"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/PartialPageObjectCreatedBy"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/PartialPageObjectCreatedBy"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2026-10-03T15:37:00.000Z"
-          },
-          "title": {
-            "$ref": "#/components/schemas/PartialDatabaseObjectTitle"
-          },
-          "description": {
-            "$ref": "#/components/schemas/PartialDatabaseObjectTitle"
-          },
-          "is_inline": {
-            "type": "boolean"
-          },
-          "database_type": {
-            "type": "null"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/PartialDataSourceObjectResponseParent"
-          },
-          "database_parent": {
-            "$ref": "#/components/schemas/PartialBlockObjectParent"
-          },
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0"
-          },
-          "public_url": {
-            "type": "null"
-          },
-          "in_trash": {
-            "type": "boolean"
-          },
-          "request_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "9fdf6fc0-f506-4d02-8e6e-342acc770c4f"
           }
         },
         "required": [
@@ -29354,53 +28515,6 @@
           "type": {
             "description": "The view type.",
             "$ref": "#/components/schemas/viewType"
-          },
-          "data_source_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "9201f6db-2895-4450-9435-041541a181dd"
-          },
-          "name": {
-            "type": "string",
-            "example": "Board"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2026-09-25T10:10:19.197+00:00"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/PartialPageObjectCreatedBy"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2026-10-03T15:37:46.207+00:00"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/PartialPageObjectCreatedBy"
-          },
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0?v=cb3265bc5d5e488fbd8a69221c107915"
-          },
-          "filter": {
-            "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseFilter"
-          },
-          "sorts": {
-            "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseSorts"
-          },
-          "quick_filters": {
-            "type": "null"
-          },
-          "configuration": {
-            "$ref": "#/components/schemas/PartialDataSourceViewObjectResponseConfiguration"
-          },
-          "request_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "8816a2e1-d092-4511-b1e9-c742c8957df5"
           }
         },
         "required": [
@@ -29422,59 +28536,6 @@
           "id": {
             "description": "The ID of the database.",
             "$ref": "#/components/schemas/idResponse"
-          },
-          "title": {
-            "$ref": "#/components/schemas/PartialDatabaseObjectTitle"
-          },
-          "description": {
-            "$ref": "#/components/schemas/PartialDatabaseObjectTitle"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/PartialBlockObjectParent"
-          },
-          "is_inline": {
-            "type": "boolean"
-          },
-          "database_type": {
-            "type": "null"
-          },
-          "in_trash": {
-            "type": "boolean"
-          },
-          "is_locked": {
-            "type": "boolean"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2024-03-19T08:28:01.083+00:00"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2026-10-03T15:37:46.207+00:00"
-          },
-          "data_sources": {
-            "$ref": "#/components/schemas/PartialDatabaseObjectResponseDataSources"
-          },
-          "icon": {
-            "$ref": "#/components/schemas/PartialPageObjectIcon"
-          },
-          "cover": {
-            "$ref": "#/components/schemas/PartialDatabaseObjectCover"
-          },
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0"
-          },
-          "public_url": {
-            "type": "null"
-          },
-          "request_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "0aa393b2-0705-493f-bd6d-947157665746"
           }
         },
         "required": [
@@ -29494,56 +28555,6 @@
           "id": {
             "description": "The ID of the page.",
             "$ref": "#/components/schemas/idResponse"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2026-10-03T16:15:00.000Z"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2026-10-03T16:15:00.000Z"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/PartialPageObjectCreatedBy"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/PartialPageObjectCreatedBy"
-          },
-          "cover": {
-            "type": "null"
-          },
-          "icon": {
-            "$ref": "#/components/schemas/PartialPageObjectIcon"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/PartialPageObjectResponseParent"
-          },
-          "in_trash": {
-            "type": "boolean"
-          },
-          "is_archived": {
-            "type": "boolean"
-          },
-          "is_locked": {
-            "type": "boolean"
-          },
-          "properties": {
-            "$ref": "#/components/schemas/PartialPageObjectResponseProperties"
-          },
-          "url": {
-            "type": "string",
-            "format": "uri",
-            "example": "https://app.notion.com/p/Clean-Up-3ee88fcddaf481708b9ef5270e82e4e6"
-          },
-          "public_url": {
-            "type": "null"
-          },
-          "request_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "230f9a46-65f4-4ed6-9e5e-11f13f409e2a"
           }
         },
         "required": [
@@ -30342,7 +29353,8 @@
         "properties": {
           "property": {
             "description": "The name or ID of the property to sort by.",
-            "type": "string"
+            "type": "string",
+            "example": "mFVH"
           },
           "direction": {
             "description": "Sort direction.",
@@ -30693,7 +29705,7 @@
           "plain_text": {
             "description": "The plain text content of the rich text object, without any styling.",
             "type": "string",
-            "example": "Clean Up"
+            "example": "Intentions"
           },
           "href": {
             "description": "A URL that the rich text object links to or mentions.",
@@ -31064,7 +30076,8 @@
           },
           "property_id": {
             "description": "Property ID to group by.",
-            "type": "string"
+            "type": "string",
+            "example": "@F<W"
           },
           "sort": {
             "description": "Sort order for groups.",
@@ -31072,7 +30085,8 @@
           },
           "property_name": {
             "description": "Property name (convenience field).",
-            "type": "string"
+            "type": "string",
+            "example": "Status"
           },
           "hide_empty_groups": {
             "description": "Whether to hide groups that have no items.",
@@ -31310,7 +30324,8 @@
         "enum": [
           "ascending",
           "descending"
-        ]
+        ],
+        "example": "ascending"
       },
       "statusDatabasePropertyConfigResponse": {
         "title": "Status",
@@ -32363,7 +31378,7 @@
           "title"
         ]
       },
-      "titleObject": {
+      "titleObjectResponse": {
         "type": "object",
         "properties": {
           "title": {
@@ -33087,20 +32102,6 @@
         "type": "object"
       },
       "viewFilterOneOf": {
-        "description": "A filter condition on a specific property. The property field specifies which property to filter, and an additional field specifies the filter type and condition (e.g., title, rich_text, number, checkbox, select, multi_select, date, people, files, relation, formula, rollup, etc.).",
-        "type": "object",
-        "properties": {
-          "property": {
-            "description": "The name or ID of the property to filter on.",
-            "type": "string"
-          }
-        },
-        "required": [
-          "property"
-        ],
-        "additionalProperties": true
-      },
-      "viewFilterOneOf2": {
         "description": "A filter condition on a timestamp (created_time or last_edited_time). The timestamp field specifies which timestamp, and a matching field contains the date filter condition.",
         "type": "object",
         "properties": {
@@ -33118,15 +32119,32 @@
         "description": "Filter for the view. Can be a property filter (filter by property value), timestamp filter (filter by created_time or last_edited_time), or compound filter (combine filters with and/or logic). Compound filters support up to 2 levels of nesting.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/viewFilterOneOf"
+            "$ref": "#/components/schemas/viewFilterResponseOneOf0"
           },
           {
-            "$ref": "#/components/schemas/viewFilterOneOf2"
+            "$ref": "#/components/schemas/viewFilterOneOf"
           },
           {
             "$ref": "#/components/schemas/viewFilterResponseOneOf2"
           }
         ]
+      },
+      "viewFilterResponseOneOf0": {
+        "description": "A filter condition on a specific property. The property field specifies which property to filter, and an additional field specifies the filter type and condition (e.g., title, rich_text, number, checkbox, select, multi_select, date, people, files, relation, formula, rollup, etc.).",
+        "type": "object",
+        "properties": {
+          "property": {
+            "description": "The name or ID of the property to filter on.",
+            "type": "string"
+          },
+          "or": {
+            "$ref": "#/components/schemas/ViewFilterResponseOneOf0Or"
+          }
+        },
+        "required": [
+          "property"
+        ],
+        "additionalProperties": true
       },
       "viewFilterResponseOneOf2": {
         "description": "A compound filter that combines multiple filters with AND or OR logic. Supports up to 2 levels of nesting.",
@@ -33251,11 +32269,13 @@
         "properties": {
           "property_id": {
             "description": "Property ID (stable identifier).",
-            "type": "string"
+            "type": "string",
+            "example": "title"
           },
           "property_name": {
             "description": "Property name (convenience field, not stable across renames).",
-            "type": "string"
+            "type": "string",
+            "example": "Name"
           },
           "visible": {
             "description": "Whether this property is visible in the view.",
