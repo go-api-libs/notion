@@ -5345,7 +5345,7 @@
           },
           "account": {
             "description": "The provider-side account identifier, null when none is linked, or \"hidden\" when the caller lacks edit access to the agent.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "permissions": {
             "$ref": "#/components/schemas/AgentConnectionsItemOneOfPermissions4"
@@ -5492,7 +5492,7 @@
             "type": "string"
           },
           "title": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         },
         "required": [
@@ -6116,7 +6116,7 @@
           },
           "id": {
             "description": "The public model this agent maps to (e.g. \"claude-sonnet-5\"), or null for a pre-release / early-access model.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         },
         "required": [
@@ -8060,7 +8060,7 @@
             "$ref": "#/components/schemas/CommentObjectResponseDisplayNameType"
           },
           "resolved_name": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         },
         "required": [
@@ -9304,7 +9304,7 @@
           },
           "public_url": {
             "description": "The public URL of the database if it is publicly accessible.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "request_id": {
             "type": "string",
@@ -9445,7 +9445,7 @@
           },
           "name": {
             "description": "The name of the database property, or `null` if deleted.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "action": {
             "$ref": "#/components/schemas/DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItemAction"
@@ -9497,7 +9497,7 @@
         "type": "object",
         "properties": {
           "date": {
-            "$ref": "#/components/schemas/Date7"
+            "$ref": "#/components/schemas/Date6"
           },
           "type": {
             "type": "string",
@@ -9569,26 +9569,6 @@
         "title": "Date",
         "type": "object",
         "properties": {
-          "type": {
-            "description": "Always `date`",
-            "type": "string",
-            "const": "date"
-          },
-          "date": {
-            "description": "Details of the date mention.",
-            "$ref": "#/components/schemas/dateResponse"
-          }
-        },
-        "required": [
-          "type",
-          "date"
-        ],
-        "additionalProperties": false
-      },
-      "Date6": {
-        "title": "Date",
-        "type": "object",
-        "properties": {
           "date": {
             "$ref": "#/components/schemas/datePropertyFilter"
           },
@@ -9606,7 +9586,7 @@
         ],
         "additionalProperties": false
       },
-      "Date7": {
+      "Date6": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/dateRequest"
@@ -9615,6 +9595,26 @@
             "type": "null"
           }
         ]
+      },
+      "Date7": {
+        "title": "Date",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `date`",
+            "type": "string",
+            "const": "date"
+          },
+          "date": {
+            "description": "Details of the date mention.",
+            "$ref": "#/components/schemas/dateResponse"
+          }
+        },
+        "required": [
+          "type",
+          "date"
+        ],
+        "additionalProperties": false
       },
       "Date8": {
         "anyOf": [
@@ -10020,7 +10020,7 @@
           },
           "parameter": {
             "description": "The parameter related to the error, if applicable. Null if not applicable.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "status_code": {
             "description": "The HTTP status code associated with the error, if available. Null if not applicable.",
@@ -10731,7 +10731,7 @@
             "type": "string"
           },
           "description": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "instructions_page_id": {
             "$ref": "#/components/schemas/ListViewsNextCursor"
@@ -10800,7 +10800,7 @@
           },
           "instructions": {
             "description": "The agent's inline instructions when verbose=true, or null when its instructions are stored on a page.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         },
         "required": [
@@ -11635,7 +11635,7 @@
           },
           "link_preview": {
             "description": "Details of the link preview mention.",
-            "$ref": "#/components/schemas/linkPreviewMention"
+            "$ref": "#/components/schemas/RichTextLinkOneOf"
           }
         },
         "required": [
@@ -11886,7 +11886,7 @@
             "$ref": "#/components/schemas/ListSkillsPluginsOkResults"
           },
           "next_cursor": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "has_more": {
             "type": "boolean"
@@ -12051,35 +12051,6 @@
           },
           {
             "$ref": "#/components/schemas/CustomEmoji"
-          }
-        ]
-      },
-      "MentionRichTextItemResponseMention": {
-        "description": "Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.",
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/User6"
-          },
-          {
-            "$ref": "#/components/schemas/Date5"
-          },
-          {
-            "$ref": "#/components/schemas/LinkPreview"
-          },
-          {
-            "$ref": "#/components/schemas/LinkMention"
-          },
-          {
-            "$ref": "#/components/schemas/Page3"
-          },
-          {
-            "$ref": "#/components/schemas/Database3"
-          },
-          {
-            "$ref": "#/components/schemas/TemplateMention2"
-          },
-          {
-            "$ref": "#/components/schemas/CustomEmoji3"
           }
         ]
       },
@@ -12459,7 +12430,7 @@
           },
           "public_url": {
             "description": "The public URL of the Notion page, if it has been published to the web.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "parent": {
             "description": "Information about the page's parent.",
@@ -12850,16 +12821,6 @@
           }
         ]
       },
-      "PagePublicURL": {
-        "oneOf": [
-          {
-            "type": "string"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
       "PageTemplateAnyOf": {
         "type": "object",
         "properties": {
@@ -12904,7 +12865,7 @@
           },
           "transcript_id": {
             "description": "The ID of the deleted transcript, or `null` if not available.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         },
         "required": [
@@ -14090,7 +14051,7 @@
         "properties": {
           "prefix": {
             "description": "The prefix for the unique ID.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         },
         "required": [
@@ -14131,7 +14092,7 @@
             "$ref": "#/components/schemas/PropertyValueNumber"
           },
           "url": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "select": {
             "$ref": "#/components/schemas/PropertyValueSelect"
@@ -14150,10 +14111,10 @@
             "$ref": "#/components/schemas/PropertyValueDate"
           },
           "email": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "phone_number": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "checkbox": {
             "type": "boolean"
@@ -14810,7 +14771,7 @@
             "type": "boolean"
           },
           "next_cursor": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         },
         "required": [
@@ -14850,7 +14811,7 @@
             "type": "string"
           },
           "description": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "instructions_page_id": {
             "$ref": "#/components/schemas/ListViewsNextCursor"
@@ -14906,7 +14867,7 @@
           },
           "instructions": {
             "description": "The agent's inline instructions when verbose=true, or null when its instructions are stored on a page.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         },
         "required": [
@@ -16176,7 +16137,7 @@
             "type": "boolean"
           },
           "next_cursor": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         },
         "required": [
@@ -16956,7 +16917,7 @@
           },
           "next_cursor": {
             "description": "Pass this cursor as start_cursor when has_more is true, even when results is empty.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         },
         "required": [
@@ -18491,7 +18452,7 @@
           "ids": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/PagePublicURL"
+              "$ref": "#/components/schemas/RichTextHref"
             }
           }
         },
@@ -18615,13 +18576,40 @@
         ]
       },
       "RichText": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/richTextItemResponseCommon"
+        "type": "object",
+        "properties": {
+          "plain_text": {
+            "description": "The plain text content of the rich text object, without any styling.",
+            "type": "string",
+            "example": "Intentions"
           },
-          {
-            "$ref": "#/components/schemas/RichTextAllOf1"
+          "href": {
+            "description": "A URL that the rich text object links to or mentions.",
+            "$ref": "#/components/schemas/RichTextHref"
+          },
+          "annotations": {
+            "description": "All rich text objects contain an annotations object that sets the styling for the rich text.",
+            "$ref": "#/components/schemas/annotationResponse"
+          },
+          "type": {
+            "$ref": "#/components/schemas/RichTextType"
+          },
+          "text": {
+            "$ref": "#/components/schemas/RichTextText"
+          },
+          "mention": {
+            "$ref": "#/components/schemas/RichTextMention"
+          },
+          "equation": {
+            "description": "Notion supports inline LaTeX equations as rich text objects with a type value of `equation`.",
+            "$ref": "#/components/schemas/contentWithExpression"
           }
+        },
+        "required": [
+          "plain_text",
+          "href",
+          "annotations",
+          "type"
         ]
       },
       "RichText2": {
@@ -18711,18 +18699,101 @@
           "id"
         ]
       },
-      "RichTextAllOf1": {
+      "RichTextHref": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/textRichTextItemResponse"
+            "type": "string"
           },
           {
-            "$ref": "#/components/schemas/mentionRichTextItemResponse"
-          },
-          {
-            "$ref": "#/components/schemas/equationRichTextItemResponse"
+            "type": "null"
           }
         ]
+      },
+      "RichTextLinkOneOf": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "description": "The URL of the link.",
+            "type": "string",
+            "example": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb",
+            "examples": [
+              "https://www.notion.com"
+            ]
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "additionalProperties": false
+      },
+      "RichTextMention": {
+        "description": "Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/User6"
+          },
+          {
+            "$ref": "#/components/schemas/Date7"
+          },
+          {
+            "$ref": "#/components/schemas/LinkPreview"
+          },
+          {
+            "$ref": "#/components/schemas/LinkMention"
+          },
+          {
+            "$ref": "#/components/schemas/Page3"
+          },
+          {
+            "$ref": "#/components/schemas/Database3"
+          },
+          {
+            "$ref": "#/components/schemas/TemplateMention2"
+          },
+          {
+            "$ref": "#/components/schemas/CustomEmoji3"
+          }
+        ]
+      },
+      "RichTextText": {
+        "description": "If a rich text object's type value is `text`, then the corresponding text field contains an object including the text content and any inline link.",
+        "type": "object",
+        "properties": {
+          "content": {
+            "description": "The actual text content of the text.",
+            "type": "string",
+            "maxLength": 2000,
+            "example": "Intentions"
+          },
+          "link": {
+            "$ref": "#/components/schemas/RichTextTextLink"
+          }
+        },
+        "required": [
+          "content",
+          "link"
+        ],
+        "additionalProperties": false
+      },
+      "RichTextTextLink": {
+        "description": "An object with information about any inline link in this text, if included.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/RichTextLinkOneOf"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "RichTextType": {
+        "type": "string",
+        "enum": [
+          "text",
+          "mention",
+          "equation"
+        ],
+        "example": "text"
       },
       "RichTexts": {
         "type": "array",
@@ -19061,7 +19132,7 @@
             "$ref": "#/components/schemas/selectColor"
           },
           "description": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         }
       },
@@ -19128,7 +19199,7 @@
             "$ref": "#/components/schemas/selectColor"
           },
           "description": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         },
         "required": [
@@ -19893,37 +19964,6 @@
           }
         ]
       },
-      "TextRichTextItemResponseText": {
-        "description": "If a rich text object's type value is `text`, then the corresponding text field contains an object including the text content and any inline link.",
-        "type": "object",
-        "properties": {
-          "content": {
-            "description": "The actual text content of the text.",
-            "type": "string",
-            "maxLength": 2000,
-            "example": "Intentions"
-          },
-          "link": {
-            "$ref": "#/components/schemas/TextRichTextItemResponseTextLink"
-          }
-        },
-        "required": [
-          "content",
-          "link"
-        ],
-        "additionalProperties": false
-      },
-      "TextRichTextItemResponseTextLink": {
-        "description": "An object with information about any inline link in this text, if included.",
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/linkPreviewMention"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
       "TimelinePreferenceZoomLevel": {
         "description": "Zoom level for the timeline.",
         "type": "string",
@@ -20447,7 +20487,7 @@
         "type": "object",
         "properties": {
           "prefix": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         }
       },
@@ -21522,11 +21562,11 @@
           },
           "name": {
             "description": "The name of the user.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "avatar_url": {
             "description": "The avatar URL of the user.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "type": {
             "description": "The type of the user.",
@@ -22705,7 +22745,7 @@
           },
           "workspace_name": {
             "description": "The name of the bot's workspace.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         },
         "required": [
@@ -22965,11 +23005,11 @@
           },
           "x_axis_property_id": {
             "description": "Property ID for x-axis values in results mode. Pass null to clear.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "y_axis_property_id": {
             "description": "Property ID for y-axis values in results mode. Pass null to clear.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "value": {
             "description": "Aggregation for number charts. Pass null to clear.",
@@ -23041,7 +23081,7 @@
           },
           "caption": {
             "description": "Chart caption text. Pass null to clear.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "color_by_value": {
             "description": "Whether to color chart elements by their numeric value (gradient coloring). Pass null to clear.",
@@ -23157,7 +23197,7 @@
           },
           "caption": {
             "description": "Text caption displayed below the chart. Null when no caption is shown.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "color_by_value": {
             "description": "Whether chart elements are colored by their numeric value (gradient coloring).",
@@ -24199,7 +24239,7 @@
           },
           "public_url": {
             "description": "The public URL of the data source if it is publicly accessible.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "request_id": {
             "type": "string",
@@ -24380,7 +24420,7 @@
           },
           "data_source_id": {
             "description": "The ID of the data source this view is scoped to, or null for dashboard views.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "created_by": {
             "description": "The user who created the view, or null if not available.",
@@ -25076,7 +25116,7 @@
           },
           "end": {
             "description": "The end date of the date object, if any.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "time_zone": {
             "description": "The time zone of the date object.",
@@ -25264,25 +25304,6 @@
           "equation"
         ]
       },
-      "equationRichTextItemResponse": {
-        "title": "Equation",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `equation`",
-            "type": "string",
-            "const": "equation"
-          },
-          "equation": {
-            "description": "Notion supports inline LaTeX equations as rich text objects with a type value of `equation`.",
-            "$ref": "#/components/schemas/contentWithExpression"
-          }
-        },
-        "required": [
-          "type",
-          "equation"
-        ]
-      },
       "existencePropertyFilter": {
         "anyOf": [
           {
@@ -25354,7 +25375,7 @@
           },
           "external": {
             "description": "The external URL.",
-            "$ref": "#/components/schemas/linkPreviewMention"
+            "$ref": "#/components/schemas/RichTextLinkOneOf"
           }
         },
         "required": [
@@ -25436,7 +25457,7 @@
           },
           "external": {
             "description": "The external URL for the icon.",
-            "$ref": "#/components/schemas/linkPreviewMention"
+            "$ref": "#/components/schemas/RichTextLinkOneOf"
           }
         },
         "required": [
@@ -25659,10 +25680,10 @@
             "$ref": "#/components/schemas/Status2"
           },
           "filename": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "content_type": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "content_length": {
             "$ref": "#/components/schemas/RetrieveSessionMessageCount"
@@ -26442,7 +26463,7 @@
           },
           "name": {
             "description": "The name of the group.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         },
         "required": [
@@ -26899,23 +26920,6 @@
         ],
         "additionalProperties": false
       },
-      "linkPreviewMention": {
-        "type": "object",
-        "properties": {
-          "url": {
-            "description": "The URL of the link preview mention.",
-            "type": "string",
-            "example": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb",
-            "examples": [
-              "https://www.notion.com"
-            ]
-          }
-        },
-        "required": [
-          "url"
-        ],
-        "additionalProperties": false
-      },
       "listViewConfigRequest": {
         "type": "object",
         "properties": {
@@ -26986,7 +26990,7 @@
           },
           "map_by": {
             "description": "Property ID of the location property used to position items on the map. Pass null to clear.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "properties": {
             "description": "Property visibility and display configuration on map pin cards. Pass null to clear.",
@@ -27130,24 +27134,6 @@
           }
         },
         "required": [
-          "mention"
-        ]
-      },
-      "mentionRichTextItemResponse": {
-        "title": "Mention",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `mention`",
-            "type": "string",
-            "const": "mention"
-          },
-          "mention": {
-            "$ref": "#/components/schemas/MentionRichTextItemResponseMention"
-          }
-        },
-        "required": [
-          "type",
           "mention"
         ]
       },
@@ -28600,16 +28586,16 @@
             "type": "number"
           },
           "name": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "address": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "aws_place_id": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "google_place_id": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         },
         "required": [
@@ -28747,7 +28733,7 @@
             "$ref": "#/components/schemas/Status5"
           },
           {
-            "$ref": "#/components/schemas/Date6"
+            "$ref": "#/components/schemas/Date5"
           },
           {
             "$ref": "#/components/schemas/People4"
@@ -29204,30 +29190,6 @@
           }
         }
       },
-      "richTextItemResponseCommon": {
-        "type": "object",
-        "properties": {
-          "plain_text": {
-            "description": "The plain text content of the rich text object, without any styling.",
-            "type": "string",
-            "example": "Intentions"
-          },
-          "href": {
-            "description": "A URL that the rich text object links to or mentions.",
-            "$ref": "#/components/schemas/PagePublicURL"
-          },
-          "annotations": {
-            "description": "All rich text objects contain an annotations object that sets the styling for the rich text.",
-            "$ref": "#/components/schemas/annotationResponse"
-          }
-        },
-        "required": [
-          "plain_text",
-          "href",
-          "annotations"
-        ],
-        "additionalProperties": false
-      },
       "richTextPropertyItemObjectResponse": {
         "title": "Rich Text",
         "type": "object",
@@ -29584,7 +29546,7 @@
             "$ref": "#/components/schemas/selectColor"
           },
           "description": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         },
         "required": [
@@ -29792,7 +29754,7 @@
             "$ref": "#/components/schemas/selectColor"
           },
           "description": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "group": {
             "$ref": "#/components/schemas/statusOptionGroup"
@@ -29833,7 +29795,7 @@
             "$ref": "#/components/schemas/selectColor"
           },
           "description": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "group": {
             "$ref": "#/components/schemas/statusOptionGroup"
@@ -30431,24 +30393,6 @@
           "text"
         ]
       },
-      "textRichTextItemResponse": {
-        "title": "Text",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `text`",
-            "type": "string",
-            "const": "text"
-          },
-          "text": {
-            "$ref": "#/components/schemas/TextRichTextItemResponseText"
-          }
-        },
-        "required": [
-          "type",
-          "text"
-        ]
-      },
       "timeZoneRequest": {
         "type": "string",
         "example": "Africa/Abidjan"
@@ -30458,7 +30402,7 @@
         "properties": {
           "property_id": {
             "description": "Relation property ID used for dependency arrows, or null to disable arrows.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         }
       },
@@ -30467,7 +30411,7 @@
         "properties": {
           "property_id": {
             "description": "Relation property ID used for dependency arrows.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           }
         },
         "additionalProperties": false
@@ -30518,7 +30462,7 @@
           },
           "end_date_property_id": {
             "description": "Property ID of the date property used for the end of timeline items. Pass null to clear.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "properties": {
             "description": "Property visibility and display configuration on timeline items. Pass null to clear.",
@@ -30823,7 +30767,7 @@
         "type": "object",
         "properties": {
           "prefix": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "number": {
             "$ref": "#/components/schemas/PropertyValueNumber"
@@ -31033,7 +30977,7 @@
           },
           "name": {
             "description": "The name of the user.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextHref"
           },
           "avatar_url": {
             "description": "The avatar URL of the user.",

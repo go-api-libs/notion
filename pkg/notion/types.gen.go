@@ -8221,33 +8221,13 @@ func (v *Date4) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, e
 
 // Date5 defines a model
 type Date5 struct {
-	// Always `date`
-	Type string `json:"type"`
-	// Details of the date mention.
-	Date DateResponse `json:"date"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether Date5 declares it.
-func (v *Date5) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "date":
-		return true, json.UnmarshalDecode(dec, &v.Date, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// Date6 defines a model
-type Date6 struct {
 	Date     DatePropertyFilter `json:"date"`
 	Property string             `json:"property"`
 	Type     string             `json:"type,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether Date6 declares it.
-func (v *Date6) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether Date5 declares it.
+func (v *Date5) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "date":
 		return true, json.UnmarshalDecode(dec, &v.Date, jsonOpts)
@@ -8255,6 +8235,26 @@ func (v *Date6) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, e
 		return true, json.UnmarshalDecode(dec, &v.Property, jsonOpts)
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
+	}
+
+	return false, nil
+}
+
+// Date7 defines a model
+type Date7 struct {
+	// Always `date`
+	Type string `json:"type"`
+	// Details of the date mention.
+	Date DateResponse `json:"date"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether Date7 declares it.
+func (v *Date7) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
+	case "date":
+		return true, json.UnmarshalDecode(dec, &v.Date, jsonOpts)
 	}
 
 	return false, nil
@@ -9239,26 +9239,6 @@ func (v *EquationRichTextItemRequest) unmarshalJSONMember(dec *jsontext.Decoder,
 	return false, nil
 }
 
-// EquationRichTextItemResponse defines a model
-type EquationRichTextItemResponse struct {
-	// Always `equation`
-	Type string `json:"type"`
-	// Notion supports inline LaTeX equations as rich text objects with a type value of `equation`.
-	Equation ContentWithExpression `json:"equation"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether EquationRichTextItemResponse declares it.
-func (v *EquationRichTextItemResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "equation":
-		return true, json.UnmarshalDecode(dec, &v.Equation, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // Error defines a model
 type Error struct {
 	Object         string                                             `json:"object"`
@@ -9515,7 +9495,7 @@ type ExternalInternalOrExternalFileWithNameResponse struct {
 	// Type of attachment. In this case, an external URL.
 	Type string `json:"type"`
 	// The external URL.
-	External LinkPreviewMention `json:"external"`
+	External RichTextLinkOneOf `json:"external"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether ExternalInternalOrExternalFileWithNameResponse declares it.
@@ -9599,7 +9579,7 @@ type ExternalPageIcon2 struct {
 	// Type of icon. In this case, an external URL.
 	Type string `json:"type"`
 	// The external URL for the icon.
-	External LinkPreviewMention `json:"external"`
+	External RichTextLinkOneOf `json:"external"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether ExternalPageIcon2 declares it.
@@ -13244,7 +13224,7 @@ type LinkPreview struct {
 	// Always `link_preview`
 	Type string `json:"type"`
 	// Details of the link preview mention.
-	LinkPreview LinkPreviewMention `json:"link_preview"`
+	LinkPreview RichTextLinkOneOf `json:"link_preview"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether LinkPreview declares it.
@@ -13257,12 +13237,6 @@ func (v *LinkPreview) unmarshalJSONMember(dec *jsontext.Decoder, name string) (b
 	}
 
 	return false, nil
-}
-
-// LinkPreviewMention defines a model
-type LinkPreviewMention struct {
-	// The URL of the link preview mention.
-	URL string `json:"url"`
 }
 
 // LinkToPage defines a model
@@ -14007,151 +13981,6 @@ func (v *MentionRichTextItemRequestMention) MarshalJSONTo(enc *jsontext.Encoder)
 		variant, tag = v.TemplateMention, "template_mention"
 	case v.CustomEmoji != nil:
 		variant, tag = v.CustomEmoji, "custom_emoji"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
-// MentionRichTextItemResponse defines a model
-type MentionRichTextItemResponse struct {
-	// Always `mention`
-	Type string `json:"type"`
-	// Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.
-	Mention MentionRichTextItemResponseMention `json:"mention"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MentionRichTextItemResponse declares it.
-func (v *MentionRichTextItemResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "mention":
-		return true, json.UnmarshalDecode(dec, &v.Mention, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.
-// MentionRichTextItemResponseMention is an untagged oneOf union: exactly one field is set after unmarshaling.
-type MentionRichTextItemResponseMention struct {
-	User6            *User6
-	Date5            *Date5
-	LinkPreview      *LinkPreview
-	LinkMention      *LinkMention
-	Page3            *Page3
-	Database3        *Database3
-	TemplateMention2 *TemplateMention2
-	CustomEmoji3     *CustomEmoji3
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its first member must be type, which names the
-// alternative; the alternative then decodes each further member as it is read.
-func (v *MentionRichTextItemResponseMention) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "user":
-		var vv User6
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.User6 = &vv
-	case "date":
-		var vv Date5
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.Date5 = &vv
-	case "link_preview":
-		var vv LinkPreview
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.LinkPreview = &vv
-	case "link_mention":
-		var vv LinkMention
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.LinkMention = &vv
-	case "page":
-		var vv Page3
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.Page3 = &vv
-	case "database":
-		var vv Database3
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.Database3 = &vv
-	case "template_mention":
-		var vv TemplateMention2
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.TemplateMention2 = &vv
-	case "custom_emoji":
-		var vv CustomEmoji3
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.CustomEmoji3 = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *MentionRichTextItemResponseMention) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.User6 != nil:
-		variant, tag = v.User6, "user"
-	case v.Date5 != nil:
-		variant, tag = v.Date5, "date"
-	case v.LinkPreview != nil:
-		variant, tag = v.LinkPreview, "link_preview"
-	case v.LinkMention != nil:
-		variant, tag = v.LinkMention, "link_mention"
-	case v.Page3 != nil:
-		variant, tag = v.Page3, "page"
-	case v.Database3 != nil:
-		variant, tag = v.Database3, "database"
-	case v.TemplateMention2 != nil:
-		variant, tag = v.TemplateMention2, "template_mention"
-	case v.CustomEmoji3 != nil:
-		variant, tag = v.CustomEmoji3, "custom_emoji"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -19759,7 +19588,7 @@ type PropertyFilter struct {
 	Select4         *Select4
 	MultiSelect4    *MultiSelect4
 	Status5         *Status5
-	Date6           *Date6
+	Date5           *Date5
 	People4         *People4
 	Files4          *Files4
 	URL4            *URL4
@@ -19835,12 +19664,12 @@ func (v *PropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 		v.Status5 = &vv
 	case "date":
-		var vv Date6
+		var vv Date5
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.Date6 = &vv
+		v.Date5 = &vv
 	case "people":
 		var vv People4
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
@@ -19968,8 +19797,8 @@ func (v *PropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		variant, tag = v.MultiSelect4, "multi_select"
 	case v.Status5 != nil:
 		variant, tag = v.Status5, "status"
-	case v.Date6 != nil:
-		variant, tag = v.Date6, "date"
+	case v.Date5 != nil:
+		variant, tag = v.Date5, "date"
 	case v.People4 != nil:
 		variant, tag = v.People4, "people"
 	case v.Files4 != nil:
@@ -25953,163 +25782,14 @@ type RichText struct {
 	// A URL that the rich text object links to or mentions.
 	Href string `json:"href"`
 	// All rich text objects contain an annotations object that sets the styling for the rich text.
-	Annotations    AnnotationResponse `json:"annotations"`
-	RichTextAllOf1 RichTextAllOf1     `json:"-"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RichText declares it.
-func (v *RichText) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "plain_text":
-		return true, json.UnmarshalDecode(dec, &v.PlainText, jsonOpts)
-	case "href":
-		return true, json.UnmarshalDecode(dec, &v.Href, jsonOpts)
-	case "annotations":
-		return true, json.UnmarshalDecode(dec, &v.Annotations, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// fieldsOfRichText is RichText without its methods, to encode the fields outside its union.
-type fieldsOfRichText RichText
-
-// membersOfRichText are the members RichText declares outside its union.
-var membersOfRichText = map[string]bool{"annotations": true, "href": true, "plain_text": true}
-
-// variantsOfRichText are the alternatives its union is decoded as, in order.
-var variantsOfRichText = []jsonVariant{
-	{
-		value:    "text",
-		members:  map[string]bool{"text": true, "type": true},
-		required: []string{"text", "type"},
-	},
-	{
-		value:    "mention",
-		members:  map[string]bool{"mention": true, "type": true},
-		required: []string{"mention", "type"},
-	},
-	{
-		value:    "equation",
-		members:  map[string]bool{"equation": true, "type": true},
-		required: []string{"equation", "type"},
-	},
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its first member must be type, which names the
-// alternative of RichTextAllOf1; each further member then decodes as it is read, into the fields or the alternative
-// that declares it, and a member neither declares is an error.
-func (v *RichText) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "text":
-		var vv TextRichTextItemResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfRichText, v.unmarshalJSONMember},
-			{variantsOfRichText[0].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.RichTextAllOf1.TextRichTextItemResponse = &vv
-	case "mention":
-		var vv MentionRichTextItemResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfRichText, v.unmarshalJSONMember},
-			{variantsOfRichText[1].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.RichTextAllOf1.MentionRichTextItemResponse = &vv
-	case "equation":
-		var vv EquationRichTextItemResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfRichText, v.unmarshalJSONMember},
-			{variantsOfRichText[2].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.RichTextAllOf1.EquationRichTextItemResponse = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of RichTextAllOf1 that is set;
-// a member both write must have the same value in each.
-func (v *RichText) MarshalJSONTo(enc *jsontext.Encoder) error {
-	out, err := json.Marshal((*fieldsOfRichText)(v), jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	var set int
-
-	var tag string
-
-	if v.RichTextAllOf1.TextRichTextItemResponse != nil {
-		tag = "text"
-
-		variant, err := json.Marshal(v.RichTextAllOf1.TextRichTextItemResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.RichTextAllOf1.MentionRichTextItemResponse != nil {
-		tag = "mention"
-
-		variant, err := json.Marshal(v.RichTextAllOf1.MentionRichTextItemResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.RichTextAllOf1.EquationRichTextItemResponse != nil {
-		tag = "equation"
-
-		variant, err := json.Marshal(v.RichTextAllOf1.EquationRichTextItemResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if set != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of RichTextAllOf1 set, got %d", set)}
-	}
-
-	// decoding wants type first
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
+	Annotations AnnotationResponse `json:"annotations"`
+	Type        RichTextType       `json:"type"`
+	// If a rich text object's type value is `text`, then the corresponding text field contains an object including the text content and any inline link.
+	Text RichTextText `json:"text,omitzero"`
+	// Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.
+	Mention RichTextMention `json:"mention,omitzero"`
+	// Notion supports inline LaTeX equations as rich text objects with a type value of `equation`.
+	Equation ContentWithExpression `json:"equation,omitzero"`
 }
 
 // RichText2 defines a model
@@ -26192,81 +25872,6 @@ func (v *RichText6) unmarshalJSONMember(dec *jsontext.Decoder, name string) (boo
 	}
 
 	return false, nil
-}
-
-// RichTextAllOf1 defines a model
-// RichTextAllOf1 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type RichTextAllOf1 struct {
-	TextRichTextItemResponse     *TextRichTextItemResponse
-	MentionRichTextItemResponse  *MentionRichTextItemResponse
-	EquationRichTextItemResponse *EquationRichTextItemResponse
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its first member must be type, which names the
-// alternative; the alternative then decodes each further member as it is read.
-func (v *RichTextAllOf1) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "text":
-		var vv TextRichTextItemResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.TextRichTextItemResponse = &vv
-	case "mention":
-		var vv MentionRichTextItemResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.MentionRichTextItemResponse = &vv
-	case "equation":
-		var vv EquationRichTextItemResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.EquationRichTextItemResponse = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *RichTextAllOf1) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.TextRichTextItemResponse != nil:
-		variant, tag = v.TextRichTextItemResponse, "text"
-	case v.MentionRichTextItemResponse != nil:
-		variant, tag = v.MentionRichTextItemResponse, "mention"
-	case v.EquationRichTextItemResponse != nil:
-		variant, tag = v.EquationRichTextItemResponse, "equation"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
 }
 
 // RichTextItemRequest defines a model
@@ -26502,6 +26107,137 @@ func (v *RichTextItemRequestAllOf1) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
+// RichTextLinkOneOf defines a model
+type RichTextLinkOneOf struct {
+	// The URL of the link.
+	URL string `json:"url"`
+}
+
+// Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.
+// RichTextMention is an untagged oneOf union: exactly one field is set after unmarshaling.
+type RichTextMention struct {
+	User6            *User6
+	Date7            *Date7
+	LinkPreview      *LinkPreview
+	LinkMention      *LinkMention
+	Page3            *Page3
+	Database3        *Database3
+	TemplateMention2 *TemplateMention2
+	CustomEmoji3     *CustomEmoji3
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its first member must be type, which names the
+// alternative; the alternative then decodes each further member as it is read.
+func (v *RichTextMention) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	tag, first, err := jsonFirstMember(dec, "type")
+	if err != nil {
+		return err
+	}
+
+	switch tag {
+	case "user":
+		var vv User6
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.User6 = &vv
+	case "date":
+		var vv Date7
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.Date7 = &vv
+	case "link_preview":
+		var vv LinkPreview
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.LinkPreview = &vv
+	case "link_mention":
+		var vv LinkMention
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.LinkMention = &vv
+	case "page":
+		var vv Page3
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.Page3 = &vv
+	case "database":
+		var vv Database3
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.Database3 = &vv
+	case "template_mention":
+		var vv TemplateMention2
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.TemplateMention2 = &vv
+	case "custom_emoji":
+		var vv CustomEmoji3
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.CustomEmoji3 = &vv
+	default:
+		return jsonUnknownValue("type", tag)
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+func (v *RichTextMention) MarshalJSONTo(enc *jsontext.Encoder) error {
+	var (
+		variant any
+		tag     string
+	)
+
+	switch {
+	case v.User6 != nil:
+		variant, tag = v.User6, "user"
+	case v.Date7 != nil:
+		variant, tag = v.Date7, "date"
+	case v.LinkPreview != nil:
+		variant, tag = v.LinkPreview, "link_preview"
+	case v.LinkMention != nil:
+		variant, tag = v.LinkMention, "link_mention"
+	case v.Page3 != nil:
+		variant, tag = v.Page3, "page"
+	case v.Database3 != nil:
+		variant, tag = v.Database3, "database"
+	case v.TemplateMention2 != nil:
+		variant, tag = v.TemplateMention2, "template_mention"
+	case v.CustomEmoji3 != nil:
+		variant, tag = v.CustomEmoji3, "custom_emoji"
+	default:
+		return &json.SemanticError{Err: errors.New("no alternative set")}
+	}
+
+	out, err := json.Marshal(variant, jsonOpts)
+	if err != nil {
+		return err
+	}
+
+	if out, err = jsonFirst(out, "type", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
+}
+
 // RichTextPropertyItemObjectResponse defines a model
 type RichTextPropertyItemObjectResponse struct {
 	Type     string   `json:"type"`
@@ -26524,6 +26260,33 @@ func (v *RichTextPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.D
 	}
 
 	return false, nil
+}
+
+// If a rich text object's type value is `text`, then the corresponding text field contains an object including the text content and any inline link.
+type RichTextText struct {
+	// The actual text content of the text.
+	Content string `json:"content"`
+	// An object with information about any inline link in this text, if included.
+	Link RichTextLinkOneOf `json:"link"`
+}
+
+// RichTextType defines a model
+type RichTextType string
+
+const (
+	RichTextTypeText     RichTextType = "text"
+	RichTextTypeMention  RichTextType = "mention"
+	RichTextTypeEquation RichTextType = "equation"
+)
+
+// Valid indicates whether the value is a known member of the RichTextType enum.
+func (e RichTextType) Valid() bool {
+	switch e {
+	case RichTextTypeText, RichTextTypeMention, RichTextTypeEquation:
+		return true
+	default:
+		return false
+	}
 }
 
 // RichTexts defines a model
@@ -29528,34 +29291,6 @@ type TextRichTextItemRequestText struct {
 	Content string `json:"content"`
 	// An object with information about any inline link in this text, if included.
 	Link ExternalPageIconExternal `json:"link,omitzero"`
-}
-
-// TextRichTextItemResponse defines a model
-type TextRichTextItemResponse struct {
-	// Always `text`
-	Type string `json:"type"`
-	// If a rich text object's type value is `text`, then the corresponding text field contains an object including the text content and any inline link.
-	Text TextRichTextItemResponseText `json:"text"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether TextRichTextItemResponse declares it.
-func (v *TextRichTextItemResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "text":
-		return true, json.UnmarshalDecode(dec, &v.Text, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// If a rich text object's type value is `text`, then the corresponding text field contains an object including the text content and any inline link.
-type TextRichTextItemResponseText struct {
-	// The actual text content of the text.
-	Content string `json:"content"`
-	// An object with information about any inline link in this text, if included.
-	Link LinkPreviewMention `json:"link"`
 }
 
 // TimeZoneRequest defines a model

@@ -676,6 +676,7 @@ func fixOpenAPI() (*openapi.Document, error) {
 		// a rollup's array holds property values without their id
 		{name: "PropertyValue", aliases: []string{"simpleOrArrayPropertyValueResponse"}},
 		{name: "PropertyConfig"},
+		{name: "RichText"},
 	} {
 		if err := mergeTaggedUnion(doc, u.name, "type", u.aliases...); err != nil {
 			return nil, err
