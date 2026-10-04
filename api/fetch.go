@@ -668,13 +668,18 @@ func fixOpenAPI() (*openapi.Document, error) {
 		return nil, err
 	}
 
-	if err := mergeTaggedUnion(doc, "Block", "type"); err != nil {
-		return nil, err
-	}
-
-	// a rollup's array holds property values without their id
-	if err := mergeTaggedUnion(doc, "PropertyValue", "type", "simpleOrArrayPropertyValueResponse"); err != nil {
-		return nil, err
+	for _, u := range []struct {
+		name    string
+		aliases []string
+	}{
+		{name: "Block"},
+		// a rollup's array holds property values without their id
+		{name: "PropertyValue", aliases: []string{"simpleOrArrayPropertyValueResponse"}},
+		{name: "PropertyConfig"},
+	} {
+		if err := mergeTaggedUnion(doc, u.name, "type", u.aliases...); err != nil {
+			return nil, err
+		}
 	}
 
 	if err := applyPasses(doc); err != nil {

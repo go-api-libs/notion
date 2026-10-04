@@ -12208,22 +12208,6 @@
         ],
         "additionalProperties": false
       },
-      "MultiSelectDatabasePropertyConfigResponseMultiSelect": {
-        "type": "object",
-        "properties": {
-          "options": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/selectProperty"
-            }
-          }
-        },
-        "required": [
-          "options"
-        ],
-        "additionalProperties": false
-      },
       "MultiSelectMultiSelectItem": {
         "anyOf": [
           {
@@ -12333,19 +12317,6 @@
             "$ref": "#/components/schemas/numberFormat"
           }
         }
-      },
-      "NumberDatabasePropertyConfigResponseNumber": {
-        "type": "object",
-        "properties": {
-          "format": {
-            "description": "The number format for the property.",
-            "$ref": "#/components/schemas/numberFormat"
-          }
-        },
-        "required": [
-          "format"
-        ],
-        "additionalProperties": false
       },
       "NumberFormulaPropertyValueResponseNumber": {
         "oneOf": [
@@ -13853,83 +13824,96 @@
         ]
       },
       "PropertyConfig": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/databasePropertyConfigResponseCommon"
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "The ID of the property.",
+            "type": "string",
+            "example": "%3ANHe"
           },
-          {
-            "$ref": "#/components/schemas/PropertyConfigAllOf1"
+          "name": {
+            "description": "The name of the property.",
+            "type": "string",
+            "example": "Duration"
+          },
+          "description": {
+            "$ref": "#/components/schemas/PropertyConfigDescription"
+          },
+          "type": {
+            "$ref": "#/components/schemas/PropertyConfigType"
+          },
+          "number": {
+            "$ref": "#/components/schemas/PropertyConfigNumber"
+          },
+          "formula": {
+            "$ref": "#/components/schemas/contentWithExpression"
+          },
+          "select": {
+            "$ref": "#/components/schemas/PropertyConfigSelect"
+          },
+          "multi_select": {
+            "$ref": "#/components/schemas/PropertyConfigMultiSelect"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PropertyConfigStatus"
+          },
+          "relation": {
+            "$ref": "#/components/schemas/databasePropertyRelationConfigResponse"
+          },
+          "rollup": {
+            "$ref": "#/components/schemas/PropertyConfigRollup"
+          },
+          "unique_id": {
+            "$ref": "#/components/schemas/PropertyConfigUniqueID"
+          },
+          "title": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "rich_text": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "url": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "people": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "files": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "email": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "phone_number": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "date": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "checkbox": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "created_time": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "last_edited_by": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "last_edited_time": {
+            "$ref": "#/components/schemas/emptyObject"
           }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "type"
         ]
       },
-      "PropertyConfigAllOf1": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/numberDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/formulaDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/selectDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/multiSelectDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/statusDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/relationDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/rollupDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/uniqueIdDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/titleDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/richTextDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/urlDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/peopleDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/filesDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/emailDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/phoneNumberDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/dateDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/checkboxDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/createdByDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/createdTimeDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/lastEditedByDatabasePropertyConfigResponse"
-          },
-          {
-            "$ref": "#/components/schemas/lastEditedTimeDatabasePropertyConfigResponse"
-          }
-        ]
-      },
-      "PropertyConfigurationCommonDescription": {
+      "PropertyConfigDescription": {
         "description": "The description of the property.",
         "oneOf": [
           {
@@ -13939,6 +13923,180 @@
             "type": "null"
           }
         ]
+      },
+      "PropertyConfigMultiSelect": {
+        "type": "object",
+        "properties": {
+          "options": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/selectProperty"
+            }
+          }
+        },
+        "required": [
+          "options"
+        ],
+        "additionalProperties": false
+      },
+      "PropertyConfigNumber": {
+        "type": "object",
+        "properties": {
+          "format": {
+            "description": "The number format for the property.",
+            "$ref": "#/components/schemas/numberFormat"
+          }
+        },
+        "required": [
+          "format"
+        ],
+        "additionalProperties": false
+      },
+      "PropertyConfigRollup": {
+        "type": "object",
+        "properties": {
+          "function": {
+            "description": "The function to use for the rollup, e.g. count, count_values, percent_not_empty, max.",
+            "$ref": "#/components/schemas/rollupFunction"
+          },
+          "rollup_property_name": {
+            "type": "string"
+          },
+          "relation_property_name": {
+            "type": "string"
+          },
+          "rollup_property_id": {
+            "type": "string"
+          },
+          "relation_property_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "function",
+          "rollup_property_name",
+          "relation_property_name",
+          "rollup_property_id",
+          "relation_property_id"
+        ],
+        "additionalProperties": false
+      },
+      "PropertyConfigSelect": {
+        "type": "object",
+        "properties": {
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/selectProperty"
+            }
+          }
+        },
+        "required": [
+          "options"
+        ],
+        "additionalProperties": false
+      },
+      "PropertyConfigStatus": {
+        "type": "object",
+        "properties": {
+          "options": {
+            "description": "The options for the status property.",
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/selectProperty"
+            }
+          },
+          "groups": {
+            "$ref": "#/components/schemas/PropertyConfigStatusGroups"
+          }
+        },
+        "required": [
+          "options",
+          "groups"
+        ],
+        "additionalProperties": false
+      },
+      "PropertyConfigStatusGroups": {
+        "description": "The groups for the status property.",
+        "type": "array",
+        "maxItems": 100,
+        "items": {
+          "$ref": "#/components/schemas/PropertyConfigStatusGroupsItem"
+        }
+      },
+      "PropertyConfigStatusGroupsItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "The ID of the status group.",
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the status group.",
+            "type": "string"
+          },
+          "color": {
+            "description": "The color of the status group.",
+            "$ref": "#/components/schemas/selectColor"
+          },
+          "option_ids": {
+            "description": "The IDs of the status options in this group.",
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "color",
+          "option_ids"
+        ],
+        "additionalProperties": false
+      },
+      "PropertyConfigType": {
+        "type": "string",
+        "enum": [
+          "number",
+          "formula",
+          "select",
+          "multi_select",
+          "status",
+          "relation",
+          "rollup",
+          "unique_id",
+          "title",
+          "rich_text",
+          "url",
+          "people",
+          "files",
+          "email",
+          "phone_number",
+          "date",
+          "checkbox",
+          "created_by",
+          "created_time",
+          "last_edited_by",
+          "last_edited_time"
+        ],
+        "example": "formula"
+      },
+      "PropertyConfigUniqueID": {
+        "type": "object",
+        "properties": {
+          "prefix": {
+            "description": "The prefix for the unique ID.",
+            "$ref": "#/components/schemas/PagePublicURL"
+          }
+        },
+        "required": [
+          "prefix"
+        ],
+        "additionalProperties": false
       },
       "PropertyItemPropertyItemListResponsePropertyItem": {
         "anyOf": [
@@ -18755,35 +18913,6 @@
           "rollup_property_id"
         ]
       },
-      "RollupDatabasePropertyConfigResponseRollup": {
-        "type": "object",
-        "properties": {
-          "function": {
-            "description": "The function to use for the rollup, e.g. count, count_values, percent_not_empty, max.",
-            "$ref": "#/components/schemas/rollupFunction"
-          },
-          "rollup_property_name": {
-            "type": "string"
-          },
-          "relation_property_name": {
-            "type": "string"
-          },
-          "rollup_property_id": {
-            "type": "string"
-          },
-          "relation_property_id": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "function",
-          "rollup_property_name",
-          "relation_property_name",
-          "rollup_property_id",
-          "relation_property_id"
-        ],
-        "additionalProperties": false
-      },
       "Select": {
         "title": "Select",
         "type": "object",
@@ -18903,21 +19032,6 @@
         },
         "required": [
           "name"
-        ],
-        "additionalProperties": false
-      },
-      "SelectDatabasePropertyConfigResponseSelect": {
-        "type": "object",
-        "properties": {
-          "options": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/selectProperty"
-            }
-          }
-        },
-        "required": [
-          "options"
         ],
         "additionalProperties": false
       },
@@ -19109,67 +19223,6 @@
         "required": [
           "status",
           "property"
-        ],
-        "additionalProperties": false
-      },
-      "StatusDatabasePropertyConfigResponseStatus": {
-        "type": "object",
-        "properties": {
-          "options": {
-            "description": "The options for the status property.",
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/selectProperty"
-            }
-          },
-          "groups": {
-            "$ref": "#/components/schemas/StatusDatabasePropertyConfigResponseStatusGroups"
-          }
-        },
-        "required": [
-          "options",
-          "groups"
-        ],
-        "additionalProperties": false
-      },
-      "StatusDatabasePropertyConfigResponseStatusGroups": {
-        "description": "The groups for the status property.",
-        "type": "array",
-        "maxItems": 100,
-        "items": {
-          "$ref": "#/components/schemas/StatusDatabasePropertyConfigResponseStatusGroupsItem"
-        }
-      },
-      "StatusDatabasePropertyConfigResponseStatusGroupsItem": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "description": "The ID of the status group.",
-            "type": "string"
-          },
-          "name": {
-            "description": "The name of the status group.",
-            "type": "string"
-          },
-          "color": {
-            "description": "The color of the status group.",
-            "$ref": "#/components/schemas/selectColor"
-          },
-          "option_ids": {
-            "description": "The IDs of the status options in this group.",
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "color",
-          "option_ids"
         ],
         "additionalProperties": false
       },
@@ -20369,19 +20422,6 @@
         ],
         "additionalProperties": false
       },
-      "UniqueIDDatabasePropertyConfigResponseUniqueID": {
-        "type": "object",
-        "properties": {
-          "prefix": {
-            "description": "The prefix for the unique ID.",
-            "$ref": "#/components/schemas/PagePublicURL"
-          }
-        },
-        "required": [
-          "prefix"
-        ],
-        "additionalProperties": false
-      },
       "UniqueIDPropertyItemObjectResponseUniqueID": {
         "type": "object",
         "properties": {
@@ -20646,7 +20686,7 @@
             "type": "string"
           },
           "description": {
-            "$ref": "#/components/schemas/PropertyConfigurationCommonDescription"
+            "$ref": "#/components/schemas/PropertyConfigDescription"
           }
         }
       },
@@ -23130,24 +23170,6 @@
         ],
         "additionalProperties": false
       },
-      "checkboxDatabasePropertyConfigResponse": {
-        "title": "Checkbox",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `checkbox`",
-            "type": "string",
-            "const": "checkbox"
-          },
-          "checkbox": {
-            "$ref": "#/components/schemas/emptyObject"
-          }
-        },
-        "required": [
-          "type",
-          "checkbox"
-        ]
-      },
       "checkboxGroupByConfigRequest": {
         "type": "object",
         "properties": {
@@ -23816,24 +23838,6 @@
           "type"
         ]
       },
-      "createdByDatabasePropertyConfigResponse": {
-        "title": "Created By",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `created_by`",
-            "type": "string",
-            "const": "created_by"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/emptyObject"
-          }
-        },
-        "required": [
-          "type",
-          "created_by"
-        ]
-      },
       "createdByPropertyItemObjectResponse": {
         "title": "Created By",
         "type": "object",
@@ -23858,24 +23862,6 @@
           "created_by",
           "object",
           "id"
-        ]
-      },
-      "createdTimeDatabasePropertyConfigResponse": {
-        "title": "Created Time",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `created_time`",
-            "type": "string",
-            "const": "created_time"
-          },
-          "created_time": {
-            "$ref": "#/components/schemas/emptyObject"
-          }
-        },
-        "required": [
-          "type",
-          "created_time"
         ]
       },
       "createdTimePropertyItemObjectResponse": {
@@ -24604,30 +24590,6 @@
         ],
         "additionalProperties": false
       },
-      "databasePropertyConfigResponseCommon": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "description": "The ID of the property.",
-            "type": "string",
-            "example": "%3ANHe"
-          },
-          "name": {
-            "description": "The name of the property.",
-            "type": "string",
-            "example": "Duration"
-          },
-          "description": {
-            "$ref": "#/components/schemas/PropertyConfigurationCommonDescription"
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "description"
-        ],
-        "additionalProperties": false
-      },
       "databasePropertyRelationConfigResponse": {
         "allOf": [
           {
@@ -24726,24 +24688,6 @@
           "type",
           "entity",
           "data"
-        ]
-      },
-      "dateDatabasePropertyConfigResponse": {
-        "title": "Date",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `date`",
-            "type": "string",
-            "const": "date"
-          },
-          "date": {
-            "$ref": "#/components/schemas/emptyObject"
-          }
-        },
-        "required": [
-          "type",
-          "date"
         ]
       },
       "dateFormulaPropertyResponse": {
@@ -25185,24 +25129,6 @@
         },
         "required": [
           "dual_property"
-        ]
-      },
-      "emailDatabasePropertyConfigResponse": {
-        "title": "Email",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `email`",
-            "type": "string",
-            "const": "email"
-          },
-          "email": {
-            "$ref": "#/components/schemas/emptyObject"
-          }
-        },
-        "required": [
-          "type",
-          "email"
         ]
       },
       "emailPropertyItemObjectResponse": {
@@ -25837,24 +25763,6 @@
         ],
         "additionalProperties": false
       },
-      "filesDatabasePropertyConfigResponse": {
-        "title": "Files",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `files`",
-            "type": "string",
-            "const": "files"
-          },
-          "files": {
-            "$ref": "#/components/schemas/emptyObject"
-          }
-        },
-        "required": [
-          "type",
-          "files"
-        ]
-      },
       "filesPropertyItemObjectResponse": {
         "title": "Files",
         "type": "object",
@@ -25971,24 +25879,6 @@
           "sort"
         ],
         "additionalProperties": false
-      },
-      "formulaDatabasePropertyConfigResponse": {
-        "title": "Formula",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `formula`",
-            "type": "string",
-            "const": "formula"
-          },
-          "formula": {
-            "$ref": "#/components/schemas/contentWithExpression"
-          }
-        },
-        "required": [
-          "type",
-          "formula"
-        ]
       },
       "formulaDateSubGroupByRequest": {
         "type": "object",
@@ -26886,24 +26776,6 @@
           "java/c/c++/c#"
         ]
       },
-      "lastEditedByDatabasePropertyConfigResponse": {
-        "title": "Last Edited By",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `last_edited_by`",
-            "type": "string",
-            "const": "last_edited_by"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/emptyObject"
-          }
-        },
-        "required": [
-          "type",
-          "last_edited_by"
-        ]
-      },
       "lastEditedByPropertyItemObjectResponse": {
         "title": "Last Edited By",
         "type": "object",
@@ -26928,24 +26800,6 @@
           "last_edited_by",
           "object",
           "id"
-        ]
-      },
-      "lastEditedTimeDatabasePropertyConfigResponse": {
-        "title": "Last Edited Time",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `last_edited_time`",
-            "type": "string",
-            "const": "last_edited_time"
-          },
-          "last_edited_time": {
-            "$ref": "#/components/schemas/emptyObject"
-          }
-        },
-        "required": [
-          "type",
-          "last_edited_time"
         ]
       },
       "lastEditedTimePropertyItemObjectResponse": {
@@ -27297,24 +27151,6 @@
           "mention"
         ]
       },
-      "multiSelectDatabasePropertyConfigResponse": {
-        "title": "Multi Select",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `multi_select`",
-            "type": "string",
-            "const": "multi_select"
-          },
-          "multi_select": {
-            "$ref": "#/components/schemas/MultiSelectDatabasePropertyConfigResponseMultiSelect"
-          }
-        },
-        "required": [
-          "type",
-          "multi_select"
-        ]
-      },
       "multiSelectPropertyConfigurationRequest": {
         "title": "Multi Select",
         "type": "object",
@@ -27445,24 +27281,6 @@
           "home",
           "star",
           "robot"
-        ]
-      },
-      "numberDatabasePropertyConfigResponse": {
-        "title": "Number",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `number`",
-            "type": "string",
-            "const": "number"
-          },
-          "number": {
-            "$ref": "#/components/schemas/NumberDatabasePropertyConfigResponseNumber"
-          }
-        },
-        "required": [
-          "type",
-          "number"
         ]
       },
       "numberFormat": {
@@ -28561,24 +28379,6 @@
         ],
         "additionalProperties": false
       },
-      "peopleDatabasePropertyConfigResponse": {
-        "title": "People",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `people`",
-            "type": "string",
-            "const": "people"
-          },
-          "people": {
-            "$ref": "#/components/schemas/emptyObject"
-          }
-        },
-        "required": [
-          "type",
-          "people"
-        ]
-      },
       "peoplePropertyFilter": {
         "anyOf": [
           {
@@ -28733,24 +28533,6 @@
         "required": [
           "type",
           "person"
-        ]
-      },
-      "phoneNumberDatabasePropertyConfigResponse": {
-        "title": "Phone Number",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `phone_number`",
-            "type": "string",
-            "const": "phone_number"
-          },
-          "phone_number": {
-            "$ref": "#/components/schemas/emptyObject"
-          }
-        },
-        "required": [
-          "type",
-          "phone_number"
         ]
       },
       "phoneNumberPropertyItemObjectResponse": {
@@ -28932,7 +28714,7 @@
         "type": "object",
         "properties": {
           "description": {
-            "$ref": "#/components/schemas/PropertyConfigurationCommonDescription"
+            "$ref": "#/components/schemas/PropertyConfigDescription"
           }
         }
       },
@@ -29222,24 +29004,6 @@
           "message"
         ]
       },
-      "relationDatabasePropertyConfigResponse": {
-        "title": "Relation",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `relation`",
-            "type": "string",
-            "const": "relation"
-          },
-          "relation": {
-            "$ref": "#/components/schemas/databasePropertyRelationConfigResponse"
-          }
-        },
-        "required": [
-          "type",
-          "relation"
-        ]
-      },
       "relationGroupByConfigRequest": {
         "type": "object",
         "properties": {
@@ -29408,24 +29172,6 @@
         ],
         "additionalProperties": false
       },
-      "richTextDatabasePropertyConfigResponse": {
-        "title": "Rich Text",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `rich_text`",
-            "type": "string",
-            "const": "rich_text"
-          },
-          "rich_text": {
-            "$ref": "#/components/schemas/emptyObject"
-          }
-        },
-        "required": [
-          "type",
-          "rich_text"
-        ]
-      },
       "richTextItemRequest": {
         "allOf": [
           {
@@ -29506,24 +29252,6 @@
           "rich_text",
           "object",
           "id"
-        ]
-      },
-      "rollupDatabasePropertyConfigResponse": {
-        "title": "Rollup",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `rollup`",
-            "type": "string",
-            "const": "rollup"
-          },
-          "rollup": {
-            "$ref": "#/components/schemas/RollupDatabasePropertyConfigResponseRollup"
-          }
-        },
-        "required": [
-          "type",
-          "rollup"
         ]
       },
       "rollupFunction": {
@@ -29784,24 +29512,6 @@
         ],
         "example": "gray"
       },
-      "selectDatabasePropertyConfigResponse": {
-        "title": "Select",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `select`",
-            "type": "string",
-            "const": "select"
-          },
-          "select": {
-            "$ref": "#/components/schemas/SelectDatabasePropertyConfigResponseSelect"
-          }
-        },
-        "required": [
-          "type",
-          "select"
-        ]
-      },
       "selectGroupByConfigRequest": {
         "type": "object",
         "properties": {
@@ -29995,24 +29705,6 @@
           "descending"
         ],
         "example": "ascending"
-      },
-      "statusDatabasePropertyConfigResponse": {
-        "title": "Status",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `status`",
-            "type": "string",
-            "const": "status"
-          },
-          "status": {
-            "$ref": "#/components/schemas/StatusDatabasePropertyConfigResponseStatus"
-          }
-        },
-        "required": [
-          "type",
-          "status"
-        ]
       },
       "statusGroupByConfigRequest": {
         "type": "object",
@@ -30991,24 +30683,6 @@
         ],
         "additionalProperties": false
       },
-      "titleDatabasePropertyConfigResponse": {
-        "title": "Title",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `title`",
-            "type": "string",
-            "const": "title"
-          },
-          "title": {
-            "$ref": "#/components/schemas/emptyObject"
-          }
-        },
-        "required": [
-          "type",
-          "title"
-        ]
-      },
       "titleObjectResponse": {
         "type": "object",
         "properties": {
@@ -31118,24 +30792,6 @@
             "format": "date-time"
           }
         }
-      },
-      "uniqueIdDatabasePropertyConfigResponse": {
-        "title": "Unique Id",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `unique_id`",
-            "type": "string",
-            "const": "unique_id"
-          },
-          "unique_id": {
-            "$ref": "#/components/schemas/UniqueIDDatabasePropertyConfigResponseUniqueID"
-          }
-        },
-        "required": [
-          "type",
-          "unique_id"
-        ]
       },
       "uniqueIdPropertyItemObjectResponse": {
         "title": "Unique Id",
@@ -31313,24 +30969,6 @@
             "$ref": "#/components/schemas/viewConfigRequest"
           }
         }
-      },
-      "urlDatabasePropertyConfigResponse": {
-        "title": "Url",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `url`",
-            "type": "string",
-            "const": "url"
-          },
-          "url": {
-            "$ref": "#/components/schemas/emptyObject"
-          }
-        },
-        "required": [
-          "type",
-          "url"
-        ]
       },
       "urlPropertyItemObjectResponse": {
         "title": "Url",

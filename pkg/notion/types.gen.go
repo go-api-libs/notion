@@ -4950,25 +4950,6 @@ func (v *Checkbox4) unmarshalJSONMember(dec *jsontext.Decoder, name string) (boo
 	return false, nil
 }
 
-// CheckboxDatabasePropertyConfigResponse defines a model
-type CheckboxDatabasePropertyConfigResponse struct {
-	// Always `checkbox`
-	Type     string      `json:"type"`
-	Checkbox EmptyObject `json:"checkbox"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether CheckboxDatabasePropertyConfigResponse declares it.
-func (v *CheckboxDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "checkbox":
-		return true, json.UnmarshalDecode(dec, &v.Checkbox, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // CheckboxGroupByConfigRequest defines a model
 type CheckboxGroupByConfigRequest struct {
 	// The property type for grouping.
@@ -7266,25 +7247,6 @@ func (v *CreatedBy2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bo
 	return false, nil
 }
 
-// CreatedByDatabasePropertyConfigResponse defines a model
-type CreatedByDatabasePropertyConfigResponse struct {
-	// Always `created_by`
-	Type      string      `json:"type"`
-	CreatedBy EmptyObject `json:"created_by"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether CreatedByDatabasePropertyConfigResponse declares it.
-func (v *CreatedByDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "created_by":
-		return true, json.UnmarshalDecode(dec, &v.CreatedBy, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // CreatedByPropertyItemObjectResponse defines a model
 type CreatedByPropertyItemObjectResponse struct {
 	Type      string                         `json:"type"`
@@ -7344,25 +7306,6 @@ func (v *CreatedTime2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (
 		return true, json.UnmarshalDecode(dec, &v.Property, jsonOpts)
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// CreatedTimeDatabasePropertyConfigResponse defines a model
-type CreatedTimeDatabasePropertyConfigResponse struct {
-	// Always `created_time`
-	Type        string      `json:"type"`
-	CreatedTime EmptyObject `json:"created_time"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether CreatedTimeDatabasePropertyConfigResponse declares it.
-func (v *CreatedTimeDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "created_time":
-		return true, json.UnmarshalDecode(dec, &v.CreatedTime, jsonOpts)
 	}
 
 	return false, nil
@@ -8317,25 +8260,6 @@ func (v *Date6) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, e
 	return false, nil
 }
 
-// DateDatabasePropertyConfigResponse defines a model
-type DateDatabasePropertyConfigResponse struct {
-	// Always `date`
-	Type string      `json:"type"`
-	Date EmptyObject `json:"date"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether DateDatabasePropertyConfigResponse declares it.
-func (v *DateDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "date":
-		return true, json.UnmarshalDecode(dec, &v.Date, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // DateFormulaPropertyResponse defines a model
 type DateFormulaPropertyResponse struct {
 	Type string       `json:"type"`
@@ -8997,25 +8921,6 @@ func (v *Email4) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, 
 		return true, json.UnmarshalDecode(dec, &v.Property, jsonOpts)
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// EmailDatabasePropertyConfigResponse defines a model
-type EmailDatabasePropertyConfigResponse struct {
-	// Always `email`
-	Type  string      `json:"type"`
-	Email EmptyObject `json:"email"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether EmailDatabasePropertyConfigResponse declares it.
-func (v *EmailDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "email":
-		return true, json.UnmarshalDecode(dec, &v.Email, jsonOpts)
 	}
 
 	return false, nil
@@ -10399,25 +10304,6 @@ func (v *Files4) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, 
 	return false, nil
 }
 
-// FilesDatabasePropertyConfigResponse defines a model
-type FilesDatabasePropertyConfigResponse struct {
-	// Always `files`
-	Type  string      `json:"type"`
-	Files EmptyObject `json:"files"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether FilesDatabasePropertyConfigResponse declares it.
-func (v *FilesDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "files":
-		return true, json.UnmarshalDecode(dec, &v.Files, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // FilesItem defines a model
 // FilesItem is an untagged anyOf union: at least one field is set after unmarshaling.
 type FilesItem struct {
@@ -10671,25 +10557,6 @@ func (v *FormulaCheckboxSubGroupByResponse) unmarshalJSONMember(dec *jsontext.De
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
 	case "sort":
 		return true, json.UnmarshalDecode(dec, &v.Sort, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// FormulaDatabasePropertyConfigResponse defines a model
-type FormulaDatabasePropertyConfigResponse struct {
-	// Always `formula`
-	Type    string                `json:"type"`
-	Formula ContentWithExpression `json:"formula"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether FormulaDatabasePropertyConfigResponse declares it.
-func (v *FormulaDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "formula":
-		return true, json.UnmarshalDecode(dec, &v.Formula, jsonOpts)
 	}
 
 	return false, nil
@@ -13219,25 +13086,6 @@ func (v *LastEditedBy2) unmarshalJSONMember(dec *jsontext.Decoder, name string) 
 	return false, nil
 }
 
-// LastEditedByDatabasePropertyConfigResponse defines a model
-type LastEditedByDatabasePropertyConfigResponse struct {
-	// Always `last_edited_by`
-	Type         string      `json:"type"`
-	LastEditedBy EmptyObject `json:"last_edited_by"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether LastEditedByDatabasePropertyConfigResponse declares it.
-func (v *LastEditedByDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "last_edited_by":
-		return true, json.UnmarshalDecode(dec, &v.LastEditedBy, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // LastEditedByPropertyItemObjectResponse defines a model
 type LastEditedByPropertyItemObjectResponse struct {
 	Type         string                         `json:"type"`
@@ -13297,25 +13145,6 @@ func (v *LastEditedTime2) unmarshalJSONMember(dec *jsontext.Decoder, name string
 		return true, json.UnmarshalDecode(dec, &v.Property, jsonOpts)
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// LastEditedTimeDatabasePropertyConfigResponse defines a model
-type LastEditedTimeDatabasePropertyConfigResponse struct {
-	// Always `last_edited_time`
-	Type           string      `json:"type"`
-	LastEditedTime EmptyObject `json:"last_edited_time"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether LastEditedTimeDatabasePropertyConfigResponse declares it.
-func (v *LastEditedTimeDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "last_edited_time":
-		return true, json.UnmarshalDecode(dec, &v.LastEditedTime, jsonOpts)
 	}
 
 	return false, nil
@@ -14559,30 +14388,6 @@ func (v *MultiSelect4) unmarshalJSONMember(dec *jsontext.Decoder, name string) (
 	return false, nil
 }
 
-// MultiSelectDatabasePropertyConfigResponse defines a model
-type MultiSelectDatabasePropertyConfigResponse struct {
-	// Always `multi_select`
-	Type        string                                               `json:"type"`
-	MultiSelect MultiSelectDatabasePropertyConfigResponseMultiSelect `json:"multi_select"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MultiSelectDatabasePropertyConfigResponse declares it.
-func (v *MultiSelectDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "multi_select":
-		return true, json.UnmarshalDecode(dec, &v.MultiSelect, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// MultiSelectDatabasePropertyConfigResponseMultiSelect defines a model
-type MultiSelectDatabasePropertyConfigResponseMultiSelect struct {
-	Options []SelectProperty `json:"options"`
-}
-
 // MultiSelectMultiSelectItem defines a model
 // MultiSelectMultiSelectItem is an untagged anyOf union: at least one field is set after unmarshaling.
 type MultiSelectMultiSelectItem struct {
@@ -14925,31 +14730,6 @@ func (v *Number4) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool,
 // Number5 defines a model
 type Number5 struct {
 	Format NumberFormat `json:"format,omitzero"`
-}
-
-// NumberDatabasePropertyConfigResponse defines a model
-type NumberDatabasePropertyConfigResponse struct {
-	// Always `number`
-	Type   string                                     `json:"type"`
-	Number NumberDatabasePropertyConfigResponseNumber `json:"number"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether NumberDatabasePropertyConfigResponse declares it.
-func (v *NumberDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "number":
-		return true, json.UnmarshalDecode(dec, &v.Number, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// NumberDatabasePropertyConfigResponseNumber defines a model
-type NumberDatabasePropertyConfigResponseNumber struct {
-	// The number format for the property.
-	Format NumberFormat `json:"format"`
 }
 
 // NumberFormat defines a model
@@ -17451,25 +17231,6 @@ func (v *People5) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool,
 	return false, nil
 }
 
-// PeopleDatabasePropertyConfigResponse defines a model
-type PeopleDatabasePropertyConfigResponse struct {
-	// Always `people`
-	Type   string      `json:"type"`
-	People EmptyObject `json:"people"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PeopleDatabasePropertyConfigResponse declares it.
-func (v *PeopleDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "people":
-		return true, json.UnmarshalDecode(dec, &v.People, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // PeopleItem defines a model
 // PeopleItem is an untagged anyOf union: at least one field is set after unmarshaling.
 type PeopleItem struct {
@@ -17918,25 +17679,6 @@ func (v *PhoneNumber4) unmarshalJSONMember(dec *jsontext.Decoder, name string) (
 		return true, json.UnmarshalDecode(dec, &v.Property, jsonOpts)
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// PhoneNumberDatabasePropertyConfigResponse defines a model
-type PhoneNumberDatabasePropertyConfigResponse struct {
-	// Always `phone_number`
-	Type        string      `json:"type"`
-	PhoneNumber EmptyObject `json:"phone_number"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PhoneNumberDatabasePropertyConfigResponse declares it.
-func (v *PhoneNumberDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "phone_number":
-		return true, json.UnmarshalDecode(dec, &v.PhoneNumber, jsonOpts)
 	}
 
 	return false, nil
@@ -18734,958 +18476,121 @@ type PropertyConfig struct {
 	// The name of the property.
 	Name string `json:"name"`
 	// The description of the property.
-	Description          PropertyDescriptionRequest `json:"description"`
-	PropertyConfigAllOf1 PropertyConfigAllOf1       `json:"-"`
+	Description    PropertyDescriptionRequest             `json:"description"`
+	Type           PropertyConfigType                     `json:"type"`
+	Number         PropertyConfigNumber                   `json:"number,omitzero"`
+	Formula        ContentWithExpression                  `json:"formula,omitzero"`
+	Select         PropertyConfigSelect                   `json:"select,omitzero"`
+	MultiSelect    PropertyConfigMultiSelect              `json:"multi_select,omitzero"`
+	Status         PropertyConfigStatus                   `json:"status,omitzero"`
+	Relation       DatabasePropertyRelationConfigResponse `json:"relation,omitzero"`
+	Rollup         PropertyConfigRollup                   `json:"rollup,omitzero"`
+	UniqueID       PropertyConfigUniqueID                 `json:"unique_id,omitzero"`
+	Title          *EmptyObject                           `json:"title,omitzero"`
+	RichText       *EmptyObject                           `json:"rich_text,omitzero"`
+	URL            *EmptyObject                           `json:"url,omitzero"`
+	People         *EmptyObject                           `json:"people,omitzero"`
+	Files          *EmptyObject                           `json:"files,omitzero"`
+	Email          *EmptyObject                           `json:"email,omitzero"`
+	PhoneNumber    *EmptyObject                           `json:"phone_number,omitzero"`
+	Date           *EmptyObject                           `json:"date,omitzero"`
+	Checkbox       *EmptyObject                           `json:"checkbox,omitzero"`
+	CreatedBy      *EmptyObject                           `json:"created_by,omitzero"`
+	CreatedTime    *EmptyObject                           `json:"created_time,omitzero"`
+	LastEditedBy   *EmptyObject                           `json:"last_edited_by,omitzero"`
+	LastEditedTime *EmptyObject                           `json:"last_edited_time,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PropertyConfig declares it.
-func (v *PropertyConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "id":
-		return true, json.UnmarshalDecode(dec, &v.ID, jsonOpts)
-	case "name":
-		return true, json.UnmarshalDecode(dec, &v.Name, jsonOpts)
-	case "description":
-		return true, json.UnmarshalDecode(dec, &v.Description, jsonOpts)
-	}
-
-	return false, nil
+// PropertyConfigMultiSelect defines a model
+type PropertyConfigMultiSelect struct {
+	Options []SelectProperty `json:"options"`
 }
 
-// fieldsOfPropertyConfig is PropertyConfig without its methods, to encode the fields outside its union.
-type fieldsOfPropertyConfig PropertyConfig
-
-// membersOfPropertyConfig are the members PropertyConfig declares outside its union.
-var membersOfPropertyConfig = map[string]bool{"description": true, "id": true, "name": true}
-
-// variantsOfPropertyConfig are the alternatives its union is decoded as, in order.
-var variantsOfPropertyConfig = []jsonVariant{
-	{
-		value:    "number",
-		members:  map[string]bool{"number": true, "type": true},
-		required: []string{"number", "type"},
-	},
-	{
-		value:    "formula",
-		members:  map[string]bool{"formula": true, "type": true},
-		required: []string{"formula", "type"},
-	},
-	{
-		value:    "select",
-		members:  map[string]bool{"select": true, "type": true},
-		required: []string{"select", "type"},
-	},
-	{
-		value:    "multi_select",
-		members:  map[string]bool{"multi_select": true, "type": true},
-		required: []string{"multi_select", "type"},
-	},
-	{
-		value:    "status",
-		members:  map[string]bool{"status": true, "type": true},
-		required: []string{"status", "type"},
-	},
-	{
-		value:    "relation",
-		members:  map[string]bool{"relation": true, "type": true},
-		required: []string{"relation", "type"},
-	},
-	{
-		value:    "rollup",
-		members:  map[string]bool{"rollup": true, "type": true},
-		required: []string{"rollup", "type"},
-	},
-	{
-		value:    "unique_id",
-		members:  map[string]bool{"type": true, "unique_id": true},
-		required: []string{"type", "unique_id"},
-	},
-	{
-		value:    "title",
-		members:  map[string]bool{"title": true, "type": true},
-		required: []string{"title", "type"},
-	},
-	{
-		value:    "rich_text",
-		members:  map[string]bool{"rich_text": true, "type": true},
-		required: []string{"rich_text", "type"},
-	},
-	{
-		value:    "url",
-		members:  map[string]bool{"type": true, "url": true},
-		required: []string{"type", "url"},
-	},
-	{
-		value:    "people",
-		members:  map[string]bool{"people": true, "type": true},
-		required: []string{"people", "type"},
-	},
-	{
-		value:    "files",
-		members:  map[string]bool{"files": true, "type": true},
-		required: []string{"files", "type"},
-	},
-	{
-		value:    "email",
-		members:  map[string]bool{"email": true, "type": true},
-		required: []string{"email", "type"},
-	},
-	{
-		value:    "phone_number",
-		members:  map[string]bool{"phone_number": true, "type": true},
-		required: []string{"phone_number", "type"},
-	},
-	{
-		value:    "date",
-		members:  map[string]bool{"date": true, "type": true},
-		required: []string{"date", "type"},
-	},
-	{
-		value:    "checkbox",
-		members:  map[string]bool{"checkbox": true, "type": true},
-		required: []string{"checkbox", "type"},
-	},
-	{
-		value:    "created_by",
-		members:  map[string]bool{"created_by": true, "type": true},
-		required: []string{"created_by", "type"},
-	},
-	{
-		value:    "created_time",
-		members:  map[string]bool{"created_time": true, "type": true},
-		required: []string{"created_time", "type"},
-	},
-	{
-		value:    "last_edited_by",
-		members:  map[string]bool{"last_edited_by": true, "type": true},
-		required: []string{"last_edited_by", "type"},
-	},
-	{
-		value:    "last_edited_time",
-		members:  map[string]bool{"last_edited_time": true, "type": true},
-		required: []string{"last_edited_time", "type"},
-	},
+// PropertyConfigNumber defines a model
+type PropertyConfigNumber struct {
+	// The number format for the property.
+	Format NumberFormat `json:"format"`
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its first member must be type, which names the
-// alternative of PropertyConfigAllOf1; each further member then decodes as it is read, into the fields or the alternative
-// that declares it, and a member neither declares is an error.
-func (v *PropertyConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
+// PropertyConfigRollup defines a model
+type PropertyConfigRollup struct {
+	// The function to use for the rollup, e.g. count, count_values, percent_not_empty, max.
+	Function             RollupFunction `json:"function"`
+	RollupPropertyName   string         `json:"rollup_property_name"`
+	RelationPropertyName string         `json:"relation_property_name"`
+	RollupPropertyID     string         `json:"rollup_property_id"`
+	RelationPropertyID   string         `json:"relation_property_id"`
+}
 
-	switch tag {
-	case "number":
-		var vv NumberDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[0].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
+// PropertyConfigSelect defines a model
+type PropertyConfigSelect struct {
+	Options []SelectProperty `json:"options"`
+}
 
-		v.PropertyConfigAllOf1.NumberDatabasePropertyConfigResponse = &vv
-	case "formula":
-		var vv FormulaDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[1].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
+// PropertyConfigStatus defines a model
+type PropertyConfigStatus struct {
+	// The options for the status property.
+	Options []SelectProperty `json:"options"`
+	// The groups for the status property.
+	Groups PropertyConfigStatusGroups `json:"groups"`
+}
 
-		v.PropertyConfigAllOf1.FormulaDatabasePropertyConfigResponse = &vv
-	case "select":
-		var vv SelectDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[2].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
+// The groups for the status property.
+type PropertyConfigStatusGroups []PropertyConfigStatusGroupsItem
 
-		v.PropertyConfigAllOf1.SelectDatabasePropertyConfigResponse = &vv
-	case "multi_select":
-		var vv MultiSelectDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[3].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
+// PropertyConfigStatusGroupsItem defines a model
+type PropertyConfigStatusGroupsItem struct {
+	// The ID of the status group.
+	ID string `json:"id"`
+	// The name of the status group.
+	Name string `json:"name"`
+	// The color of the status group.
+	Color SelectColor `json:"color"`
+	// The IDs of the status options in this group.
+	OptionIds []string `json:"option_ids"`
+}
 
-		v.PropertyConfigAllOf1.MultiSelectDatabasePropertyConfigResponse = &vv
-	case "status":
-		var vv StatusDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[4].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
+// PropertyConfigType defines a model
+type PropertyConfigType string
 
-		v.PropertyConfigAllOf1.StatusDatabasePropertyConfigResponse = &vv
-	case "relation":
-		var vv RelationDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[5].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
+const (
+	PropertyConfigTypeNumber         PropertyConfigType = "number"
+	PropertyConfigTypeFormula        PropertyConfigType = "formula"
+	PropertyConfigTypeSelect         PropertyConfigType = "select"
+	PropertyConfigTypeMultiSelect    PropertyConfigType = "multi_select"
+	PropertyConfigTypeStatus         PropertyConfigType = "status"
+	PropertyConfigTypeRelation       PropertyConfigType = "relation"
+	PropertyConfigTypeRollup         PropertyConfigType = "rollup"
+	PropertyConfigTypeUniqueID       PropertyConfigType = "unique_id"
+	PropertyConfigTypeTitle          PropertyConfigType = "title"
+	PropertyConfigTypeRichText       PropertyConfigType = "rich_text"
+	PropertyConfigTypeURL            PropertyConfigType = "url"
+	PropertyConfigTypePeople         PropertyConfigType = "people"
+	PropertyConfigTypeFiles          PropertyConfigType = "files"
+	PropertyConfigTypeEmail          PropertyConfigType = "email"
+	PropertyConfigTypePhoneNumber    PropertyConfigType = "phone_number"
+	PropertyConfigTypeDate           PropertyConfigType = "date"
+	PropertyConfigTypeCheckbox       PropertyConfigType = "checkbox"
+	PropertyConfigTypeCreatedBy      PropertyConfigType = "created_by"
+	PropertyConfigTypeCreatedTime    PropertyConfigType = "created_time"
+	PropertyConfigTypeLastEditedBy   PropertyConfigType = "last_edited_by"
+	PropertyConfigTypeLastEditedTime PropertyConfigType = "last_edited_time"
+)
 
-		v.PropertyConfigAllOf1.RelationDatabasePropertyConfigResponse = &vv
-	case "rollup":
-		var vv RollupDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[6].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyConfigAllOf1.RollupDatabasePropertyConfigResponse = &vv
-	case "unique_id":
-		var vv UniqueIDDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[7].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyConfigAllOf1.UniqueIDDatabasePropertyConfigResponse = &vv
-	case "title":
-		var vv TitleDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[8].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyConfigAllOf1.TitleDatabasePropertyConfigResponse = &vv
-	case "rich_text":
-		var vv RichTextDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[9].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyConfigAllOf1.RichTextDatabasePropertyConfigResponse = &vv
-	case "url":
-		var vv URLDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[10].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyConfigAllOf1.URLDatabasePropertyConfigResponse = &vv
-	case "people":
-		var vv PeopleDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[11].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyConfigAllOf1.PeopleDatabasePropertyConfigResponse = &vv
-	case "files":
-		var vv FilesDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[12].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyConfigAllOf1.FilesDatabasePropertyConfigResponse = &vv
-	case "email":
-		var vv EmailDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[13].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyConfigAllOf1.EmailDatabasePropertyConfigResponse = &vv
-	case "phone_number":
-		var vv PhoneNumberDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[14].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyConfigAllOf1.PhoneNumberDatabasePropertyConfigResponse = &vv
-	case "date":
-		var vv DateDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[15].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyConfigAllOf1.DateDatabasePropertyConfigResponse = &vv
-	case "checkbox":
-		var vv CheckboxDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[16].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyConfigAllOf1.CheckboxDatabasePropertyConfigResponse = &vv
-	case "created_by":
-		var vv CreatedByDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[17].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyConfigAllOf1.CreatedByDatabasePropertyConfigResponse = &vv
-	case "created_time":
-		var vv CreatedTimeDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[18].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyConfigAllOf1.CreatedTimeDatabasePropertyConfigResponse = &vv
-	case "last_edited_by":
-		var vv LastEditedByDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[19].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyConfigAllOf1.LastEditedByDatabasePropertyConfigResponse = &vv
-	case "last_edited_time":
-		var vv LastEditedTimeDatabasePropertyConfigResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyConfig, v.unmarshalJSONMember},
-			{variantsOfPropertyConfig[20].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyConfigAllOf1.LastEditedTimeDatabasePropertyConfigResponse = &vv
+// Valid indicates whether the value is a known member of the PropertyConfigType enum.
+func (e PropertyConfigType) Valid() bool {
+	switch e {
+	case PropertyConfigTypeNumber, PropertyConfigTypeFormula, PropertyConfigTypeSelect, PropertyConfigTypeMultiSelect, PropertyConfigTypeStatus, PropertyConfigTypeRelation, PropertyConfigTypeRollup, PropertyConfigTypeUniqueID, PropertyConfigTypeTitle, PropertyConfigTypeRichText, PropertyConfigTypeURL, PropertyConfigTypePeople, PropertyConfigTypeFiles, PropertyConfigTypeEmail, PropertyConfigTypePhoneNumber, PropertyConfigTypeDate, PropertyConfigTypeCheckbox, PropertyConfigTypeCreatedBy, PropertyConfigTypeCreatedTime, PropertyConfigTypeLastEditedBy, PropertyConfigTypeLastEditedTime:
+		return true
 	default:
-		return jsonUnknownValue("type", tag)
+		return false
 	}
-
-	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of PropertyConfigAllOf1 that is set;
-// a member both write must have the same value in each.
-func (v *PropertyConfig) MarshalJSONTo(enc *jsontext.Encoder) error {
-	out, err := json.Marshal((*fieldsOfPropertyConfig)(v), jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	var set int
-
-	var tag string
-
-	if v.PropertyConfigAllOf1.NumberDatabasePropertyConfigResponse != nil {
-		tag = "number"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.NumberDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.FormulaDatabasePropertyConfigResponse != nil {
-		tag = "formula"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.FormulaDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.SelectDatabasePropertyConfigResponse != nil {
-		tag = "select"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.SelectDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.MultiSelectDatabasePropertyConfigResponse != nil {
-		tag = "multi_select"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.MultiSelectDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.StatusDatabasePropertyConfigResponse != nil {
-		tag = "status"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.StatusDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.RelationDatabasePropertyConfigResponse != nil {
-		tag = "relation"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.RelationDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.RollupDatabasePropertyConfigResponse != nil {
-		tag = "rollup"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.RollupDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.UniqueIDDatabasePropertyConfigResponse != nil {
-		tag = "unique_id"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.UniqueIDDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.TitleDatabasePropertyConfigResponse != nil {
-		tag = "title"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.TitleDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.RichTextDatabasePropertyConfigResponse != nil {
-		tag = "rich_text"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.RichTextDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.URLDatabasePropertyConfigResponse != nil {
-		tag = "url"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.URLDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.PeopleDatabasePropertyConfigResponse != nil {
-		tag = "people"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.PeopleDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.FilesDatabasePropertyConfigResponse != nil {
-		tag = "files"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.FilesDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.EmailDatabasePropertyConfigResponse != nil {
-		tag = "email"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.EmailDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.PhoneNumberDatabasePropertyConfigResponse != nil {
-		tag = "phone_number"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.PhoneNumberDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.DateDatabasePropertyConfigResponse != nil {
-		tag = "date"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.DateDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.CheckboxDatabasePropertyConfigResponse != nil {
-		tag = "checkbox"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.CheckboxDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.CreatedByDatabasePropertyConfigResponse != nil {
-		tag = "created_by"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.CreatedByDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.CreatedTimeDatabasePropertyConfigResponse != nil {
-		tag = "created_time"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.CreatedTimeDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.LastEditedByDatabasePropertyConfigResponse != nil {
-		tag = "last_edited_by"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.LastEditedByDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyConfigAllOf1.LastEditedTimeDatabasePropertyConfigResponse != nil {
-		tag = "last_edited_time"
-
-		variant, err := json.Marshal(v.PropertyConfigAllOf1.LastEditedTimeDatabasePropertyConfigResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if set != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of PropertyConfigAllOf1 set, got %d", set)}
-	}
-
-	// decoding wants type first
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
-// PropertyConfigAllOf1 defines a model
-// PropertyConfigAllOf1 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type PropertyConfigAllOf1 struct {
-	NumberDatabasePropertyConfigResponse         *NumberDatabasePropertyConfigResponse
-	FormulaDatabasePropertyConfigResponse        *FormulaDatabasePropertyConfigResponse
-	SelectDatabasePropertyConfigResponse         *SelectDatabasePropertyConfigResponse
-	MultiSelectDatabasePropertyConfigResponse    *MultiSelectDatabasePropertyConfigResponse
-	StatusDatabasePropertyConfigResponse         *StatusDatabasePropertyConfigResponse
-	RelationDatabasePropertyConfigResponse       *RelationDatabasePropertyConfigResponse
-	RollupDatabasePropertyConfigResponse         *RollupDatabasePropertyConfigResponse
-	UniqueIDDatabasePropertyConfigResponse       *UniqueIDDatabasePropertyConfigResponse
-	TitleDatabasePropertyConfigResponse          *TitleDatabasePropertyConfigResponse
-	RichTextDatabasePropertyConfigResponse       *RichTextDatabasePropertyConfigResponse
-	URLDatabasePropertyConfigResponse            *URLDatabasePropertyConfigResponse
-	PeopleDatabasePropertyConfigResponse         *PeopleDatabasePropertyConfigResponse
-	FilesDatabasePropertyConfigResponse          *FilesDatabasePropertyConfigResponse
-	EmailDatabasePropertyConfigResponse          *EmailDatabasePropertyConfigResponse
-	PhoneNumberDatabasePropertyConfigResponse    *PhoneNumberDatabasePropertyConfigResponse
-	DateDatabasePropertyConfigResponse           *DateDatabasePropertyConfigResponse
-	CheckboxDatabasePropertyConfigResponse       *CheckboxDatabasePropertyConfigResponse
-	CreatedByDatabasePropertyConfigResponse      *CreatedByDatabasePropertyConfigResponse
-	CreatedTimeDatabasePropertyConfigResponse    *CreatedTimeDatabasePropertyConfigResponse
-	LastEditedByDatabasePropertyConfigResponse   *LastEditedByDatabasePropertyConfigResponse
-	LastEditedTimeDatabasePropertyConfigResponse *LastEditedTimeDatabasePropertyConfigResponse
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its first member must be type, which names the
-// alternative; the alternative then decodes each further member as it is read.
-func (v *PropertyConfigAllOf1) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "number":
-		var vv NumberDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.NumberDatabasePropertyConfigResponse = &vv
-	case "formula":
-		var vv FormulaDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.FormulaDatabasePropertyConfigResponse = &vv
-	case "select":
-		var vv SelectDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SelectDatabasePropertyConfigResponse = &vv
-	case "multi_select":
-		var vv MultiSelectDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.MultiSelectDatabasePropertyConfigResponse = &vv
-	case "status":
-		var vv StatusDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.StatusDatabasePropertyConfigResponse = &vv
-	case "relation":
-		var vv RelationDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.RelationDatabasePropertyConfigResponse = &vv
-	case "rollup":
-		var vv RollupDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.RollupDatabasePropertyConfigResponse = &vv
-	case "unique_id":
-		var vv UniqueIDDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.UniqueIDDatabasePropertyConfigResponse = &vv
-	case "title":
-		var vv TitleDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.TitleDatabasePropertyConfigResponse = &vv
-	case "rich_text":
-		var vv RichTextDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.RichTextDatabasePropertyConfigResponse = &vv
-	case "url":
-		var vv URLDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.URLDatabasePropertyConfigResponse = &vv
-	case "people":
-		var vv PeopleDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.PeopleDatabasePropertyConfigResponse = &vv
-	case "files":
-		var vv FilesDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.FilesDatabasePropertyConfigResponse = &vv
-	case "email":
-		var vv EmailDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.EmailDatabasePropertyConfigResponse = &vv
-	case "phone_number":
-		var vv PhoneNumberDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.PhoneNumberDatabasePropertyConfigResponse = &vv
-	case "date":
-		var vv DateDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.DateDatabasePropertyConfigResponse = &vv
-	case "checkbox":
-		var vv CheckboxDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.CheckboxDatabasePropertyConfigResponse = &vv
-	case "created_by":
-		var vv CreatedByDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.CreatedByDatabasePropertyConfigResponse = &vv
-	case "created_time":
-		var vv CreatedTimeDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.CreatedTimeDatabasePropertyConfigResponse = &vv
-	case "last_edited_by":
-		var vv LastEditedByDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.LastEditedByDatabasePropertyConfigResponse = &vv
-	case "last_edited_time":
-		var vv LastEditedTimeDatabasePropertyConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.LastEditedTimeDatabasePropertyConfigResponse = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *PropertyConfigAllOf1) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.NumberDatabasePropertyConfigResponse != nil:
-		variant, tag = v.NumberDatabasePropertyConfigResponse, "number"
-	case v.FormulaDatabasePropertyConfigResponse != nil:
-		variant, tag = v.FormulaDatabasePropertyConfigResponse, "formula"
-	case v.SelectDatabasePropertyConfigResponse != nil:
-		variant, tag = v.SelectDatabasePropertyConfigResponse, "select"
-	case v.MultiSelectDatabasePropertyConfigResponse != nil:
-		variant, tag = v.MultiSelectDatabasePropertyConfigResponse, "multi_select"
-	case v.StatusDatabasePropertyConfigResponse != nil:
-		variant, tag = v.StatusDatabasePropertyConfigResponse, "status"
-	case v.RelationDatabasePropertyConfigResponse != nil:
-		variant, tag = v.RelationDatabasePropertyConfigResponse, "relation"
-	case v.RollupDatabasePropertyConfigResponse != nil:
-		variant, tag = v.RollupDatabasePropertyConfigResponse, "rollup"
-	case v.UniqueIDDatabasePropertyConfigResponse != nil:
-		variant, tag = v.UniqueIDDatabasePropertyConfigResponse, "unique_id"
-	case v.TitleDatabasePropertyConfigResponse != nil:
-		variant, tag = v.TitleDatabasePropertyConfigResponse, "title"
-	case v.RichTextDatabasePropertyConfigResponse != nil:
-		variant, tag = v.RichTextDatabasePropertyConfigResponse, "rich_text"
-	case v.URLDatabasePropertyConfigResponse != nil:
-		variant, tag = v.URLDatabasePropertyConfigResponse, "url"
-	case v.PeopleDatabasePropertyConfigResponse != nil:
-		variant, tag = v.PeopleDatabasePropertyConfigResponse, "people"
-	case v.FilesDatabasePropertyConfigResponse != nil:
-		variant, tag = v.FilesDatabasePropertyConfigResponse, "files"
-	case v.EmailDatabasePropertyConfigResponse != nil:
-		variant, tag = v.EmailDatabasePropertyConfigResponse, "email"
-	case v.PhoneNumberDatabasePropertyConfigResponse != nil:
-		variant, tag = v.PhoneNumberDatabasePropertyConfigResponse, "phone_number"
-	case v.DateDatabasePropertyConfigResponse != nil:
-		variant, tag = v.DateDatabasePropertyConfigResponse, "date"
-	case v.CheckboxDatabasePropertyConfigResponse != nil:
-		variant, tag = v.CheckboxDatabasePropertyConfigResponse, "checkbox"
-	case v.CreatedByDatabasePropertyConfigResponse != nil:
-		variant, tag = v.CreatedByDatabasePropertyConfigResponse, "created_by"
-	case v.CreatedTimeDatabasePropertyConfigResponse != nil:
-		variant, tag = v.CreatedTimeDatabasePropertyConfigResponse, "created_time"
-	case v.LastEditedByDatabasePropertyConfigResponse != nil:
-		variant, tag = v.LastEditedByDatabasePropertyConfigResponse, "last_edited_by"
-	case v.LastEditedTimeDatabasePropertyConfigResponse != nil:
-		variant, tag = v.LastEditedTimeDatabasePropertyConfigResponse, "last_edited_time"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
+// PropertyConfigUniqueID defines a model
+type PropertyConfigUniqueID struct {
+	// The prefix for the unique ID.
+	Prefix string `json:"prefix"`
 }
 
 // PropertyConfigurationRequest defines a model
@@ -25583,25 +24488,6 @@ func (v *RelationAllOf2) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// RelationDatabasePropertyConfigResponse defines a model
-type RelationDatabasePropertyConfigResponse struct {
-	// Always `relation`
-	Type     string                                 `json:"type"`
-	Relation DatabasePropertyRelationConfigResponse `json:"relation"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RelationDatabasePropertyConfigResponse declares it.
-func (v *RelationDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "relation":
-		return true, json.UnmarshalDecode(dec, &v.Relation, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // RelationGroupByConfigRequest defines a model
 type RelationGroupByConfigRequest struct {
 	// The property type for grouping.
@@ -27383,25 +26269,6 @@ func (v *RichTextAllOf1) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// RichTextDatabasePropertyConfigResponse defines a model
-type RichTextDatabasePropertyConfigResponse struct {
-	// Always `rich_text`
-	Type     string      `json:"type"`
-	RichText EmptyObject `json:"rich_text"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RichTextDatabasePropertyConfigResponse declares it.
-func (v *RichTextDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "rich_text":
-		return true, json.UnmarshalDecode(dec, &v.RichText, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // RichTextItemRequest defines a model
 type RichTextItemRequest struct {
 	// All rich text objects contain an annotations object that sets the styling for the rich text.
@@ -28091,35 +26958,6 @@ type RollupAllOfOneOf4 struct {
 	RollupPropertyID   string `json:"rollup_property_id"`
 }
 
-// RollupDatabasePropertyConfigResponse defines a model
-type RollupDatabasePropertyConfigResponse struct {
-	// Always `rollup`
-	Type   string                                     `json:"type"`
-	Rollup RollupDatabasePropertyConfigResponseRollup `json:"rollup"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RollupDatabasePropertyConfigResponse declares it.
-func (v *RollupDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "rollup":
-		return true, json.UnmarshalDecode(dec, &v.Rollup, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// RollupDatabasePropertyConfigResponseRollup defines a model
-type RollupDatabasePropertyConfigResponseRollup struct {
-	// The function to use for the rollup, e.g. count, count_values, percent_not_empty, max.
-	Function             RollupFunction `json:"function"`
-	RollupPropertyName   string         `json:"rollup_property_name"`
-	RelationPropertyName string         `json:"relation_property_name"`
-	RollupPropertyID     string         `json:"rollup_property_id"`
-	RelationPropertyID   string         `json:"relation_property_id"`
-}
-
 // RollupFunction defines a model
 type RollupFunction string
 
@@ -28623,30 +27461,6 @@ func (e SelectColor) Valid() bool {
 	default:
 		return false
 	}
-}
-
-// SelectDatabasePropertyConfigResponse defines a model
-type SelectDatabasePropertyConfigResponse struct {
-	// Always `select`
-	Type   string                                     `json:"type"`
-	Select SelectDatabasePropertyConfigResponseSelect `json:"select"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether SelectDatabasePropertyConfigResponse declares it.
-func (v *SelectDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "select":
-		return true, json.UnmarshalDecode(dec, &v.Select, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// SelectDatabasePropertyConfigResponseSelect defines a model
-type SelectDatabasePropertyConfigResponseSelect struct {
-	Options []SelectProperty `json:"options"`
 }
 
 // SelectGroupByConfigRequest defines a model
@@ -29190,48 +28004,6 @@ func (v *Status5) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool,
 	}
 
 	return false, nil
-}
-
-// StatusDatabasePropertyConfigResponse defines a model
-type StatusDatabasePropertyConfigResponse struct {
-	// Always `status`
-	Type   string                                     `json:"type"`
-	Status StatusDatabasePropertyConfigResponseStatus `json:"status"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether StatusDatabasePropertyConfigResponse declares it.
-func (v *StatusDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "status":
-		return true, json.UnmarshalDecode(dec, &v.Status, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// StatusDatabasePropertyConfigResponseStatus defines a model
-type StatusDatabasePropertyConfigResponseStatus struct {
-	// The options for the status property.
-	Options []SelectProperty `json:"options"`
-	// The groups for the status property.
-	Groups StatusDatabasePropertyConfigResponseStatusGroups `json:"groups"`
-}
-
-// The groups for the status property.
-type StatusDatabasePropertyConfigResponseStatusGroups []StatusDatabasePropertyConfigResponseStatusGroupsItem
-
-// StatusDatabasePropertyConfigResponseStatusGroupsItem defines a model
-type StatusDatabasePropertyConfigResponseStatusGroupsItem struct {
-	// The ID of the status group.
-	ID string `json:"id"`
-	// The name of the status group.
-	Name string `json:"name"`
-	// The color of the status group.
-	Color SelectColor `json:"color"`
-	// The IDs of the status options in this group.
-	OptionIds []string `json:"option_ids"`
 }
 
 // How to group status values. "group" groups by status group (To Do/In Progress/Done), "option" groups by individual option.
@@ -31160,25 +29932,6 @@ func (v *Title5) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, 
 	return false, nil
 }
 
-// TitleDatabasePropertyConfigResponse defines a model
-type TitleDatabasePropertyConfigResponse struct {
-	// Always `title`
-	Type  string      `json:"type"`
-	Title EmptyObject `json:"title"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether TitleDatabasePropertyConfigResponse declares it.
-func (v *TitleDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "title":
-		return true, json.UnmarshalDecode(dec, &v.Title, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // TitleObjectResponse defines a model
 type TitleObjectResponse struct {
 	Title string `json:"title"`
@@ -31497,25 +30250,6 @@ func (v *URL4) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, er
 	return false, nil
 }
 
-// URLDatabasePropertyConfigResponse defines a model
-type URLDatabasePropertyConfigResponse struct {
-	// Always `url`
-	Type string      `json:"type"`
-	URL  EmptyObject `json:"url"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether URLDatabasePropertyConfigResponse declares it.
-func (v *URLDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "url":
-		return true, json.UnmarshalDecode(dec, &v.URL, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // URLPropertyItemObjectResponse defines a model
 type URLPropertyItemObjectResponse struct {
 	Type   string `json:"type"`
@@ -31578,31 +30312,6 @@ func (v *UniqueID2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (boo
 	}
 
 	return false, nil
-}
-
-// UniqueIDDatabasePropertyConfigResponse defines a model
-type UniqueIDDatabasePropertyConfigResponse struct {
-	// Always `unique_id`
-	Type     string                                         `json:"type"`
-	UniqueID UniqueIDDatabasePropertyConfigResponseUniqueID `json:"unique_id"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether UniqueIDDatabasePropertyConfigResponse declares it.
-func (v *UniqueIDDatabasePropertyConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "unique_id":
-		return true, json.UnmarshalDecode(dec, &v.UniqueID, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// UniqueIDDatabasePropertyConfigResponseUniqueID defines a model
-type UniqueIDDatabasePropertyConfigResponseUniqueID struct {
-	// The prefix for the unique ID.
-	Prefix string `json:"prefix"`
 }
 
 // UniqueIDPropertyItemObjectResponse defines a model
