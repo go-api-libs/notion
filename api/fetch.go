@@ -164,9 +164,7 @@ func consolidateErrors(doc *openapi.Document, prefixes []string, name, common, c
 
 	for _, n := range names {
 		if err := collectError(doc.Components.Schemas[n], common, codes, statuses); err != nil {
-			return &errpath.ErrField{Field: "components", Err: &errpath.ErrField{
-				Field: "schemas", Err: &errpath.ErrKey{Key: n, Err: err},
-			}}
+			return componentErr(n, err)
 		}
 	}
 
@@ -492,6 +490,11 @@ func removeUnreferenced(doc *openapi.Document, names []string) error {
 	return nil
 }
 
+// propertyErr reports err as one of the property prop of the component schema name.
+func propertyErr(name, prop string, err error) error {
+	return componentErr(name, &errpath.ErrField{Field: "properties", Err: &errpath.ErrKey{Key: prop, Err: err}})
+}
+
 // componentErr reports err as one of the component schema name.
 func componentErr(name string, err error) error {
 	return &errpath.ErrField{Field: "components", Err: &errpath.ErrField{
@@ -505,15 +508,11 @@ func addRequestID(doc *openapi.Document, names ...string) error {
 	for _, n := range names {
 		s, ok := doc.Components.Schemas[n]
 		if !ok {
-			return &errpath.ErrField{Field: "components", Err: &errpath.ErrField{
-				Field: "schemas", Err: &errpath.ErrKey{Key: n, Err: errors.New("not found")},
-			}}
+			return componentErr(n, errors.New("not found"))
 		}
 
 		if _, ok := s.Properties["request_id"]; ok {
-			return &errpath.ErrField{Field: "components", Err: &errpath.ErrField{
-				Field: "schemas", Err: &errpath.ErrKey{Key: n, Err: errors.New("already has request_id")},
-			}}
+			return propertyErr(n, "request_id", errors.New("already there"))
 		}
 
 		s.Properties.Set("request_id", &openapi.Schema{Type: openapi.TypeString, Format: openapi.FormatUUID})
@@ -528,19 +527,13 @@ func addRequestID(doc *openapi.Document, names ...string) error {
 func allowDateTimes(doc *openapi.Document, name string, props ...string) error {
 	s, ok := doc.Components.Schemas[name]
 	if !ok {
-		return &errpath.ErrField{Field: "components", Err: &errpath.ErrField{
-			Field: "schemas", Err: &errpath.ErrKey{Key: name, Err: errors.New("not found")},
-		}}
+		return componentErr(name, errors.New("not found"))
 	}
 
 	for _, prop := range props {
 		p, ok := s.Properties[prop]
 		if !ok {
-			return &errpath.ErrField{Field: "components", Err: &errpath.ErrField{
-				Field: "schemas", Err: &errpath.ErrKey{Key: name, Err: &errpath.ErrField{
-					Field: "properties", Err: &errpath.ErrKey{Key: prop, Err: errors.New("not found")},
-				}},
-			}}
+			return propertyErr(name, prop, errors.New("not found"))
 		}
 
 		dates := 0
@@ -553,11 +546,7 @@ func allowDateTimes(doc *openapi.Document, name string, props ...string) error {
 		}
 
 		if dates == 0 {
-			return &errpath.ErrField{Field: "components", Err: &errpath.ErrField{
-				Field: "schemas", Err: &errpath.ErrKey{Key: name, Err: &errpath.ErrField{
-					Field: "properties", Err: &errpath.ErrKey{Key: prop, Err: errors.New("is not a date")},
-				}},
-			}}
+			return propertyErr(name, prop, errors.New("is not a date"))
 		}
 	}
 
