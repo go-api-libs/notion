@@ -2051,96 +2051,11 @@ func (v *Array) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, e
 	return false, nil
 }
 
-// ArrayBasedPropertyValueResponse defines a model
-// ArrayBasedPropertyValueResponse is an untagged oneOf union: exactly one field is set after unmarshaling.
-type ArrayBasedPropertyValueResponse struct {
-	TitleArrayBasedPropertyValueResponse    *TitleArrayBasedPropertyValueResponse
-	RichTextArrayBasedPropertyValueResponse *RichTextArrayBasedPropertyValueResponse
-	PeopleArrayBasedPropertyValueResponse   *PeopleArrayBasedPropertyValueResponse
-	RelationArrayBasedPropertyValueResponse *RelationArrayBasedPropertyValueResponse
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its first member must be type, which names the
-// alternative; the alternative then decodes each further member as it is read.
-func (v *ArrayBasedPropertyValueResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "title":
-		var vv TitleArrayBasedPropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.TitleArrayBasedPropertyValueResponse = &vv
-	case "rich_text":
-		var vv RichTextArrayBasedPropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.RichTextArrayBasedPropertyValueResponse = &vv
-	case "people":
-		var vv PeopleArrayBasedPropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.PeopleArrayBasedPropertyValueResponse = &vv
-	case "relation":
-		var vv RelationArrayBasedPropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.RelationArrayBasedPropertyValueResponse = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *ArrayBasedPropertyValueResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.TitleArrayBasedPropertyValueResponse != nil:
-		variant, tag = v.TitleArrayBasedPropertyValueResponse, "title"
-	case v.RichTextArrayBasedPropertyValueResponse != nil:
-		variant, tag = v.RichTextArrayBasedPropertyValueResponse, "rich_text"
-	case v.PeopleArrayBasedPropertyValueResponse != nil:
-		variant, tag = v.PeopleArrayBasedPropertyValueResponse, "people"
-	case v.RelationArrayBasedPropertyValueResponse != nil:
-		variant, tag = v.RelationArrayBasedPropertyValueResponse, "relation"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
 // ArrayPartialRollupValueResponse defines a model
 type ArrayPartialRollupValueResponse struct {
 	// Always `array`
-	Type  string                               `json:"type"`
-	Array []SimpleOrArrayPropertyValueResponse `json:"array"`
+	Type  string          `json:"type"`
+	Array []PropertyValue `json:"array"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether ArrayPartialRollupValueResponse declares it.
@@ -4214,25 +4129,6 @@ func (v *ButtonPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Dec
 	return false, nil
 }
 
-// ButtonSimplePropertyValueResponse defines a model
-type ButtonSimplePropertyValueResponse struct {
-	// Always `button`
-	Type   string      `json:"type"`
-	Button EmptyObject `json:"button"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether ButtonSimplePropertyValueResponse declares it.
-func (v *ButtonSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "button":
-		return true, json.UnmarshalDecode(dec, &v.Button, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // CalendarViewConfigRequest defines a model
 type CalendarViewConfigRequest struct {
 	// The view type. Must be "calendar".
@@ -5179,25 +5075,6 @@ func (v *CheckboxPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.D
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOpts)
 	case "id":
 		return true, json.UnmarshalDecode(dec, &v.ID, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// CheckboxSimplePropertyValueResponse defines a model
-type CheckboxSimplePropertyValueResponse struct {
-	// Always `checkbox`
-	Type     string `json:"type"`
-	Checkbox bool   `json:"checkbox"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether CheckboxSimplePropertyValueResponse declares it.
-func (v *CheckboxSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "checkbox":
-		return true, json.UnmarshalDecode(dec, &v.Checkbox, jsonOpts)
 	}
 
 	return false, nil
@@ -7432,25 +7309,6 @@ func (v *CreatedByPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.
 	return false, nil
 }
 
-// CreatedBySimplePropertyValueResponse defines a model
-type CreatedBySimplePropertyValueResponse struct {
-	// Always `created_by`
-	Type      string            `json:"type"`
-	CreatedBy UserValueResponse `json:"created_by"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether CreatedBySimplePropertyValueResponse declares it.
-func (v *CreatedBySimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "created_by":
-		return true, json.UnmarshalDecode(dec, &v.CreatedBy, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // CreatedTime defines a model
 type CreatedTime struct {
 	// Always `created_time`
@@ -7529,25 +7387,6 @@ func (v *CreatedTimePropertyItemObjectResponse) unmarshalJSONMember(dec *jsontex
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOpts)
 	case "id":
 		return true, json.UnmarshalDecode(dec, &v.ID, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// CreatedTimeSimplePropertyValueResponse defines a model
-type CreatedTimeSimplePropertyValueResponse struct {
-	// Always `created_time`
-	Type        string    `json:"type"`
-	CreatedTime time.Time `json:"created_time"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether CreatedTimeSimplePropertyValueResponse declares it.
-func (v *CreatedTimeSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "created_time":
-		return true, json.UnmarshalDecode(dec, &v.CreatedTime, jsonOpts)
 	}
 
 	return false, nil
@@ -8515,6 +8354,25 @@ func (v *DateFormulaPropertyResponse) unmarshalJSONMember(dec *jsontext.Decoder,
 	return false, nil
 }
 
+// DateFormulaPropertyValueResponse defines a model
+type DateFormulaPropertyValueResponse struct {
+	// Always `date`
+	Type string       `json:"type"`
+	Date DateResponse `json:"date"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether DateFormulaPropertyValueResponse declares it.
+func (v *DateFormulaPropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
+	case "date":
+		return true, json.UnmarshalDecode(dec, &v.Date, jsonOpts)
+	}
+
+	return false, nil
+}
+
 // Granularity for date grouping.
 type DateGroupByConfigGroupBy string
 
@@ -8975,25 +8833,6 @@ type DateResponse struct {
 	TimeZone TimeZoneRequest `json:"time_zone"`
 }
 
-// DateSimplePropertyValue defines a model
-type DateSimplePropertyValue struct {
-	// Always `date`
-	Type string       `json:"type"`
-	Date DateResponse `json:"date"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether DateSimplePropertyValue declares it.
-func (v *DateSimplePropertyValue) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "date":
-		return true, json.UnmarshalDecode(dec, &v.Date, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // DeleteAgentOk defines a model
 type DeleteAgentOk struct {
 	AgentID IDResponse `json:"agent_id"`
@@ -9201,25 +9040,6 @@ func (v *EmailPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Deco
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOpts)
 	case "id":
 		return true, json.UnmarshalDecode(dec, &v.ID, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// EmailSimplePropertyValueResponse defines a model
-type EmailSimplePropertyValueResponse struct {
-	// Always `email`
-	Type  string `json:"type"`
-	Email string `json:"email"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether EmailSimplePropertyValueResponse declares it.
-func (v *EmailSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "email":
-		return true, json.UnmarshalDecode(dec, &v.Email, jsonOpts)
 	}
 
 	return false, nil
@@ -10348,8 +10168,8 @@ type FileUploadObjectResponseNumberOfParts struct {
 // FileUploadPageIcon defines a model
 type FileUploadPageIcon struct {
 	// Always `file_upload`
-	Type       string   `json:"type,omitzero"`
-	FileUpload IDObject `json:"file_upload"`
+	Type       string                       `json:"type,omitzero"`
+	FileUpload FileUploadPageIconFileUpload `json:"file_upload"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether FileUploadPageIcon declares it.
@@ -10362,6 +10182,12 @@ func (v *FileUploadPageIcon) unmarshalJSONMember(dec *jsontext.Decoder, name str
 	}
 
 	return false, nil
+}
+
+// FileUploadPageIconFileUpload defines a model
+type FileUploadPageIconFileUpload struct {
+	// ID of a FileUpload object that has the status `uploaded`.
+	ID string `json:"id"`
 }
 
 // FileUploadUploadFailedWebhookPayload defines a model
@@ -10683,25 +10509,6 @@ func (v *FilesPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Deco
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOpts)
 	case "id":
 		return true, json.UnmarshalDecode(dec, &v.ID, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// FilesSimplePropertyValueResponse defines a model
-type FilesSimplePropertyValueResponse struct {
-	// Always `files`
-	Type  string                                   `json:"type"`
-	Files []InternalOrExternalFileWithNameResponse `json:"files"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether FilesSimplePropertyValueResponse declares it.
-func (v *FilesSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "files":
-		return true, json.UnmarshalDecode(dec, &v.Files, jsonOpts)
 	}
 
 	return false, nil
@@ -11325,7 +11132,7 @@ func (v *FormulaPropertyResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 // FormulaPropertyValueResponse is an untagged oneOf union: exactly one field is set after unmarshaling.
 type FormulaPropertyValueResponse struct {
 	BooleanFormulaPropertyValueResponse     *BooleanFormulaPropertyValueResponse
-	DateSimplePropertyValue                 *DateSimplePropertyValue
+	DateFormulaPropertyValueResponse        *DateFormulaPropertyValueResponse
 	NumberFormulaPropertyValueResponse      *NumberFormulaPropertyValueResponse
 	StringFormulaPropertyValueResponse      *StringFormulaPropertyValueResponse
 	UnsupportedFormulaPropertyValueResponse *UnsupportedFormulaPropertyValueResponse
@@ -11348,12 +11155,12 @@ func (v *FormulaPropertyValueResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) 
 
 		v.BooleanFormulaPropertyValueResponse = &vv
 	case "date":
-		var vv DateSimplePropertyValue
+		var vv DateFormulaPropertyValueResponse
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.DateSimplePropertyValue = &vv
+		v.DateFormulaPropertyValueResponse = &vv
 	case "number":
 		var vv NumberFormulaPropertyValueResponse
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
@@ -11392,8 +11199,8 @@ func (v *FormulaPropertyValueResponse) MarshalJSONTo(enc *jsontext.Encoder) erro
 	switch {
 	case v.BooleanFormulaPropertyValueResponse != nil:
 		variant, tag = v.BooleanFormulaPropertyValueResponse, "boolean"
-	case v.DateSimplePropertyValue != nil:
-		variant, tag = v.DateSimplePropertyValue, "date"
+	case v.DateFormulaPropertyValueResponse != nil:
+		variant, tag = v.DateFormulaPropertyValueResponse, "date"
 	case v.NumberFormulaPropertyValueResponse != nil:
 		variant, tag = v.NumberFormulaPropertyValueResponse, "number"
 	case v.StringFormulaPropertyValueResponse != nil:
@@ -11414,25 +11221,6 @@ func (v *FormulaPropertyValueResponse) MarshalJSONTo(enc *jsontext.Encoder) erro
 	}
 
 	return enc.WriteValue(out)
-}
-
-// FormulaSimplePropertyValueResponse defines a model
-type FormulaSimplePropertyValueResponse struct {
-	// Always `formula`
-	Type    string                       `json:"type"`
-	Formula FormulaPropertyValueResponse `json:"formula"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether FormulaSimplePropertyValueResponse declares it.
-func (v *FormulaSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "formula":
-		return true, json.UnmarshalDecode(dec, &v.Formula, jsonOpts)
-	}
-
-	return false, nil
 }
 
 // Sub-group-by configuration for formula properties based on result type.
@@ -12771,21 +12559,6 @@ func (v *Heading44) unmarshalJSONMember(dec *jsontext.Decoder, name string) (boo
 	return false, nil
 }
 
-// IDObject defines a model
-type IDObject struct {
-	ID string `json:"id"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether IDObject declares it.
-func (v *IDObject) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "id":
-		return true, json.UnmarshalDecode(dec, &v.ID, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // IDRequest defines a model
 type IDRequest string
 
@@ -13489,25 +13262,6 @@ func (v *LastEditedByPropertyItemObjectResponse) unmarshalJSONMember(dec *jsonte
 	return false, nil
 }
 
-// LastEditedBySimplePropertyValueResponse defines a model
-type LastEditedBySimplePropertyValueResponse struct {
-	// Always `last_edited_by`
-	Type         string            `json:"type"`
-	LastEditedBy UserValueResponse `json:"last_edited_by"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether LastEditedBySimplePropertyValueResponse declares it.
-func (v *LastEditedBySimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "last_edited_by":
-		return true, json.UnmarshalDecode(dec, &v.LastEditedBy, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // LastEditedTime defines a model
 type LastEditedTime struct {
 	// Always `last_edited_time`
@@ -13586,25 +13340,6 @@ func (v *LastEditedTimePropertyItemObjectResponse) unmarshalJSONMember(dec *json
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOpts)
 	case "id":
 		return true, json.UnmarshalDecode(dec, &v.ID, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// LastEditedTimeSimplePropertyValueResponse defines a model
-type LastEditedTimeSimplePropertyValueResponse struct {
-	// Always `last_edited_time`
-	Type           string    `json:"type"`
-	LastEditedTime time.Time `json:"last_edited_time"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether LastEditedTimeSimplePropertyValueResponse declares it.
-func (v *LastEditedTimeSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "last_edited_time":
-		return true, json.UnmarshalDecode(dec, &v.LastEditedTime, jsonOpts)
 	}
 
 	return false, nil
@@ -15054,25 +14789,6 @@ func (v *MultiSelectPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// MultiSelectSimplePropertyValueResponse defines a model
-type MultiSelectSimplePropertyValueResponse struct {
-	// Always `multi_select`
-	Type        string                               `json:"type"`
-	MultiSelect []PartialSelectPropertyValueResponse `json:"multi_select"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MultiSelectSimplePropertyValueResponse declares it.
-func (v *MultiSelectSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "multi_select":
-		return true, json.UnmarshalDecode(dec, &v.MultiSelect, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // NoticonColor defines a model
 type NoticonColor string
 
@@ -15528,25 +15244,6 @@ func (v *NumberPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Dec
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOpts)
 	case "id":
 		return true, json.UnmarshalDecode(dec, &v.ID, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// NumberSimplePropertyValueResponse defines a model
-type NumberSimplePropertyValueResponse struct {
-	// Always `number`
-	Type   string   `json:"type"`
-	Number *float64 `json:"number"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether NumberSimplePropertyValueResponse declares it.
-func (v *NumberSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "number":
-		return true, json.UnmarshalDecode(dec, &v.Number, jsonOpts)
 	}
 
 	return false, nil
@@ -17229,25 +16926,6 @@ type PartialPageObjectResponse struct {
 	ID IDResponse `json:"id"`
 }
 
-// PartialRollupPropertyResponse defines a model
-type PartialRollupPropertyResponse struct {
-	// Always `rollup`
-	Type   string                     `json:"type"`
-	Rollup PartialRollupValueResponse `json:"rollup"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PartialRollupPropertyResponse declares it.
-func (v *PartialRollupPropertyResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "rollup":
-		return true, json.UnmarshalDecode(dec, &v.Rollup, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // PartialRollupValueResponse defines a model
 type PartialRollupValueResponse struct {
 	// The function used for the rollup, e.g. count, count_values, percent_not_empty, max.
@@ -17773,76 +17451,6 @@ func (v *People5) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool,
 	return false, nil
 }
 
-// PeopleArrayBasedPropertyValueResponse defines a model
-type PeopleArrayBasedPropertyValueResponse struct {
-	// Always `people`
-	Type   string                                            `json:"type"`
-	People []PeopleArrayBasedPropertyValueResponsePeopleItem `json:"people"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PeopleArrayBasedPropertyValueResponse declares it.
-func (v *PeopleArrayBasedPropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "people":
-		return true, json.UnmarshalDecode(dec, &v.People, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// PeopleArrayBasedPropertyValueResponsePeopleItem defines a model
-// PeopleArrayBasedPropertyValueResponsePeopleItem is an untagged oneOf union: exactly one field is set after unmarshaling.
-type PeopleArrayBasedPropertyValueResponsePeopleItem struct {
-	UserValueResponse   *UserValueResponse
-	GroupObjectResponse *GroupObjectResponse
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *PeopleArrayBasedPropertyValueResponsePeopleItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv UserValueResponse
-		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
-			v.UserValueResponse = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv GroupObjectResponse
-		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
-			v.GroupObjectResponse = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *PeopleArrayBasedPropertyValueResponsePeopleItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.UserValueResponse != nil:
-		return json.MarshalEncode(enc, v.UserValueResponse, jsonOpts)
-	case v.GroupObjectResponse != nil:
-		return json.MarshalEncode(enc, v.GroupObjectResponse, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
 // PeopleDatabasePropertyConfigResponse defines a model
 type PeopleDatabasePropertyConfigResponse struct {
 	// Always `people`
@@ -18358,25 +17966,6 @@ func (v *PhoneNumberPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// PhoneNumberSimplePropertyValueResponse defines a model
-type PhoneNumberSimplePropertyValueResponse struct {
-	// Always `phone_number`
-	Type        string `json:"type"`
-	PhoneNumber string `json:"phone_number"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PhoneNumberSimplePropertyValueResponse declares it.
-func (v *PhoneNumberSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "phone_number":
-		return true, json.UnmarshalDecode(dec, &v.PhoneNumber, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // Place defines a model
 type Place struct {
 	Place Place3 `json:"place"`
@@ -18456,25 +18045,6 @@ type PlacePropertyValueResponse struct {
 	Address       string  `json:"address,omitzero"`
 	AwsPlaceID    string  `json:"aws_place_id,omitzero"`
 	GooglePlaceID string  `json:"google_place_id,omitzero"`
-}
-
-// PlaceSimplePropertyValueResponse defines a model
-type PlaceSimplePropertyValueResponse struct {
-	// Always `place`
-	Type  string                     `json:"type"`
-	Place PlacePropertyValueResponse `json:"place"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PlaceSimplePropertyValueResponse declares it.
-func (v *PlaceSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "place":
-		return true, json.UnmarshalDecode(dec, &v.Place, jsonOpts)
-	}
-
-	return false, nil
 }
 
 // PostDatabaseQuery defines a model
@@ -21994,680 +21564,124 @@ type PropertySortResponse struct {
 
 // PropertyValue defines a model
 type PropertyValue struct {
-	IDObject
-	PropertyValueAllOf1 PropertyValueAllOf1 `json:"-"`
+	ID             string                                   `json:"id,omitzero"`
+	Type           PropertyValueType                        `json:"type"`
+	Number         *float64                                 `json:"number,omitzero"`
+	URL            string                                   `json:"url,omitzero"`
+	Select         PartialSelectPropertyValueResponse       `json:"select,omitzero"`
+	MultiSelect    []PartialSelectPropertyValueResponse     `json:"multi_select,omitzero"`
+	Status         PartialSelectPropertyValueResponse       `json:"status,omitzero"`
+	Date           DateResponse                             `json:"date,omitzero"`
+	Email          string                                   `json:"email,omitzero"`
+	PhoneNumber    string                                   `json:"phone_number,omitzero"`
+	Checkbox       *bool                                    `json:"checkbox,omitzero"`
+	Files          []InternalOrExternalFileWithNameResponse `json:"files,omitzero"`
+	CreatedBy      UserValueResponse                        `json:"created_by,omitzero"`
+	CreatedTime    time.Time                                `json:"created_time,omitzero"`
+	LastEditedBy   UserValueResponse                        `json:"last_edited_by,omitzero"`
+	LastEditedTime time.Time                                `json:"last_edited_time,omitzero"`
+	Formula        FormulaPropertyValueResponse             `json:"formula,omitzero"`
+	Button         *EmptyObject                             `json:"button,omitzero"`
+	UniqueID       UniqueIDPropertyValueResponse            `json:"unique_id,omitzero"`
+	Verification   VerificationPropertyValueResponse        `json:"verification,omitzero"`
+	Place          PlacePropertyValueResponse               `json:"place,omitzero"`
+	Title          RichTexts                                `json:"title,omitzero"`
+	RichText       RichTexts                                `json:"rich_text,omitzero"`
+	People         []PropertyValuePeopleItem                `json:"people,omitzero"`
+	Relation       []RelationItemPropertyValue              `json:"relation,omitzero"`
+	Rollup         PartialRollupValueResponse               `json:"rollup,omitzero"`
+	HasMore        *bool                                    `json:"has_more,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PropertyValue declares it.
-func (v *PropertyValue) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	}
-
-	if ok, err := v.IDObject.unmarshalJSONMember(dec, name); ok || err != nil {
-		return ok, err
-	}
-
-	return false, nil
+// PropertyValuePeopleItem defines a model
+// PropertyValuePeopleItem is an untagged oneOf union: exactly one field is set after unmarshaling.
+type PropertyValuePeopleItem struct {
+	UserValueResponse   *UserValueResponse
+	GroupObjectResponse *GroupObjectResponse
 }
 
-// fieldsOfPropertyValue is PropertyValue without its methods, to encode the fields outside its union.
-type fieldsOfPropertyValue PropertyValue
-
-// membersOfPropertyValue are the members PropertyValue declares outside its union.
-var membersOfPropertyValue = map[string]bool{"id": true}
-
-// variantsOfPropertyValue are the alternatives its union is decoded as, in order.
-var variantsOfPropertyValue = []jsonVariant{
-	{
-		value:    "number",
-		members:  map[string]bool{"number": true, "type": true},
-		required: []string{"number", "type"},
-	},
-	{
-		value:    "url",
-		members:  map[string]bool{"type": true, "url": true},
-		required: []string{"type", "url"},
-	},
-	{
-		value:    "select",
-		members:  map[string]bool{"select": true, "type": true},
-		required: []string{"select", "type"},
-	},
-	{
-		value:    "multi_select",
-		members:  map[string]bool{"multi_select": true, "type": true},
-		required: []string{"multi_select", "type"},
-	},
-	{
-		value:    "status",
-		members:  map[string]bool{"status": true, "type": true},
-		required: []string{"status", "type"},
-	},
-	{
-		value:    "date",
-		members:  map[string]bool{"date": true, "type": true},
-		required: []string{"date", "type"},
-	},
-	{
-		value:    "email",
-		members:  map[string]bool{"email": true, "type": true},
-		required: []string{"email", "type"},
-	},
-	{
-		value:    "phone_number",
-		members:  map[string]bool{"phone_number": true, "type": true},
-		required: []string{"phone_number", "type"},
-	},
-	{
-		value:    "checkbox",
-		members:  map[string]bool{"checkbox": true, "type": true},
-		required: []string{"checkbox", "type"},
-	},
-	{
-		value:    "files",
-		members:  map[string]bool{"files": true, "type": true},
-		required: []string{"files", "type"},
-	},
-	{
-		value:    "created_by",
-		members:  map[string]bool{"created_by": true, "type": true},
-		required: []string{"created_by", "type"},
-	},
-	{
-		value:    "created_time",
-		members:  map[string]bool{"created_time": true, "type": true},
-		required: []string{"created_time", "type"},
-	},
-	{
-		value:    "last_edited_by",
-		members:  map[string]bool{"last_edited_by": true, "type": true},
-		required: []string{"last_edited_by", "type"},
-	},
-	{
-		value:    "last_edited_time",
-		members:  map[string]bool{"last_edited_time": true, "type": true},
-		required: []string{"last_edited_time", "type"},
-	},
-	{
-		value:    "formula",
-		members:  map[string]bool{"formula": true, "type": true},
-		required: []string{"formula", "type"},
-	},
-	{
-		value:    "button",
-		members:  map[string]bool{"button": true, "type": true},
-		required: []string{"button", "type"},
-	},
-	{
-		value:    "unique_id",
-		members:  map[string]bool{"type": true, "unique_id": true},
-		required: []string{"type", "unique_id"},
-	},
-	{
-		value:    "verification",
-		members:  map[string]bool{"type": true, "verification": true},
-		required: []string{"type", "verification"},
-	},
-	{
-		value:    "place",
-		members:  map[string]bool{"place": true, "type": true},
-		required: []string{"place", "type"},
-	},
-	{
-		value:    "title",
-		members:  map[string]bool{"title": true, "type": true},
-		required: []string{"title", "type"},
-	},
-	{
-		value:    "rich_text",
-		members:  map[string]bool{"rich_text": true, "type": true},
-		required: []string{"rich_text", "type"},
-	},
-	{
-		value:    "people",
-		members:  map[string]bool{"people": true, "type": true},
-		required: []string{"people", "type"},
-	},
-	{
-		value:    "relation",
-		members:  map[string]bool{"has_more": true, "relation": true, "type": true},
-		required: []string{"relation", "type"},
-	},
-	{
-		value:    "rollup",
-		members:  map[string]bool{"rollup": true, "type": true},
-		required: []string{"rollup", "type"},
-	},
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its first member must be type, which names the
-// alternative of PropertyValueAllOf1; each further member then decodes as it is read, into the fields or the alternative
-// that declares it, and a member neither declares is an error.
-func (v *PropertyValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, err := jsonFirstMember(dec, "type")
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *PropertyValuePeopleItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	raw, err := dec.ReadValue()
 	if err != nil {
 		return err
 	}
 
-	switch tag {
-	case "number":
-		var vv NumberSimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[0].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
+	var matched int
 
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{NumberSimplePropertyValueResponse: &vv}}
-	case "url":
-		var vv URLSimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[1].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
+	{
+		var vv UserValueResponse
+		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
+			v.UserValueResponse = &vv
+			matched++
 		}
+	}
 
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{URLSimplePropertyValueResponse: &vv}}
-	case "select":
-		var vv SelectSimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[2].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
+	{
+		var vv GroupObjectResponse
+		if err := json.Unmarshal(raw, &vv, jsonOpts); err == nil {
+			v.GroupObjectResponse = &vv
+			matched++
 		}
+	}
 
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{SelectSimplePropertyValueResponse: &vv}}
-	case "multi_select":
-		var vv MultiSelectSimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[3].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{MultiSelectSimplePropertyValueResponse: &vv}}
-	case "status":
-		var vv StatusSimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[4].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{StatusSimplePropertyValueResponse: &vv}}
-	case "date":
-		var vv DateSimplePropertyValue
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[5].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{DateSimplePropertyValue: &vv}}
-	case "email":
-		var vv EmailSimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[6].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{EmailSimplePropertyValueResponse: &vv}}
-	case "phone_number":
-		var vv PhoneNumberSimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[7].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{PhoneNumberSimplePropertyValueResponse: &vv}}
-	case "checkbox":
-		var vv CheckboxSimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[8].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{CheckboxSimplePropertyValueResponse: &vv}}
-	case "files":
-		var vv FilesSimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[9].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{FilesSimplePropertyValueResponse: &vv}}
-	case "created_by":
-		var vv CreatedBySimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[10].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{CreatedBySimplePropertyValueResponse: &vv}}
-	case "created_time":
-		var vv CreatedTimeSimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[11].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{CreatedTimeSimplePropertyValueResponse: &vv}}
-	case "last_edited_by":
-		var vv LastEditedBySimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[12].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{LastEditedBySimplePropertyValueResponse: &vv}}
-	case "last_edited_time":
-		var vv LastEditedTimeSimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[13].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{LastEditedTimeSimplePropertyValueResponse: &vv}}
-	case "formula":
-		var vv FormulaSimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[14].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{FormulaSimplePropertyValueResponse: &vv}}
-	case "button":
-		var vv ButtonSimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[15].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{ButtonSimplePropertyValueResponse: &vv}}
-	case "unique_id":
-		var vv UniqueIDSimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[16].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{UniqueIDSimplePropertyValueResponse: &vv}}
-	case "verification":
-		var vv VerificationSimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[17].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{VerificationSimplePropertyValueResponse: &vv}}
-	case "place":
-		var vv PlaceSimplePropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[18].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{PlaceSimplePropertyValueResponse: &vv}}
-	case "title":
-		var vv TitleArrayBasedPropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[19].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{ArrayBasedPropertyValueResponse: &ArrayBasedPropertyValueResponse{TitleArrayBasedPropertyValueResponse: &vv}}
-	case "rich_text":
-		var vv RichTextArrayBasedPropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[20].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{ArrayBasedPropertyValueResponse: &ArrayBasedPropertyValueResponse{RichTextArrayBasedPropertyValueResponse: &vv}}
-	case "people":
-		var vv PeopleArrayBasedPropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[21].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{ArrayBasedPropertyValueResponse: &ArrayBasedPropertyValueResponse{PeopleArrayBasedPropertyValueResponse: &vv}}
-	case "relation":
-		var vv RelationArrayBasedPropertyValueResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[22].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{ArrayBasedPropertyValueResponse: &ArrayBasedPropertyValueResponse{RelationArrayBasedPropertyValueResponse: &vv}}
-	case "rollup":
-		var vv PartialRollupPropertyResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfPropertyValue, v.unmarshalJSONMember},
-			{variantsOfPropertyValue[23].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.PropertyValueAllOf1.PartialRollupPropertyResponse = &vv
-	default:
-		return jsonUnknownValue("type", tag)
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of PropertyValueAllOf1 that is set;
-// a member both write must have the same value in each.
-func (v *PropertyValue) MarshalJSONTo(enc *jsontext.Encoder) error {
-	out, err := json.Marshal((*fieldsOfPropertyValue)(v), jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	var set int
-
-	var tag string
-
-	if v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse != nil {
-		tag = ""
-
-		variant, err := json.Marshal(v.PropertyValueAllOf1.SimpleOrArrayPropertyValueResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.PropertyValueAllOf1.PartialRollupPropertyResponse != nil {
-		tag = ""
-
-		variant, err := json.Marshal(v.PropertyValueAllOf1.PartialRollupPropertyResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if set != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of PropertyValueAllOf1 set, got %d", set)}
-	}
-
-	// decoding wants type first
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
-// PropertyValueAllOf1 defines a model
-// PropertyValueAllOf1 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type PropertyValueAllOf1 struct {
-	SimpleOrArrayPropertyValueResponse *SimpleOrArrayPropertyValueResponse
-	PartialRollupPropertyResponse      *PartialRollupPropertyResponse
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its first member must be type, which names the
-// alternative; the alternative then decodes each further member as it is read.
-func (v *PropertyValueAllOf1) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "number":
-		var vv NumberSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{NumberSimplePropertyValueResponse: &vv}}
-	case "url":
-		var vv URLSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{URLSimplePropertyValueResponse: &vv}}
-	case "select":
-		var vv SelectSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{SelectSimplePropertyValueResponse: &vv}}
-	case "multi_select":
-		var vv MultiSelectSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{MultiSelectSimplePropertyValueResponse: &vv}}
-	case "status":
-		var vv StatusSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{StatusSimplePropertyValueResponse: &vv}}
-	case "date":
-		var vv DateSimplePropertyValue
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{DateSimplePropertyValue: &vv}}
-	case "email":
-		var vv EmailSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{EmailSimplePropertyValueResponse: &vv}}
-	case "phone_number":
-		var vv PhoneNumberSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{PhoneNumberSimplePropertyValueResponse: &vv}}
-	case "checkbox":
-		var vv CheckboxSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{CheckboxSimplePropertyValueResponse: &vv}}
-	case "files":
-		var vv FilesSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{FilesSimplePropertyValueResponse: &vv}}
-	case "created_by":
-		var vv CreatedBySimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{CreatedBySimplePropertyValueResponse: &vv}}
-	case "created_time":
-		var vv CreatedTimeSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{CreatedTimeSimplePropertyValueResponse: &vv}}
-	case "last_edited_by":
-		var vv LastEditedBySimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{LastEditedBySimplePropertyValueResponse: &vv}}
-	case "last_edited_time":
-		var vv LastEditedTimeSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{LastEditedTimeSimplePropertyValueResponse: &vv}}
-	case "formula":
-		var vv FormulaSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{FormulaSimplePropertyValueResponse: &vv}}
-	case "button":
-		var vv ButtonSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{ButtonSimplePropertyValueResponse: &vv}}
-	case "unique_id":
-		var vv UniqueIDSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{UniqueIDSimplePropertyValueResponse: &vv}}
-	case "verification":
-		var vv VerificationSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{VerificationSimplePropertyValueResponse: &vv}}
-	case "place":
-		var vv PlaceSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{SimplePropertyValueResponse: &SimplePropertyValueResponse{PlaceSimplePropertyValueResponse: &vv}}
-	case "title":
-		var vv TitleArrayBasedPropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{ArrayBasedPropertyValueResponse: &ArrayBasedPropertyValueResponse{TitleArrayBasedPropertyValueResponse: &vv}}
-	case "rich_text":
-		var vv RichTextArrayBasedPropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{ArrayBasedPropertyValueResponse: &ArrayBasedPropertyValueResponse{RichTextArrayBasedPropertyValueResponse: &vv}}
-	case "people":
-		var vv PeopleArrayBasedPropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{ArrayBasedPropertyValueResponse: &ArrayBasedPropertyValueResponse{PeopleArrayBasedPropertyValueResponse: &vv}}
-	case "relation":
-		var vv RelationArrayBasedPropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimpleOrArrayPropertyValueResponse = &SimpleOrArrayPropertyValueResponse{ArrayBasedPropertyValueResponse: &ArrayBasedPropertyValueResponse{RelationArrayBasedPropertyValueResponse: &vv}}
-	case "rollup":
-		var vv PartialRollupPropertyResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.PartialRollupPropertyResponse = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *PropertyValueAllOf1) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *PropertyValuePeopleItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.SimpleOrArrayPropertyValueResponse != nil:
-		variant, tag = v.SimpleOrArrayPropertyValueResponse, ""
-	case v.PartialRollupPropertyResponse != nil:
-		variant, tag = v.PartialRollupPropertyResponse, ""
+	case v.UserValueResponse != nil:
+		return json.MarshalEncode(enc, v.UserValueResponse, jsonOpts)
+	case v.GroupObjectResponse != nil:
+		return json.MarshalEncode(enc, v.GroupObjectResponse, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// PropertyValueType defines a model
+type PropertyValueType string
+
+const (
+	PropertyValueTypeNumber         PropertyValueType = "number"
+	PropertyValueTypeURL            PropertyValueType = "url"
+	PropertyValueTypeSelect         PropertyValueType = "select"
+	PropertyValueTypeMultiSelect    PropertyValueType = "multi_select"
+	PropertyValueTypeStatus         PropertyValueType = "status"
+	PropertyValueTypeDate           PropertyValueType = "date"
+	PropertyValueTypeEmail          PropertyValueType = "email"
+	PropertyValueTypePhoneNumber    PropertyValueType = "phone_number"
+	PropertyValueTypeCheckbox       PropertyValueType = "checkbox"
+	PropertyValueTypeFiles          PropertyValueType = "files"
+	PropertyValueTypeCreatedBy      PropertyValueType = "created_by"
+	PropertyValueTypeCreatedTime    PropertyValueType = "created_time"
+	PropertyValueTypeLastEditedBy   PropertyValueType = "last_edited_by"
+	PropertyValueTypeLastEditedTime PropertyValueType = "last_edited_time"
+	PropertyValueTypeFormula        PropertyValueType = "formula"
+	PropertyValueTypeButton         PropertyValueType = "button"
+	PropertyValueTypeUniqueID       PropertyValueType = "unique_id"
+	PropertyValueTypeVerification   PropertyValueType = "verification"
+	PropertyValueTypePlace          PropertyValueType = "place"
+	PropertyValueTypeTitle          PropertyValueType = "title"
+	PropertyValueTypeRichText       PropertyValueType = "rich_text"
+	PropertyValueTypePeople         PropertyValueType = "people"
+	PropertyValueTypeRelation       PropertyValueType = "relation"
+	PropertyValueTypeRollup         PropertyValueType = "rollup"
+)
+
+// Valid indicates whether the value is a known member of the PropertyValueType enum.
+func (e PropertyValueType) Valid() bool {
+	switch e {
+	case PropertyValueTypeNumber, PropertyValueTypeURL, PropertyValueTypeSelect, PropertyValueTypeMultiSelect, PropertyValueTypeStatus, PropertyValueTypeDate, PropertyValueTypeEmail, PropertyValueTypePhoneNumber, PropertyValueTypeCheckbox, PropertyValueTypeFiles, PropertyValueTypeCreatedBy, PropertyValueTypeCreatedTime, PropertyValueTypeLastEditedBy, PropertyValueTypeLastEditedTime, PropertyValueTypeFormula, PropertyValueTypeButton, PropertyValueTypeUniqueID, PropertyValueTypeVerification, PropertyValueTypePlace, PropertyValueTypeTitle, PropertyValueTypeRichText, PropertyValueTypePeople, PropertyValueTypeRelation, PropertyValueTypeRollup:
+		return true
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return false
 	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
 }
 
 // PublicAPIAsyncTaskStatusResultJSONValue defines a model
@@ -26569,28 +25583,6 @@ func (v *RelationAllOf2) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// RelationArrayBasedPropertyValueResponse defines a model
-type RelationArrayBasedPropertyValueResponse struct {
-	// Always `relation`
-	Type     string                      `json:"type"`
-	Relation []RelationItemPropertyValue `json:"relation"`
-	HasMore  *bool                       `json:"has_more,omitzero"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RelationArrayBasedPropertyValueResponse declares it.
-func (v *RelationArrayBasedPropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "relation":
-		return true, json.UnmarshalDecode(dec, &v.Relation, jsonOpts)
-	case "has_more":
-		return true, json.UnmarshalDecode(dec, &v.HasMore, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // RelationDatabasePropertyConfigResponse defines a model
 type RelationDatabasePropertyConfigResponse struct {
 	// Always `relation`
@@ -28391,25 +27383,6 @@ func (v *RichTextAllOf1) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// RichTextArrayBasedPropertyValueResponse defines a model
-type RichTextArrayBasedPropertyValueResponse struct {
-	// Always `rich_text`
-	Type     string    `json:"type"`
-	RichText RichTexts `json:"rich_text"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RichTextArrayBasedPropertyValueResponse declares it.
-func (v *RichTextArrayBasedPropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "rich_text":
-		return true, json.UnmarshalDecode(dec, &v.RichText, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // RichTextDatabasePropertyConfigResponse defines a model
 type RichTextDatabasePropertyConfigResponse struct {
 	// Always `rich_text`
@@ -30085,472 +29058,6 @@ func (v *SelectPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Dec
 	return false, nil
 }
 
-// SelectSimplePropertyValueResponse defines a model
-type SelectSimplePropertyValueResponse struct {
-	// Always `select`
-	Type   string                             `json:"type"`
-	Select PartialSelectPropertyValueResponse `json:"select"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether SelectSimplePropertyValueResponse declares it.
-func (v *SelectSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "select":
-		return true, json.UnmarshalDecode(dec, &v.Select, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// SimpleOrArrayPropertyValueResponse defines a model
-// SimpleOrArrayPropertyValueResponse is an untagged oneOf union: exactly one field is set after unmarshaling.
-type SimpleOrArrayPropertyValueResponse struct {
-	SimplePropertyValueResponse     *SimplePropertyValueResponse
-	ArrayBasedPropertyValueResponse *ArrayBasedPropertyValueResponse
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its first member must be type, which names the
-// alternative; the alternative then decodes each further member as it is read.
-func (v *SimpleOrArrayPropertyValueResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "number":
-		var vv NumberSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{NumberSimplePropertyValueResponse: &vv}
-	case "url":
-		var vv URLSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{URLSimplePropertyValueResponse: &vv}
-	case "select":
-		var vv SelectSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{SelectSimplePropertyValueResponse: &vv}
-	case "multi_select":
-		var vv MultiSelectSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{MultiSelectSimplePropertyValueResponse: &vv}
-	case "status":
-		var vv StatusSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{StatusSimplePropertyValueResponse: &vv}
-	case "date":
-		var vv DateSimplePropertyValue
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{DateSimplePropertyValue: &vv}
-	case "email":
-		var vv EmailSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{EmailSimplePropertyValueResponse: &vv}
-	case "phone_number":
-		var vv PhoneNumberSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{PhoneNumberSimplePropertyValueResponse: &vv}
-	case "checkbox":
-		var vv CheckboxSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{CheckboxSimplePropertyValueResponse: &vv}
-	case "files":
-		var vv FilesSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{FilesSimplePropertyValueResponse: &vv}
-	case "created_by":
-		var vv CreatedBySimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{CreatedBySimplePropertyValueResponse: &vv}
-	case "created_time":
-		var vv CreatedTimeSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{CreatedTimeSimplePropertyValueResponse: &vv}
-	case "last_edited_by":
-		var vv LastEditedBySimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{LastEditedBySimplePropertyValueResponse: &vv}
-	case "last_edited_time":
-		var vv LastEditedTimeSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{LastEditedTimeSimplePropertyValueResponse: &vv}
-	case "formula":
-		var vv FormulaSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{FormulaSimplePropertyValueResponse: &vv}
-	case "button":
-		var vv ButtonSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{ButtonSimplePropertyValueResponse: &vv}
-	case "unique_id":
-		var vv UniqueIDSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{UniqueIDSimplePropertyValueResponse: &vv}
-	case "verification":
-		var vv VerificationSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{VerificationSimplePropertyValueResponse: &vv}
-	case "place":
-		var vv PlaceSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SimplePropertyValueResponse = &SimplePropertyValueResponse{PlaceSimplePropertyValueResponse: &vv}
-	case "title":
-		var vv TitleArrayBasedPropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.ArrayBasedPropertyValueResponse = &ArrayBasedPropertyValueResponse{TitleArrayBasedPropertyValueResponse: &vv}
-	case "rich_text":
-		var vv RichTextArrayBasedPropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.ArrayBasedPropertyValueResponse = &ArrayBasedPropertyValueResponse{RichTextArrayBasedPropertyValueResponse: &vv}
-	case "people":
-		var vv PeopleArrayBasedPropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.ArrayBasedPropertyValueResponse = &ArrayBasedPropertyValueResponse{PeopleArrayBasedPropertyValueResponse: &vv}
-	case "relation":
-		var vv RelationArrayBasedPropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.ArrayBasedPropertyValueResponse = &ArrayBasedPropertyValueResponse{RelationArrayBasedPropertyValueResponse: &vv}
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *SimpleOrArrayPropertyValueResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.SimplePropertyValueResponse != nil:
-		variant, tag = v.SimplePropertyValueResponse, ""
-	case v.ArrayBasedPropertyValueResponse != nil:
-		variant, tag = v.ArrayBasedPropertyValueResponse, ""
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
-// SimplePropertyValueResponse defines a model
-// SimplePropertyValueResponse is an untagged oneOf union: exactly one field is set after unmarshaling.
-type SimplePropertyValueResponse struct {
-	NumberSimplePropertyValueResponse         *NumberSimplePropertyValueResponse
-	URLSimplePropertyValueResponse            *URLSimplePropertyValueResponse
-	SelectSimplePropertyValueResponse         *SelectSimplePropertyValueResponse
-	MultiSelectSimplePropertyValueResponse    *MultiSelectSimplePropertyValueResponse
-	StatusSimplePropertyValueResponse         *StatusSimplePropertyValueResponse
-	DateSimplePropertyValue                   *DateSimplePropertyValue
-	EmailSimplePropertyValueResponse          *EmailSimplePropertyValueResponse
-	PhoneNumberSimplePropertyValueResponse    *PhoneNumberSimplePropertyValueResponse
-	CheckboxSimplePropertyValueResponse       *CheckboxSimplePropertyValueResponse
-	FilesSimplePropertyValueResponse          *FilesSimplePropertyValueResponse
-	CreatedBySimplePropertyValueResponse      *CreatedBySimplePropertyValueResponse
-	CreatedTimeSimplePropertyValueResponse    *CreatedTimeSimplePropertyValueResponse
-	LastEditedBySimplePropertyValueResponse   *LastEditedBySimplePropertyValueResponse
-	LastEditedTimeSimplePropertyValueResponse *LastEditedTimeSimplePropertyValueResponse
-	FormulaSimplePropertyValueResponse        *FormulaSimplePropertyValueResponse
-	ButtonSimplePropertyValueResponse         *ButtonSimplePropertyValueResponse
-	UniqueIDSimplePropertyValueResponse       *UniqueIDSimplePropertyValueResponse
-	VerificationSimplePropertyValueResponse   *VerificationSimplePropertyValueResponse
-	PlaceSimplePropertyValueResponse          *PlaceSimplePropertyValueResponse
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its first member must be type, which names the
-// alternative; the alternative then decodes each further member as it is read.
-func (v *SimplePropertyValueResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "number":
-		var vv NumberSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.NumberSimplePropertyValueResponse = &vv
-	case "url":
-		var vv URLSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.URLSimplePropertyValueResponse = &vv
-	case "select":
-		var vv SelectSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.SelectSimplePropertyValueResponse = &vv
-	case "multi_select":
-		var vv MultiSelectSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.MultiSelectSimplePropertyValueResponse = &vv
-	case "status":
-		var vv StatusSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.StatusSimplePropertyValueResponse = &vv
-	case "date":
-		var vv DateSimplePropertyValue
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.DateSimplePropertyValue = &vv
-	case "email":
-		var vv EmailSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.EmailSimplePropertyValueResponse = &vv
-	case "phone_number":
-		var vv PhoneNumberSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.PhoneNumberSimplePropertyValueResponse = &vv
-	case "checkbox":
-		var vv CheckboxSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.CheckboxSimplePropertyValueResponse = &vv
-	case "files":
-		var vv FilesSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.FilesSimplePropertyValueResponse = &vv
-	case "created_by":
-		var vv CreatedBySimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.CreatedBySimplePropertyValueResponse = &vv
-	case "created_time":
-		var vv CreatedTimeSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.CreatedTimeSimplePropertyValueResponse = &vv
-	case "last_edited_by":
-		var vv LastEditedBySimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.LastEditedBySimplePropertyValueResponse = &vv
-	case "last_edited_time":
-		var vv LastEditedTimeSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.LastEditedTimeSimplePropertyValueResponse = &vv
-	case "formula":
-		var vv FormulaSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.FormulaSimplePropertyValueResponse = &vv
-	case "button":
-		var vv ButtonSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.ButtonSimplePropertyValueResponse = &vv
-	case "unique_id":
-		var vv UniqueIDSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.UniqueIDSimplePropertyValueResponse = &vv
-	case "verification":
-		var vv VerificationSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.VerificationSimplePropertyValueResponse = &vv
-	case "place":
-		var vv PlaceSimplePropertyValueResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.PlaceSimplePropertyValueResponse = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *SimplePropertyValueResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.NumberSimplePropertyValueResponse != nil:
-		variant, tag = v.NumberSimplePropertyValueResponse, "number"
-	case v.URLSimplePropertyValueResponse != nil:
-		variant, tag = v.URLSimplePropertyValueResponse, "url"
-	case v.SelectSimplePropertyValueResponse != nil:
-		variant, tag = v.SelectSimplePropertyValueResponse, "select"
-	case v.MultiSelectSimplePropertyValueResponse != nil:
-		variant, tag = v.MultiSelectSimplePropertyValueResponse, "multi_select"
-	case v.StatusSimplePropertyValueResponse != nil:
-		variant, tag = v.StatusSimplePropertyValueResponse, "status"
-	case v.DateSimplePropertyValue != nil:
-		variant, tag = v.DateSimplePropertyValue, "date"
-	case v.EmailSimplePropertyValueResponse != nil:
-		variant, tag = v.EmailSimplePropertyValueResponse, "email"
-	case v.PhoneNumberSimplePropertyValueResponse != nil:
-		variant, tag = v.PhoneNumberSimplePropertyValueResponse, "phone_number"
-	case v.CheckboxSimplePropertyValueResponse != nil:
-		variant, tag = v.CheckboxSimplePropertyValueResponse, "checkbox"
-	case v.FilesSimplePropertyValueResponse != nil:
-		variant, tag = v.FilesSimplePropertyValueResponse, "files"
-	case v.CreatedBySimplePropertyValueResponse != nil:
-		variant, tag = v.CreatedBySimplePropertyValueResponse, "created_by"
-	case v.CreatedTimeSimplePropertyValueResponse != nil:
-		variant, tag = v.CreatedTimeSimplePropertyValueResponse, "created_time"
-	case v.LastEditedBySimplePropertyValueResponse != nil:
-		variant, tag = v.LastEditedBySimplePropertyValueResponse, "last_edited_by"
-	case v.LastEditedTimeSimplePropertyValueResponse != nil:
-		variant, tag = v.LastEditedTimeSimplePropertyValueResponse, "last_edited_time"
-	case v.FormulaSimplePropertyValueResponse != nil:
-		variant, tag = v.FormulaSimplePropertyValueResponse, "formula"
-	case v.ButtonSimplePropertyValueResponse != nil:
-		variant, tag = v.ButtonSimplePropertyValueResponse, "button"
-	case v.UniqueIDSimplePropertyValueResponse != nil:
-		variant, tag = v.UniqueIDSimplePropertyValueResponse, "unique_id"
-	case v.VerificationSimplePropertyValueResponse != nil:
-		variant, tag = v.VerificationSimplePropertyValueResponse, "verification"
-	case v.PlaceSimplePropertyValueResponse != nil:
-		variant, tag = v.PlaceSimplePropertyValueResponse, "place"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
 // SingleProperty defines a model
 type SingleProperty struct {
 	// Always `single_property`
@@ -30984,25 +29491,6 @@ func (v *StatusPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Dec
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOpts)
 	case "id":
 		return true, json.UnmarshalDecode(dec, &v.ID, jsonOpts)
-	}
-
-	return false, nil
-}
-
-// StatusSimplePropertyValueResponse defines a model
-type StatusSimplePropertyValueResponse struct {
-	// Always `status`
-	Type   string                             `json:"type"`
-	Status PartialSelectPropertyValueResponse `json:"status"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether StatusSimplePropertyValueResponse declares it.
-func (v *StatusSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "status":
-		return true, json.UnmarshalDecode(dec, &v.Status, jsonOpts)
 	}
 
 	return false, nil
@@ -32672,25 +31160,6 @@ func (v *Title5) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, 
 	return false, nil
 }
 
-// TitleArrayBasedPropertyValueResponse defines a model
-type TitleArrayBasedPropertyValueResponse struct {
-	// Always `title`
-	Type  string    `json:"type"`
-	Title RichTexts `json:"title"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether TitleArrayBasedPropertyValueResponse declares it.
-func (v *TitleArrayBasedPropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "title":
-		return true, json.UnmarshalDecode(dec, &v.Title, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // TitleDatabasePropertyConfigResponse defines a model
 type TitleDatabasePropertyConfigResponse struct {
 	// Always `title`
@@ -33071,25 +31540,6 @@ func (v *URLPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decode
 	return false, nil
 }
 
-// URLSimplePropertyValueResponse defines a model
-type URLSimplePropertyValueResponse struct {
-	// Always `url`
-	Type string `json:"type"`
-	URL  string `json:"url"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether URLSimplePropertyValueResponse declares it.
-func (v *URLSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "url":
-		return true, json.UnmarshalDecode(dec, &v.URL, jsonOpts)
-	}
-
-	return false, nil
-}
-
 // UniqueID defines a model
 type UniqueID struct {
 	// Always `unique_id`
@@ -33189,25 +31639,6 @@ type UniqueIDPropertyItemObjectResponseUniqueID struct {
 type UniqueIDPropertyValueResponse struct {
 	Prefix string   `json:"prefix"`
 	Number *float64 `json:"number"`
-}
-
-// UniqueIDSimplePropertyValueResponse defines a model
-type UniqueIDSimplePropertyValueResponse struct {
-	// Always `unique_id`
-	Type     string                        `json:"type"`
-	UniqueID UniqueIDPropertyValueResponse `json:"unique_id"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether UniqueIDSimplePropertyValueResponse declares it.
-func (v *UniqueIDSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "unique_id":
-		return true, json.UnmarshalDecode(dec, &v.UniqueID, jsonOpts)
-	}
-
-	return false, nil
 }
 
 // UniqueIDUniqueID defines a model
@@ -36343,25 +34774,6 @@ func (v *VerificationPropertyValueResponse) MarshalJSONTo(enc *jsontext.Encoder)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// VerificationSimplePropertyValueResponse defines a model
-type VerificationSimplePropertyValueResponse struct {
-	// Always `verification`
-	Type         string                            `json:"type"`
-	Verification VerificationPropertyValueResponse `json:"verification"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether VerificationSimplePropertyValueResponse declares it.
-func (v *VerificationSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOpts)
-	case "verification":
-		return true, json.UnmarshalDecode(dec, &v.Verification, jsonOpts)
-	}
-
-	return false, nil
 }
 
 // VerificationVerification3 defines a model

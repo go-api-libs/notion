@@ -257,41 +257,88 @@ func nameEnum(s *openapi.Schema, names ...string) error {
 
 // mergeTaggedUnion turns the schema name, a union of objects told apart by the property tag, into one object: the
 // properties the variants share, tag as an enum of their values, and each variant's own properties, optional. The
-// variants are removed once nothing refers to them. It fails if a variant is not a reference to an object, has no
-// single value for tag, or disagrees with another on a property they share, so a change upstream is noticed.
-func mergeTaggedUnion(doc *openapi.Document, name, tag string) error {
+// union may nest unions, and may be one part of an allOf whose other parts are objects every variant shares. The
+// schemas it merged are removed once nothing refers to them. Every reference to one of aliases, unions within it that
+// stand for the variants without the allOf's other parts, is repointed at name, whose properties from those parts
+// become optional. It fails if a variant is not a reference to an object, has no single value for tag, or disagrees
+// with another on a property they share, so a change upstream is noticed.
+func mergeTaggedUnion(doc *openapi.Document, name, tag string, aliases ...string) error {
 	s, ok := doc.Components.Schemas[name]
 	if !ok {
 		return componentErr(name, errors.New("not found"))
 	}
 
-	alts, field := s.OneOf, "oneOf"
-	if len(alts) == 0 {
-		alts, field = s.AnyOf, "anyOf"
+	common, union, merged, err := splitAllOf(s)
+	if err != nil {
+		return componentErr(name, err)
 	}
 
-	if len(alts) == 0 {
-		return componentErr(name, errors.New("not a union"))
-	}
+	var names []string
 
-	names := make([]string, len(alts))
-	variants := make([]*openapi.Schema, len(alts))
+	variants := []*openapi.Schema{}
 
-	for i, alt := range alts {
-		if alt.Ref == nil || alt.Ref.Value == nil || alt.Ref.Value.Type != openapi.TypeObject {
-			return componentErr(name, &errpath.ErrField{Field: field, Err: &errpath.ErrIndex{
-				Index: i, Err: errors.New("not a reference to an object"),
-			}})
+	var collect func(openapi.SchemaList) error
+
+	collect = func(alts openapi.SchemaList) error {
+		for _, alt := range alts {
+			if alt.Ref == nil || alt.Ref.Value == nil {
+				return errors.New("a variant is not a reference")
+			}
+
+			n := strings.TrimPrefix(alt.Ref.Identifier, schemaRefPrefix)
+			merged = append(merged, n)
+
+			if sub := alternatives(alt.Ref.Value); len(sub) > 0 {
+				if err := collect(sub); err != nil {
+					return err
+				}
+
+				continue
+			}
+
+			if alt.Ref.Value.Type != openapi.TypeObject {
+				return fmt.Errorf("variant %s is neither an object nor a union", n)
+			}
+
+			names = append(names, n)
+			variants = append(variants, alt.Ref.Value)
 		}
 
-		names[i] = strings.TrimPrefix(alt.Ref.Identifier, schemaRefPrefix)
-		variants[i] = alt.Ref.Value
+		return nil
+	}
+
+	if err := collect(alternatives(union)); err != nil {
+		return componentErr(name, err)
+	}
+
+	if len(variants) == 0 {
+		return componentErr(name, errors.New("not a union"))
 	}
 
 	tags := &jsonSet{}
 	seen := map[string][]byte{}
 	shared := map[string]int{tag: len(variants)}
 	required := map[string]int{}
+
+	commonProps := openapi.Schemas{}
+
+	for _, c := range common {
+		for prop, p := range c.Properties.ByIndex() {
+			b, err := json.Marshal(p)
+			if err != nil {
+				return err
+			}
+
+			seen[prop] = b
+			commonProps.Set(prop, p)
+		}
+
+		if len(aliases) == 0 {
+			for _, r := range c.Required {
+				required[r] = len(variants)
+			}
+		}
+	}
 
 	for i, v := range variants {
 		if t, ok := v.Properties[tag]; !ok || len(t.Const) == 0 {
@@ -327,8 +374,11 @@ func mergeTaggedUnion(doc *openapi.Document, name, tag string) error {
 		}
 	}
 
-	// what they share first, in the first variant's order, then each variant's own
+	// the common parts' properties first, then what the variants share, in the first one's order, then each one's own
 	props := openapi.Schemas{}
+	for prop, p := range commonProps.ByIndex() {
+		props.Set(prop, p)
+	}
 
 	for _, own := range []bool{false, true} {
 		for _, v := range variants {
@@ -347,7 +397,7 @@ func mergeTaggedUnion(doc *openapi.Document, name, tag string) error {
 	var req []string
 
 	for prop := range props.ByIndex() {
-		if required[prop] == len(variants) {
+		if required[prop] >= len(variants) {
 			req = append(req, prop)
 		}
 	}
@@ -360,14 +410,82 @@ func mergeTaggedUnion(doc *openapi.Document, name, tag string) error {
 		Required:    req,
 	})
 
-	spec := &bytes.Buffer{}
-	if err := doc.WriteJSON(spec); err != nil {
-		return err
+	redirect := map[string]string{}
+	for _, a := range aliases {
+		if !slices.Contains(merged, a) {
+			return componentErr(name, fmt.Errorf("%s is not one of its unions", a))
+		}
+
+		redirect[a] = name
 	}
 
-	for _, n := range names {
-		if !bytes.Contains(spec.Bytes(), []byte(`"`+schemaRefPrefix+n+`"`)) {
-			delete(doc.Components.Schemas, n)
+	if err := edit.RedirectSchemas(doc, redirect); err != nil {
+		return fmt.Errorf("redirecting schemas: %w", err)
+	}
+
+	return removeUnreferenced(doc, merged)
+}
+
+// splitAllOf returns the object parts of s's allOf and its one union, with the names of the parts it refers to, or s
+// itself as the union when it has no allOf.
+func splitAllOf(s *openapi.Schema) (common []*openapi.Schema, union *openapi.Schema, names []string, err error) {
+	if len(s.AllOf) == 0 {
+		return nil, s, nil, nil
+	}
+
+	for i, part := range s.AllOf {
+		p := part
+		if part.Ref != nil {
+			p = part.Ref.Value
+			names = append(names, strings.TrimPrefix(part.Ref.Identifier, schemaRefPrefix))
+		}
+
+		switch {
+		case len(alternatives(p)) > 0 && union == nil:
+			union = p
+		case p.Type == openapi.TypeObject:
+			common = append(common, p)
+		default:
+			return nil, nil, nil, &errpath.ErrField{Field: "allOf", Err: &errpath.ErrIndex{
+				Index: i, Err: errors.New("is neither an object nor the one union"),
+			}}
+		}
+	}
+
+	if union == nil {
+		return nil, nil, nil, errors.New("has no union in its allOf")
+	}
+
+	return common, union, names, nil
+}
+
+// alternatives are s's oneOf, or else its anyOf.
+func alternatives(s *openapi.Schema) openapi.SchemaList {
+	if len(s.OneOf) > 0 {
+		return s.OneOf
+	}
+
+	return s.AnyOf
+}
+
+// removeUnreferenced removes those of the component schemas names nothing refers to, until each that remains is
+// referred to, since removing one can leave another unreferenced.
+func removeUnreferenced(doc *openapi.Document, names []string) error {
+	for removed := true; removed; {
+		removed = false
+
+		spec := &bytes.Buffer{}
+		if err := doc.WriteJSON(spec); err != nil {
+			return err
+		}
+
+		for _, n := range names {
+			if _, ok := doc.Components.Schemas[n]; ok &&
+				!bytes.Contains(spec.Bytes(), []byte(`"`+schemaRefPrefix+n+`"`)) {
+				delete(doc.Components.Schemas, n)
+
+				removed = true
+			}
 		}
 	}
 
@@ -551,6 +669,11 @@ func fixOpenAPI() (*openapi.Document, error) {
 	}
 
 	if err := mergeTaggedUnion(doc, "Block", "type"); err != nil {
+		return nil, err
+	}
+
+	// a rollup's array holds property values without their id
+	if err := mergeTaggedUnion(doc, "PropertyValue", "type", "simpleOrArrayPropertyValueResponse"); err != nil {
 		return nil, err
 	}
 

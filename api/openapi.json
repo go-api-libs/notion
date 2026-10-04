@@ -10393,6 +10393,18 @@
         ],
         "additionalProperties": false
       },
+      "FileUploadPageIconFileUpload": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "ID of a FileUpload object that has the status `uploaded`.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      },
       "FileUploadUploadFailedWebhookPayloadAllOf1Data": {
         "description": "Additional event-specific data.",
         "type": "object",
@@ -13204,16 +13216,6 @@
           "id"
         ]
       },
-      "PeopleArrayBasedPropertyValueResponsePeopleItem": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/userValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/groupObjectResponse"
-          }
-        ]
-      },
       "PeopleItem": {
         "anyOf": [
           {
@@ -13453,16 +13455,6 @@
         "required": [
           "lat",
           "lon"
-        ]
-      },
-      "PlaceSimplePropertyValueResponsePlace": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/placePropertyValueResponse"
-          },
-          {
-            "type": "null"
-          }
         ]
       },
       "PostDatabaseQuery": {
@@ -13968,22 +13960,201 @@
         ]
       },
       "PropertyValue": {
-        "allOf": [
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "%3ANHe"
+          },
+          "type": {
+            "$ref": "#/components/schemas/PropertyValueType"
+          },
+          "number": {
+            "$ref": "#/components/schemas/PropertyValueNumber"
+          },
+          "url": {
+            "$ref": "#/components/schemas/PagePublicURL"
+          },
+          "select": {
+            "$ref": "#/components/schemas/PropertyValueSelect"
+          },
+          "multi_select": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/partialSelectPropertyValueResponse"
+            }
+          },
+          "status": {
+            "$ref": "#/components/schemas/PropertyValueSelect"
+          },
+          "date": {
+            "$ref": "#/components/schemas/PropertyValueDate"
+          },
+          "email": {
+            "$ref": "#/components/schemas/PagePublicURL"
+          },
+          "phone_number": {
+            "$ref": "#/components/schemas/PagePublicURL"
+          },
+          "checkbox": {
+            "type": "boolean"
+          },
+          "files": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/internalOrExternalFileWithNameResponse"
+            }
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/userValueResponse"
+          },
+          "created_time": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-03T16:15:00.000Z"
+          },
+          "last_edited_by": {
+            "$ref": "#/components/schemas/userValueResponse"
+          },
+          "last_edited_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "formula": {
+            "$ref": "#/components/schemas/formulaPropertyValueResponse"
+          },
+          "button": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "unique_id": {
+            "$ref": "#/components/schemas/uniqueIdPropertyValueResponse"
+          },
+          "verification": {
+            "$ref": "#/components/schemas/PropertyValueVerification"
+          },
+          "place": {
+            "$ref": "#/components/schemas/PropertyValuePlace"
+          },
+          "title": {
+            "$ref": "#/components/schemas/RichTexts"
+          },
+          "rich_text": {
+            "$ref": "#/components/schemas/RichTexts"
+          },
+          "people": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/PropertyValuePeopleItem"
+            }
+          },
+          "relation": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/relationItemPropertyValue"
+            }
+          },
+          "rollup": {
+            "$ref": "#/components/schemas/partialRollupValueResponse"
+          },
+          "has_more": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "PropertyValueDate": {
+        "oneOf": [
           {
-            "$ref": "#/components/schemas/idObject"
+            "$ref": "#/components/schemas/dateResponse"
           },
           {
-            "$ref": "#/components/schemas/PropertyValueAllOf1"
+            "type": "null"
           }
         ]
       },
-      "PropertyValueAllOf1": {
+      "PropertyValueNumber": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/simpleOrArrayPropertyValueResponse"
+            "type": "number"
           },
           {
-            "$ref": "#/components/schemas/partialRollupPropertyResponse"
+            "type": "null"
+          }
+        ]
+      },
+      "PropertyValuePeopleItem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/userValueResponse"
+          },
+          {
+            "$ref": "#/components/schemas/groupObjectResponse"
+          }
+        ]
+      },
+      "PropertyValuePlace": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/placePropertyValueResponse"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "PropertyValueSelect": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/partialSelectPropertyValueResponse"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "PropertyValueType": {
+        "type": "string",
+        "enum": [
+          "number",
+          "url",
+          "select",
+          "multi_select",
+          "status",
+          "date",
+          "email",
+          "phone_number",
+          "checkbox",
+          "files",
+          "created_by",
+          "created_time",
+          "last_edited_by",
+          "last_edited_time",
+          "formula",
+          "button",
+          "unique_id",
+          "verification",
+          "place",
+          "title",
+          "rich_text",
+          "people",
+          "relation",
+          "rollup"
+        ],
+        "example": "formula"
+      },
+      "PropertyValueVerification": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/verificationPropertyValueResponse"
+          },
+          {
+            "type": "null"
           }
         ]
       },
@@ -18116,16 +18287,6 @@
           "bot"
         ]
       },
-      "RetrieveSessionCreditsUsed": {
-        "oneOf": [
-          {
-            "type": "number"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
       "RetrieveSessionMessageCount": {
         "oneOf": [
           {
@@ -18242,7 +18403,7 @@
             "$ref": "#/components/schemas/RetrieveSessionMessageCount"
           },
           "credits_used": {
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
+            "$ref": "#/components/schemas/PropertyValueNumber"
           },
           "runs_completed": {
             "$ref": "#/components/schemas/RetrieveSessionMessageCount"
@@ -18864,16 +19025,6 @@
         "anyOf": [
           {
             "$ref": "#/components/schemas/partialSelectResponse"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "SelectSimplePropertyValueSelect": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/partialSelectPropertyValueResponse"
           },
           {
             "type": "null"
@@ -20586,7 +20737,7 @@
         "properties": {
           "credit_limit": {
             "description": "The per-agent credit limit as a non-negative integer, or null to clear the limit.",
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
+            "$ref": "#/components/schemas/PropertyValueNumber"
           }
         },
         "required": [
@@ -21432,16 +21583,6 @@
           "state"
         ]
       },
-      "VerificationPropertyDate": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/dateResponse"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
       "VerificationPropertyItemObjectResponseVerification": {
         "anyOf": [
           {
@@ -21476,16 +21617,6 @@
           "verified",
           "expired",
           "none"
-        ]
-      },
-      "VerificationSimplePropertyValueResponseVerification": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/verificationPropertyValueResponse"
-          },
-          {
-            "type": "null"
-          }
         ]
       },
       "VerificationVerification3": {
@@ -22002,22 +22133,6 @@
           "notes_ready"
         ]
       },
-      "arrayBasedPropertyValueResponse": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/titleArrayBasedPropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/richTextArrayBasedPropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/peopleArrayBasedPropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/relationArrayBasedPropertyValueResponse"
-          }
-        ]
-      },
       "arrayPartialRollupValueResponse": {
         "title": "Array",
         "type": "object",
@@ -22031,7 +22146,7 @@
             "type": "array",
             "maxItems": 100,
             "items": {
-              "$ref": "#/components/schemas/simpleOrArrayPropertyValueResponse"
+              "$ref": "#/components/schemas/PropertyValue"
             }
           }
         },
@@ -22627,25 +22742,6 @@
           "id"
         ]
       },
-      "buttonSimplePropertyValueResponse": {
-        "title": "Button",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `button`",
-            "type": "string",
-            "const": "button"
-          },
-          "button": {
-            "$ref": "#/components/schemas/emptyObject"
-          }
-        },
-        "required": [
-          "type",
-          "button"
-        ],
-        "additionalProperties": false
-      },
       "calendarViewConfigRequest": {
         "type": "object",
         "properties": {
@@ -22883,11 +22979,11 @@
           },
           "y_axis_min": {
             "description": "Custom y-axis minimum. Pass null to clear.",
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
+            "$ref": "#/components/schemas/PropertyValueNumber"
           },
           "y_axis_max": {
             "description": "Custom y-axis maximum. Pass null to clear.",
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
+            "$ref": "#/components/schemas/PropertyValueNumber"
           },
           "donut_labels": {
             "$ref": "#/components/schemas/ChartViewConfigRequestDonutLabels"
@@ -22998,11 +23094,11 @@
           },
           "y_axis_min": {
             "description": "Custom minimum value for the y-axis. Null clears the override.",
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
+            "$ref": "#/components/schemas/PropertyValueNumber"
           },
           "y_axis_max": {
             "description": "Custom maximum value for the y-axis. Null clears the override.",
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
+            "$ref": "#/components/schemas/PropertyValueNumber"
           },
           "donut_labels": {
             "description": "What to display on donut chart slices.",
@@ -23168,25 +23264,6 @@
           "object",
           "id"
         ]
-      },
-      "checkboxSimplePropertyValueResponse": {
-        "title": "Checkbox",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `checkbox`",
-            "type": "string",
-            "const": "checkbox"
-          },
-          "checkbox": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "checkbox"
-        ],
-        "additionalProperties": false
       },
       "columnListRequest": {
         "type": "object",
@@ -23783,25 +23860,6 @@
           "id"
         ]
       },
-      "createdBySimplePropertyValueResponse": {
-        "title": "Created By",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `created_by`",
-            "type": "string",
-            "const": "created_by"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/userValueResponse"
-          }
-        },
-        "required": [
-          "type",
-          "created_by"
-        ],
-        "additionalProperties": false
-      },
       "createdTimeDatabasePropertyConfigResponse": {
         "title": "Created Time",
         "type": "object",
@@ -23846,27 +23904,6 @@
           "object",
           "id"
         ]
-      },
-      "createdTimeSimplePropertyValueResponse": {
-        "title": "Created Time",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `created_time`",
-            "type": "string",
-            "const": "created_time"
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2026-10-03T16:15:00.000Z"
-          }
-        },
-        "required": [
-          "type",
-          "created_time"
-        ],
-        "additionalProperties": false
       },
       "customEmojiResponse": {
         "type": "object",
@@ -24726,6 +24763,25 @@
           "date"
         ]
       },
+      "dateFormulaPropertyValueResponse": {
+        "title": "Date",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `date`",
+            "type": "string",
+            "const": "date"
+          },
+          "date": {
+            "$ref": "#/components/schemas/PropertyValueDate"
+          }
+        },
+        "required": [
+          "type",
+          "date"
+        ],
+        "additionalProperties": false
+      },
       "dateGroupByConfigRequest": {
         "type": "object",
         "properties": {
@@ -24826,7 +24882,7 @@
             "const": "date"
           },
           "date": {
-            "$ref": "#/components/schemas/VerificationPropertyDate"
+            "$ref": "#/components/schemas/PropertyValueDate"
           }
         },
         "required": [
@@ -25090,25 +25146,6 @@
         ],
         "additionalProperties": false
       },
-      "dateSimplePropertyValue": {
-        "title": "Date",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `date`",
-            "type": "string",
-            "const": "date"
-          },
-          "date": {
-            "$ref": "#/components/schemas/VerificationPropertyDate"
-          }
-        },
-        "required": [
-          "type",
-          "date"
-        ],
-        "additionalProperties": false
-      },
       "deletedViewQueryResponse": {
         "type": "object",
         "properties": {
@@ -25196,25 +25233,6 @@
           "object",
           "id"
         ]
-      },
-      "emailSimplePropertyValueResponse": {
-        "title": "Email",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `email`",
-            "type": "string",
-            "const": "email"
-          },
-          "email": {
-            "$ref": "#/components/schemas/PagePublicURL"
-          }
-        },
-        "required": [
-          "type",
-          "email"
-        ],
-        "additionalProperties": false
       },
       "embedFileUpload": {
         "type": "object",
@@ -25761,7 +25779,7 @@
             "const": "file_upload"
           },
           "file_upload": {
-            "$ref": "#/components/schemas/idObject"
+            "$ref": "#/components/schemas/FileUploadPageIconFileUpload"
           }
         },
         "required": [
@@ -25866,29 +25884,6 @@
           "object",
           "id"
         ]
-      },
-      "filesSimplePropertyValueResponse": {
-        "title": "Files",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `files`",
-            "type": "string",
-            "const": "files"
-          },
-          "files": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/internalOrExternalFileWithNameResponse"
-            }
-          }
-        },
-        "required": [
-          "type",
-          "files"
-        ],
-        "additionalProperties": false
       },
       "formViewConfigRequest": {
         "type": "object",
@@ -26266,7 +26261,7 @@
             "$ref": "#/components/schemas/booleanFormulaPropertyValueResponse"
           },
           {
-            "$ref": "#/components/schemas/dateSimplePropertyValue"
+            "$ref": "#/components/schemas/dateFormulaPropertyValueResponse"
           },
           {
             "$ref": "#/components/schemas/numberFormulaPropertyValueResponse"
@@ -26278,25 +26273,6 @@
             "$ref": "#/components/schemas/unsupportedFormulaPropertyValueResponse"
           }
         ]
-      },
-      "formulaSimplePropertyValueResponse": {
-        "title": "Formula",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `formula`",
-            "type": "string",
-            "const": "formula"
-          },
-          "formula": {
-            "$ref": "#/components/schemas/formulaPropertyValueResponse"
-          }
-        },
-        "required": [
-          "type",
-          "formula"
-        ],
-        "additionalProperties": false
       },
       "formulaSubGroupByResponse": {
         "description": "Sub-group-by configuration for formula properties based on result type.",
@@ -26716,18 +26692,6 @@
         ],
         "additionalProperties": false
       },
-      "idObject": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "example": "%3ANHe"
-          }
-        },
-        "required": [
-          "id"
-        ]
-      },
       "idRequest": {
         "type": "string",
         "example": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
@@ -26966,25 +26930,6 @@
           "id"
         ]
       },
-      "lastEditedBySimplePropertyValueResponse": {
-        "title": "Last Edited By",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `last_edited_by`",
-            "type": "string",
-            "const": "last_edited_by"
-          },
-          "last_edited_by": {
-            "$ref": "#/components/schemas/userValueResponse"
-          }
-        },
-        "required": [
-          "type",
-          "last_edited_by"
-        ],
-        "additionalProperties": false
-      },
       "lastEditedTimeDatabasePropertyConfigResponse": {
         "title": "Last Edited Time",
         "type": "object",
@@ -27029,26 +26974,6 @@
           "object",
           "id"
         ]
-      },
-      "lastEditedTimeSimplePropertyValueResponse": {
-        "title": "Last Edited Time",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `last_edited_time`",
-            "type": "string",
-            "const": "last_edited_time"
-          },
-          "last_edited_time": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "type",
-          "last_edited_time"
-        ],
-        "additionalProperties": false
       },
       "lastVisitedTimePropertyConfigurationRequest": {
         "title": "Last Visited Time",
@@ -27479,29 +27404,6 @@
           "id"
         ]
       },
-      "multiSelectSimplePropertyValueResponse": {
-        "title": "Multi Select",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `multi_select`",
-            "type": "string",
-            "const": "multi_select"
-          },
-          "multi_select": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/partialSelectPropertyValueResponse"
-            }
-          }
-        },
-        "required": [
-          "type",
-          "multi_select"
-        ],
-        "additionalProperties": false
-      },
       "noticonColor": {
         "type": "string",
         "enum": [
@@ -27701,7 +27603,7 @@
             "const": "number"
           },
           "number": {
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
+            "$ref": "#/components/schemas/PropertyValueNumber"
           }
         },
         "required": [
@@ -27835,25 +27737,6 @@
           "object",
           "id"
         ]
-      },
-      "numberSimplePropertyValueResponse": {
-        "title": "Number",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `number`",
-            "type": "string",
-            "const": "number"
-          },
-          "number": {
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
-          }
-        },
-        "required": [
-          "type",
-          "number"
-        ],
-        "additionalProperties": false
       },
       "numberedListFormat": {
         "type": "string",
@@ -28563,24 +28446,6 @@
         ],
         "additionalProperties": false
       },
-      "partialRollupPropertyResponse": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `rollup`",
-            "type": "string",
-            "const": "rollup"
-          },
-          "rollup": {
-            "$ref": "#/components/schemas/partialRollupValueResponse"
-          }
-        },
-        "required": [
-          "type",
-          "rollup"
-        ],
-        "additionalProperties": false
-      },
       "partialRollupValueResponse": {
         "allOf": [
           {
@@ -28693,29 +28558,6 @@
         "required": [
           "id",
           "object"
-        ],
-        "additionalProperties": false
-      },
-      "peopleArrayBasedPropertyValueResponse": {
-        "title": "People",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `people`",
-            "type": "string",
-            "const": "people"
-          },
-          "people": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/PeopleArrayBasedPropertyValueResponsePeopleItem"
-            }
-          }
-        },
-        "required": [
-          "type",
-          "people"
         ],
         "additionalProperties": false
       },
@@ -28940,25 +28782,6 @@
           "id"
         ]
       },
-      "phoneNumberSimplePropertyValueResponse": {
-        "title": "Phone Number",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `phone_number`",
-            "type": "string",
-            "const": "phone_number"
-          },
-          "phone_number": {
-            "$ref": "#/components/schemas/PagePublicURL"
-          }
-        },
-        "required": [
-          "type",
-          "phone_number"
-        ],
-        "additionalProperties": false
-      },
       "placePropertyItemObjectResponse": {
         "title": "Place",
         "type": "object",
@@ -29010,25 +28833,6 @@
         "required": [
           "lat",
           "lon"
-        ],
-        "additionalProperties": false
-      },
-      "placeSimplePropertyValueResponse": {
-        "title": "Place",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `place`",
-            "type": "string",
-            "const": "place"
-          },
-          "place": {
-            "$ref": "#/components/schemas/PlaceSimplePropertyValueResponsePlace"
-          }
-        },
-        "required": [
-          "type",
-          "place"
         ],
         "additionalProperties": false
       },
@@ -29418,32 +29222,6 @@
           "message"
         ]
       },
-      "relationArrayBasedPropertyValueResponse": {
-        "title": "Relation",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `relation`",
-            "type": "string",
-            "const": "relation"
-          },
-          "relation": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/relationItemPropertyValue"
-            }
-          },
-          "has_more": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "relation"
-        ],
-        "additionalProperties": false
-      },
       "relationDatabasePropertyConfigResponse": {
         "title": "Relation",
         "type": "object",
@@ -29627,25 +29405,6 @@
         },
         "required": [
           "type"
-        ],
-        "additionalProperties": false
-      },
-      "richTextArrayBasedPropertyValueResponse": {
-        "title": "Rich Text",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `rich_text`",
-            "type": "string",
-            "const": "rich_text"
-          },
-          "rich_text": {
-            "$ref": "#/components/schemas/RichTexts"
-          }
-        },
-        "required": [
-          "type",
-          "rich_text"
         ],
         "additionalProperties": false
       },
@@ -30211,96 +29970,6 @@
           "id"
         ]
       },
-      "selectSimplePropertyValueResponse": {
-        "title": "Select",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `select`",
-            "type": "string",
-            "const": "select"
-          },
-          "select": {
-            "$ref": "#/components/schemas/SelectSimplePropertyValueSelect"
-          }
-        },
-        "required": [
-          "type",
-          "select"
-        ],
-        "additionalProperties": false
-      },
-      "simpleOrArrayPropertyValueResponse": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/simplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/arrayBasedPropertyValueResponse"
-          }
-        ]
-      },
-      "simplePropertyValueResponse": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/numberSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/urlSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/selectSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/multiSelectSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/statusSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/dateSimplePropertyValue"
-          },
-          {
-            "$ref": "#/components/schemas/emailSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/phoneNumberSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/checkboxSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/filesSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/createdBySimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/createdTimeSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/lastEditedBySimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/lastEditedTimeSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/formulaSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/buttonSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/uniqueIdSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/verificationSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/placeSimplePropertyValueResponse"
-          }
-        ]
-      },
       "singlePropertyDatabasePropertyRelationConfigResponse": {
         "title": "Single Property",
         "type": "object",
@@ -30539,25 +30208,6 @@
           "object",
           "id"
         ]
-      },
-      "statusSimplePropertyValueResponse": {
-        "title": "Status",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `status`",
-            "type": "string",
-            "const": "status"
-          },
-          "status": {
-            "$ref": "#/components/schemas/SelectSimplePropertyValueSelect"
-          }
-        },
-        "required": [
-          "type",
-          "status"
-        ],
-        "additionalProperties": false
       },
       "stringFormulaPropertyResponse": {
         "title": "String",
@@ -31341,25 +30991,6 @@
         ],
         "additionalProperties": false
       },
-      "titleArrayBasedPropertyValueResponse": {
-        "title": "Title",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `title`",
-            "type": "string",
-            "const": "title"
-          },
-          "title": {
-            "$ref": "#/components/schemas/RichTexts"
-          }
-        },
-        "required": [
-          "type",
-          "title"
-        ],
-        "additionalProperties": false
-      },
       "titleDatabasePropertyConfigResponse": {
         "title": "Title",
         "type": "object",
@@ -31539,31 +31170,12 @@
             "$ref": "#/components/schemas/PagePublicURL"
           },
           "number": {
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
+            "$ref": "#/components/schemas/PropertyValueNumber"
           }
         },
         "required": [
           "prefix",
           "number"
-        ],
-        "additionalProperties": false
-      },
-      "uniqueIdSimplePropertyValueResponse": {
-        "title": "Unique Id",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `unique_id`",
-            "type": "string",
-            "const": "unique_id"
-          },
-          "unique_id": {
-            "$ref": "#/components/schemas/uniqueIdPropertyValueResponse"
-          }
-        },
-        "required": [
-          "type",
-          "unique_id"
         ],
         "additionalProperties": false
       },
@@ -31749,25 +31361,6 @@
           "id"
         ]
       },
-      "urlSimplePropertyValueResponse": {
-        "title": "Url",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `url`",
-            "type": "string",
-            "const": "url"
-          },
-          "url": {
-            "$ref": "#/components/schemas/PagePublicURL"
-          }
-        },
-        "required": [
-          "type",
-          "url"
-        ],
-        "additionalProperties": false
-      },
       "userObjectResponse": {
         "allOf": [
           {
@@ -31890,7 +31483,7 @@
             "$ref": "#/components/schemas/VerificationPropertyResponseState"
           },
           "date": {
-            "$ref": "#/components/schemas/VerificationPropertyDate"
+            "$ref": "#/components/schemas/PropertyValueDate"
           },
           "verified_by": {
             "$ref": "#/components/schemas/VerificationPropertyResponseVerifiedBy"
@@ -31947,25 +31540,6 @@
             "$ref": "#/components/schemas/verificationPropertyResponse"
           }
         ]
-      },
-      "verificationSimplePropertyValueResponse": {
-        "title": "Verification",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `verification`",
-            "type": "string",
-            "const": "verification"
-          },
-          "verification": {
-            "$ref": "#/components/schemas/VerificationSimplePropertyValueResponseVerification"
-          }
-        },
-        "required": [
-          "type",
-          "verification"
-        ],
-        "additionalProperties": false
       },
       "viewConfigRequest": {
         "description": "View configuration, discriminated by the type field.",
