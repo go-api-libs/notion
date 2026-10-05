@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json/jsontext"
 	"encoding/json/v2"
 	"errors"
 	"fmt"
@@ -11,7 +12,6 @@ import (
 	"net/http"
 	"os"
 	"slices"
-	"strings"
 	"uuid"
 
 	"github.com/MarkRosemaker/openapi-enrich/cassette"
@@ -56,9 +56,23 @@ func run(ctx context.Context) error {
 		return ia, nil
 	}
 
+	view, err := record(cassette.Request{Method: http.MethodGet, URL: "https://api.notion.com/v1/views/" + viewID.String()})
+	if err != nil {
+		return err
+	}
+
+	// the entries of the view, as its filter and sorts select and order them
+	viewQuery, err := queryOfView(view.Response.Body)
+	if err != nil {
+		return err
+	}
+
+	if _, err := record(viewQuery); err != nil {
+		return err
+	}
+
 	for _, r := range []cassette.Request{
 		{Method: http.MethodGet, URL: "https://api.notion.com/v1/views?database_id=" + dbID.String()},
-		{Method: http.MethodGet, URL: "https://api.notion.com/v1/views/" + viewID.String()},
 		{Method: http.MethodGet, URL: "https://api.notion.com/v1/databases/" + dbID.String()},
 		{Method: http.MethodGet, URL: "https://api.notion.com/v1/data_sources/" + dataSourceID.String()},
 		{Method: http.MethodGet, URL: "https://api.notion.com/v1/blocks/" + dbID.String()},
@@ -116,6 +130,33 @@ func run(ctx context.Context) error {
 	return ias.WriteFile(pathInteractions)
 }
 
+// queryOfView is the query of the data source the view shows, with the view's filter and sorts.
+func queryOfView(view []byte) (cassette.Request, error) {
+	var v struct {
+		DataSourceID string         `json:"data_source_id"`
+		Filter       jsontext.Value `json:"filter"`
+		Sorts        jsontext.Value `json:"sorts"`
+	}
+	if err := json.Unmarshal(view, &v); err != nil {
+		return cassette.Request{}, fmt.Errorf("decoding view: %w", err)
+	}
+
+	body, err := json.Marshal(struct {
+		Filter   jsontext.Value `json:"filter,omitzero"`
+		Sorts    jsontext.Value `json:"sorts,omitzero"`
+		PageSize int            `json:"page_size"`
+	}{v.Filter, v.Sorts, 3})
+	if err != nil {
+		return cassette.Request{}, err
+	}
+
+	return cassette.Request{
+		Method: http.MethodPost,
+		URL:    "https://api.notion.com/v1/data_sources/" + v.DataSourceID + "/query",
+		Body:   body,
+	}, nil
+}
+
 // do sends r to Notion and records the interaction.
 func do(ctx context.Context, r cassette.Request) (cassette.Interaction, error) {
 	var reqBody io.Reader
@@ -160,7 +201,20 @@ func do(ctx context.Context, r cassette.Request) (cassette.Interaction, error) {
 	return ia, nil
 }
 
-func cmp(a, b cassette.Interaction) int { return strings.Compare(a.Request.URL, b.Request.URL) }
+// eqTo reports whether an interaction is a's: the same request URL and body, so that queries of the same URL are
+// recorded apart.
 func eqTo(a cassette.Interaction) func(cassette.Interaction) bool {
-	return func(b cassette.Interaction) bool { return cmp(a, b) == 0 }
+	return func(b cassette.Interaction) bool {
+		return a.Request.URL == b.Request.URL && bytes.Equal(compact(a.Request.Body), compact(b.Request.Body))
+	}
+}
+
+// compact is body without the whitespace the file of interactions is indented with.
+func compact(body cassette.Body) []byte {
+	v := jsontext.Value(bytes.Clone(body))
+	if v.Compact() != nil {
+		return body
+	}
+
+	return v
 }
