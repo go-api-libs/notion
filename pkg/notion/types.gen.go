@@ -187,6 +187,68 @@ func (e APITranscriptionStatus) Valid() bool {
 	}
 }
 
+// Agent defines a model
+type Agent struct {
+	// Always `agent`
+	Object string   `json:"object"`
+	ID     AgentID6 `json:"id"`
+	// What kind of agent this is: "notion_ai" is the personal agent; "custom_agent" is a standalone agent you chat with; "autofill_custom_agent" fills a database property; "external" runs through an external provider.
+	AgentType          AgentAgentType `json:"agent_type"`
+	Name               string         `json:"name"`
+	Description        string         `json:"description"`
+	InstructionsPageID IDResponse     `json:"instructions_page_id"`
+	Icon               AgentIcon      `json:"icon"`
+	// The model the agent runs on: auto (Notion selects) or a pinned model.
+	Model AgentModel `json:"model"`
+	// Integrations the agent is connected to (Notion, Slack, Discord, MCP servers, and other connectors), each with an account and per-target permissions.
+	Connections []AgentConnectionsItem `json:"connections"`
+	// "active" when the agent can run; "disabled" when it is paused (see pause_reason); "deleted" when it has been removed.
+	Status AgentStatus `json:"status"`
+	// Why the agent is paused when status is "disabled" (e.g. "credit_limit", "disabled_from_workspace_settings"); null when active.
+	PauseReason  AgentPauseReasonOneOf `json:"pause_reason"`
+	CreatedBy    AgentCreatedByUser    `json:"created_by"`
+	Version      AgentVersionOneOf     `json:"version"`
+	AgentVersion AgentVersionOneOf     `json:"agent_version"`
+	// Whether the draft has edits not yet in the published version, or "hidden" when the caller lacks edit access to the agent.
+	HasUnpublishedChanges AgentHasUnpublishedChanges `json:"has_unpublished_changes"`
+	// ISO 8601 timestamp of the agent's most recent run, null if it has never run, or "hidden" when the caller lacks edit access to the agent.
+	LastRunTime AgentLastRunAt `json:"last_run_time"`
+	// ISO 8601 timestamp of the agent's most recent run, null if it has never run, or "hidden" when the caller lacks edit access to the agent.
+	LastRunAt AgentLastRunAt `json:"last_run_at"`
+	// The per-agent credit limit that applies to this agent, null when uncapped, or "hidden" when the caller lacks full access to the agent. This is the effective limit computed at runtime, folding in both the agent's own limit and any workspace-admin default.
+	CreditLimit AgentCreditLimit `json:"credit_limit"`
+	// The agent's configured triggers, each with a machine type, an enabled flag, and (for recurrence triggers) a structured schedule.
+	Triggers AgentTriggers `json:"triggers"`
+	// Whether this agent is in the caller's personal favorites, or null when the caller has no personal favorites scope.
+	IsFavorited *bool `json:"is_favorited"`
+	// Date and time when this agent was created.
+	CreatedTime time.Time `json:"created_time,omitzero"`
+	// Date and time when this agent was last edited.
+	LastEditedTime time.Time `json:"last_edited_time,omitzero"`
+	// The agent's inline instructions when verbose=true, or null when its instructions are stored on a page.
+	Instructions string `json:"instructions,omitzero"`
+}
+
+// What kind of agent this is: "notion_ai" is the personal agent; "custom_agent" is a standalone agent you chat with; "autofill_custom_agent" fills a database property; "external" runs through an external provider.
+type AgentAgentType string
+
+const (
+	AgentAgentTypeNotionAi            AgentAgentType = "notion_ai"
+	AgentAgentTypeCustomAgent         AgentAgentType = "custom_agent"
+	AgentAgentTypeAutofillCustomAgent AgentAgentType = "autofill_custom_agent"
+	AgentAgentTypeExternal            AgentAgentType = "external"
+)
+
+// Valid indicates whether the value is a known member of the AgentAgentType enum.
+func (e AgentAgentType) Valid() bool {
+	switch e {
+	case AgentAgentTypeNotionAi, AgentAgentTypeCustomAgent, AgentAgentTypeAutofillCustomAgent, AgentAgentTypeExternal:
+		return true
+	default:
+		return false
+	}
+}
+
 // AgentBatch defines a model
 type AgentBatch struct {
 	// The operations to apply, at least one and at most 100. Operations are applied in the order given, and the batch is not atomic: each operation succeeds or fails on its own, and per-operation outcomes are reported in the async task's result.
@@ -1390,6 +1452,16 @@ func (v *AgentConnectionsItemSlackPermissionsItemTargetSlackChannel) unmarshalJS
 	return false, nil
 }
 
+// AgentCreatedByUser defines a model
+type AgentCreatedByUser struct {
+	// Always `user`
+	Object string `json:"object"`
+	// Always `user`
+	Type string `json:"type"`
+	// The ID of the user that created this agent.
+	ID IDResponse `json:"id"`
+}
+
 // The per-agent credit limit that applies to this agent, null when uncapped, or "hidden" when the caller lacks full access to the agent. This is the effective limit computed at runtime, folding in both the agent's own limit and any workspace-admin default.
 // AgentCreditLimit is an untagged oneOf union: exactly one field is set after unmarshaling.
 type AgentCreditLimit struct {
@@ -1441,6 +1513,64 @@ func (v *AgentCreditLimit) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.Int != nil:
 		return json.MarshalEncode(enc, v.Int, jsonOpts)
+	case v.String != "":
+		return json.MarshalEncode(enc, v.String, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// Whether the draft has edits not yet in the published version, or "hidden" when the caller lacks edit access to the agent.
+// AgentHasUnpublishedChanges is an untagged oneOf union: exactly one field is set after unmarshaling.
+type AgentHasUnpublishedChanges struct {
+	Bool   *bool
+	String string
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *AgentHasUnpublishedChanges) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = AgentHasUnpublishedChanges{}
+
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv bool
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.Bool = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv string
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.String = vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *AgentHasUnpublishedChanges) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.Bool != nil:
+		return json.MarshalEncode(enc, v.Bool, jsonOpts)
 	case v.String != "":
 		return json.MarshalEncode(enc, v.String, jsonOpts)
 	}
@@ -1501,6 +1631,61 @@ func (v *AgentID) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.IDRequest, jsonOpts)
 	case v.AgentIDOneOf != "":
 		return json.MarshalEncode(enc, v.AgentIDOneOf, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// AgentID6 defines a model
+// AgentID6 is an untagged anyOf union: at least one field is set after unmarshaling.
+type AgentID6 struct {
+	IDResponse *IDResponse
+	String     string
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *AgentID6) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = AgentID6{}
+
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv IDResponse
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.IDResponse = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv string
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.String = vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *AgentID6) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.IDResponse != nil:
+		return json.MarshalEncode(enc, v.IDResponse, jsonOpts)
+	case v.String != "":
+		return json.MarshalEncode(enc, v.String, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -1598,6 +1783,26 @@ type AgentIconCustomAgentAvatarCustomAgentAvatar struct {
 	AnimatedURL string `json:"animated_url"`
 }
 
+// AgentInsights defines a model
+type AgentInsights struct {
+	// Always `agent_insights`
+	Object string          `json:"object"`
+	ID     AgentInsightsID `json:"id"`
+	Name   string          `json:"name"`
+	// One of: `notion_ai`, `custom_agent`, `autofill_custom_agent`
+	AgentType AgentInsightsAgentType `json:"agent_type"`
+	// One of: `active`, `disabled`, `deleted`
+	Status      AgentStatus           `json:"status"`
+	PauseReason AgentPauseReasonOneOf `json:"pause_reason"`
+	CreatedBy   SessionCreatedBy      `json:"created_by"`
+	// Premium AI credits consumed by this agent within the window.
+	TotalCreditsUsed float64 `json:"total_credits_used"`
+	// Enforced per-agent credit limit; null when none is configured, and "hidden" when the caller lacks full access to the agent.
+	CreditLimit AgentInsightsCreditLimit `json:"credit_limit"`
+	// Number of runs recorded for this agent within the window.
+	RunsCompleted float64 `json:"runs_completed"`
+}
+
 // AgentInsightsAgentType defines a model
 type AgentInsightsAgentType string
 
@@ -1615,6 +1820,122 @@ func (e AgentInsightsAgentType) Valid() bool {
 	default:
 		return false
 	}
+}
+
+// Enforced per-agent credit limit; null when none is configured, and "hidden" when the caller lacks full access to the agent.
+// AgentInsightsCreditLimit is an untagged oneOf union: exactly one field is set after unmarshaling.
+type AgentInsightsCreditLimit struct {
+	Float64 *float64
+	String  string
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *AgentInsightsCreditLimit) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = AgentInsightsCreditLimit{}
+
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv float64
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.Float64 = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv string
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.String = vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *AgentInsightsCreditLimit) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.Float64 != nil:
+		return json.MarshalEncode(enc, v.Float64, jsonOpts)
+	case v.String != "":
+		return json.MarshalEncode(enc, v.String, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// AgentInsightsID defines a model
+// AgentInsightsID is an untagged oneOf union: exactly one field is set after unmarshaling.
+type AgentInsightsID struct {
+	IDResponse *IDResponse
+	String     string
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *AgentInsightsID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = AgentInsightsID{}
+
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv IDResponse
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.IDResponse = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv string
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.String = vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *AgentInsightsID) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.IDResponse != nil:
+		return json.MarshalEncode(enc, v.IDResponse, jsonOpts)
+	case v.String != "":
+		return json.MarshalEncode(enc, v.String, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
 // ISO 8601 timestamp of the agent's most recent run, null if it has never run, or "hidden" when the caller lacks edit access to the agent.
@@ -1927,7 +2248,7 @@ func (e AgentListResultsItemOneOf0AgentType) Valid() bool {
 // AgentListResultsItemOneOf0CreatedByOneOf0 defines a model
 type AgentListResultsItemOneOf0CreatedByOneOf0 struct {
 	// One of: `user`, `bot`
-	Type RetrieveSessionCreatedByType `json:"type"`
+	Type SessionCreatedByType `json:"type"`
 	// The ID of the user or bot that created this agent.
 	ID IDResponse `json:"id"`
 }
@@ -2269,6 +2590,17 @@ type AnnotationResponse struct {
 	Color APIColor `json:"color"`
 }
 
+// AsyncTask defines a model
+type AsyncTask struct {
+	Object           string                     `json:"object"`
+	ID               string                     `json:"id"`
+	Status           NonTerminalAsyncTaskStatus `json:"status"`
+	StatusURL        string                     `json:"status_url"`
+	CreatedTime      time.Time                  `json:"created_time"`
+	PollAfterSeconds int                        `json:"poll_after_seconds"`
+	Operation        AsyncTaskOperation         `json:"operation"`
+}
+
 // AsyncTaskMcpOperationName defines a model
 type AsyncTaskMcpOperationName string
 
@@ -2285,6 +2617,109 @@ func (e AsyncTaskMcpOperationName) Valid() bool {
 	default:
 		return false
 	}
+}
+
+// AsyncTaskOperation defines a model
+// AsyncTaskOperation is an untagged anyOf union: at least one field is set after unmarshaling.
+type AsyncTaskOperation struct {
+	AsyncTaskOperationRest *AsyncTaskOperationRest
+	AsyncTaskOperationMcp  *AsyncTaskOperationMcp
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member surface names the alternative, which then
+// decodes each further member as it is read. With surface first, nothing is read twice.
+func (v *AsyncTaskOperation) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = AsyncTaskOperation{}
+
+	tag, first, dec, err := jsonFirstMember(dec, "surface")
+	if err != nil {
+		return err
+	}
+
+	switch tag {
+	case "rest":
+		var vv AsyncTaskOperationRest
+		if err := jsonMembersFrom(dec, "surface", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.AsyncTaskOperationRest = &vv
+	case "mcp":
+		var vv AsyncTaskOperationMcp
+		if err := jsonMembersFrom(dec, "surface", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.AsyncTaskOperationMcp = &vv
+	default:
+		return jsonUnknownValue("surface", tag)
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with surface first, as decoding wants it, and set to the variant's value.
+func (v *AsyncTaskOperation) MarshalJSONTo(enc *jsontext.Encoder) error {
+	var (
+		variant any
+		tag     string
+	)
+
+	switch {
+	case v.AsyncTaskOperationRest != nil:
+		variant, tag = v.AsyncTaskOperationRest, "rest"
+	case v.AsyncTaskOperationMcp != nil:
+		variant, tag = v.AsyncTaskOperationMcp, "mcp"
+	default:
+		return &json.SemanticError{Err: errors.New("no alternative set")}
+	}
+
+	out, err := json.Marshal(variant, jsonOpts)
+	if err != nil {
+		return err
+	}
+
+	if out, err = jsonFirst(out, "surface", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
+}
+
+// AsyncTaskOperationMcp defines a model
+type AsyncTaskOperationMcp struct {
+	Surface string                    `json:"surface"`
+	Name    AsyncTaskMcpOperationName `json:"name"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AsyncTaskOperationMcp declares it.
+func (v *AsyncTaskOperationMcp) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "surface":
+		return true, json.UnmarshalDecode(dec, &v.Surface, jsonOptsOf(dec))
+	case "name":
+		return true, json.UnmarshalDecode(dec, &v.Name, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// AsyncTaskOperationRest defines a model
+type AsyncTaskOperationRest struct {
+	Surface string                     `json:"surface"`
+	Name    AsyncTaskRestOperationName `json:"name"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AsyncTaskOperationRest declares it.
+func (v *AsyncTaskOperationRest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "surface":
+		return true, json.UnmarshalDecode(dec, &v.Surface, jsonOptsOf(dec))
+	case "name":
+		return true, json.UnmarshalDecode(dec, &v.Name, jsonOptsOf(dec))
+	}
+
+	return false, nil
 }
 
 // AsyncTaskRestOperationName defines a model
@@ -4206,62 +4641,15 @@ type CancelSession2 struct {
 	AgentID string `json:"agent_id"`
 	Title   string `json:"title"`
 	// One of: `queued`, `in_progress`, `requires_action`, `completed`, `failed`, `canceled`, `terminated`
-	Status          CancelSessionStatus          `json:"status"`
+	Status          SessionStatus                `json:"status"`
 	CreatedAt       time.Time                    `json:"created_at"`
 	UpdatedAt       time.Time                    `json:"updated_at"`
 	RequiredActions CancelSessionRequiredActions `json:"required_actions,omitzero"`
-	Err             CancelSessionError           `json:"error,omitzero"`
-}
-
-// CancelSessionError defines a model
-type CancelSessionError struct {
-	Code      string `json:"code"`
-	Message   string `json:"message"`
-	Retryable bool   `json:"retryable"`
+	Err             SessionError                 `json:"error,omitzero"`
 }
 
 // CancelSessionRequiredActions defines a model
-type CancelSessionRequiredActions []CancelSessionRequiredActionsItem
-
-// CancelSessionRequiredActionsItem defines a model
-type CancelSessionRequiredActionsItem struct {
-	ActionID string                            `json:"action_id"`
-	Title    string                            `json:"title"`
-	Options  CancelSessionRequiredActionsItem2 `json:"options"`
-}
-
-// CancelSessionRequiredActionsItem2 defines a model
-type CancelSessionRequiredActionsItem2 []CancelSessionRequiredActionsItem3
-
-// CancelSessionRequiredActionsItem3 defines a model
-type CancelSessionRequiredActionsItem3 struct {
-	// One of: `approve`, `reject`
-	ID    UpdateSessionOneOfActionsItemOptionID `json:"id"`
-	Label string                                `json:"label"`
-}
-
-// CancelSessionStatus defines a model
-type CancelSessionStatus string
-
-const (
-	CancelSessionStatusQueued         CancelSessionStatus = "queued"
-	CancelSessionStatusInProgress     CancelSessionStatus = "in_progress"
-	CancelSessionStatusRequiresAction CancelSessionStatus = "requires_action"
-	CancelSessionStatusCompleted      CancelSessionStatus = "completed"
-	CancelSessionStatusFailed         CancelSessionStatus = "failed"
-	CancelSessionStatusCanceled       CancelSessionStatus = "canceled"
-	CancelSessionStatusTerminated     CancelSessionStatus = "terminated"
-)
-
-// Valid indicates whether the value is a known member of the CancelSessionStatus enum.
-func (e CancelSessionStatus) Valid() bool {
-	switch e {
-	case CancelSessionStatusQueued, CancelSessionStatusInProgress, CancelSessionStatusRequiresAction, CancelSessionStatusCompleted, CancelSessionStatusFailed, CancelSessionStatusCanceled, CancelSessionStatusTerminated:
-		return true
-	default:
-		return false
-	}
-}
+type CancelSessionRequiredActions []SessionRequiredActionsItem
 
 // The aggregation operator. "count" counts all rows and does not require a property_id. All other operators require a property_id.
 type ChartAggregationAggregator string
@@ -9133,327 +9521,6 @@ func (v *GalleryViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, n
 	return false, nil
 }
 
-// GetAgentInsightsOk defines a model
-type GetAgentInsightsOk struct {
-	// Always `agent_insights`
-	Object string               `json:"object"`
-	ID     GetAgentInsightsOkID `json:"id"`
-	Name   string               `json:"name"`
-	// One of: `notion_ai`, `custom_agent`, `autofill_custom_agent`
-	AgentType AgentInsightsAgentType `json:"agent_type"`
-	// One of: `active`, `disabled`, `deleted`
-	Status      AgentStatus              `json:"status"`
-	PauseReason AgentPauseReasonOneOf    `json:"pause_reason"`
-	CreatedBy   RetrieveSessionCreatedBy `json:"created_by"`
-	// Premium AI credits consumed by this agent within the window.
-	TotalCreditsUsed float64 `json:"total_credits_used"`
-	// Enforced per-agent credit limit; null when none is configured, and "hidden" when the caller lacks full access to the agent.
-	CreditLimit GetAgentInsightsOkCreditLimit `json:"credit_limit"`
-	// Number of runs recorded for this agent within the window.
-	RunsCompleted float64 `json:"runs_completed"`
-}
-
-// Enforced per-agent credit limit; null when none is configured, and "hidden" when the caller lacks full access to the agent.
-// GetAgentInsightsOkCreditLimit is an untagged oneOf union: exactly one field is set after unmarshaling.
-type GetAgentInsightsOkCreditLimit struct {
-	Float64 *float64
-	String  string
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *GetAgentInsightsOkCreditLimit) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = GetAgentInsightsOkCreditLimit{}
-
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv float64
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.Float64 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv string
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.String = vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *GetAgentInsightsOkCreditLimit) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.Float64 != nil:
-		return json.MarshalEncode(enc, v.Float64, jsonOpts)
-	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// GetAgentInsightsOkID defines a model
-// GetAgentInsightsOkID is an untagged oneOf union: exactly one field is set after unmarshaling.
-type GetAgentInsightsOkID struct {
-	IDResponse *IDResponse
-	String     string
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *GetAgentInsightsOkID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = GetAgentInsightsOkID{}
-
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv IDResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.IDResponse = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv string
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.String = vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *GetAgentInsightsOkID) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.IDResponse != nil:
-		return json.MarshalEncode(enc, v.IDResponse, jsonOpts)
-	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// GetAgentOk defines a model
-type GetAgentOk struct {
-	// Always `agent`
-	Object string       `json:"object"`
-	ID     GetAgentOkID `json:"id"`
-	// What kind of agent this is: "notion_ai" is the personal agent; "custom_agent" is a standalone agent you chat with; "autofill_custom_agent" fills a database property; "external" runs through an external provider.
-	AgentType          GetAgentOkAgentType `json:"agent_type"`
-	Name               string              `json:"name"`
-	Description        string              `json:"description"`
-	InstructionsPageID IDResponse          `json:"instructions_page_id"`
-	Icon               AgentIcon           `json:"icon"`
-	// The model the agent runs on: auto (Notion selects) or a pinned model.
-	Model AgentModel `json:"model"`
-	// Integrations the agent is connected to (Notion, Slack, Discord, MCP servers, and other connectors), each with an account and per-target permissions.
-	Connections []AgentConnectionsItem `json:"connections"`
-	// "active" when the agent can run; "disabled" when it is paused (see pause_reason); "deleted" when it has been removed.
-	Status AgentStatus `json:"status"`
-	// Why the agent is paused when status is "disabled" (e.g. "credit_limit", "disabled_from_workspace_settings"); null when active.
-	PauseReason  AgentPauseReasonOneOf   `json:"pause_reason"`
-	CreatedBy    GetAgentOkCreatedByUser `json:"created_by"`
-	Version      AgentVersionOneOf       `json:"version"`
-	AgentVersion AgentVersionOneOf       `json:"agent_version"`
-	// Whether the draft has edits not yet in the published version, or "hidden" when the caller lacks edit access to the agent.
-	HasUnpublishedChanges GetAgentOkHasUnpublishedChanges `json:"has_unpublished_changes"`
-	// ISO 8601 timestamp of the agent's most recent run, null if it has never run, or "hidden" when the caller lacks edit access to the agent.
-	LastRunTime AgentLastRunAt `json:"last_run_time"`
-	// ISO 8601 timestamp of the agent's most recent run, null if it has never run, or "hidden" when the caller lacks edit access to the agent.
-	LastRunAt AgentLastRunAt `json:"last_run_at"`
-	// The per-agent credit limit that applies to this agent, null when uncapped, or "hidden" when the caller lacks full access to the agent. This is the effective limit computed at runtime, folding in both the agent's own limit and any workspace-admin default.
-	CreditLimit AgentCreditLimit `json:"credit_limit"`
-	// The agent's configured triggers, each with a machine type, an enabled flag, and (for recurrence triggers) a structured schedule.
-	Triggers AgentTriggers `json:"triggers"`
-	// Whether this agent is in the caller's personal favorites, or null when the caller has no personal favorites scope.
-	IsFavorited *bool `json:"is_favorited"`
-	// Date and time when this agent was created.
-	CreatedTime time.Time `json:"created_time,omitzero"`
-	// Date and time when this agent was last edited.
-	LastEditedTime time.Time `json:"last_edited_time,omitzero"`
-	// The agent's inline instructions when verbose=true, or null when its instructions are stored on a page.
-	Instructions string `json:"instructions,omitzero"`
-}
-
-// What kind of agent this is: "notion_ai" is the personal agent; "custom_agent" is a standalone agent you chat with; "autofill_custom_agent" fills a database property; "external" runs through an external provider.
-type GetAgentOkAgentType string
-
-const (
-	GetAgentOkAgentTypeNotionAi            GetAgentOkAgentType = "notion_ai"
-	GetAgentOkAgentTypeCustomAgent         GetAgentOkAgentType = "custom_agent"
-	GetAgentOkAgentTypeAutofillCustomAgent GetAgentOkAgentType = "autofill_custom_agent"
-	GetAgentOkAgentTypeExternal            GetAgentOkAgentType = "external"
-)
-
-// Valid indicates whether the value is a known member of the GetAgentOkAgentType enum.
-func (e GetAgentOkAgentType) Valid() bool {
-	switch e {
-	case GetAgentOkAgentTypeNotionAi, GetAgentOkAgentTypeCustomAgent, GetAgentOkAgentTypeAutofillCustomAgent, GetAgentOkAgentTypeExternal:
-		return true
-	default:
-		return false
-	}
-}
-
-// GetAgentOkCreatedByUser defines a model
-type GetAgentOkCreatedByUser struct {
-	// Always `user`
-	Object string `json:"object"`
-	// Always `user`
-	Type string `json:"type"`
-	// The ID of the user that created this agent.
-	ID IDResponse `json:"id"`
-}
-
-// Whether the draft has edits not yet in the published version, or "hidden" when the caller lacks edit access to the agent.
-// GetAgentOkHasUnpublishedChanges is an untagged oneOf union: exactly one field is set after unmarshaling.
-type GetAgentOkHasUnpublishedChanges struct {
-	Bool   *bool
-	String string
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *GetAgentOkHasUnpublishedChanges) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = GetAgentOkHasUnpublishedChanges{}
-
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv bool
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.Bool = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv string
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.String = vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *GetAgentOkHasUnpublishedChanges) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.Bool != nil:
-		return json.MarshalEncode(enc, v.Bool, jsonOpts)
-	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// GetAgentOkID defines a model
-// GetAgentOkID is an untagged anyOf union: at least one field is set after unmarshaling.
-type GetAgentOkID struct {
-	IDResponse *IDResponse
-	String     string
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *GetAgentOkID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = GetAgentOkID{}
-
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv IDResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.IDResponse = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv string
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.String = vv
-			matched++
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *GetAgentOkID) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.IDResponse != nil:
-		return json.MarshalEncode(enc, v.IDResponse, jsonOpts)
-	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
 // GetPluginDirectoryOk defines a model
 type GetPluginDirectoryOk struct {
 	ID string `json:"id"`
@@ -13777,120 +13844,6 @@ type PostPage struct {
 	AllowAsync *bool              `json:"allow_async,omitzero"`
 	Template   PostPageTemplate   `json:"template,omitzero"`
 	Position   PagePositionSchema `json:"position,omitzero"`
-}
-
-// PostPageAccepted defines a model
-type PostPageAccepted struct {
-	Object           string                     `json:"object"`
-	ID               string                     `json:"id"`
-	Status           NonTerminalAsyncTaskStatus `json:"status"`
-	StatusURL        string                     `json:"status_url"`
-	CreatedTime      time.Time                  `json:"created_time"`
-	PollAfterSeconds int                        `json:"poll_after_seconds"`
-	Operation        PostPageAcceptedOperation  `json:"operation"`
-}
-
-// PostPageAcceptedOperation defines a model
-// PostPageAcceptedOperation is an untagged anyOf union: at least one field is set after unmarshaling.
-type PostPageAcceptedOperation struct {
-	PostPageAcceptedOperationRest *PostPageAcceptedOperationRest
-	PostPageAcceptedOperationMcp  *PostPageAcceptedOperationMcp
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member surface names the alternative, which then
-// decodes each further member as it is read. With surface first, nothing is read twice.
-func (v *PostPageAcceptedOperation) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = PostPageAcceptedOperation{}
-
-	tag, first, dec, err := jsonFirstMember(dec, "surface")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "rest":
-		var vv PostPageAcceptedOperationRest
-		if err := jsonMembersFrom(dec, "surface", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.PostPageAcceptedOperationRest = &vv
-	case "mcp":
-		var vv PostPageAcceptedOperationMcp
-		if err := jsonMembersFrom(dec, "surface", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.PostPageAcceptedOperationMcp = &vv
-	default:
-		return jsonUnknownValue("surface", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with surface first, as decoding wants it, and set to the variant's value.
-func (v *PostPageAcceptedOperation) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.PostPageAcceptedOperationRest != nil:
-		variant, tag = v.PostPageAcceptedOperationRest, "rest"
-	case v.PostPageAcceptedOperationMcp != nil:
-		variant, tag = v.PostPageAcceptedOperationMcp, "mcp"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "surface", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
-// PostPageAcceptedOperationMcp defines a model
-type PostPageAcceptedOperationMcp struct {
-	Surface string                    `json:"surface"`
-	Name    AsyncTaskMcpOperationName `json:"name"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PostPageAcceptedOperationMcp declares it.
-func (v *PostPageAcceptedOperationMcp) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "surface":
-		return true, json.UnmarshalDecode(dec, &v.Surface, jsonOptsOf(dec))
-	case "name":
-		return true, json.UnmarshalDecode(dec, &v.Name, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// PostPageAcceptedOperationRest defines a model
-type PostPageAcceptedOperationRest struct {
-	Surface string                     `json:"surface"`
-	Name    AsyncTaskRestOperationName `json:"name"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PostPageAcceptedOperationRest declares it.
-func (v *PostPageAcceptedOperationRest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "surface":
-		return true, json.UnmarshalDecode(dec, &v.Surface, jsonOptsOf(dec))
-	case "name":
-		return true, json.UnmarshalDecode(dec, &v.Name, jsonOptsOf(dec))
-	}
-
-	return false, nil
 }
 
 // PostPageParent defines a model
@@ -18504,13 +18457,13 @@ type QuerySessionsFilterStatus struct {
 // A session status comparison.
 type QuerySessionsFilterStatus2 struct {
 	// Return sessions with this status.
-	Equals CancelSessionStatus `json:"equals,omitzero"`
+	Equals SessionStatus `json:"equals,omitzero"`
 	// Return sessions with any of these statuses.
 	In QuerySessionsFilterStatusIn `json:"in,omitzero"`
 }
 
 // Return sessions with any of these statuses.
-type QuerySessionsFilterStatusIn []CancelSessionStatus
+type QuerySessionsFilterStatusIn []SessionStatus
 
 // Filter sessions by status.
 type QuerySessionsFilterStatusProperty string
@@ -19830,169 +19783,6 @@ type RetrieveAsyncTaskOkSucceeded struct {
 	Result      map[string]PublicAPIAsyncTaskStatusResultJSONValue `json:"result"`
 }
 
-// RetrieveSessionAgentVersionOneOf defines a model
-type RetrieveSessionAgentVersionOneOf struct {
-	ID          string    `json:"id"`
-	Number      int       `json:"number"`
-	PublishedAt time.Time `json:"published_at"`
-}
-
-// RetrieveSessionCreatedBy defines a model
-type RetrieveSessionCreatedBy struct {
-	ID string `json:"id"`
-	// One of: `user`, `bot`
-	Type RetrieveSessionCreatedByType `json:"type"`
-}
-
-// One of: `user`, `bot`
-type RetrieveSessionCreatedByType string
-
-const (
-	RetrieveSessionCreatedByTypeUser RetrieveSessionCreatedByType = "user"
-	RetrieveSessionCreatedByTypeBot  RetrieveSessionCreatedByType = "bot"
-)
-
-// Valid indicates whether the value is a known member of the RetrieveSessionCreatedByType enum.
-func (e RetrieveSessionCreatedByType) Valid() bool {
-	switch e {
-	case RetrieveSessionCreatedByTypeUser, RetrieveSessionCreatedByTypeBot:
-		return true
-	default:
-		return false
-	}
-}
-
-// RetrieveSessionModels defines a model
-// RetrieveSessionModels is an untagged oneOf union: exactly one field is set after unmarshaling.
-type RetrieveSessionModels struct {
-	RetrieveSessionModelsAuto   *RetrieveSessionModelsAuto
-	RetrieveSessionModelsPinned *RetrieveSessionModelsPinned
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
-func (v *RetrieveSessionModels) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = RetrieveSessionModels{}
-
-	tag, first, dec, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "auto":
-		var vv RetrieveSessionModelsAuto
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.RetrieveSessionModelsAuto = &vv
-	case "pinned":
-		var vv RetrieveSessionModelsPinned
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.RetrieveSessionModelsPinned = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *RetrieveSessionModels) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.RetrieveSessionModelsAuto != nil:
-		variant, tag = v.RetrieveSessionModelsAuto, "auto"
-	case v.RetrieveSessionModelsPinned != nil:
-		variant, tag = v.RetrieveSessionModelsPinned, "pinned"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
-// RetrieveSessionModelsAuto defines a model
-type RetrieveSessionModelsAuto struct {
-	// Always `auto`
-	Type string `json:"type"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveSessionModelsAuto declares it.
-func (v *RetrieveSessionModelsAuto) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// RetrieveSessionModelsPinned defines a model
-type RetrieveSessionModelsPinned struct {
-	// Always `pinned`
-	Type string   `json:"type"`
-	Ids  []string `json:"ids"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveSessionModelsPinned declares it.
-func (v *RetrieveSessionModelsPinned) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "ids":
-		return true, json.UnmarshalDecode(dec, &v.Ids, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// RetrieveSessionOk defines a model
-type RetrieveSessionOk struct {
-	// Always `session`
-	Object  string `json:"object"`
-	ID      string `json:"id"`
-	AgentID string `json:"agent_id"`
-	Title   string `json:"title"`
-	// One of: `queued`, `in_progress`, `requires_action`, `completed`, `failed`, `canceled`, `terminated`
-	Status          CancelSessionStatus              `json:"status"`
-	CreatedAt       time.Time                        `json:"created_at"`
-	UpdatedAt       time.Time                        `json:"updated_at"`
-	CreatedBy       RetrieveSessionCreatedBy         `json:"created_by"`
-	AgentVersion    RetrieveSessionAgentVersionOneOf `json:"agent_version"`
-	Models          RetrieveSessionModels            `json:"models"`
-	RequiredActions RetrieveSessionRequiredActions   `json:"required_actions,omitzero"`
-	Err             CancelSessionError               `json:"error,omitzero"`
-	TriggerType     string                           `json:"trigger_type,omitzero"`
-	TypeLabels      []string                         `json:"type_labels,omitzero"`
-	ChatUserEmails  []string                         `json:"chat_user_emails,omitzero"`
-	ToolTypes       []string                         `json:"tool_types,omitzero"`
-	ToolCallCount   *int                             `json:"tool_call_count,omitzero"`
-	CreditsUsed     *float64                         `json:"credits_used,omitzero"`
-	RunsCompleted   *int                             `json:"runs_completed,omitzero"`
-	MessageCount    *int                             `json:"message_count,omitzero"`
-}
-
-// RetrieveSessionRequiredActions defines a model
-type RetrieveSessionRequiredActions []CancelSessionRequiredActionsItem
-
 // RevokeToken defines a model
 type RevokeToken struct {
 	Token string `json:"token"`
@@ -21075,6 +20865,71 @@ type SelectPropertyFilterEquals struct {
 	Equals StringOrStringArray `json:"equals"`
 }
 
+// Session defines a model
+type Session struct {
+	// Always `session`
+	Object  string `json:"object"`
+	ID      string `json:"id"`
+	AgentID string `json:"agent_id"`
+	Title   string `json:"title"`
+	// One of: `queued`, `in_progress`, `requires_action`, `completed`, `failed`, `canceled`, `terminated`
+	Status          SessionStatus            `json:"status"`
+	CreatedAt       time.Time                `json:"created_at"`
+	UpdatedAt       time.Time                `json:"updated_at"`
+	CreatedBy       SessionCreatedBy         `json:"created_by"`
+	AgentVersion    SessionAgentVersionOneOf `json:"agent_version"`
+	Models          SessionModels            `json:"models"`
+	RequiredActions SessionRequiredActions   `json:"required_actions,omitzero"`
+	Err             SessionError             `json:"error,omitzero"`
+	TriggerType     string                   `json:"trigger_type,omitzero"`
+	TypeLabels      []string                 `json:"type_labels,omitzero"`
+	ChatUserEmails  []string                 `json:"chat_user_emails,omitzero"`
+	ToolTypes       []string                 `json:"tool_types,omitzero"`
+	ToolCallCount   *int                     `json:"tool_call_count,omitzero"`
+	CreditsUsed     *float64                 `json:"credits_used,omitzero"`
+	RunsCompleted   *int                     `json:"runs_completed,omitzero"`
+	MessageCount    *int                     `json:"message_count,omitzero"`
+}
+
+// SessionAgentVersionOneOf defines a model
+type SessionAgentVersionOneOf struct {
+	ID          string    `json:"id"`
+	Number      int       `json:"number"`
+	PublishedAt time.Time `json:"published_at"`
+}
+
+// SessionCreatedBy defines a model
+type SessionCreatedBy struct {
+	ID string `json:"id"`
+	// One of: `user`, `bot`
+	Type SessionCreatedByType `json:"type"`
+}
+
+// One of: `user`, `bot`
+type SessionCreatedByType string
+
+const (
+	SessionCreatedByTypeUser SessionCreatedByType = "user"
+	SessionCreatedByTypeBot  SessionCreatedByType = "bot"
+)
+
+// Valid indicates whether the value is a known member of the SessionCreatedByType enum.
+func (e SessionCreatedByType) Valid() bool {
+	switch e {
+	case SessionCreatedByTypeUser, SessionCreatedByTypeBot:
+		return true
+	default:
+		return false
+	}
+}
+
+// SessionError defines a model
+type SessionError struct {
+	Code      string `json:"code"`
+	Message   string `json:"message"`
+	Retryable bool   `json:"retryable"`
+}
+
 // SessionEventList defines a model
 type SessionEventList struct {
 	// Always `list`
@@ -21206,7 +21061,7 @@ type SessionEventListResultsItemAgentMessage struct {
 	// Always `agent.message`
 	Type      string                                               `json:"type"`
 	Content   []SessionEventListResultsItemUserMessageContentItem  `json:"content"`
-	CreatedBy RetrieveSessionCreatedBy                             `json:"created_by"`
+	CreatedBy SessionCreatedBy                                     `json:"created_by"`
 	Metadata  SessionEventListResultsItemAgentMessageMetadataModel `json:"metadata"`
 }
 
@@ -21367,8 +21222,8 @@ type SessionEventListResultsItemSessionStatus struct {
 	Type string `json:"type"`
 	// One of: `requires_action`, `completed`, `failed`, `canceled`, `terminated`
 	Status          SessionEventListResultsItemSessionStatusStatus `json:"status"`
-	RequiredActions RetrieveSessionRequiredActions                 `json:"required_actions,omitzero"`
-	Err             CancelSessionError                             `json:"error,omitzero"`
+	RequiredActions SessionRequiredActions                         `json:"required_actions,omitzero"`
+	Err             SessionError                                   `json:"error,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether SessionEventListResultsItemSessionStatus declares it.
@@ -21429,7 +21284,7 @@ type SessionEventListResultsItemUserMessage struct {
 	// Always `user.message`
 	Type      string                                              `json:"type"`
 	Content   []SessionEventListResultsItemUserMessageContentItem `json:"content"`
-	CreatedBy RetrieveSessionCreatedBy                            `json:"created_by"`
+	CreatedBy SessionCreatedBy                                    `json:"created_by"`
 	Metadata  map[string]string                                   `json:"metadata"`
 }
 
@@ -21600,22 +21455,185 @@ type SessionListResultsItem struct {
 	AgentID string `json:"agent_id"`
 	Title   string `json:"title"`
 	// One of: `queued`, `in_progress`, `requires_action`, `completed`, `failed`, `canceled`, `terminated`
-	Status          CancelSessionStatus              `json:"status"`
-	CreatedBy       RetrieveSessionCreatedBy         `json:"created_by"`
-	AgentVersion    RetrieveSessionAgentVersionOneOf `json:"agent_version"`
-	Models          RetrieveSessionModels            `json:"models"`
-	CreatedAt       time.Time                        `json:"created_at"`
-	UpdatedAt       time.Time                        `json:"updated_at"`
-	RequiredActions RetrieveSessionRequiredActions   `json:"required_actions,omitzero"`
-	Err             CancelSessionError               `json:"error,omitzero"`
-	TriggerType     string                           `json:"trigger_type,omitzero"`
-	TypeLabels      []string                         `json:"type_labels,omitzero"`
-	ChatUserEmails  []string                         `json:"chat_user_emails,omitzero"`
-	ToolTypes       []string                         `json:"tool_types,omitzero"`
-	ToolCallCount   *int                             `json:"tool_call_count,omitzero"`
-	CreditsUsed     *float64                         `json:"credits_used,omitzero"`
-	RunsCompleted   *int                             `json:"runs_completed,omitzero"`
-	MessageCount    *int                             `json:"message_count,omitzero"`
+	Status          SessionStatus            `json:"status"`
+	CreatedBy       SessionCreatedBy         `json:"created_by"`
+	AgentVersion    SessionAgentVersionOneOf `json:"agent_version"`
+	Models          SessionModels            `json:"models"`
+	CreatedAt       time.Time                `json:"created_at"`
+	UpdatedAt       time.Time                `json:"updated_at"`
+	RequiredActions SessionRequiredActions   `json:"required_actions,omitzero"`
+	Err             SessionError             `json:"error,omitzero"`
+	TriggerType     string                   `json:"trigger_type,omitzero"`
+	TypeLabels      []string                 `json:"type_labels,omitzero"`
+	ChatUserEmails  []string                 `json:"chat_user_emails,omitzero"`
+	ToolTypes       []string                 `json:"tool_types,omitzero"`
+	ToolCallCount   *int                     `json:"tool_call_count,omitzero"`
+	CreditsUsed     *float64                 `json:"credits_used,omitzero"`
+	RunsCompleted   *int                     `json:"runs_completed,omitzero"`
+	MessageCount    *int                     `json:"message_count,omitzero"`
+}
+
+// SessionModels defines a model
+// SessionModels is an untagged oneOf union: exactly one field is set after unmarshaling.
+type SessionModels struct {
+	SessionModelsAuto   *SessionModelsAuto
+	SessionModelsPinned *SessionModelsPinned
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
+// decodes each further member as it is read. With type first, nothing is read twice.
+func (v *SessionModels) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = SessionModels{}
+
+	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if err != nil {
+		return err
+	}
+
+	switch tag {
+	case "auto":
+		var vv SessionModelsAuto
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.SessionModelsAuto = &vv
+	case "pinned":
+		var vv SessionModelsPinned
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.SessionModelsPinned = &vv
+	default:
+		return jsonUnknownValue("type", tag)
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+func (v *SessionModels) MarshalJSONTo(enc *jsontext.Encoder) error {
+	var (
+		variant any
+		tag     string
+	)
+
+	switch {
+	case v.SessionModelsAuto != nil:
+		variant, tag = v.SessionModelsAuto, "auto"
+	case v.SessionModelsPinned != nil:
+		variant, tag = v.SessionModelsPinned, "pinned"
+	default:
+		return &json.SemanticError{Err: errors.New("no alternative set")}
+	}
+
+	out, err := json.Marshal(variant, jsonOpts)
+	if err != nil {
+		return err
+	}
+
+	if out, err = jsonFirst(out, "type", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
+}
+
+// SessionModelsAuto defines a model
+type SessionModelsAuto struct {
+	// Always `auto`
+	Type string `json:"type"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether SessionModelsAuto declares it.
+func (v *SessionModelsAuto) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// SessionModelsPinned defines a model
+type SessionModelsPinned struct {
+	// Always `pinned`
+	Type string   `json:"type"`
+	Ids  []string `json:"ids"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether SessionModelsPinned declares it.
+func (v *SessionModelsPinned) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "ids":
+		return true, json.UnmarshalDecode(dec, &v.Ids, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// SessionRequiredActions defines a model
+type SessionRequiredActions []SessionRequiredActionsItem
+
+// SessionRequiredActionsItem defines a model
+type SessionRequiredActionsItem struct {
+	ActionID string                      `json:"action_id"`
+	Title    string                      `json:"title"`
+	Options  SessionRequiredActionsItem2 `json:"options"`
+}
+
+// SessionRequiredActionsItem2 defines a model
+type SessionRequiredActionsItem2 []SessionRequiredActionsItem3
+
+// SessionRequiredActionsItem3 defines a model
+type SessionRequiredActionsItem3 struct {
+	// One of: `approve`, `reject`
+	ID    SessionRequiredActionsItemID `json:"id"`
+	Label string                       `json:"label"`
+}
+
+// One of: `approve`, `reject`
+type SessionRequiredActionsItemID string
+
+const (
+	SessionRequiredActionsItemIDApprove SessionRequiredActionsItemID = "approve"
+	SessionRequiredActionsItemIDReject  SessionRequiredActionsItemID = "reject"
+)
+
+// Valid indicates whether the value is a known member of the SessionRequiredActionsItemID enum.
+func (e SessionRequiredActionsItemID) Valid() bool {
+	switch e {
+	case SessionRequiredActionsItemIDApprove, SessionRequiredActionsItemIDReject:
+		return true
+	default:
+		return false
+	}
+}
+
+// SessionStatus defines a model
+type SessionStatus string
+
+const (
+	SessionStatusQueued         SessionStatus = "queued"
+	SessionStatusInProgress     SessionStatus = "in_progress"
+	SessionStatusRequiresAction SessionStatus = "requires_action"
+	SessionStatusCompleted      SessionStatus = "completed"
+	SessionStatusFailed         SessionStatus = "failed"
+	SessionStatusCanceled       SessionStatus = "canceled"
+	SessionStatusTerminated     SessionStatus = "terminated"
+)
+
+// Valid indicates whether the value is a known member of the SessionStatus enum.
+func (e SessionStatus) Valid() bool {
+	switch e {
+	case SessionStatusQueued, SessionStatusInProgress, SessionStatusRequiresAction, SessionStatusCompleted, SessionStatusFailed, SessionStatusCanceled, SessionStatusTerminated:
+		return true
+	default:
+		return false
+	}
 }
 
 // SimpleOrArrayPropertyValueResponse defines a model
@@ -24978,24 +24996,6 @@ type UpdatePageMarkdownAllOf0UpdateContentUpdateContentContentUpdatesItem struct
 	ReplaceAllMatches *bool `json:"replace_all_matches,omitzero"`
 }
 
-// One of: `approve`, `reject`
-type UpdateSessionOneOfActionsItemOptionID string
-
-const (
-	UpdateSessionOneOfActionsItemOptionIDApprove UpdateSessionOneOfActionsItemOptionID = "approve"
-	UpdateSessionOneOfActionsItemOptionIDReject  UpdateSessionOneOfActionsItemOptionID = "reject"
-)
-
-// Valid indicates whether the value is a known member of the UpdateSessionOneOfActionsItemOptionID enum.
-func (e UpdateSessionOneOfActionsItemOptionID) Valid() bool {
-	switch e {
-	case UpdateSessionOneOfActionsItemOptionIDApprove, UpdateSessionOneOfActionsItemOptionIDReject:
-		return true
-	default:
-		return false
-	}
-}
-
 // Exactly one mode: append a message, answer pending actions, or replay from an event.
 // UpdateSessionRequest is an untagged oneOf union: exactly one field is set after unmarshaling.
 type UpdateSessionRequest struct {
@@ -25106,7 +25106,7 @@ type UpdateSessionRequestOneOf1Actions []UpdateSessionRequestOneOf1ActionsItem
 type UpdateSessionRequestOneOf1ActionsItem struct {
 	ActionID IDRequest `json:"action_id"`
 	// One of: `approve`, `reject`
-	OptionID UpdateSessionOneOfActionsItemOptionID `json:"option_id"`
+	OptionID SessionRequiredActionsItemID `json:"option_id"`
 }
 
 // UpdateSessionRequestOneOf2 defines a model

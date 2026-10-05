@@ -9834,8 +9834,8 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 // Get agent
 //
 //	GET /agents/{agent_id}
-func (c *Client) GetAgent(ctx context.Context, agentID string, params *GetAgentParams) (*GetAgentOk, error) {
-	return c.GetAgentWithResult[GetAgentOk](ctx, agentID, params)
+func (c *Client) GetAgent(ctx context.Context, agentID string, params *GetAgentParams) (*Agent, error) {
+	return c.GetAgentWithResult[Agent](ctx, agentID, params)
 }
 
 // Get agent
@@ -10242,8 +10242,8 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 // Get agent insights
 //
 //	GET /agents/{agent_id}/insights
-func (c *Client) GetAgentInsights(ctx context.Context, agentID string, params *GetAgentInsightsParams) (*GetAgentInsightsOk, error) {
-	return c.GetAgentInsightsWithResult[GetAgentInsightsOk](ctx, agentID, params)
+func (c *Client) GetAgentInsights(ctx context.Context, agentID string, params *GetAgentInsightsParams) (*AgentInsights, error) {
+	return c.GetAgentInsightsWithResult[AgentInsights](ctx, agentID, params)
 }
 
 // Get agent insights
@@ -11890,8 +11890,8 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 // Retrieve a session
 //
 //	GET /sessions/{session_id}
-func (c *Client) RetrieveSession(ctx context.Context, sessionID IDRequest) (*RetrieveSessionOk, error) {
-	return c.RetrieveSessionWithResult[RetrieveSessionOk](ctx, sessionID)
+func (c *Client) RetrieveSession(ctx context.Context, sessionID IDRequest) (*Session, error) {
+	return c.RetrieveSessionWithResult[Session](ctx, sessionID)
 }
 
 // Retrieve a session

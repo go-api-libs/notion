@@ -10,6 +10,7 @@ import (
 	"io"
 	"iter"
 	"log"
+	"maps"
 	"net/http"
 	"os"
 	"slices"
@@ -365,6 +366,27 @@ func nameLists(doc *openapi.Document) {
 		} else {
 			moveToComponents(doc, s, name)
 		}
+	}
+}
+
+// nameObjects names each object Notion responds with after what it is, such as Session. Of the bodies that are the
+// same object, the one with the most properties takes the name, as the others are partial forms of it.
+func nameObjects(doc *openapi.Document) {
+	fullest := map[string]*openapi.Schema{}
+
+	for s := range bodies(doc) {
+		object, ok := constString(s.Properties["object"])
+		if !ok || object == "list" || s.Ref != nil {
+			continue
+		}
+
+		if f, ok := fullest[object]; !ok || len(s.Properties) > len(f.Properties) {
+			fullest[object] = s
+		}
+	}
+
+	for _, object := range slices.Sorted(maps.Keys(fullest)) {
+		moveToComponents(doc, fullest[object], strcase.ToGoPascal(object))
 	}
 }
 
@@ -747,6 +769,7 @@ func fixOpenAPI() (*openapi.Document, error) {
 	}
 
 	nameLists(doc)
+	nameObjects(doc)
 	nameBranches(doc)
 
 	if err := allowDateTimes(doc, "dateResponse", "start", "end"); err != nil {

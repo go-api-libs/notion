@@ -4992,6 +4992,130 @@
   },
   "components": {
     "schemas": {
+      "Agent": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `agent`",
+            "type": "string",
+            "const": "agent"
+          },
+          "id": {
+            "$ref": "#/components/schemas/AgentID6"
+          },
+          "agent_type": {
+            "$ref": "#/components/schemas/AgentAgentType"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "$ref": "#/components/schemas/PagePublicURL"
+          },
+          "instructions_page_id": {
+            "$ref": "#/components/schemas/PageListNextCursor"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/AgentIcon"
+          },
+          "model": {
+            "description": "The model the agent runs on: auto (Notion selects) or a pinned model.",
+            "$ref": "#/components/schemas/AgentModel"
+          },
+          "connections": {
+            "description": "Integrations the agent is connected to (Notion, Slack, Discord, MCP servers, and other connectors), each with an account and per-target permissions.",
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/AgentConnectionsItem"
+            }
+          },
+          "status": {
+            "description": "\"active\" when the agent can run; \"disabled\" when it is paused (see pause_reason); \"deleted\" when it has been removed.",
+            "$ref": "#/components/schemas/AgentStatus"
+          },
+          "pause_reason": {
+            "description": "Why the agent is paused when status is \"disabled\" (e.g. \"credit_limit\", \"disabled_from_workspace_settings\"); null when active.",
+            "$ref": "#/components/schemas/AgentPauseReason"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/AgentCreatedBy"
+          },
+          "version": {
+            "$ref": "#/components/schemas/AgentVersion"
+          },
+          "agent_version": {
+            "$ref": "#/components/schemas/AgentVersion"
+          },
+          "has_unpublished_changes": {
+            "$ref": "#/components/schemas/AgentHasUnpublishedChanges"
+          },
+          "last_run_time": {
+            "$ref": "#/components/schemas/AgentLastRunAt"
+          },
+          "last_run_at": {
+            "$ref": "#/components/schemas/AgentLastRunAt"
+          },
+          "credit_limit": {
+            "$ref": "#/components/schemas/AgentCreditLimit"
+          },
+          "triggers": {
+            "description": "The agent's configured triggers, each with a machine type, an enabled flag, and (for recurrence triggers) a structured schedule.",
+            "$ref": "#/components/schemas/AgentTriggers"
+          },
+          "is_favorited": {
+            "description": "Whether this agent is in the caller's personal favorites, or null when the caller has no personal favorites scope.",
+            "$ref": "#/components/schemas/AgentIsFavorited"
+          },
+          "created_time": {
+            "description": "Date and time when this agent was created.",
+            "type": "string",
+            "format": "date-time"
+          },
+          "last_edited_time": {
+            "description": "Date and time when this agent was last edited.",
+            "type": "string",
+            "format": "date-time"
+          },
+          "instructions": {
+            "description": "The agent's inline instructions when verbose=true, or null when its instructions are stored on a page.",
+            "$ref": "#/components/schemas/PagePublicURL"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "agent_type",
+          "name",
+          "description",
+          "instructions_page_id",
+          "icon",
+          "model",
+          "connections",
+          "status",
+          "pause_reason",
+          "created_by",
+          "version",
+          "agent_version",
+          "has_unpublished_changes",
+          "last_run_time",
+          "last_run_at",
+          "credit_limit",
+          "triggers",
+          "is_favorited"
+        ],
+        "additionalProperties": false
+      },
+      "AgentAgentType": {
+        "description": "What kind of agent this is: \"notion_ai\" is the personal agent; \"custom_agent\" is a standalone agent you chat with; \"autofill_custom_agent\" fills a database property; \"external\" runs through an external provider.",
+        "type": "string",
+        "enum": [
+          "notion_ai",
+          "custom_agent",
+          "autofill_custom_agent",
+          "external"
+        ]
+      },
       "AgentBatch": {
         "type": "object",
         "properties": {
@@ -5933,6 +6057,41 @@
         ],
         "additionalProperties": false
       },
+      "AgentCreatedBy": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/AgentCreatedByUser"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "AgentCreatedByUser": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `user`",
+            "type": "string",
+            "const": "user"
+          },
+          "type": {
+            "description": "Always `user`",
+            "type": "string",
+            "const": "user"
+          },
+          "id": {
+            "description": "The ID of the user that created this agent.",
+            "$ref": "#/components/schemas/idResponse"
+          }
+        },
+        "required": [
+          "object",
+          "type",
+          "id"
+        ],
+        "additionalProperties": false
+      },
       "AgentCreditLimit": {
         "description": "The per-agent credit limit that applies to this agent, null when uncapped, or \"hidden\" when the caller lacks full access to the agent. This is the effective limit computed at runtime, folding in both the agent's own limit and any workspace-admin default.",
         "oneOf": [
@@ -5950,6 +6109,19 @@
           }
         ]
       },
+      "AgentHasUnpublishedChanges": {
+        "description": "Whether the draft has edits not yet in the published version, or \"hidden\" when the caller lacks edit access to the agent.",
+        "oneOf": [
+          {
+            "type": "boolean"
+          },
+          {
+            "description": "Always `hidden`",
+            "type": "string",
+            "const": "hidden"
+          }
+        ]
+      },
       "AgentID": {
         "oneOf": [
           {
@@ -5957,6 +6129,18 @@
           },
           {
             "$ref": "#/components/schemas/AgentIDOneOf"
+          }
+        ]
+      },
+      "AgentID6": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/idResponse"
+          },
+          {
+            "description": "Always `notion_ai`",
+            "type": "string",
+            "const": "notion_ai"
           }
         ]
       },
@@ -6018,6 +6202,60 @@
         ],
         "additionalProperties": false
       },
+      "AgentInsights": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `agent_insights`",
+            "type": "string",
+            "const": "agent_insights"
+          },
+          "id": {
+            "$ref": "#/components/schemas/AgentInsightsID"
+          },
+          "name": {
+            "type": "string"
+          },
+          "agent_type": {
+            "description": "One of: `notion_ai`, `custom_agent`, `autofill_custom_agent`",
+            "$ref": "#/components/schemas/AgentInsightsAgentType"
+          },
+          "status": {
+            "description": "One of: `active`, `disabled`, `deleted`",
+            "$ref": "#/components/schemas/AgentStatus"
+          },
+          "pause_reason": {
+            "$ref": "#/components/schemas/AgentPauseReason"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/AgentInsightsCreatedBy"
+          },
+          "total_credits_used": {
+            "description": "Premium AI credits consumed by this agent within the window.",
+            "type": "number"
+          },
+          "credit_limit": {
+            "$ref": "#/components/schemas/AgentInsightsCreditLimit"
+          },
+          "runs_completed": {
+            "description": "Number of runs recorded for this agent within the window.",
+            "type": "number"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "name",
+          "agent_type",
+          "status",
+          "pause_reason",
+          "created_by",
+          "total_credits_used",
+          "credit_limit",
+          "runs_completed"
+        ],
+        "additionalProperties": false
+      },
       "AgentInsightsAgentType": {
         "type": "string",
         "enum": [
@@ -6029,10 +6267,38 @@
       "AgentInsightsCreatedBy": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/RetrieveSessionCreatedBy"
+            "$ref": "#/components/schemas/SessionCreatedBy"
           },
           {
             "type": "null"
+          }
+        ]
+      },
+      "AgentInsightsCreditLimit": {
+        "description": "Enforced per-agent credit limit; null when none is configured, and \"hidden\" when the caller lacks full access to the agent.",
+        "oneOf": [
+          {
+            "type": "number"
+          },
+          {
+            "description": "Always `hidden`",
+            "type": "string",
+            "const": "hidden"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "AgentInsightsID": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/idResponse"
+          },
+          {
+            "description": "Always `notion_ai`",
+            "type": "string",
+            "const": "notion_ai"
           }
         ]
       },
@@ -6337,7 +6603,7 @@
         "type": "object",
         "properties": {
           "type": {
-            "$ref": "#/components/schemas/RetrieveSessionCreatedByType"
+            "$ref": "#/components/schemas/SessionCreatedByType"
           },
           "id": {
             "description": "The ID of the user or bot that created this agent.",
@@ -6612,6 +6878,91 @@
           "id",
           "number",
           "published_at"
+        ],
+        "additionalProperties": false
+      },
+      "AsyncTask": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "async_task"
+          },
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "$ref": "#/components/schemas/nonTerminalAsyncTaskStatus"
+          },
+          "status_url": {
+            "type": "string",
+            "minLength": 1
+          },
+          "created_time": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "poll_after_seconds": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "operation": {
+            "$ref": "#/components/schemas/AsyncTaskOperation"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "status",
+          "status_url",
+          "created_time",
+          "poll_after_seconds",
+          "operation"
+        ],
+        "additionalProperties": false
+      },
+      "AsyncTaskOperation": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/AsyncTaskOperationRest"
+          },
+          {
+            "$ref": "#/components/schemas/AsyncTaskOperationMcp"
+          }
+        ]
+      },
+      "AsyncTaskOperationMcp": {
+        "type": "object",
+        "properties": {
+          "surface": {
+            "type": "string",
+            "const": "mcp"
+          },
+          "name": {
+            "$ref": "#/components/schemas/asyncTaskMcpOperationName"
+          }
+        },
+        "required": [
+          "surface",
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "AsyncTaskOperationRest": {
+        "type": "object",
+        "properties": {
+          "surface": {
+            "type": "string",
+            "const": "rest"
+          },
+          "name": {
+            "$ref": "#/components/schemas/asyncTaskRestOperationName"
+          }
+        },
+        "required": [
+          "surface",
+          "name"
         ],
         "additionalProperties": false
       },
@@ -8534,7 +8885,7 @@
           },
           "status": {
             "description": "One of: `queued`, `in_progress`, `requires_action`, `completed`, `failed`, `canceled`, `terminated`",
-            "$ref": "#/components/schemas/CancelSessionStatus"
+            "$ref": "#/components/schemas/SessionStatus"
           },
           "created_at": {
             "type": "string",
@@ -8548,7 +8899,7 @@
             "$ref": "#/components/schemas/CancelSessionRequiredActions"
           },
           "error": {
-            "$ref": "#/components/schemas/CancelSessionError"
+            "$ref": "#/components/schemas/SessionError"
           }
         },
         "required": [
@@ -8562,87 +8913,12 @@
         ],
         "additionalProperties": false
       },
-      "CancelSessionError": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string"
-          },
-          "message": {
-            "type": "string"
-          },
-          "retryable": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "code",
-          "message",
-          "retryable"
-        ],
-        "additionalProperties": false
-      },
       "CancelSessionRequiredActions": {
         "type": "array",
         "maxItems": 100,
         "items": {
-          "$ref": "#/components/schemas/CancelSessionRequiredActionsItem"
+          "$ref": "#/components/schemas/SessionRequiredActionsItem"
         }
-      },
-      "CancelSessionRequiredActionsItem": {
-        "type": "object",
-        "properties": {
-          "action_id": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "options": {
-            "$ref": "#/components/schemas/CancelSessionRequiredActionsItem2"
-          }
-        },
-        "required": [
-          "action_id",
-          "title",
-          "options"
-        ],
-        "additionalProperties": false
-      },
-      "CancelSessionRequiredActionsItem2": {
-        "type": "array",
-        "maxItems": 100,
-        "items": {
-          "$ref": "#/components/schemas/CancelSessionRequiredActionsItem3"
-        }
-      },
-      "CancelSessionRequiredActionsItem3": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "$ref": "#/components/schemas/UpdateSessionOneOfActionsItemOptionID"
-          },
-          "label": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "label"
-        ],
-        "additionalProperties": false
-      },
-      "CancelSessionStatus": {
-        "type": "string",
-        "enum": [
-          "queued",
-          "in_progress",
-          "requires_action",
-          "completed",
-          "failed",
-          "canceled",
-          "terminated"
-        ]
       },
       "ChartAggregationAggregator": {
         "description": "The aggregation operator. \"count\" counts all rows and does not require a property_id. All other operators require a property_id.",
@@ -11088,272 +11364,6 @@
           "string"
         ]
       },
-      "GetAgentInsightsOk": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `agent_insights`",
-            "type": "string",
-            "const": "agent_insights"
-          },
-          "id": {
-            "$ref": "#/components/schemas/GetAgentInsightsOkID"
-          },
-          "name": {
-            "type": "string"
-          },
-          "agent_type": {
-            "description": "One of: `notion_ai`, `custom_agent`, `autofill_custom_agent`",
-            "$ref": "#/components/schemas/AgentInsightsAgentType"
-          },
-          "status": {
-            "description": "One of: `active`, `disabled`, `deleted`",
-            "$ref": "#/components/schemas/AgentStatus"
-          },
-          "pause_reason": {
-            "$ref": "#/components/schemas/AgentPauseReason"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/AgentInsightsCreatedBy"
-          },
-          "total_credits_used": {
-            "description": "Premium AI credits consumed by this agent within the window.",
-            "type": "number"
-          },
-          "credit_limit": {
-            "$ref": "#/components/schemas/GetAgentInsightsOkCreditLimit"
-          },
-          "runs_completed": {
-            "description": "Number of runs recorded for this agent within the window.",
-            "type": "number"
-          }
-        },
-        "required": [
-          "object",
-          "id",
-          "name",
-          "agent_type",
-          "status",
-          "pause_reason",
-          "created_by",
-          "total_credits_used",
-          "credit_limit",
-          "runs_completed"
-        ],
-        "additionalProperties": false
-      },
-      "GetAgentInsightsOkCreditLimit": {
-        "description": "Enforced per-agent credit limit; null when none is configured, and \"hidden\" when the caller lacks full access to the agent.",
-        "oneOf": [
-          {
-            "type": "number"
-          },
-          {
-            "description": "Always `hidden`",
-            "type": "string",
-            "const": "hidden"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "GetAgentInsightsOkID": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/idResponse"
-          },
-          {
-            "description": "Always `notion_ai`",
-            "type": "string",
-            "const": "notion_ai"
-          }
-        ]
-      },
-      "GetAgentOk": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `agent`",
-            "type": "string",
-            "const": "agent"
-          },
-          "id": {
-            "$ref": "#/components/schemas/GetAgentOkID"
-          },
-          "agent_type": {
-            "$ref": "#/components/schemas/GetAgentOkAgentType"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "$ref": "#/components/schemas/PagePublicURL"
-          },
-          "instructions_page_id": {
-            "$ref": "#/components/schemas/PageListNextCursor"
-          },
-          "icon": {
-            "$ref": "#/components/schemas/AgentIcon"
-          },
-          "model": {
-            "description": "The model the agent runs on: auto (Notion selects) or a pinned model.",
-            "$ref": "#/components/schemas/AgentModel"
-          },
-          "connections": {
-            "description": "Integrations the agent is connected to (Notion, Slack, Discord, MCP servers, and other connectors), each with an account and per-target permissions.",
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/AgentConnectionsItem"
-            }
-          },
-          "status": {
-            "description": "\"active\" when the agent can run; \"disabled\" when it is paused (see pause_reason); \"deleted\" when it has been removed.",
-            "$ref": "#/components/schemas/AgentStatus"
-          },
-          "pause_reason": {
-            "description": "Why the agent is paused when status is \"disabled\" (e.g. \"credit_limit\", \"disabled_from_workspace_settings\"); null when active.",
-            "$ref": "#/components/schemas/AgentPauseReason"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/GetAgentOkCreatedBy"
-          },
-          "version": {
-            "$ref": "#/components/schemas/AgentVersion"
-          },
-          "agent_version": {
-            "$ref": "#/components/schemas/AgentVersion"
-          },
-          "has_unpublished_changes": {
-            "$ref": "#/components/schemas/GetAgentOkHasUnpublishedChanges"
-          },
-          "last_run_time": {
-            "$ref": "#/components/schemas/AgentLastRunAt"
-          },
-          "last_run_at": {
-            "$ref": "#/components/schemas/AgentLastRunAt"
-          },
-          "credit_limit": {
-            "$ref": "#/components/schemas/AgentCreditLimit"
-          },
-          "triggers": {
-            "description": "The agent's configured triggers, each with a machine type, an enabled flag, and (for recurrence triggers) a structured schedule.",
-            "$ref": "#/components/schemas/AgentTriggers"
-          },
-          "is_favorited": {
-            "description": "Whether this agent is in the caller's personal favorites, or null when the caller has no personal favorites scope.",
-            "$ref": "#/components/schemas/AgentIsFavorited"
-          },
-          "created_time": {
-            "description": "Date and time when this agent was created.",
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_time": {
-            "description": "Date and time when this agent was last edited.",
-            "type": "string",
-            "format": "date-time"
-          },
-          "instructions": {
-            "description": "The agent's inline instructions when verbose=true, or null when its instructions are stored on a page.",
-            "$ref": "#/components/schemas/PagePublicURL"
-          }
-        },
-        "required": [
-          "object",
-          "id",
-          "agent_type",
-          "name",
-          "description",
-          "instructions_page_id",
-          "icon",
-          "model",
-          "connections",
-          "status",
-          "pause_reason",
-          "created_by",
-          "version",
-          "agent_version",
-          "has_unpublished_changes",
-          "last_run_time",
-          "last_run_at",
-          "credit_limit",
-          "triggers",
-          "is_favorited"
-        ],
-        "additionalProperties": false
-      },
-      "GetAgentOkAgentType": {
-        "description": "What kind of agent this is: \"notion_ai\" is the personal agent; \"custom_agent\" is a standalone agent you chat with; \"autofill_custom_agent\" fills a database property; \"external\" runs through an external provider.",
-        "type": "string",
-        "enum": [
-          "notion_ai",
-          "custom_agent",
-          "autofill_custom_agent",
-          "external"
-        ]
-      },
-      "GetAgentOkCreatedBy": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/GetAgentOkCreatedByUser"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "GetAgentOkCreatedByUser": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `user`",
-            "type": "string",
-            "const": "user"
-          },
-          "type": {
-            "description": "Always `user`",
-            "type": "string",
-            "const": "user"
-          },
-          "id": {
-            "description": "The ID of the user that created this agent.",
-            "$ref": "#/components/schemas/idResponse"
-          }
-        },
-        "required": [
-          "object",
-          "type",
-          "id"
-        ],
-        "additionalProperties": false
-      },
-      "GetAgentOkHasUnpublishedChanges": {
-        "description": "Whether the draft has edits not yet in the published version, or \"hidden\" when the caller lacks edit access to the agent.",
-        "oneOf": [
-          {
-            "type": "boolean"
-          },
-          {
-            "description": "Always `hidden`",
-            "type": "string",
-            "const": "hidden"
-          }
-        ]
-      },
-      "GetAgentOkID": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/idResponse"
-          },
-          {
-            "description": "Always `notion_ai`",
-            "type": "string",
-            "const": "notion_ai"
-          }
-        ]
-      },
       "GetPluginDirectoryOk": {
         "type": "object",
         "properties": {
@@ -13619,91 +13629,6 @@
             "$ref": "#/components/schemas/pagePositionSchema"
           }
         },
-        "additionalProperties": false
-      },
-      "PostPageAccepted": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "type": "string",
-            "const": "async_task"
-          },
-          "id": {
-            "type": "string",
-            "minLength": 1
-          },
-          "status": {
-            "$ref": "#/components/schemas/nonTerminalAsyncTaskStatus"
-          },
-          "status_url": {
-            "type": "string",
-            "minLength": 1
-          },
-          "created_time": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "poll_after_seconds": {
-            "type": "integer",
-            "minimum": 0
-          },
-          "operation": {
-            "$ref": "#/components/schemas/PostPageAcceptedOperation"
-          }
-        },
-        "required": [
-          "object",
-          "id",
-          "status",
-          "status_url",
-          "created_time",
-          "poll_after_seconds",
-          "operation"
-        ],
-        "additionalProperties": false
-      },
-      "PostPageAcceptedOperation": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/PostPageAcceptedOperationRest"
-          },
-          {
-            "$ref": "#/components/schemas/PostPageAcceptedOperationMcp"
-          }
-        ]
-      },
-      "PostPageAcceptedOperationMcp": {
-        "type": "object",
-        "properties": {
-          "surface": {
-            "type": "string",
-            "const": "mcp"
-          },
-          "name": {
-            "$ref": "#/components/schemas/asyncTaskMcpOperationName"
-          }
-        },
-        "required": [
-          "surface",
-          "name"
-        ],
-        "additionalProperties": false
-      },
-      "PostPageAcceptedOperationRest": {
-        "type": "object",
-        "properties": {
-          "surface": {
-            "type": "string",
-            "const": "rest"
-          },
-          "name": {
-            "$ref": "#/components/schemas/asyncTaskRestOperationName"
-          }
-        },
-        "required": [
-          "surface",
-          "name"
-        ],
         "additionalProperties": false
       },
       "PostPageParent": {
@@ -16621,7 +16546,7 @@
         "properties": {
           "equals": {
             "description": "Return sessions with this status.",
-            "$ref": "#/components/schemas/CancelSessionStatus"
+            "$ref": "#/components/schemas/SessionStatus"
           },
           "in": {
             "$ref": "#/components/schemas/QuerySessionsFilterStatusIn"
@@ -16634,7 +16559,7 @@
         "type": "array",
         "maxItems": 7,
         "items": {
-          "$ref": "#/components/schemas/CancelSessionStatus"
+          "$ref": "#/components/schemas/SessionStatus"
         }
       },
       "QuerySessionsFilterStatusProperty": {
@@ -17746,230 +17671,6 @@
         ],
         "additionalProperties": false
       },
-      "RetrieveSessionAgentVersion": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/RetrieveSessionAgentVersionOneOf"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "RetrieveSessionAgentVersionOneOf": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "number": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "published_at": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "id",
-          "number",
-          "published_at"
-        ],
-        "additionalProperties": false
-      },
-      "RetrieveSessionCreatedBy": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "type": {
-            "$ref": "#/components/schemas/RetrieveSessionCreatedByType"
-          }
-        },
-        "required": [
-          "id",
-          "type"
-        ],
-        "additionalProperties": false
-      },
-      "RetrieveSessionCreatedByType": {
-        "description": "One of: `user`, `bot`",
-        "type": "string",
-        "enum": [
-          "user",
-          "bot"
-        ]
-      },
-      "RetrieveSessionCreditsUsed": {
-        "oneOf": [
-          {
-            "type": "number"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "RetrieveSessionMessageCount": {
-        "oneOf": [
-          {
-            "type": "integer",
-            "minimum": 0
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "RetrieveSessionModels": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/RetrieveSessionModelsAuto"
-          },
-          {
-            "$ref": "#/components/schemas/RetrieveSessionModelsPinned"
-          }
-        ]
-      },
-      "RetrieveSessionModelsAuto": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `auto`",
-            "type": "string",
-            "const": "auto"
-          }
-        },
-        "required": [
-          "type"
-        ],
-        "additionalProperties": false
-      },
-      "RetrieveSessionModelsPinned": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `pinned`",
-            "type": "string",
-            "const": "pinned"
-          },
-          "ids": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PagePublicURL"
-            }
-          }
-        },
-        "required": [
-          "type",
-          "ids"
-        ],
-        "additionalProperties": false
-      },
-      "RetrieveSessionOk": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `session`",
-            "type": "string",
-            "const": "session"
-          },
-          "id": {
-            "type": "string"
-          },
-          "agent_id": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "status": {
-            "description": "One of: `queued`, `in_progress`, `requires_action`, `completed`, `failed`, `canceled`, `terminated`",
-            "$ref": "#/components/schemas/CancelSessionStatus"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/RetrieveSessionCreatedBy"
-          },
-          "agent_version": {
-            "$ref": "#/components/schemas/RetrieveSessionAgentVersion"
-          },
-          "models": {
-            "$ref": "#/components/schemas/RetrieveSessionModels"
-          },
-          "required_actions": {
-            "$ref": "#/components/schemas/RetrieveSessionRequiredActions"
-          },
-          "error": {
-            "$ref": "#/components/schemas/CancelSessionError"
-          },
-          "trigger_type": {
-            "type": "string"
-          },
-          "type_labels": {
-            "$ref": "#/components/schemas/RetrieveSessionToolTypes"
-          },
-          "chat_user_emails": {
-            "$ref": "#/components/schemas/RetrieveSessionToolTypes"
-          },
-          "tool_types": {
-            "$ref": "#/components/schemas/RetrieveSessionToolTypes"
-          },
-          "tool_call_count": {
-            "$ref": "#/components/schemas/RetrieveSessionMessageCount"
-          },
-          "credits_used": {
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
-          },
-          "runs_completed": {
-            "$ref": "#/components/schemas/RetrieveSessionMessageCount"
-          },
-          "message_count": {
-            "$ref": "#/components/schemas/RetrieveSessionMessageCount"
-          }
-        },
-        "required": [
-          "object",
-          "id",
-          "agent_id",
-          "title",
-          "status",
-          "created_at",
-          "updated_at",
-          "created_by",
-          "agent_version",
-          "models"
-        ],
-        "additionalProperties": false
-      },
-      "RetrieveSessionRequiredActions": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/CancelSessionRequiredActionsItem"
-        }
-      },
-      "RetrieveSessionToolTypes": {
-        "oneOf": [
-          {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
       "RevokeToken": {
         "type": "object",
         "properties": {
@@ -18502,6 +18203,175 @@
           }
         ]
       },
+      "Session": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `session`",
+            "type": "string",
+            "const": "session"
+          },
+          "id": {
+            "type": "string"
+          },
+          "agent_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "description": "One of: `queued`, `in_progress`, `requires_action`, `completed`, `failed`, `canceled`, `terminated`",
+            "$ref": "#/components/schemas/SessionStatus"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/SessionCreatedBy"
+          },
+          "agent_version": {
+            "$ref": "#/components/schemas/SessionAgentVersion"
+          },
+          "models": {
+            "$ref": "#/components/schemas/SessionModels"
+          },
+          "required_actions": {
+            "$ref": "#/components/schemas/SessionRequiredActions"
+          },
+          "error": {
+            "$ref": "#/components/schemas/SessionError"
+          },
+          "trigger_type": {
+            "type": "string"
+          },
+          "type_labels": {
+            "$ref": "#/components/schemas/SessionToolTypes"
+          },
+          "chat_user_emails": {
+            "$ref": "#/components/schemas/SessionToolTypes"
+          },
+          "tool_types": {
+            "$ref": "#/components/schemas/SessionToolTypes"
+          },
+          "tool_call_count": {
+            "$ref": "#/components/schemas/SessionMessageCount"
+          },
+          "credits_used": {
+            "$ref": "#/components/schemas/SessionCreditsUsed"
+          },
+          "runs_completed": {
+            "$ref": "#/components/schemas/SessionMessageCount"
+          },
+          "message_count": {
+            "$ref": "#/components/schemas/SessionMessageCount"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "agent_id",
+          "title",
+          "status",
+          "created_at",
+          "updated_at",
+          "created_by",
+          "agent_version",
+          "models"
+        ],
+        "additionalProperties": false
+      },
+      "SessionAgentVersion": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/SessionAgentVersionOneOf"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "SessionAgentVersionOneOf": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "number": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "published_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "number",
+          "published_at"
+        ],
+        "additionalProperties": false
+      },
+      "SessionCreatedBy": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/SessionCreatedByType"
+          }
+        },
+        "required": [
+          "id",
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      "SessionCreatedByType": {
+        "description": "One of: `user`, `bot`",
+        "type": "string",
+        "enum": [
+          "user",
+          "bot"
+        ]
+      },
+      "SessionCreditsUsed": {
+        "oneOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "SessionError": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "retryable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "retryable"
+        ],
+        "additionalProperties": false
+      },
       "SessionEventList": {
         "type": "object",
         "properties": {
@@ -18810,10 +18680,10 @@
             "$ref": "#/components/schemas/SessionEventListResultsItemSessionStatusStatus"
           },
           "required_actions": {
-            "$ref": "#/components/schemas/RetrieveSessionRequiredActions"
+            "$ref": "#/components/schemas/SessionRequiredActions"
           },
           "error": {
-            "$ref": "#/components/schemas/CancelSessionError"
+            "$ref": "#/components/schemas/SessionError"
           }
         },
         "required": [
@@ -19031,16 +18901,16 @@
           },
           "status": {
             "description": "One of: `queued`, `in_progress`, `requires_action`, `completed`, `failed`, `canceled`, `terminated`",
-            "$ref": "#/components/schemas/CancelSessionStatus"
+            "$ref": "#/components/schemas/SessionStatus"
           },
           "created_by": {
-            "$ref": "#/components/schemas/RetrieveSessionCreatedBy"
+            "$ref": "#/components/schemas/SessionCreatedBy"
           },
           "agent_version": {
-            "$ref": "#/components/schemas/RetrieveSessionAgentVersion"
+            "$ref": "#/components/schemas/SessionAgentVersion"
           },
           "models": {
-            "$ref": "#/components/schemas/RetrieveSessionModels"
+            "$ref": "#/components/schemas/SessionModels"
           },
           "created_at": {
             "type": "string",
@@ -19051,34 +18921,34 @@
             "format": "date-time"
           },
           "required_actions": {
-            "$ref": "#/components/schemas/RetrieveSessionRequiredActions"
+            "$ref": "#/components/schemas/SessionRequiredActions"
           },
           "error": {
-            "$ref": "#/components/schemas/CancelSessionError"
+            "$ref": "#/components/schemas/SessionError"
           },
           "trigger_type": {
             "type": "string"
           },
           "type_labels": {
-            "$ref": "#/components/schemas/RetrieveSessionToolTypes"
+            "$ref": "#/components/schemas/SessionToolTypes"
           },
           "chat_user_emails": {
-            "$ref": "#/components/schemas/RetrieveSessionToolTypes"
+            "$ref": "#/components/schemas/SessionToolTypes"
           },
           "tool_types": {
-            "$ref": "#/components/schemas/RetrieveSessionToolTypes"
+            "$ref": "#/components/schemas/SessionToolTypes"
           },
           "tool_call_count": {
-            "$ref": "#/components/schemas/RetrieveSessionMessageCount"
+            "$ref": "#/components/schemas/SessionMessageCount"
           },
           "credits_used": {
             "$ref": "#/components/schemas/SessionListResultsItemCreditsUsed"
           },
           "runs_completed": {
-            "$ref": "#/components/schemas/RetrieveSessionMessageCount"
+            "$ref": "#/components/schemas/SessionMessageCount"
           },
           "message_count": {
-            "$ref": "#/components/schemas/RetrieveSessionMessageCount"
+            "$ref": "#/components/schemas/SessionMessageCount"
           }
         },
         "required": [
@@ -19100,6 +18970,144 @@
           {
             "type": "number",
             "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "SessionMessageCount": {
+        "oneOf": [
+          {
+            "type": "integer",
+            "minimum": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "SessionModels": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/SessionModelsAuto"
+          },
+          {
+            "$ref": "#/components/schemas/SessionModelsPinned"
+          }
+        ]
+      },
+      "SessionModelsAuto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `auto`",
+            "type": "string",
+            "const": "auto"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      "SessionModelsPinned": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `pinned`",
+            "type": "string",
+            "const": "pinned"
+          },
+          "ids": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PagePublicURL"
+            }
+          }
+        },
+        "required": [
+          "type",
+          "ids"
+        ],
+        "additionalProperties": false
+      },
+      "SessionRequiredActions": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/SessionRequiredActionsItem"
+        }
+      },
+      "SessionRequiredActionsItem": {
+        "type": "object",
+        "properties": {
+          "action_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "options": {
+            "$ref": "#/components/schemas/SessionRequiredActionsItem2"
+          }
+        },
+        "required": [
+          "action_id",
+          "title",
+          "options"
+        ],
+        "additionalProperties": false
+      },
+      "SessionRequiredActionsItem2": {
+        "type": "array",
+        "maxItems": 100,
+        "items": {
+          "$ref": "#/components/schemas/SessionRequiredActionsItem3"
+        }
+      },
+      "SessionRequiredActionsItem3": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/SessionRequiredActionsItemID"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label"
+        ],
+        "additionalProperties": false
+      },
+      "SessionRequiredActionsItemID": {
+        "description": "One of: `approve`, `reject`",
+        "type": "string",
+        "enum": [
+          "approve",
+          "reject"
+        ]
+      },
+      "SessionStatus": {
+        "type": "string",
+        "enum": [
+          "queued",
+          "in_progress",
+          "requires_action",
+          "completed",
+          "failed",
+          "canceled",
+          "terminated"
+        ]
+      },
+      "SessionToolTypes": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           {
             "type": "null"
@@ -20712,7 +20720,7 @@
         "properties": {
           "credit_limit": {
             "description": "The per-agent credit limit as a non-negative integer, or null to clear the limit.",
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
+            "$ref": "#/components/schemas/SessionCreditsUsed"
           }
         },
         "required": [
@@ -21185,14 +21193,6 @@
           "new_str"
         ]
       },
-      "UpdateSessionOneOfActionsItemOptionID": {
-        "description": "One of: `approve`, `reject`",
-        "type": "string",
-        "enum": [
-          "approve",
-          "reject"
-        ]
-      },
       "UpdateSessionRequest": {
         "title": "Update session request",
         "description": "Exactly one mode: append a message, answer pending actions, or replay from an event.",
@@ -21323,7 +21323,7 @@
             "$ref": "#/components/schemas/idRequest"
           },
           "option_id": {
-            "$ref": "#/components/schemas/UpdateSessionOneOfActionsItemOptionID"
+            "$ref": "#/components/schemas/SessionRequiredActionsItemID"
           }
         },
         "required": [
@@ -23296,11 +23296,11 @@
           },
           "y_axis_min": {
             "description": "Custom y-axis minimum. Pass null to clear.",
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
+            "$ref": "#/components/schemas/SessionCreditsUsed"
           },
           "y_axis_max": {
             "description": "Custom y-axis maximum. Pass null to clear.",
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
+            "$ref": "#/components/schemas/SessionCreditsUsed"
           },
           "donut_labels": {
             "$ref": "#/components/schemas/ChartViewConfigRequestDonutLabels"
@@ -23411,11 +23411,11 @@
           },
           "y_axis_min": {
             "description": "Custom minimum value for the y-axis. Null clears the override.",
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
+            "$ref": "#/components/schemas/SessionCreditsUsed"
           },
           "y_axis_max": {
             "description": "Custom maximum value for the y-axis. Null clears the override.",
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
+            "$ref": "#/components/schemas/SessionCreditsUsed"
           },
           "donut_labels": {
             "description": "What to display on donut chart slices.",
@@ -26571,7 +26571,7 @@
             "$ref": "#/components/schemas/PagePublicURL"
           },
           "content_length": {
-            "$ref": "#/components/schemas/RetrieveSessionMessageCount"
+            "$ref": "#/components/schemas/SessionMessageCount"
           },
           "upload_url": {
             "type": "string"
@@ -29030,7 +29030,7 @@
             "const": "number"
           },
           "number": {
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
+            "$ref": "#/components/schemas/SessionCreditsUsed"
           }
         },
         "required": [
@@ -29119,7 +29119,7 @@
             "const": "number"
           },
           "number": {
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
+            "$ref": "#/components/schemas/SessionCreditsUsed"
           }
         },
         "required": [
@@ -33374,7 +33374,7 @@
             "$ref": "#/components/schemas/PagePublicURL"
           },
           "number": {
-            "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
+            "$ref": "#/components/schemas/SessionCreditsUsed"
           }
         },
         "required": [
@@ -36474,7 +36474,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/GetAgentInsightsOk"
+              "$ref": "#/components/schemas/AgentInsights"
             }
           }
         }
@@ -36554,7 +36554,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/GetAgentOk"
+              "$ref": "#/components/schemas/Agent"
             }
           }
         }
@@ -38694,7 +38694,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/PostPageAccepted"
+              "$ref": "#/components/schemas/AsyncTask"
             }
           }
         }
@@ -40694,7 +40694,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/RetrieveSessionOk"
+              "$ref": "#/components/schemas/Session"
             }
           }
         }
