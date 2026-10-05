@@ -7154,7 +7154,8 @@
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "example": "7f7a2665-50a6-4a33-9ee7-33a93dd3cbd0"
           },
           "has_more": {
             "type": "boolean"
@@ -10510,7 +10511,7 @@
             "description": "The time when the database was last edited.",
             "type": "string",
             "format": "date-time",
-            "example": "2026-10-03T15:37:46.207+00:00"
+            "example": "2026-10-05T18:33:33.129+00:00"
           },
           "data_sources": {
             "description": "The data sources of the database.",
@@ -10539,7 +10540,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "0aa393b2-0705-493f-bd6d-947157665746"
+            "example": "05032afd-5f3c-481a-b58e-6489cd56eec1"
           }
         },
         "required": [
@@ -10871,10 +10872,12 @@
         "type": "object",
         "properties": {
           "synced_property_id": {
-            "type": "string"
+            "type": "string",
+            "example": "VN%3AD"
           },
           "synced_property_name": {
-            "type": "string"
+            "type": "string",
+            "example": "Sub"
           }
         },
         "required": [
@@ -10922,7 +10925,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "9e1aef9a-66e7-461d-89d2-2072f799276a"
+            "example": "e53a388c-c1e4-4dc2-a258-5f295e21c4c1"
           },
           "code": {
             "$ref": "#/components/schemas/ErrorCode"
@@ -10942,7 +10945,7 @@
               504,
               529
             ],
-            "example": 404
+            "example": 403
           }
         },
         "required": [
@@ -10983,7 +10986,7 @@
           "invalid_client",
           "test_env_error"
         ],
-        "example": "object_not_found"
+        "example": "restricted_resource"
       },
       "ExistencePropertyFilterIsEmpty": {
         "type": "object",
@@ -11431,10 +11434,86 @@
         "properties": {
           "or": {
             "$ref": "#/components/schemas/propertyOrTimestampFilterArray"
+          },
+          "date": {
+            "$ref": "#/components/schemas/TextPropertyFilterEquals"
+          },
+          "property": {
+            "type": "string",
+            "example": "Blch"
+          },
+          "and": {
+            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemOrAnd"
           }
         },
         "required": [
           "or"
+        ]
+      },
+      "GroupFilterOperatorArrayItemOrAnd": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/GroupFilterOperatorArrayItemOrAndItem"
+        }
+      },
+      "GroupFilterOperatorArrayItemOrAndItem": {
+        "type": "object",
+        "properties": {
+          "date": {
+            "$ref": "#/components/schemas/TextPropertyFilterEquals"
+          },
+          "property": {
+            "type": "string",
+            "example": "Blch"
+          },
+          "formula": {
+            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemOrAndItemFormula"
+          },
+          "select": {
+            "$ref": "#/components/schemas/TextPropertyFilterDoesNotEqual"
+          },
+          "created_time": {
+            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemOrAndItemCreatedTime"
+          }
+        },
+        "required": [
+          "date",
+          "property"
+        ]
+      },
+      "GroupFilterOperatorArrayItemOrAndItemCreatedTime": {
+        "type": "object",
+        "properties": {
+          "on_or_after": {
+            "type": "string",
+            "example": "2024-04-13"
+          }
+        },
+        "required": [
+          "on_or_after"
+        ]
+      },
+      "GroupFilterOperatorArrayItemOrAndItemFormula": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemOrAndItemFormulaNumber"
+          }
+        },
+        "required": [
+          "number"
+        ]
+      },
+      "GroupFilterOperatorArrayItemOrAndItemFormulaNumber": {
+        "type": "object",
+        "properties": {
+          "less_than": {
+            "type": "integer",
+            "example": 24
+          }
+        },
+        "required": [
+          "less_than"
         ]
       },
       "GroupSortType": {
@@ -12090,22 +12169,6 @@
           "page_id"
         ]
       },
-      "MultiSelectDatabasePropertyConfigResponseMultiSelect": {
-        "type": "object",
-        "properties": {
-          "options": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/selectProperty"
-            }
-          }
-        },
-        "required": [
-          "options"
-        ],
-        "additionalProperties": false
-      },
       "MultiSelectPropertyFilterContains": {
         "type": "object",
         "properties": {
@@ -12150,21 +12213,6 @@
           "format"
         ],
         "additionalProperties": false
-      },
-      "NumberFormulaPropertyValueResponseNumber": {
-        "oneOf": [
-          {
-            "type": [
-              "number",
-              "null"
-            ],
-            "format": "double",
-            "example": 94
-          },
-          {
-            "type": "null"
-          }
-        ]
       },
       "NumberPropertyConfigurationNumber": {
         "type": "object",
@@ -12238,6 +12286,18 @@
         },
         "required": [
           "less_than_or_equal_to"
+        ]
+      },
+      "NumberSimplePropertyValueNumber": {
+        "oneOf": [
+          {
+            "type": "number",
+            "format": "double",
+            "example": 31.299999
+          },
+          {
+            "type": "null"
+          }
         ]
       },
       "Page": {
@@ -12490,16 +12550,13 @@
               "string",
               "null"
             ],
-            "example": "9201f6db-2895-4450-9435-041541a181dd"
+            "example": "s:ff0daf10-69a9-4caf-ba61-961a24f9a9aa:39588fcd-daf4-81b5-9e98-dc425530a49e"
           },
           "has_more": {
             "type": "boolean"
           },
           "results": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PageOrDataSourceListResultsItem"
-            }
+            "$ref": "#/components/schemas/PageOrDataSourceListResults"
           },
           "request_status": {
             "$ref": "#/components/schemas/PageOrDataSourceListRequestStatus"
@@ -12507,7 +12564,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "34d96cb8-8293-4906-8347-a54d7fa88e34"
+            "example": "e198e7c3-dec6-47a4-b613-1bad528e92f5"
           }
         },
         "required": [
@@ -12539,7 +12596,20 @@
           "query_result_limit_reached"
         ]
       },
-      "PageOrDataSourceListResultsItem": {
+      "PageOrDataSourceListResults": {
+        "oneOf": [
+          {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf0Item"
+            }
+          },
+          {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1"
+          }
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf0Item": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/PageOrPartial"
@@ -12547,6 +12617,1286 @@
           {
             "$ref": "#/components/schemas/DataSourceOrPartial"
           }
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf1": {
+        "type": "array",
+        "prefixItems": [
+          {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1Item0"
+          },
+          {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1Item1"
+          },
+          {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1Item2"
+          }
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf1Item0": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "example": "page"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "3f088fcd-daf4-8160-8a85-daa05dbea1be"
+          },
+          "created_time": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-05T03:01:00.000Z"
+          },
+          "last_edited_time": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-05T18:33:00.000Z"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemCreatedBy"
+          },
+          "last_edited_by": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemCreatedBy"
+          },
+          "cover": {
+            "type": "null"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemIcon"
+          },
+          "parent": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemParent"
+          },
+          "in_trash": {
+            "type": "boolean"
+          },
+          "is_archived": {
+            "type": "boolean"
+          },
+          "is_locked": {
+            "type": "boolean"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1Item0Properties"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://app.notion.com/p/Daily-Learning-3f088fcddaf481608a85daa05dbea1be"
+          },
+          "public_url": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "created_time",
+          "last_edited_time",
+          "created_by",
+          "last_edited_by",
+          "cover",
+          "icon",
+          "parent",
+          "in_trash",
+          "is_archived",
+          "is_locked",
+          "properties",
+          "url",
+          "public_url"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf1Item0Properties": {
+        "type": "object",
+        "properties": {
+          "Duration": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesDuration"
+          },
+          "Started Hours Ago": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgo"
+          },
+          "Start Fallback": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesEndFallback"
+          },
+          "Status": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesStatus"
+          },
+          "Start": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesEnd2"
+          },
+          "Recurring": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesRecurring"
+          },
+          "End": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1Item0PropertiesEnd"
+          },
+          "Time": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesTime"
+          },
+          "End Fallback": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesEndFallback"
+          },
+          "Human Duration": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration"
+          },
+          "Priority": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesPriority"
+          },
+          "Created time": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesCreatedTime"
+          },
+          "Priority If Not Started": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration"
+          },
+          "Time without Date": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration"
+          },
+          "Name": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesName"
+          }
+        },
+        "required": [
+          "Duration",
+          "Started Hours Ago",
+          "Start Fallback",
+          "Status",
+          "Start",
+          "Recurring",
+          "End",
+          "Time",
+          "End Fallback",
+          "Human Duration",
+          "Priority",
+          "Created time",
+          "Priority If Not Started",
+          "Time without Date",
+          "Name"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf1Item0PropertiesEnd": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "_Y%3BI"
+          },
+          "type": {
+            "type": "string",
+            "example": "date"
+          },
+          "date": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "date"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf1Item1": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "example": "data_source"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "9201f6db-2895-4450-9435-041541a181dd"
+          },
+          "cover": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1Item1Cover"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemIcon"
+          },
+          "created_time": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-03-19T08:28:00.000Z"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemCreatedBy"
+          },
+          "last_edited_by": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemCreatedBy"
+          },
+          "last_edited_time": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-05T18:33:00.000Z"
+          },
+          "title": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemTitle"
+          },
+          "description": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemTitle"
+          },
+          "is_inline": {
+            "type": "boolean"
+          },
+          "database_type": {
+            "type": "null"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1Item1Properties"
+          },
+          "parent": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1Item1Parent"
+          },
+          "database_parent": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1Item1DatabaseParent"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0"
+          },
+          "public_url": {
+            "type": "null"
+          },
+          "in_trash": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "cover",
+          "icon",
+          "created_time",
+          "created_by",
+          "last_edited_by",
+          "last_edited_time",
+          "title",
+          "description",
+          "is_inline",
+          "database_type",
+          "properties",
+          "parent",
+          "database_parent",
+          "url",
+          "public_url",
+          "in_trash"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf1Item1Cover": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "external"
+          },
+          "external": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1Item1CoverExternal"
+          }
+        },
+        "required": [
+          "type",
+          "external"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf1Item1CoverExternal": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb"
+          }
+        },
+        "required": [
+          "url"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf1Item1DatabaseParent": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "page_id"
+          },
+          "page_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "11788fcd-daf4-80e7-a530-c2e25a86328e"
+          }
+        },
+        "required": [
+          "type",
+          "page_id"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf1Item1Parent": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "database_id"
+          },
+          "database_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+          }
+        },
+        "required": [
+          "type",
+          "database_id"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf1Item1Properties": {
+        "type": "object",
+        "properties": {
+          "Duration": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesTime2"
+          },
+          "Started Hours Ago": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesTime2"
+          },
+          "Start Fallback": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesTime2"
+          },
+          "Status": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1Item1PropertiesStatus"
+          },
+          "Start": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesEnd"
+          },
+          "End": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesEnd"
+          },
+          "Time": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesTime2"
+          },
+          "End Fallback": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesTime2"
+          },
+          "Human Duration": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesTime2"
+          },
+          "Created time": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1Item1PropertiesCreatedTime"
+          },
+          "Priority If Not Started": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesTime2"
+          },
+          "Time without Date": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesTime2"
+          },
+          "Name": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1Item1PropertiesName"
+          }
+        },
+        "required": [
+          "Duration",
+          "Started Hours Ago",
+          "Start Fallback",
+          "Status",
+          "Start",
+          "End",
+          "Time",
+          "End Fallback",
+          "Human Duration",
+          "Created time",
+          "Priority If Not Started",
+          "Time without Date",
+          "Name"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf1Item1PropertiesCreatedTime": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "kF%40C"
+          },
+          "name": {
+            "type": "string",
+            "example": "Created time"
+          },
+          "description": {
+            "type": "null"
+          },
+          "type": {
+            "type": "string",
+            "example": "created_time"
+          },
+          "created_time": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "type",
+          "created_time"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf1Item1PropertiesName": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "title"
+          },
+          "name": {
+            "type": "string",
+            "example": "Name"
+          },
+          "description": {
+            "type": "null"
+          },
+          "type": {
+            "type": "string",
+            "example": "title"
+          },
+          "title": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "type",
+          "title"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf1Item1PropertiesStatus": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "%40F%3CW"
+          },
+          "name": {
+            "type": "string",
+            "example": "Status"
+          },
+          "description": {
+            "type": "null"
+          },
+          "type": {
+            "type": "string",
+            "example": "select"
+          },
+          "select": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelect"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "type",
+          "select"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelect": {
+        "type": "object",
+        "properties": {
+          "options": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelectOptions"
+          }
+        },
+        "required": [
+          "options"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelectOptions": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelectOptionsItem"
+        }
+      },
+      "PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelectOptionsItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "78673949-50fe-41c5-8cdb-ce44acb4b59f"
+          },
+          "name": {
+            "type": "string",
+            "example": "Not Started"
+          },
+          "color": {
+            "type": "string",
+            "example": "gray"
+          },
+          "description": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "color",
+          "description"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf1Item2": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "example": "page"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "3ef88fcd-daf4-8150-8b87-d294754ff58c"
+          },
+          "created_time": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-04T16:15:00.000Z"
+          },
+          "last_edited_time": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-05T18:18:00.000Z"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemCreatedBy"
+          },
+          "last_edited_by": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemCreatedBy"
+          },
+          "cover": {
+            "type": "null"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemIcon"
+          },
+          "parent": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemParent"
+          },
+          "in_trash": {
+            "type": "boolean"
+          },
+          "is_archived": {
+            "type": "boolean"
+          },
+          "is_locked": {
+            "type": "boolean"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOf1Item2Properties"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://app.notion.com/p/Clean-Up-3ef88fcddaf481508b87d294754ff58c"
+          },
+          "public_url": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "created_time",
+          "last_edited_time",
+          "created_by",
+          "last_edited_by",
+          "cover",
+          "icon",
+          "parent",
+          "in_trash",
+          "is_archived",
+          "is_locked",
+          "properties",
+          "url",
+          "public_url"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOf1Item2Properties": {
+        "type": "object",
+        "properties": {
+          "Duration": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesDuration"
+          },
+          "Started Hours Ago": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgo"
+          },
+          "Start Fallback": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesEndFallback"
+          },
+          "Status": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesStatus"
+          },
+          "Start": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesEnd2"
+          },
+          "Recurring": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesRecurring"
+          },
+          "End": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesEnd2"
+          },
+          "Time": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesTime"
+          },
+          "End Fallback": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesEndFallback"
+          },
+          "Human Duration": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration"
+          },
+          "Priority": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesPriority"
+          },
+          "Created time": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesCreatedTime"
+          },
+          "Priority If Not Started": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration"
+          },
+          "Time without Date": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration"
+          },
+          "Name": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesName"
+          }
+        },
+        "required": [
+          "Duration",
+          "Started Hours Ago",
+          "Start Fallback",
+          "Status",
+          "Start",
+          "Recurring",
+          "End",
+          "Time",
+          "End Fallback",
+          "Human Duration",
+          "Priority",
+          "Created time",
+          "Priority If Not Started",
+          "Time without Date",
+          "Name"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemCreatedBy": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "type": "string",
+            "example": "user"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "00000000-0000-0000-0000-000000000003"
+          }
+        },
+        "required": [
+          "object",
+          "id"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemIcon": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "emoji"
+          },
+          "emoji": {
+            "type": "string",
+            "example": "🤓"
+          }
+        },
+        "required": [
+          "type",
+          "emoji"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemParent": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "data_source_id"
+          },
+          "data_source_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "9201f6db-2895-4450-9435-041541a181dd"
+          },
+          "database_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+          }
+        },
+        "required": [
+          "type",
+          "data_source_id",
+          "database_id"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesCreatedTime": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "kF%40C"
+          },
+          "type": {
+            "type": "string",
+            "example": "created_time"
+          },
+          "created_time": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-05T03:01:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "created_time"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesDuration": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "%3ANHe"
+          },
+          "type": {
+            "type": "string",
+            "example": "formula"
+          },
+          "formula": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesDurationFormula"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "formula"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesDurationFormula": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "number"
+          },
+          "number": {
+            "type": "integer",
+            "example": 124
+          }
+        },
+        "required": [
+          "type",
+          "number"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesEnd": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "_Y%3BI"
+          },
+          "name": {
+            "type": "string",
+            "example": "End"
+          },
+          "description": {
+            "type": "null"
+          },
+          "type": {
+            "type": "string",
+            "example": "date"
+          },
+          "date": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "type",
+          "date"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesEnd2": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "_Y%3BI"
+          },
+          "type": {
+            "type": "string",
+            "example": "date"
+          },
+          "date": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesEndDate"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "date"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesEndDate": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-05T02:30:00.000+02:00"
+          },
+          "end": {
+            "type": "null"
+          },
+          "time_zone": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "start",
+          "end",
+          "time_zone"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesEndFallback": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "c%3A%5DA"
+          },
+          "type": {
+            "type": "string",
+            "example": "formula"
+          },
+          "formula": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesEndFallbackFormula"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "formula"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesEndFallbackFormula": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "date"
+          },
+          "date": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesEndDate"
+          }
+        },
+        "required": [
+          "type",
+          "date"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "dAuV"
+          },
+          "type": {
+            "type": "string",
+            "example": "formula"
+          },
+          "formula": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesHumanDurationFormula"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "formula"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesHumanDurationFormula": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "string"
+          },
+          "string": {
+            "type": "string",
+            "example": "2h 4m"
+          }
+        },
+        "required": [
+          "type",
+          "string"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesName": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "title"
+          },
+          "type": {
+            "type": "string",
+            "example": "title"
+          },
+          "title": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemTitle"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "title"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesPriority": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "ePdI"
+          },
+          "type": {
+            "type": "string",
+            "example": "rollup"
+          },
+          "rollup": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesPriorityRollup"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "rollup"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesPriorityRollup": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "array"
+          },
+          "array": {
+            "type": "array",
+            "maxItems": 0
+          },
+          "function": {
+            "type": "string",
+            "example": "show_original"
+          }
+        },
+        "required": [
+          "type",
+          "array",
+          "function"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesRecurring": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "TIII"
+          },
+          "type": {
+            "type": "string",
+            "example": "relation"
+          },
+          "relation": {
+            "type": "array",
+            "maxItems": 0
+          },
+          "has_more": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "relation",
+          "has_more"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "%3Bpl%3A"
+          },
+          "type": {
+            "type": "string",
+            "example": "formula"
+          },
+          "formula": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgoFormula"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "formula"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgoFormula": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "number"
+          },
+          "number": {
+            "type": "number",
+            "format": "double",
+            "example": 2.066666666667
+          }
+        },
+        "required": [
+          "type",
+          "number"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesStatus": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "%40F%3CW"
+          },
+          "type": {
+            "type": "string",
+            "example": "select"
+          },
+          "select": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesStatusSelect"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "select"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesStatusSelect": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "7cc827cd-2b85-4f5d-abc6-a08930dc7653"
+          },
+          "name": {
+            "type": "string",
+            "example": "In Progress"
+          },
+          "color": {
+            "type": "string",
+            "example": "orange"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "color"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesTime": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "%60G%7Bc"
+          },
+          "type": {
+            "type": "string",
+            "example": "formula"
+          },
+          "formula": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesTimeFormula"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "formula"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesTime2": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "%60G%7Bc"
+          },
+          "name": {
+            "type": "string",
+            "example": "Time"
+          },
+          "description": {
+            "type": "null"
+          },
+          "type": {
+            "type": "string",
+            "example": "formula"
+          },
+          "formula": {
+            "$ref": "#/components/schemas/expressionObject"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "type",
+          "formula"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesTimeFormula": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "date"
+          },
+          "date": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemPropertiesTimeFormulaDate"
+          }
+        },
+        "required": [
+          "type",
+          "date"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemPropertiesTimeFormulaDate": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-05T18:33:00.000+00:00"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-05T20:37:00.000+00:00"
+          },
+          "time_zone": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "start",
+          "end",
+          "time_zone"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemTitle": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemTitleItem"
+        }
+      },
+      "PageOrDataSourceListResultsOneOfItemTitleItem": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "text"
+          },
+          "text": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemTitleItemText"
+          },
+          "annotations": {
+            "$ref": "#/components/schemas/PageOrDataSourceListResultsOneOfItemTitleItemAnnotations"
+          },
+          "plain_text": {
+            "type": "string",
+            "example": "Intentions"
+          },
+          "href": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "type",
+          "text",
+          "annotations",
+          "plain_text",
+          "href"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemTitleItemAnnotations": {
+        "type": "object",
+        "properties": {
+          "bold": {
+            "type": "boolean"
+          },
+          "italic": {
+            "type": "boolean"
+          },
+          "strikethrough": {
+            "type": "boolean"
+          },
+          "underline": {
+            "type": "boolean"
+          },
+          "code": {
+            "type": "boolean"
+          },
+          "color": {
+            "type": "string",
+            "example": "default"
+          }
+        },
+        "required": [
+          "bold",
+          "italic",
+          "strikethrough",
+          "underline",
+          "code",
+          "color"
+        ]
+      },
+      "PageOrDataSourceListResultsOneOfItemTitleItemText": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "example": "Intentions"
+          },
+          "link": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "content",
+          "link"
         ]
       },
       "PageOrPartial": {
@@ -13205,7 +14555,7 @@
         "oneOf": [
           {
             "type": "string",
-            "example": "2026-10-03T18:11:00.000+00:00"
+            "example": "https://fae-tools.notion.site/Example-Page-96245c8f178444a482ad1941127c3ec3"
           },
           {
             "type": "null"
@@ -13262,6 +14612,22 @@
         "required": [
           "target",
           "transcript_id"
+        ]
+      },
+      "PartialUserObjectResponsePerson": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "email_verified": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "email",
+          "email_verified"
         ]
       },
       "PatchBlockChildren": {
@@ -13382,32 +14748,6 @@
           }
         },
         "additionalProperties": false
-      },
-      "PersonUserObjectResponseBot": {
-        "type": "object",
-        "properties": {
-          "owner": {
-            "$ref": "#/components/schemas/EmptyObjectOwner"
-          },
-          "workspace_name": {
-            "type": "string",
-            "example": "Mark Rösler's Notion"
-          },
-          "workspace_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a"
-          },
-          "workspace_limits": {
-            "$ref": "#/components/schemas/EmptyObjectWorkspaceLimits"
-          }
-        },
-        "required": [
-          "owner",
-          "workspace_name",
-          "workspace_id",
-          "workspace_limits"
-        ]
       },
       "PlaceSimplePropertyValueResponsePlace": {
         "oneOf": [
@@ -14424,7 +15764,8 @@
             ]
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "%60cG%5E"
           }
         },
         "required": [
@@ -14452,7 +15793,8 @@
             ]
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "EUgY"
           }
         },
         "required": [
@@ -14480,7 +15822,8 @@
             ]
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "~FiP"
           }
         },
         "required": [
@@ -14508,7 +15851,8 @@
             ]
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "%40ft%3F"
           }
         },
         "required": [
@@ -17714,6 +19058,21 @@
           }
         ]
       },
+      "RichTextItemResponseCommonHref": {
+        "description": "A URL that the rich text object links to or mentions.",
+        "oneOf": [
+          {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "https://www.google.com/"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "RichTexts": {
         "type": "array",
         "items": {
@@ -17728,16 +19087,20 @@
             "$ref": "#/components/schemas/rollupFunction"
           },
           "rollup_property_name": {
-            "type": "string"
+            "type": "string",
+            "example": "Name"
           },
           "relation_property_name": {
-            "type": "string"
+            "type": "string",
+            "example": "Equal relation"
           },
           "rollup_property_id": {
-            "type": "string"
+            "type": "string",
+            "example": "title"
           },
           "relation_property_id": {
-            "type": "string"
+            "type": "string",
+            "example": "EUgY"
           }
         },
         "required": [
@@ -17995,7 +19358,8 @@
             "type": [
               "number",
               "null"
-            ]
+            ],
+            "example": 0
           },
           "function": {
             "$ref": "#/components/schemas/rollupFunction"
@@ -18105,7 +19469,7 @@
           "status"
         ]
       },
-      "SelectDatabasePropertyConfigResponseSelect": {
+      "SelectDatabasePropertyConfigSelect": {
         "type": "object",
         "properties": {
           "options": {
@@ -18345,7 +19709,8 @@
       "SessionCreditsUsed": {
         "oneOf": [
           {
-            "type": "number"
+            "type": "number",
+            "example": 0
           },
           {
             "type": "null"
@@ -19129,7 +20494,6 @@
           "options": {
             "description": "The options for the status property.",
             "type": "array",
-            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/selectProperty"
             }
@@ -19147,7 +20511,6 @@
       "StatusDatabasePropertyConfigResponseStatusGroups": {
         "description": "The groups for the status property.",
         "type": "array",
-        "maxItems": 100,
         "items": {
           "$ref": "#/components/schemas/StatusDatabasePropertyConfigResponseStatusGroupsItem"
         }
@@ -19157,11 +20520,13 @@
         "properties": {
           "id": {
             "description": "The ID of the status group.",
-            "type": "string"
+            "type": "string",
+            "example": "3872a41e-0e9a-4684-8a93-83e310e627da"
           },
           "name": {
             "description": "The name of the status group.",
-            "type": "string"
+            "type": "string",
+            "example": "To-do"
           },
           "color": {
             "description": "The color of the status group.",
@@ -19170,9 +20535,9 @@
           "option_ids": {
             "description": "The IDs of the status options in this group.",
             "type": "array",
-            "maxItems": 100,
             "items": {
-              "type": "string"
+              "type": "string",
+              "example": "t|{j"
             }
           }
         },
@@ -19442,7 +20807,7 @@
             "description": "The actual text content of the text.",
             "type": "string",
             "maxLength": 2000,
-            "example": "Intentions"
+            "example": "Clean Up"
           },
           "link": {
             "$ref": "#/components/schemas/TextRichTextItemResponseTextLink"
@@ -19458,12 +20823,32 @@
         "description": "An object with information about any inline link in this text, if included.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/linkPreviewMention"
+            "$ref": "#/components/schemas/TextRichTextItemResponseTextLinkURL"
           },
           {
             "type": "null"
           }
         ]
+      },
+      "TextRichTextItemResponseTextLinkURL": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "url": {
+            "description": "The URL of the link.",
+            "type": "string",
+            "example": "https://www.google.com/",
+            "examples": [
+              "https://www.notion.com"
+            ]
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "additionalProperties": false
       },
       "TextRichTextItemTextLinkURL": {
         "type": "object",
@@ -19589,7 +20974,8 @@
         "properties": {
           "block_type": {
             "description": "The underlying block type that is not currently supported by the Public API. Example values include: form, button, drive.",
-            "type": "string"
+            "type": "string",
+            "example": "button"
           }
         },
         "required": [
@@ -21434,7 +22820,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "c0a1d99b-a0df-44ab-8717-71ca857cdf8e"
+            "example": "c5e205ab-aaea-4346-9880-bf961d9fcbb2"
           }
         },
         "required": [
@@ -21444,20 +22830,6 @@
           "next_cursor",
           "has_more",
           "results"
-        ]
-      },
-      "UserObjectCommonAvatarURL": {
-        "oneOf": [
-          {
-            "type": [
-              "string",
-              "null"
-            ],
-            "example": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100"
-          },
-          {
-            "type": "null"
-          }
         ]
       },
       "UserOrPartial": {
@@ -21658,24 +23030,12 @@
             "$ref": "#/components/schemas/TextPropertyFilterDoesNotEqual"
           },
           "created_time": {
-            "$ref": "#/components/schemas/ViewFilterResponsePropertyOrItemAndItemCreatedTime"
+            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemOrAndItemCreatedTime"
           }
         },
         "required": [
           "property",
           "select"
-        ]
-      },
-      "ViewFilterResponsePropertyOrItemAndItemCreatedTime": {
-        "type": "object",
-        "properties": {
-          "on_or_after": {
-            "type": "string",
-            "example": "2024-04-13"
-          }
-        },
-        "required": [
-          "on_or_after"
         ]
       },
       "ViewFilterResponsePropertyOrItemOr": {
@@ -21720,35 +23080,12 @@
             "$ref": "#/components/schemas/TextPropertyFilterEquals"
           },
           "formula": {
-            "$ref": "#/components/schemas/ViewFilterResponsePropertyOrItemOrItemAndItemFormula"
+            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemOrAndItemFormula"
           }
         },
         "required": [
           "property",
           "date"
-        ]
-      },
-      "ViewFilterResponsePropertyOrItemOrItemAndItemFormula": {
-        "type": "object",
-        "properties": {
-          "number": {
-            "$ref": "#/components/schemas/ViewFilterResponsePropertyOrItemOrItemAndItemFormulaNumber"
-          }
-        },
-        "required": [
-          "number"
-        ]
-      },
-      "ViewFilterResponsePropertyOrItemOrItemAndItemFormulaNumber": {
-        "type": "object",
-        "properties": {
-          "less_than": {
-            "type": "integer",
-            "example": 24
-          }
-        },
-        "required": [
-          "less_than"
         ]
       },
       "ViewFilterTimestamp": {
@@ -21799,7 +23136,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "6cc5e987-9254-45c5-a971-b776ccefe223"
+            "example": "e73a456f-a8bd-4505-81aa-cd2b79b1fa8a"
           }
         },
         "required": [
@@ -22182,18 +23519,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "a2ea33fb-7546-4c05-ba58-44d2dd30184f"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:43:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:43:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -22206,7 +23546,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "84559901-5eb1-43c2-9713-72083fbcd407"
           }
         },
         "required": [
@@ -22685,18 +24026,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "f435a9bc-ec00-44de-82b9-d1ce933ee623"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:17:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-10-08T21:16:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -22709,7 +24053,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "29710632-6752-4eb5-9df0-4698b61c58ab"
           }
         },
         "required": [
@@ -22806,7 +24151,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "d4f7e5ef-9813-408a-9d5f-343805e2ad48"
+            "example": "1057a65b-d6f0-47de-87b6-19c8de6573a3"
           }
         },
         "required": [
@@ -22834,18 +24179,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "adfd6f37-c3b0-4c2d-bda4-be9c3cfbc682"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:22:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:22:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -22858,7 +24206,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "a6c01538-fb27-427f-8ee7-2ad03fe7bab2"
           }
         },
         "required": [
@@ -22895,18 +24244,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "3a084cf3-fec9-4fbe-bd7e-a09005ce0a72"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T17:57:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-10-08T21:16:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -22919,7 +24271,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "815be90c-b534-4a1b-82a6-3e8b3319f7c1"
           }
         },
         "required": [
@@ -23086,18 +24439,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "0377f15d-c60f-4643-87b9-467e4814fe46"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T17:49:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-10-08T21:16:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -23110,7 +24466,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "1c8f53d3-686c-40ac-afe4-6a31a943709d"
           }
         },
         "required": [
@@ -23567,7 +24924,13 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "JuTz"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "450f64a0-18ab-47a7-9077-3572091079b8"
           }
         },
         "required": [
@@ -23630,7 +24993,7 @@
           "last_edited_time": {
             "type": "string",
             "format": "date-time",
-            "example": "2026-10-03T15:37:00.000Z"
+            "example": "2026-10-05T18:33:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -23644,7 +25007,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "466c960f-ce62-4648-9b60-5dce07df1dcb"
+            "example": "4ceabbf0-0119-4d36-be45-a78c3245fce5"
           }
         },
         "required": [
@@ -23681,18 +25044,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "2633808e-7e36-4f4e-972a-ccd2d3c49004"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:03:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-10-08T21:16:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -23705,7 +25071,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "39bb7017-09e9-42b1-874a-be9fc8aec90b"
           }
         },
         "required": [
@@ -23742,18 +25109,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "a610b904-c43a-4105-9886-71918e86ad92"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:01:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-10-08T21:16:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -23766,7 +25136,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "70321354-c5e6-4115-9d1b-676e1e764bb2"
           }
         },
         "required": [
@@ -23803,18 +25174,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "bc0271a5-5ab2-4a14-ad6c-2e2ecf5c40a0"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:15:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:17:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -23827,7 +25201,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "01d55938-92f2-490d-8411-e8d7ece99f7c"
           }
         },
         "required": [
@@ -23864,18 +25239,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "f7bcdc51-3dc1-41c2-926b-fd2d2ec9b581"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:15:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-10-08T21:16:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -23888,7 +25266,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "8d2ff643-ecc4-4427-a797-f1065413e5b4"
           }
         },
         "required": [
@@ -23928,6 +25307,8 @@
           "width_ratio": {
             "description": "Ratio between 0 and 1 of the width of this column relative to all columns in the list. If not provided, uses an equal width.",
             "type": "number",
+            "format": "double",
+            "example": 0.5,
             "examples": [
               0.5
             ]
@@ -24136,7 +25517,7 @@
         "properties": {
           "expression": {
             "type": "string",
-            "example": "dateBetween(prop(\"End Fallback\"),prop(\"Start\"),\"minutes\")",
+            "example": "e^{\\pi i}+1=0",
             "examples": [
               "e=mc^2"
             ]
@@ -24315,7 +25696,8 @@
           },
           "table_width": {
             "type": "integer",
-            "minimum": 1
+            "minimum": 1,
+            "example": 2
           }
         },
         "required": [
@@ -24349,7 +25731,6 @@
         "properties": {
           "cells": {
             "type": "array",
-            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/RichTexts"
             }
@@ -24529,7 +25910,13 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "~esH"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "16a9d0dc-8a50-453d-bd4f-8f6141108cfb"
           }
         },
         "required": [
@@ -24603,14 +25990,21 @@
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-31T10:19:00.000Z"
           },
           "object": {
             "type": "string",
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "NeE%60"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "31e3660a-cd9d-4ec5-b3bf-cc85a379c46c"
           }
         },
         "required": [
@@ -24934,7 +26328,7 @@
             "description": "The time when the data source was last edited.",
             "type": "string",
             "format": "date-time",
-            "example": "2026-10-03T15:37:00.000Z"
+            "example": "2026-10-05T18:33:00.000Z"
           },
           "created_by": {
             "description": "The user who created the data source.",
@@ -24971,7 +26365,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "9fdf6fc0-f506-4d02-8e6e-342acc770c4f"
+            "example": "e2cfdc69-9ce8-4add-93cb-21f61e6dc7d0"
           }
         },
         "required": [
@@ -25128,7 +26522,7 @@
             "description": "The time when the view was last edited.",
             "type": "string",
             "format": "date-time",
-            "example": "2026-10-03T15:37:46.207+00:00"
+            "example": "2026-10-05T18:33:33.129+00:00"
           },
           "url": {
             "description": "Canonical deep link to the view in Notion.",
@@ -25166,7 +26560,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "8816a2e1-d092-4511-b1e9-c742c8957df5"
+            "example": "53397722-9d4c-47ad-9e1a-381a3a02ebe4"
           }
         },
         "required": [
@@ -25660,7 +27054,13 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "uK%60G"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "9b5572cc-3b29-46dd-ad45-b89eaf912c59"
           }
         },
         "required": [
@@ -25692,10 +27092,7 @@
         "additionalProperties": false
       },
       "dateResponse": {
-        "type": [
-          "object",
-          "null"
-        ],
+        "type": "object",
         "properties": {
           "start": {
             "description": "The start date of the date object.",
@@ -25781,18 +27178,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "959fb0ee-847f-4acb-bca6-61a35a8d2ba6"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:21:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:21:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -25805,7 +27205,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "f0731845-a942-4a8d-94a5-27e079f29477"
           }
         },
         "required": [
@@ -25893,7 +27294,13 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "TWA%3B"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "b8a82d45-d9ce-46dd-aab7-eae1ead1cff9"
           }
         },
         "required": [
@@ -25942,18 +27349,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "40a8cb72-ab5c-42f7-aa4a-f5400ffe7178"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:05:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-10-08T21:16:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -25966,7 +27376,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "e7b32f92-6c1a-4ffe-83cb-72393ac8af98"
           }
         },
         "required": [
@@ -26089,18 +27500,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "fed8f526-d79c-4429-9ca9-c6aa55e7044b"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:20:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-10-08T21:16:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -26113,7 +27527,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "32dd990f-5240-4709-bc4e-e91823142cbb"
           }
         },
         "required": [
@@ -26182,6 +27597,7 @@
         "properties": {
           "expression": {
             "type": "string",
+            "example": "e^{\\pi i}+1 = 0",
             "examples": [
               "e=mc^2"
             ]
@@ -26325,18 +27741,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "5f71213c-f1cc-4eb9-8c98-855332ca46ad"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:15:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-10-08T21:16:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -26349,7 +27768,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "103b2180-064e-4a54-ae05-8b320bef0a28"
           }
         },
         "required": [
@@ -26421,7 +27841,8 @@
             "$ref": "#/components/schemas/RichTexts"
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "example": "hd-wallpaper-g6e0a7c1ce_1920.jpeg"
           }
         },
         "required": [
@@ -26719,7 +28140,13 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "KXdF"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "1bf0b6c2-b453-44d1-9c52-28b5e8d5a8da"
           }
         },
         "required": [
@@ -27088,7 +28515,13 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "C%5EC%3A"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "ee24be35-48ea-4ab0-a234-fa0f661080eb"
           }
         },
         "required": [
@@ -27126,7 +28559,7 @@
             "$ref": "#/components/schemas/dateSimplePropertyValue"
           },
           {
-            "$ref": "#/components/schemas/numberFormulaPropertyValueResponse"
+            "$ref": "#/components/schemas/numberSimplePropertyValue"
           },
           {
             "$ref": "#/components/schemas/stringFormulaPropertyValueResponse"
@@ -27350,7 +28783,6 @@
       },
       "groupFilterOperatorArray": {
         "type": "array",
-        "maxItems": 100,
         "items": {
           "$ref": "#/components/schemas/groupFilterOperatorArrayItem"
         }
@@ -27527,18 +28959,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "80687e03-c8fa-4c9a-a807-2ec66b056d44"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T17:43:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T17:46:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -27551,7 +28986,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "8800a02d-adea-4d1e-8ee9-b61c4a4261c8"
           }
         },
         "required": [
@@ -27588,18 +29024,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "d05aa478-397e-4954-b694-b7c1c6c78956"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T17:46:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-10-08T21:16:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -27612,7 +29051,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "dc13fd60-5990-47a7-a4b5-31591ec8b861"
           }
         },
         "required": [
@@ -27649,18 +29089,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "b7950ba9-e8a0-4b2f-a069-5cafcd6ed6ad"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T17:46:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-10-08T21:16:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -27673,7 +29116,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "0af8cb34-99e9-45cb-91f9-625d22a8d46d"
           }
         },
         "required": [
@@ -27802,12 +29246,12 @@
       },
       "idRequest": {
         "type": "string",
-        "example": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+        "example": "3ee88fcd-daf4-8170-8b9e-f5270e82e4e6"
       },
       "idResponse": {
         "type": "string",
         "format": "uuid",
-        "example": "cb3265bc-5d5e-488f-bd8a-69221c107915"
+        "example": "3ee88fcd-daf4-8170-8b9e-f5270e82e4e6"
       },
       "imageBlockObjectResponse": {
         "title": "Image",
@@ -27829,18 +29273,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "c7cbd11f-bd18-49c3-a630-a06db427a31b"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:09:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2024-05-03T17:07:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -27853,7 +29300,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "60fed403-8a7e-4e93-a7a9-ec96f1034d61"
           }
         },
         "required": [
@@ -27903,12 +29351,14 @@
         "properties": {
           "url": {
             "description": "The URL of the file.",
-            "type": "string"
+            "type": "string",
+            "example": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/30d8226f-1494-40f3-898c-4683f6e14a38/sparkles_2728.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466Z7BP7XHS%2F20261005%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261005T203800Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEBoaCXVzLXdlc3QtMiJHMEUCIHF9UO9BzsHuDDv4mEzRgrSKr0%2BjFZFP2q98Giw0HHqiAiEArfljUyzvdXG5w9nNsHPzgKNvwzWfBUNvnxchYZ26PAkqiAQI4v%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDEHY%2F3NuEcVJd7UUHCrcA66LJFjo%2FXsWZiDNm4rdCmfC03AJvcyDCUYTKWJmf45iBd36lnSEXMZPeve7fvaxPbwXGzZRz%2Ftanu61SSDEvs7F25g3J0uFPrPmmDDUuU%2Fo8dMMpLMTplYLXlQ%2BWVqlHqCo1FjHxH9i8FbvtV1VZLpJOCQB3N0H%2FfkvWAjDPyXmuJCpk6pF71PWrAyK0%2FuzCGSyAdW807mjXU7569P%2F%2FzCBkmWr9uvO6jTN5HB0AkEIb69Vq1GrK1Rk%2BaGs6uZ6QZiWLpggAKVkYtybPuBI87RUeAw1HltJaM59PRtzV2uqCnXVzHVWyh4hkf0kbNcRR4SJwbIpmPQr9kqfr%2FIvdeCVtWWa0xfFzH%2BxG%2FZAKRtv288C%2BQ01sJADPlK%2FXJZeHuW0nylPuKq1xWmOvx17AKA4uchTzwTQmkp4dkzr0dMuVGgc00V7LoCyAsF6z12I1Lop3Za0Co9dVarSN0VjbtcWJau4xWFwcvv80JaVOJvbRBO6zE9iSXNZs5lOmiXgqhXZqPy1%2BCxNE%2B8wdbGfOml1iRRMRUrPy1JhbI0Y7sSjXg2uYp7gdXNiH%2FdMXmH%2Bnct%2BwWBI7Foz4qlwNjL0SFBP6zadpZM5MzJWvIco6JGvfAYY%2FreJstre%2BGCGMMDCj9YGOqUBN4TPWz%2FQRRTQo01Q02m3w8Ild3V0lhYOXf2UyPL5JJsk%2BVUvsnVpAeHvoZw%2BRhF87RueBzmHxCgVn66bICf9oNJ9ImPXVUDQNp7z8cOwODKlPfP9%2BuZUvten%2Bld0145Rkxeow5s9y79VwOwCl%2FwAq%2Fd62pDS3i2y78N3QydQUfHP3kdF%2BBk7JafwY93u2c7i8LoXSvk1379vumE%2FCTjbO4Jojy3J&X-Amz-Signature=6342a97156efbd3ffc1f59076443ce2bef9e68640dffae1c7ee3060904e37d99&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
           },
           "expiry_time": {
             "description": "The time when the URL will expire.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-05T21:38:00.707Z"
           }
         },
         "required": [
@@ -28053,7 +29503,8 @@
           "xml",
           "yaml",
           "java/c/c++/c#"
-        ]
+        ],
+        "example": "go"
       },
       "lastEditedByDatabasePropertyConfigResponse": {
         "title": "Last Edited By",
@@ -28106,7 +29557,13 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "eszR"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "d45d80e4-d4f5-4682-8121-b483e77c4dc2"
           }
         },
         "required": [
@@ -28239,15 +29696,18 @@
         "properties": {
           "href": {
             "description": "The href of the link mention.",
-            "type": "string"
+            "type": "string",
+            "example": "https://example.com/"
           },
           "title": {
             "description": "The title of the link.",
-            "type": "string"
+            "type": "string",
+            "example": "Example Domain"
           },
           "description": {
             "description": "The description of the link.",
-            "type": "string"
+            "type": "string",
+            "example": "This domain is for use in illustrative examples in documents. You may use this\n    domain in literature without prior coordination or asking for permission."
           },
           "link_author": {
             "description": "The author of the link.",
@@ -28307,18 +29767,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "18e88fcd-daf4-800c-8864-e9467fd4274a"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2025-02-02T19:53:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-05T20:21:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -28331,7 +29794,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "a599d51c-2082-48a5-8f2c-876cc64a0a43"
           }
         },
         "required": [
@@ -28354,10 +29818,7 @@
           "url": {
             "description": "The URL of the link preview mention.",
             "type": "string",
-            "example": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb",
-            "examples": [
-              "https://www.notion.com"
-            ]
+            "example": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/melting-face_1fae0.png"
           }
         },
         "required": [
@@ -28385,18 +29846,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "bc6b54d9-b078-4869-ac76-2025d7ded188"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:29:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:29:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -28409,7 +29873,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "181cdfb2-9480-444f-b31f-64005445f6a0"
           }
         },
         "required": [
@@ -28615,7 +30080,8 @@
         "type": "object",
         "properties": {
           "url": {
-            "type": "string"
+            "type": "string",
+            "example": "https://twitter.com/elonmusk/status/1519480761749016577"
           },
           "caption": {
             "$ref": "#/components/schemas/RichTexts"
@@ -28732,7 +30198,7 @@
             "const": "multi_select"
           },
           "multi_select": {
-            "$ref": "#/components/schemas/MultiSelectDatabasePropertyConfigResponseMultiSelect"
+            "$ref": "#/components/schemas/SelectDatabasePropertyConfigSelect"
           }
         },
         "required": [
@@ -28780,7 +30246,6 @@
           },
           "multi_select": {
             "type": "array",
-            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/partialSelectResponse"
             }
@@ -28790,7 +30255,13 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "UuqS"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "52fcd3d4-8c56-48c5-86d9-e73825751714"
           }
         },
         "required": [
@@ -28811,7 +30282,6 @@
           },
           "multi_select": {
             "type": "array",
-            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/partialSelectPropertyValueResponse"
             }
@@ -28908,32 +30378,14 @@
             "type": [
               "number",
               "null"
-            ]
+            ],
+            "example": 0
           }
         },
         "required": [
           "type",
           "number"
         ]
-      },
-      "numberFormulaPropertyValueResponse": {
-        "title": "Number",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `number`",
-            "type": "string",
-            "const": "number"
-          },
-          "number": {
-            "$ref": "#/components/schemas/NumberFormulaPropertyValueResponseNumber"
-          }
-        },
-        "required": [
-          "type",
-          "number"
-        ],
-        "additionalProperties": false
       },
       "numberGroupByConfigRequest": {
         "type": "object",
@@ -29099,7 +30551,13 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "CQUf"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "b9f7409a-3631-4e51-923d-65d2d61da267"
           }
         },
         "required": [
@@ -29109,7 +30567,7 @@
           "id"
         ]
       },
-      "numberSimplePropertyValueResponse": {
+      "numberSimplePropertyValue": {
         "title": "Number",
         "type": "object",
         "properties": {
@@ -29119,7 +30577,7 @@
             "const": "number"
           },
           "number": {
-            "$ref": "#/components/schemas/SessionCreditsUsed"
+            "$ref": "#/components/schemas/NumberSimplePropertyValueNumber"
           }
         },
         "required": [
@@ -29156,18 +30614,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "111ff69f-1d43-448e-aa4c-881b3524ec86"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T17:55:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-10-08T21:16:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -29180,7 +30641,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "ee7b5dff-6f2e-491f-9534-95702e73c7a3"
           }
         },
         "required": [
@@ -29606,18 +31068,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "dad588e3-83ec-430a-bcd3-3cc5dc37d7e9"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T05:31:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T05:33:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -29630,7 +31095,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "9569454a-ca00-4f51-8b3e-5f104eb8bc51"
           }
         },
         "required": [
@@ -29956,10 +31422,12 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "1b58b969-49fa-4973-b868-f0de3388f051"
           },
           "name": {
-            "type": "string"
+            "type": "string",
+            "example": "I've taken a look"
           },
           "color": {
             "$ref": "#/components/schemas/selectColor"
@@ -29998,6 +31466,22 @@
             "description": "Always `user`",
             "type": "string",
             "const": "user"
+          },
+          "name": {
+            "type": "string",
+            "example": "Fae Tools"
+          },
+          "avatar_url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100"
+          },
+          "type": {
+            "type": "string",
+            "example": "person"
+          },
+          "person": {
+            "$ref": "#/components/schemas/PartialUserObjectResponsePerson"
           }
         },
         "required": [
@@ -30026,18 +31510,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "d6d7291f-eacf-4905-a6d6-3dc988017437"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:07:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-10-08T21:16:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -30050,7 +31537,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "b04099dc-d536-4098-b44b-13190adfae31"
           }
         },
         "required": [
@@ -30242,9 +31730,6 @@
           "person": {
             "description": "Details about the person, when the `type` of the user is `person`.",
             "$ref": "#/components/schemas/PersonUserObjectPerson"
-          },
-          "bot": {
-            "$ref": "#/components/schemas/PersonUserObjectResponseBot"
           }
         },
         "required": [
@@ -30306,7 +31791,13 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "RYYU"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "b14e6997-faac-419f-a650-c21a22917028"
           }
         },
         "required": [
@@ -30797,7 +32288,7 @@
           },
           "message": {
             "type": "string",
-            "example": "Could not find page with ID: 00000000-0000-0000-0000-000000000000. Make sure the relevant pages and databases are shared with your integration \"Fae\"."
+            "example": "Insufficient permissions for this endpoint."
           },
           "additional_data": {
             "type": "object",
@@ -30831,18 +32322,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "7e4b229d-b2eb-45df-b272-a07f88b7722e"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T17:54:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-10-08T21:16:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -30855,7 +32349,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "f79cc160-4a36-4c3f-9ba9-c8cc84ec3a17"
           }
         },
         "required": [
@@ -31147,11 +32642,10 @@
           "plain_text": {
             "description": "The plain text content of the rich text object, without any styling.",
             "type": "string",
-            "example": "Intentions"
+            "example": "Clean Up"
           },
           "href": {
-            "description": "A URL that the rich text object links to or mentions.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/RichTextItemResponseCommonHref"
           },
           "annotations": {
             "description": "All rich text objects contain an annotations object that sets the styling for the rich text.",
@@ -31379,7 +32873,7 @@
             "const": "select"
           },
           "select": {
-            "$ref": "#/components/schemas/SelectDatabasePropertyConfigResponseSelect"
+            "$ref": "#/components/schemas/SelectDatabasePropertyConfigSelect"
           }
         },
         "required": [
@@ -31516,7 +33010,13 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "hiMX"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "6bb8bf25-c1d2-47a7-873e-c4a6026f38d1"
           }
         },
         "required": [
@@ -31558,7 +33058,7 @@
       "simplePropertyValueResponse": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/numberSimplePropertyValueResponse"
+            "$ref": "#/components/schemas/numberSimplePropertyValue"
           },
           {
             "$ref": "#/components/schemas/urlSimplePropertyValueResponse"
@@ -31855,7 +33355,13 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "~%7CtN"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "7d925202-3e62-479d-b84d-97e53ef7f2a2"
           }
         },
         "required": [
@@ -31896,7 +33402,8 @@
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "example": "no"
           }
         },
         "required": [
@@ -31914,7 +33421,7 @@
             "const": "string"
           },
           "string": {
-            "$ref": "#/components/schemas/UserObjectCommonAvatarURL"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "required": [
@@ -32000,18 +33507,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "2503b13d-2eda-4f95-af02-785522aa7bb7"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:32:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-10-08T21:16:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -32024,7 +33534,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "424d2451-987a-4df4-bb29-883f44aaad96"
           }
         },
         "required": [
@@ -32198,18 +33709,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "edf66def-c7ba-4945-8eac-15a6f77ffc98"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:34:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:34:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -32222,7 +33736,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "6e1d1b9a-8f98-40c7-a513-32d252dbac15"
           }
         },
         "required": [
@@ -32259,18 +33774,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "e4018970-a733-4168-8e5f-4584245ea2eb"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:21:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:21:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -32283,7 +33801,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "4c61be2e-4830-44a5-9dd9-eff006a5082e"
           }
         },
         "required": [
@@ -32369,18 +33888,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "254fcbee-a657-45be-8c04-49262dd738c7"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:34:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:38:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -32393,7 +33915,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "8e3f4ce5-8fe2-4557-ae98-05bd34c00a0f"
           }
         },
         "required": [
@@ -32749,7 +34272,8 @@
       "textRequest": {
         "type": "string",
         "minLength": 1,
-        "maxLength": 2000
+        "maxLength": 2000,
+        "example": "https://bitcoin.org/bitcoin.pdf"
       },
       "textRichTextItemRequest": {
         "title": "Text",
@@ -33133,18 +34657,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "a6317289-4a7b-480f-9b7c-c45d7c14a96f"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:32:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-08-04T14:49:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -33157,7 +34684,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "794950cb-4451-4459-b46d-6ab740ab6810"
           }
         },
         "required": [
@@ -33194,18 +34722,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "ab902eb8-638c-4c1b-a65c-d6dc9e4e8925"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:00:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-10-08T21:16:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -33218,7 +34749,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "46fbfa98-a49b-4744-b1a0-f1010aa8df57"
           }
         },
         "required": [
@@ -33422,18 +34954,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "49d7456b-013c-4aec-8f6d-2843aff9b7dc"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:26:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:29:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -33446,7 +34981,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "e4738252-668d-4ad4-9da0-ef25e3d57059"
           }
         },
         "required": [
@@ -33652,7 +35188,13 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "z%3BWh"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "beace63d-9712-4057-8e95-1e8dc5c9c557"
           }
         },
         "required": [
@@ -33719,7 +35261,7 @@
           },
           "avatar_url": {
             "description": "The avatar URL of the user.",
-            "$ref": "#/components/schemas/UserObjectCommonAvatarURL"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "required": [
@@ -33900,18 +35442,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "a95ecf46-05b6-4dc1-bc61-b79651767c75"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-07-14T18:14:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2022-10-08T21:16:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -33924,7 +35469,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "7fc4dd69-4c4a-4a6b-8e9f-342b12793ecc"
           }
         },
         "required": [
@@ -34205,7 +35751,8 @@
         "properties": {
           "property": {
             "description": "Property name or ID to sort by.",
-            "type": "string"
+            "type": "string",
+            "example": "mFVH"
           },
           "direction": {
             "description": "Sort direction.",

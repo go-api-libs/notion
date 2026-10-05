@@ -404,6 +404,7 @@ func shapeOf(v any) any {
 			item := shapeOf(x)
 			if b, err := json.Marshal(item, json.Deterministic(true)); err == nil && !seen[string(b)] {
 				seen[string(b)] = true
+
 				items = append(items, item)
 			}
 		}

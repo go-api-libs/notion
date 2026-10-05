@@ -11,20 +11,29 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"net/url"
 	"slices"
 	"strconv"
 	"time"
 	"uuid"
 
 	"cloud.google.com/go/civil"
+	"github.com/MarkRosemaker/jsonutil"
+	"github.com/go-api-libs/types"
 )
 
 var jsonOpts = json.JoinOptions(
 	json.RejectUnknownMembers(true),
+	json.WithMarshalers(json.JoinMarshalers(
+		json.MarshalToFunc(jsonutil.URLMarshal),
+	)),
+	json.WithUnmarshalers(json.JoinUnmarshalers(
+		json.UnmarshalFromFunc(jsonutil.URLUnmarshal),
+	)),
 )
 
 // jsonOptsLenient is jsonOpts accepting members the specification does not know, as debug mode decodes once a strict
-// decoding failed.
+// decoding failed, and as a caller's own type of a result is decoded.
 var jsonOptsLenient = json.JoinOptions(jsonOpts, json.RejectUnknownMembers(false))
 
 // GetUsersParams holds the query parameters for GetUsers.
@@ -3325,7 +3334,7 @@ type BlockObjectQuote struct {
 // BlockObjectRequest defines a model
 type BlockObjectRequest struct {
 	Object           string                                      `json:"object,omitzero"`
-	Type             BlockObjectRequestType                      `json:"type"`
+	Type             BlockObjectRequestType                      `json:"type,omitzero"`
 	Embed            *BlockObjectEmbed2                          `json:"embed,omitzero"`
 	Bookmark         *MediaContentWithURLAndCaptionRequest       `json:"bookmark,omitzero"`
 	Image            *MediaContentWithFileAndCaptionRequest      `json:"image,omitzero"`
@@ -3547,6 +3556,11 @@ func (v *BlockObjectRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		return err
 	}
 
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfBlockObjectRequest, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = BlockObjectRequestType(tag)
+	}
+
 	return jsonCheckTag("type", string(v.Type), tagsOfBlockObjectRequest, v.taggedMembers(), jsonStrict(dec))
 }
 
@@ -3591,7 +3605,7 @@ type BlockObjectRequestToDoToDo struct {
 // BlockObjectRequestWithoutChildren defines a model
 type BlockObjectRequestWithoutChildren struct {
 	Object           string                                      `json:"object,omitzero"`
-	Type             BlockObjectRequestWithoutChildrenType       `json:"type"`
+	Type             BlockObjectRequestWithoutChildrenType       `json:"type,omitzero"`
 	Embed            *BlockObjectEmbed2                          `json:"embed,omitzero"`
 	Bookmark         *MediaContentWithURLAndCaptionRequest       `json:"bookmark,omitzero"`
 	Image            *MediaContentWithFileAndCaptionRequest      `json:"image,omitzero"`
@@ -3795,6 +3809,11 @@ func (v *BlockObjectRequestWithoutChildren) UnmarshalJSONFrom(dec *jsontext.Deco
 		return err
 	}
 
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfBlockObjectRequestWithoutChildren, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = BlockObjectRequestWithoutChildrenType(tag)
+	}
+
 	return jsonCheckTag("type", string(v.Type), tagsOfBlockObjectRequestWithoutChildren, v.taggedMembers(), jsonStrict(dec))
 }
 
@@ -3847,7 +3866,7 @@ type BlockObjectVideo struct {
 // BlockObjectWithSingleLevelOfChildrenRequest defines a model
 type BlockObjectWithSingleLevelOfChildrenRequest struct {
 	Object           string                                                             `json:"object,omitzero"`
-	Type             BlockObjectWithSingleLevelOfChildrenRequestType                    `json:"type"`
+	Type             BlockObjectWithSingleLevelOfChildrenRequestType                    `json:"type,omitzero"`
 	Embed            *BlockObjectEmbed2                                                 `json:"embed,omitzero"`
 	Bookmark         *MediaContentWithURLAndCaptionRequest                              `json:"bookmark,omitzero"`
 	Image            *MediaContentWithFileAndCaptionRequest                             `json:"image,omitzero"`
@@ -4057,6 +4076,11 @@ func (v *BlockObjectWithSingleLevelOfChildrenRequest) UnmarshalJSONFrom(dec *jso
 		return err
 	}
 
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfBlockObjectWithSingleLevelOfChildrenRequest, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = BlockObjectWithSingleLevelOfChildrenRequestType(tag)
+	}
+
 	return jsonCheckTag("type", string(v.Type), tagsOfBlockObjectWithSingleLevelOfChildrenRequest, v.taggedMembers(), jsonStrict(dec))
 }
 
@@ -4215,7 +4239,7 @@ type BoardViewConfigRequest struct {
 	// Group-by configuration for board columns.
 	GroupBy GroupByConfigRequest `json:"group_by"`
 	// Secondary group-by configuration for sub-grouping within columns. Pass null to remove sub-grouping.
-	SubGroupBy GroupByConfigRequest `json:"sub_group_by,omitzero"`
+	SubGroupBy *GroupByConfigRequest `json:"sub_group_by,omitzero"`
 	// Property visibility and display configuration on cards. Pass null to clear.
 	Properties []ViewPropertyConfigRequest `json:"properties,omitzero"`
 	// Cover image configuration for cards. Pass null to clear.
@@ -4460,29 +4484,6 @@ type BotInfoResponseWorkspaceLimits struct {
 	MaxFileUploadSizeInBytes int `json:"max_file_upload_size_in_bytes"`
 }
 
-// BotUserObjectResponse defines a model
-type BotUserObjectResponse struct {
-	// Indicates this user is a bot.
-	Type string `json:"type"`
-	// Details about the bot, when the `type` of the user is `bot`.
-	Bot       BotUserObjectResponseBot `json:"bot"`
-	RequestID uuid.UUID                `json:"request_id,omitzero"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether BotUserObjectResponse declares it.
-func (v *BotUserObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "bot":
-		return true, json.UnmarshalDecode(dec, &v.Bot, jsonOptsOf(dec))
-	case "request_id":
-		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
 // Details about the bot, when the `type` of the user is `bot`.
 // BotUserObjectResponseBot is an untagged oneOf union: exactly one field is set after unmarshaling.
 type BotUserObjectResponseBot struct {
@@ -4539,6 +4540,30 @@ func (v *BotUserObjectResponseBot) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// ButtonPropertyItemObjectResponse defines a model
+type ButtonPropertyItemObjectResponse struct {
+	Type   string      `json:"type"`
+	Button EmptyObject `json:"button"`
+	Object string      `json:"object"`
+	ID     string      `json:"id"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether ButtonPropertyItemObjectResponse declares it.
+func (v *ButtonPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "button":
+		return true, json.UnmarshalDecode(dec, &v.Button, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	}
+
+	return false, nil
 }
 
 // CalendarViewConfigRequest defines a model
@@ -4902,7 +4927,7 @@ type ChartViewConfigRequest struct {
 	// The chart type.
 	ChartType ChartViewConfigChartType `json:"chart_type"`
 	// X-axis grouping configuration for grouped data mode. Pass null to clear.
-	XAxis GroupByConfigRequest `json:"x_axis,omitzero"`
+	XAxis *GroupByConfigRequest `json:"x_axis,omitzero"`
 	// Y-axis aggregation for grouped data mode. Pass null to clear.
 	YAxis ChartAggregationRequest `json:"y_axis,omitzero"`
 	// Property ID for x-axis values in results mode. Pass null to clear.
@@ -4944,7 +4969,7 @@ type ChartViewConfigRequest struct {
 	// Hide title (number only). Pass null to clear.
 	HideTitle *bool `json:"hide_title,omitzero"`
 	// Stack-by grouping for stacked/grouped bar charts. Pass null to clear.
-	StackBy GroupByConfigRequest `json:"stack_by,omitzero"`
+	StackBy *GroupByConfigRequest `json:"stack_by,omitzero"`
 	// Reference lines on the chart. Pass null to clear.
 	ReferenceLines []ChartReferenceLineRequest `json:"reference_lines,omitzero"`
 	// Chart caption text. Pass null to clear.
@@ -5022,7 +5047,7 @@ type ChartViewConfigResponse struct {
 	// The chart type: column (vertical bars), bar (horizontal bars), line, donut, or number (single value display).
 	ChartType ChartViewConfigChartType `json:"chart_type"`
 	// X-axis grouping configuration for column/bar/line/donut charts using grouped data. Null when using results (raw property values) mode.
-	XAxis GroupByConfigResponse `json:"x_axis,omitzero"`
+	XAxis *GroupByConfigResponse `json:"x_axis,omitzero"`
 	// Y-axis aggregation for column/bar/line/donut charts using grouped data. Null when using results mode.
 	YAxis ChartAggregationResponse `json:"y_axis,omitzero"`
 	// Property ID for the x-axis name values when using results (raw property values) mode.
@@ -5064,7 +5089,7 @@ type ChartViewConfigResponse struct {
 	// Whether to hide the title label (number charts only).
 	HideTitle *bool `json:"hide_title,omitzero"`
 	// Stack-by grouping configuration for stacked/grouped bar charts (column/bar/line only). Null when not stacked.
-	StackBy GroupByConfigResponse `json:"stack_by,omitzero"`
+	StackBy *GroupByConfigResponse `json:"stack_by,omitzero"`
 	// Reference lines drawn on the chart. Null when no reference lines are configured.
 	ReferenceLines []ChartReferenceLineResponse `json:"reference_lines,omitzero"`
 	// Text caption displayed below the chart. Null when no caption is shown.
@@ -5252,6 +5277,33 @@ type CheckboxPropertyFilterDoesNotEqual struct {
 // CheckboxPropertyFilterEquals defines a model
 type CheckboxPropertyFilterEquals struct {
 	Equals bool `json:"equals"`
+}
+
+// CheckboxPropertyItemObjectResponse defines a model
+type CheckboxPropertyItemObjectResponse struct {
+	Type      string    `json:"type"`
+	Checkbox  bool      `json:"checkbox"`
+	Object    string    `json:"object"`
+	ID        string    `json:"id"`
+	RequestID uuid.UUID `json:"request_id,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether CheckboxPropertyItemObjectResponse declares it.
+func (v *CheckboxPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "checkbox":
+		return true, json.UnmarshalDecode(dec, &v.Checkbox, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
+	}
+
+	return false, nil
 }
 
 // CodeBlockObjectResponseCode defines a model
@@ -5656,8 +5708,8 @@ type ContentWithRichTextColorAndIcon struct {
 type ContentWithRichTextColorAndIcon2 struct {
 	RichText RichTexts `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color APIColor         `json:"color"`
-	Icon  PageIconResponse `json:"icon"`
+	Color APIColor          `json:"color"`
+	Icon  *PageIconResponse `json:"icon"`
 }
 
 // ContentWithRichTextColorAndIconUpdate defines a model
@@ -6048,7 +6100,7 @@ type CreateACommentAllOf0OneOf3 struct {
 
 // The parent of the comment. This can be a page or a block.
 type CreateACommentAllOfOneOfParent struct {
-	Type CreateACommentAllOfOneOfParentType `json:"type"`
+	Type CreateACommentAllOfOneOfParentType `json:"type,omitzero"`
 	// The ID of the parent page (with or without dashes), for example, 195de9221179449fab8075a27c979105
 	PageID IDRequest `json:"page_id,omitzero"`
 	// The ID of the parent block (with or without dashes), for example, 195de9221179449fab8075a27c979105
@@ -6096,6 +6148,11 @@ func (v *CreateACommentAllOfOneOfParent) UnmarshalJSONFrom(dec *jsontext.Decoder
 	*v = CreateACommentAllOfOneOfParent{}
 	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
 		return err
+	}
+
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfCreateACommentAllOfOneOfParent, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = CreateACommentAllOfOneOfParentType(tag)
 	}
 
 	return jsonCheckTag("type", string(v.Type), tagsOfCreateACommentAllOfOneOfParent, v.taggedMembers(), jsonStrict(dec))
@@ -6212,7 +6269,7 @@ type CreateADatabase struct {
 	// Title of data source as it appears in Notion.
 	Title []RichTextItemRequest `json:"title,omitzero"`
 	// Page icon.
-	Icon PageIconRequest `json:"icon,omitzero"`
+	Icon *PageIconRequest `json:"icon,omitzero"`
 }
 
 // CreateAToken defines a model
@@ -7064,11 +7121,65 @@ type CreatedByPropertyConfiguration struct {
 	CreatedBy EmptyObject `json:"created_by"`
 }
 
+// CreatedByPropertyItemObjectResponse defines a model
+type CreatedByPropertyItemObjectResponse struct {
+	Type      string        `json:"type"`
+	CreatedBy UserOrPartial `json:"created_by"`
+	Object    string        `json:"object"`
+	ID        string        `json:"id"`
+	RequestID uuid.UUID     `json:"request_id,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether CreatedByPropertyItemObjectResponse declares it.
+func (v *CreatedByPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "created_by":
+		return true, json.UnmarshalDecode(dec, &v.CreatedBy, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
 // CreatedTimePropertyConfiguration defines a model
 type CreatedTimePropertyConfiguration struct {
 	// Always `created_time`
 	Type        string      `json:"type,omitzero"`
 	CreatedTime EmptyObject `json:"created_time"`
+}
+
+// CreatedTimePropertyItemObjectResponse defines a model
+type CreatedTimePropertyItemObjectResponse struct {
+	Type        string    `json:"type"`
+	CreatedTime time.Time `json:"created_time"`
+	Object      string    `json:"object"`
+	ID          string    `json:"id"`
+	RequestID   uuid.UUID `json:"request_id,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether CreatedTimePropertyItemObjectResponse declares it.
+func (v *CreatedTimePropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "created_time":
+		return true, json.UnmarshalDecode(dec, &v.CreatedTime, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
+	}
+
+	return false, nil
 }
 
 // CustomEmojiList defines a model
@@ -7238,9 +7349,9 @@ type DataSourceObjectResponse struct {
 	// The properties schema of the data source.
 	Properties map[string]PropertyConfig `json:"properties"`
 	// The icon of the data source.
-	Icon PageIconResponse `json:"icon"`
+	Icon *PageIconResponse `json:"icon"`
 	// The cover of the data source.
-	Cover PageCoverResponse `json:"cover"`
+	Cover *PageCoverResponse `json:"cover"`
 	// The URL of the data source.
 	URL string `json:"url"`
 	// The public URL of the data source if it is publicly accessible.
@@ -7368,13 +7479,13 @@ type DataSourceViewObjectResponse struct {
 	// The user who last edited the view, or null if not available.
 	LastEditedBy PartialUserObjectResponse `json:"last_edited_by,omitzero"`
 	// The filter applied to this view (same shape as data source query filter).
-	Filter ViewFilterResponse `json:"filter,omitzero"`
+	Filter *ViewFilterResponse `json:"filter,omitzero"`
 	// The sorts applied to this view (same shape as data source query sorts).
 	Sorts []ViewSortResponse `json:"sorts,omitzero"`
 	// Quick filters pinned to the view's filter bar. Keys are property IDs. Values are filter conditions (same shape as a property filter without the property field). Null when no quick filters are set.
 	QuickFilters map[string]ViewFilter `json:"quick_filters,omitzero"`
 	// View presentation configuration.
-	Configuration ViewConfigResponse `json:"configuration,omitzero"`
+	Configuration *ViewConfigResponse `json:"configuration,omitzero"`
 	// For dashboard widget views, the ID of the parent dashboard view. Only present when this view is a widget inside a dashboard.
 	DashboardViewID string    `json:"dashboard_view_id,omitzero"`
 	RequestID       uuid.UUID `json:"request_id,omitzero"`
@@ -7470,9 +7581,9 @@ type Database struct {
 	// The data sources of the database.
 	DataSources []DataSourceReferenceResponse `json:"data_sources"`
 	// The icon of the database.
-	Icon PageIconResponse `json:"icon"`
+	Icon *PageIconResponse `json:"icon"`
 	// The cover of the database.
-	Cover PageCoverResponse `json:"cover"`
+	Cover *PageCoverResponse `json:"cover"`
 	// The URL of the database.
 	URL string `json:"url"`
 	// The public URL of the database if it is publicly accessible.
@@ -7591,7 +7702,7 @@ type DatabaseParentResponse struct {
 type DatabasePropertyRelationConfigResponse struct {
 	DatabaseID     IDResponse                                                      `json:"database_id"`
 	DataSourceID   IDResponse                                                      `json:"data_source_id"`
-	Type           DatabasePropertyRelationConfigResponseType                      `json:"type"`
+	Type           DatabasePropertyRelationConfigResponseType                      `json:"type,omitzero"`
 	SingleProperty *EmptyObject                                                    `json:"single_property,omitzero"`
 	DualProperty   *DualPropertyDatabasePropertyRelationConfigResponseDualProperty `json:"dual_property,omitzero"`
 }
@@ -7637,6 +7748,11 @@ func (v *DatabasePropertyRelationConfigResponse) UnmarshalJSONFrom(dec *jsontext
 	*v = DatabasePropertyRelationConfigResponse{}
 	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
 		return err
+	}
+
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfDatabasePropertyRelationConfigResponse, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = DatabasePropertyRelationConfigResponseType(tag)
 	}
 
 	return jsonCheckTag("type", string(v.Type), tagsOfDatabasePropertyRelationConfigResponse, v.taggedMembers(), jsonStrict(dec))
@@ -8136,6 +8252,33 @@ type DatePropertyFilterThisWeek struct {
 	ThisWeek EmptyObject `json:"this_week"`
 }
 
+// DatePropertyItemObjectResponse defines a model
+type DatePropertyItemObjectResponse struct {
+	Type      string       `json:"type"`
+	Date      DateResponse `json:"date"`
+	Object    string       `json:"object"`
+	ID        string       `json:"id"`
+	RequestID uuid.UUID    `json:"request_id,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether DatePropertyItemObjectResponse declares it.
+func (v *DatePropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "date":
+		return true, json.UnmarshalDecode(dec, &v.Date, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
 // DateRequest defines a model
 type DateRequest struct {
 	// The start date of the date object.
@@ -8193,6 +8336,33 @@ type EmailPropertyConfiguration struct {
 	// Always `email`
 	Type  string      `json:"type,omitzero"`
 	Email EmptyObject `json:"email"`
+}
+
+// EmailPropertyItemObjectResponse defines a model
+type EmailPropertyItemObjectResponse struct {
+	Type      string    `json:"type"`
+	Email     string    `json:"email"`
+	Object    string    `json:"object"`
+	ID        string    `json:"id"`
+	RequestID uuid.UUID `json:"request_id,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether EmailPropertyItemObjectResponse declares it.
+func (v *EmailPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "email":
+		return true, json.UnmarshalDecode(dec, &v.Email, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
+	}
+
+	return false, nil
 }
 
 // EmbedFileUpload defines a model
@@ -8689,6 +8859,33 @@ type FilesPropertyConfiguration struct {
 	Files EmptyObject `json:"files"`
 }
 
+// FilesPropertyItemObjectResponse defines a model
+type FilesPropertyItemObjectResponse struct {
+	Type      string                                   `json:"type"`
+	Files     []InternalOrExternalFileWithNameResponse `json:"files"`
+	Object    string                                   `json:"object"`
+	ID        string                                   `json:"id"`
+	RequestID uuid.UUID                                `json:"request_id,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether FilesPropertyItemObjectResponse declares it.
+func (v *FilesPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "files":
+		return true, json.UnmarshalDecode(dec, &v.Files, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
 // FormViewConfigRequest defines a model
 type FormViewConfigRequest struct {
 	// The view type. Must be "form".
@@ -9136,6 +9333,33 @@ type FormulaPropertyFilterCheckbox struct {
 // FormulaPropertyFilterString defines a model
 type FormulaPropertyFilterString struct {
 	String TextPropertyFilter `json:"string"`
+}
+
+// FormulaPropertyItemObjectResponse defines a model
+type FormulaPropertyItemObjectResponse struct {
+	Type      string                  `json:"type"`
+	Formula   FormulaPropertyResponse `json:"formula"`
+	Object    string                  `json:"object"`
+	ID        string                  `json:"id"`
+	RequestID uuid.UUID               `json:"request_id,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether FormulaPropertyItemObjectResponse declares it.
+func (v *FormulaPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "formula":
+		return true, json.UnmarshalDecode(dec, &v.Formula, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
+	}
+
+	return false, nil
 }
 
 // FormulaPropertyResponse defines a model
@@ -9900,7 +10124,37 @@ type GroupFilterOperatorArrayItemAnd struct {
 
 // GroupFilterOperatorArrayItemOr defines a model
 type GroupFilterOperatorArrayItemOr struct {
-	Or PropertyOrTimestampFilterArray `json:"or"`
+	Or       PropertyOrTimestampFilterArray    `json:"or"`
+	Date     TextPropertyFilterEquals          `json:"date,omitzero"`
+	Property string                            `json:"property,omitzero"`
+	And      GroupFilterOperatorArrayItemOrAnd `json:"and,omitzero"`
+}
+
+// GroupFilterOperatorArrayItemOrAnd defines a model
+type GroupFilterOperatorArrayItemOrAnd []GroupFilterOperatorArrayItemOrAndItem
+
+// GroupFilterOperatorArrayItemOrAndItem defines a model
+type GroupFilterOperatorArrayItemOrAndItem struct {
+	Date        TextPropertyFilterEquals                         `json:"date"`
+	Property    string                                           `json:"property"`
+	Formula     GroupFilterOperatorArrayItemOrAndItemFormula     `json:"formula,omitzero"`
+	Select      TextPropertyFilterDoesNotEqual                   `json:"select,omitzero"`
+	CreatedTime GroupFilterOperatorArrayItemOrAndItemCreatedTime `json:"created_time,omitzero"`
+}
+
+// GroupFilterOperatorArrayItemOrAndItemCreatedTime defines a model
+type GroupFilterOperatorArrayItemOrAndItemCreatedTime struct {
+	OnOrAfter string `json:"on_or_after"`
+}
+
+// GroupFilterOperatorArrayItemOrAndItemFormula defines a model
+type GroupFilterOperatorArrayItemOrAndItemFormula struct {
+	Number GroupFilterOperatorArrayItemOrAndItemFormulaNumber `json:"number"`
+}
+
+// GroupFilterOperatorArrayItemOrAndItemFormulaNumber defines a model
+type GroupFilterOperatorArrayItemOrAndItemFormulaNumber struct {
+	LessThan int `json:"less_than"`
 }
 
 // GroupObjectRequest defines a model
@@ -10224,11 +10478,62 @@ type LastEditedByPropertyConfiguration struct {
 	LastEditedBy EmptyObject `json:"last_edited_by"`
 }
 
+// LastEditedByPropertyItemObjectResponse defines a model
+type LastEditedByPropertyItemObjectResponse struct {
+	Type         string        `json:"type"`
+	LastEditedBy UserOrPartial `json:"last_edited_by"`
+	Object       string        `json:"object"`
+	ID           string        `json:"id"`
+	RequestID    uuid.UUID     `json:"request_id,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether LastEditedByPropertyItemObjectResponse declares it.
+func (v *LastEditedByPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "last_edited_by":
+		return true, json.UnmarshalDecode(dec, &v.LastEditedBy, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
 // LastEditedTimePropertyConfiguration defines a model
 type LastEditedTimePropertyConfiguration struct {
 	// Always `last_edited_time`
 	Type           string      `json:"type,omitzero"`
 	LastEditedTime EmptyObject `json:"last_edited_time"`
+}
+
+// LastEditedTimePropertyItemObjectResponse defines a model
+type LastEditedTimePropertyItemObjectResponse struct {
+	Type           string    `json:"type"`
+	LastEditedTime time.Time `json:"last_edited_time"`
+	Object         string    `json:"object"`
+	ID             string    `json:"id"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether LastEditedTimePropertyItemObjectResponse declares it.
+func (v *LastEditedTimePropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "last_edited_time":
+		return true, json.UnmarshalDecode(dec, &v.LastEditedTime, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	}
+
+	return false, nil
 }
 
 // LinkMentionResponse defines a model
@@ -10485,7 +10790,7 @@ func (v *MapViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name 
 // MediaContentWithFileAndCaptionRequest defines a model
 type MediaContentWithFileAndCaptionRequest struct {
 	Caption    []RichTextItemRequest                     `json:"caption,omitzero"`
-	Type       MediaContentWithFileAndCaptionRequestType `json:"type"`
+	Type       MediaContentWithFileAndCaptionRequestType `json:"type,omitzero"`
 	External   *ExternalFileRequest                      `json:"external,omitzero"`
 	FileUpload *FileUploadIDRequest                      `json:"file_upload,omitzero"`
 }
@@ -10531,6 +10836,11 @@ func (v *MediaContentWithFileAndCaptionRequest) UnmarshalJSONFrom(dec *jsontext.
 	*v = MediaContentWithFileAndCaptionRequest{}
 	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
 		return err
+	}
+
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfMediaContentWithFileAndCaptionRequest, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = MediaContentWithFileAndCaptionRequestType(tag)
 	}
 
 	return jsonCheckTag("type", string(v.Type), tagsOfMediaContentWithFileAndCaptionRequest, v.taggedMembers(), jsonStrict(dec))
@@ -10628,7 +10938,7 @@ func (v *MediaContentWithFileAndCaptionResponse) MarshalJSONTo(enc *jsontext.Enc
 type MediaContentWithFileNameAndCaptionRequest struct {
 	Caption    []RichTextItemRequest                         `json:"caption,omitzero"`
 	Name       StringRequest                                 `json:"name,omitzero"`
-	Type       MediaContentWithFileNameAndCaptionRequestType `json:"type"`
+	Type       MediaContentWithFileNameAndCaptionRequestType `json:"type,omitzero"`
 	External   *ExternalFileRequest                          `json:"external,omitzero"`
 	FileUpload *FileUploadIDRequest                          `json:"file_upload,omitzero"`
 }
@@ -10674,6 +10984,11 @@ func (v *MediaContentWithFileNameAndCaptionRequest) UnmarshalJSONFrom(dec *jsont
 	*v = MediaContentWithFileNameAndCaptionRequest{}
 	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
 		return err
+	}
+
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfMediaContentWithFileNameAndCaptionRequest, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = MediaContentWithFileNameAndCaptionRequestType(tag)
 	}
 
 	return jsonCheckTag("type", string(v.Type), tagsOfMediaContentWithFileNameAndCaptionRequest, v.taggedMembers(), jsonStrict(dec))
@@ -10793,7 +11108,7 @@ type MentionRichTextItemMentionPage struct {
 
 // Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.
 type MentionRichTextItemRequestMention struct {
-	Type MentionRichTextItemRequestMentionType `json:"type"`
+	Type MentionRichTextItemRequestMentionType `json:"type,omitzero"`
 	// Details of the user mention.
 	User *PartialUserObjectRequest `json:"user,omitzero"`
 	// Details of the date mention.
@@ -10868,6 +11183,11 @@ func (v *MentionRichTextItemRequestMention) UnmarshalJSONFrom(dec *jsontext.Deco
 	*v = MentionRichTextItemRequestMention{}
 	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
 		return err
+	}
+
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfMentionRichTextItemRequestMention, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = MentionRichTextItemRequestMentionType(tag)
 	}
 
 	return jsonCheckTag("type", string(v.Type), tagsOfMentionRichTextItemRequestMention, v.taggedMembers(), jsonStrict(dec))
@@ -11012,7 +11332,7 @@ type MovePage struct {
 
 // The new parent of the page.
 type MovePageParent struct {
-	Type MovePageParentType `json:"type"`
+	Type MovePageParentType `json:"type,omitzero"`
 	// The ID of the parent page (with or without dashes), for example, 195de9221179449fab8075a27c979105
 	PageID IDRequest `json:"page_id,omitzero"`
 	// The ID of the parent data source (collection), with or without dashes. For example, f336d0bc-b841-465b-8045-024475c079dd
@@ -11062,6 +11382,11 @@ func (v *MovePageParent) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		return err
 	}
 
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfMovePageParent, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = MovePageParentType(tag)
+	}
+
 	return jsonCheckTag("type", string(v.Type), tagsOfMovePageParent, v.taggedMembers(), jsonStrict(dec))
 }
 
@@ -11088,11 +11413,6 @@ type MovePageParentPageID struct {
 	PageID IDRequest `json:"page_id"`
 	// Always `page_id`
 	Type string `json:"type,omitzero"`
-}
-
-// MultiSelectDatabasePropertyConfigResponseMultiSelect defines a model
-type MultiSelectDatabasePropertyConfigResponseMultiSelect struct {
-	Options []SelectProperty `json:"options"`
 }
 
 // MultiSelectPropertyFilter defines a model
@@ -11169,6 +11489,33 @@ type MultiSelectPropertyFilterContains struct {
 // MultiSelectPropertyFilterDoesNotContain defines a model
 type MultiSelectPropertyFilterDoesNotContain struct {
 	DoesNotContain StringOrStringArray `json:"does_not_contain"`
+}
+
+// MultiSelectPropertyItemObjectResponse defines a model
+type MultiSelectPropertyItemObjectResponse struct {
+	Type        string                  `json:"type"`
+	MultiSelect []PartialSelectResponse `json:"multi_select"`
+	Object      string                  `json:"object"`
+	ID          string                  `json:"id"`
+	RequestID   uuid.UUID               `json:"request_id,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MultiSelectPropertyItemObjectResponse declares it.
+func (v *MultiSelectPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "multi_select":
+		return true, json.UnmarshalDecode(dec, &v.MultiSelect, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
+	}
+
+	return false, nil
 }
 
 // NonTerminalAsyncTaskStatus defines a model
@@ -11443,6 +11790,40 @@ type NumberPropertyFilterLessThanOrEqualTo struct {
 	LessThanOrEqualTo float64 `json:"less_than_or_equal_to"`
 }
 
+// NumberPropertyItemObjectResponse defines a model
+type NumberPropertyItemObjectResponse struct {
+	Type      string    `json:"type"`
+	Number    float64   `json:"number"`
+	Object    string    `json:"object"`
+	ID        string    `json:"id"`
+	RequestID uuid.UUID `json:"request_id,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether NumberPropertyItemObjectResponse declares it.
+func (v *NumberPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "number":
+		return true, json.UnmarshalDecode(dec, &v.Number, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// NumberSimplePropertyValue defines a model
+type NumberSimplePropertyValue struct {
+	// Always `number`
+	Type   string   `json:"type"`
+	Number *float64 `json:"number"`
+}
+
 // NumberedListFormat defines a model
 type NumberedListFormat string
 
@@ -11487,9 +11868,9 @@ type Page struct {
 	// Property values of this page.
 	Properties map[string]PropertyValue `json:"properties"`
 	// Page icon.
-	Icon PageIconResponse `json:"icon"`
+	Icon *PageIconResponse `json:"icon"`
 	// Page cover image.
-	Cover PageCoverResponse `json:"cover"`
+	Cover *PageCoverResponse `json:"cover"`
 	// User who created the page.
 	CreatedBy PartialUserObjectResponse `json:"created_by"`
 	// User who last edited the page.
@@ -11518,7 +11899,7 @@ type PageContentUpdatedWebhookPayloadData struct {
 
 // PageCoverRequest defines a model
 type PageCoverRequest struct {
-	Type       PageCoverRequestType         `json:"type"`
+	Type       PageCoverRequestType         `json:"type,omitzero"`
 	FileUpload *IDObject                    `json:"file_upload,omitzero"`
 	External   *TextRichTextItemTextLinkURL `json:"external,omitzero"`
 }
@@ -11564,6 +11945,11 @@ func (v *PageCoverRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PageCoverRequest{}
 	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
 		return err
+	}
+
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfPageCoverRequest, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = PageCoverRequestType(tag)
 	}
 
 	return jsonCheckTag("type", string(v.Type), tagsOfPageCoverRequest, v.taggedMembers(), jsonStrict(dec))
@@ -11690,7 +12076,7 @@ type PageIDParentForBlockBasedObject struct {
 
 // PageIconRequest defines a model
 type PageIconRequest struct {
-	Type       PageIconRequestType `json:"type"`
+	Type       PageIconRequestType `json:"type,omitzero"`
 	FileUpload *IDObject           `json:"file_upload,omitzero"`
 	// An emoji character.
 	Emoji       EmojiRequest                    `json:"emoji,omitzero"`
@@ -11756,6 +12142,11 @@ func (v *PageIconRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PageIconRequest{}
 	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
 		return err
+	}
+
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfPageIconRequest, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = PageIconRequestType(tag)
 	}
 
 	return jsonCheckTag("type", string(v.Type), tagsOfPageIconRequest, v.taggedMembers(), jsonStrict(dec))
@@ -11934,7 +12325,7 @@ type PageOrDataSourceList struct {
 	Object           string                            `json:"object"`
 	NextCursor       string                            `json:"next_cursor"`
 	HasMore          bool                              `json:"has_more"`
-	Results          []PageOrDataSourceListResultsItem `json:"results"`
+	Results          PageOrDataSourceListResults       `json:"results"`
 	RequestStatus    PageOrDataSourceListRequestStatus `json:"request_status,omitzero"`
 	RequestID        uuid.UUID                         `json:"request_id,omitzero"`
 }
@@ -11962,16 +12353,74 @@ func (e PageOrDataSourceListRequestStatusIncompleteReason) Valid() bool {
 	}
 }
 
-// PageOrDataSourceListResultsItem defines a model
-// PageOrDataSourceListResultsItem is an untagged anyOf union: at least one field is set after unmarshaling.
-type PageOrDataSourceListResultsItem struct {
+// PageOrDataSourceListResults defines a model
+// PageOrDataSourceListResults is an untagged oneOf union: exactly one field is set after unmarshaling.
+type PageOrDataSourceListResults struct {
+	PageOrDataSourceListResultsOneOf0Item []PageOrDataSourceListResultsOneOf0Item
+	PageOrDataSourceListResultsOneOf1     *PageOrDataSourceListResultsOneOf1
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *PageOrDataSourceListResults) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = PageOrDataSourceListResults{}
+
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv []PageOrDataSourceListResultsOneOf0Item
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.PageOrDataSourceListResultsOneOf0Item = vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv PageOrDataSourceListResultsOneOf1
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.PageOrDataSourceListResultsOneOf1 = &vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *PageOrDataSourceListResults) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.PageOrDataSourceListResultsOneOf0Item != nil:
+		return json.MarshalEncode(enc, v.PageOrDataSourceListResultsOneOf0Item, jsonOpts)
+	case v.PageOrDataSourceListResultsOneOf1 != nil:
+		return json.MarshalEncode(enc, v.PageOrDataSourceListResultsOneOf1, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// PageOrDataSourceListResultsOneOf0Item defines a model
+// PageOrDataSourceListResultsOneOf0Item is an untagged anyOf union: at least one field is set after unmarshaling.
+type PageOrDataSourceListResultsOneOf0Item struct {
 	PageOrPartial       *PageOrPartial
 	DataSourceOrPartial *DataSourceOrPartial
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *PageOrDataSourceListResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = PageOrDataSourceListResultsItem{}
+func (v *PageOrDataSourceListResultsOneOf0Item) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = PageOrDataSourceListResultsOneOf0Item{}
 
 	opts := jsonOptsOf(dec)
 
@@ -12006,7 +12455,7 @@ func (v *PageOrDataSourceListResultsItem) UnmarshalJSONFrom(dec *jsontext.Decode
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *PageOrDataSourceListResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *PageOrDataSourceListResultsOneOf0Item) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PageOrPartial != nil:
 		return json.MarshalEncode(enc, v.PageOrPartial, jsonOpts)
@@ -12015,6 +12464,457 @@ func (v *PageOrDataSourceListResultsItem) MarshalJSONTo(enc *jsontext.Encoder) e
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// PageOrDataSourceListResultsOneOf1 defines a model
+type PageOrDataSourceListResultsOneOf1 struct {
+	Item0 PageOrDataSourceListResultsOneOf1Item0
+	Item1 PageOrDataSourceListResultsOneOf1Item1
+	Item2 PageOrDataSourceListResultsOneOf1Item2
+}
+
+func (a *PageOrDataSourceListResultsOneOf1) Items(yield func(int, any) bool) {
+	for i, v := range []any{&a.Item0, &a.Item1, &a.Item2} {
+		if !yield(i, v) {
+			return
+		}
+	}
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (a *PageOrDataSourceListResultsOneOf1) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	if k := dec.PeekKind(); k != jsontext.KindBeginArray {
+		return &json.SemanticError{JSONKind: k}
+	}
+
+	if _, err := dec.ReadToken(); err != nil {
+		return err
+	}
+
+	for _, f := range a.Items {
+		if dec.PeekKind() == jsontext.KindEndArray {
+			return &json.SemanticError{Err: fmt.Errorf("array shorter than 3")}
+		}
+
+		if err := json.UnmarshalDecode(dec, f); err != nil {
+			return err
+		}
+	}
+
+	if k := dec.PeekKind(); k != jsontext.KindEndArray {
+		return &json.SemanticError{JSONKind: k, Err: fmt.Errorf("array longer than 3")}
+	}
+
+	_, err := dec.ReadToken()
+	return err
+}
+
+// MarshalJSONTo implements [json.MarshalerTo].
+func (a PageOrDataSourceListResultsOneOf1) MarshalJSONTo(enc *jsontext.Encoder) error {
+	if err := enc.WriteToken(jsontext.BeginArray); err != nil {
+		return err
+	}
+
+	for _, v := range a.Items {
+		if err := json.MarshalEncode(enc, v); err != nil {
+			return err
+		}
+	}
+
+	if err := enc.WriteToken(jsontext.EndArray); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// PageOrDataSourceListResultsOneOf1Item0 defines a model
+type PageOrDataSourceListResultsOneOf1Item0 struct {
+	Object         string                                           `json:"object"`
+	ID             uuid.UUID                                        `json:"id"`
+	CreatedTime    time.Time                                        `json:"created_time"`
+	LastEditedTime time.Time                                        `json:"last_edited_time"`
+	CreatedBy      PageOrDataSourceListResultsOneOfItemCreatedBy    `json:"created_by"`
+	LastEditedBy   PageOrDataSourceListResultsOneOfItemCreatedBy    `json:"last_edited_by"`
+	Cover          *struct{}                                        `json:"cover"`
+	Icon           PageOrDataSourceListResultsOneOfItemIcon         `json:"icon"`
+	Parent         PageOrDataSourceListResultsOneOfItemParent       `json:"parent"`
+	InTrash        bool                                             `json:"in_trash"`
+	IsArchived     bool                                             `json:"is_archived"`
+	IsLocked       bool                                             `json:"is_locked"`
+	Properties     PageOrDataSourceListResultsOneOf1Item0Properties `json:"properties"`
+	URL            url.URL                                          `json:"url"`
+	PublicURL      *struct{}                                        `json:"public_url"`
+}
+
+// PageOrDataSourceListResultsOneOf1Item0Properties defines a model
+type PageOrDataSourceListResultsOneOf1Item0Properties struct {
+	Duration             PageOrDataSourceListResultsOneOfItemPropertiesDuration        `json:"Duration"`
+	StartedHoursAgo      PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgo `json:"Started Hours Ago"`
+	StartFallback        PageOrDataSourceListResultsOneOfItemPropertiesEndFallback     `json:"Start Fallback"`
+	Status               PageOrDataSourceListResultsOneOfItemPropertiesStatus          `json:"Status"`
+	Start                PageOrDataSourceListResultsOneOfItemPropertiesEnd2            `json:"Start"`
+	Recurring            PageOrDataSourceListResultsOneOfItemPropertiesRecurring       `json:"Recurring"`
+	End                  PageOrDataSourceListResultsOneOf1Item0PropertiesEnd           `json:"End"`
+	Time                 PageOrDataSourceListResultsOneOfItemPropertiesTime            `json:"Time"`
+	EndFallback          PageOrDataSourceListResultsOneOfItemPropertiesEndFallback     `json:"End Fallback"`
+	HumanDuration        PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration   `json:"Human Duration"`
+	Priority             PageOrDataSourceListResultsOneOfItemPropertiesPriority        `json:"Priority"`
+	CreatedTime          PageOrDataSourceListResultsOneOfItemPropertiesCreatedTime     `json:"Created time"`
+	PriorityIfNotStarted PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration   `json:"Priority If Not Started"`
+	TimeWithoutDate      PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration   `json:"Time without Date"`
+	Name                 PageOrDataSourceListResultsOneOfItemPropertiesName            `json:"Name"`
+}
+
+// PageOrDataSourceListResultsOneOf1Item0PropertiesEnd defines a model
+type PageOrDataSourceListResultsOneOf1Item0PropertiesEnd struct {
+	ID   string    `json:"id"`
+	Type string    `json:"type"`
+	Date *struct{} `json:"date"`
+}
+
+// PageOrDataSourceListResultsOneOf1Item1 defines a model
+type PageOrDataSourceListResultsOneOf1Item1 struct {
+	Object         string                                               `json:"object"`
+	ID             uuid.UUID                                            `json:"id"`
+	Cover          PageOrDataSourceListResultsOneOf1Item1Cover          `json:"cover"`
+	Icon           PageOrDataSourceListResultsOneOfItemIcon             `json:"icon"`
+	CreatedTime    time.Time                                            `json:"created_time"`
+	CreatedBy      PageOrDataSourceListResultsOneOfItemCreatedBy        `json:"created_by"`
+	LastEditedBy   PageOrDataSourceListResultsOneOfItemCreatedBy        `json:"last_edited_by"`
+	LastEditedTime time.Time                                            `json:"last_edited_time"`
+	Title          PageOrDataSourceListResultsOneOfItemTitle            `json:"title"`
+	Description    PageOrDataSourceListResultsOneOfItemTitle            `json:"description"`
+	IsInline       bool                                                 `json:"is_inline"`
+	DatabaseType   *struct{}                                            `json:"database_type"`
+	Properties     PageOrDataSourceListResultsOneOf1Item1Properties     `json:"properties"`
+	Parent         PageOrDataSourceListResultsOneOf1Item1Parent         `json:"parent"`
+	DatabaseParent PageOrDataSourceListResultsOneOf1Item1DatabaseParent `json:"database_parent"`
+	URL            url.URL                                              `json:"url"`
+	PublicURL      *struct{}                                            `json:"public_url"`
+	InTrash        bool                                                 `json:"in_trash"`
+}
+
+// PageOrDataSourceListResultsOneOf1Item1Cover defines a model
+type PageOrDataSourceListResultsOneOf1Item1Cover struct {
+	Type     string                                              `json:"type"`
+	External PageOrDataSourceListResultsOneOf1Item1CoverExternal `json:"external"`
+}
+
+// PageOrDataSourceListResultsOneOf1Item1CoverExternal defines a model
+type PageOrDataSourceListResultsOneOf1Item1CoverExternal struct {
+	URL url.URL `json:"url"`
+}
+
+// PageOrDataSourceListResultsOneOf1Item1DatabaseParent defines a model
+type PageOrDataSourceListResultsOneOf1Item1DatabaseParent struct {
+	Type   string    `json:"type"`
+	PageID uuid.UUID `json:"page_id"`
+}
+
+// PageOrDataSourceListResultsOneOf1Item1Parent defines a model
+type PageOrDataSourceListResultsOneOf1Item1Parent struct {
+	Type       string    `json:"type"`
+	DatabaseID uuid.UUID `json:"database_id"`
+}
+
+// PageOrDataSourceListResultsOneOf1Item1Properties defines a model
+type PageOrDataSourceListResultsOneOf1Item1Properties struct {
+	Duration             PageOrDataSourceListResultsOneOfItemPropertiesTime2         `json:"Duration"`
+	StartedHoursAgo      PageOrDataSourceListResultsOneOfItemPropertiesTime2         `json:"Started Hours Ago"`
+	StartFallback        PageOrDataSourceListResultsOneOfItemPropertiesTime2         `json:"Start Fallback"`
+	Status               PageOrDataSourceListResultsOneOf1Item1PropertiesStatus      `json:"Status"`
+	Start                PageOrDataSourceListResultsOneOfItemPropertiesEnd           `json:"Start"`
+	End                  PageOrDataSourceListResultsOneOfItemPropertiesEnd           `json:"End"`
+	Time                 PageOrDataSourceListResultsOneOfItemPropertiesTime2         `json:"Time"`
+	EndFallback          PageOrDataSourceListResultsOneOfItemPropertiesTime2         `json:"End Fallback"`
+	HumanDuration        PageOrDataSourceListResultsOneOfItemPropertiesTime2         `json:"Human Duration"`
+	CreatedTime          PageOrDataSourceListResultsOneOf1Item1PropertiesCreatedTime `json:"Created time"`
+	PriorityIfNotStarted PageOrDataSourceListResultsOneOfItemPropertiesTime2         `json:"Priority If Not Started"`
+	TimeWithoutDate      PageOrDataSourceListResultsOneOfItemPropertiesTime2         `json:"Time without Date"`
+	Name                 PageOrDataSourceListResultsOneOf1Item1PropertiesName        `json:"Name"`
+}
+
+// PageOrDataSourceListResultsOneOf1Item1PropertiesCreatedTime defines a model
+type PageOrDataSourceListResultsOneOf1Item1PropertiesCreatedTime struct {
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Description *struct{} `json:"description"`
+	Type        string    `json:"type"`
+	CreatedTime struct{}  `json:"created_time"`
+}
+
+// PageOrDataSourceListResultsOneOf1Item1PropertiesName defines a model
+type PageOrDataSourceListResultsOneOf1Item1PropertiesName struct {
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Description *struct{} `json:"description"`
+	Type        string    `json:"type"`
+	Title       struct{}  `json:"title"`
+}
+
+// PageOrDataSourceListResultsOneOf1Item1PropertiesStatus defines a model
+type PageOrDataSourceListResultsOneOf1Item1PropertiesStatus struct {
+	ID          string                                                       `json:"id"`
+	Name        string                                                       `json:"name"`
+	Description *struct{}                                                    `json:"description"`
+	Type        string                                                       `json:"type"`
+	Select      PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelect `json:"select"`
+}
+
+// PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelect defines a model
+type PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelect struct {
+	Options PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelectOptions `json:"options"`
+}
+
+// PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelectOptions defines a model
+type PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelectOptions []PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelectOptionsItem
+
+// PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelectOptionsItem defines a model
+type PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelectOptionsItem struct {
+	ID          uuid.UUID `json:"id"`
+	Name        string    `json:"name"`
+	Color       string    `json:"color"`
+	Description *struct{} `json:"description"`
+}
+
+// PageOrDataSourceListResultsOneOf1Item2 defines a model
+type PageOrDataSourceListResultsOneOf1Item2 struct {
+	Object         string                                           `json:"object"`
+	ID             uuid.UUID                                        `json:"id"`
+	CreatedTime    time.Time                                        `json:"created_time"`
+	LastEditedTime time.Time                                        `json:"last_edited_time"`
+	CreatedBy      PageOrDataSourceListResultsOneOfItemCreatedBy    `json:"created_by"`
+	LastEditedBy   PageOrDataSourceListResultsOneOfItemCreatedBy    `json:"last_edited_by"`
+	Cover          *struct{}                                        `json:"cover"`
+	Icon           PageOrDataSourceListResultsOneOfItemIcon         `json:"icon"`
+	Parent         PageOrDataSourceListResultsOneOfItemParent       `json:"parent"`
+	InTrash        bool                                             `json:"in_trash"`
+	IsArchived     bool                                             `json:"is_archived"`
+	IsLocked       bool                                             `json:"is_locked"`
+	Properties     PageOrDataSourceListResultsOneOf1Item2Properties `json:"properties"`
+	URL            url.URL                                          `json:"url"`
+	PublicURL      *struct{}                                        `json:"public_url"`
+}
+
+// PageOrDataSourceListResultsOneOf1Item2Properties defines a model
+type PageOrDataSourceListResultsOneOf1Item2Properties struct {
+	Duration             PageOrDataSourceListResultsOneOfItemPropertiesDuration        `json:"Duration"`
+	StartedHoursAgo      PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgo `json:"Started Hours Ago"`
+	StartFallback        PageOrDataSourceListResultsOneOfItemPropertiesEndFallback     `json:"Start Fallback"`
+	Status               PageOrDataSourceListResultsOneOfItemPropertiesStatus          `json:"Status"`
+	Start                PageOrDataSourceListResultsOneOfItemPropertiesEnd2            `json:"Start"`
+	Recurring            PageOrDataSourceListResultsOneOfItemPropertiesRecurring       `json:"Recurring"`
+	End                  PageOrDataSourceListResultsOneOfItemPropertiesEnd2            `json:"End"`
+	Time                 PageOrDataSourceListResultsOneOfItemPropertiesTime            `json:"Time"`
+	EndFallback          PageOrDataSourceListResultsOneOfItemPropertiesEndFallback     `json:"End Fallback"`
+	HumanDuration        PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration   `json:"Human Duration"`
+	Priority             PageOrDataSourceListResultsOneOfItemPropertiesPriority        `json:"Priority"`
+	CreatedTime          PageOrDataSourceListResultsOneOfItemPropertiesCreatedTime     `json:"Created time"`
+	PriorityIfNotStarted PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration   `json:"Priority If Not Started"`
+	TimeWithoutDate      PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration   `json:"Time without Date"`
+	Name                 PageOrDataSourceListResultsOneOfItemPropertiesName            `json:"Name"`
+}
+
+// PageOrDataSourceListResultsOneOfItemCreatedBy defines a model
+type PageOrDataSourceListResultsOneOfItemCreatedBy struct {
+	Object string    `json:"object"`
+	ID     uuid.UUID `json:"id"`
+}
+
+// PageOrDataSourceListResultsOneOfItemIcon defines a model
+type PageOrDataSourceListResultsOneOfItemIcon struct {
+	Type  string `json:"type"`
+	Emoji string `json:"emoji"`
+}
+
+// PageOrDataSourceListResultsOneOfItemParent defines a model
+type PageOrDataSourceListResultsOneOfItemParent struct {
+	Type         string    `json:"type"`
+	DataSourceID uuid.UUID `json:"data_source_id"`
+	DatabaseID   uuid.UUID `json:"database_id"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesCreatedTime defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesCreatedTime struct {
+	ID          string    `json:"id"`
+	Type        string    `json:"type"`
+	CreatedTime time.Time `json:"created_time"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesDuration defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesDuration struct {
+	ID      string                                                        `json:"id"`
+	Type    string                                                        `json:"type"`
+	Formula PageOrDataSourceListResultsOneOfItemPropertiesDurationFormula `json:"formula"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesDurationFormula defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesDurationFormula struct {
+	Type   string `json:"type"`
+	Number int    `json:"number"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesEnd defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesEnd struct {
+	ID          string    `json:"id"`
+	Name        string    `json:"name"`
+	Description *struct{} `json:"description"`
+	Type        string    `json:"type"`
+	Date        struct{}  `json:"date"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesEnd2 defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesEnd2 struct {
+	ID   string                                                `json:"id"`
+	Type string                                                `json:"type"`
+	Date PageOrDataSourceListResultsOneOfItemPropertiesEndDate `json:"date"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesEndDate defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesEndDate struct {
+	Start    time.Time `json:"start"`
+	End      *struct{} `json:"end"`
+	TimeZone *struct{} `json:"time_zone"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesEndFallback defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesEndFallback struct {
+	ID      string                                                           `json:"id"`
+	Type    string                                                           `json:"type"`
+	Formula PageOrDataSourceListResultsOneOfItemPropertiesEndFallbackFormula `json:"formula"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesEndFallbackFormula defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesEndFallbackFormula struct {
+	Type string                                                `json:"type"`
+	Date PageOrDataSourceListResultsOneOfItemPropertiesEndDate `json:"date"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration struct {
+	ID      string                                                             `json:"id"`
+	Type    string                                                             `json:"type"`
+	Formula PageOrDataSourceListResultsOneOfItemPropertiesHumanDurationFormula `json:"formula"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesHumanDurationFormula defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesHumanDurationFormula struct {
+	Type   string `json:"type"`
+	String string `json:"string"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesName defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesName struct {
+	ID    string                                    `json:"id"`
+	Type  string                                    `json:"type"`
+	Title PageOrDataSourceListResultsOneOfItemTitle `json:"title"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesPriority defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesPriority struct {
+	ID     string                                                       `json:"id"`
+	Type   string                                                       `json:"type"`
+	Rollup PageOrDataSourceListResultsOneOfItemPropertiesPriorityRollup `json:"rollup"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesPriorityRollup defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesPriorityRollup struct {
+	Type     string `json:"type"`
+	Array    []any  `json:"array"`
+	Function string `json:"function"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesRecurring defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesRecurring struct {
+	ID       string `json:"id"`
+	Type     string `json:"type"`
+	Relation []any  `json:"relation"`
+	HasMore  bool   `json:"has_more"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgo defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgo struct {
+	ID      string                                                               `json:"id"`
+	Type    string                                                               `json:"type"`
+	Formula PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgoFormula `json:"formula"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgoFormula defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgoFormula struct {
+	Type   string  `json:"type"`
+	Number float64 `json:"number"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesStatus defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesStatus struct {
+	ID     string                                                     `json:"id"`
+	Type   string                                                     `json:"type"`
+	Select PageOrDataSourceListResultsOneOfItemPropertiesStatusSelect `json:"select"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesStatusSelect defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesStatusSelect struct {
+	ID    uuid.UUID `json:"id"`
+	Name  string    `json:"name"`
+	Color string    `json:"color"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesTime defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesTime struct {
+	ID      string                                                    `json:"id"`
+	Type    string                                                    `json:"type"`
+	Formula PageOrDataSourceListResultsOneOfItemPropertiesTimeFormula `json:"formula"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesTime2 defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesTime2 struct {
+	ID          string           `json:"id"`
+	Name        string           `json:"name"`
+	Description *struct{}        `json:"description"`
+	Type        string           `json:"type"`
+	Formula     ExpressionObject `json:"formula"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesTimeFormula defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesTimeFormula struct {
+	Type string                                                        `json:"type"`
+	Date PageOrDataSourceListResultsOneOfItemPropertiesTimeFormulaDate `json:"date"`
+}
+
+// PageOrDataSourceListResultsOneOfItemPropertiesTimeFormulaDate defines a model
+type PageOrDataSourceListResultsOneOfItemPropertiesTimeFormulaDate struct {
+	Start    time.Time `json:"start"`
+	End      time.Time `json:"end"`
+	TimeZone *struct{} `json:"time_zone"`
+}
+
+// PageOrDataSourceListResultsOneOfItemTitle defines a model
+type PageOrDataSourceListResultsOneOfItemTitle []PageOrDataSourceListResultsOneOfItemTitleItem
+
+// PageOrDataSourceListResultsOneOfItemTitleItem defines a model
+type PageOrDataSourceListResultsOneOfItemTitleItem struct {
+	Type        string                                                   `json:"type"`
+	Text        PageOrDataSourceListResultsOneOfItemTitleItemText        `json:"text"`
+	Annotations PageOrDataSourceListResultsOneOfItemTitleItemAnnotations `json:"annotations"`
+	PlainText   string                                                   `json:"plain_text"`
+	Href        *struct{}                                                `json:"href"`
+}
+
+// PageOrDataSourceListResultsOneOfItemTitleItemAnnotations defines a model
+type PageOrDataSourceListResultsOneOfItemTitleItemAnnotations struct {
+	Bold          bool   `json:"bold"`
+	Italic        bool   `json:"italic"`
+	Strikethrough bool   `json:"strikethrough"`
+	Underline     bool   `json:"underline"`
+	Code          bool   `json:"code"`
+	Color         string `json:"color"`
+}
+
+// PageOrDataSourceListResultsOneOfItemTitleItemText defines a model
+type PageOrDataSourceListResultsOneOfItemTitleItemText struct {
+	Content string    `json:"content"`
+	Link    *struct{} `json:"link"`
 }
 
 // PageOrPartial defines a model
@@ -12179,7 +13079,7 @@ type PagePropertiesUpdatedWebhookPayloadData struct {
 
 // PagePropertiesValue defines a model
 type PagePropertiesValue struct {
-	Type         PagePropertiesValueType                         `json:"type"`
+	Type         PagePropertiesValueType                         `json:"type,omitzero"`
 	Title        []RichTextItemRequest                           `json:"title,omitzero"`
 	RichText     []RichTextItemRequest                           `json:"rich_text,omitzero"`
 	Number       *float64                                        `json:"number,omitzero"`
@@ -12311,6 +13211,11 @@ func (v *PagePropertiesValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		return err
 	}
 
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfPagePropertiesValue, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = PagePropertiesValueType(tag)
+	}
+
 	return jsonCheckTag("type", string(v.Type), tagsOfPagePropertiesValue, v.taggedMembers(), jsonStrict(dec))
 }
 
@@ -12334,7 +13239,7 @@ func (v *PagePropertiesValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 // PagePropertiesValueFilesItem defines a model
 type PagePropertiesValueFilesItem struct {
 	Name       StringRequest                    `json:"name,omitzero"`
-	Type       PagePropertiesValueFilesItemType `json:"type"`
+	Type       PagePropertiesValueFilesItemType `json:"type,omitzero"`
 	File       *InternalFileRequest             `json:"file,omitzero"`
 	External   *ExternalFileRequest             `json:"external,omitzero"`
 	FileUpload *FileUploadIDRequest             `json:"file_upload,omitzero"`
@@ -12386,6 +13291,11 @@ func (v *PagePropertiesValueFilesItem) UnmarshalJSONFrom(dec *jsontext.Decoder) 
 	*v = PagePropertiesValueFilesItem{}
 	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
 		return err
+	}
+
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfPagePropertiesValueFilesItem, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = PagePropertiesValueFilesItemType(tag)
 	}
 
 	return jsonCheckTag("type", string(v.Type), tagsOfPagePropertiesValueFilesItem, v.taggedMembers(), jsonStrict(dec))
@@ -13251,7 +14161,17 @@ func (v *PartialUserObjectRequest) unmarshalJSONMember(dec *jsontext.Decoder, na
 type PartialUserObjectResponse struct {
 	ID IDResponse `json:"id"`
 	// Always `user`
-	Object string `json:"object"`
+	Object    string                          `json:"object"`
+	Name      string                          `json:"name,omitzero"`
+	AvatarURL url.URL                         `json:"avatar_url,omitzero"`
+	Type      string                          `json:"type,omitzero"`
+	Person    PartialUserObjectResponsePerson `json:"person,omitzero"`
+}
+
+// PartialUserObjectResponsePerson defines a model
+type PartialUserObjectResponsePerson struct {
+	Email         types.Email `json:"email"`
+	EmailVerified bool        `json:"email_verified"`
 }
 
 // PatchBlockChildren defines a model
@@ -13263,8 +14183,8 @@ type PatchBlockChildren struct {
 // PatchPage defines a model
 type PatchPage struct {
 	Properties map[string]PagePropertiesValue `json:"properties,omitzero"`
-	Icon       PageIconRequest                `json:"icon,omitzero"`
-	Cover      PageCoverRequest               `json:"cover,omitzero"`
+	Icon       *PageIconRequest               `json:"icon,omitzero"`
+	Cover      *PageCoverRequest              `json:"cover,omitzero"`
 	// Whether the page should be locked from editing in the Notion app UI. If not provided, the locked state will not be updated.
 	IsLocked *bool             `json:"is_locked,omitzero"`
 	Template PatchPageTemplate `json:"template,omitzero"`
@@ -13483,6 +14403,30 @@ type PeoplePropertyFilterDoesNotContain struct {
 	DoesNotContain PersonIDOrMe `json:"does_not_contain"`
 }
 
+// PeoplePropertyItemObjectResponse defines a model
+type PeoplePropertyItemObjectResponse struct {
+	Type   string        `json:"type"`
+	People UserOrPartial `json:"people"`
+	Object string        `json:"object"`
+	ID     string        `json:"id"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PeoplePropertyItemObjectResponse declares it.
+func (v *PeoplePropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "people":
+		return true, json.UnmarshalDecode(dec, &v.People, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
 // PersonGroupByConfigRequest defines a model
 type PersonGroupByConfigRequest struct {
 	// The property type for grouping.
@@ -13591,37 +14535,6 @@ type PersonUserObjectPerson struct {
 	EmailVerified *bool `json:"email_verified,omitzero"`
 }
 
-// PersonUserObjectResponse defines a model
-type PersonUserObjectResponse struct {
-	// Indicates this user is a person.
-	Type string `json:"type"`
-	// Details about the person, when the `type` of the user is `person`.
-	Person PersonUserObjectPerson      `json:"person"`
-	Bot    PersonUserObjectResponseBot `json:"bot,omitzero"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PersonUserObjectResponse declares it.
-func (v *PersonUserObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "person":
-		return true, json.UnmarshalDecode(dec, &v.Person, jsonOptsOf(dec))
-	case "bot":
-		return true, json.UnmarshalDecode(dec, &v.Bot, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// PersonUserObjectResponseBot defines a model
-type PersonUserObjectResponseBot struct {
-	Owner           EmptyObjectOwner           `json:"owner"`
-	WorkspaceName   string                     `json:"workspace_name"`
-	WorkspaceID     uuid.UUID                  `json:"workspace_id"`
-	WorkspaceLimits EmptyObjectWorkspaceLimits `json:"workspace_limits"`
-}
-
 // PhoneNumberPropertyConfiguration defines a model
 type PhoneNumberPropertyConfiguration struct {
 	// Always `phone_number`
@@ -13629,11 +14542,62 @@ type PhoneNumberPropertyConfiguration struct {
 	PhoneNumber EmptyObject `json:"phone_number"`
 }
 
+// PhoneNumberPropertyItemObjectResponse defines a model
+type PhoneNumberPropertyItemObjectResponse struct {
+	Type        string    `json:"type"`
+	PhoneNumber string    `json:"phone_number"`
+	Object      string    `json:"object"`
+	ID          string    `json:"id"`
+	RequestID   uuid.UUID `json:"request_id,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PhoneNumberPropertyItemObjectResponse declares it.
+func (v *PhoneNumberPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "phone_number":
+		return true, json.UnmarshalDecode(dec, &v.PhoneNumber, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
 // PlacePropertyConfiguration defines a model
 type PlacePropertyConfiguration struct {
 	// Always `place`
 	Type  string      `json:"type,omitzero"`
 	Place EmptyObject `json:"place"`
+}
+
+// PlacePropertyItemObjectResponse defines a model
+type PlacePropertyItemObjectResponse struct {
+	Type   string                    `json:"type"`
+	Place  PagePropertiesValuePlace2 `json:"place"`
+	Object string                    `json:"object"`
+	ID     string                    `json:"id"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PlacePropertyItemObjectResponse declares it.
+func (v *PlacePropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "place":
+		return true, json.UnmarshalDecode(dec, &v.Place, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	}
+
+	return false, nil
 }
 
 // PlacePropertyValueResponse defines a model
@@ -13834,8 +14798,8 @@ type PostDatabaseQuerySortsItemAnyOf1 struct {
 type PostPage struct {
 	Parent     PostPageParent                 `json:"parent,omitzero"`
 	Properties map[string]PagePropertiesValue `json:"properties,omitzero"`
-	Icon       PageIconRequest                `json:"icon,omitzero"`
-	Cover      PageCoverRequest               `json:"cover,omitzero"`
+	Icon       *PageIconRequest               `json:"icon,omitzero"`
+	Cover      *PageCoverRequest              `json:"cover,omitzero"`
 	Content    []BlockObjectRequest           `json:"content,omitzero"`
 	Children   []BlockObjectRequest           `json:"children,omitzero"`
 	// Page content as Notion-flavored Markdown. Mutually exclusive with content/children.
@@ -13848,7 +14812,7 @@ type PostPage struct {
 
 // PostPageParent defines a model
 type PostPageParent struct {
-	Type         PostPageParentType `json:"type"`
+	Type         PostPageParentType `json:"type,omitzero"`
 	PageID       IDRequest          `json:"page_id,omitzero"`
 	DatabaseID   IDRequest          `json:"database_id,omitzero"`
 	DataSourceID IDRequest          `json:"data_source_id,omitzero"`
@@ -13906,6 +14870,11 @@ func (v *PostPageParent) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PostPageParent{}
 	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
 		return err
+	}
+
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfPostPageParent, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = PostPageParentType(tag)
 	}
 
 	return jsonCheckTag("type", string(v.Type), tagsOfPostPageParent, v.taggedMembers(), jsonStrict(dec))
@@ -14220,29 +15189,29 @@ type PropertyConfig struct {
 	// The name of the property.
 	Name string `json:"name"`
 	// The description of the property.
-	Description    PropertyDescriptionRequest                            `json:"description"`
-	Type           PropertyConfigType                                    `json:"type"`
-	Number         *NumberDatabasePropertyConfigResponseNumber           `json:"number,omitzero"`
-	Formula        *ContentWithExpression                                `json:"formula,omitzero"`
-	Select         *SelectDatabasePropertyConfigResponseSelect           `json:"select,omitzero"`
-	MultiSelect    *MultiSelectDatabasePropertyConfigResponseMultiSelect `json:"multi_select,omitzero"`
-	Status         *StatusDatabasePropertyConfigResponseStatus           `json:"status,omitzero"`
-	Relation       *DatabasePropertyRelationConfigResponse               `json:"relation,omitzero"`
-	Rollup         *RollupDatabasePropertyConfigResponseRollup           `json:"rollup,omitzero"`
-	UniqueID       *UniqueIDDatabasePropertyConfigResponseUniqueID       `json:"unique_id,omitzero"`
-	Title          *EmptyObject                                          `json:"title,omitzero"`
-	RichText       *EmptyObject                                          `json:"rich_text,omitzero"`
-	URL            *EmptyObject                                          `json:"url,omitzero"`
-	People         *EmptyObject                                          `json:"people,omitzero"`
-	Files          *EmptyObject                                          `json:"files,omitzero"`
-	Email          *EmptyObject                                          `json:"email,omitzero"`
-	PhoneNumber    *EmptyObject                                          `json:"phone_number,omitzero"`
-	Date           *EmptyObject                                          `json:"date,omitzero"`
-	Checkbox       *EmptyObject                                          `json:"checkbox,omitzero"`
-	CreatedBy      *EmptyObject                                          `json:"created_by,omitzero"`
-	CreatedTime    *EmptyObject                                          `json:"created_time,omitzero"`
-	LastEditedBy   *EmptyObject                                          `json:"last_edited_by,omitzero"`
-	LastEditedTime *EmptyObject                                          `json:"last_edited_time,omitzero"`
+	Description    PropertyDescriptionRequest                      `json:"description"`
+	Type           PropertyConfigType                              `json:"type"`
+	Number         *NumberDatabasePropertyConfigResponseNumber     `json:"number,omitzero"`
+	Formula        *ContentWithExpression                          `json:"formula,omitzero"`
+	Select         *SelectDatabasePropertyConfigSelect             `json:"select,omitzero"`
+	MultiSelect    *SelectDatabasePropertyConfigSelect             `json:"multi_select,omitzero"`
+	Status         *StatusDatabasePropertyConfigResponseStatus     `json:"status,omitzero"`
+	Relation       *DatabasePropertyRelationConfigResponse         `json:"relation,omitzero"`
+	Rollup         *RollupDatabasePropertyConfigResponseRollup     `json:"rollup,omitzero"`
+	UniqueID       *UniqueIDDatabasePropertyConfigResponseUniqueID `json:"unique_id,omitzero"`
+	Title          *EmptyObject                                    `json:"title,omitzero"`
+	RichText       *EmptyObject                                    `json:"rich_text,omitzero"`
+	URL            *EmptyObject                                    `json:"url,omitzero"`
+	People         *EmptyObject                                    `json:"people,omitzero"`
+	Files          *EmptyObject                                    `json:"files,omitzero"`
+	Email          *EmptyObject                                    `json:"email,omitzero"`
+	PhoneNumber    *EmptyObject                                    `json:"phone_number,omitzero"`
+	Date           *EmptyObject                                    `json:"date,omitzero"`
+	Checkbox       *EmptyObject                                    `json:"checkbox,omitzero"`
+	CreatedBy      *EmptyObject                                    `json:"created_by,omitzero"`
+	CreatedTime    *EmptyObject                                    `json:"created_time,omitzero"`
+	LastEditedBy   *EmptyObject                                    `json:"last_edited_by,omitzero"`
+	LastEditedTime *EmptyObject                                    `json:"last_edited_time,omitzero"`
 }
 
 // PropertyConfigType is a value of PropertyConfig's type, naming the members it holds.
@@ -14407,7 +15376,7 @@ func (v *PropertyConfig) MarshalJSONTo(enc *jsontext.Encoder) error {
 type PropertyConfigurationRequest struct {
 	// The description of the property.
 	Description     PropertyDescriptionRequest             `json:"description,omitzero"`
-	Type            PropertyConfigurationRequestType       `json:"type"`
+	Type            PropertyConfigurationRequestType       `json:"type,omitzero"`
 	Number          *NumberPropertyConfigurationNumber     `json:"number,omitzero"`
 	Formula         *FormulaPropertyConfigurationFormula   `json:"formula,omitzero"`
 	Select          *SelectPropertyConfigurationSelect     `json:"select,omitzero"`
@@ -14599,6 +15568,11 @@ func (v *PropertyConfigurationRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) 
 		return err
 	}
 
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfPropertyConfigurationRequest, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = PropertyConfigurationRequestType(tag)
+	}
+
 	return jsonCheckTag("type", string(v.Type), tagsOfPropertyConfigurationRequest, v.taggedMembers(), jsonStrict(dec))
 }
 
@@ -14625,7 +15599,7 @@ type PropertyDescriptionRequest string
 // PropertyFilter defines a model
 type PropertyFilter struct {
 	Property       string                                  `json:"property"`
-	Type           PropertyFilterType                      `json:"type"`
+	Type           PropertyFilterType                      `json:"type,omitzero"`
 	Title          *TextPropertyFilter                     `json:"title,omitzero"`
 	RichText       *TextPropertyFilter                     `json:"rich_text,omitzero"`
 	Number         *NumberPropertyFilter                   `json:"number,omitzero"`
@@ -14793,6 +15767,11 @@ func (v *PropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		return err
 	}
 
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfPropertyFilter, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = PropertyFilterType(tag)
+	}
+
 	return jsonCheckTag("type", string(v.Type), tagsOfPropertyFilter, v.taggedMembers(), jsonStrict(dec))
 }
 
@@ -14869,207 +15848,290 @@ func (v *PropertyFilterVerificationVerification) MarshalJSONTo(enc *jsontext.Enc
 }
 
 // PropertyItemObjectResponse defines a model
+// PropertyItemObjectResponse is an untagged anyOf union: at least one field is set after unmarshaling.
 type PropertyItemObjectResponse struct {
-	Object         string                                      `json:"object"`
-	ID             string                                      `json:"id"`
-	Type           PropertyItemObjectResponseType              `json:"type"`
-	Number         *float64                                    `json:"number,omitzero"`
-	URL            string                                      `json:"url,omitzero"`
-	Select         *PartialSelectResponse                      `json:"select,omitzero"`
-	MultiSelect    []PartialSelectResponse                     `json:"multi_select,omitzero"`
-	Status         *PartialSelectResponse                      `json:"status,omitzero"`
-	Date           *DateResponse                               `json:"date,omitzero"`
-	Email          string                                      `json:"email,omitzero"`
-	PhoneNumber    string                                      `json:"phone_number,omitzero"`
-	Checkbox       *bool                                       `json:"checkbox,omitzero"`
-	Files          []InternalOrExternalFileWithNameResponse    `json:"files,omitzero"`
-	CreatedBy      *UserOrPartial                              `json:"created_by,omitzero"`
-	CreatedTime    *time.Time                                  `json:"created_time,omitzero"`
-	LastEditedBy   *UserOrPartial                              `json:"last_edited_by,omitzero"`
-	LastEditedTime *time.Time                                  `json:"last_edited_time,omitzero"`
-	Formula        *FormulaPropertyResponse                    `json:"formula,omitzero"`
-	Button         *EmptyObject                                `json:"button,omitzero"`
-	UniqueID       *UniqueIDPropertyItemObjectResponseUniqueID `json:"unique_id,omitzero"`
-	Verification   *VerificationPropertyValueResponse          `json:"verification,omitzero"`
-	Place          *PagePropertiesValuePlace2                  `json:"place,omitzero"`
-	Title          *RichText                                   `json:"title,omitzero"`
-	RichText       *RichText                                   `json:"rich_text,omitzero"`
-	People         *UserOrPartial                              `json:"people,omitzero"`
-	Relation       *RelationPropertyItemObjectResponseRelation `json:"relation,omitzero"`
-	Rollup         *RollupPropertyItemObjectRollup             `json:"rollup,omitzero"`
+	NumberPropertyItemObjectResponse         *NumberPropertyItemObjectResponse
+	URLPropertyItemObjectResponse            *URLPropertyItemObjectResponse
+	SelectPropertyItemObjectResponse         *SelectPropertyItemObjectResponse
+	MultiSelectPropertyItemObjectResponse    *MultiSelectPropertyItemObjectResponse
+	StatusPropertyItemObjectResponse         *StatusPropertyItemObjectResponse
+	DatePropertyItemObjectResponse           *DatePropertyItemObjectResponse
+	EmailPropertyItemObjectResponse          *EmailPropertyItemObjectResponse
+	PhoneNumberPropertyItemObjectResponse    *PhoneNumberPropertyItemObjectResponse
+	CheckboxPropertyItemObjectResponse       *CheckboxPropertyItemObjectResponse
+	FilesPropertyItemObjectResponse          *FilesPropertyItemObjectResponse
+	CreatedByPropertyItemObjectResponse      *CreatedByPropertyItemObjectResponse
+	CreatedTimePropertyItemObjectResponse    *CreatedTimePropertyItemObjectResponse
+	LastEditedByPropertyItemObjectResponse   *LastEditedByPropertyItemObjectResponse
+	LastEditedTimePropertyItemObjectResponse *LastEditedTimePropertyItemObjectResponse
+	FormulaPropertyItemObjectResponse        *FormulaPropertyItemObjectResponse
+	ButtonPropertyItemObjectResponse         *ButtonPropertyItemObjectResponse
+	UniqueIDPropertyItemObjectResponse       *UniqueIDPropertyItemObjectResponse
+	VerificationPropertyItemObjectResponse   *VerificationPropertyItemObjectResponse
+	PlacePropertyItemObjectResponse          *PlacePropertyItemObjectResponse
+	TitlePropertyItemObjectResponse          *TitlePropertyItemObjectResponse
+	RichTextPropertyItemObjectResponse       *RichTextPropertyItemObjectResponse
+	PeoplePropertyItemObjectResponse         *PeoplePropertyItemObjectResponse
+	RelationPropertyItemObjectResponse       *RelationPropertyItemObjectResponse
+	RollupPropertyItemObjectResponse         *RollupPropertyItemObjectResponse
 }
 
-// PropertyItemObjectResponseType is a value of PropertyItemObjectResponse's type, naming the members it holds.
-type PropertyItemObjectResponseType string
-
-const (
-	PropertyItemObjectResponseTypeNumber         PropertyItemObjectResponseType = "number"
-	PropertyItemObjectResponseTypeURL            PropertyItemObjectResponseType = "url"
-	PropertyItemObjectResponseTypeSelect         PropertyItemObjectResponseType = "select"
-	PropertyItemObjectResponseTypeMultiSelect    PropertyItemObjectResponseType = "multi_select"
-	PropertyItemObjectResponseTypeStatus         PropertyItemObjectResponseType = "status"
-	PropertyItemObjectResponseTypeDate           PropertyItemObjectResponseType = "date"
-	PropertyItemObjectResponseTypeEmail          PropertyItemObjectResponseType = "email"
-	PropertyItemObjectResponseTypePhoneNumber    PropertyItemObjectResponseType = "phone_number"
-	PropertyItemObjectResponseTypeCheckbox       PropertyItemObjectResponseType = "checkbox"
-	PropertyItemObjectResponseTypeFiles          PropertyItemObjectResponseType = "files"
-	PropertyItemObjectResponseTypeCreatedBy      PropertyItemObjectResponseType = "created_by"
-	PropertyItemObjectResponseTypeCreatedTime    PropertyItemObjectResponseType = "created_time"
-	PropertyItemObjectResponseTypeLastEditedBy   PropertyItemObjectResponseType = "last_edited_by"
-	PropertyItemObjectResponseTypeLastEditedTime PropertyItemObjectResponseType = "last_edited_time"
-	PropertyItemObjectResponseTypeFormula        PropertyItemObjectResponseType = "formula"
-	PropertyItemObjectResponseTypeButton         PropertyItemObjectResponseType = "button"
-	PropertyItemObjectResponseTypeUniqueID       PropertyItemObjectResponseType = "unique_id"
-	PropertyItemObjectResponseTypeVerification   PropertyItemObjectResponseType = "verification"
-	PropertyItemObjectResponseTypePlace          PropertyItemObjectResponseType = "place"
-	PropertyItemObjectResponseTypeTitle          PropertyItemObjectResponseType = "title"
-	PropertyItemObjectResponseTypeRichText       PropertyItemObjectResponseType = "rich_text"
-	PropertyItemObjectResponseTypePeople         PropertyItemObjectResponseType = "people"
-	PropertyItemObjectResponseTypeRelation       PropertyItemObjectResponseType = "relation"
-	PropertyItemObjectResponseTypeRollup         PropertyItemObjectResponseType = "rollup"
-)
-
-// Valid indicates whether the value is a known member of the PropertyItemObjectResponseType enum.
-func (e PropertyItemObjectResponseType) Valid() bool {
-	_, ok := tagsOfPropertyItemObjectResponse[string(e)]
-	return ok
-}
-
-// tagsOfPropertyItemObjectResponse holds, for each value of type, the members of its alternative's own, each with whether it is required.
-var tagsOfPropertyItemObjectResponse = map[string]map[string]bool{
-	"number":           {"number": true},
-	"url":              {"url": true},
-	"select":           {"select": false},
-	"multi_select":     {"multi_select": true},
-	"status":           {"status": false},
-	"date":             {"date": false},
-	"email":            {"email": true},
-	"phone_number":     {"phone_number": true},
-	"checkbox":         {"checkbox": true},
-	"files":            {"files": true},
-	"created_by":       {"created_by": true},
-	"created_time":     {"created_time": true},
-	"last_edited_by":   {"last_edited_by": true},
-	"last_edited_time": {"last_edited_time": true},
-	"formula":          {"formula": true},
-	"button":           {"button": true},
-	"unique_id":        {"unique_id": true},
-	"verification":     {"verification": false},
-	"place":            {"place": true},
-	"title":            {"title": true},
-	"rich_text":        {"rich_text": true},
-	"people":           {"people": true},
-	"relation":         {"relation": true},
-	"rollup":           {"rollup": true},
-}
-
-// taggedMembers returns those of the members of an alternative's own that are set.
-func (v *PropertyItemObjectResponse) taggedMembers() []string {
-	var set []string
-	if v.Number != nil {
-		set = append(set, "number")
-	}
-	if v.URL != "" {
-		set = append(set, "url")
-	}
-	if v.Select != nil {
-		set = append(set, "select")
-	}
-	if v.MultiSelect != nil {
-		set = append(set, "multi_select")
-	}
-	if v.Status != nil {
-		set = append(set, "status")
-	}
-	if v.Date != nil {
-		set = append(set, "date")
-	}
-	if v.Email != "" {
-		set = append(set, "email")
-	}
-	if v.PhoneNumber != "" {
-		set = append(set, "phone_number")
-	}
-	if v.Checkbox != nil {
-		set = append(set, "checkbox")
-	}
-	if v.Files != nil {
-		set = append(set, "files")
-	}
-	if v.CreatedBy != nil {
-		set = append(set, "created_by")
-	}
-	if v.CreatedTime != nil {
-		set = append(set, "created_time")
-	}
-	if v.LastEditedBy != nil {
-		set = append(set, "last_edited_by")
-	}
-	if v.LastEditedTime != nil {
-		set = append(set, "last_edited_time")
-	}
-	if v.Formula != nil {
-		set = append(set, "formula")
-	}
-	if v.Button != nil {
-		set = append(set, "button")
-	}
-	if v.UniqueID != nil {
-		set = append(set, "unique_id")
-	}
-	if v.Verification != nil {
-		set = append(set, "verification")
-	}
-	if v.Place != nil {
-		set = append(set, "place")
-	}
-	if v.Title != nil {
-		set = append(set, "title")
-	}
-	if v.RichText != nil {
-		set = append(set, "rich_text")
-	}
-	if v.People != nil {
-		set = append(set, "people")
-	}
-	if v.Relation != nil {
-		set = append(set, "relation")
-	}
-	if v.Rollup != nil {
-		set = append(set, "rollup")
-	}
-
-	return set
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
+// decodes each further member as it is read. With type first, nothing is read twice.
 func (v *PropertyItemObjectResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain PropertyItemObjectResponse
-
 	*v = PropertyItemObjectResponse{}
-	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
+
+	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPropertyItemObjectResponse, v.taggedMembers(), jsonStrict(dec))
+	switch tag {
+	case "number":
+		var vv NumberPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.NumberPropertyItemObjectResponse = &vv
+	case "url":
+		var vv URLPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.URLPropertyItemObjectResponse = &vv
+	case "select":
+		var vv SelectPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.SelectPropertyItemObjectResponse = &vv
+	case "multi_select":
+		var vv MultiSelectPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.MultiSelectPropertyItemObjectResponse = &vv
+	case "status":
+		var vv StatusPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.StatusPropertyItemObjectResponse = &vv
+	case "date":
+		var vv DatePropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.DatePropertyItemObjectResponse = &vv
+	case "email":
+		var vv EmailPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.EmailPropertyItemObjectResponse = &vv
+	case "phone_number":
+		var vv PhoneNumberPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.PhoneNumberPropertyItemObjectResponse = &vv
+	case "checkbox":
+		var vv CheckboxPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.CheckboxPropertyItemObjectResponse = &vv
+	case "files":
+		var vv FilesPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.FilesPropertyItemObjectResponse = &vv
+	case "created_by":
+		var vv CreatedByPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.CreatedByPropertyItemObjectResponse = &vv
+	case "created_time":
+		var vv CreatedTimePropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.CreatedTimePropertyItemObjectResponse = &vv
+	case "last_edited_by":
+		var vv LastEditedByPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.LastEditedByPropertyItemObjectResponse = &vv
+	case "last_edited_time":
+		var vv LastEditedTimePropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.LastEditedTimePropertyItemObjectResponse = &vv
+	case "formula":
+		var vv FormulaPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.FormulaPropertyItemObjectResponse = &vv
+	case "button":
+		var vv ButtonPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.ButtonPropertyItemObjectResponse = &vv
+	case "unique_id":
+		var vv UniqueIDPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.UniqueIDPropertyItemObjectResponse = &vv
+	case "verification":
+		var vv VerificationPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.VerificationPropertyItemObjectResponse = &vv
+	case "place":
+		var vv PlacePropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.PlacePropertyItemObjectResponse = &vv
+	case "title":
+		var vv TitlePropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.TitlePropertyItemObjectResponse = &vv
+	case "rich_text":
+		var vv RichTextPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.RichTextPropertyItemObjectResponse = &vv
+	case "people":
+		var vv PeoplePropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.PeoplePropertyItemObjectResponse = &vv
+	case "relation":
+		var vv RelationPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.RelationPropertyItemObjectResponse = &vv
+	case "rollup":
+		var vv RollupPropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.RollupPropertyItemObjectResponse = &vv
+	default:
+		return jsonUnknownValue("type", tag)
+	}
+
+	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
 func (v *PropertyItemObjectResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain PropertyItemObjectResponse
+	var (
+		variant any
+		tag     string
+	)
 
-	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPropertyItemObjectResponse, set); ok && out.Type == "" {
-		out.Type = PropertyItemObjectResponseType(tag)
+	switch {
+	case v.NumberPropertyItemObjectResponse != nil:
+		variant, tag = v.NumberPropertyItemObjectResponse, "number"
+	case v.URLPropertyItemObjectResponse != nil:
+		variant, tag = v.URLPropertyItemObjectResponse, "url"
+	case v.SelectPropertyItemObjectResponse != nil:
+		variant, tag = v.SelectPropertyItemObjectResponse, "select"
+	case v.MultiSelectPropertyItemObjectResponse != nil:
+		variant, tag = v.MultiSelectPropertyItemObjectResponse, "multi_select"
+	case v.StatusPropertyItemObjectResponse != nil:
+		variant, tag = v.StatusPropertyItemObjectResponse, "status"
+	case v.DatePropertyItemObjectResponse != nil:
+		variant, tag = v.DatePropertyItemObjectResponse, "date"
+	case v.EmailPropertyItemObjectResponse != nil:
+		variant, tag = v.EmailPropertyItemObjectResponse, "email"
+	case v.PhoneNumberPropertyItemObjectResponse != nil:
+		variant, tag = v.PhoneNumberPropertyItemObjectResponse, "phone_number"
+	case v.CheckboxPropertyItemObjectResponse != nil:
+		variant, tag = v.CheckboxPropertyItemObjectResponse, "checkbox"
+	case v.FilesPropertyItemObjectResponse != nil:
+		variant, tag = v.FilesPropertyItemObjectResponse, "files"
+	case v.CreatedByPropertyItemObjectResponse != nil:
+		variant, tag = v.CreatedByPropertyItemObjectResponse, "created_by"
+	case v.CreatedTimePropertyItemObjectResponse != nil:
+		variant, tag = v.CreatedTimePropertyItemObjectResponse, "created_time"
+	case v.LastEditedByPropertyItemObjectResponse != nil:
+		variant, tag = v.LastEditedByPropertyItemObjectResponse, "last_edited_by"
+	case v.LastEditedTimePropertyItemObjectResponse != nil:
+		variant, tag = v.LastEditedTimePropertyItemObjectResponse, "last_edited_time"
+	case v.FormulaPropertyItemObjectResponse != nil:
+		variant, tag = v.FormulaPropertyItemObjectResponse, "formula"
+	case v.ButtonPropertyItemObjectResponse != nil:
+		variant, tag = v.ButtonPropertyItemObjectResponse, "button"
+	case v.UniqueIDPropertyItemObjectResponse != nil:
+		variant, tag = v.UniqueIDPropertyItemObjectResponse, "unique_id"
+	case v.VerificationPropertyItemObjectResponse != nil:
+		variant, tag = v.VerificationPropertyItemObjectResponse, "verification"
+	case v.PlacePropertyItemObjectResponse != nil:
+		variant, tag = v.PlacePropertyItemObjectResponse, "place"
+	case v.TitlePropertyItemObjectResponse != nil:
+		variant, tag = v.TitlePropertyItemObjectResponse, "title"
+	case v.RichTextPropertyItemObjectResponse != nil:
+		variant, tag = v.RichTextPropertyItemObjectResponse, "rich_text"
+	case v.PeoplePropertyItemObjectResponse != nil:
+		variant, tag = v.PeoplePropertyItemObjectResponse, "people"
+	case v.RelationPropertyItemObjectResponse != nil:
+		variant, tag = v.RelationPropertyItemObjectResponse, "relation"
+	case v.RollupPropertyItemObjectResponse != nil:
+		variant, tag = v.RollupPropertyItemObjectResponse, "rollup"
+	default:
+		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPropertyItemObjectResponse, set, true); err != nil {
+	out, err := json.Marshal(variant, jsonOpts)
+	if err != nil {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	if out, err = jsonFirst(out, "type", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
 }
 
 // PropertyItemPropertyItemListResponse defines a model
@@ -18552,7 +19614,7 @@ type RelationPropertyConfiguration struct {
 // RelationPropertyConfigurationRelation defines a model
 type RelationPropertyConfigurationRelation struct {
 	DataSourceID   IDRequest                                                           `json:"data_source_id"`
-	Type           RelationPropertyConfigurationRelationType                           `json:"type"`
+	Type           RelationPropertyConfigurationRelationType                           `json:"type,omitzero"`
 	SingleProperty *EmptyObject                                                        `json:"single_property,omitzero"`
 	DualProperty   *RelationPropertyConfigurationRelationAllOfDualPropertyDualProperty `json:"dual_property,omitzero"`
 }
@@ -18598,6 +19660,11 @@ func (v *RelationPropertyConfigurationRelation) UnmarshalJSONFrom(dec *jsontext.
 	*v = RelationPropertyConfigurationRelation{}
 	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
 		return err
+	}
+
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfRelationPropertyConfigurationRelation, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = RelationPropertyConfigurationRelationType(tag)
 	}
 
 	return jsonCheckTag("type", string(v.Type), tagsOfRelationPropertyConfigurationRelation, v.taggedMembers(), jsonStrict(dec))
@@ -18700,6 +19767,30 @@ type RelationPropertyFilterContains struct {
 // RelationPropertyFilterDoesNotContain defines a model
 type RelationPropertyFilterDoesNotContain struct {
 	DoesNotContain IDRequest `json:"does_not_contain"`
+}
+
+// RelationPropertyItemObjectResponse defines a model
+type RelationPropertyItemObjectResponse struct {
+	Type     string                                     `json:"type"`
+	Relation RelationPropertyItemObjectResponseRelation `json:"relation"`
+	Object   string                                     `json:"object"`
+	ID       string                                     `json:"id"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RelationPropertyItemObjectResponse declares it.
+func (v *RelationPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "relation":
+		return true, json.UnmarshalDecode(dec, &v.Relation, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	}
+
+	return false, nil
 }
 
 // RelationPropertyItemObjectResponseRelation defines a model
@@ -19882,7 +20973,7 @@ func (v *RichText) MarshalJSONTo(enc *jsontext.Encoder) error {
 type RichTextItemRequest struct {
 	// All rich text objects contain an annotations object that sets the styling for the rich text.
 	Annotations *AnnotationRequest      `json:"annotations,omitzero"`
-	Type        RichTextItemRequestType `json:"type"`
+	Type        RichTextItemRequestType `json:"type,omitzero"`
 	// If a rich text object's type value is `text`, then the corresponding text field contains an object including the text content and any inline link.
 	Text *TextRichTextItemRequestText `json:"text,omitzero"`
 	// Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.
@@ -19939,6 +21030,11 @@ func (v *RichTextItemRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		return err
 	}
 
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfRichTextItemRequest, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = RichTextItemRequestType(tag)
+	}
+
 	return jsonCheckTag("type", string(v.Type), tagsOfRichTextItemRequest, v.taggedMembers(), jsonStrict(dec))
 }
 
@@ -19964,6 +21060,30 @@ type RichTextPropertyConfiguration struct {
 	// Always `rich_text`
 	Type     string      `json:"type,omitzero"`
 	RichText EmptyObject `json:"rich_text"`
+}
+
+// RichTextPropertyItemObjectResponse defines a model
+type RichTextPropertyItemObjectResponse struct {
+	Type     string   `json:"type"`
+	RichText RichText `json:"rich_text"`
+	Object   string   `json:"object"`
+	ID       string   `json:"id"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RichTextPropertyItemObjectResponse declares it.
+func (v *RichTextPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "rich_text":
+		return true, json.UnmarshalDecode(dec, &v.RichText, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	}
+
+	return false, nil
 }
 
 // RichTexts defines a model
@@ -20422,6 +21542,30 @@ type RollupPropertyFilterNumber struct {
 	Number NumberPropertyFilter `json:"number"`
 }
 
+// RollupPropertyItemObjectResponse defines a model
+type RollupPropertyItemObjectResponse struct {
+	Type   string                         `json:"type"`
+	Rollup RollupPropertyItemObjectRollup `json:"rollup"`
+	Object string                         `json:"object"`
+	ID     string                         `json:"id"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RollupPropertyItemObjectResponse declares it.
+func (v *RollupPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "rollup":
+		return true, json.UnmarshalDecode(dec, &v.Rollup, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
 // RollupPropertyItemObjectRollup defines a model
 type RollupPropertyItemObjectRollup struct {
 	Function    RollupFunction                     `json:"function"`
@@ -20715,8 +21859,8 @@ func (e SelectColor) Valid() bool {
 	}
 }
 
-// SelectDatabasePropertyConfigResponseSelect defines a model
-type SelectDatabasePropertyConfigResponseSelect struct {
+// SelectDatabasePropertyConfigSelect defines a model
+type SelectDatabasePropertyConfigSelect struct {
 	Options []SelectProperty `json:"options"`
 }
 
@@ -20863,6 +22007,33 @@ type SelectPropertyFilterDoesNotEqual struct {
 // SelectPropertyFilterEquals defines a model
 type SelectPropertyFilterEquals struct {
 	Equals StringOrStringArray `json:"equals"`
+}
+
+// SelectPropertyItemObjectResponse defines a model
+type SelectPropertyItemObjectResponse struct {
+	Type      string                `json:"type"`
+	Select    PartialSelectResponse `json:"select"`
+	Object    string                `json:"object"`
+	ID        string                `json:"id"`
+	RequestID uuid.UUID             `json:"request_id,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether SelectPropertyItemObjectResponse declares it.
+func (v *SelectPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "select":
+		return true, json.UnmarshalDecode(dec, &v.Select, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
+	}
+
+	return false, nil
 }
 
 // Session defines a model
@@ -22190,6 +23361,33 @@ type StatusPropertyConfigUpdateRequest struct {
 	Options StatusOptionUpdateRequestArray `json:"options,omitzero"`
 }
 
+// StatusPropertyItemObjectResponse defines a model
+type StatusPropertyItemObjectResponse struct {
+	Type      string                `json:"type"`
+	Status    PartialSelectResponse `json:"status"`
+	Object    string                `json:"object"`
+	ID        string                `json:"id"`
+	RequestID uuid.UUID             `json:"request_id,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether StatusPropertyItemObjectResponse declares it.
+func (v *StatusPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "status":
+		return true, json.UnmarshalDecode(dec, &v.Status, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
 // StatusType defines a model
 type StatusType string
 
@@ -22392,7 +23590,7 @@ type TableViewConfigRequest struct {
 	// Property visibility and display configuration. Pass null to clear.
 	Properties []ViewPropertyConfigRequest `json:"properties,omitzero"`
 	// Group-by configuration for the table. Pass null to remove grouping.
-	GroupBy GroupByConfigRequest `json:"group_by,omitzero"`
+	GroupBy *GroupByConfigRequest `json:"group_by,omitzero"`
 	// Subtask (sub-item) configuration. Pass null to reset subtask config to defaults (which may show subtasks). Use `{ "display_mode": "disabled" }` to explicitly disable subtasks.
 	Subtasks *SubtaskConfigRequest `json:"subtasks,omitzero"`
 	// Whether to wrap cell content in the table.
@@ -22490,7 +23688,7 @@ func (e TemplateMentionDateTemplateMentionTemplateMentionDate) Valid() bool {
 
 // TemplateMentionRequest defines a model
 type TemplateMentionRequest struct {
-	Type TemplateMentionRequestType `json:"type"`
+	Type TemplateMentionRequestType `json:"type,omitzero"`
 	// The date of the template mention.
 	TemplateMentionDate TemplateMentionDateTemplateMentionTemplateMentionDate `json:"template_mention_date,omitzero"`
 	// The user of the template mention.
@@ -22538,6 +23736,11 @@ func (v *TemplateMentionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 	*v = TemplateMentionRequest{}
 	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
 		return err
+	}
+
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfTemplateMentionRequest, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = TemplateMentionRequestType(tag)
 	}
 
 	return jsonCheckTag("type", string(v.Type), tagsOfTemplateMentionRequest, v.taggedMembers(), jsonStrict(dec))
@@ -22860,7 +24063,13 @@ type TextRichTextItemResponseText struct {
 	// The actual text content of the text.
 	Content string `json:"content"`
 	// An object with information about any inline link in this text, if included.
-	Link LinkPreviewMention `json:"link"`
+	Link TextRichTextItemResponseTextLinkURL `json:"link"`
+}
+
+// TextRichTextItemResponseTextLinkURL defines a model
+type TextRichTextItemResponseTextLinkURL struct {
+	// The URL of the link.
+	URL string `json:"url"`
 }
 
 // TextRichTextItemTextLinkURL defines a model
@@ -23175,6 +24384,30 @@ type TitlePropertyConfiguration struct {
 	Title EmptyObject `json:"title"`
 }
 
+// TitlePropertyItemObjectResponse defines a model
+type TitlePropertyItemObjectResponse struct {
+	Type   string   `json:"type"`
+	Title  RichText `json:"title"`
+	Object string   `json:"object"`
+	ID     string   `json:"id"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether TitlePropertyItemObjectResponse declares it.
+func (v *TitlePropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "title":
+		return true, json.UnmarshalDecode(dec, &v.Title, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
 // ToDoBlockObjectResponseToDo defines a model
 type ToDoBlockObjectResponseToDo struct {
 	RichText RichTexts `json:"rich_text"`
@@ -23219,6 +24452,33 @@ type URLPropertyConfiguration struct {
 	URL  EmptyObject `json:"url"`
 }
 
+// URLPropertyItemObjectResponse defines a model
+type URLPropertyItemObjectResponse struct {
+	Type      string    `json:"type"`
+	URL       string    `json:"url"`
+	Object    string    `json:"object"`
+	ID        string    `json:"id"`
+	RequestID uuid.UUID `json:"request_id,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether URLPropertyItemObjectResponse declares it.
+func (v *URLPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "url":
+		return true, json.UnmarshalDecode(dec, &v.URL, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
 // UniqueIDDatabasePropertyConfigResponseUniqueID defines a model
 type UniqueIDDatabasePropertyConfigResponseUniqueID struct {
 	// The prefix for the unique ID.
@@ -23235,6 +24495,30 @@ type UniqueIDPropertyConfiguration struct {
 // UniqueIDPropertyConfigurationUniqueID defines a model
 type UniqueIDPropertyConfigurationUniqueID struct {
 	Prefix string `json:"prefix,omitzero"`
+}
+
+// UniqueIDPropertyItemObjectResponse defines a model
+type UniqueIDPropertyItemObjectResponse struct {
+	Type     string                                     `json:"type"`
+	UniqueID UniqueIDPropertyItemObjectResponseUniqueID `json:"unique_id"`
+	Object   string                                     `json:"object"`
+	ID       string                                     `json:"id"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether UniqueIDPropertyItemObjectResponse declares it.
+func (v *UniqueIDPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "unique_id":
+		return true, json.UnmarshalDecode(dec, &v.UniqueID, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	}
+
+	return false, nil
 }
 
 // UniqueIDPropertyItemObjectResponseUniqueID defines a model
@@ -23829,7 +25113,7 @@ type UpdateABlockLinkToPage struct {
 
 // UpdateABlockLinkToPageLinkToPage defines a model
 type UpdateABlockLinkToPageLinkToPage struct {
-	Type       UpdateABlockLinkToPageLinkToPageType `json:"type"`
+	Type       UpdateABlockLinkToPageLinkToPageType `json:"type,omitzero"`
 	PageID     IDRequest                            `json:"page_id,omitzero"`
 	DatabaseID IDRequest                            `json:"database_id,omitzero"`
 	CommentID  IDRequest                            `json:"comment_id,omitzero"`
@@ -23881,6 +25165,11 @@ func (v *UpdateABlockLinkToPageLinkToPage) UnmarshalJSONFrom(dec *jsontext.Decod
 	*v = UpdateABlockLinkToPageLinkToPage{}
 	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
 		return err
+	}
+
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfUpdateABlockLinkToPageLinkToPage, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = UpdateABlockLinkToPageLinkToPageType(tag)
 	}
 
 	return jsonCheckTag("type", string(v.Type), tagsOfUpdateABlockLinkToPageLinkToPage, v.taggedMembers(), jsonStrict(dec))
@@ -24100,7 +25389,7 @@ type UpdateADataSource struct {
 	// Title of data source as it appears in Notion.
 	Title []RichTextItemRequest `json:"title,omitzero"`
 	// Data source icon.
-	Icon PageIconRequest `json:"icon,omitzero"`
+	Icon *PageIconRequest `json:"icon,omitzero"`
 	// The property schema of the data source. The keys are property names or IDs, and the values are property configuration objects. Properties set to null will be removed.
 	Properties map[string]UpdateADataSourcePropertiesValue `json:"properties,omitzero"`
 	// Whether the data source should be moved to or from the trash. If not provided, the trash status will not be updated.
@@ -24179,7 +25468,7 @@ type UpdateADataSourcePropertiesValueOneOf0 struct {
 	Name string `json:"name,omitzero"`
 	// The description of the property.
 	Description    PropertyDescriptionRequest                        `json:"description,omitzero"`
-	Type           UpdateADataSourcePropertiesValueOneOf0Type        `json:"type"`
+	Type           UpdateADataSourcePropertiesValueOneOf0Type        `json:"type,omitzero"`
 	Number         *NumberPropertyConfigurationNumber                `json:"number,omitzero"`
 	Formula        *FormulaPropertyConfigurationFormula              `json:"formula,omitzero"`
 	Select         *UpdateADataSourcePropertiesValueOneOfAllOfSelect `json:"select,omitzero"`
@@ -24345,6 +25634,11 @@ func (v *UpdateADataSourcePropertiesValueOneOf0) UnmarshalJSONFrom(dec *jsontext
 	*v = UpdateADataSourcePropertiesValueOneOf0{}
 	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
 		return err
+	}
+
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfUpdateADataSourcePropertiesValueOneOf0, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = UpdateADataSourcePropertiesValueOneOf0Type(tag)
 	}
 
 	return jsonCheckTag("type", string(v.Type), tagsOfUpdateADataSourcePropertiesValueOneOf0, v.taggedMembers(), jsonStrict(dec))
@@ -25157,204 +26451,79 @@ type UserObjectResponse struct {
 	// The name of the user.
 	Name string `json:"name"`
 	// The avatar URL of the user.
-	AvatarURL                string                   `json:"avatar_url"`
-	UserObjectResponseAllOf1 UserObjectResponseAllOf1 `json:"-"`
+	AvatarURL string                 `json:"avatar_url"`
+	Type      UserObjectResponseType `json:"type"`
+	// Details about the person, when the `type` of the user is `person`.
+	Person *PersonUserObjectPerson `json:"person,omitzero"`
+	// Details about the bot, when the `type` of the user is `bot`.
+	Bot       *BotUserObjectResponseBot `json:"bot,omitzero"`
+	RequestID *uuid.UUID                `json:"request_id,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether UserObjectResponse declares it.
-func (v *UserObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "id":
-		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
-	case "object":
-		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
-	case "name":
-		return true, json.UnmarshalDecode(dec, &v.Name, jsonOptsOf(dec))
-	case "avatar_url":
-		return true, json.UnmarshalDecode(dec, &v.AvatarURL, jsonOptsOf(dec))
+// UserObjectResponseType is a value of UserObjectResponse's type, naming the members it holds.
+type UserObjectResponseType string
+
+const (
+	UserObjectResponseTypePerson UserObjectResponseType = "person"
+	UserObjectResponseTypeBot    UserObjectResponseType = "bot"
+)
+
+// Valid indicates whether the value is a known member of the UserObjectResponseType enum.
+func (e UserObjectResponseType) Valid() bool {
+	_, ok := tagsOfUserObjectResponse[string(e)]
+	return ok
+}
+
+// tagsOfUserObjectResponse holds, for each value of type, the members of its alternative's own, each with whether it is required.
+var tagsOfUserObjectResponse = map[string]map[string]bool{
+	"person": {"person": true},
+	"bot":    {"bot": true, "request_id": false},
+}
+
+// taggedMembers returns those of the members of an alternative's own that are set.
+func (v *UserObjectResponse) taggedMembers() []string {
+	var set []string
+	if v.Person != nil {
+		set = append(set, "person")
+	}
+	if v.Bot != nil {
+		set = append(set, "bot")
+	}
+	if v.RequestID != nil {
+		set = append(set, "request_id")
 	}
 
-	return false, nil
+	return set
 }
 
-// fieldsOfUserObjectResponse is UserObjectResponse without its methods, to encode the fields outside its union.
-type fieldsOfUserObjectResponse UserObjectResponse
-
-// membersOfUserObjectResponse are the members UserObjectResponse declares outside its union.
-var membersOfUserObjectResponse = map[string]bool{"avatar_url": true, "id": true, "name": true, "object": true}
-
-// variantsOfUserObjectResponse are the alternatives its union is decoded as, in order.
-var variantsOfUserObjectResponse = []jsonVariant{
-	{
-		value:    "person",
-		members:  map[string]bool{"bot": true, "person": true, "type": true},
-		required: []string{"person", "type"},
-	},
-	{
-		value:    "bot",
-		members:  map[string]bool{"bot": true, "request_id": true, "type": true},
-		required: []string{"bot", "type"},
-	},
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative of
-// UserObjectResponseAllOf1; each further member then decodes as it is read, into the fields or the alternative that declares
-// it, and a member neither declares is an error. With type first, nothing is read twice.
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
+// alternative's own, only those of the one type names are set.
 func (v *UserObjectResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain UserObjectResponse
+
 	*v = UserObjectResponse{}
-
-	tag, first, dec, err := jsonFirstMember(dec, "type")
-	if err != nil {
+	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
 		return err
 	}
 
-	switch tag {
-	case "person":
-		var vv PersonUserObjectResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfUserObjectResponse, v.unmarshalJSONMember},
-			{variantsOfUserObjectResponse[0].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.UserObjectResponseAllOf1.PersonUserObjectResponse = &vv
-	case "bot":
-		var vv BotUserObjectResponse
-		if err := jsonPartsFrom(dec, "type", first, []jsonPart{
-			{membersOfUserObjectResponse, v.unmarshalJSONMember},
-			{variantsOfUserObjectResponse[1].members, vv.unmarshalJSONMember},
-		}); err != nil {
-			return err
-		}
-
-		v.UserObjectResponseAllOf1.BotUserObjectResponse = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
+	return jsonCheckTag("type", string(v.Type), tagsOfUserObjectResponse, v.taggedMembers(), jsonStrict(dec))
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of UserObjectResponseAllOf1 that is set;
-// a member both write must have the same value in each.
+// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
+// the value whose member is set.
 func (v *UserObjectResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
-	out, err := json.Marshal((*fieldsOfUserObjectResponse)(v), jsonOpts)
-	if err != nil {
+	type plain UserObjectResponse
+
+	out, set := *v, v.taggedMembers()
+	if tag, ok := jsonInferTag(tagsOfUserObjectResponse, set); ok && out.Type == "" {
+		out.Type = UserObjectResponseType(tag)
+	}
+
+	if err := jsonCheckTag("type", string(out.Type), tagsOfUserObjectResponse, set, true); err != nil {
 		return err
 	}
 
-	var set int
-
-	var tag string
-
-	if v.UserObjectResponseAllOf1.PersonUserObjectResponse != nil {
-		tag = "person"
-
-		variant, err := json.Marshal(v.UserObjectResponseAllOf1.PersonUserObjectResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.UserObjectResponseAllOf1.BotUserObjectResponse != nil {
-		tag = "bot"
-
-		variant, err := json.Marshal(v.UserObjectResponseAllOf1.BotUserObjectResponse, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if set != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of UserObjectResponseAllOf1 set, got %d", set)}
-	}
-
-	// decoding wants type first
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
-// UserObjectResponseAllOf1 defines a model
-// UserObjectResponseAllOf1 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type UserObjectResponseAllOf1 struct {
-	PersonUserObjectResponse *PersonUserObjectResponse
-	BotUserObjectResponse    *BotUserObjectResponse
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
-func (v *UserObjectResponseAllOf1) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = UserObjectResponseAllOf1{}
-
-	tag, first, dec, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "person":
-		var vv PersonUserObjectResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.PersonUserObjectResponse = &vv
-	case "bot":
-		var vv BotUserObjectResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.BotUserObjectResponse = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *UserObjectResponseAllOf1) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.PersonUserObjectResponse != nil:
-		variant, tag = v.PersonUserObjectResponse, "person"
-	case v.BotUserObjectResponse != nil:
-		variant, tag = v.BotUserObjectResponse, "bot"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
 // UserOrPartial defines a model
@@ -25475,12 +26644,36 @@ type VerificationPropertyDoesNotEqualFilter struct {
 	DoesNotEqual VerificationPropertyStatusFilterStatus `json:"does_not_equal"`
 }
 
+// VerificationPropertyItemObjectResponse defines a model
+type VerificationPropertyItemObjectResponse struct {
+	Type         string                             `json:"type"`
+	Verification *VerificationPropertyValueResponse `json:"verification"`
+	Object       string                             `json:"object"`
+	ID           string                             `json:"id"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether VerificationPropertyItemObjectResponse declares it.
+func (v *VerificationPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "verification":
+		return true, json.UnmarshalDecode(dec, &v.Verification, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
 // VerificationPropertyResponse defines a model
 type VerificationPropertyResponse struct {
 	// One of: `verified`, `expired`
 	State      VerificationPropertyResponseState `json:"state"`
 	Date       DateResponse                      `json:"date"`
-	VerifiedBy UserValueResponse                 `json:"verified_by"`
+	VerifiedBy *UserValueResponse                `json:"verified_by"`
 }
 
 // One of: `verified`, `expired`
@@ -26149,14 +27342,9 @@ type ViewFilterResponsePropertyOrItemAnd []ViewFilterResponsePropertyOrItemAndIt
 
 // ViewFilterResponsePropertyOrItemAndItem defines a model
 type ViewFilterResponsePropertyOrItemAndItem struct {
-	Property    string                                             `json:"property"`
-	Select      TextPropertyFilterDoesNotEqual                     `json:"select"`
-	CreatedTime ViewFilterResponsePropertyOrItemAndItemCreatedTime `json:"created_time,omitzero"`
-}
-
-// ViewFilterResponsePropertyOrItemAndItemCreatedTime defines a model
-type ViewFilterResponsePropertyOrItemAndItemCreatedTime struct {
-	OnOrAfter string `json:"on_or_after"`
+	Property    string                                           `json:"property"`
+	Select      TextPropertyFilterDoesNotEqual                   `json:"select"`
+	CreatedTime GroupFilterOperatorArrayItemOrAndItemCreatedTime `json:"created_time,omitzero"`
 }
 
 // ViewFilterResponsePropertyOrItemOr defines a model
@@ -26174,19 +27362,9 @@ type ViewFilterResponsePropertyOrItemOrItemAnd []ViewFilterResponsePropertyOrIte
 
 // ViewFilterResponsePropertyOrItemOrItemAndItem defines a model
 type ViewFilterResponsePropertyOrItemOrItemAndItem struct {
-	Property string                                               `json:"property"`
-	Date     TextPropertyFilterEquals                             `json:"date"`
-	Formula  ViewFilterResponsePropertyOrItemOrItemAndItemFormula `json:"formula,omitzero"`
-}
-
-// ViewFilterResponsePropertyOrItemOrItemAndItemFormula defines a model
-type ViewFilterResponsePropertyOrItemOrItemAndItemFormula struct {
-	Number ViewFilterResponsePropertyOrItemOrItemAndItemFormulaNumber `json:"number"`
-}
-
-// ViewFilterResponsePropertyOrItemOrItemAndItemFormulaNumber defines a model
-type ViewFilterResponsePropertyOrItemOrItemAndItemFormulaNumber struct {
-	LessThan int `json:"less_than"`
+	Property string                                       `json:"property"`
+	Date     TextPropertyFilterEquals                     `json:"date"`
+	Formula  GroupFilterOperatorArrayItemOrAndItemFormula `json:"formula,omitzero"`
 }
 
 // A filter condition on a timestamp (created_time or last_edited_time). The timestamp field specifies which timestamp, and a matching field contains the date filter condition.
