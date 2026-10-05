@@ -25,8 +25,8 @@ func TestBlock(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if b.Type != BlockTypeChildDatabase {
-		t.Errorf("type is %q, want %q", b.Type, BlockTypeChildDatabase)
+	if b.Type != "child_database" {
+		t.Errorf("type is %q, want child_database", b.Type)
 	}
 
 	if got, want := b.ChildDatabase.Title, "Intentions"; got != want {

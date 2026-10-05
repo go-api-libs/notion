@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"cmp"
 	"context"
 	"encoding/json/jsontext"
@@ -253,243 +252,6 @@ func nameEnum(s *openapi.Schema, names ...string) error {
 	return nil
 }
 
-// mergeTaggedUnion turns the schema name, a union of objects told apart by the property tag, into one object: the
-// properties the variants share, tag as an enum of their values, and each variant's own properties, optional. The
-// union may nest unions, and may be one part of an allOf whose other parts are objects every variant shares. The
-// schemas it merged are removed once nothing refers to them. Every reference to one of aliases, unions within it that
-// stand for the variants without the allOf's other parts, is repointed at name, whose properties from those parts
-// become optional. It fails if a variant is not a reference to an object, has no single value for tag, or disagrees
-// with another on a property they share, so a change upstream is noticed.
-func mergeTaggedUnion(doc *openapi.Document, name, tag string, aliases ...string) error {
-	s, ok := doc.Components.Schemas[name]
-	if !ok {
-		return componentErr(name, errors.New("not found"))
-	}
-
-	common, union, merged, err := splitAllOf(s)
-	if err != nil {
-		return componentErr(name, err)
-	}
-
-	var names []string
-
-	variants := []*openapi.Schema{}
-
-	var collect func(openapi.SchemaList) error
-
-	collect = func(alts openapi.SchemaList) error {
-		for _, alt := range alts {
-			if alt.Ref == nil || alt.Ref.Value == nil {
-				return errors.New("a variant is not a reference")
-			}
-
-			n := strings.TrimPrefix(alt.Ref.Identifier, schemaRefPrefix)
-			merged = append(merged, n)
-
-			if sub := alternatives(alt.Ref.Value); len(sub) > 0 {
-				if err := collect(sub); err != nil {
-					return err
-				}
-
-				continue
-			}
-
-			if alt.Ref.Value.Type != openapi.TypeObject {
-				return fmt.Errorf("variant %s is neither an object nor a union", n)
-			}
-
-			names = append(names, n)
-			variants = append(variants, alt.Ref.Value)
-		}
-
-		return nil
-	}
-
-	if err := collect(alternatives(union)); err != nil {
-		return componentErr(name, err)
-	}
-
-	if len(variants) == 0 {
-		return componentErr(name, errors.New("not a union"))
-	}
-
-	tags := &jsonSet{}
-	seen := map[string][]byte{}
-	shared := map[string]int{tag: len(variants)}
-	required := map[string]int{}
-
-	commonProps := openapi.Schemas{}
-
-	for _, c := range common {
-		for prop, p := range c.Properties.ByIndex() {
-			b, err := json.Marshal(p)
-			if err != nil {
-				return err
-			}
-
-			seen[prop] = b
-			commonProps.Set(prop, p)
-		}
-
-		if len(aliases) == 0 {
-			for _, r := range c.Required {
-				required[r] = len(variants)
-			}
-		}
-	}
-
-	for i, v := range variants {
-		if t, ok := v.Properties[tag]; !ok || len(t.Const) == 0 {
-			return componentErr(names[i], &errpath.ErrField{Field: "properties", Err: &errpath.ErrKey{
-				Key: tag, Err: errors.New("has no single value"),
-			}})
-		} else {
-			tags.add(t)
-		}
-
-		for prop, p := range v.Properties.ByIndex() {
-			if prop == tag {
-				continue
-			}
-
-			b, err := json.Marshal(p)
-			if err != nil {
-				return err
-			}
-
-			if prev, ok := seen[prop]; ok && !bytes.Equal(prev, b) {
-				return componentErr(names[i], &errpath.ErrField{Field: "properties", Err: &errpath.ErrKey{
-					Key: prop, Err: errors.New("differs from another variant's"),
-				}})
-			}
-
-			seen[prop] = b
-			shared[prop]++
-		}
-
-		for _, r := range v.Required {
-			required[r]++
-		}
-	}
-
-	// the common parts' properties first, then what the variants share, in the first one's order, then each one's own
-	props := openapi.Schemas{}
-	for prop, p := range commonProps.ByIndex() {
-		props.Set(prop, p)
-	}
-
-	for _, own := range []bool{false, true} {
-		for _, v := range variants {
-			for prop, p := range v.Properties.ByIndex() {
-				switch _, done := props[prop]; {
-				case done, own == (shared[prop] == len(variants)):
-				case prop == tag:
-					props.Set(tag, &openapi.Schema{Type: openapi.TypeString, Enum: tags.values})
-				default:
-					props.Set(prop, p)
-				}
-			}
-		}
-	}
-
-	var req []string
-
-	for prop := range props.ByIndex() {
-		if required[prop] >= len(variants) {
-			req = append(req, prop)
-		}
-	}
-
-	s.Replace(&openapi.Schema{
-		Title:       s.Title,
-		Description: s.Description,
-		Type:        openapi.TypeObject,
-		Properties:  props,
-		Required:    req,
-	})
-
-	redirect := map[string]string{}
-	for _, a := range aliases {
-		if !slices.Contains(merged, a) {
-			return componentErr(name, fmt.Errorf("%s is not one of its unions", a))
-		}
-
-		redirect[a] = name
-	}
-
-	if err := edit.RedirectSchemas(doc, redirect); err != nil {
-		return fmt.Errorf("redirecting schemas: %w", err)
-	}
-
-	return removeUnreferenced(doc, merged)
-}
-
-// splitAllOf returns the object parts of s's allOf and its one union, with the names of the parts it refers to, or s
-// itself as the union when it has no allOf.
-func splitAllOf(s *openapi.Schema) (common []*openapi.Schema, union *openapi.Schema, names []string, err error) {
-	if len(s.AllOf) == 0 {
-		return nil, s, nil, nil
-	}
-
-	for i, part := range s.AllOf {
-		p := part
-		if part.Ref != nil {
-			p = part.Ref.Value
-			names = append(names, strings.TrimPrefix(part.Ref.Identifier, schemaRefPrefix))
-		}
-
-		switch {
-		case len(alternatives(p)) > 0 && union == nil:
-			union = p
-		case p.Type == openapi.TypeObject:
-			common = append(common, p)
-		default:
-			return nil, nil, nil, &errpath.ErrField{Field: "allOf", Err: &errpath.ErrIndex{
-				Index: i, Err: errors.New("is neither an object nor the one union"),
-			}}
-		}
-	}
-
-	if union == nil {
-		return nil, nil, nil, errors.New("has no union in its allOf")
-	}
-
-	return common, union, names, nil
-}
-
-// alternatives are s's oneOf, or else its anyOf.
-func alternatives(s *openapi.Schema) openapi.SchemaList {
-	if len(s.OneOf) > 0 {
-		return s.OneOf
-	}
-
-	return s.AnyOf
-}
-
-// removeUnreferenced removes those of the component schemas names nothing refers to, until each that remains is
-// referred to, since removing one can leave another unreferenced.
-func removeUnreferenced(doc *openapi.Document, names []string) error {
-	for removed := true; removed; {
-		removed = false
-
-		spec := &bytes.Buffer{}
-		if err := doc.WriteJSON(spec); err != nil {
-			return err
-		}
-
-		for _, n := range names {
-			if _, ok := doc.Components.Schemas[n]; ok &&
-				!bytes.Contains(spec.Bytes(), []byte(`"`+schemaRefPrefix+n+`"`)) {
-				delete(doc.Components.Schemas, n)
-
-				removed = true
-			}
-		}
-	}
-
-	return nil
-}
-
 // propertyErr reports err as one of the property prop of the component schema name.
 func propertyErr(name, prop string, err error) error {
 	return componentErr(name, &errpath.ErrField{Field: "properties", Err: &errpath.ErrKey{Key: prop, Err: err}})
@@ -500,6 +262,79 @@ func componentErr(name string, err error) error {
 	return &errpath.ErrField{Field: "components", Err: &errpath.ErrField{
 		Field: "schemas", Err: &errpath.ErrKey{Key: name, Err: err},
 	}}
+}
+
+// variants are the names of the component schemas the union name lists.
+func variants(doc *openapi.Document, name string) ([]string, error) {
+	s, ok := doc.Components.Schemas[name]
+	if !ok {
+		return nil, componentErr(name, errors.New("not found"))
+	}
+
+	var names []string
+
+	for _, alt := range alternatives(s) {
+		n, ok := strings.CutPrefix(alt.Ref.Identifier, schemaRefPrefix)
+		if alt.Ref == nil || !ok {
+			return nil, componentErr(name, errors.New("lists a variant that is not a component"))
+		}
+
+		names = append(names, n)
+	}
+
+	return names, nil
+}
+
+// flattenUnions lists, in each union among the schemas names or their allOf parts, the variants of the unions it lists
+// instead of those unions, which tells the variants apart by their tag just the same.
+func flattenUnions(doc *openapi.Document, names ...string) error {
+	for _, n := range names {
+		s, ok := doc.Components.Schemas[n]
+		if !ok {
+			return componentErr(n, errors.New("not found"))
+		}
+
+		for _, part := range append(openapi.SchemaList{s}, s.AllOf...) {
+			if part.OneOf != nil {
+				part.OneOf = leaves(part.OneOf)
+			}
+
+			if part.AnyOf != nil {
+				part.AnyOf = leaves(part.AnyOf)
+			}
+		}
+	}
+
+	return nil
+}
+
+// leaves are the alternatives alts lists, with each that is a union replaced by its own leaves.
+func leaves(alts openapi.SchemaList) openapi.SchemaList {
+	var flat openapi.SchemaList
+
+	for _, alt := range alts {
+		v := alt
+		if alt.Ref != nil {
+			v = alt.Ref.Value
+		}
+
+		if sub := alternatives(v); len(sub) > 0 {
+			flat = append(flat, leaves(sub)...)
+		} else {
+			flat = append(flat, alt)
+		}
+	}
+
+	return flat
+}
+
+// alternatives are s's oneOf, or else its anyOf.
+func alternatives(s *openapi.Schema) openapi.SchemaList {
+	if len(s.OneOf) > 0 {
+		return s.OneOf
+	}
+
+	return s.AnyOf
 }
 
 // addRequestID adds the request_id Notion returns on every top-level object, but the official spec leaves out, to the
@@ -649,27 +484,22 @@ func fixOpenAPI() (*openapi.Document, error) {
 		return nil, fmt.Errorf("naming the arrays of RichText: %w", err)
 	}
 
-	if err := addRequestID(doc, "Page", "Database"); err != nil {
+	blocks, err := variants(doc, "Block")
+	if err != nil {
+		return nil, err
+	}
+
+	// each block variant, so that they keep differing only in their type and its member
+	if err := addRequestID(doc, append([]string{"Page", "Database"}, blocks...)...); err != nil {
+		return nil, err
+	}
+
+	if err := flattenUnions(doc, "PropertyValue"); err != nil {
 		return nil, err
 	}
 
 	if err := allowDateTimes(doc, "dateResponse", "start", "end"); err != nil {
 		return nil, err
-	}
-
-	for _, u := range []struct {
-		name    string
-		aliases []string
-	}{
-		{name: "Block"},
-		// a rollup's array holds property values without their id
-		{name: "PropertyValue", aliases: []string{"simpleOrArrayPropertyValueResponse"}},
-		{name: "PropertyConfig"},
-		{name: "RichText"},
-	} {
-		if err := mergeTaggedUnion(doc, u.name, "type", u.aliases...); err != nil {
-			return nil, err
-		}
 	}
 
 	if err := applyPasses(doc); err != nil {
