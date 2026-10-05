@@ -303,6 +303,8 @@ func nameBranchesIn(doc *openapi.Document, s *openapi.Schema, name string) {
 		return
 	}
 
+	s.OneOf, s.AnyOf = spliceUnions(s.OneOf, true), spliceUnions(s.AnyOf, false)
+
 	for _, union := range []struct {
 		alts openapi.SchemaList
 		kind string
@@ -337,6 +339,37 @@ func nameBranchesIn(doc *openapi.Document, s *openapi.Schema, name string) {
 	if s.AdditionalProperties != nil {
 		nameBranchesIn(doc, s.AdditionalProperties.Schema, name+"Value")
 	}
+}
+
+// spliceUnions lists, instead of each inline alternative in alts that is only a union of the same kind, that union's
+// alternatives, which allows the same values.
+func spliceUnions(alts openapi.SchemaList, oneOf bool) openapi.SchemaList {
+	var spliced openapi.SchemaList
+
+	for _, alt := range alts {
+		inner := alt.AnyOf
+		if oneOf {
+			inner = alt.OneOf
+		}
+
+		if alt.Ref == nil && len(inner) > 0 && onlyUnion(alt) {
+			spliced = append(spliced, spliceUnions(inner, oneOf)...)
+		} else {
+			spliced = append(spliced, alt)
+		}
+	}
+
+	return spliced
+}
+
+// onlyUnion reports whether s says nothing besides its oneOf or anyOf and a description.
+func onlyUnion(s *openapi.Schema) bool {
+	c := *s
+	c.OneOf, c.AnyOf, c.Description = nil, nil, ""
+
+	b, err := json.Marshal(&c)
+
+	return err == nil && string(b) == "{}"
 }
 
 // telling is what tells the branch alts[i] of a union apart from the others: a value it fixes a member to and no

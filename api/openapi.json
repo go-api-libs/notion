@@ -6903,7 +6903,7 @@
         "type": "object",
         "properties": {
           "link_to_page": {
-            "$ref": "#/components/schemas/BlockObjectLinkToPageLinkToPage"
+            "$ref": "#/components/schemas/UpdateABlockLinkToPageLinkToPage"
           },
           "type": {
             "type": "string",
@@ -6916,36 +6916,6 @@
         },
         "required": [
           "link_to_page"
-        ],
-        "additionalProperties": false
-      },
-      "BlockObjectLinkToPageLinkToPage": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/PageParentPageID"
-          },
-          {
-            "$ref": "#/components/schemas/PageParentDatabaseID"
-          },
-          {
-            "$ref": "#/components/schemas/BlockObjectLinkToPageLinkToPageCommentID"
-          }
-        ]
-      },
-      "BlockObjectLinkToPageLinkToPageCommentID": {
-        "title": "Comment Id",
-        "type": "object",
-        "properties": {
-          "comment_id": {
-            "$ref": "#/components/schemas/idRequest"
-          },
-          "type": {
-            "type": "string",
-            "const": "comment_id"
-          }
-        },
-        "required": [
-          "comment_id"
         ],
         "additionalProperties": false
       },
@@ -7231,7 +7201,7 @@
         "type": "object",
         "properties": {
           "synced_from": {
-            "$ref": "#/components/schemas/BlockObjectSyncedBlockSyncedBlockSyncedFrom"
+            "$ref": "#/components/schemas/UpdateABlockSyncedBlockSyncedBlockSyncedFrom"
           },
           "children": {
             "type": "array",
@@ -7555,7 +7525,7 @@
         "type": "object",
         "properties": {
           "synced_block": {
-            "$ref": "#/components/schemas/UpdateABlockAnyOfSyncedBlockSyncedBlock"
+            "$ref": "#/components/schemas/UpdateABlockSyncedBlockSyncedBlock"
           },
           "type": {
             "type": "string",
@@ -7677,26 +7647,6 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectSyncedBlockSyncedBlockSyncedFrom": {
-        "title": "Block Id",
-        "type": [
-          "object",
-          "null"
-        ],
-        "properties": {
-          "block_id": {
-            "$ref": "#/components/schemas/idRequest"
-          },
-          "type": {
-            "type": "string",
-            "const": "block_id"
-          }
-        },
-        "required": [
-          "block_id"
-        ],
-        "additionalProperties": false
-      },
       "BlockObjectTable": {
         "title": "Table",
         "type": "object",
@@ -7723,7 +7673,7 @@
         "type": "object",
         "properties": {
           "table_of_contents": {
-            "$ref": "#/components/schemas/BlockObjectTableOfContentsTableOfContents"
+            "$ref": "#/components/schemas/UpdateABlockTableOfContentsTableOfContents"
           },
           "type": {
             "type": "string",
@@ -7737,15 +7687,6 @@
         "required": [
           "table_of_contents"
         ],
-        "additionalProperties": false
-      },
-      "BlockObjectTableOfContentsTableOfContents": {
-        "type": "object",
-        "properties": {
-          "color": {
-            "$ref": "#/components/schemas/apiColor"
-          }
-        },
         "additionalProperties": false
       },
       "BlockObjectVideo": {
@@ -7962,7 +7903,7 @@
         "type": "object",
         "properties": {
           "synced_from": {
-            "$ref": "#/components/schemas/BlockObjectSyncedBlockSyncedBlockSyncedFrom"
+            "$ref": "#/components/schemas/UpdateABlockSyncedBlockSyncedBlockSyncedFrom"
           },
           "children": {
             "type": "array",
@@ -10153,7 +10094,7 @@
           "last_edited_time"
         ]
       },
-      "DatePropertyFilterAnyOf0After": {
+      "DatePropertyFilterAfter": {
         "type": "object",
         "properties": {
           "after": {
@@ -10164,7 +10105,7 @@
           "after"
         ]
       },
-      "DatePropertyFilterAnyOf0Before": {
+      "DatePropertyFilterBefore": {
         "type": "object",
         "properties": {
           "before": {
@@ -10175,7 +10116,7 @@
           "before"
         ]
       },
-      "DatePropertyFilterAnyOf0Equals": {
+      "DatePropertyFilterEquals": {
         "type": "object",
         "properties": {
           "equals": {
@@ -10186,7 +10127,7 @@
           "equals"
         ]
       },
-      "DatePropertyFilterAnyOf0NextMonth": {
+      "DatePropertyFilterNextMonth": {
         "type": "object",
         "properties": {
           "next_month": {
@@ -10197,7 +10138,7 @@
           "next_month"
         ]
       },
-      "DatePropertyFilterAnyOf0NextWeek": {
+      "DatePropertyFilterNextWeek": {
         "type": "object",
         "properties": {
           "next_week": {
@@ -10208,7 +10149,7 @@
           "next_week"
         ]
       },
-      "DatePropertyFilterAnyOf0NextYear": {
+      "DatePropertyFilterNextYear": {
         "type": "object",
         "properties": {
           "next_year": {
@@ -10219,7 +10160,7 @@
           "next_year"
         ]
       },
-      "DatePropertyFilterAnyOf0OnOrAfter": {
+      "DatePropertyFilterOnOrAfter": {
         "type": "object",
         "properties": {
           "on_or_after": {
@@ -10230,7 +10171,7 @@
           "on_or_after"
         ]
       },
-      "DatePropertyFilterAnyOf0OnOrBefore": {
+      "DatePropertyFilterOnOrBefore": {
         "type": "object",
         "properties": {
           "on_or_before": {
@@ -10241,7 +10182,7 @@
           "on_or_before"
         ]
       },
-      "DatePropertyFilterAnyOf0PastMonth": {
+      "DatePropertyFilterPastMonth": {
         "type": "object",
         "properties": {
           "past_month": {
@@ -10252,7 +10193,7 @@
           "past_month"
         ]
       },
-      "DatePropertyFilterAnyOf0PastWeek": {
+      "DatePropertyFilterPastWeek": {
         "type": "object",
         "properties": {
           "past_week": {
@@ -10263,7 +10204,7 @@
           "past_week"
         ]
       },
-      "DatePropertyFilterAnyOf0PastYear": {
+      "DatePropertyFilterPastYear": {
         "type": "object",
         "properties": {
           "past_year": {
@@ -10274,7 +10215,7 @@
           "past_year"
         ]
       },
-      "DatePropertyFilterAnyOf0ThisWeek": {
+      "DatePropertyFilterThisWeek": {
         "type": "object",
         "properties": {
           "this_week": {
@@ -11153,7 +11094,7 @@
         ],
         "additionalProperties": false
       },
-      "GroupFilterOperatorArrayItemAnyOf1And": {
+      "GroupFilterOperatorArrayItemAnd": {
         "type": "object",
         "properties": {
           "and": {
@@ -11164,7 +11105,7 @@
           "and"
         ]
       },
-      "GroupFilterOperatorArrayItemAnyOf1Or": {
+      "GroupFilterOperatorArrayItemOr": {
         "type": "object",
         "properties": {
           "or": {
@@ -12100,7 +12041,7 @@
         ],
         "additionalProperties": false
       },
-      "MultiSelectPropertyFilterAnyOf0Contains": {
+      "MultiSelectPropertyFilterContains": {
         "type": "object",
         "properties": {
           "contains": {
@@ -12111,7 +12052,7 @@
           "contains"
         ]
       },
-      "MultiSelectPropertyFilterAnyOf0DoesNotContain": {
+      "MultiSelectPropertyFilterDoesNotContain": {
         "type": "object",
         "properties": {
           "does_not_contain": {
@@ -12168,7 +12109,7 @@
           }
         }
       },
-      "NumberPropertyFilterAnyOf0DoesNotEqual": {
+      "NumberPropertyFilterDoesNotEqual": {
         "type": "object",
         "properties": {
           "does_not_equal": {
@@ -12179,7 +12120,7 @@
           "does_not_equal"
         ]
       },
-      "NumberPropertyFilterAnyOf0Equals": {
+      "NumberPropertyFilterEquals": {
         "type": "object",
         "properties": {
           "equals": {
@@ -12190,7 +12131,7 @@
           "equals"
         ]
       },
-      "NumberPropertyFilterAnyOf0GreaterThan": {
+      "NumberPropertyFilterGreaterThan": {
         "type": "object",
         "properties": {
           "greater_than": {
@@ -12201,7 +12142,7 @@
           "greater_than"
         ]
       },
-      "NumberPropertyFilterAnyOf0GreaterThanOrEqualTo": {
+      "NumberPropertyFilterGreaterThanOrEqualTo": {
         "type": "object",
         "properties": {
           "greater_than_or_equal_to": {
@@ -12212,7 +12153,7 @@
           "greater_than_or_equal_to"
         ]
       },
-      "NumberPropertyFilterAnyOf0LessThan": {
+      "NumberPropertyFilterLessThan": {
         "type": "object",
         "properties": {
           "less_than": {
@@ -12223,7 +12164,7 @@
           "less_than"
         ]
       },
-      "NumberPropertyFilterAnyOf0LessThanOrEqualTo": {
+      "NumberPropertyFilterLessThanOrEqualTo": {
         "type": "object",
         "properties": {
           "less_than_or_equal_to": {
@@ -12470,15 +12411,11 @@
       "PageOrDataSourceResultsItem": {
         "anyOf": [
           {
-            "$ref": "#/components/schemas/Page2"
+            "$ref": "#/components/schemas/Page"
           },
           {
-            "$ref": "#/components/schemas/PageOrDataSourceResultsItemAnyOf"
-          }
-        ]
-      },
-      "PageOrDataSourceResultsItemAnyOf": {
-        "anyOf": [
+            "$ref": "#/components/schemas/partialPageObjectResponse"
+          },
           {
             "$ref": "#/components/schemas/partialDataSourceObjectResponse"
           },
@@ -13286,7 +13223,7 @@
           }
         ]
       },
-      "PeoplePropertyFilterAnyOf0Contains": {
+      "PeoplePropertyFilterContains": {
         "type": "object",
         "properties": {
           "contains": {
@@ -13297,7 +13234,7 @@
           "contains"
         ]
       },
-      "PeoplePropertyFilterAnyOf0DoesNotContain": {
+      "PeoplePropertyFilterDoesNotContain": {
         "type": "object",
         "properties": {
           "does_not_contain": {
@@ -13410,7 +13347,10 @@
       "PostDatabaseQueryFilter": {
         "anyOf": [
           {
-            "$ref": "#/components/schemas/PostDatabaseQueryFilterAnyOf0"
+            "$ref": "#/components/schemas/PostDatabaseQueryFilterOr"
+          },
+          {
+            "$ref": "#/components/schemas/PostDatabaseQueryFilterAnd"
           },
           {
             "$ref": "#/components/schemas/propertyFilter"
@@ -13420,17 +13360,7 @@
           }
         ]
       },
-      "PostDatabaseQueryFilterAnyOf0": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/PostDatabaseQueryFilterAnyOf0Or"
-          },
-          {
-            "$ref": "#/components/schemas/PostDatabaseQueryFilterAnyOf0And"
-          }
-        ]
-      },
-      "PostDatabaseQueryFilterAnyOf0And": {
+      "PostDatabaseQueryFilterAnd": {
         "type": "object",
         "properties": {
           "and": {
@@ -13441,7 +13371,7 @@
           "and"
         ]
       },
-      "PostDatabaseQueryFilterAnyOf0Or": {
+      "PostDatabaseQueryFilterOr": {
         "type": "object",
         "properties": {
           "or": {
@@ -14665,90 +14595,44 @@
         "description": "Filter agents by public properties, optionally combined with and/or.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOf"
+            "$ref": "#/components/schemas/QueryAgentsFilterID"
           },
           {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOf1"
+            "$ref": "#/components/schemas/QueryAgentsFilterAgentType"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterCreatedBy"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterCreatedTime"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterFavorited"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterConnections"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterStatus"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterModelMode"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterAgentVersion"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterLastRunAt"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterAnd"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterOr"
           }
         ]
       },
-      "QueryAgentsFilterOneOf": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfID"
-          },
-          {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfAgentType"
-          },
-          {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfCreatedBy"
-          },
-          {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfCreatedTime"
-          },
-          {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfFavorited"
-          },
-          {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfConnections"
-          },
-          {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfStatus"
-          },
-          {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfModelMode"
-          },
-          {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfAgentVersion"
-          },
-          {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfLastRunAt"
-          }
-        ]
-      },
-      "QueryAgentsFilterOneOf1": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOf1And"
-          },
-          {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOf1Or"
-          }
-        ]
-      },
-      "QueryAgentsFilterOneOf1And": {
-        "type": "object",
-        "properties": {
-          "and": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-              "$ref": "#/components/schemas/QueryAgentsFilterOneOfOrItem"
-            }
-          }
-        },
-        "required": [
-          "and"
-        ],
-        "additionalProperties": false
-      },
-      "QueryAgentsFilterOneOf1Or": {
-        "type": "object",
-        "properties": {
-          "or": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-              "$ref": "#/components/schemas/QueryAgentsFilterOneOfOrItem"
-            }
-          }
-        },
-        "required": [
-          "or"
-        ],
-        "additionalProperties": false
-      },
-      "QueryAgentsFilterOneOfAgentType": {
+      "QueryAgentsFilterAgentType": {
         "type": "object",
         "properties": {
           "property": {
@@ -14756,7 +14640,7 @@
             "const": "agent_type"
           },
           "string": {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfAgentTypeString"
+            "$ref": "#/components/schemas/QueryAgentsFilterAgentTypeString"
           }
         },
         "required": [
@@ -14765,7 +14649,7 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfAgentTypeString": {
+      "QueryAgentsFilterAgentTypeString": {
         "type": "object",
         "properties": {
           "equals": {
@@ -14777,7 +14661,7 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfAgentVersion": {
+      "QueryAgentsFilterAgentVersion": {
         "type": "object",
         "properties": {
           "property": {
@@ -14785,7 +14669,7 @@
             "const": "agent_version"
           },
           "number": {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfAgentVersionNumber"
+            "$ref": "#/components/schemas/QueryAgentsFilterAgentVersionNumber"
           }
         },
         "required": [
@@ -14794,7 +14678,7 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfAgentVersionNumber": {
+      "QueryAgentsFilterAgentVersionNumber": {
         "type": "object",
         "properties": {
           "equals": {
@@ -14807,7 +14691,23 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfConnections": {
+      "QueryAgentsFilterAnd": {
+        "type": "object",
+        "properties": {
+          "and": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/QueryAgentsFilterOrItem"
+            }
+          }
+        },
+        "required": [
+          "and"
+        ],
+        "additionalProperties": false
+      },
+      "QueryAgentsFilterConnections": {
         "type": "object",
         "properties": {
           "property": {
@@ -14815,7 +14715,7 @@
             "const": "connections"
           },
           "mcp_server": {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfCreatedByPeople"
+            "$ref": "#/components/schemas/QueryAgentsFilterCreatedByPeople"
           }
         },
         "required": [
@@ -14824,7 +14724,7 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfCreatedBy": {
+      "QueryAgentsFilterCreatedBy": {
         "type": "object",
         "properties": {
           "property": {
@@ -14832,7 +14732,7 @@
             "const": "created_by"
           },
           "people": {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfCreatedByPeople"
+            "$ref": "#/components/schemas/QueryAgentsFilterCreatedByPeople"
           }
         },
         "required": [
@@ -14841,7 +14741,7 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfCreatedByPeople": {
+      "QueryAgentsFilterCreatedByPeople": {
         "type": "object",
         "properties": {
           "contains": {
@@ -14853,7 +14753,7 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfCreatedTime": {
+      "QueryAgentsFilterCreatedTime": {
         "type": "object",
         "properties": {
           "property": {
@@ -14861,7 +14761,7 @@
             "const": "created_time"
           },
           "date": {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfLastRunAtDate"
+            "$ref": "#/components/schemas/QueryAgentsFilterLastRunAtDate"
           }
         },
         "required": [
@@ -14870,7 +14770,7 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfFavorited": {
+      "QueryAgentsFilterFavorited": {
         "type": "object",
         "properties": {
           "property": {
@@ -14878,7 +14778,7 @@
             "const": "favorited"
           },
           "checkbox": {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfFavoritedCheckbox"
+            "$ref": "#/components/schemas/QueryAgentsFilterFavoritedCheckbox"
           }
         },
         "required": [
@@ -14887,7 +14787,7 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfFavoritedCheckbox": {
+      "QueryAgentsFilterFavoritedCheckbox": {
         "type": "object",
         "properties": {
           "equals": {
@@ -14899,7 +14799,7 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfID": {
+      "QueryAgentsFilterID": {
         "type": "object",
         "properties": {
           "property": {
@@ -14907,7 +14807,7 @@
             "const": "id"
           },
           "id": {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfIDID"
+            "$ref": "#/components/schemas/QueryAgentsFilterIDID"
           }
         },
         "required": [
@@ -14916,7 +14816,7 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfIDID": {
+      "QueryAgentsFilterIDID": {
         "type": "object",
         "properties": {
           "equals": {
@@ -14928,7 +14828,7 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfLastRunAt": {
+      "QueryAgentsFilterLastRunAt": {
         "type": "object",
         "properties": {
           "property": {
@@ -14936,7 +14836,7 @@
             "const": "last_run_at"
           },
           "date": {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfLastRunAtDate"
+            "$ref": "#/components/schemas/QueryAgentsFilterLastRunAtDate"
           }
         },
         "required": [
@@ -14945,7 +14845,7 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfLastRunAtDate": {
+      "QueryAgentsFilterLastRunAtDate": {
         "type": "object",
         "properties": {
           "after": {
@@ -14959,7 +14859,7 @@
         },
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfModelMode": {
+      "QueryAgentsFilterModelMode": {
         "type": "object",
         "properties": {
           "property": {
@@ -14967,7 +14867,7 @@
             "const": "model_mode"
           },
           "select": {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfModelModeSelect"
+            "$ref": "#/components/schemas/QueryAgentsFilterModelModeSelect"
           }
         },
         "required": [
@@ -14976,11 +14876,11 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfModelModeSelect": {
+      "QueryAgentsFilterModelModeSelect": {
         "type": "object",
         "properties": {
           "equals": {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfModelModeSelectEquals"
+            "$ref": "#/components/schemas/QueryAgentsFilterModelModeSelectEquals"
           }
         },
         "required": [
@@ -14988,57 +14888,21 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfModelModeSelectEquals": {
+      "QueryAgentsFilterModelModeSelectEquals": {
         "type": "string",
         "enum": [
           "auto",
           "pinned"
         ]
       },
-      "QueryAgentsFilterOneOfOrItem": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOf"
-          },
-          {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfOrItemOneOf"
-          }
-        ]
-      },
-      "QueryAgentsFilterOneOfOrItemOneOf": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfOrItemOneOfAnd"
-          },
-          {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfOrItemOneOfOr"
-          }
-        ]
-      },
-      "QueryAgentsFilterOneOfOrItemOneOfAnd": {
-        "type": "object",
-        "properties": {
-          "and": {
-            "type": "array",
-            "minItems": 1,
-            "items": {
-              "$ref": "#/components/schemas/QueryAgentsFilterOneOf"
-            }
-          }
-        },
-        "required": [
-          "and"
-        ],
-        "additionalProperties": false
-      },
-      "QueryAgentsFilterOneOfOrItemOneOfOr": {
+      "QueryAgentsFilterOr": {
         "type": "object",
         "properties": {
           "or": {
             "type": "array",
             "minItems": 1,
             "items": {
-              "$ref": "#/components/schemas/QueryAgentsFilterOneOf"
+              "$ref": "#/components/schemas/QueryAgentsFilterOrItem"
             }
           }
         },
@@ -15047,7 +14911,113 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfStatus": {
+      "QueryAgentsFilterOrItem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterID"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterAgentType"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterCreatedBy"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterCreatedTime"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterFavorited"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterConnections"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterStatus"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterModelMode"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterAgentVersion"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterLastRunAt"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterOrItemAnd"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterOrItemOr"
+          }
+        ]
+      },
+      "QueryAgentsFilterOrItemAnd": {
+        "type": "object",
+        "properties": {
+          "and": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/QueryAgentsFilterOrItemOrItem"
+            }
+          }
+        },
+        "required": [
+          "and"
+        ],
+        "additionalProperties": false
+      },
+      "QueryAgentsFilterOrItemOr": {
+        "type": "object",
+        "properties": {
+          "or": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/components/schemas/QueryAgentsFilterOrItemOrItem"
+            }
+          }
+        },
+        "required": [
+          "or"
+        ],
+        "additionalProperties": false
+      },
+      "QueryAgentsFilterOrItemOrItem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterID"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterAgentType"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterCreatedBy"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterCreatedTime"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterFavorited"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterConnections"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterStatus"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterModelMode"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterAgentVersion"
+          },
+          {
+            "$ref": "#/components/schemas/QueryAgentsFilterLastRunAt"
+          }
+        ]
+      },
+      "QueryAgentsFilterStatus": {
         "type": "object",
         "properties": {
           "property": {
@@ -15055,7 +15025,7 @@
             "const": "status"
           },
           "status": {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfStatus2"
+            "$ref": "#/components/schemas/QueryAgentsFilterStatus2"
           }
         },
         "required": [
@@ -15064,11 +15034,11 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfStatus2": {
+      "QueryAgentsFilterStatus2": {
         "type": "object",
         "properties": {
           "in": {
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfStatusIn"
+            "$ref": "#/components/schemas/QueryAgentsFilterStatusIn"
           }
         },
         "required": [
@@ -15076,7 +15046,7 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterOneOfStatusIn": {
+      "QueryAgentsFilterStatusIn": {
         "type": "array",
         "minItems": 1,
         "items": {
@@ -17095,7 +17065,7 @@
           },
           "string": {
             "description": "An exact string comparison.",
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfIDID"
+            "$ref": "#/components/schemas/QueryAgentsFilterIDID"
           }
         },
         "required": [
@@ -17129,7 +17099,7 @@
           },
           "string": {
             "description": "An exact string comparison.",
-            "$ref": "#/components/schemas/QueryAgentsFilterOneOfIDID"
+            "$ref": "#/components/schemas/QueryAgentsFilterIDID"
           }
         },
         "required": [
@@ -17563,7 +17533,7 @@
           "single_property"
         ]
       },
-      "RelationPropertyFilterAnyOf0Contains": {
+      "RelationPropertyFilterContains": {
         "type": "object",
         "properties": {
           "contains": {
@@ -17574,7 +17544,7 @@
           "contains"
         ]
       },
-      "RelationPropertyFilterAnyOf0DoesNotContain": {
+      "RelationPropertyFilterDoesNotContain": {
         "type": "object",
         "properties": {
           "does_not_contain": {
@@ -19270,7 +19240,7 @@
           "name"
         ]
       },
-      "SelectPropertyFilterAnyOfDoesNotEqual": {
+      "SelectPropertyFilterDoesNotEqual": {
         "type": "object",
         "properties": {
           "does_not_equal": {
@@ -19281,7 +19251,7 @@
           "does_not_equal"
         ]
       },
-      "SelectPropertyFilterAnyOfEquals": {
+      "SelectPropertyFilterEquals": {
         "type": "object",
         "properties": {
           "equals": {
@@ -19535,7 +19505,7 @@
           "phone_number"
         ]
       },
-      "TextPropertyFilterAnyOf0Contains": {
+      "TextPropertyFilterContains": {
         "type": "object",
         "properties": {
           "contains": {
@@ -19546,7 +19516,7 @@
           "contains"
         ]
       },
-      "TextPropertyFilterAnyOf0DoesNotContain": {
+      "TextPropertyFilterDoesNotContain": {
         "type": "object",
         "properties": {
           "does_not_contain": {
@@ -19557,29 +19527,7 @@
           "does_not_contain"
         ]
       },
-      "TextPropertyFilterAnyOf0EndsWith": {
-        "type": "object",
-        "properties": {
-          "ends_with": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "ends_with"
-        ]
-      },
-      "TextPropertyFilterAnyOf0StartsWith": {
-        "type": "object",
-        "properties": {
-          "starts_with": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "starts_with"
-        ]
-      },
-      "TextPropertyFilterAnyOfDoesNotEqual": {
+      "TextPropertyFilterDoesNotEqual": {
         "type": "object",
         "properties": {
           "does_not_equal": {
@@ -19591,7 +19539,18 @@
           "does_not_equal"
         ]
       },
-      "TextPropertyFilterAnyOfEquals": {
+      "TextPropertyFilterEndsWith": {
+        "type": "object",
+        "properties": {
+          "ends_with": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ends_with"
+        ]
+      },
+      "TextPropertyFilterEquals": {
         "type": "object",
         "properties": {
           "equals": {
@@ -19601,6 +19560,17 @@
         },
         "required": [
           "equals"
+        ]
+      },
+      "TextPropertyFilterStartsWith": {
+        "type": "object",
+        "properties": {
+          "starts_with": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "starts_with"
         ]
       },
       "TextRichTextItemRequestText": {
@@ -19797,108 +19767,110 @@
       "UpdateABlock": {
         "anyOf": [
           {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0"
+            "$ref": "#/components/schemas/UpdateABlockEmbed"
           },
           {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf1"
+            "$ref": "#/components/schemas/UpdateABlockBookmark"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockImage"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockVideo"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockPdf"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockFile"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockAudio"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockCode"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockEquation"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockDivider"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockBreadcrumb"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockTab"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockTableOfContents"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockLinkToPage"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockTableRow"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockHeading1"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockHeading2"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockHeading3"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockHeading4"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockParagraph"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockBulletedListItem"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockNumberedListItem"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockQuote"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockToDo"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockToggle"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockTemplate"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockCallout"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockSyncedBlock"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockTable"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockColumn"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockAnyOf30"
           }
         ]
       },
-      "UpdateABlockAnyOf0": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Embed"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Bookmark"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Image"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Video"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Pdf"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0File"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Audio"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Code"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Equation"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Divider"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Breadcrumb"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Tab"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0TableOfContents"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0LinkToPage"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0TableRow"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Heading1"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Heading2"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Heading3"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Heading4"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Paragraph"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0BulletedListItem"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0NumberedListItem"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Quote"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0ToDo"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Toggle"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Template"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Callout"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0SyncedBlock"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Table"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0Column"
+      "UpdateABlockAnyOf30": {
+        "type": "object",
+        "properties": {
+          "in_trash": {
+            "type": "boolean"
           }
-        ]
+        },
+        "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Audio": {
+      "UpdateABlockAudio": {
         "title": "Audio",
         "type": "object",
         "properties": {
@@ -19918,7 +19890,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Bookmark": {
+      "UpdateABlockBookmark": {
         "title": "Bookmark",
         "type": "object",
         "properties": {
@@ -19938,7 +19910,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Breadcrumb": {
+      "UpdateABlockBreadcrumb": {
         "title": "Breadcrumb",
         "type": "object",
         "properties": {
@@ -19958,7 +19930,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0BulletedListItem": {
+      "UpdateABlockBulletedListItem": {
         "title": "Bulleted List Item",
         "type": "object",
         "properties": {
@@ -19978,7 +19950,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Callout": {
+      "UpdateABlockCallout": {
         "title": "Callout",
         "type": "object",
         "properties": {
@@ -19998,12 +19970,12 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Code": {
+      "UpdateABlockCode": {
         "title": "Code",
         "type": "object",
         "properties": {
           "code": {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0CodeCode"
+            "$ref": "#/components/schemas/UpdateABlockCodeCode"
           },
           "type": {
             "type": "string",
@@ -20018,7 +19990,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0CodeCode": {
+      "UpdateABlockCodeCode": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -20041,12 +20013,12 @@
         },
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Column": {
+      "UpdateABlockColumn": {
         "title": "Column",
         "type": "object",
         "properties": {
           "column": {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0ColumnColumn"
+            "$ref": "#/components/schemas/UpdateABlockColumnColumn"
           },
           "type": {
             "type": "string",
@@ -20061,7 +20033,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0ColumnColumn": {
+      "UpdateABlockColumnColumn": {
         "type": "object",
         "properties": {
           "width_ratio": {
@@ -20076,7 +20048,7 @@
         },
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Divider": {
+      "UpdateABlockDivider": {
         "title": "Divider",
         "type": "object",
         "properties": {
@@ -20096,12 +20068,12 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Embed": {
+      "UpdateABlockEmbed": {
         "title": "Embed",
         "type": "object",
         "properties": {
           "embed": {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0EmbedEmbed"
+            "$ref": "#/components/schemas/UpdateABlockEmbedEmbed"
           },
           "type": {
             "type": "string",
@@ -20116,7 +20088,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0EmbedEmbed": {
+      "UpdateABlockEmbedEmbed": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/updateMediaContentWithUrlAndCaptionRequest"
@@ -20126,7 +20098,7 @@
           }
         ]
       },
-      "UpdateABlockAnyOf0Equation": {
+      "UpdateABlockEquation": {
         "title": "Equation",
         "type": "object",
         "properties": {
@@ -20146,7 +20118,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0File": {
+      "UpdateABlockFile": {
         "title": "File",
         "type": "object",
         "properties": {
@@ -20166,7 +20138,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Heading1": {
+      "UpdateABlockHeading1": {
         "title": "Heading 1",
         "type": "object",
         "properties": {
@@ -20186,7 +20158,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Heading2": {
+      "UpdateABlockHeading2": {
         "title": "Heading 2",
         "type": "object",
         "properties": {
@@ -20206,7 +20178,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Heading3": {
+      "UpdateABlockHeading3": {
         "title": "Heading 3",
         "type": "object",
         "properties": {
@@ -20226,7 +20198,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Heading4": {
+      "UpdateABlockHeading4": {
         "title": "Heading 4",
         "type": "object",
         "properties": {
@@ -20246,7 +20218,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Image": {
+      "UpdateABlockImage": {
         "title": "Image",
         "type": "object",
         "properties": {
@@ -20266,12 +20238,12 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0LinkToPage": {
+      "UpdateABlockLinkToPage": {
         "title": "Link To Page",
         "type": "object",
         "properties": {
           "link_to_page": {
-            "$ref": "#/components/schemas/BlockObjectLinkToPageLinkToPage"
+            "$ref": "#/components/schemas/UpdateABlockLinkToPageLinkToPage"
           },
           "type": {
             "type": "string",
@@ -20286,7 +20258,37 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0NumberedListItem": {
+      "UpdateABlockLinkToPageLinkToPage": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/PageParentPageID"
+          },
+          {
+            "$ref": "#/components/schemas/PageParentDatabaseID"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateABlockLinkToPageLinkToPageCommentID"
+          }
+        ]
+      },
+      "UpdateABlockLinkToPageLinkToPageCommentID": {
+        "title": "Comment Id",
+        "type": "object",
+        "properties": {
+          "comment_id": {
+            "$ref": "#/components/schemas/idRequest"
+          },
+          "type": {
+            "type": "string",
+            "const": "comment_id"
+          }
+        },
+        "required": [
+          "comment_id"
+        ],
+        "additionalProperties": false
+      },
+      "UpdateABlockNumberedListItem": {
         "title": "Numbered List Item",
         "type": "object",
         "properties": {
@@ -20306,7 +20308,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Paragraph": {
+      "UpdateABlockParagraph": {
         "title": "Paragraph",
         "type": "object",
         "properties": {
@@ -20326,7 +20328,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Pdf": {
+      "UpdateABlockPdf": {
         "title": "Pdf",
         "type": "object",
         "properties": {
@@ -20346,7 +20348,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Quote": {
+      "UpdateABlockQuote": {
         "title": "Quote",
         "type": "object",
         "properties": {
@@ -20366,12 +20368,12 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0SyncedBlock": {
+      "UpdateABlockSyncedBlock": {
         "title": "Synced Block",
         "type": "object",
         "properties": {
           "synced_block": {
-            "$ref": "#/components/schemas/UpdateABlockAnyOfSyncedBlockSyncedBlock"
+            "$ref": "#/components/schemas/UpdateABlockSyncedBlockSyncedBlock"
           },
           "type": {
             "type": "string",
@@ -20386,7 +20388,39 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Tab": {
+      "UpdateABlockSyncedBlockSyncedBlock": {
+        "type": "object",
+        "properties": {
+          "synced_from": {
+            "$ref": "#/components/schemas/UpdateABlockSyncedBlockSyncedBlockSyncedFrom"
+          }
+        },
+        "required": [
+          "synced_from"
+        ],
+        "additionalProperties": false
+      },
+      "UpdateABlockSyncedBlockSyncedBlockSyncedFrom": {
+        "title": "Block Id",
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "block_id": {
+            "$ref": "#/components/schemas/idRequest"
+          },
+          "type": {
+            "type": "string",
+            "const": "block_id"
+          }
+        },
+        "required": [
+          "block_id"
+        ],
+        "additionalProperties": false
+      },
+      "UpdateABlockTab": {
         "title": "Tab",
         "type": "object",
         "properties": {
@@ -20406,12 +20440,12 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Table": {
+      "UpdateABlockTable": {
         "title": "Table",
         "type": "object",
         "properties": {
           "table": {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0TableTable"
+            "$ref": "#/components/schemas/UpdateABlockTableTable"
           },
           "type": {
             "type": "string",
@@ -20426,12 +20460,12 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0TableOfContents": {
+      "UpdateABlockTableOfContents": {
         "title": "Table Of Contents",
         "type": "object",
         "properties": {
           "table_of_contents": {
-            "$ref": "#/components/schemas/BlockObjectTableOfContentsTableOfContents"
+            "$ref": "#/components/schemas/UpdateABlockTableOfContentsTableOfContents"
           },
           "type": {
             "type": "string",
@@ -20446,7 +20480,16 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0TableRow": {
+      "UpdateABlockTableOfContentsTableOfContents": {
+        "type": "object",
+        "properties": {
+          "color": {
+            "$ref": "#/components/schemas/apiColor"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateABlockTableRow": {
         "title": "Table Row",
         "type": "object",
         "properties": {
@@ -20466,7 +20509,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0TableTable": {
+      "UpdateABlockTableTable": {
         "type": "object",
         "properties": {
           "has_column_header": {
@@ -20478,7 +20521,7 @@
         },
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Template": {
+      "UpdateABlockTemplate": {
         "title": "Template",
         "type": "object",
         "properties": {
@@ -20498,12 +20541,12 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0ToDo": {
+      "UpdateABlockToDo": {
         "title": "To Do",
         "type": "object",
         "properties": {
           "to_do": {
-            "$ref": "#/components/schemas/UpdateABlockAnyOf0ToDoToDo"
+            "$ref": "#/components/schemas/UpdateABlockToDoToDo"
           },
           "type": {
             "type": "string",
@@ -20518,7 +20561,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0ToDoToDo": {
+      "UpdateABlockToDoToDo": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -20536,7 +20579,7 @@
           }
         }
       },
-      "UpdateABlockAnyOf0Toggle": {
+      "UpdateABlockToggle": {
         "title": "Toggle",
         "type": "object",
         "properties": {
@@ -20556,7 +20599,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockAnyOf0Video": {
+      "UpdateABlockVideo": {
         "title": "Video",
         "type": "object",
         "properties": {
@@ -20573,27 +20616,6 @@
         },
         "required": [
           "video"
-        ],
-        "additionalProperties": false
-      },
-      "UpdateABlockAnyOf1": {
-        "type": "object",
-        "properties": {
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "additionalProperties": false
-      },
-      "UpdateABlockAnyOfSyncedBlockSyncedBlock": {
-        "type": "object",
-        "properties": {
-          "synced_from": {
-            "$ref": "#/components/schemas/BlockObjectSyncedBlockSyncedBlockSyncedFrom"
-          }
-        },
-        "required": [
-          "synced_from"
         ],
         "additionalProperties": false
       },
@@ -21811,7 +21833,7 @@
             "example": "@F<W"
           },
           "select": {
-            "$ref": "#/components/schemas/TextPropertyFilterAnyOfDoesNotEqual"
+            "$ref": "#/components/schemas/TextPropertyFilterDoesNotEqual"
           },
           "created_time": {
             "$ref": "#/components/schemas/ViewFilterResponsePropertyOrItemAndItemCreatedTime"
@@ -21848,7 +21870,7 @@
             "example": "Blch"
           },
           "date": {
-            "$ref": "#/components/schemas/TextPropertyFilterAnyOfEquals"
+            "$ref": "#/components/schemas/TextPropertyFilterEquals"
           },
           "and": {
             "$ref": "#/components/schemas/ViewFilterResponsePropertyOrItemOrItemAnd"
@@ -21873,7 +21895,7 @@
             "example": "Blch"
           },
           "date": {
-            "$ref": "#/components/schemas/TextPropertyFilterAnyOfEquals"
+            "$ref": "#/components/schemas/TextPropertyFilterEquals"
           },
           "formula": {
             "$ref": "#/components/schemas/ViewFilterResponsePropertyOrItemOrItemAndItemFormula"
@@ -25788,50 +25810,43 @@
       "datePropertyFilter": {
         "anyOf": [
           {
-            "$ref": "#/components/schemas/datePropertyFilterAnyOf0"
+            "$ref": "#/components/schemas/DatePropertyFilterEquals"
+          },
+          {
+            "$ref": "#/components/schemas/DatePropertyFilterBefore"
+          },
+          {
+            "$ref": "#/components/schemas/DatePropertyFilterAfter"
+          },
+          {
+            "$ref": "#/components/schemas/DatePropertyFilterOnOrBefore"
+          },
+          {
+            "$ref": "#/components/schemas/DatePropertyFilterOnOrAfter"
+          },
+          {
+            "$ref": "#/components/schemas/DatePropertyFilterThisWeek"
+          },
+          {
+            "$ref": "#/components/schemas/DatePropertyFilterPastWeek"
+          },
+          {
+            "$ref": "#/components/schemas/DatePropertyFilterPastMonth"
+          },
+          {
+            "$ref": "#/components/schemas/DatePropertyFilterPastYear"
+          },
+          {
+            "$ref": "#/components/schemas/DatePropertyFilterNextWeek"
+          },
+          {
+            "$ref": "#/components/schemas/DatePropertyFilterNextMonth"
+          },
+          {
+            "$ref": "#/components/schemas/DatePropertyFilterNextYear"
           },
           {
             "$ref": "#/components/schemas/existencePropertyFilter"
-          }
-        ]
-      },
-      "datePropertyFilterAnyOf0": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/DatePropertyFilterAnyOf0Equals"
-          },
-          {
-            "$ref": "#/components/schemas/DatePropertyFilterAnyOf0Before"
-          },
-          {
-            "$ref": "#/components/schemas/DatePropertyFilterAnyOf0After"
-          },
-          {
-            "$ref": "#/components/schemas/DatePropertyFilterAnyOf0OnOrBefore"
-          },
-          {
-            "$ref": "#/components/schemas/DatePropertyFilterAnyOf0OnOrAfter"
-          },
-          {
-            "$ref": "#/components/schemas/DatePropertyFilterAnyOf0ThisWeek"
-          },
-          {
-            "$ref": "#/components/schemas/DatePropertyFilterAnyOf0PastWeek"
-          },
-          {
-            "$ref": "#/components/schemas/DatePropertyFilterAnyOf0PastMonth"
-          },
-          {
-            "$ref": "#/components/schemas/DatePropertyFilterAnyOf0PastYear"
-          },
-          {
-            "$ref": "#/components/schemas/DatePropertyFilterAnyOf0NextWeek"
-          },
-          {
-            "$ref": "#/components/schemas/DatePropertyFilterAnyOf0NextMonth"
-          },
-          {
-            "$ref": "#/components/schemas/DatePropertyFilterAnyOf0NextYear"
           }
         ]
       },
@@ -27572,17 +27587,10 @@
             "$ref": "#/components/schemas/propertyOrTimestampFilter"
           },
           {
-            "$ref": "#/components/schemas/groupFilterOperatorArrayItemAnyOf1"
-          }
-        ]
-      },
-      "groupFilterOperatorArrayItemAnyOf1": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemAnyOf1Or"
+            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemOr"
           },
           {
-            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemAnyOf1And"
+            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemAnd"
           }
         ]
       },
@@ -28978,20 +28986,13 @@
       "multiSelectPropertyFilter": {
         "anyOf": [
           {
-            "$ref": "#/components/schemas/multiSelectPropertyFilterAnyOf0"
+            "$ref": "#/components/schemas/MultiSelectPropertyFilterContains"
+          },
+          {
+            "$ref": "#/components/schemas/MultiSelectPropertyFilterDoesNotContain"
           },
           {
             "$ref": "#/components/schemas/existencePropertyFilter"
-          }
-        ]
-      },
-      "multiSelectPropertyFilterAnyOf0": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/MultiSelectPropertyFilterAnyOf0Contains"
-          },
-          {
-            "$ref": "#/components/schemas/MultiSelectPropertyFilterAnyOf0DoesNotContain"
           }
         ]
       },
@@ -29283,32 +29284,25 @@
       "numberPropertyFilter": {
         "anyOf": [
           {
-            "$ref": "#/components/schemas/numberPropertyFilterAnyOf0"
+            "$ref": "#/components/schemas/NumberPropertyFilterEquals"
+          },
+          {
+            "$ref": "#/components/schemas/NumberPropertyFilterDoesNotEqual"
+          },
+          {
+            "$ref": "#/components/schemas/NumberPropertyFilterGreaterThan"
+          },
+          {
+            "$ref": "#/components/schemas/NumberPropertyFilterLessThan"
+          },
+          {
+            "$ref": "#/components/schemas/NumberPropertyFilterGreaterThanOrEqualTo"
+          },
+          {
+            "$ref": "#/components/schemas/NumberPropertyFilterLessThanOrEqualTo"
           },
           {
             "$ref": "#/components/schemas/existencePropertyFilter"
-          }
-        ]
-      },
-      "numberPropertyFilterAnyOf0": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/NumberPropertyFilterAnyOf0Equals"
-          },
-          {
-            "$ref": "#/components/schemas/NumberPropertyFilterAnyOf0DoesNotEqual"
-          },
-          {
-            "$ref": "#/components/schemas/NumberPropertyFilterAnyOf0GreaterThan"
-          },
-          {
-            "$ref": "#/components/schemas/NumberPropertyFilterAnyOf0LessThan"
-          },
-          {
-            "$ref": "#/components/schemas/NumberPropertyFilterAnyOf0GreaterThanOrEqualTo"
-          },
-          {
-            "$ref": "#/components/schemas/NumberPropertyFilterAnyOf0LessThanOrEqualTo"
           }
         ]
       },
@@ -30405,20 +30399,13 @@
       "peoplePropertyFilter": {
         "anyOf": [
           {
-            "$ref": "#/components/schemas/peoplePropertyFilterAnyOf0"
+            "$ref": "#/components/schemas/PeoplePropertyFilterContains"
+          },
+          {
+            "$ref": "#/components/schemas/PeoplePropertyFilterDoesNotContain"
           },
           {
             "$ref": "#/components/schemas/existencePropertyFilter"
-          }
-        ]
-      },
-      "peoplePropertyFilterAnyOf0": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/PeoplePropertyFilterAnyOf0Contains"
-          },
-          {
-            "$ref": "#/components/schemas/PeoplePropertyFilterAnyOf0DoesNotContain"
           }
         ]
       },
@@ -31290,20 +31277,13 @@
       "relationPropertyFilter": {
         "anyOf": [
           {
-            "$ref": "#/components/schemas/relationPropertyFilterAnyOf0"
+            "$ref": "#/components/schemas/RelationPropertyFilterContains"
+          },
+          {
+            "$ref": "#/components/schemas/RelationPropertyFilterDoesNotContain"
           },
           {
             "$ref": "#/components/schemas/existencePropertyFilter"
-          }
-        ]
-      },
-      "relationPropertyFilterAnyOf0": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/RelationPropertyFilterAnyOf0Contains"
-          },
-          {
-            "$ref": "#/components/schemas/RelationPropertyFilterAnyOf0DoesNotContain"
           }
         ]
       },
@@ -31781,20 +31761,13 @@
       "selectPropertyFilter": {
         "anyOf": [
           {
-            "$ref": "#/components/schemas/selectPropertyFilterAnyOf"
+            "$ref": "#/components/schemas/SelectPropertyFilterEquals"
+          },
+          {
+            "$ref": "#/components/schemas/SelectPropertyFilterDoesNotEqual"
           },
           {
             "$ref": "#/components/schemas/existencePropertyFilter"
-          }
-        ]
-      },
-      "selectPropertyFilterAnyOf": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/SelectPropertyFilterAnyOfEquals"
-          },
-          {
-            "$ref": "#/components/schemas/SelectPropertyFilterAnyOfDoesNotEqual"
           }
         ]
       },
@@ -33022,32 +32995,25 @@
       "textPropertyFilter": {
         "anyOf": [
           {
-            "$ref": "#/components/schemas/textPropertyFilterAnyOf0"
+            "$ref": "#/components/schemas/TextPropertyFilterEquals"
+          },
+          {
+            "$ref": "#/components/schemas/TextPropertyFilterDoesNotEqual"
+          },
+          {
+            "$ref": "#/components/schemas/TextPropertyFilterContains"
+          },
+          {
+            "$ref": "#/components/schemas/TextPropertyFilterDoesNotContain"
+          },
+          {
+            "$ref": "#/components/schemas/TextPropertyFilterStartsWith"
+          },
+          {
+            "$ref": "#/components/schemas/TextPropertyFilterEndsWith"
           },
           {
             "$ref": "#/components/schemas/existencePropertyFilter"
-          }
-        ]
-      },
-      "textPropertyFilterAnyOf0": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/TextPropertyFilterAnyOfEquals"
-          },
-          {
-            "$ref": "#/components/schemas/TextPropertyFilterAnyOfDoesNotEqual"
-          },
-          {
-            "$ref": "#/components/schemas/TextPropertyFilterAnyOf0Contains"
-          },
-          {
-            "$ref": "#/components/schemas/TextPropertyFilterAnyOf0DoesNotContain"
-          },
-          {
-            "$ref": "#/components/schemas/TextPropertyFilterAnyOf0StartsWith"
-          },
-          {
-            "$ref": "#/components/schemas/TextPropertyFilterAnyOf0EndsWith"
           }
         ]
       },
