@@ -141,11 +141,18 @@ func queryOfView(view []byte) (cassette.Request, error) {
 		return cassette.Request{}, fmt.Errorf("decoding view: %w", err)
 	}
 
+	var filter any
+	if len(v.Filter) > 0 {
+		if err := json.Unmarshal(v.Filter, &filter); err != nil {
+			return cassette.Request{}, fmt.Errorf("decoding filter: %w", err)
+		}
+	}
+
 	body, err := json.Marshal(struct {
-		Filter   jsontext.Value `json:"filter,omitzero"`
+		Filter   any            `json:"filter,omitzero"`
 		Sorts    jsontext.Value `json:"sorts,omitzero"`
 		PageSize int            `json:"page_size"`
-	}{v.Filter, v.Sorts, 3})
+	}{unnest(filter), v.Sorts, 3}, json.Deterministic(true))
 	if err != nil {
 		return cassette.Request{}, err
 	}
@@ -155,6 +162,40 @@ func queryOfView(view []byte) (cassette.Request, error) {
 		URL:    "https://api.notion.com/v1/data_sources/" + v.DataSourceID + "/query",
 		Body:   body,
 	}, nil
+}
+
+// unnest lists the filters of a compound filter within one of the same kind, an "or" in an "or" or an "and" in an
+// "and", in the outer one, which allows the same entries. A view nests filters deeper than a query may, two levels.
+func unnest(filter any) any {
+	f, ok := filter.(map[string]any)
+	if !ok || len(f) != 1 {
+		return filter
+	}
+
+	for op, children := range f {
+		cs, ok := children.([]any)
+		if op != "and" && op != "or" || !ok {
+			return filter
+		}
+
+		var flat []any
+
+		for _, c := range cs {
+			c = unnest(c)
+			if inner, ok := c.(map[string]any); ok && len(inner) == 1 {
+				if same, ok := inner[op].([]any); ok {
+					flat = append(flat, same...)
+					continue
+				}
+			}
+
+			flat = append(flat, c)
+		}
+
+		return map[string]any{op: flat}
+	}
+
+	return filter
 }
 
 // do sends r to Notion and records the interaction.
