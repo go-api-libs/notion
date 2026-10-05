@@ -7,8 +7,8 @@ require (
 	github.com/MarkRosemaker/jsonutil v0.0.0-20261004011215-c1eff28436f6
 	github.com/MarkRosemaker/openapi v0.0.0-20261005183413-2a3bd56f42a1
 	github.com/MarkRosemaker/openapi-edit v0.0.0-20261005183438-5084b9673f29
-	github.com/MarkRosemaker/openapi-enrich v0.0.0-20261005183531-9093726b230b
-	github.com/MarkRosemaker/openapi-merge v0.0.0-20261005183438-645ed02a2c89
+	github.com/MarkRosemaker/openapi-enrich v0.0.0-20261005205225-f498da69d18f
+	github.com/MarkRosemaker/openapi-merge v0.0.0-20261005204934-c05df42449a2
 	golang.org/x/sync v0.23.0
 )
 
