@@ -22,10 +22,14 @@ var (
 	dbID         = uuid.MustParse("457d00dcfc3a4ddba42ffe376530bee0")
 	dataSourceID = uuid.MustParse("9201f6db-2895-4450-9435-041541a181dd")
 	viewID       = uuid.MustParse("cb3265bc5d5e488fbd8a69221c107915")
+
+	// https://app.notion.com/p/fae-tools/Example-Page-96245c8f178444a482ad1941127c3ec3, a page of every kind of block
+	examplePageID = uuid.MustParse("96245c8f178444a482ad1941127c3ec3")
 )
 
 const (
 	pathInteractions = "api/interactions.json"
+	baseURL          = "https://api.notion.com/v1/"
 )
 
 func main() {
@@ -123,6 +127,10 @@ func run(ctx context.Context) error {
 		}
 	}
 
+	if err := recordExample(ctx, record); err != nil {
+		return fmt.Errorf("example page: %w", err)
+	}
+
 	ias.Mask()
 	ias.TrimResponseHeaders()
 	ias.TrimResponseBodies(3)
@@ -196,6 +204,180 @@ func unnest(filter any) any {
 	}
 
 	return filter
+}
+
+// recordExample records the example page, a block of each shape in it and its subpages, and each database in it.
+// Its lists of blocks are walked without being recorded, since a recording keeps only three items of each list.
+func recordExample(ctx context.Context, record func(cassette.Request) (cassette.Interaction, error)) error {
+	page := examplePageID.String()
+
+	for _, r := range []cassette.Request{
+		get("pages/" + page),
+		get("pages/" + page + "/properties/title"),
+		get("blocks/" + page + "/children?page_size=3"),
+	} {
+		if _, err := record(r); err != nil {
+			return err
+		}
+	}
+
+	w := walker{ctx: ctx, record: record, seen: map[string]bool{}}
+
+	return w.children(page)
+}
+
+// walker records a block of each shape it comes across.
+type walker struct {
+	ctx    context.Context
+	record func(cassette.Request) (cassette.Interaction, error)
+	seen   map[string]bool // the shapes recorded
+}
+
+// children walks the blocks within the block or page id.
+func (w *walker) children(id string) error {
+	for cursor := ""; ; {
+		url := baseURL + "blocks/" + id + "/children?page_size=100"
+		if cursor != "" {
+			url += "&start_cursor=" + cursor
+		}
+
+		ia, err := do(w.ctx, cassette.Request{Method: http.MethodGet, URL: url})
+		if err != nil {
+			return err
+		}
+
+		if ia.Response.StatusCode != http.StatusOK {
+			return fmt.Errorf("GET %s: %d %s", url, ia.Response.StatusCode, ia.Response.Body)
+		}
+
+		var list struct {
+			Results    []map[string]any `json:"results"`
+			HasMore    bool             `json:"has_more"`
+			NextCursor string           `json:"next_cursor"`
+		}
+		if err := json.Unmarshal(ia.Response.Body, &list); err != nil {
+			return fmt.Errorf("decoding children of %s: %w", id, err)
+		}
+
+		for _, b := range list.Results {
+			if err := w.block(b); err != nil {
+				return err
+			}
+		}
+
+		if !list.HasMore {
+			return nil
+		}
+
+		cursor = list.NextCursor
+	}
+}
+
+// block records b if no block of its shape was, and what it holds.
+func (w *walker) block(b map[string]any) error {
+	id, _ := b["id"].(string)
+	typ, _ := b["type"].(string)
+
+	if shape, err := json.Marshal(shapeOf(b), json.Deterministic(true)); err != nil {
+		return err
+	} else if !w.seen[string(shape)] {
+		w.seen[string(shape)] = true
+
+		if _, err := w.record(get("blocks/" + id)); err != nil {
+			return err
+		}
+	}
+
+	switch typ {
+	case "child_page":
+		if _, err := w.record(get("pages/" + id)); err != nil {
+			return err
+		}
+	case "child_database":
+		return w.database(id)
+	}
+
+	if b["has_children"] == true || typ == "child_page" {
+		return w.children(id)
+	}
+
+	return nil
+}
+
+// database records the database id, and each of its data sources with a few of its entries.
+func (w *walker) database(id string) error {
+	ia, err := w.record(get("databases/" + id))
+	if err != nil {
+		return err
+	}
+
+	var db struct {
+		DataSources []struct {
+			ID string `json:"id"`
+		} `json:"data_sources"`
+	}
+	if err := json.Unmarshal(ia.Response.Body, &db); err != nil {
+		return fmt.Errorf("decoding database %s: %w", id, err)
+	}
+
+	for _, ds := range db.DataSources {
+		for _, r := range []cassette.Request{
+			get("data_sources/" + ds.ID),
+			{Method: http.MethodPost, URL: baseURL + "data_sources/" + ds.ID + "/query", Body: []byte(`{"page_size":3}`)},
+		} {
+			if _, err := w.record(r); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+// noise are the members whose values tell blocks apart but not their shape: what each says, not how.
+var noise = map[string]bool{
+	"id": true, "created_time": true, "last_edited_time": true, "created_by": true, "last_edited_by": true,
+	"parent": true, "plain_text": true, "content": true, "url": true, "expiry_time": true, "expression": true,
+	"title": true, "caption": true, "name": true, "page_id": true, "database_id": true, "block_id": true,
+	"start": true, "end": true, "emoji": true,
+}
+
+// shapeOf is v without its noise, and with each of its arrays' items once.
+func shapeOf(v any) any {
+	switch v := v.(type) {
+	case map[string]any:
+		m := make(map[string]any, len(v))
+		for k, x := range v {
+			if noise[k] {
+				m[k] = nil
+			} else {
+				m[k] = shapeOf(x)
+			}
+		}
+
+		return m
+	case []any:
+		var items []any
+
+		seen := map[string]bool{}
+
+		for _, x := range v {
+			item := shapeOf(x)
+			if b, err := json.Marshal(item, json.Deterministic(true)); err == nil && !seen[string(b)] {
+				seen[string(b)] = true
+				items = append(items, item)
+			}
+		}
+
+		return items
+	}
+
+	return v
+}
+
+// get is a GET request of the path below the API's URL.
+func get(path string) cassette.Request {
+	return cassette.Request{Method: http.MethodGet, URL: baseURL + path}
 }
 
 // do sends r to Notion and records the interaction.
