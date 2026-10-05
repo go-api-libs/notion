@@ -2,27 +2,33 @@ package notion
 
 import (
 	"fmt"
-	"net/http"
+	"maps"
+	"slices"
 	"strings"
 )
 
-func (e *error_api_400) Error() string {
+// Error formats as e.g. "notion: 400 validation_error: body failed validation (key: value)".
+func (e *Error) Error() string {
 	b := &strings.Builder{}
-	fmt.Fprintf(b, "%d %s - %s: obj - %s; msg - %s", e.Status, http.StatusText(e.Status), e.Code, e.Object, e.Message)
+	fmt.Fprintf(b, "notion: %d %s: %s", e.Status, e.Code, e.Message)
 
-	if e.AdditionalData != nil {
-		for key, data := range *e.AdditionalData {
-			fmt.Fprintf(b, "; %s - ", key)
-
-			if data.String != nil {
-				b.WriteString(*data.String)
-			}
-
-			if data.String2 != nil {
-				b.WriteString(strings.Join(*data.String2, ", "))
-			}
-		}
+	if len(e.AdditionalData) == 0 {
+		return b.String()
 	}
+
+	b.WriteString(" (")
+
+	// sorted, so the same error always reads the same
+	for i, key := range slices.Sorted(maps.Keys(e.AdditionalData)) {
+		if i > 0 {
+			b.WriteString("; ")
+		}
+
+		data := e.AdditionalData[key]
+		fmt.Fprintf(b, "%s: %s%s", key, data.String, strings.Join(data.String2, ", "))
+	}
+
+	b.WriteByte(')')
 
 	return b.String()
 }

@@ -80,6 +80,7 @@ func main() {
 ## Additional Information
 
 - [**Go Reference**](https://pkg.go.dev/github.com/go-api-libs/notion): API documentation.
+- [**Roadmap**](docs/roadmap.md): what is planned and not yet done.
 - [**OpenAPI Specification**](./api/openapi.json): The OpenAPI 3.1.0 specification.
 
 ## Contributing
