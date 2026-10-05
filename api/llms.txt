@@ -74,6 +74,7 @@
 - [Parent](https://developers.notion.com/reference/parent-object.md): Learn more about different parent objects that link together a workspace's entities in Notion's API.
 - [Emoji and icon](https://developers.notion.com/reference/emoji-and-icon.md): Learn how to use emoji and icon objects in the Notion API.
 - [Unfurl attribute (Link Previews)](https://developers.notion.com/reference/unfurl-attribute-object.md): A Link Preview is rendered from an array of unfurl attribute objects.
+- [List analytics reports](https://developers.notion.com/reference/admin/list-analytics-reports.md): List analytics reports.
 - [Authentication](https://developers.notion.com/reference/authentication.md): Learn how to authenticate your connection requests using bearer tokens.
 - [Create a token](https://developers.notion.com/reference/create-a-token.md): Creates an access token that a third-party service can use to authenticate with Notion.
 - [Introspect a token](https://developers.notion.com/reference/introspect-token.md): Get a token's active status, scope, and issued time.
