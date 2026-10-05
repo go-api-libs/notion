@@ -7101,7 +7101,7 @@ type CreateViewRequest struct {
 	// Filter to apply to the view. Uses the same format as the data source query filter.
 	Filter *ViewFilter `json:"filter,omitzero"`
 	// Sorts to apply to the view. Uses the same format as the data source query sorts.
-	Sorts ViewSortsRequest `json:"sorts,omitzero"`
+	Sorts Sorts `json:"sorts,omitzero"`
 	// Quick filters to pin in the view's filter bar. Keys are property names or IDs. Values are filter conditions (same shape as a property filter but without the property field). Each quick filter appears as a clickable pill above the view, independent of the advanced filter.
 	QuickFilters map[string]ViewFilter `json:"quick_filters,omitzero"`
 	// Create a new linked database block on a page and add the view to it. Mutually exclusive with database_id and view_id.
@@ -7481,7 +7481,7 @@ type DataSourceViewObjectResponse struct {
 	// The filter applied to this view (same shape as data source query filter).
 	Filter *ViewFilterResponse `json:"filter,omitzero"`
 	// The sorts applied to this view (same shape as data source query sorts).
-	Sorts []ViewSortResponse `json:"sorts,omitzero"`
+	Sorts Sorts `json:"sorts,omitzero"`
 	// Quick filters pinned to the view's filter bar. Keys are property IDs. Values are filter conditions (same shape as a property filter without the property field). Null when no quick filters are set.
 	QuickFilters map[string]ViewFilter `json:"quick_filters,omitzero"`
 	// View presentation configuration.
@@ -14636,10 +14636,10 @@ type PluginListResultsItem struct {
 
 // PostDatabaseQuery defines a model
 type PostDatabaseQuery struct {
-	Sorts       []PostDatabaseQuerySortsItem `json:"sorts,omitzero"`
-	Filter      PostDatabaseQueryFilter      `json:"filter,omitzero"`
-	StartCursor string                       `json:"start_cursor,omitzero"`
-	PageSize    *float64                     `json:"page_size,omitzero"`
+	Sorts       Sorts                   `json:"sorts,omitzero"`
+	Filter      PostDatabaseQueryFilter `json:"filter,omitzero"`
+	StartCursor string                  `json:"start_cursor,omitzero"`
+	PageSize    *float64                `json:"page_size,omitzero"`
 	// Whether to return archived pages. When omitted or false, returns non-archived pages. When true, returns archived pages.
 	IsArchived *bool `json:"is_archived,omitzero"`
 	// Optionally filter the results to only include pages or data sources. Regular, non-wiki databases only support page children. The default behavior is no result type filtering, in other words, returning both pages and data sources for wikis.
@@ -14731,67 +14731,6 @@ type PostDatabaseQueryFilterAnd struct {
 // PostDatabaseQueryFilterOr defines a model
 type PostDatabaseQueryFilterOr struct {
 	Or GroupFilterOperatorArray `json:"or"`
-}
-
-// PostDatabaseQuerySortsItem defines a model
-// PostDatabaseQuerySortsItem is an untagged anyOf union: at least one field is set after unmarshaling.
-type PostDatabaseQuerySortsItem struct {
-	ViewPropertySort                 *ViewPropertySort
-	PostDatabaseQuerySortsItemAnyOf1 *PostDatabaseQuerySortsItemAnyOf1
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *PostDatabaseQuerySortsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = PostDatabaseQuerySortsItem{}
-
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv ViewPropertySort
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ViewPropertySort = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv PostDatabaseQuerySortsItemAnyOf1
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PostDatabaseQuerySortsItemAnyOf1 = &vv
-			matched++
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *PostDatabaseQuerySortsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.ViewPropertySort != nil:
-		return json.MarshalEncode(enc, v.ViewPropertySort, jsonOpts)
-	case v.PostDatabaseQuerySortsItemAnyOf1 != nil:
-		return json.MarshalEncode(enc, v.PostDatabaseQuerySortsItemAnyOf1, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// PostDatabaseQuerySortsItemAnyOf1 defines a model
-type PostDatabaseQuerySortsItemAnyOf1 struct {
-	Timestamp TimestampSortTimestamp `json:"timestamp"`
-	Direction SortDirection          `json:"direction"`
 }
 
 // PostPage defines a model
@@ -16293,13 +16232,16 @@ func (v *PropertyOrTimestampFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 // PropertyOrTimestampFilterArray defines a model
 type PropertyOrTimestampFilterArray []PropertyOrTimestampFilter
 
-// PropertySortResponse defines a model
-type PropertySortResponse struct {
+// PropertySort defines a model
+type PropertySort struct {
 	// The name or ID of the property to sort by.
 	Property string `json:"property"`
 	// Sort direction.
 	Direction SortDirection `json:"direction"`
 }
+
+// PropertySorts defines a model
+type PropertySorts []PropertySort
 
 // PropertyValue defines a model
 type PropertyValue struct {
@@ -23007,6 +22949,64 @@ func (v *SimpleOrArrayPropertyValueResponse) MarshalJSONTo(enc *jsontext.Encoder
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
+// A sort of a data source's entries, by a property or a timestamp.
+// Sort is an untagged oneOf union: exactly one field is set after unmarshaling.
+type Sort struct {
+	PropertySort  *PropertySort
+	TimestampSort *TimestampSort
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *Sort) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = Sort{}
+
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv PropertySort
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.PropertySort = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv TimestampSort
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.TimestampSort = &vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *Sort) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.PropertySort != nil:
+		return json.MarshalEncode(enc, v.PropertySort, jsonOpts)
+	case v.TimestampSort != nil:
+		return json.MarshalEncode(enc, v.TimestampSort, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
 // SortDirection defines a model
 type SortDirection string
 
@@ -23024,6 +23024,9 @@ func (e SortDirection) Valid() bool {
 		return false
 	}
 }
+
+// Sorts defines a model
+type Sorts []Sort
 
 // Status defines a model
 type Status string
@@ -24346,8 +24349,8 @@ func (v *TimestampLastEditedTimeFilter) unmarshalJSONMember(dec *jsontext.Decode
 	return false, nil
 }
 
-// TimestampSortResponse defines a model
-type TimestampSortResponse struct {
+// TimestampSort defines a model
+type TimestampSort struct {
 	// The timestamp to sort by.
 	Timestamp TimestampSortTimestamp `json:"timestamp"`
 	// Sort direction.
@@ -26416,7 +26419,7 @@ type UpdateViewRequest struct {
 	// Filter to apply to the view. Uses the same format as the data source query filter. Pass null to clear the filter.
 	Filter *ViewFilter `json:"filter,omitzero"`
 	// Property sorts to apply to the view. Only property-based sorts are supported. Pass null to clear the sorts.
-	Sorts ViewPropertySortsRequest `json:"sorts,omitzero"`
+	Sorts PropertySorts `json:"sorts,omitzero"`
 	// Quick filters for the view's filter bar. Keys are property names or IDs. Set a key to a filter condition to add/update that quick filter. Set a key to null to remove it. Pass null for the entire field to clear all quick filters. Unmentioned quick filters are preserved.
 	QuickFilters map[string]ViewFilter `json:"quick_filters,omitzero"`
 	// View presentation configuration. The type field must match the view type. Individual nullable fields within the configuration can be set to null to clear them.
@@ -27635,17 +27638,6 @@ func (e ViewPropertyConfigTimeFormat) Valid() bool {
 	}
 }
 
-// ViewPropertySort defines a model
-type ViewPropertySort struct {
-	// Property name or ID to sort by.
-	Property string `json:"property"`
-	// Sort direction.
-	Direction SortDirection `json:"direction"`
-}
-
-// ViewPropertySortsRequest defines a model
-type ViewPropertySortsRequest []ViewPropertySort
-
 // ViewQueryResponse defines a model
 type ViewQueryResponse struct {
 	// The object type.
@@ -27667,67 +27659,6 @@ type ViewQueryResponse struct {
 	// Set to `{ type: 'incomplete', incomplete_reason: 'query_result_limit_reached' }` when the view's underlying data source has more rows matching this query than the server-side pagination depth limit allows.
 	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
 }
-
-// Sort for the view. Can sort by property or timestamp.
-// ViewSortResponse is an untagged oneOf union: exactly one field is set after unmarshaling.
-type ViewSortResponse struct {
-	PropertySortResponse  *PropertySortResponse
-	TimestampSortResponse *TimestampSortResponse
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *ViewSortResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = ViewSortResponse{}
-
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv PropertySortResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PropertySortResponse = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv TimestampSortResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TimestampSortResponse = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *ViewSortResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.PropertySortResponse != nil:
-		return json.MarshalEncode(enc, v.PropertySortResponse, jsonOpts)
-	case v.TimestampSortResponse != nil:
-		return json.MarshalEncode(enc, v.TimestampSortResponse, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// ViewSortsRequest defines a model
-type ViewSortsRequest []ViewFilter
 
 // ViewType defines a model
 type ViewType string

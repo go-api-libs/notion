@@ -10441,10 +10441,7 @@
         "description": "The sorts applied to this view (same shape as data source query sorts).",
         "oneOf": [
           {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/viewSortResponse"
-            }
+            "$ref": "#/components/schemas/Sorts"
           },
           {
             "type": "null"
@@ -14833,10 +14830,7 @@
         "type": "object",
         "properties": {
           "sorts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PostDatabaseQuerySortsItem"
-            }
+            "$ref": "#/components/schemas/Sorts"
           },
           "filter": {
             "$ref": "#/components/schemas/PostDatabaseQueryFilter"
@@ -14895,31 +14889,6 @@
         },
         "required": [
           "or"
-        ]
-      },
-      "PostDatabaseQuerySortsItem": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/viewPropertySort"
-          },
-          {
-            "$ref": "#/components/schemas/PostDatabaseQuerySortsItemAnyOf1"
-          }
-        ]
-      },
-      "PostDatabaseQuerySortsItemAnyOf1": {
-        "type": "object",
-        "properties": {
-          "timestamp": {
-            "$ref": "#/components/schemas/TimestampSortTimestamp"
-          },
-          "direction": {
-            "$ref": "#/components/schemas/sortDirection"
-          }
-        },
-        "required": [
-          "timestamp",
-          "direction"
         ]
       },
       "PostPage": {
@@ -15890,6 +15859,32 @@
           "next_url",
           "id"
         ]
+      },
+      "PropertySort": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "description": "The name or ID of the property to sort by.",
+            "type": "string",
+            "example": "mFVH"
+          },
+          "direction": {
+            "description": "Sort direction.",
+            "$ref": "#/components/schemas/sortDirection"
+          }
+        },
+        "required": [
+          "property",
+          "direction"
+        ],
+        "additionalProperties": false
+      },
+      "PropertySorts": {
+        "type": "array",
+        "maxItems": 100,
+        "items": {
+          "$ref": "#/components/schemas/PropertySort"
+        }
       },
       "PropertyValue": {
         "allOf": [
@@ -20479,6 +20474,23 @@
           }
         ]
       },
+      "Sort": {
+        "description": "A sort of a data source's entries, by a property or a timestamp.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/PropertySort"
+          },
+          {
+            "$ref": "#/components/schemas/TimestampSort"
+          }
+        ]
+      },
+      "Sorts": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Sort"
+        }
+      },
       "Status": {
         "type": "string",
         "enum": [
@@ -20900,6 +20912,24 @@
             "type": "null"
           }
         ]
+      },
+      "TimestampSort": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "description": "The timestamp to sort by.",
+            "$ref": "#/components/schemas/TimestampSortTimestamp"
+          },
+          "direction": {
+            "description": "Sort direction.",
+            "$ref": "#/components/schemas/sortDirection"
+          }
+        },
+        "required": [
+          "timestamp",
+          "direction"
+        ],
+        "additionalProperties": false
       },
       "TimestampSortTimestamp": {
         "type": "string",
@@ -22764,7 +22794,7 @@
         "description": "Property sorts to apply to the view. Only property-based sorts are supported. Pass null to clear the sorts.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/viewPropertySortsRequest"
+            "$ref": "#/components/schemas/PropertySorts"
           },
           {
             "type": "null"
@@ -25826,7 +25856,7 @@
           },
           "sorts": {
             "description": "Sorts to apply to the view. Uses the same format as the data source query sorts.",
-            "$ref": "#/components/schemas/viewSortsRequest"
+            "$ref": "#/components/schemas/Sorts"
           },
           "quick_filters": {
             "description": "Quick filters to pin in the view's filter bar. Keys are property names or IDs. Values are filter conditions (same shape as a property filter but without the property field). Each quick filter appears as a clickable pill above the view, independent of the advanced filter.",
@@ -32232,25 +32262,6 @@
           "$ref": "#/components/schemas/propertyOrTimestampFilter"
         }
       },
-      "propertySortResponse": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "description": "The name or ID of the property to sort by.",
-            "type": "string",
-            "example": "mFVH"
-          },
-          "direction": {
-            "description": "Sort direction.",
-            "$ref": "#/components/schemas/sortDirection"
-          }
-        },
-        "required": [
-          "property",
-          "direction"
-        ],
-        "additionalProperties": false
-      },
       "publicApiAsyncTaskStatusResultJsonValue": {
         "oneOf": [
           {
@@ -34526,24 +34537,6 @@
         ],
         "additionalProperties": false
       },
-      "timestampSortResponse": {
-        "type": "object",
-        "properties": {
-          "timestamp": {
-            "description": "The timestamp to sort by.",
-            "$ref": "#/components/schemas/TimestampSortTimestamp"
-          },
-          "direction": {
-            "description": "Sort direction.",
-            "$ref": "#/components/schemas/sortDirection"
-          }
-        },
-        "required": [
-          "timestamp",
-          "direction"
-        ],
-        "additionalProperties": false
-      },
       "titleArrayBasedPropertyValueResponse": {
         "title": "Title",
         "type": "object",
@@ -35746,31 +35739,6 @@
         ],
         "additionalProperties": false
       },
-      "viewPropertySort": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "description": "Property name or ID to sort by.",
-            "type": "string",
-            "example": "mFVH"
-          },
-          "direction": {
-            "description": "Sort direction.",
-            "$ref": "#/components/schemas/sortDirection"
-          }
-        },
-        "required": [
-          "property",
-          "direction"
-        ]
-      },
-      "viewPropertySortsRequest": {
-        "type": "array",
-        "maxItems": 100,
-        "items": {
-          "$ref": "#/components/schemas/viewPropertySort"
-        }
-      },
       "viewQueryResponse": {
         "type": "object",
         "properties": {
@@ -35828,25 +35796,6 @@
           "has_more"
         ],
         "additionalProperties": false
-      },
-      "viewSortResponse": {
-        "description": "Sort for the view. Can sort by property or timestamp.",
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/propertySortResponse"
-          },
-          {
-            "$ref": "#/components/schemas/timestampSortResponse"
-          }
-        ]
-      },
-      "viewSortsRequest": {
-        "type": "array",
-        "maxItems": 100,
-        "items": {
-          "description": "Sort for the view. Can be a property sort (with property and direction) or timestamp sort (with timestamp and direction).",
-          "$ref": "#/components/schemas/viewFilter"
-        }
       },
       "viewType": {
         "type": "string",
