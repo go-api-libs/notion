@@ -14627,73 +14627,7 @@
       "PropertyValueAllOf1": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/numberSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/urlSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/selectSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/multiSelectSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/statusSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/dateSimplePropertyValue"
-          },
-          {
-            "$ref": "#/components/schemas/emailSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/phoneNumberSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/checkboxSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/filesSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/createdBySimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/createdTimeSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/lastEditedBySimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/lastEditedTimeSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/formulaSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/buttonSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/uniqueIdSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/verificationSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/placeSimplePropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/titleArrayBasedPropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/richTextArrayBasedPropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/peopleArrayBasedPropertyValueResponse"
-          },
-          {
-            "$ref": "#/components/schemas/relationArrayBasedPropertyValueResponse"
+            "$ref": "#/components/schemas/simpleOrArrayPropertyValueResponse"
           },
           {
             "$ref": "#/components/schemas/partialRollupPropertyResponse"

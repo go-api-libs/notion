@@ -4106,13 +4106,6 @@ func (v *BotUserObjectResponseBot) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// ButtonSimplePropertyValueResponse defines a model
-type ButtonSimplePropertyValueResponse struct {
-	// Always `button`
-	Type   string      `json:"type"`
-	Button EmptyObject `json:"button"`
-}
-
 // CalendarViewConfigRequest defines a model
 type CalendarViewConfigRequest struct {
 	// The view type. Must be "calendar".
@@ -4871,13 +4864,6 @@ type CheckboxPropertyFilterDoesNotEqual struct {
 // CheckboxPropertyFilterEquals defines a model
 type CheckboxPropertyFilterEquals struct {
 	Equals bool `json:"equals"`
-}
-
-// CheckboxSimplePropertyValueResponse defines a model
-type CheckboxSimplePropertyValueResponse struct {
-	// Always `checkbox`
-	Type     string `json:"type"`
-	Checkbox bool   `json:"checkbox"`
 }
 
 // CodeBlockObjectResponseCode defines a model
@@ -6684,25 +6670,11 @@ type CreatedByPropertyConfiguration struct {
 	CreatedBy EmptyObject `json:"created_by"`
 }
 
-// CreatedBySimplePropertyValueResponse defines a model
-type CreatedBySimplePropertyValueResponse struct {
-	// Always `created_by`
-	Type      string            `json:"type"`
-	CreatedBy UserValueResponse `json:"created_by"`
-}
-
 // CreatedTimePropertyConfiguration defines a model
 type CreatedTimePropertyConfiguration struct {
 	// Always `created_time`
 	Type        string      `json:"type,omitzero"`
 	CreatedTime EmptyObject `json:"created_time"`
-}
-
-// CreatedTimeSimplePropertyValueResponse defines a model
-type CreatedTimeSimplePropertyValueResponse struct {
-	// Always `created_time`
-	Type        string    `json:"type"`
-	CreatedTime time.Time `json:"created_time"`
 }
 
 // CustomCustom defines a model
@@ -7835,13 +7807,6 @@ type EmailPropertyConfiguration struct {
 	Email EmptyObject `json:"email"`
 }
 
-// EmailSimplePropertyValueResponse defines a model
-type EmailSimplePropertyValueResponse struct {
-	// Always `email`
-	Type  string `json:"type"`
-	Email string `json:"email"`
-}
-
 // EmbedFileUpload defines a model
 type EmbedFileUpload struct {
 	FileUpload FileUploadIDRequest   `json:"file_upload"`
@@ -8339,13 +8304,6 @@ type FilesPropertyConfiguration struct {
 	// Always `files`
 	Type  string      `json:"type,omitzero"`
 	Files EmptyObject `json:"files"`
-}
-
-// FilesSimplePropertyValueResponse defines a model
-type FilesSimplePropertyValueResponse struct {
-	// Always `files`
-	Type  string                                   `json:"type"`
-	Files []InternalOrExternalFileWithNameResponse `json:"files"`
 }
 
 // FormViewConfigRequest defines a model
@@ -8971,13 +8929,6 @@ func (v *FormulaPropertyValueResponse) MarshalJSONTo(enc *jsontext.Encoder) erro
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
-}
-
-// FormulaSimplePropertyValueResponse defines a model
-type FormulaSimplePropertyValueResponse struct {
-	// Always `formula`
-	Type    string                       `json:"type"`
-	Formula FormulaPropertyValueResponse `json:"formula"`
 }
 
 // Sub-group-by configuration for formula properties based on result type.
@@ -10211,25 +10162,11 @@ type LastEditedByPropertyConfiguration struct {
 	LastEditedBy EmptyObject `json:"last_edited_by"`
 }
 
-// LastEditedBySimplePropertyValueResponse defines a model
-type LastEditedBySimplePropertyValueResponse struct {
-	// Always `last_edited_by`
-	Type         string            `json:"type"`
-	LastEditedBy UserValueResponse `json:"last_edited_by"`
-}
-
 // LastEditedTimePropertyConfiguration defines a model
 type LastEditedTimePropertyConfiguration struct {
 	// Always `last_edited_time`
 	Type           string      `json:"type,omitzero"`
 	LastEditedTime EmptyObject `json:"last_edited_time"`
-}
-
-// LastEditedTimeSimplePropertyValueResponse defines a model
-type LastEditedTimeSimplePropertyValueResponse struct {
-	// Always `last_edited_time`
-	Type           string    `json:"type"`
-	LastEditedTime time.Time `json:"last_edited_time"`
 }
 
 // LinkMentionResponse defines a model
@@ -11172,13 +11109,6 @@ type MultiSelectPropertyFilterDoesNotContain struct {
 	DoesNotContain StringOrStringArray `json:"does_not_contain"`
 }
 
-// MultiSelectSimplePropertyValueResponse defines a model
-type MultiSelectSimplePropertyValueResponse struct {
-	// Always `multi_select`
-	Type        string                               `json:"type"`
-	MultiSelect []PartialSelectPropertyValueResponse `json:"multi_select"`
-}
-
 // NonTerminalAsyncTaskStatus defines a model
 type NonTerminalAsyncTaskStatus string
 
@@ -11449,13 +11379,6 @@ type NumberPropertyFilterLessThan struct {
 // NumberPropertyFilterLessThanOrEqualTo defines a model
 type NumberPropertyFilterLessThanOrEqualTo struct {
 	LessThanOrEqualTo float64 `json:"less_than_or_equal_to"`
-}
-
-// NumberSimplePropertyValueResponse defines a model
-type NumberSimplePropertyValueResponse struct {
-	// Always `number`
-	Type   string   `json:"type"`
-	Number *float64 `json:"number"`
 }
 
 // NumberedListFormat defines a model
@@ -13357,13 +13280,6 @@ func (v *PatchPageTemplate) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
-// PeopleArrayBasedPropertyValueResponse defines a model
-type PeopleArrayBasedPropertyValueResponse struct {
-	// Always `people`
-	Type   string                                            `json:"type"`
-	People []PeopleArrayBasedPropertyValueResponsePeopleItem `json:"people"`
-}
-
 // PeopleArrayBasedPropertyValueResponsePeopleItem defines a model
 // PeopleArrayBasedPropertyValueResponsePeopleItem is an untagged oneOf union: exactly one field is set after unmarshaling.
 type PeopleArrayBasedPropertyValueResponsePeopleItem struct {
@@ -13651,13 +13567,6 @@ type PhoneNumberPropertyConfiguration struct {
 	PhoneNumber EmptyObject `json:"phone_number"`
 }
 
-// PhoneNumberSimplePropertyValueResponse defines a model
-type PhoneNumberSimplePropertyValueResponse struct {
-	// Always `phone_number`
-	Type        string `json:"type"`
-	PhoneNumber string `json:"phone_number"`
-}
-
 // PlacePropertyConfiguration defines a model
 type PlacePropertyConfiguration struct {
 	// Always `place`
@@ -13673,13 +13582,6 @@ type PlacePropertyValueResponse struct {
 	Address       string  `json:"address,omitzero"`
 	AwsPlaceID    string  `json:"aws_place_id,omitzero"`
 	GooglePlaceID string  `json:"google_place_id,omitzero"`
-}
-
-// PlaceSimplePropertyValueResponse defines a model
-type PlaceSimplePropertyValueResponse struct {
-	// Always `place`
-	Type  string                     `json:"type"`
-	Place PlacePropertyValueResponse `json:"place"`
 }
 
 // PluginList defines a model
@@ -18661,14 +18563,6 @@ func (e QuerySessionsSortsItemProperty) Valid() bool {
 	}
 }
 
-// RelationArrayBasedPropertyValueResponse defines a model
-type RelationArrayBasedPropertyValueResponse struct {
-	// Always `relation`
-	Type     string                      `json:"type"`
-	Relation []RelationItemPropertyValue `json:"relation"`
-	HasMore  *bool                       `json:"has_more,omitzero"`
-}
-
 // RelationGroupByConfigRequest defines a model
 type RelationGroupByConfigRequest struct {
 	// The property type for grouping.
@@ -20194,13 +20088,6 @@ func (v *RichText) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
-// RichTextArrayBasedPropertyValueResponse defines a model
-type RichTextArrayBasedPropertyValueResponse struct {
-	// Always `rich_text`
-	Type     string    `json:"type"`
-	RichText RichTexts `json:"rich_text"`
-}
-
 // RichTextItemRequest defines a model
 type RichTextItemRequest struct {
 	// All rich text objects contain an annotations object that sets the styling for the rich text.
@@ -21186,13 +21073,6 @@ type SelectPropertyFilterDoesNotEqual struct {
 // SelectPropertyFilterEquals defines a model
 type SelectPropertyFilterEquals struct {
 	Equals StringOrStringArray `json:"equals"`
-}
-
-// SelectSimplePropertyValueResponse defines a model
-type SelectSimplePropertyValueResponse struct {
-	// Always `select`
-	Type   string                             `json:"type"`
-	Select PartialSelectPropertyValueResponse `json:"select"`
 }
 
 // SessionEventList defines a model
@@ -22292,13 +22172,6 @@ type StatusPropertyConfigUpdateRequest struct {
 	Options StatusOptionUpdateRequestArray `json:"options,omitzero"`
 }
 
-// StatusSimplePropertyValueResponse defines a model
-type StatusSimplePropertyValueResponse struct {
-	// Always `status`
-	Type   string                             `json:"type"`
-	Status PartialSelectPropertyValueResponse `json:"status"`
-}
-
 // StatusType defines a model
 type StatusType string
 
@@ -23272,13 +23145,6 @@ func (e TimestampSortTimestamp) Valid() bool {
 	}
 }
 
-// TitleArrayBasedPropertyValueResponse defines a model
-type TitleArrayBasedPropertyValueResponse struct {
-	// Always `title`
-	Type  string    `json:"type"`
-	Title RichTexts `json:"title"`
-}
-
 // TitleObjectResponse defines a model
 type TitleObjectResponse struct {
 	Title string `json:"title"`
@@ -23335,13 +23201,6 @@ type URLPropertyConfiguration struct {
 	URL  EmptyObject `json:"url"`
 }
 
-// URLSimplePropertyValueResponse defines a model
-type URLSimplePropertyValueResponse struct {
-	// Always `url`
-	Type string `json:"type"`
-	URL  string `json:"url"`
-}
-
 // UniqueIDDatabasePropertyConfigResponseUniqueID defines a model
 type UniqueIDDatabasePropertyConfigResponseUniqueID struct {
 	// The prefix for the unique ID.
@@ -23370,13 +23229,6 @@ type UniqueIDPropertyItemObjectResponseUniqueID struct {
 type UniqueIDPropertyValueResponse struct {
 	Prefix string   `json:"prefix"`
 	Number *float64 `json:"number"`
-}
-
-// UniqueIDSimplePropertyValueResponse defines a model
-type UniqueIDSimplePropertyValueResponse struct {
-	// Always `unique_id`
-	Type     string                        `json:"type"`
-	UniqueID UniqueIDPropertyValueResponse `json:"unique_id"`
 }
 
 // UnsupportedBlockObjectResponseUnsupported defines a model
@@ -25734,13 +25586,6 @@ func (v *VerificationPropertyValueResponse) MarshalJSONTo(enc *jsontext.Encoder)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// VerificationSimplePropertyValueResponse defines a model
-type VerificationSimplePropertyValueResponse struct {
-	// Always `verification`
-	Type         string                            `json:"type"`
-	Verification VerificationPropertyValueResponse `json:"verification"`
 }
 
 // View configuration, discriminated by the type field.

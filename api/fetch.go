@@ -536,49 +536,6 @@ func variants(doc *openapi.Document, name string) ([]string, error) {
 	return names, nil
 }
 
-// flattenUnions lists, in each union among the schemas names or their allOf parts, the variants of the unions it lists
-// instead of those unions, which tells the variants apart by their tag just the same.
-func flattenUnions(doc *openapi.Document, names ...string) error {
-	for _, n := range names {
-		s, ok := doc.Components.Schemas[n]
-		if !ok {
-			return componentErr(n, errors.New("not found"))
-		}
-
-		for _, part := range append(openapi.SchemaList{s}, s.AllOf...) {
-			if part.OneOf != nil {
-				part.OneOf = leaves(part.OneOf)
-			}
-
-			if part.AnyOf != nil {
-				part.AnyOf = leaves(part.AnyOf)
-			}
-		}
-	}
-
-	return nil
-}
-
-// leaves are the alternatives alts lists, with each that is a union replaced by its own leaves.
-func leaves(alts openapi.SchemaList) openapi.SchemaList {
-	var flat openapi.SchemaList
-
-	for _, alt := range alts {
-		v := alt
-		if alt.Ref != nil {
-			v = alt.Ref.Value
-		}
-
-		if sub := alternatives(v); len(sub) > 0 {
-			flat = append(flat, leaves(sub)...)
-		} else {
-			flat = append(flat, alt)
-		}
-	}
-
-	return flat
-}
-
 // alternatives are s's oneOf, or else its anyOf.
 func alternatives(s *openapi.Schema) openapi.SchemaList {
 	if len(s.OneOf) > 0 {
@@ -742,10 +699,6 @@ func fixOpenAPI() (*openapi.Document, error) {
 
 	// each block variant, so that they keep differing only in their type and its member
 	if err := addRequestID(doc, append([]string{"Page", "Database"}, blocks...)...); err != nil {
-		return nil, err
-	}
-
-	if err := flattenUnions(doc, "PropertyValue"); err != nil {
 		return nil, err
 	}
 
