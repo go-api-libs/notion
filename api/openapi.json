@@ -4992,16 +4992,6 @@
   },
   "components": {
     "schemas": {
-      "ABlock": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/partialBlockObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/Block"
-          }
-        ]
-      },
       "AgentBatch": {
         "type": "object",
         "properties": {
@@ -6535,7 +6525,7 @@
           "results": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ABlock"
+              "$ref": "#/components/schemas/BlockOrPartial"
             }
           },
           "request_id": {
@@ -6580,7 +6570,7 @@
           "results": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/ABlock"
+              "$ref": "#/components/schemas/BlockOrPartial"
             }
           }
         },
@@ -8054,6 +8044,16 @@
         ],
         "additionalProperties": false
       },
+      "BlockOrPartial": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/partialBlockObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/Block"
+          }
+        ]
+      },
       "BoardViewConfigCardLayout": {
         "description": "Card layout mode. \"list\" shows full cards, \"compact\" shows condensed cards. Pass null to clear.",
         "oneOf": [
@@ -8792,6 +8792,16 @@
           "integration"
         ]
       },
+      "CommentOrPartial": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/partialCommentObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/commentObjectResponse"
+          }
+        ]
+      },
       "CoverConfigRequestType": {
         "description": "Source of the cover image.",
         "type": "string",
@@ -8818,16 +8828,6 @@
           },
           {
             "$ref": "#/components/schemas/CreateACommentAllOf1"
-          }
-        ]
-      },
-      "CreateAComment2": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/partialCommentObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/commentObjectResponse"
           }
         ]
       },
@@ -9029,16 +9029,6 @@
         "required": [
           "parent",
           "properties"
-        ]
-      },
-      "CreateADatabase2": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/partialDataSourceObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/dataSourceObjectResponse"
-          }
         ]
       },
       "CreateADatabaseIcon": {
@@ -9332,16 +9322,6 @@
         },
         "required": [
           "parent"
-        ]
-      },
-      "CreateDatabase2": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/partialDatabaseObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/Database"
-          }
         ]
       },
       "CreateDatabaseDatabaseType": {
@@ -9724,16 +9704,6 @@
         },
         "additionalProperties": false
       },
-      "CreateView": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/partialDataSourceViewObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/dataSourceViewObjectResponse"
-          }
-        ]
-      },
       "Custom": {
         "title": "Custom",
         "type": "object",
@@ -9783,6 +9753,16 @@
         },
         "required": [
           "id"
+        ]
+      },
+      "DataSourceOrPartial": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/partialDataSourceObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/dataSourceObjectResponse"
+          }
         ]
       },
       "DataSourceViewObjectCreatedBy": {
@@ -9843,6 +9823,16 @@
           },
           {
             "type": "null"
+          }
+        ]
+      },
+      "DataSourceViewOrPartial": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/partialDataSourceViewObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/dataSourceViewObjectResponse"
           }
         ]
       },
@@ -9947,6 +9937,16 @@
           "public_url"
         ],
         "additionalProperties": false
+      },
+      "DatabaseOrPartial": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/partialDatabaseObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/Database"
+          }
+        ]
       },
       "DatabaseQueryResultType": {
         "type": "string",
@@ -11956,16 +11956,6 @@
           "parent"
         ]
       },
-      "MovePage2": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/partialPageObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/Page"
-          }
-        ]
-      },
       "MovePageParent": {
         "description": "The new parent of the page.",
         "oneOf": [
@@ -12258,16 +12248,6 @@
         ],
         "additionalProperties": false
       },
-      "Page2": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/Page"
-          },
-          {
-            "$ref": "#/components/schemas/partialPageObjectResponse"
-          }
-        ]
-      },
       "PageContentUpdatedWebhookPayloadData": {
         "description": "Additional event-specific data.",
         "type": "object",
@@ -12397,16 +12377,10 @@
       "PageOrDataSourceResultsItem": {
         "anyOf": [
           {
-            "$ref": "#/components/schemas/Page"
+            "$ref": "#/components/schemas/PageOrPartial"
           },
           {
-            "$ref": "#/components/schemas/partialPageObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/partialDataSourceObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/dataSourceObjectResponse"
+            "$ref": "#/components/schemas/DataSourceOrPartial"
           }
         ]
       },
@@ -12428,6 +12402,16 @@
         "type": "string",
         "enum": [
           "query_result_limit_reached"
+        ]
+      },
+      "PageOrPartial": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/Page"
+          },
+          {
+            "$ref": "#/components/schemas/partialPageObjectResponse"
+          }
         ]
       },
       "PageParentDatabaseID": {
@@ -13218,16 +13202,6 @@
         },
         "required": [
           "does_not_contain"
-        ]
-      },
-      "PeoplePropertyItemObjectPeople": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/partialUserObjectResponse"
-          },
-          {
-            "$ref": "#/components/schemas/userObjectResponse"
-          }
         ]
       },
       "PersonGroupByConfigType": {
@@ -21648,6 +21622,16 @@
           }
         ]
       },
+      "UserOrPartial": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/partialUserObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/userObjectResponse"
+          }
+        ]
+      },
       "VerificationPropertyDate": {
         "oneOf": [
           {
@@ -24668,7 +24652,7 @@
             "const": "created_by"
           },
           "created_by": {
-            "$ref": "#/components/schemas/PeoplePropertyItemObjectPeople"
+            "$ref": "#/components/schemas/UserOrPartial"
           },
           "object": {
             "type": "string",
@@ -28325,7 +28309,7 @@
             "const": "last_edited_by"
           },
           "last_edited_by": {
-            "$ref": "#/components/schemas/PeoplePropertyItemObjectPeople"
+            "$ref": "#/components/schemas/UserOrPartial"
           },
           "object": {
             "type": "string",
@@ -30418,7 +30402,7 @@
             "const": "people"
           },
           "people": {
-            "$ref": "#/components/schemas/PeoplePropertyItemObjectPeople"
+            "$ref": "#/components/schemas/UserOrPartial"
           },
           "object": {
             "type": "string",
@@ -35230,7 +35214,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CreateAComment2"
+              "$ref": "#/components/schemas/CommentOrPartial"
             }
           }
         }
@@ -35350,7 +35334,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CreateADatabase2"
+              "$ref": "#/components/schemas/DataSourceOrPartial"
             }
           }
         }
@@ -35520,7 +35504,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CreateDatabase2"
+              "$ref": "#/components/schemas/DatabaseOrPartial"
             }
           }
         }
@@ -35880,7 +35864,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CreateView"
+              "$ref": "#/components/schemas/DataSourceViewOrPartial"
             }
           }
         }
@@ -36120,7 +36104,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/ABlock"
+              "$ref": "#/components/schemas/BlockOrPartial"
             }
           }
         }
@@ -36240,7 +36224,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CreateAComment2"
+              "$ref": "#/components/schemas/CommentOrPartial"
             }
           }
         }
@@ -38570,7 +38554,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/MovePage2"
+              "$ref": "#/components/schemas/PageOrPartial"
             }
           }
         }
@@ -38810,7 +38794,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/Page2"
+              "$ref": "#/components/schemas/PageOrPartial"
             }
           }
         }
@@ -39060,7 +39044,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/Page2"
+              "$ref": "#/components/schemas/PageOrPartial"
             }
           }
         }
@@ -39780,7 +39764,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/ABlock"
+              "$ref": "#/components/schemas/BlockOrPartial"
             }
           }
         }
@@ -39900,7 +39884,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CreateADatabase2"
+              "$ref": "#/components/schemas/DataSourceOrPartial"
             }
           }
         }
@@ -40020,7 +40004,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/MovePage2"
+              "$ref": "#/components/schemas/PageOrPartial"
             }
           }
         }
@@ -40260,7 +40244,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CreateView"
+              "$ref": "#/components/schemas/DataSourceViewOrPartial"
             }
           }
         }
@@ -40500,7 +40484,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CreateAComment2"
+              "$ref": "#/components/schemas/CommentOrPartial"
             }
           }
         }
@@ -40620,7 +40604,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CreateDatabase2"
+              "$ref": "#/components/schemas/DatabaseOrPartial"
             }
           }
         }
@@ -41150,7 +41134,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/ABlock"
+              "$ref": "#/components/schemas/BlockOrPartial"
             }
           }
         }
@@ -41270,7 +41254,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CreateAComment2"
+              "$ref": "#/components/schemas/CommentOrPartial"
             }
           }
         }
@@ -41390,7 +41374,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CreateADatabase2"
+              "$ref": "#/components/schemas/DataSourceOrPartial"
             }
           }
         }
@@ -41510,7 +41494,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CreateView"
+              "$ref": "#/components/schemas/DataSourceViewOrPartial"
             }
           }
         }
@@ -41870,7 +41854,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CreateDatabase2"
+              "$ref": "#/components/schemas/DatabaseOrPartial"
             }
           }
         }

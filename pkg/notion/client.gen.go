@@ -715,8 +715,8 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 // Create a page
 //
 //	POST /pages
-func (c *Client) PostPage(ctx context.Context, params *PostPageParams, body PostPage) (*Page2, error) {
-	return c.PostPageWithResult[Page2](ctx, params, body)
+func (c *Client) PostPage(ctx context.Context, params *PostPageParams, body PostPage) (*PageOrPartial, error) {
+	return c.PostPageWithResult[PageOrPartial](ctx, params, body)
 }
 
 // Create a page
@@ -944,8 +944,8 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 // Retrieve a page
 //
 //	GET /pages/{page_id}
-func (c *Client) RetrieveAPage(ctx context.Context, pageID IDRequest, params *RetrieveAPageParams) (*MovePage2, error) {
-	return c.RetrieveAPageWithResult[MovePage2](ctx, pageID, params)
+func (c *Client) RetrieveAPage(ctx context.Context, pageID IDRequest, params *RetrieveAPageParams) (*PageOrPartial, error) {
+	return c.RetrieveAPageWithResult[PageOrPartial](ctx, pageID, params)
 }
 
 // Retrieve a page
@@ -1153,8 +1153,8 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRe
 // Update page
 //
 //	PATCH /pages/{page_id}
-func (c *Client) PatchPage(ctx context.Context, pageID IDRequest, params *PatchPageParams, body PatchPage) (*Page2, error) {
-	return c.PatchPageWithResult[Page2](ctx, pageID, params, body)
+func (c *Client) PatchPage(ctx context.Context, pageID IDRequest, params *PatchPageParams, body PatchPage) (*PageOrPartial, error) {
+	return c.PatchPageWithResult[PageOrPartial](ctx, pageID, params, body)
 }
 
 // Update page
@@ -1369,8 +1369,8 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID IDReques
 // Move a page
 //
 //	POST /pages/{page_id}/move
-func (c *Client) MovePage(ctx context.Context, pageID IDRequest, body MovePage) (*MovePage2, error) {
-	return c.MovePageWithResult[MovePage2](ctx, pageID, body)
+func (c *Client) MovePage(ctx context.Context, pageID IDRequest, body MovePage) (*PageOrPartial, error) {
+	return c.MovePageWithResult[PageOrPartial](ctx, pageID, body)
 }
 
 // Move a page
@@ -2415,8 +2415,8 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 // Retrieve a block
 //
 //	GET /blocks/{block_id}
-func (c *Client) RetrieveABlock(ctx context.Context, blockID IDRequest) (*ABlock, error) {
-	return c.RetrieveABlockWithResult[ABlock](ctx, blockID)
+func (c *Client) RetrieveABlock(ctx context.Context, blockID IDRequest) (*BlockOrPartial, error) {
+	return c.RetrieveABlockWithResult[BlockOrPartial](ctx, blockID)
 }
 
 // Retrieve a block
@@ -2614,8 +2614,8 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 // Delete a block
 //
 //	DELETE /blocks/{block_id}
-func (c *Client) DeleteABlock(ctx context.Context, blockID IDRequest) (*ABlock, error) {
-	return c.DeleteABlockWithResult[ABlock](ctx, blockID)
+func (c *Client) DeleteABlock(ctx context.Context, blockID IDRequest) (*BlockOrPartial, error) {
+	return c.DeleteABlockWithResult[BlockOrPartial](ctx, blockID)
 }
 
 // Delete a block
@@ -2813,8 +2813,8 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID IDRe
 // Update a block
 //
 //	PATCH /blocks/{block_id}
-func (c *Client) UpdateABlock(ctx context.Context, blockID IDRequest, body UpdateABlock) (*ABlock, error) {
-	return c.UpdateABlockWithResult[ABlock](ctx, blockID, body)
+func (c *Client) UpdateABlock(ctx context.Context, blockID IDRequest, body UpdateABlock) (*BlockOrPartial, error) {
+	return c.UpdateABlockWithResult[BlockOrPartial](ctx, blockID, body)
 }
 
 // Update a block
@@ -3438,8 +3438,8 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 // Retrieve a data source
 //
 //	GET /data_sources/{data_source_id}
-func (c *Client) RetrieveADataSource(ctx context.Context, dataSourceID IDRequest) (*CreateADatabase2, error) {
-	return c.RetrieveADataSourceWithResult[CreateADatabase2](ctx, dataSourceID)
+func (c *Client) RetrieveADataSource(ctx context.Context, dataSourceID IDRequest) (*DataSourceOrPartial, error) {
+	return c.RetrieveADataSourceWithResult[DataSourceOrPartial](ctx, dataSourceID)
 }
 
 // Retrieve a data source
@@ -3637,8 +3637,8 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 // Update a data source
 //
 //	PATCH /data_sources/{data_source_id}
-func (c *Client) UpdateADataSource(ctx context.Context, dataSourceID IDRequest, body UpdateADataSource) (*CreateADatabase2, error) {
-	return c.UpdateADataSourceWithResult[CreateADatabase2](ctx, dataSourceID, body)
+func (c *Client) UpdateADataSource(ctx context.Context, dataSourceID IDRequest, body UpdateADataSource) (*DataSourceOrPartial, error) {
+	return c.UpdateADataSourceWithResult[DataSourceOrPartial](ctx, dataSourceID, body)
 }
 
 // Update a data source
@@ -4059,8 +4059,8 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 // Create a data source
 //
 //	POST /data_sources
-func (c *Client) CreateADatabase(ctx context.Context, body CreateADatabase) (*CreateADatabase2, error) {
-	return c.CreateADatabaseWithResult[CreateADatabase2](ctx, body)
+func (c *Client) CreateADatabase(ctx context.Context, body CreateADatabase) (*DataSourceOrPartial, error) {
+	return c.CreateADatabaseWithResult[DataSourceOrPartial](ctx, body)
 }
 
 // Create a data source
@@ -4482,8 +4482,8 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 // Retrieve a database
 //
 //	GET /databases/{database_id}
-func (c *Client) RetrieveDatabase(ctx context.Context, databaseID IDRequest) (*CreateDatabase2, error) {
-	return c.RetrieveDatabaseWithResult[CreateDatabase2](ctx, databaseID)
+func (c *Client) RetrieveDatabase(ctx context.Context, databaseID IDRequest) (*DatabaseOrPartial, error) {
+	return c.RetrieveDatabaseWithResult[DatabaseOrPartial](ctx, databaseID)
 }
 
 // Retrieve a database
@@ -4681,8 +4681,8 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 // Update a database
 //
 //	PATCH /databases/{database_id}
-func (c *Client) UpdateDatabase(ctx context.Context, databaseID IDRequest, body UpdateDatabase) (*CreateDatabase2, error) {
-	return c.UpdateDatabaseWithResult[CreateDatabase2](ctx, databaseID, body)
+func (c *Client) UpdateDatabase(ctx context.Context, databaseID IDRequest, body UpdateDatabase) (*DatabaseOrPartial, error) {
+	return c.UpdateDatabaseWithResult[DatabaseOrPartial](ctx, databaseID, body)
 }
 
 // Update a database
@@ -4887,8 +4887,8 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 // Create a database
 //
 //	POST /databases
-func (c *Client) CreateDatabase(ctx context.Context, body CreateDatabase) (*CreateDatabase2, error) {
-	return c.CreateDatabaseWithResult[CreateDatabase2](ctx, body)
+func (c *Client) CreateDatabase(ctx context.Context, body CreateDatabase) (*DatabaseOrPartial, error) {
+	return c.CreateDatabaseWithResult[DatabaseOrPartial](ctx, body)
 }
 
 // Create a database
@@ -5513,8 +5513,8 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 // Create a comment
 //
 //	POST /comments
-func (c *Client) CreateAComment(ctx context.Context, body CreateAComment) (*CreateAComment2, error) {
-	return c.CreateACommentWithResult[CreateAComment2](ctx, body)
+func (c *Client) CreateAComment(ctx context.Context, body CreateAComment) (*CommentOrPartial, error) {
+	return c.CreateACommentWithResult[CommentOrPartial](ctx, body)
 }
 
 // Create a comment
@@ -5719,8 +5719,8 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 // Retrieve a comment
 //
 //	GET /comments/{comment_id}
-func (c *Client) RetrieveComment(ctx context.Context, commentID IDRequest) (*CreateAComment2, error) {
-	return c.RetrieveCommentWithResult[CreateAComment2](ctx, commentID)
+func (c *Client) RetrieveComment(ctx context.Context, commentID IDRequest) (*CommentOrPartial, error) {
+	return c.RetrieveCommentWithResult[CommentOrPartial](ctx, commentID)
 }
 
 // Retrieve a comment
@@ -5918,8 +5918,8 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 // Delete a comment
 //
 //	DELETE /comments/{comment_id}
-func (c *Client) DeleteAComment(ctx context.Context, commentID IDRequest) (*CreateAComment2, error) {
-	return c.DeleteACommentWithResult[CreateAComment2](ctx, commentID)
+func (c *Client) DeleteAComment(ctx context.Context, commentID IDRequest) (*CommentOrPartial, error) {
+	return c.DeleteACommentWithResult[CommentOrPartial](ctx, commentID)
 }
 
 // Delete a comment
@@ -6117,8 +6117,8 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 // Update a comment
 //
 //	PATCH /comments/{comment_id}
-func (c *Client) UpdateAComment(ctx context.Context, commentID IDRequest, body UpdateAComment) (*CreateAComment2, error) {
-	return c.UpdateACommentWithResult[CreateAComment2](ctx, commentID, body)
+func (c *Client) UpdateAComment(ctx context.Context, commentID IDRequest, body UpdateAComment) (*CommentOrPartial, error) {
+	return c.UpdateACommentWithResult[CommentOrPartial](ctx, commentID, body)
 }
 
 // Update a comment
@@ -7788,8 +7788,8 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 // Create a view
 //
 //	POST /views
-func (c *Client) CreateView(ctx context.Context, body CreateViewRequest) (*CreateView, error) {
-	return c.CreateViewWithResult[CreateView](ctx, body)
+func (c *Client) CreateView(ctx context.Context, body CreateViewRequest) (*DataSourceViewOrPartial, error) {
+	return c.CreateViewWithResult[DataSourceViewOrPartial](ctx, body)
 }
 
 // Create a view
@@ -7994,8 +7994,8 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 // Retrieve a view
 //
 //	GET /views/{view_id}
-func (c *Client) RetrieveAView(ctx context.Context, viewID IDRequest) (*CreateView, error) {
-	return c.RetrieveAViewWithResult[CreateView](ctx, viewID)
+func (c *Client) RetrieveAView(ctx context.Context, viewID IDRequest) (*DataSourceViewOrPartial, error) {
+	return c.RetrieveAViewWithResult[DataSourceViewOrPartial](ctx, viewID)
 }
 
 // Retrieve a view
@@ -8392,8 +8392,8 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID IDReque
 // Update a view
 //
 //	PATCH /views/{view_id}
-func (c *Client) UpdateAView(ctx context.Context, viewID IDRequest, body UpdateViewRequest) (*CreateView, error) {
-	return c.UpdateAViewWithResult[CreateView](ctx, viewID, body)
+func (c *Client) UpdateAView(ctx context.Context, viewID IDRequest, body UpdateViewRequest) (*DataSourceViewOrPartial, error) {
+	return c.UpdateAViewWithResult[DataSourceViewOrPartial](ctx, viewID, body)
 }
 
 // Update a view

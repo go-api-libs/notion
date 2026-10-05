@@ -128,59 +128,6 @@ type ListSkillsPluginsParams struct {
 	StartCursor string
 }
 
-// ABlock defines a model
-// ABlock is an untagged anyOf union: at least one field is set after unmarshaling.
-type ABlock struct {
-	PartialBlockObjectResponse *PartialBlockObjectResponse
-	Block                      *Block
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *ABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv PartialBlockObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialBlockObjectResponse = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv Block
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.Block = &vv
-			matched++
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *ABlock) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.PartialBlockObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialBlockObjectResponse, jsonOpts)
-	case v.Block != nil:
-		return json.MarshalEncode(enc, v.Block, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
 // One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 type APIColor string
 
@@ -2506,23 +2453,23 @@ func (v *Block) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 // Block2 defines a model
 type Block2 struct {
-	Type       string      `json:"type"`
-	Block      EmptyObject `json:"block"`
-	Object     string      `json:"object"`
-	NextCursor string      `json:"next_cursor"`
-	HasMore    bool        `json:"has_more"`
-	Results    []ABlock    `json:"results"`
-	RequestID  uuid.UUID   `json:"request_id,omitzero"`
+	Type       string           `json:"type"`
+	Block      EmptyObject      `json:"block"`
+	Object     string           `json:"object"`
+	NextCursor string           `json:"next_cursor"`
+	HasMore    bool             `json:"has_more"`
+	Results    []BlockOrPartial `json:"results"`
+	RequestID  uuid.UUID        `json:"request_id,omitzero"`
 }
 
 // Block3 defines a model
 type Block3 struct {
-	Type       string      `json:"type"`
-	Block      EmptyObject `json:"block"`
-	Object     string      `json:"object"`
-	NextCursor string      `json:"next_cursor"`
-	HasMore    bool        `json:"has_more"`
-	Results    []ABlock    `json:"results"`
+	Type       string           `json:"type"`
+	Block      EmptyObject      `json:"block"`
+	Object     string           `json:"object"`
+	NextCursor string           `json:"next_cursor"`
+	HasMore    bool             `json:"has_more"`
+	Results    []BlockOrPartial `json:"results"`
 }
 
 // BlockIDParentForBlockBasedObject defines a model
@@ -3365,6 +3312,59 @@ type BlockObjectWithSingleLevelOfChildrenRequestToDoToDo struct {
 	Color    APIColor                            `json:"color,omitzero"`
 	Children []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
 	Checked  *bool                               `json:"checked,omitzero"`
+}
+
+// BlockOrPartial defines a model
+// BlockOrPartial is an untagged anyOf union: at least one field is set after unmarshaling.
+type BlockOrPartial struct {
+	PartialBlockObjectResponse *PartialBlockObjectResponse
+	Block                      *Block
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *BlockOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv PartialBlockObjectResponse
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.PartialBlockObjectResponse = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv Block
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.Block = &vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *BlockOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.PartialBlockObjectResponse != nil:
+		return json.MarshalEncode(enc, v.PartialBlockObjectResponse, jsonOpts)
+	case v.Block != nil:
+		return json.MarshalEncode(enc, v.Block, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
 // BoardViewConfigCardLayout2 defines a model
@@ -4675,6 +4675,59 @@ func (e CommentObjectResponseDisplayNameType) Valid() bool {
 	}
 }
 
+// CommentOrPartial defines a model
+// CommentOrPartial is an untagged anyOf union: at least one field is set after unmarshaling.
+type CommentOrPartial struct {
+	PartialCommentObjectResponse *PartialCommentObjectResponse
+	CommentObjectResponse        *CommentObjectResponse
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *CommentOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv PartialCommentObjectResponse
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.PartialCommentObjectResponse = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv CommentObjectResponse
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.CommentObjectResponse = &vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *CommentOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.PartialCommentObjectResponse != nil:
+		return json.MarshalEncode(enc, v.PartialCommentObjectResponse, jsonOpts)
+	case v.CommentObjectResponse != nil:
+		return json.MarshalEncode(enc, v.CommentObjectResponse, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
 // CommentParentResponse defines a model
 type CommentParentResponse struct {
 	Type string `json:"type"`
@@ -5111,62 +5164,6 @@ func (v *CreateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// CreateAComment2 defines a model
-// CreateAComment2 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type CreateAComment2 struct {
-	PartialCommentObjectResponse *PartialCommentObjectResponse
-	CommentObjectResponse        *CommentObjectResponse
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *CreateAComment2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv PartialCommentObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialCommentObjectResponse = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv CommentObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CommentObjectResponse = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *CreateAComment2) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.PartialCommentObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialCommentObjectResponse, jsonOpts)
-	case v.CommentObjectResponse != nil:
-		return json.MarshalEncode(enc, v.CommentObjectResponse, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
 // An array of files to attach to the comment. Maximum of 3 allowed.
 type CreateACommentAllOf0Attachments []CreateACommentAllOf0AttachmentsItem
 
@@ -5411,62 +5408,6 @@ type CreateADatabase struct {
 	Title []RichTextItemRequest `json:"title,omitzero"`
 	// Page icon.
 	Icon PageIconRequest `json:"icon,omitzero"`
-}
-
-// CreateADatabase2 defines a model
-// CreateADatabase2 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type CreateADatabase2 struct {
-	PartialDataSourceObjectResponse *PartialDataSourceObjectResponse
-	DataSourceObjectResponse        *DataSourceObjectResponse
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *CreateADatabase2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv PartialDataSourceObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialDataSourceObjectResponse = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv DataSourceObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DataSourceObjectResponse = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *CreateADatabase2) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.PartialDataSourceObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialDataSourceObjectResponse, jsonOpts)
-	case v.DataSourceObjectResponse != nil:
-		return json.MarshalEncode(enc, v.DataSourceObjectResponse, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
 // CreateAToken defines a model
@@ -5745,62 +5686,6 @@ type CreateDatabase struct {
 	Icon PageIconRequest `json:"icon,omitzero"`
 	// The cover image for the database.
 	Cover PageCoverRequest `json:"cover,omitzero"`
-}
-
-// CreateDatabase2 defines a model
-// CreateDatabase2 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type CreateDatabase2 struct {
-	PartialDatabaseObjectResponse *PartialDatabaseObjectResponse
-	Database                      *Database
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *CreateDatabase2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv PartialDatabaseObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialDatabaseObjectResponse = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv Database
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.Database = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *CreateDatabase2) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.PartialDatabaseObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialDatabaseObjectResponse, jsonOpts)
-	case v.Database != nil:
-		return json.MarshalEncode(enc, v.Database, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
 // Create a typed database with Notion's canonical schema. One of `tasks`, `projects`, or `skills`. Cannot be combined with `initial_data_source`. When `title` is omitted, the database is named after the type.
@@ -6309,62 +6194,6 @@ type CreateMeetingNoteOptions struct {
 	KickoffSummary *bool `json:"kickoff_summary,omitzero"`
 }
 
-// CreateView defines a model
-// CreateView is an untagged oneOf union: exactly one field is set after unmarshaling.
-type CreateView struct {
-	PartialDataSourceViewObjectResponse *PartialDataSourceViewObjectResponse
-	DataSourceViewObjectResponse        *DataSourceViewObjectResponse
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *CreateView) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv PartialDataSourceViewObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialDataSourceViewObjectResponse = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv DataSourceViewObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DataSourceViewObjectResponse = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *CreateView) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.PartialDataSourceViewObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialDataSourceViewObjectResponse, jsonOpts)
-	case v.DataSourceViewObjectResponse != nil:
-		return json.MarshalEncode(enc, v.DataSourceViewObjectResponse, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
 // CreateViewQueryRequest defines a model
 type CreateViewQueryRequest struct {
 	// The number of results to return per page. Maximum: 100
@@ -6619,6 +6448,59 @@ type DataSourceObjectResponse struct {
 	RequestID uuid.UUID `json:"request_id,omitzero"`
 }
 
+// DataSourceOrPartial defines a model
+// DataSourceOrPartial is an untagged anyOf union: at least one field is set after unmarshaling.
+type DataSourceOrPartial struct {
+	PartialDataSourceObjectResponse *PartialDataSourceObjectResponse
+	DataSourceObjectResponse        *DataSourceObjectResponse
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *DataSourceOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv PartialDataSourceObjectResponse
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.PartialDataSourceObjectResponse = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv DataSourceObjectResponse
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.DataSourceObjectResponse = &vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *DataSourceOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.PartialDataSourceObjectResponse != nil:
+		return json.MarshalEncode(enc, v.PartialDataSourceObjectResponse, jsonOpts)
+	case v.DataSourceObjectResponse != nil:
+		return json.MarshalEncode(enc, v.DataSourceObjectResponse, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
 // DataSourceParentResponse defines a model
 type DataSourceParentResponse struct {
 	// The parent type.
@@ -6710,6 +6592,59 @@ type DataSourceViewObjectResponse struct {
 	RequestID       uuid.UUID `json:"request_id,omitzero"`
 }
 
+// DataSourceViewOrPartial defines a model
+// DataSourceViewOrPartial is an untagged anyOf union: at least one field is set after unmarshaling.
+type DataSourceViewOrPartial struct {
+	PartialDataSourceViewObjectResponse *PartialDataSourceViewObjectResponse
+	DataSourceViewObjectResponse        *DataSourceViewObjectResponse
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *DataSourceViewOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv PartialDataSourceViewObjectResponse
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.PartialDataSourceViewObjectResponse = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv DataSourceViewObjectResponse
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.DataSourceViewObjectResponse = &vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *DataSourceViewOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.PartialDataSourceViewObjectResponse != nil:
+		return json.MarshalEncode(enc, v.PartialDataSourceViewObjectResponse, jsonOpts)
+	case v.DataSourceViewObjectResponse != nil:
+		return json.MarshalEncode(enc, v.DataSourceViewObjectResponse, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
 // DataSourceViewReferenceResponse defines a model
 type DataSourceViewReferenceResponse struct {
 	// The object type name.
@@ -6797,6 +6732,59 @@ type DatabaseMovedWebhookPayload struct {
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
 	Data PageMovedWebhookPayloadData `json:"data"`
+}
+
+// DatabaseOrPartial defines a model
+// DatabaseOrPartial is an untagged anyOf union: at least one field is set after unmarshaling.
+type DatabaseOrPartial struct {
+	PartialDatabaseObjectResponse *PartialDatabaseObjectResponse
+	Database                      *Database
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *DatabaseOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv PartialDatabaseObjectResponse
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.PartialDatabaseObjectResponse = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv Database
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.Database = &vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *DatabaseOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.PartialDatabaseObjectResponse != nil:
+		return json.MarshalEncode(enc, v.PartialDatabaseObjectResponse, jsonOpts)
+	case v.Database != nil:
+		return json.MarshalEncode(enc, v.Database, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
 // DatabaseParentResponse defines a model
@@ -10536,62 +10524,6 @@ type MovePage struct {
 	Parent MovePageParent `json:"parent"`
 }
 
-// MovePage2 defines a model
-// MovePage2 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type MovePage2 struct {
-	PartialPageObjectResponse *PartialPageObjectResponse
-	Page                      *Page
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *MovePage2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv PartialPageObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialPageObjectResponse = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv Page
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.Page = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *MovePage2) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.PartialPageObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialPageObjectResponse, jsonOpts)
-	case v.Page != nil:
-		return json.MarshalEncode(enc, v.Page, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
 // The new parent of the page.
 type MovePageParent struct {
 	Type string `json:"type"`
@@ -11099,59 +11031,6 @@ type Page struct {
 	RequestID    uuid.UUID                 `json:"request_id,omitzero"`
 }
 
-// Page2 defines a model
-// Page2 is an untagged anyOf union: at least one field is set after unmarshaling.
-type Page2 struct {
-	Page                      *Page
-	PartialPageObjectResponse *PartialPageObjectResponse
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *Page2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv Page
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.Page = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv PartialPageObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialPageObjectResponse = &vv
-			matched++
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *Page2) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.Page != nil:
-		return json.MarshalEncode(enc, v.Page, jsonOpts)
-	case v.PartialPageObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialPageObjectResponse, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
 // PageContentUpdatedWebhookPayload defines a model
 type PageContentUpdatedWebhookPayload struct {
 	BaseWebhookPayload
@@ -11533,10 +11412,8 @@ type PageOrDataSource struct {
 // PageOrDataSourceResultsItem defines a model
 // PageOrDataSourceResultsItem is an untagged anyOf union: at least one field is set after unmarshaling.
 type PageOrDataSourceResultsItem struct {
-	Page                            *Page
-	PartialPageObjectResponse       *PartialPageObjectResponse
-	PartialDataSourceObjectResponse *PartialDataSourceObjectResponse
-	DataSourceObjectResponse        *DataSourceObjectResponse
+	PageOrPartial       *PageOrPartial
+	DataSourceOrPartial *DataSourceOrPartial
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -11551,33 +11428,17 @@ func (v *PageOrDataSourceResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 	var matched int
 
 	{
-		var vv Page
+		var vv PageOrPartial
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.Page = &vv
+			v.PageOrPartial = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv PartialPageObjectResponse
+		var vv DataSourceOrPartial
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialPageObjectResponse = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv PartialDataSourceObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialDataSourceObjectResponse = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv DataSourceObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DataSourceObjectResponse = &vv
+			v.DataSourceOrPartial = &vv
 			matched++
 		}
 	}
@@ -11592,14 +11453,10 @@ func (v *PageOrDataSourceResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *PageOrDataSourceResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.Page != nil:
-		return json.MarshalEncode(enc, v.Page, jsonOpts)
-	case v.PartialPageObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialPageObjectResponse, jsonOpts)
-	case v.PartialDataSourceObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialDataSourceObjectResponse, jsonOpts)
-	case v.DataSourceObjectResponse != nil:
-		return json.MarshalEncode(enc, v.DataSourceObjectResponse, jsonOpts)
+	case v.PageOrPartial != nil:
+		return json.MarshalEncode(enc, v.PageOrPartial, jsonOpts)
+	case v.DataSourceOrPartial != nil:
+		return json.MarshalEncode(enc, v.DataSourceOrPartial, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -11626,6 +11483,59 @@ func (e PageOrDataSourceStatusIncompleteReason) Valid() bool {
 	default:
 		return false
 	}
+}
+
+// PageOrPartial defines a model
+// PageOrPartial is an untagged anyOf union: at least one field is set after unmarshaling.
+type PageOrPartial struct {
+	Page                      *Page
+	PartialPageObjectResponse *PartialPageObjectResponse
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *PageOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv Page
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.Page = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv PartialPageObjectResponse
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.PartialPageObjectResponse = &vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *PageOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.Page != nil:
+		return json.MarshalEncode(enc, v.Page, jsonOpts)
+	case v.PartialPageObjectResponse != nil:
+		return json.MarshalEncode(enc, v.PartialPageObjectResponse, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
 // PageParentDatabaseID defines a model
@@ -12950,59 +12860,6 @@ type PeoplePropertyFilterContains struct {
 // PeoplePropertyFilterDoesNotContain defines a model
 type PeoplePropertyFilterDoesNotContain struct {
 	DoesNotContain PersonIDOrMe `json:"does_not_contain"`
-}
-
-// PeoplePropertyItemObjectPeople defines a model
-// PeoplePropertyItemObjectPeople is an untagged anyOf union: at least one field is set after unmarshaling.
-type PeoplePropertyItemObjectPeople struct {
-	PartialUserObjectResponse *PartialUserObjectResponse
-	UserObjectResponse        *UserObjectResponse
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *PeoplePropertyItemObjectPeople) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv PartialUserObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialUserObjectResponse = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv UserObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UserObjectResponse = &vv
-			matched++
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *PeoplePropertyItemObjectPeople) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.PartialUserObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialUserObjectResponse, jsonOpts)
-	case v.UserObjectResponse != nil:
-		return json.MarshalEncode(enc, v.UserObjectResponse, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
 // PersonGroupByConfigRequest defines a model
@@ -14396,9 +14253,9 @@ type PropertyItemObjectResponse struct {
 	PhoneNumber    string                                      `json:"phone_number,omitzero"`
 	Checkbox       *bool                                       `json:"checkbox,omitzero"`
 	Files          []InternalOrExternalFileWithNameResponse    `json:"files,omitzero"`
-	CreatedBy      *PeoplePropertyItemObjectPeople             `json:"created_by,omitzero"`
+	CreatedBy      *UserOrPartial                              `json:"created_by,omitzero"`
 	CreatedTime    *time.Time                                  `json:"created_time,omitzero"`
-	LastEditedBy   *PeoplePropertyItemObjectPeople             `json:"last_edited_by,omitzero"`
+	LastEditedBy   *UserOrPartial                              `json:"last_edited_by,omitzero"`
 	LastEditedTime *time.Time                                  `json:"last_edited_time,omitzero"`
 	Formula        *FormulaPropertyResponse                    `json:"formula,omitzero"`
 	Button         *EmptyObject                                `json:"button,omitzero"`
@@ -14407,7 +14264,7 @@ type PropertyItemObjectResponse struct {
 	Place          *PagePropertiesValuePlace2                  `json:"place,omitzero"`
 	Title          *RichText                                   `json:"title,omitzero"`
 	RichText       *RichText                                   `json:"rich_text,omitzero"`
-	People         *PeoplePropertyItemObjectPeople             `json:"people,omitzero"`
+	People         *UserOrPartial                              `json:"people,omitzero"`
 	Relation       *RelationPropertyItemObjectResponseRelation `json:"relation,omitzero"`
 	Rollup         *RollupPropertyItemObjectRollup             `json:"rollup,omitzero"`
 }
@@ -25736,6 +25593,59 @@ func (v *UserObjectResponseAllOf1) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return enc.WriteValue(out)
+}
+
+// UserOrPartial defines a model
+// UserOrPartial is an untagged anyOf union: at least one field is set after unmarshaling.
+type UserOrPartial struct {
+	PartialUserObjectResponse *PartialUserObjectResponse
+	UserObjectResponse        *UserObjectResponse
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *UserOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv PartialUserObjectResponse
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.PartialUserObjectResponse = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv UserObjectResponse
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.UserObjectResponse = &vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *UserOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.PartialUserObjectResponse != nil:
+		return json.MarshalEncode(enc, v.PartialUserObjectResponse, jsonOpts)
+	case v.UserObjectResponse != nil:
+		return json.MarshalEncode(enc, v.UserObjectResponse, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
 // UserValueResponse defines a model

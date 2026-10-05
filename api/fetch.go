@@ -265,6 +265,41 @@ func componentErr(name string, err error) error {
 	}}
 }
 
+// namePartialUnions names each union of an object and its partial form, which responses spell out inline and flatten
+// would name after the operation, such as PageOrPartial for a page or the partial page Notion returns in its place.
+// It is an anyOf, since an object matches its partial form too.
+func namePartialUnions(doc *openapi.Document) error {
+	for name := range doc.Components.Schemas.ByIndex() {
+		core, partial := strings.CutPrefix(name, "partial")
+		core, response := strings.CutSuffix(core, "ObjectResponse")
+		if !partial || !response {
+			continue
+		}
+
+		ref := schemaRefPrefix + name
+
+		union := strcase.ToGoPascal(core) + "OrPartial"
+
+		err := edit.ExtractSchema(doc, union, func(s *openapi.Schema) bool {
+			alts := alternatives(s)
+
+			return len(alts) == 2 && alts[0].Ref != nil && alts[1].Ref != nil &&
+				(alts[0].Ref.Identifier == ref || alts[1].Ref.Identifier == ref)
+		})
+		if errors.Is(err, edit.ErrNoMatch) {
+			continue
+		} else if err != nil {
+			return fmt.Errorf("naming the union with %s: %w", name, err)
+		}
+
+		// some responses say oneOf, but an object matches its partial form too
+		u := doc.Components.Schemas[union]
+		u.AnyOf, u.OneOf = alternatives(u), nil
+	}
+
+	return nil
+}
+
 // nameBranches moves each inline branch of a union into the component schemas, under its parent's
 // name and what tells it apart from the other branches -- see [telling].
 // flatten would name it after its title, which other unions' branches share, or its position, which says nothing.
@@ -662,6 +697,10 @@ func fixOpenAPI() (*openapi.Document, error) {
 	}
 
 	if err := flattenUnions(doc, "PropertyValue"); err != nil {
+		return nil, err
+	}
+
+	if err := namePartialUnions(doc); err != nil {
 		return nil, err
 	}
 
