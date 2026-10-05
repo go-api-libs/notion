@@ -715,8 +715,8 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 // Create a page
 //
 //	POST /pages
-func (c *Client) PostPage(ctx context.Context, params *PostPageParams, body PostPage) (*Page5, error) {
-	return c.PostPageWithResult[Page5](ctx, params, body)
+func (c *Client) PostPage(ctx context.Context, params *PostPageParams, body PostPage) (*Page2, error) {
+	return c.PostPageWithResult[Page2](ctx, params, body)
 }
 
 // Create a page
@@ -1153,8 +1153,8 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRe
 // Update page
 //
 //	PATCH /pages/{page_id}
-func (c *Client) PatchPage(ctx context.Context, pageID IDRequest, params *PatchPageParams, body PatchPage) (*Page5, error) {
-	return c.PatchPageWithResult[Page5](ctx, pageID, params, body)
+func (c *Client) PatchPage(ctx context.Context, pageID IDRequest, params *PatchPageParams, body PatchPage) (*Page2, error) {
+	return c.PatchPageWithResult[Page2](ctx, pageID, params, body)
 }
 
 // Update page

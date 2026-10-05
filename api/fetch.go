@@ -22,6 +22,7 @@ import (
 	enrich "github.com/MarkRosemaker/openapi-enrich"
 	"github.com/MarkRosemaker/openapi-enrich/cassette"
 	flatten "github.com/MarkRosemaker/openapi-flatten"
+	"github.com/ettle/strcase"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -264,6 +265,121 @@ func componentErr(name string, err error) error {
 	}}
 }
 
+// nameBranches moves each inline branch of a union into the component schemas, under its parent's
+// name and what tells it apart from the other branches -- see [telling].
+// flatten would name it after its title, which other unions' branches share, or its position, which says nothing.
+func nameBranches(doc *openapi.Document) {
+	for name, s := range doc.Components.Schemas.ByIndex() {
+		nameBranchesIn(doc, s, name)
+	}
+
+	// the bodies, under the names flatten gives them
+	inContent := func(c openapi.Content, name string) {
+		for _, mt := range c {
+			if mt.Schema != nil {
+				nameBranchesIn(doc, mt.Schema, strcase.ToGoPascal(cmp.Or(mt.Schema.Title, name)))
+			}
+		}
+	}
+
+	for _, p := range doc.Paths.ByIndex() {
+		for _, op := range p.Operations {
+			if op.RequestBody != nil && op.RequestBody.Value != nil {
+				inContent(op.RequestBody.Value.Content, op.OperationID)
+			}
+
+			for code, rsp := range op.Responses.ByIndex() {
+				if rsp.Value != nil {
+					inContent(rsp.Value.Content, op.OperationID+" "+cmp.Or(code.StatusText(), string(code)))
+				}
+			}
+		}
+	}
+}
+
+// nameBranchesIn is nameBranches for s, the schema flatten would name name, and what it holds.
+func nameBranchesIn(doc *openapi.Document, s *openapi.Schema, name string) {
+	if s == nil || s.Ref != nil {
+		return
+	}
+
+	for _, union := range []struct {
+		alts openapi.SchemaList
+		kind string
+	}{{s.OneOf, "OneOf"}, {s.AnyOf, "AnyOf"}} {
+		for i, alt := range union.alts {
+			branch := fmt.Sprintf("%s%s%d", name, union.kind, i)
+
+			if v, ok := telling(union.alts, i); ok && alt.Ref == nil && alt.Type == openapi.TypeObject {
+				if n := strcase.ToGoPascal(name + " " + v); doc.Components.Schemas[n] == nil {
+					moved := new(openapi.Schema)
+					moved.Replace(alt)
+					doc.Components.Schemas.Set(n, moved)
+					alt.Replace(&openapi.Schema{Ref: &openapi.SchemaRef{Identifier: schemaRefPrefix + n, Value: moved}})
+					alt, branch = moved, n
+				}
+			}
+
+			nameBranchesIn(doc, alt, branch)
+		}
+	}
+
+	for i, part := range s.AllOf {
+		nameBranchesIn(doc, part, fmt.Sprintf("%sAllOf%d", name, i))
+	}
+
+	for prop, p := range s.Properties.ByIndex() {
+		nameBranchesIn(doc, p, strcase.ToGoPascal(name+" "+strings.ReplaceAll(prop, "/", " ")))
+	}
+
+	nameBranchesIn(doc, s.Items, name+"Item")
+
+	if s.AdditionalProperties != nil {
+		nameBranchesIn(doc, s.AdditionalProperties.Schema, name+"Value")
+	}
+}
+
+// telling is what tells the branch alts[i] of a union apart from the others: a value it fixes a member to and no
+// other branch does, the member type's first, or else the one member it requires.
+func telling(alts openapi.SchemaList, i int) (string, bool) {
+	s := alts[i]
+
+	props := []string{"type"}
+	for prop := range s.Properties.ByIndex() {
+		props = append(props, prop)
+	}
+
+	for _, prop := range props {
+		if v, ok := constString(s.Properties[prop]); ok && !slices.ContainsFunc(alts, func(other *openapi.Schema) bool {
+			w, ok := constString(deref(other).Properties[prop])
+			return other != s && ok && w == v
+		}) {
+			return v, true
+		}
+	}
+
+	if len(s.Required) == 1 {
+		return s.Required[0], true
+	}
+
+	return "", false
+}
+
+// constString is the string p fixes its value to, if it does.
+func constString(p *openapi.Schema) (string, bool) {
+	var v string
+	return v, p != nil && json.Unmarshal(p.Const, &v) == nil
+}
+
+// deref is the schema s stands for: the one it refers to, if it is a reference.
+func deref(s *openapi.Schema) *openapi.Schema {
+	if s.Ref != nil && s.Ref.Value != nil {
+		return s.Ref.Value
+	}
+
+	return s
+}
+
 // variants are the names of the component schemas the union name lists.
 func variants(doc *openapi.Document, name string) ([]string, error) {
 	s, ok := doc.Components.Schemas[name]
@@ -497,6 +613,8 @@ func fixOpenAPI() (*openapi.Document, error) {
 	if err := flattenUnions(doc, "PropertyValue"); err != nil {
 		return nil, err
 	}
+
+	nameBranches(doc)
 
 	if err := allowDateTimes(doc, "dateResponse", "start", "end"); err != nil {
 		return nil, err

@@ -85,7 +85,7 @@ type ListCommentsParams struct {
 
 // ListFileUploadsParams holds the query parameters for ListFileUploads.
 type ListFileUploadsParams struct {
-	Status      Status2
+	Status      Status
 	StartCursor string
 	PageSize    int
 }
@@ -283,9 +283,9 @@ func (e AgentBatchOperationSurface) Valid() bool {
 // One action to apply to one agent. Each operation is authorized and applied on its own.
 // AgentBatchOperationsItem is an untagged oneOf union: exactly one field is set after unmarshaling.
 type AgentBatchOperationsItem struct {
-	AgentBatchOperationsItemOneOf0 *AgentBatchOperationsItemOneOf0
-	AgentBatchOperationsItemOneOf1 *AgentBatchOperationsItemOneOf1
-	AgentBatchOperationsItemOneOf2 *AgentBatchOperationsItemOneOf2
+	AgentBatchOperationsItemUpdateStatus      *AgentBatchOperationsItemUpdateStatus
+	AgentBatchOperationsItemUpdateCreditLimit *AgentBatchOperationsItemUpdateCreditLimit
+	AgentBatchOperationsItemDelete            *AgentBatchOperationsItemDelete
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member action names the alternative, which then
@@ -298,26 +298,26 @@ func (v *AgentBatchOperationsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 
 	switch tag {
 	case "update_status":
-		var vv AgentBatchOperationsItemOneOf0
+		var vv AgentBatchOperationsItemUpdateStatus
 		if err := jsonMembersFrom(dec, "action", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.AgentBatchOperationsItemOneOf0 = &vv
+		v.AgentBatchOperationsItemUpdateStatus = &vv
 	case "update_credit_limit":
-		var vv AgentBatchOperationsItemOneOf1
+		var vv AgentBatchOperationsItemUpdateCreditLimit
 		if err := jsonMembersFrom(dec, "action", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.AgentBatchOperationsItemOneOf1 = &vv
+		v.AgentBatchOperationsItemUpdateCreditLimit = &vv
 	case "delete":
-		var vv AgentBatchOperationsItemOneOf2
+		var vv AgentBatchOperationsItemDelete
 		if err := jsonMembersFrom(dec, "action", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.AgentBatchOperationsItemOneOf2 = &vv
+		v.AgentBatchOperationsItemDelete = &vv
 	default:
 		return jsonUnknownValue("action", tag)
 	}
@@ -333,12 +333,12 @@ func (v *AgentBatchOperationsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	)
 
 	switch {
-	case v.AgentBatchOperationsItemOneOf0 != nil:
-		variant, tag = v.AgentBatchOperationsItemOneOf0, "update_status"
-	case v.AgentBatchOperationsItemOneOf1 != nil:
-		variant, tag = v.AgentBatchOperationsItemOneOf1, "update_credit_limit"
-	case v.AgentBatchOperationsItemOneOf2 != nil:
-		variant, tag = v.AgentBatchOperationsItemOneOf2, "delete"
+	case v.AgentBatchOperationsItemUpdateStatus != nil:
+		variant, tag = v.AgentBatchOperationsItemUpdateStatus, "update_status"
+	case v.AgentBatchOperationsItemUpdateCreditLimit != nil:
+		variant, tag = v.AgentBatchOperationsItemUpdateCreditLimit, "update_credit_limit"
+	case v.AgentBatchOperationsItemDelete != nil:
+		variant, tag = v.AgentBatchOperationsItemDelete, "delete"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -355,32 +355,28 @@ func (v *AgentBatchOperationsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// AgentBatchOperationsItemOneOf0 defines a model
-type AgentBatchOperationsItemOneOf0 struct {
-	// Enable or disable one agent, equivalent to `PATCH /v1/agents/:agent_id/status`.
+// AgentBatchOperationsItemDelete defines a model
+type AgentBatchOperationsItemDelete struct {
+	// Soft-delete one agent, equivalent to `DELETE /v1/agents/:agent_id`.
 	Action string `json:"action"`
 	// The agent ID (a UUID), or `notion_ai` for the personal agent. Endpoint-specific restrictions still apply.
 	AgentID AgentID `json:"agent_id"`
-	// The status to apply to this agent.
-	Fields UpdateAgentStatus `json:"fields"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentBatchOperationsItemOneOf0 declares it.
-func (v *AgentBatchOperationsItemOneOf0) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentBatchOperationsItemDelete declares it.
+func (v *AgentBatchOperationsItemDelete) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "action":
 		return true, json.UnmarshalDecode(dec, &v.Action, jsonOptsOf(dec))
 	case "agent_id":
 		return true, json.UnmarshalDecode(dec, &v.AgentID, jsonOptsOf(dec))
-	case "fields":
-		return true, json.UnmarshalDecode(dec, &v.Fields, jsonOptsOf(dec))
 	}
 
 	return false, nil
 }
 
-// AgentBatchOperationsItemOneOf1 defines a model
-type AgentBatchOperationsItemOneOf1 struct {
+// AgentBatchOperationsItemUpdateCreditLimit defines a model
+type AgentBatchOperationsItemUpdateCreditLimit struct {
 	// Set or clear one agent's credit limit, equivalent to `PATCH /v1/agents/:agent_id/credit_limit`. Requires full access to the agent.
 	Action string `json:"action"`
 	// The agent ID (a UUID), or `notion_ai` for the personal agent. Endpoint-specific restrictions still apply.
@@ -389,8 +385,8 @@ type AgentBatchOperationsItemOneOf1 struct {
 	Fields UpdateAgentCreditLimit `json:"fields"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentBatchOperationsItemOneOf1 declares it.
-func (v *AgentBatchOperationsItemOneOf1) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentBatchOperationsItemUpdateCreditLimit declares it.
+func (v *AgentBatchOperationsItemUpdateCreditLimit) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "action":
 		return true, json.UnmarshalDecode(dec, &v.Action, jsonOptsOf(dec))
@@ -403,21 +399,25 @@ func (v *AgentBatchOperationsItemOneOf1) unmarshalJSONMember(dec *jsontext.Decod
 	return false, nil
 }
 
-// AgentBatchOperationsItemOneOf2 defines a model
-type AgentBatchOperationsItemOneOf2 struct {
-	// Soft-delete one agent, equivalent to `DELETE /v1/agents/:agent_id`.
+// AgentBatchOperationsItemUpdateStatus defines a model
+type AgentBatchOperationsItemUpdateStatus struct {
+	// Enable or disable one agent, equivalent to `PATCH /v1/agents/:agent_id/status`.
 	Action string `json:"action"`
 	// The agent ID (a UUID), or `notion_ai` for the personal agent. Endpoint-specific restrictions still apply.
 	AgentID AgentID `json:"agent_id"`
+	// The status to apply to this agent.
+	Fields UpdateAgentStatus `json:"fields"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentBatchOperationsItemOneOf2 declares it.
-func (v *AgentBatchOperationsItemOneOf2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentBatchOperationsItemUpdateStatus declares it.
+func (v *AgentBatchOperationsItemUpdateStatus) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "action":
 		return true, json.UnmarshalDecode(dec, &v.Action, jsonOptsOf(dec))
 	case "agent_id":
 		return true, json.UnmarshalDecode(dec, &v.AgentID, jsonOptsOf(dec))
+	case "fields":
+		return true, json.UnmarshalDecode(dec, &v.Fields, jsonOptsOf(dec))
 	}
 
 	return false, nil
@@ -426,12 +426,12 @@ func (v *AgentBatchOperationsItemOneOf2) unmarshalJSONMember(dec *jsontext.Decod
 // AgentConnectionsItem defines a model
 // AgentConnectionsItem is an untagged oneOf union: exactly one field is set after unmarshaling.
 type AgentConnectionsItem struct {
-	AgentConnectionsItemOneOf  *AgentConnectionsItemOneOf
-	AgentConnectionsItemOneOf2 *AgentConnectionsItemOneOf2
-	AgentConnectionsItemOneOf3 *AgentConnectionsItemOneOf3
-	AgentConnectionsItemOneOf4 *AgentConnectionsItemOneOf4
-	AgentConnectionsItemOneOf5 *AgentConnectionsItemOneOf5
-	AgentConnectionsItemOneOf6 *AgentConnectionsItemOneOf6
+	AgentConnectionsItemNotion          *AgentConnectionsItemNotion
+	AgentConnectionsItemSlack           *AgentConnectionsItemSlack
+	AgentConnectionsItemDiscord         *AgentConnectionsItemDiscord
+	AgentConnectionsItemMcpServer       *AgentConnectionsItemMcpServer
+	AgentConnectionsItemCustomMcpServer *AgentConnectionsItemCustomMcpServer
+	AgentConnectionsItemOneOf           *AgentConnectionsItemOneOf
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -448,54 +448,54 @@ func (v *AgentConnectionsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
+		var vv AgentConnectionsItemNotion
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.AgentConnectionsItemNotion = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv AgentConnectionsItemSlack
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.AgentConnectionsItemSlack = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv AgentConnectionsItemDiscord
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.AgentConnectionsItemDiscord = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv AgentConnectionsItemMcpServer
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.AgentConnectionsItemMcpServer = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv AgentConnectionsItemCustomMcpServer
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.AgentConnectionsItemCustomMcpServer = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
 		var vv AgentConnectionsItemOneOf
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
 			v.AgentConnectionsItemOneOf = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv AgentConnectionsItemOneOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemOneOf2 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv AgentConnectionsItemOneOf3
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemOneOf3 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv AgentConnectionsItemOneOf4
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemOneOf4 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv AgentConnectionsItemOneOf5
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemOneOf5 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv AgentConnectionsItemOneOf6
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemOneOf6 = &vv
 			matched++
 		}
 	}
@@ -510,153 +510,55 @@ func (v *AgentConnectionsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *AgentConnectionsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
+	case v.AgentConnectionsItemNotion != nil:
+		return json.MarshalEncode(enc, v.AgentConnectionsItemNotion, jsonOpts)
+	case v.AgentConnectionsItemSlack != nil:
+		return json.MarshalEncode(enc, v.AgentConnectionsItemSlack, jsonOpts)
+	case v.AgentConnectionsItemDiscord != nil:
+		return json.MarshalEncode(enc, v.AgentConnectionsItemDiscord, jsonOpts)
+	case v.AgentConnectionsItemMcpServer != nil:
+		return json.MarshalEncode(enc, v.AgentConnectionsItemMcpServer, jsonOpts)
+	case v.AgentConnectionsItemCustomMcpServer != nil:
+		return json.MarshalEncode(enc, v.AgentConnectionsItemCustomMcpServer, jsonOpts)
 	case v.AgentConnectionsItemOneOf != nil:
 		return json.MarshalEncode(enc, v.AgentConnectionsItemOneOf, jsonOpts)
-	case v.AgentConnectionsItemOneOf2 != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemOneOf2, jsonOpts)
-	case v.AgentConnectionsItemOneOf3 != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemOneOf3, jsonOpts)
-	case v.AgentConnectionsItemOneOf4 != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemOneOf4, jsonOpts)
-	case v.AgentConnectionsItemOneOf5 != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemOneOf5, jsonOpts)
-	case v.AgentConnectionsItemOneOf6 != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemOneOf6, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// AgentConnectionsItemOneOf defines a model
-type AgentConnectionsItemOneOf struct {
-	// Always `notion`
-	Type        string                               `json:"type"`
-	Name        string                               `json:"name"`
-	Account     *struct{}                            `json:"account"`
-	Permissions AgentConnectionsItemOneOfPermissions `json:"permissions"`
-}
-
-// AgentConnectionsItemOneOf2 defines a model
-type AgentConnectionsItemOneOf2 struct {
-	// Always `slack`
-	Type string `json:"type"`
-	Name string `json:"name"`
-	// The linked Slack workspace, null when none is linked, or "hidden" when the caller lacks edit access to the agent.
-	Account     AgentConnectionsItemOneOfAccount      `json:"account"`
-	Permissions AgentConnectionsItemOneOfPermissions2 `json:"permissions"`
-}
-
-// AgentConnectionsItemOneOf3 defines a model
-type AgentConnectionsItemOneOf3 struct {
-	// Always `discord`
-	Type string `json:"type"`
-	Name string `json:"name"`
-	// The linked Discord server, null when none is linked, or "hidden" when the caller lacks edit access to the agent.
-	Account     AgentConnectionsItemOneOfAccount2     `json:"account"`
-	Permissions AgentConnectionsItemOneOfPermissions3 `json:"permissions"`
-}
-
-// AgentConnectionsItemOneOf4 defines a model
-type AgentConnectionsItemOneOf4 struct {
-	// Always `mcp_server`
-	Type string `json:"type"`
-	Name string `json:"name"`
-	// The MCP server host, null when none is linked, or "hidden" when the caller lacks edit access to the agent.
-	Account AgentConnectionsItemOneOfAccount3 `json:"account"`
-	// The tools the agent may call, null when all tools are enabled (including any the server adds later), or "hidden" when the caller lacks edit access to the agent.
-	EnabledTools AgentConnectionsItemOneOfEnabledTools `json:"enabled_tools"`
-	// Whether read / write tool calls run without a confirmation step.
-	RunToolsAutomatically AgentConnectionsItemOneOfRunToolsAutomatically `json:"run_tools_automatically"`
-}
-
-// AgentConnectionsItemOneOf5 defines a model
-type AgentConnectionsItemOneOf5 struct {
+// AgentConnectionsItemCustomMcpServer defines a model
+type AgentConnectionsItemCustomMcpServer struct {
 	// Always `custom_mcp_server`
 	Type string `json:"type"`
 	Name string `json:"name"`
 	// The MCP server host, null when none is linked, or "hidden" when the caller lacks edit access to the agent.
-	Account AgentConnectionsItemOneOfAccount3 `json:"account"`
+	Account AgentConnectionsItemMcpServerAccount `json:"account"`
 	// The tools the agent may call, null when all tools are enabled (including any the server adds later), or "hidden" when the caller lacks edit access to the agent.
-	EnabledTools AgentConnectionsItemOneOfEnabledTools `json:"enabled_tools"`
+	EnabledTools AgentConnectionsItemMcpServerEnabledTools `json:"enabled_tools"`
 	// Whether read / write tool calls run without a confirmation step.
-	RunToolsAutomatically AgentConnectionsItemOneOfRunToolsAutomatically `json:"run_tools_automatically"`
+	RunToolsAutomatically AgentConnectionsItemMcpServerRunToolsAutomatically `json:"run_tools_automatically"`
 }
 
-// AgentConnectionsItemOneOf6 defines a model
-type AgentConnectionsItemOneOf6 struct {
-	// The connector's machine name (e.g. "github", "google_drive").
-	Type AgentConnectionsItemOneOfType `json:"type"`
-	Name string                        `json:"name"`
-	// The provider-side account identifier, null when none is linked, or "hidden" when the caller lacks edit access to the agent.
-	Account     string                                `json:"account"`
-	Permissions AgentConnectionsItemOneOfPermissions4 `json:"permissions"`
-}
-
-// The linked Slack workspace, null when none is linked, or "hidden" when the caller lacks edit access to the agent.
-// AgentConnectionsItemOneOfAccount is an untagged oneOf union: exactly one field is set after unmarshaling.
-type AgentConnectionsItemOneOfAccount struct {
-	AgentConnectionsItemOneOfAccountOneOf *AgentConnectionsItemOneOfAccountOneOf
-	String                                string
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *AgentConnectionsItemOneOfAccount) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv AgentConnectionsItemOneOfAccountOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemOneOfAccountOneOf = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv string
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.String = vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *AgentConnectionsItemOneOfAccount) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.AgentConnectionsItemOneOfAccountOneOf != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemOneOfAccountOneOf, jsonOpts)
-	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+// AgentConnectionsItemDiscord defines a model
+type AgentConnectionsItemDiscord struct {
+	// Always `discord`
+	Type string `json:"type"`
+	Name string `json:"name"`
+	// The linked Discord server, null when none is linked, or "hidden" when the caller lacks edit access to the agent.
+	Account     AgentConnectionsItemDiscordAccount     `json:"account"`
+	Permissions AgentConnectionsItemDiscordPermissions `json:"permissions"`
 }
 
 // The linked Discord server, null when none is linked, or "hidden" when the caller lacks edit access to the agent.
-// AgentConnectionsItemOneOfAccount2 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type AgentConnectionsItemOneOfAccount2 struct {
-	AgentConnectionsItemOneOfAccountOneOf2 *AgentConnectionsItemOneOfAccountOneOf2
-	String                                 string
+// AgentConnectionsItemDiscordAccount is an untagged oneOf union: exactly one field is set after unmarshaling.
+type AgentConnectionsItemDiscordAccount struct {
+	AgentConnectionsItemDiscordAccountDiscordServer *AgentConnectionsItemDiscordAccountDiscordServer
+	String                                          string
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *AgentConnectionsItemOneOfAccount2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+func (v *AgentConnectionsItemDiscordAccount) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	opts := jsonOptsOf(dec)
 	strict := jsonStrict(dec)
 
@@ -669,9 +571,9 @@ func (v *AgentConnectionsItemOneOfAccount2) UnmarshalJSONFrom(dec *jsontext.Deco
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv AgentConnectionsItemOneOfAccountOneOf2
+		var vv AgentConnectionsItemDiscordAccountDiscordServer
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemOneOfAccountOneOf2 = &vv
+			v.AgentConnectionsItemDiscordAccountDiscordServer = &vv
 			matched++
 		}
 	}
@@ -693,10 +595,10 @@ func (v *AgentConnectionsItemOneOfAccount2) UnmarshalJSONFrom(dec *jsontext.Deco
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *AgentConnectionsItemOneOfAccount2) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *AgentConnectionsItemDiscordAccount) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.AgentConnectionsItemOneOfAccountOneOf2 != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemOneOfAccountOneOf2, jsonOpts)
+	case v.AgentConnectionsItemDiscordAccountDiscordServer != nil:
+		return json.MarshalEncode(enc, v.AgentConnectionsItemDiscordAccountDiscordServer, jsonOpts)
 	case v.String != "":
 		return json.MarshalEncode(enc, v.String, jsonOpts)
 	}
@@ -704,389 +606,33 @@ func (v *AgentConnectionsItemOneOfAccount2) MarshalJSONTo(enc *jsontext.Encoder)
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// The MCP server host, null when none is linked, or "hidden" when the caller lacks edit access to the agent.
-// AgentConnectionsItemOneOfAccount3 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type AgentConnectionsItemOneOfAccount3 struct {
-	AgentConnectionsItemOneOfAccountOneOf3 *AgentConnectionsItemOneOfAccountOneOf3
-	String                                 string
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *AgentConnectionsItemOneOfAccount3) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv AgentConnectionsItemOneOfAccountOneOf3
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemOneOfAccountOneOf3 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv string
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.String = vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *AgentConnectionsItemOneOfAccount3) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.AgentConnectionsItemOneOfAccountOneOf3 != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemOneOfAccountOneOf3, jsonOpts)
-	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// AgentConnectionsItemOneOfAccountOneOf defines a model
-type AgentConnectionsItemOneOfAccountOneOf struct {
-	// Always `slack_workspace`
-	Type   string `json:"type"`
-	TeamID string `json:"team_id"`
-}
-
-// AgentConnectionsItemOneOfAccountOneOf2 defines a model
-type AgentConnectionsItemOneOfAccountOneOf2 struct {
+// AgentConnectionsItemDiscordAccountDiscordServer defines a model
+type AgentConnectionsItemDiscordAccountDiscordServer struct {
 	// Always `discord_server`
 	Type string `json:"type"`
 	ID   string `json:"id"`
 }
 
-// AgentConnectionsItemOneOfAccountOneOf3 defines a model
-type AgentConnectionsItemOneOfAccountOneOf3 struct {
-	// Always `mcp_server`
-	Type string `json:"type"`
-	// The MCP server host (never the full URL, which can carry credentials or private path components).
-	ServerHost string `json:"server_host"`
-}
+// AgentConnectionsItemDiscordPermissions defines a model
+type AgentConnectionsItemDiscordPermissions []AgentConnectionsItemDiscordPermissionsItem
 
-// The tools the agent may call, null when all tools are enabled (including any the server adds later), or "hidden" when the caller lacks edit access to the agent.
-// AgentConnectionsItemOneOfEnabledTools is an untagged oneOf union: exactly one field is set after unmarshaling.
-type AgentConnectionsItemOneOfEnabledTools struct {
-	AgentConnectionsItemOneOfEnabledToolsOneOf AgentConnectionsItemOneOfEnabledToolsOneOf
-	String                                     string
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *AgentConnectionsItemOneOfEnabledTools) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv AgentConnectionsItemOneOfEnabledToolsOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemOneOfEnabledToolsOneOf = vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv string
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.String = vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *AgentConnectionsItemOneOfEnabledTools) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.AgentConnectionsItemOneOfEnabledToolsOneOf != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemOneOfEnabledToolsOneOf, jsonOpts)
-	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// AgentConnectionsItemOneOfEnabledToolsOneOf defines a model
-type AgentConnectionsItemOneOfEnabledToolsOneOf []AgentConnectionsItemOneOfEnabledToolsOneOfItem
-
-// AgentConnectionsItemOneOfEnabledToolsOneOfItem defines a model
-type AgentConnectionsItemOneOfEnabledToolsOneOfItem struct {
-	Name  string `json:"name"`
-	Title string `json:"title"`
-}
-
-// AgentConnectionsItemOneOfPermissions defines a model
-type AgentConnectionsItemOneOfPermissions []AgentConnectionsItemOneOfPermissionsItem
-
-// AgentConnectionsItemOneOfPermissions2 defines a model
-type AgentConnectionsItemOneOfPermissions2 []AgentConnectionsItemOneOfPermissionsItem2
-
-// AgentConnectionsItemOneOfPermissions3 defines a model
-type AgentConnectionsItemOneOfPermissions3 []AgentConnectionsItemOneOfPermissionsItem3
-
-// AgentConnectionsItemOneOfPermissions4 defines a model
-type AgentConnectionsItemOneOfPermissions4 []AgentConnectionsItemOneOfPermissionsItem4
-
-// AgentConnectionsItemOneOfPermissionsItem defines a model
-type AgentConnectionsItemOneOfPermissionsItem struct {
-	Target AgentConnectionsItemOneOfPermissionsItemTarget `json:"target"`
-	// Content roles ("reader" | "comment_only" | "read_and_write" | "editor") for scoped targets, or search verbs ("allow" | "disallow") for the search targets.
-	Scopes []string `json:"scopes"`
-}
-
-// AgentConnectionsItemOneOfPermissionsItem2 defines a model
-type AgentConnectionsItemOneOfPermissionsItem2 struct {
-	Target AgentConnectionsItemOneOfPermissionsItemTarget2 `json:"target"`
-	// Slack verbs granted on this target ("read" | "write" | "reply_in_thread" | "react").
-	Scopes []string `json:"scopes"`
-}
-
-// AgentConnectionsItemOneOfPermissionsItem3 defines a model
-type AgentConnectionsItemOneOfPermissionsItem3 struct {
-	Target AgentConnectionsItemOneOfPermissionsItemTarget3 `json:"target"`
+// AgentConnectionsItemDiscordPermissionsItem defines a model
+type AgentConnectionsItemDiscordPermissionsItem struct {
+	Target AgentConnectionsItemDiscordPermissionsItemTarget `json:"target"`
 	// Discord verbs granted on this target ("read" | "write" | "reply_in_thread" | "react").
 	Scopes []string `json:"scopes"`
 }
 
-// AgentConnectionsItemOneOfPermissionsItem4 defines a model
-type AgentConnectionsItemOneOfPermissionsItem4 struct {
-	Target AgentConnectionsItemOneOfPermissionsItemTarget4 `json:"target"`
-	// The scopes granted on this target.
-	Scopes []string `json:"scopes"`
-}
-
-// AgentConnectionsItemOneOfPermissionsItemTarget defines a model
-// AgentConnectionsItemOneOfPermissionsItemTarget is an untagged oneOf union: exactly one field is set after unmarshaling.
-type AgentConnectionsItemOneOfPermissionsItemTarget struct {
-	AgentConnectionsItemOneOfPermissionsItemTargetOneOf  *AgentConnectionsItemOneOfPermissionsItemTargetOneOf
-	AgentConnectionsItemOneOfPermissionsItemTargetOneOf2 *AgentConnectionsItemOneOfPermissionsItemTargetOneOf2
-	AgentConnectionsItemOneOfPermissionsItemTargetOneOf3 *AgentConnectionsItemOneOfPermissionsItemTargetOneOf3
-	AgentConnectionsItemOneOfPermissionsItemTargetOneOf4 *AgentConnectionsItemOneOfPermissionsItemTargetOneOf4
-	AgentConnectionsItemOneOfPermissionsItemTargetOneOf5 *AgentConnectionsItemOneOfPermissionsItemTargetOneOf5
-	AgentConnectionsItemOneOfPermissionsItemTargetOneOf6 *AgentConnectionsItemOneOfPermissionsItemTargetOneOf6
-	AgentConnectionsItemOneOfPermissionsItemTargetOneOf7 *AgentConnectionsItemOneOfPermissionsItemTargetOneOf7
+// AgentConnectionsItemDiscordPermissionsItemTarget defines a model
+// AgentConnectionsItemDiscordPermissionsItemTarget is an untagged oneOf union: exactly one field is set after unmarshaling.
+type AgentConnectionsItemDiscordPermissionsItemTarget struct {
+	AgentConnectionsItemDiscordPermissionsItemTargetDiscordChannel     *AgentConnectionsItemDiscordPermissionsItemTargetDiscordChannel
+	AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels *AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
 // decodes each further member as it is read. With type first, nothing is read twice.
-func (v *AgentConnectionsItemOneOfPermissionsItemTarget) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, dec, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "page":
-		var vv AgentConnectionsItemOneOfPermissionsItemTargetOneOf
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf = &vv
-	case "database_property":
-		var vv AgentConnectionsItemOneOfPermissionsItemTargetOneOf2
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf2 = &vv
-	case "agent":
-		var vv AgentConnectionsItemOneOfPermissionsItemTargetOneOf3
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf3 = &vv
-	case "workspace":
-		var vv AgentConnectionsItemOneOfPermissionsItemTargetOneOf4
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf4 = &vv
-	case "owner_private_pages":
-		var vv AgentConnectionsItemOneOfPermissionsItemTargetOneOf5
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf5 = &vv
-	case "web_search":
-		var vv AgentConnectionsItemOneOfPermissionsItemTargetOneOf6
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf6 = &vv
-	case "notion_help_docs_search":
-		var vv AgentConnectionsItemOneOfPermissionsItemTargetOneOf7
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf7 = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *AgentConnectionsItemOneOfPermissionsItemTarget) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf != nil:
-		variant, tag = v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf, "page"
-	case v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf2 != nil:
-		variant, tag = v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf2, "database_property"
-	case v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf3 != nil:
-		variant, tag = v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf3, "agent"
-	case v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf4 != nil:
-		variant, tag = v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf4, "workspace"
-	case v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf5 != nil:
-		variant, tag = v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf5, "owner_private_pages"
-	case v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf6 != nil:
-		variant, tag = v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf6, "web_search"
-	case v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf7 != nil:
-		variant, tag = v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf7, "notion_help_docs_search"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
-// AgentConnectionsItemOneOfPermissionsItemTarget2 defines a model
-// AgentConnectionsItemOneOfPermissionsItemTarget2 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type AgentConnectionsItemOneOfPermissionsItemTarget2 struct {
-	AgentConnectionsItemOneOfPermissionsItemTargetOneOf8  *AgentConnectionsItemOneOfPermissionsItemTargetOneOf8
-	AgentConnectionsItemOneOfPermissionsItemTargetOneOf9  *AgentConnectionsItemOneOfPermissionsItemTargetOneOf9
-	AgentConnectionsItemOneOfPermissionsItemTargetOneOf10 *AgentConnectionsItemOneOfPermissionsItemTargetOneOf10
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
-func (v *AgentConnectionsItemOneOfPermissionsItemTarget2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, dec, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "slack_channel":
-		var vv AgentConnectionsItemOneOfPermissionsItemTargetOneOf8
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf8 = &vv
-	case "slack_all_public_channels":
-		var vv AgentConnectionsItemOneOfPermissionsItemTargetOneOf9
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf9 = &vv
-	case "slack_all_channels":
-		var vv AgentConnectionsItemOneOfPermissionsItemTargetOneOf10
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf10 = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *AgentConnectionsItemOneOfPermissionsItemTarget2) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf8 != nil:
-		variant, tag = v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf8, "slack_channel"
-	case v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf9 != nil:
-		variant, tag = v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf9, "slack_all_public_channels"
-	case v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf10 != nil:
-		variant, tag = v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf10, "slack_all_channels"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
-// AgentConnectionsItemOneOfPermissionsItemTarget3 defines a model
-// AgentConnectionsItemOneOfPermissionsItemTarget3 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type AgentConnectionsItemOneOfPermissionsItemTarget3 struct {
-	AgentConnectionsItemOneOfPermissionsItemTargetOneOf11 *AgentConnectionsItemOneOfPermissionsItemTargetOneOf11
-	AgentConnectionsItemOneOfPermissionsItemTargetOneOf12 *AgentConnectionsItemOneOfPermissionsItemTargetOneOf12
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
-func (v *AgentConnectionsItemOneOfPermissionsItemTarget3) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+func (v *AgentConnectionsItemDiscordPermissionsItemTarget) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	tag, first, dec, err := jsonFirstMember(dec, "type")
 	if err != nil {
 		return err
@@ -1094,19 +640,19 @@ func (v *AgentConnectionsItemOneOfPermissionsItemTarget3) UnmarshalJSONFrom(dec 
 
 	switch tag {
 	case "discord_channel":
-		var vv AgentConnectionsItemOneOfPermissionsItemTargetOneOf11
+		var vv AgentConnectionsItemDiscordPermissionsItemTargetDiscordChannel
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf11 = &vv
+		v.AgentConnectionsItemDiscordPermissionsItemTargetDiscordChannel = &vv
 	case "discord_all_channels":
-		var vv AgentConnectionsItemOneOfPermissionsItemTargetOneOf12
+		var vv AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf12 = &vv
+		v.AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels = &vv
 	default:
 		return jsonUnknownValue("type", tag)
 	}
@@ -1115,17 +661,17 @@ func (v *AgentConnectionsItemOneOfPermissionsItemTarget3) UnmarshalJSONFrom(dec 
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *AgentConnectionsItemOneOfPermissionsItemTarget3) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *AgentConnectionsItemDiscordPermissionsItemTarget) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
 		tag     string
 	)
 
 	switch {
-	case v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf11 != nil:
-		variant, tag = v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf11, "discord_channel"
-	case v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf12 != nil:
-		variant, tag = v.AgentConnectionsItemOneOfPermissionsItemTargetOneOf12, "discord_all_channels"
+	case v.AgentConnectionsItemDiscordPermissionsItemTargetDiscordChannel != nil:
+		variant, tag = v.AgentConnectionsItemDiscordPermissionsItemTargetDiscordChannel, "discord_channel"
+	case v.AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels != nil:
+		variant, tag = v.AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels, "discord_all_channels"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -1142,39 +688,14 @@ func (v *AgentConnectionsItemOneOfPermissionsItemTarget3) MarshalJSONTo(enc *jso
 	return enc.WriteValue(out)
 }
 
-// AgentConnectionsItemOneOfPermissionsItemTarget4 defines a model
-type AgentConnectionsItemOneOfPermissionsItemTarget4 struct {
-	Type string `json:"type"`
-	ID   string `json:"id"`
-}
-
-// AgentConnectionsItemOneOfPermissionsItemTargetOneOf defines a model
-type AgentConnectionsItemOneOfPermissionsItemTargetOneOf struct {
-	// Always `page`
-	Type string `json:"type"`
-	ID   string `json:"id"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemOneOfPermissionsItemTargetOneOf declares it.
-func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "id":
-		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// AgentConnectionsItemOneOfPermissionsItemTargetOneOf10 defines a model
-type AgentConnectionsItemOneOfPermissionsItemTargetOneOf10 struct {
-	// Always `slack_all_channels`
+// AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels defines a model
+type AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels struct {
+	// Always `discord_all_channels`
 	Type string `json:"type"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemOneOfPermissionsItemTargetOneOf10 declares it.
-func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf10) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels declares it.
+func (v *AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -1183,15 +704,15 @@ func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf10) unmarshalJSONMem
 	return false, nil
 }
 
-// AgentConnectionsItemOneOfPermissionsItemTargetOneOf11 defines a model
-type AgentConnectionsItemOneOfPermissionsItemTargetOneOf11 struct {
+// AgentConnectionsItemDiscordPermissionsItemTargetDiscordChannel defines a model
+type AgentConnectionsItemDiscordPermissionsItemTargetDiscordChannel struct {
 	// Always `discord_channel`
 	Type string `json:"type"`
 	ID   string `json:"id"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemOneOfPermissionsItemTargetOneOf11 declares it.
-func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf11) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemDiscordPermissionsItemTargetDiscordChannel declares it.
+func (v *AgentConnectionsItemDiscordPermissionsItemTargetDiscordChannel) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -1202,32 +723,319 @@ func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf11) unmarshalJSONMem
 	return false, nil
 }
 
-// AgentConnectionsItemOneOfPermissionsItemTargetOneOf12 defines a model
-type AgentConnectionsItemOneOfPermissionsItemTargetOneOf12 struct {
-	// Always `discord_all_channels`
+// AgentConnectionsItemMcpServer defines a model
+type AgentConnectionsItemMcpServer struct {
+	// Always `mcp_server`
 	Type string `json:"type"`
+	Name string `json:"name"`
+	// The MCP server host, null when none is linked, or "hidden" when the caller lacks edit access to the agent.
+	Account AgentConnectionsItemMcpServerAccount `json:"account"`
+	// The tools the agent may call, null when all tools are enabled (including any the server adds later), or "hidden" when the caller lacks edit access to the agent.
+	EnabledTools AgentConnectionsItemMcpServerEnabledTools `json:"enabled_tools"`
+	// Whether read / write tool calls run without a confirmation step.
+	RunToolsAutomatically AgentConnectionsItemMcpServerRunToolsAutomatically `json:"run_tools_automatically"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemOneOfPermissionsItemTargetOneOf12 declares it.
-func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf12) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// The MCP server host, null when none is linked, or "hidden" when the caller lacks edit access to the agent.
+// AgentConnectionsItemMcpServerAccount is an untagged oneOf union: exactly one field is set after unmarshaling.
+type AgentConnectionsItemMcpServerAccount struct {
+	AgentConnectionsItemMcpServerAccountMcpServer *AgentConnectionsItemMcpServerAccountMcpServer
+	String                                        string
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *AgentConnectionsItemMcpServerAccount) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv AgentConnectionsItemMcpServerAccountMcpServer
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.AgentConnectionsItemMcpServerAccountMcpServer = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv string
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.String = vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *AgentConnectionsItemMcpServerAccount) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.AgentConnectionsItemMcpServerAccountMcpServer != nil:
+		return json.MarshalEncode(enc, v.AgentConnectionsItemMcpServerAccountMcpServer, jsonOpts)
+	case v.String != "":
+		return json.MarshalEncode(enc, v.String, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// AgentConnectionsItemMcpServerAccountMcpServer defines a model
+type AgentConnectionsItemMcpServerAccountMcpServer struct {
+	// Always `mcp_server`
+	Type string `json:"type"`
+	// The MCP server host (never the full URL, which can carry credentials or private path components).
+	ServerHost string `json:"server_host"`
+}
+
+// The tools the agent may call, null when all tools are enabled (including any the server adds later), or "hidden" when the caller lacks edit access to the agent.
+// AgentConnectionsItemMcpServerEnabledTools is an untagged oneOf union: exactly one field is set after unmarshaling.
+type AgentConnectionsItemMcpServerEnabledTools struct {
+	AgentConnectionsItemMcpServerEnabledToolsOneOf AgentConnectionsItemMcpServerEnabledToolsOneOf
+	String                                         string
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *AgentConnectionsItemMcpServerEnabledTools) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv AgentConnectionsItemMcpServerEnabledToolsOneOf
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.AgentConnectionsItemMcpServerEnabledToolsOneOf = vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv string
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.String = vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *AgentConnectionsItemMcpServerEnabledTools) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.AgentConnectionsItemMcpServerEnabledToolsOneOf != nil:
+		return json.MarshalEncode(enc, v.AgentConnectionsItemMcpServerEnabledToolsOneOf, jsonOpts)
+	case v.String != "":
+		return json.MarshalEncode(enc, v.String, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// AgentConnectionsItemMcpServerEnabledToolsOneOf defines a model
+type AgentConnectionsItemMcpServerEnabledToolsOneOf []AgentConnectionsItemMcpServerEnabledToolsOneOfItem
+
+// AgentConnectionsItemMcpServerEnabledToolsOneOfItem defines a model
+type AgentConnectionsItemMcpServerEnabledToolsOneOfItem struct {
+	Name  string `json:"name"`
+	Title string `json:"title"`
+}
+
+// Whether read / write tool calls run without a confirmation step.
+type AgentConnectionsItemMcpServerRunToolsAutomatically struct {
+	// Whether read tool calls run without a confirmation step.
+	Read bool `json:"read"`
+	// Whether write tool calls run without a confirmation step.
+	Write bool `json:"write"`
+}
+
+// AgentConnectionsItemNotion defines a model
+type AgentConnectionsItemNotion struct {
+	// Always `notion`
+	Type        string                                `json:"type"`
+	Name        string                                `json:"name"`
+	Account     *struct{}                             `json:"account"`
+	Permissions AgentConnectionsItemNotionPermissions `json:"permissions"`
+}
+
+// AgentConnectionsItemNotionPermissions defines a model
+type AgentConnectionsItemNotionPermissions []AgentConnectionsItemNotionPermissionsItem
+
+// AgentConnectionsItemNotionPermissionsItem defines a model
+type AgentConnectionsItemNotionPermissionsItem struct {
+	Target AgentConnectionsItemNotionPermissionsItemTarget `json:"target"`
+	// Content roles ("reader" | "comment_only" | "read_and_write" | "editor") for scoped targets, or search verbs ("allow" | "disallow") for the search targets.
+	Scopes []string `json:"scopes"`
+}
+
+// AgentConnectionsItemNotionPermissionsItemTarget defines a model
+// AgentConnectionsItemNotionPermissionsItemTarget is an untagged oneOf union: exactly one field is set after unmarshaling.
+type AgentConnectionsItemNotionPermissionsItemTarget struct {
+	AgentConnectionsItemNotionPermissionsItemTargetPage                 *AgentConnectionsItemNotionPermissionsItemTargetPage
+	AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty     *AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty
+	AgentConnectionsItemNotionPermissionsItemTargetAgent                *AgentConnectionsItemNotionPermissionsItemTargetAgent
+	AgentConnectionsItemNotionPermissionsItemTargetWorkspace            *AgentConnectionsItemNotionPermissionsItemTargetWorkspace
+	AgentConnectionsItemNotionPermissionsItemTargetOwnerPrivatePages    *AgentConnectionsItemNotionPermissionsItemTargetOwnerPrivatePages
+	AgentConnectionsItemNotionPermissionsItemTargetWebSearch            *AgentConnectionsItemNotionPermissionsItemTargetWebSearch
+	AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch *AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
+// decodes each further member as it is read. With type first, nothing is read twice.
+func (v *AgentConnectionsItemNotionPermissionsItemTarget) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if err != nil {
+		return err
+	}
+
+	switch tag {
+	case "page":
+		var vv AgentConnectionsItemNotionPermissionsItemTargetPage
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.AgentConnectionsItemNotionPermissionsItemTargetPage = &vv
+	case "database_property":
+		var vv AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty = &vv
+	case "agent":
+		var vv AgentConnectionsItemNotionPermissionsItemTargetAgent
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.AgentConnectionsItemNotionPermissionsItemTargetAgent = &vv
+	case "workspace":
+		var vv AgentConnectionsItemNotionPermissionsItemTargetWorkspace
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.AgentConnectionsItemNotionPermissionsItemTargetWorkspace = &vv
+	case "owner_private_pages":
+		var vv AgentConnectionsItemNotionPermissionsItemTargetOwnerPrivatePages
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.AgentConnectionsItemNotionPermissionsItemTargetOwnerPrivatePages = &vv
+	case "web_search":
+		var vv AgentConnectionsItemNotionPermissionsItemTargetWebSearch
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.AgentConnectionsItemNotionPermissionsItemTargetWebSearch = &vv
+	case "notion_help_docs_search":
+		var vv AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch = &vv
+	default:
+		return jsonUnknownValue("type", tag)
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+func (v *AgentConnectionsItemNotionPermissionsItemTarget) MarshalJSONTo(enc *jsontext.Encoder) error {
+	var (
+		variant any
+		tag     string
+	)
+
+	switch {
+	case v.AgentConnectionsItemNotionPermissionsItemTargetPage != nil:
+		variant, tag = v.AgentConnectionsItemNotionPermissionsItemTargetPage, "page"
+	case v.AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty != nil:
+		variant, tag = v.AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty, "database_property"
+	case v.AgentConnectionsItemNotionPermissionsItemTargetAgent != nil:
+		variant, tag = v.AgentConnectionsItemNotionPermissionsItemTargetAgent, "agent"
+	case v.AgentConnectionsItemNotionPermissionsItemTargetWorkspace != nil:
+		variant, tag = v.AgentConnectionsItemNotionPermissionsItemTargetWorkspace, "workspace"
+	case v.AgentConnectionsItemNotionPermissionsItemTargetOwnerPrivatePages != nil:
+		variant, tag = v.AgentConnectionsItemNotionPermissionsItemTargetOwnerPrivatePages, "owner_private_pages"
+	case v.AgentConnectionsItemNotionPermissionsItemTargetWebSearch != nil:
+		variant, tag = v.AgentConnectionsItemNotionPermissionsItemTargetWebSearch, "web_search"
+	case v.AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch != nil:
+		variant, tag = v.AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch, "notion_help_docs_search"
+	default:
+		return &json.SemanticError{Err: errors.New("no alternative set")}
+	}
+
+	out, err := json.Marshal(variant, jsonOpts)
+	if err != nil {
+		return err
+	}
+
+	if out, err = jsonFirst(out, "type", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
+}
+
+// AgentConnectionsItemNotionPermissionsItemTargetAgent defines a model
+type AgentConnectionsItemNotionPermissionsItemTargetAgent struct {
+	// Always `agent`
+	Type string `json:"type"`
+	ID   string `json:"id"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemNotionPermissionsItemTargetAgent declares it.
+func (v *AgentConnectionsItemNotionPermissionsItemTargetAgent) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
 	}
 
 	return false, nil
 }
 
-// AgentConnectionsItemOneOfPermissionsItemTargetOneOf2 defines a model
-type AgentConnectionsItemOneOfPermissionsItemTargetOneOf2 struct {
+// AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty defines a model
+type AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty struct {
 	// Always `database_property`
 	Type         string `json:"type"`
 	DataSourceID string `json:"data_source_id"`
 	PropertyID   string `json:"property_id"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemOneOfPermissionsItemTargetOneOf2 declares it.
-func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty declares it.
+func (v *AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -1240,15 +1048,47 @@ func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf2) unmarshalJSONMemb
 	return false, nil
 }
 
-// AgentConnectionsItemOneOfPermissionsItemTargetOneOf3 defines a model
-type AgentConnectionsItemOneOfPermissionsItemTargetOneOf3 struct {
-	// Always `agent`
+// AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch defines a model
+type AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch struct {
+	// Always `notion_help_docs_search`
+	Type string `json:"type"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch declares it.
+func (v *AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// AgentConnectionsItemNotionPermissionsItemTargetOwnerPrivatePages defines a model
+type AgentConnectionsItemNotionPermissionsItemTargetOwnerPrivatePages struct {
+	// Always `owner_private_pages`
+	Type string `json:"type"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemNotionPermissionsItemTargetOwnerPrivatePages declares it.
+func (v *AgentConnectionsItemNotionPermissionsItemTargetOwnerPrivatePages) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// AgentConnectionsItemNotionPermissionsItemTargetPage defines a model
+type AgentConnectionsItemNotionPermissionsItemTargetPage struct {
+	// Always `page`
 	Type string `json:"type"`
 	ID   string `json:"id"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemOneOfPermissionsItemTargetOneOf3 declares it.
-func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf3) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemNotionPermissionsItemTargetPage declares it.
+func (v *AgentConnectionsItemNotionPermissionsItemTargetPage) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -1259,48 +1099,16 @@ func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf3) unmarshalJSONMemb
 	return false, nil
 }
 
-// AgentConnectionsItemOneOfPermissionsItemTargetOneOf4 defines a model
-type AgentConnectionsItemOneOfPermissionsItemTargetOneOf4 struct {
-	// Always `workspace`
-	Type string `json:"type"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemOneOfPermissionsItemTargetOneOf4 declares it.
-func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf4) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// AgentConnectionsItemOneOfPermissionsItemTargetOneOf5 defines a model
-type AgentConnectionsItemOneOfPermissionsItemTargetOneOf5 struct {
-	// Always `owner_private_pages`
-	Type string `json:"type"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemOneOfPermissionsItemTargetOneOf5 declares it.
-func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf5) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// AgentConnectionsItemOneOfPermissionsItemTargetOneOf6 defines a model
-type AgentConnectionsItemOneOfPermissionsItemTargetOneOf6 struct {
+// AgentConnectionsItemNotionPermissionsItemTargetWebSearch defines a model
+type AgentConnectionsItemNotionPermissionsItemTargetWebSearch struct {
 	// Always `web_search`
 	Type string `json:"type"`
 	// Domains web search is restricted to, or null when unrestricted.
 	AllowedDomains []string `json:"allowed_domains"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemOneOfPermissionsItemTargetOneOf6 declares it.
-func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf6) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemNotionPermissionsItemTargetWebSearch declares it.
+func (v *AgentConnectionsItemNotionPermissionsItemTargetWebSearch) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -1311,14 +1119,14 @@ func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf6) unmarshalJSONMemb
 	return false, nil
 }
 
-// AgentConnectionsItemOneOfPermissionsItemTargetOneOf7 defines a model
-type AgentConnectionsItemOneOfPermissionsItemTargetOneOf7 struct {
-	// Always `notion_help_docs_search`
+// AgentConnectionsItemNotionPermissionsItemTargetWorkspace defines a model
+type AgentConnectionsItemNotionPermissionsItemTargetWorkspace struct {
+	// Always `workspace`
 	Type string `json:"type"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemOneOfPermissionsItemTargetOneOf7 declares it.
-func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf7) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemNotionPermissionsItemTargetWorkspace declares it.
+func (v *AgentConnectionsItemNotionPermissionsItemTargetWorkspace) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -1327,47 +1135,30 @@ func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf7) unmarshalJSONMemb
 	return false, nil
 }
 
-// AgentConnectionsItemOneOfPermissionsItemTargetOneOf8 defines a model
-type AgentConnectionsItemOneOfPermissionsItemTargetOneOf8 struct {
-	// Always `slack_channel`
+// AgentConnectionsItemOneOf defines a model
+type AgentConnectionsItemOneOf struct {
+	// The connector's machine name (e.g. "github", "google_drive").
+	Type AgentConnectionsItemOneOfType `json:"type"`
+	Name string                        `json:"name"`
+	// The provider-side account identifier, null when none is linked, or "hidden" when the caller lacks edit access to the agent.
+	Account     string                               `json:"account"`
+	Permissions AgentConnectionsItemOneOfPermissions `json:"permissions"`
+}
+
+// AgentConnectionsItemOneOfPermissions defines a model
+type AgentConnectionsItemOneOfPermissions []AgentConnectionsItemOneOfPermissionsItem
+
+// AgentConnectionsItemOneOfPermissionsItem defines a model
+type AgentConnectionsItemOneOfPermissionsItem struct {
+	Target AgentConnectionsItemOneOfPermissionsItemTarget `json:"target"`
+	// The scopes granted on this target.
+	Scopes []string `json:"scopes"`
+}
+
+// AgentConnectionsItemOneOfPermissionsItemTarget defines a model
+type AgentConnectionsItemOneOfPermissionsItemTarget struct {
 	Type string `json:"type"`
 	ID   string `json:"id"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemOneOfPermissionsItemTargetOneOf8 declares it.
-func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf8) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "id":
-		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// AgentConnectionsItemOneOfPermissionsItemTargetOneOf9 defines a model
-type AgentConnectionsItemOneOfPermissionsItemTargetOneOf9 struct {
-	// Always `slack_all_public_channels`
-	Type string `json:"type"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemOneOfPermissionsItemTargetOneOf9 declares it.
-func (v *AgentConnectionsItemOneOfPermissionsItemTargetOneOf9) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// Whether read / write tool calls run without a confirmation step.
-type AgentConnectionsItemOneOfRunToolsAutomatically struct {
-	// Whether read tool calls run without a confirmation step.
-	Read bool `json:"read"`
-	// Whether write tool calls run without a confirmation step.
-	Write bool `json:"write"`
 }
 
 // The connector's machine name (e.g. "github", "google_drive").
@@ -1422,6 +1213,215 @@ func (e AgentConnectionsItemOneOfType) Valid() bool {
 	default:
 		return false
 	}
+}
+
+// AgentConnectionsItemSlack defines a model
+type AgentConnectionsItemSlack struct {
+	// Always `slack`
+	Type string `json:"type"`
+	Name string `json:"name"`
+	// The linked Slack workspace, null when none is linked, or "hidden" when the caller lacks edit access to the agent.
+	Account     AgentConnectionsItemSlackAccount     `json:"account"`
+	Permissions AgentConnectionsItemSlackPermissions `json:"permissions"`
+}
+
+// The linked Slack workspace, null when none is linked, or "hidden" when the caller lacks edit access to the agent.
+// AgentConnectionsItemSlackAccount is an untagged oneOf union: exactly one field is set after unmarshaling.
+type AgentConnectionsItemSlackAccount struct {
+	AgentConnectionsItemSlackAccountSlackWorkspace *AgentConnectionsItemSlackAccountSlackWorkspace
+	String                                         string
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *AgentConnectionsItemSlackAccount) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv AgentConnectionsItemSlackAccountSlackWorkspace
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.AgentConnectionsItemSlackAccountSlackWorkspace = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv string
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.String = vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *AgentConnectionsItemSlackAccount) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.AgentConnectionsItemSlackAccountSlackWorkspace != nil:
+		return json.MarshalEncode(enc, v.AgentConnectionsItemSlackAccountSlackWorkspace, jsonOpts)
+	case v.String != "":
+		return json.MarshalEncode(enc, v.String, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// AgentConnectionsItemSlackAccountSlackWorkspace defines a model
+type AgentConnectionsItemSlackAccountSlackWorkspace struct {
+	// Always `slack_workspace`
+	Type   string `json:"type"`
+	TeamID string `json:"team_id"`
+}
+
+// AgentConnectionsItemSlackPermissions defines a model
+type AgentConnectionsItemSlackPermissions []AgentConnectionsItemSlackPermissionsItem
+
+// AgentConnectionsItemSlackPermissionsItem defines a model
+type AgentConnectionsItemSlackPermissionsItem struct {
+	Target AgentConnectionsItemSlackPermissionsItemTarget `json:"target"`
+	// Slack verbs granted on this target ("read" | "write" | "reply_in_thread" | "react").
+	Scopes []string `json:"scopes"`
+}
+
+// AgentConnectionsItemSlackPermissionsItemTarget defines a model
+// AgentConnectionsItemSlackPermissionsItemTarget is an untagged oneOf union: exactly one field is set after unmarshaling.
+type AgentConnectionsItemSlackPermissionsItemTarget struct {
+	AgentConnectionsItemSlackPermissionsItemTargetSlackChannel           *AgentConnectionsItemSlackPermissionsItemTargetSlackChannel
+	AgentConnectionsItemSlackPermissionsItemTargetSlackAllPublicChannels *AgentConnectionsItemSlackPermissionsItemTargetSlackAllPublicChannels
+	AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels       *AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
+// decodes each further member as it is read. With type first, nothing is read twice.
+func (v *AgentConnectionsItemSlackPermissionsItemTarget) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if err != nil {
+		return err
+	}
+
+	switch tag {
+	case "slack_channel":
+		var vv AgentConnectionsItemSlackPermissionsItemTargetSlackChannel
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.AgentConnectionsItemSlackPermissionsItemTargetSlackChannel = &vv
+	case "slack_all_public_channels":
+		var vv AgentConnectionsItemSlackPermissionsItemTargetSlackAllPublicChannels
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.AgentConnectionsItemSlackPermissionsItemTargetSlackAllPublicChannels = &vv
+	case "slack_all_channels":
+		var vv AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels = &vv
+	default:
+		return jsonUnknownValue("type", tag)
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+func (v *AgentConnectionsItemSlackPermissionsItemTarget) MarshalJSONTo(enc *jsontext.Encoder) error {
+	var (
+		variant any
+		tag     string
+	)
+
+	switch {
+	case v.AgentConnectionsItemSlackPermissionsItemTargetSlackChannel != nil:
+		variant, tag = v.AgentConnectionsItemSlackPermissionsItemTargetSlackChannel, "slack_channel"
+	case v.AgentConnectionsItemSlackPermissionsItemTargetSlackAllPublicChannels != nil:
+		variant, tag = v.AgentConnectionsItemSlackPermissionsItemTargetSlackAllPublicChannels, "slack_all_public_channels"
+	case v.AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels != nil:
+		variant, tag = v.AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels, "slack_all_channels"
+	default:
+		return &json.SemanticError{Err: errors.New("no alternative set")}
+	}
+
+	out, err := json.Marshal(variant, jsonOpts)
+	if err != nil {
+		return err
+	}
+
+	if out, err = jsonFirst(out, "type", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
+}
+
+// AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels defines a model
+type AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels struct {
+	// Always `slack_all_channels`
+	Type string `json:"type"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels declares it.
+func (v *AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// AgentConnectionsItemSlackPermissionsItemTargetSlackAllPublicChannels defines a model
+type AgentConnectionsItemSlackPermissionsItemTargetSlackAllPublicChannels struct {
+	// Always `slack_all_public_channels`
+	Type string `json:"type"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemSlackPermissionsItemTargetSlackAllPublicChannels declares it.
+func (v *AgentConnectionsItemSlackPermissionsItemTargetSlackAllPublicChannels) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// AgentConnectionsItemSlackPermissionsItemTargetSlackChannel defines a model
+type AgentConnectionsItemSlackPermissionsItemTargetSlackChannel struct {
+	// Always `slack_channel`
+	Type string `json:"type"`
+	ID   string `json:"id"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemSlackPermissionsItemTargetSlackChannel declares it.
+func (v *AgentConnectionsItemSlackPermissionsItemTargetSlackChannel) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	}
+
+	return false, nil
 }
 
 // The per-agent credit limit that applies to this agent, null when uncapped, or "hidden" when the caller lacks full access to the agent. This is the effective limit computed at runtime, folding in both the agent's own limit and any workspace-admin default.
@@ -1577,8 +1577,8 @@ func (v *AgentIDParentForBlockBasedObjectResponse) unmarshalJSONMember(dec *json
 // AgentIcon defines a model
 // AgentIcon is an untagged oneOf union: exactly one field is set after unmarshaling.
 type AgentIcon struct {
-	PageIconResponse *PageIconResponse
-	AgentIconOneOf   *AgentIconOneOf
+	PageIconResponse           *PageIconResponse
+	AgentIconCustomAgentAvatar *AgentIconCustomAgentAvatar
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -1604,9 +1604,9 @@ func (v *AgentIcon) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv AgentIconOneOf
+		var vv AgentIconCustomAgentAvatar
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentIconOneOf = &vv
+			v.AgentIconCustomAgentAvatar = &vv
 			matched++
 		}
 	}
@@ -1623,23 +1623,23 @@ func (v *AgentIcon) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PageIconResponse != nil:
 		return json.MarshalEncode(enc, v.PageIconResponse, jsonOpts)
-	case v.AgentIconOneOf != nil:
-		return json.MarshalEncode(enc, v.AgentIconOneOf, jsonOpts)
+	case v.AgentIconCustomAgentAvatar != nil:
+		return json.MarshalEncode(enc, v.AgentIconCustomAgentAvatar, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// AgentIconOneOf defines a model
-type AgentIconOneOf struct {
+// AgentIconCustomAgentAvatar defines a model
+type AgentIconCustomAgentAvatar struct {
 	// Type of icon. In this case, a custom agent avatar.
 	Type string `json:"type"`
 	// The static and animated URLs for the agent avatar.
-	CustomAgentAvatar AgentIconOneOfCustomAgentAvatar `json:"custom_agent_avatar"`
+	CustomAgentAvatar AgentIconCustomAgentAvatarCustomAgentAvatar `json:"custom_agent_avatar"`
 }
 
 // The static and animated URLs for the agent avatar.
-type AgentIconOneOfCustomAgentAvatar struct {
+type AgentIconCustomAgentAvatarCustomAgentAvatar struct {
 	// The URL of the static custom agent avatar.
 	StaticURL string `json:"static_url"`
 	// The URL of the animated custom agent avatar.
@@ -1724,8 +1724,8 @@ func (v *AgentLastRunAt) MarshalJSONTo(enc *jsontext.Encoder) error {
 // AgentModel defines a model
 // AgentModel is an untagged oneOf union: exactly one field is set after unmarshaling.
 type AgentModel struct {
-	AgentModelOneOf  *AgentModelOneOf
-	AgentModelOneOf2 *AgentModelOneOf2
+	AgentModelAuto   *AgentModelAuto
+	AgentModelPinned *AgentModelPinned
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member mode names the alternative, which then
@@ -1738,19 +1738,19 @@ func (v *AgentModel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	switch tag {
 	case "auto":
-		var vv AgentModelOneOf
+		var vv AgentModelAuto
 		if err := jsonMembersFrom(dec, "mode", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.AgentModelOneOf = &vv
+		v.AgentModelAuto = &vv
 	case "pinned":
-		var vv AgentModelOneOf2
+		var vv AgentModelPinned
 		if err := jsonMembersFrom(dec, "mode", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.AgentModelOneOf2 = &vv
+		v.AgentModelPinned = &vv
 	default:
 		return jsonUnknownValue("mode", tag)
 	}
@@ -1766,10 +1766,10 @@ func (v *AgentModel) MarshalJSONTo(enc *jsontext.Encoder) error {
 	)
 
 	switch {
-	case v.AgentModelOneOf != nil:
-		variant, tag = v.AgentModelOneOf, "auto"
-	case v.AgentModelOneOf2 != nil:
-		variant, tag = v.AgentModelOneOf2, "pinned"
+	case v.AgentModelAuto != nil:
+		variant, tag = v.AgentModelAuto, "auto"
+	case v.AgentModelPinned != nil:
+		variant, tag = v.AgentModelPinned, "pinned"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -1786,14 +1786,14 @@ func (v *AgentModel) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// AgentModelOneOf defines a model
-type AgentModelOneOf struct {
+// AgentModelAuto defines a model
+type AgentModelAuto struct {
 	// Always `auto`
 	Mode string `json:"mode"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentModelOneOf declares it.
-func (v *AgentModelOneOf) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentModelAuto declares it.
+func (v *AgentModelAuto) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "mode":
 		return true, json.UnmarshalDecode(dec, &v.Mode, jsonOptsOf(dec))
@@ -1802,16 +1802,16 @@ func (v *AgentModelOneOf) unmarshalJSONMember(dec *jsontext.Decoder, name string
 	return false, nil
 }
 
-// AgentModelOneOf2 defines a model
-type AgentModelOneOf2 struct {
+// AgentModelPinned defines a model
+type AgentModelPinned struct {
 	// Always `pinned`
 	Mode string `json:"mode"`
 	// The public model this agent maps to (e.g. "claude-sonnet-5"), or null for a pre-release / early-access model.
 	ID string `json:"id"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentModelOneOf2 declares it.
-func (v *AgentModelOneOf2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentModelPinned declares it.
+func (v *AgentModelPinned) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "mode":
 		return true, json.UnmarshalDecode(dec, &v.Mode, jsonOptsOf(dec))
@@ -1915,8 +1915,8 @@ type AgentTriggersItemSchedule struct {
 // When the schedule stops, when it is bounded.
 // AgentTriggersItemScheduleEnd is an untagged oneOf union: exactly one field is set after unmarshaling.
 type AgentTriggersItemScheduleEnd struct {
-	AgentTriggersItemScheduleEndOneOf  *AgentTriggersItemScheduleEndOneOf
-	AgentTriggersItemScheduleEndOneOf2 *AgentTriggersItemScheduleEndOneOf2
+	AgentTriggersItemScheduleEndDate  *AgentTriggersItemScheduleEndDate
+	AgentTriggersItemScheduleEndCount *AgentTriggersItemScheduleEndCount
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
@@ -1929,19 +1929,19 @@ func (v *AgentTriggersItemScheduleEnd) UnmarshalJSONFrom(dec *jsontext.Decoder) 
 
 	switch tag {
 	case "date":
-		var vv AgentTriggersItemScheduleEndOneOf
+		var vv AgentTriggersItemScheduleEndDate
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.AgentTriggersItemScheduleEndOneOf = &vv
+		v.AgentTriggersItemScheduleEndDate = &vv
 	case "count":
-		var vv AgentTriggersItemScheduleEndOneOf2
+		var vv AgentTriggersItemScheduleEndCount
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.AgentTriggersItemScheduleEndOneOf2 = &vv
+		v.AgentTriggersItemScheduleEndCount = &vv
 	default:
 		return jsonUnknownValue("type", tag)
 	}
@@ -1957,10 +1957,10 @@ func (v *AgentTriggersItemScheduleEnd) MarshalJSONTo(enc *jsontext.Encoder) erro
 	)
 
 	switch {
-	case v.AgentTriggersItemScheduleEndOneOf != nil:
-		variant, tag = v.AgentTriggersItemScheduleEndOneOf, "date"
-	case v.AgentTriggersItemScheduleEndOneOf2 != nil:
-		variant, tag = v.AgentTriggersItemScheduleEndOneOf2, "count"
+	case v.AgentTriggersItemScheduleEndDate != nil:
+		variant, tag = v.AgentTriggersItemScheduleEndDate, "date"
+	case v.AgentTriggersItemScheduleEndCount != nil:
+		variant, tag = v.AgentTriggersItemScheduleEndCount, "count"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -1977,41 +1977,41 @@ func (v *AgentTriggersItemScheduleEnd) MarshalJSONTo(enc *jsontext.Encoder) erro
 	return enc.WriteValue(out)
 }
 
-// AgentTriggersItemScheduleEndOneOf defines a model
-type AgentTriggersItemScheduleEndOneOf struct {
-	// Always `date`
-	Type string `json:"type"`
-	// ISO 8601 timestamp when the schedule stops.
-	EndAt string `json:"end_at"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentTriggersItemScheduleEndOneOf declares it.
-func (v *AgentTriggersItemScheduleEndOneOf) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "end_at":
-		return true, json.UnmarshalDecode(dec, &v.EndAt, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// AgentTriggersItemScheduleEndOneOf2 defines a model
-type AgentTriggersItemScheduleEndOneOf2 struct {
+// AgentTriggersItemScheduleEndCount defines a model
+type AgentTriggersItemScheduleEndCount struct {
 	// Always `count`
 	Type string `json:"type"`
 	// Number of occurrences after which the schedule stops.
 	Occurrences int `json:"occurrences"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentTriggersItemScheduleEndOneOf2 declares it.
-func (v *AgentTriggersItemScheduleEndOneOf2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentTriggersItemScheduleEndCount declares it.
+func (v *AgentTriggersItemScheduleEndCount) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
 	case "occurrences":
 		return true, json.UnmarshalDecode(dec, &v.Occurrences, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// AgentTriggersItemScheduleEndDate defines a model
+type AgentTriggersItemScheduleEndDate struct {
+	// Always `date`
+	Type string `json:"type"`
+	// ISO 8601 timestamp when the schedule stops.
+	EndAt string `json:"end_at"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentTriggersItemScheduleEndDate declares it.
+func (v *AgentTriggersItemScheduleEndDate) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "end_at":
+		return true, json.UnmarshalDecode(dec, &v.EndAt, jsonOptsOf(dec))
 	}
 
 	return false, nil
@@ -2173,13 +2173,6 @@ func (e AsyncTaskRestOperationName) Valid() bool {
 	default:
 		return false
 	}
-}
-
-// Audio3 defines a model
-type Audio3 struct {
-	Audio  MediaContentWithFileAndCaptionRequest `json:"audio"`
-	Type   string                                `json:"type,omitzero"`
-	Object string                                `json:"object,omitzero"`
 }
 
 // BaseWebhookPayload defines a model
@@ -2552,41 +2545,272 @@ func (v *BlockIDParentForBlockBasedObject) unmarshalJSONMember(dec *jsontext.Dec
 	return false, nil
 }
 
+// BlockObjectAudio defines a model
+type BlockObjectAudio struct {
+	Audio  MediaContentWithFileAndCaptionRequest `json:"audio"`
+	Type   string                                `json:"type,omitzero"`
+	Object string                                `json:"object,omitzero"`
+}
+
+// BlockObjectBookmark defines a model
+type BlockObjectBookmark struct {
+	Bookmark MediaContentWithURLAndCaptionRequest `json:"bookmark"`
+	Type     string                               `json:"type,omitzero"`
+	Object   string                               `json:"object,omitzero"`
+}
+
+// BlockObjectBreadcrumb defines a model
+type BlockObjectBreadcrumb struct {
+	Breadcrumb EmptyObject `json:"breadcrumb"`
+	Type       string      `json:"type,omitzero"`
+	Object     string      `json:"object,omitzero"`
+}
+
+// BlockObjectCallout defines a model
+type BlockObjectCallout struct {
+	RichText []RichTextItemRequest `json:"rich_text"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color    APIColor                                      `json:"color,omitzero"`
+	Children []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
+	Icon     PageIconRequest                               `json:"icon,omitzero"`
+}
+
+// BlockObjectCode defines a model
+type BlockObjectCode struct {
+	Code   BlockObjectCode2 `json:"code"`
+	Type   string           `json:"type,omitzero"`
+	Object string           `json:"object,omitzero"`
+}
+
+// BlockObjectCode2 defines a model
+type BlockObjectCode2 struct {
+	RichText []RichTextItemRequest `json:"rich_text"`
+	Language LanguageRequest       `json:"language"`
+	Caption  []RichTextItemRequest `json:"caption,omitzero"`
+}
+
+// BlockObjectColumn defines a model
+type BlockObjectColumn struct {
+	Column ColumnWithChildrenRequest `json:"column"`
+	Type   string                    `json:"type,omitzero"`
+	Object string                    `json:"object,omitzero"`
+}
+
+// BlockObjectDivider defines a model
+type BlockObjectDivider struct {
+	Divider EmptyObject `json:"divider"`
+	Type    string      `json:"type,omitzero"`
+	Object  string      `json:"object,omitzero"`
+}
+
+// BlockObjectEmbed defines a model
+type BlockObjectEmbed struct {
+	Embed  BlockObjectEmbed2 `json:"embed"`
+	Type   string            `json:"type,omitzero"`
+	Object string            `json:"object,omitzero"`
+}
+
+// BlockObjectEmbed2 defines a model
+// BlockObjectEmbed2 is an untagged anyOf union: at least one field is set after unmarshaling.
+type BlockObjectEmbed2 struct {
+	MediaContentWithURLAndCaptionRequest *MediaContentWithURLAndCaptionRequest
+	EmbedFileUpload                      *EmbedFileUpload
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *BlockObjectEmbed2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv MediaContentWithURLAndCaptionRequest
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.MediaContentWithURLAndCaptionRequest = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv EmbedFileUpload
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.EmbedFileUpload = &vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *BlockObjectEmbed2) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.MediaContentWithURLAndCaptionRequest != nil:
+		return json.MarshalEncode(enc, v.MediaContentWithURLAndCaptionRequest, jsonOpts)
+	case v.EmbedFileUpload != nil:
+		return json.MarshalEncode(enc, v.EmbedFileUpload, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// BlockObjectEquation defines a model
+type BlockObjectEquation struct {
+	Equation ContentWithExpression `json:"equation"`
+	Type     string                `json:"type,omitzero"`
+	Object   string                `json:"object,omitzero"`
+}
+
+// BlockObjectFile defines a model
+type BlockObjectFile struct {
+	File   MediaContentWithFileNameAndCaptionRequest `json:"file"`
+	Type   string                                    `json:"type,omitzero"`
+	Object string                                    `json:"object,omitzero"`
+}
+
+// BlockObjectHeading defines a model
+type BlockObjectHeading struct {
+	RichText []RichTextItemRequest `json:"rich_text"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color        APIColor                                      `json:"color,omitzero"`
+	IsToggleable *bool                                         `json:"is_toggleable,omitzero"`
+	Children     []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
+}
+
+// BlockObjectImage defines a model
+type BlockObjectImage struct {
+	Image  MediaContentWithFileAndCaptionRequest `json:"image"`
+	Type   string                                `json:"type,omitzero"`
+	Object string                                `json:"object,omitzero"`
+}
+
+// BlockObjectLinkToPage defines a model
+type BlockObjectLinkToPage struct {
+	LinkToPage BlockObjectLinkToPageLinkToPage `json:"link_to_page"`
+	Type       string                          `json:"type,omitzero"`
+	Object     string                          `json:"object,omitzero"`
+}
+
+// BlockObjectLinkToPageLinkToPage defines a model
+type BlockObjectLinkToPageLinkToPage struct {
+	Type       string    `json:"type"`
+	PageID     IDRequest `json:"page_id,omitzero"`
+	DatabaseID IDRequest `json:"database_id,omitzero"`
+	CommentID  IDRequest `json:"comment_id,omitzero"`
+}
+
+// tagsOfBlockObjectLinkToPageLinkToPage says, for each value of type, whether the member named after it must, may or must not be set.
+var tagsOfBlockObjectLinkToPageLinkToPage = map[string]jsonTagMember{
+	"page_id":     jsonTagRequired,
+	"database_id": jsonTagRequired,
+	"comment_id":  jsonTagRequired,
+}
+
+// taggedMembers returns those of the members named after a value of type that are set.
+func (v *BlockObjectLinkToPageLinkToPage) taggedMembers() []string {
+	var set []string
+	if v.PageID != "" {
+		set = append(set, "page_id")
+	}
+	if v.DatabaseID != "" {
+		set = append(set, "database_id")
+	}
+	if v.CommentID != "" {
+		set = append(set, "comment_id")
+	}
+
+	return set
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those named after a
+// value of type, only the one it names is set.
+func (v *BlockObjectLinkToPageLinkToPage) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain BlockObjectLinkToPageLinkToPage
+
+	*v = BlockObjectLinkToPageLinkToPage{}
+	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
+		return err
+	}
+
+	return jsonCheckTag("type", string(v.Type), tagsOfBlockObjectLinkToPageLinkToPage, v.taggedMembers(), jsonStrict(dec))
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
+// the value whose member is set.
+func (v *BlockObjectLinkToPageLinkToPage) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain BlockObjectLinkToPageLinkToPage
+
+	out, set := *v, v.taggedMembers()
+	if out.Type == "" && len(set) == 1 {
+		out.Type = string(set[0])
+	}
+
+	if err := jsonCheckTag("type", string(out.Type), tagsOfBlockObjectLinkToPageLinkToPage, set, true); err != nil {
+		return err
+	}
+
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+}
+
+// BlockObjectPdf defines a model
+type BlockObjectPdf struct {
+	PDF    MediaContentWithFileAndCaptionRequest `json:"pdf"`
+	Type   string                                `json:"type,omitzero"`
+	Object string                                `json:"object,omitzero"`
+}
+
+// BlockObjectQuote defines a model
+type BlockObjectQuote struct {
+	RichText []RichTextItemRequest `json:"rich_text"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color    APIColor                                      `json:"color,omitzero"`
+	Children []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
+}
+
 // BlockObjectRequest defines a model
 type BlockObjectRequest struct {
 	Object           string                                     `json:"object,omitzero"`
 	Type             string                                     `json:"type"`
-	Embed            *Embed2                                    `json:"embed,omitzero"`
+	Embed            *BlockObjectEmbed2                         `json:"embed,omitzero"`
 	Bookmark         *MediaContentWithURLAndCaptionRequest      `json:"bookmark,omitzero"`
 	Image            *MediaContentWithFileAndCaptionRequest     `json:"image,omitzero"`
 	Video            *MediaContentWithFileAndCaptionRequest     `json:"video,omitzero"`
 	PDF              *MediaContentWithFileAndCaptionRequest     `json:"pdf,omitzero"`
 	File             *MediaContentWithFileNameAndCaptionRequest `json:"file,omitzero"`
 	Audio            *MediaContentWithFileAndCaptionRequest     `json:"audio,omitzero"`
-	Code             *Code2                                     `json:"code,omitzero"`
+	Code             *BlockObjectCode2                          `json:"code,omitzero"`
 	Equation         *ContentWithExpression                     `json:"equation,omitzero"`
 	Divider          *EmptyObject                               `json:"divider,omitzero"`
 	Breadcrumb       *EmptyObject                               `json:"breadcrumb,omitzero"`
 	Tab              *TabRequestWithNestedTabItemChildren       `json:"tab,omitzero"`
-	TableOfContents  *TableOfContentsTableOfContents            `json:"table_of_contents,omitzero"`
-	LinkToPage       *LinkToPageLinkToPage                      `json:"link_to_page,omitzero"`
+	TableOfContents  *BlockObjectTableOfContentsTableOfContents `json:"table_of_contents,omitzero"`
+	LinkToPage       *BlockObjectLinkToPageLinkToPage           `json:"link_to_page,omitzero"`
 	TableRow         *ContentWithTableRowRequest                `json:"table_row,omitzero"`
 	Table            *TableRequestWithTableRowChildren          `json:"table,omitzero"`
 	ColumnList       *ColumnListRequest                         `json:"column_list,omitzero"`
 	Column           *ColumnWithChildrenRequest                 `json:"column,omitzero"`
-	Heading1         *Heading                                   `json:"heading_1,omitzero"`
-	Heading2         *Heading                                   `json:"heading_2,omitzero"`
-	Heading3         *Heading                                   `json:"heading_3,omitzero"`
-	Heading4         *Heading                                   `json:"heading_4,omitzero"`
-	Paragraph        *Callout5                                  `json:"paragraph,omitzero"`
-	BulletedListItem *Quote5                                    `json:"bulleted_list_item,omitzero"`
-	NumberedListItem *Quote5                                    `json:"numbered_list_item,omitzero"`
-	Quote            *Quote5                                    `json:"quote,omitzero"`
-	ToDo             *ToDoToDo2                                 `json:"to_do,omitzero"`
-	Toggle           *Quote5                                    `json:"toggle,omitzero"`
-	Template         *TemplateTemplate                          `json:"template,omitzero"`
-	Callout          *Callout5                                  `json:"callout,omitzero"`
-	SyncedBlock      *SyncedBlockSyncedBlock2                   `json:"synced_block,omitzero"`
+	Heading1         *BlockObjectHeading                        `json:"heading_1,omitzero"`
+	Heading2         *BlockObjectHeading                        `json:"heading_2,omitzero"`
+	Heading3         *BlockObjectHeading                        `json:"heading_3,omitzero"`
+	Heading4         *BlockObjectHeading                        `json:"heading_4,omitzero"`
+	Paragraph        *BlockObjectCallout                        `json:"paragraph,omitzero"`
+	BulletedListItem *BlockObjectQuote                          `json:"bulleted_list_item,omitzero"`
+	NumberedListItem *BlockObjectQuote                          `json:"numbered_list_item,omitzero"`
+	Quote            *BlockObjectQuote                          `json:"quote,omitzero"`
+	ToDo             *BlockObjectRequestToDoToDo                `json:"to_do,omitzero"`
+	Toggle           *BlockObjectQuote                          `json:"toggle,omitzero"`
+	Template         *BlockObjectRequestTemplateTemplate        `json:"template,omitzero"`
+	Callout          *BlockObjectCallout                        `json:"callout,omitzero"`
+	SyncedBlock      *BlockObjectRequestSyncedBlockSyncedBlock  `json:"synced_block,omitzero"`
 }
 
 // tagsOfBlockObjectRequest says, for each value of type, whether the member named after it must, may or must not be set.
@@ -2754,24 +2978,45 @@ func (v *BlockObjectRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
+// BlockObjectRequestSyncedBlockSyncedBlock defines a model
+type BlockObjectRequestSyncedBlockSyncedBlock struct {
+	SyncedFrom BlockObjectSyncedBlockSyncedBlockSyncedFrom   `json:"synced_from"`
+	Children   []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
+}
+
+// BlockObjectRequestTemplateTemplate defines a model
+type BlockObjectRequestTemplateTemplate struct {
+	RichText []RichTextItemRequest                         `json:"rich_text"`
+	Children []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
+}
+
+// BlockObjectRequestToDoToDo defines a model
+type BlockObjectRequestToDoToDo struct {
+	RichText []RichTextItemRequest `json:"rich_text"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color    APIColor                                      `json:"color,omitzero"`
+	Children []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
+	Checked  *bool                                         `json:"checked,omitzero"`
+}
+
 // BlockObjectRequestWithoutChildren defines a model
 type BlockObjectRequestWithoutChildren struct {
 	Object           string                                     `json:"object,omitzero"`
 	Type             string                                     `json:"type"`
-	Embed            *Embed2                                    `json:"embed,omitzero"`
+	Embed            *BlockObjectEmbed2                         `json:"embed,omitzero"`
 	Bookmark         *MediaContentWithURLAndCaptionRequest      `json:"bookmark,omitzero"`
 	Image            *MediaContentWithFileAndCaptionRequest     `json:"image,omitzero"`
 	Video            *MediaContentWithFileAndCaptionRequest     `json:"video,omitzero"`
 	PDF              *MediaContentWithFileAndCaptionRequest     `json:"pdf,omitzero"`
 	File             *MediaContentWithFileNameAndCaptionRequest `json:"file,omitzero"`
 	Audio            *MediaContentWithFileAndCaptionRequest     `json:"audio,omitzero"`
-	Code             *Code2                                     `json:"code,omitzero"`
+	Code             *BlockObjectCode2                          `json:"code,omitzero"`
 	Equation         *ContentWithExpression                     `json:"equation,omitzero"`
 	Divider          *EmptyObject                               `json:"divider,omitzero"`
 	Breadcrumb       *EmptyObject                               `json:"breadcrumb,omitzero"`
 	Tab              *EmptyObject                               `json:"tab,omitzero"`
-	TableOfContents  *TableOfContentsTableOfContents            `json:"table_of_contents,omitzero"`
-	LinkToPage       *LinkToPageLinkToPage                      `json:"link_to_page,omitzero"`
+	TableOfContents  *BlockObjectTableOfContentsTableOfContents `json:"table_of_contents,omitzero"`
+	LinkToPage       *BlockObjectLinkToPageLinkToPage           `json:"link_to_page,omitzero"`
 	TableRow         *ContentWithTableRowRequest                `json:"table_row,omitzero"`
 	Heading1         *HeaderContentWithRichTextAndColorRequest  `json:"heading_1,omitzero"`
 	Heading2         *HeaderContentWithRichTextAndColorRequest  `json:"heading_2,omitzero"`
@@ -2781,11 +3026,11 @@ type BlockObjectRequestWithoutChildren struct {
 	BulletedListItem *ContentWithRichTextAndColorRequest        `json:"bulleted_list_item,omitzero"`
 	NumberedListItem *ContentWithRichTextAndColorRequest        `json:"numbered_list_item,omitzero"`
 	Quote            *ContentWithRichTextAndColorRequest        `json:"quote,omitzero"`
-	ToDo             *ToDoToDo3                                 `json:"to_do,omitzero"`
+	ToDo             *BlockObjectRequestWithoutChildrenToDoToDo `json:"to_do,omitzero"`
 	Toggle           *ContentWithRichTextAndColorRequest        `json:"toggle,omitzero"`
 	Template         *ContentWithRichTextRequest                `json:"template,omitzero"`
 	Callout          *ContentWithRichTextColorAndIcon           `json:"callout,omitzero"`
-	SyncedBlock      *SyncedBlockSyncedBlock                    `json:"synced_block,omitzero"`
+	SyncedBlock      *UpdateABlockAnyOfSyncedBlockSyncedBlock   `json:"synced_block,omitzero"`
 }
 
 // tagsOfBlockObjectRequestWithoutChildren says, for each value of type, whether the member named after it must, may or must not be set.
@@ -2941,39 +3186,80 @@ func (v *BlockObjectRequestWithoutChildren) MarshalJSONTo(enc *jsontext.Encoder)
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
+// BlockObjectRequestWithoutChildrenToDoToDo defines a model
+type BlockObjectRequestWithoutChildrenToDoToDo struct {
+	RichText []RichTextItemRequest `json:"rich_text"`
+	Checked  *bool                 `json:"checked,omitzero"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color APIColor `json:"color,omitzero"`
+}
+
+// BlockObjectSyncedBlockSyncedBlockSyncedFrom defines a model
+type BlockObjectSyncedBlockSyncedBlockSyncedFrom struct {
+	BlockID IDRequest `json:"block_id"`
+	Type    string    `json:"type,omitzero"`
+}
+
+// BlockObjectTable defines a model
+type BlockObjectTable struct {
+	Table  TableRequestWithTableRowChildren `json:"table"`
+	Type   string                           `json:"type,omitzero"`
+	Object string                           `json:"object,omitzero"`
+}
+
+// BlockObjectTableOfContents defines a model
+type BlockObjectTableOfContents struct {
+	TableOfContents BlockObjectTableOfContentsTableOfContents `json:"table_of_contents"`
+	Type            string                                    `json:"type,omitzero"`
+	Object          string                                    `json:"object,omitzero"`
+}
+
+// BlockObjectTableOfContentsTableOfContents defines a model
+type BlockObjectTableOfContentsTableOfContents struct {
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color APIColor `json:"color,omitzero"`
+}
+
+// BlockObjectVideo defines a model
+type BlockObjectVideo struct {
+	Video  MediaContentWithFileAndCaptionRequest `json:"video"`
+	Type   string                                `json:"type,omitzero"`
+	Object string                                `json:"object,omitzero"`
+}
+
 // BlockObjectWithSingleLevelOfChildrenRequest defines a model
 type BlockObjectWithSingleLevelOfChildrenRequest struct {
-	Object           string                                         `json:"object,omitzero"`
-	Type             string                                         `json:"type"`
-	Embed            *Embed2                                        `json:"embed,omitzero"`
-	Bookmark         *MediaContentWithURLAndCaptionRequest          `json:"bookmark,omitzero"`
-	Image            *MediaContentWithFileAndCaptionRequest         `json:"image,omitzero"`
-	Video            *MediaContentWithFileAndCaptionRequest         `json:"video,omitzero"`
-	PDF              *MediaContentWithFileAndCaptionRequest         `json:"pdf,omitzero"`
-	File             *MediaContentWithFileNameAndCaptionRequest     `json:"file,omitzero"`
-	Audio            *MediaContentWithFileAndCaptionRequest         `json:"audio,omitzero"`
-	Code             *Code2                                         `json:"code,omitzero"`
-	Equation         *ContentWithExpression                         `json:"equation,omitzero"`
-	Divider          *EmptyObject                                   `json:"divider,omitzero"`
-	Breadcrumb       *EmptyObject                                   `json:"breadcrumb,omitzero"`
-	Tab              *TabRequestWithTabItemChildren                 `json:"tab,omitzero"`
-	TableOfContents  *TableOfContentsTableOfContents                `json:"table_of_contents,omitzero"`
-	LinkToPage       *LinkToPageLinkToPage                          `json:"link_to_page,omitzero"`
-	TableRow         *ContentWithTableRowRequest                    `json:"table_row,omitzero"`
-	Heading1         *HeaderContentWithSingleLevelOfChildrenRequest `json:"heading_1,omitzero"`
-	Heading2         *HeaderContentWithSingleLevelOfChildrenRequest `json:"heading_2,omitzero"`
-	Heading3         *HeaderContentWithSingleLevelOfChildrenRequest `json:"heading_3,omitzero"`
-	Heading4         *HeaderContentWithSingleLevelOfChildrenRequest `json:"heading_4,omitzero"`
-	Paragraph        *ParagraphWithSingleLevelOfChildren            `json:"paragraph,omitzero"`
-	BulletedListItem *ContentWithSingleLevelOfChildrenRequest       `json:"bulleted_list_item,omitzero"`
-	NumberedListItem *ContentWithSingleLevelOfChildrenRequest       `json:"numbered_list_item,omitzero"`
-	Quote            *ContentWithSingleLevelOfChildrenRequest       `json:"quote,omitzero"`
-	Table            *TableRequestWithTableRowChildren              `json:"table,omitzero"`
-	ToDo             *ToDoToDo4                                     `json:"to_do,omitzero"`
-	Toggle           *ContentWithSingleLevelOfChildrenRequest       `json:"toggle,omitzero"`
-	Template         *TemplateTemplate2                             `json:"template,omitzero"`
-	Callout          *ParagraphWithSingleLevelOfChildren            `json:"callout,omitzero"`
-	SyncedBlock      *SyncedBlockSyncedBlock4                       `json:"synced_block,omitzero"`
+	Object           string                                                             `json:"object,omitzero"`
+	Type             string                                                             `json:"type"`
+	Embed            *BlockObjectEmbed2                                                 `json:"embed,omitzero"`
+	Bookmark         *MediaContentWithURLAndCaptionRequest                              `json:"bookmark,omitzero"`
+	Image            *MediaContentWithFileAndCaptionRequest                             `json:"image,omitzero"`
+	Video            *MediaContentWithFileAndCaptionRequest                             `json:"video,omitzero"`
+	PDF              *MediaContentWithFileAndCaptionRequest                             `json:"pdf,omitzero"`
+	File             *MediaContentWithFileNameAndCaptionRequest                         `json:"file,omitzero"`
+	Audio            *MediaContentWithFileAndCaptionRequest                             `json:"audio,omitzero"`
+	Code             *BlockObjectCode2                                                  `json:"code,omitzero"`
+	Equation         *ContentWithExpression                                             `json:"equation,omitzero"`
+	Divider          *EmptyObject                                                       `json:"divider,omitzero"`
+	Breadcrumb       *EmptyObject                                                       `json:"breadcrumb,omitzero"`
+	Tab              *TabRequestWithTabItemChildren                                     `json:"tab,omitzero"`
+	TableOfContents  *BlockObjectTableOfContentsTableOfContents                         `json:"table_of_contents,omitzero"`
+	LinkToPage       *BlockObjectLinkToPageLinkToPage                                   `json:"link_to_page,omitzero"`
+	TableRow         *ContentWithTableRowRequest                                        `json:"table_row,omitzero"`
+	Heading1         *HeaderContentWithSingleLevelOfChildrenRequest                     `json:"heading_1,omitzero"`
+	Heading2         *HeaderContentWithSingleLevelOfChildrenRequest                     `json:"heading_2,omitzero"`
+	Heading3         *HeaderContentWithSingleLevelOfChildrenRequest                     `json:"heading_3,omitzero"`
+	Heading4         *HeaderContentWithSingleLevelOfChildrenRequest                     `json:"heading_4,omitzero"`
+	Paragraph        *ParagraphWithSingleLevelOfChildren                                `json:"paragraph,omitzero"`
+	BulletedListItem *ContentWithSingleLevelOfChildrenRequest                           `json:"bulleted_list_item,omitzero"`
+	NumberedListItem *ContentWithSingleLevelOfChildrenRequest                           `json:"numbered_list_item,omitzero"`
+	Quote            *ContentWithSingleLevelOfChildrenRequest                           `json:"quote,omitzero"`
+	Table            *TableRequestWithTableRowChildren                                  `json:"table,omitzero"`
+	ToDo             *BlockObjectWithSingleLevelOfChildrenRequestToDoToDo               `json:"to_do,omitzero"`
+	Toggle           *ContentWithSingleLevelOfChildrenRequest                           `json:"toggle,omitzero"`
+	Template         *BlockObjectWithSingleLevelOfChildrenRequestTemplateTemplate       `json:"template,omitzero"`
+	Callout          *ParagraphWithSingleLevelOfChildren                                `json:"callout,omitzero"`
+	SyncedBlock      *BlockObjectWithSingleLevelOfChildrenRequestSyncedBlockSyncedBlock `json:"synced_block,omitzero"`
 }
 
 // tagsOfBlockObjectWithSingleLevelOfChildrenRequest says, for each value of type, whether the member named after it must, may or must not be set.
@@ -3133,6 +3419,27 @@ func (v *BlockObjectWithSingleLevelOfChildrenRequest) MarshalJSONTo(enc *jsontex
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
+// BlockObjectWithSingleLevelOfChildrenRequestSyncedBlockSyncedBlock defines a model
+type BlockObjectWithSingleLevelOfChildrenRequestSyncedBlockSyncedBlock struct {
+	SyncedFrom BlockObjectSyncedBlockSyncedBlockSyncedFrom `json:"synced_from"`
+	Children   []BlockObjectRequestWithoutChildren         `json:"children,omitzero"`
+}
+
+// BlockObjectWithSingleLevelOfChildrenRequestTemplateTemplate defines a model
+type BlockObjectWithSingleLevelOfChildrenRequestTemplateTemplate struct {
+	RichText []RichTextItemRequest               `json:"rich_text"`
+	Children []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
+}
+
+// BlockObjectWithSingleLevelOfChildrenRequestToDoToDo defines a model
+type BlockObjectWithSingleLevelOfChildrenRequestToDoToDo struct {
+	RichText []RichTextItemRequest `json:"rich_text"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color    APIColor                            `json:"color,omitzero"`
+	Children []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
+	Checked  *bool                               `json:"checked,omitzero"`
+}
+
 // BoardViewConfigCardLayout2 defines a model
 type BoardViewConfigCardLayout2 string
 
@@ -3276,13 +3583,6 @@ func (v *BoardViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, nam
 	return false, nil
 }
 
-// Bookmark3 defines a model
-type Bookmark3 struct {
-	Bookmark MediaContentWithURLAndCaptionRequest `json:"bookmark"`
-	Type     string                               `json:"type,omitzero"`
-	Object   string                               `json:"object,omitzero"`
-}
-
 // BotInfoResponse defines a model
 type BotInfoResponse struct {
 	// Details about the owner of the bot.
@@ -3299,7 +3599,7 @@ type BotInfoResponse struct {
 type BotInfoResponseOwner struct {
 	Type string `json:"type"`
 	// Details about the owner of the bot, when the `type` of the owner is `user`. This means the bot is for a integration.
-	User *UserUser2 `json:"user,omitzero"`
+	User *BotInfoResponseOwnerUserUser `json:"user,omitzero"`
 	// Always true for workspace parent.
 	Workspace *bool `json:"workspace,omitzero"`
 }
@@ -3351,6 +3651,78 @@ func (v *BotInfoResponseOwner) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+}
+
+// Details about the owner of the bot, when the `type` of the owner is `user`. This means the bot is for a integration.
+// BotInfoResponseOwnerUserUser is an untagged oneOf union: exactly one field is set after unmarshaling.
+type BotInfoResponseOwnerUserUser struct {
+	BotInfoResponseOwnerUserUserPerson *BotInfoResponseOwnerUserUserPerson
+	PartialUserObjectResponse          *PartialUserObjectResponse
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *BotInfoResponseOwnerUserUser) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv BotInfoResponseOwnerUserUserPerson
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.BotInfoResponseOwnerUserUserPerson = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv PartialUserObjectResponse
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.PartialUserObjectResponse = &vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *BotInfoResponseOwnerUserUser) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.BotInfoResponseOwnerUserUserPerson != nil:
+		return json.MarshalEncode(enc, v.BotInfoResponseOwnerUserUserPerson, jsonOpts)
+	case v.PartialUserObjectResponse != nil:
+		return json.MarshalEncode(enc, v.PartialUserObjectResponse, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// BotInfoResponseOwnerUserUserPerson defines a model
+type BotInfoResponseOwnerUserUserPerson struct {
+	// The ID of the user.
+	ID IDResponse `json:"id"`
+	// The user object type name.
+	Object string `json:"object"`
+	// The name of the user.
+	Name string `json:"name"`
+	// The avatar URL of the user.
+	AvatarURL string `json:"avatar_url"`
+	// The type of the user.
+	Type string `json:"type"`
+	// The person info of the user.
+	Person PersonUserObjectPerson `json:"person"`
 }
 
 // Limits and restrictions that apply to the bot's workspace
@@ -3436,13 +3808,6 @@ func (v *BotUserObjectResponseBot) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// Breadcrumb3 defines a model
-type Breadcrumb3 struct {
-	Breadcrumb EmptyObject `json:"breadcrumb"`
-	Type       string      `json:"type,omitzero"`
-	Object     string      `json:"object,omitzero"`
 }
 
 // ButtonSimplePropertyValueResponse defines a model
@@ -3548,15 +3913,6 @@ func (e CalendarViewConfigViewRange) Valid() bool {
 	default:
 		return false
 	}
-}
-
-// Callout5 defines a model
-type Callout5 struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                                      `json:"color,omitzero"`
-	Children []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
-	Icon     PageIconRequest                               `json:"icon,omitzero"`
 }
 
 // CancelSession defines a model
@@ -4171,8 +4527,8 @@ type CheckboxPropertyConfiguration struct {
 // CheckboxPropertyFilter defines a model
 // CheckboxPropertyFilter is an untagged anyOf union: at least one field is set after unmarshaling.
 type CheckboxPropertyFilter struct {
-	CheckboxPropertyFilterAnyOf0 *CheckboxPropertyFilterAnyOf0
-	CheckboxPropertyFilterAnyOf1 *CheckboxPropertyFilterAnyOf1
+	CheckboxPropertyFilterEquals       *CheckboxPropertyFilterEquals
+	CheckboxPropertyFilterDoesNotEqual *CheckboxPropertyFilterDoesNotEqual
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -4187,17 +4543,17 @@ func (v *CheckboxPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 	var matched int
 
 	{
-		var vv CheckboxPropertyFilterAnyOf0
+		var vv CheckboxPropertyFilterEquals
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CheckboxPropertyFilterAnyOf0 = &vv
+			v.CheckboxPropertyFilterEquals = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv CheckboxPropertyFilterAnyOf1
+		var vv CheckboxPropertyFilterDoesNotEqual
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CheckboxPropertyFilterAnyOf1 = &vv
+			v.CheckboxPropertyFilterDoesNotEqual = &vv
 			matched++
 		}
 	}
@@ -4212,23 +4568,23 @@ func (v *CheckboxPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *CheckboxPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.CheckboxPropertyFilterAnyOf0 != nil:
-		return json.MarshalEncode(enc, v.CheckboxPropertyFilterAnyOf0, jsonOpts)
-	case v.CheckboxPropertyFilterAnyOf1 != nil:
-		return json.MarshalEncode(enc, v.CheckboxPropertyFilterAnyOf1, jsonOpts)
+	case v.CheckboxPropertyFilterEquals != nil:
+		return json.MarshalEncode(enc, v.CheckboxPropertyFilterEquals, jsonOpts)
+	case v.CheckboxPropertyFilterDoesNotEqual != nil:
+		return json.MarshalEncode(enc, v.CheckboxPropertyFilterDoesNotEqual, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// CheckboxPropertyFilterAnyOf0 defines a model
-type CheckboxPropertyFilterAnyOf0 struct {
-	Equals bool `json:"equals"`
+// CheckboxPropertyFilterDoesNotEqual defines a model
+type CheckboxPropertyFilterDoesNotEqual struct {
+	DoesNotEqual bool `json:"does_not_equal"`
 }
 
-// CheckboxPropertyFilterAnyOf1 defines a model
-type CheckboxPropertyFilterAnyOf1 struct {
-	DoesNotEqual bool `json:"does_not_equal"`
+// CheckboxPropertyFilterEquals defines a model
+type CheckboxPropertyFilterEquals struct {
+	Equals bool `json:"equals"`
 }
 
 // CheckboxSimplePropertyValueResponse defines a model
@@ -4250,20 +4606,6 @@ func (v *CheckboxSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.
 	return false, nil
 }
 
-// Code2 defines a model
-type Code2 struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
-	Language LanguageRequest       `json:"language"`
-	Caption  []RichTextItemRequest `json:"caption,omitzero"`
-}
-
-// Code3 defines a model
-type Code3 struct {
-	Code   Code2  `json:"code"`
-	Type   string `json:"type,omitzero"`
-	Object string `json:"object,omitzero"`
-}
-
 // CodeBlockObjectResponseCode defines a model
 type CodeBlockObjectResponseCode struct {
 	RichText RichTexts       `json:"rich_text"`
@@ -4271,29 +4613,9 @@ type CodeBlockObjectResponseCode struct {
 	Language LanguageRequest `json:"language"`
 }
 
-// CodeCode defines a model
-type CodeCode struct {
-	RichText []RichTextItemRequest `json:"rich_text,omitzero"`
-	Language LanguageRequest       `json:"language,omitzero"`
-	Caption  []RichTextItemRequest `json:"caption,omitzero"`
-}
-
-// ColumnBlockWithChildren defines a model
-type ColumnBlockWithChildren struct {
-	Column ColumnWithChildrenRequest `json:"column"`
-	Type   string                    `json:"type,omitzero"`
-	Object string                    `json:"object,omitzero"`
-}
-
-// ColumnColumn defines a model
-type ColumnColumn struct {
-	// Ratio between 0 and 1 of the width of this column relative to all columns in the list. If not provided, uses an equal width.
-	WidthRatio float64 `json:"width_ratio,omitzero"`
-}
-
 // ColumnListRequest defines a model
 type ColumnListRequest struct {
-	Children []ColumnBlockWithChildren `json:"children"`
+	Children []BlockObjectColumn `json:"children"`
 }
 
 // ColumnResponse defines a model
@@ -4931,8 +5253,8 @@ type CreateACommentAllOf0AttachmentsItem struct {
 
 // Display name for the comment.
 type CreateACommentAllOf0DisplayName struct {
-	Type   string        `json:"type"`
-	Custom *CustomCustom `json:"custom,omitzero"`
+	Type   string                                       `json:"type"`
+	Custom *CreateACommentAllOf0DisplayNameCustomCustom `json:"custom,omitzero"`
 }
 
 // tagsOfCreateACommentAllOf0DisplayName says, for each value of type, whether the member named after it must, may or must not be set.
@@ -4980,6 +5302,12 @@ func (v *CreateACommentAllOf0DisplayName) MarshalJSONTo(enc *jsontext.Encoder) e
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+}
+
+// CreateACommentAllOf0DisplayNameCustomCustom defines a model
+type CreateACommentAllOf0DisplayNameCustomCustom struct {
+	// The custom display name to use
+	Name string `json:"name"`
 }
 
 // CreateACommentAllOf1 defines a model
@@ -5223,8 +5551,8 @@ func (v *CreateADatabase2) MarshalJSONTo(enc *jsontext.Encoder) error {
 // CreateAToken defines a model
 // CreateAToken is an untagged anyOf union: at least one field is set after unmarshaling.
 type CreateAToken struct {
-	CreateATokenAnyOf0 *CreateATokenAnyOf0
-	CreateATokenAnyOf1 *CreateATokenAnyOf1
+	CreateATokenAuthorizationCode *CreateATokenAuthorizationCode
+	CreateATokenRefreshToken      *CreateATokenRefreshToken
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member grant_type names the alternative, which then
@@ -5237,19 +5565,19 @@ func (v *CreateAToken) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	switch tag {
 	case "authorization_code":
-		var vv CreateATokenAnyOf0
+		var vv CreateATokenAuthorizationCode
 		if err := jsonMembersFrom(dec, "grant_type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.CreateATokenAnyOf0 = &vv
+		v.CreateATokenAuthorizationCode = &vv
 	case "refresh_token":
-		var vv CreateATokenAnyOf1
+		var vv CreateATokenRefreshToken
 		if err := jsonMembersFrom(dec, "grant_type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.CreateATokenAnyOf1 = &vv
+		v.CreateATokenRefreshToken = &vv
 	default:
 		return jsonUnknownValue("grant_type", tag)
 	}
@@ -5265,10 +5593,10 @@ func (v *CreateAToken) MarshalJSONTo(enc *jsontext.Encoder) error {
 	)
 
 	switch {
-	case v.CreateATokenAnyOf0 != nil:
-		variant, tag = v.CreateATokenAnyOf0, "authorization_code"
-	case v.CreateATokenAnyOf1 != nil:
-		variant, tag = v.CreateATokenAnyOf1, "refresh_token"
+	case v.CreateATokenAuthorizationCode != nil:
+		variant, tag = v.CreateATokenAuthorizationCode, "authorization_code"
+	case v.CreateATokenRefreshToken != nil:
+		variant, tag = v.CreateATokenRefreshToken, "refresh_token"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -5285,16 +5613,16 @@ func (v *CreateAToken) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// CreateATokenAnyOf0 defines a model
-type CreateATokenAnyOf0 struct {
-	GrantType       string                            `json:"grant_type"`
-	Code            string                            `json:"code"`
-	RedirectURI     string                            `json:"redirect_uri,omitzero"`
-	ExternalAccount CreateATokenAnyOf0ExternalAccount `json:"external_account,omitzero"`
+// CreateATokenAuthorizationCode defines a model
+type CreateATokenAuthorizationCode struct {
+	GrantType       string                                       `json:"grant_type"`
+	Code            string                                       `json:"code"`
+	RedirectURI     string                                       `json:"redirect_uri,omitzero"`
+	ExternalAccount CreateATokenAuthorizationCodeExternalAccount `json:"external_account,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether CreateATokenAnyOf0 declares it.
-func (v *CreateATokenAnyOf0) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether CreateATokenAuthorizationCode declares it.
+func (v *CreateATokenAuthorizationCode) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "grant_type":
 		return true, json.UnmarshalDecode(dec, &v.GrantType, jsonOptsOf(dec))
@@ -5309,28 +5637,10 @@ func (v *CreateATokenAnyOf0) unmarshalJSONMember(dec *jsontext.Decoder, name str
 	return false, nil
 }
 
-// CreateATokenAnyOf0ExternalAccount defines a model
-type CreateATokenAnyOf0ExternalAccount struct {
+// CreateATokenAuthorizationCodeExternalAccount defines a model
+type CreateATokenAuthorizationCodeExternalAccount struct {
 	Key  string `json:"key"`
 	Name string `json:"name"`
-}
-
-// CreateATokenAnyOf1 defines a model
-type CreateATokenAnyOf1 struct {
-	GrantType    string `json:"grant_type"`
-	RefreshToken string `json:"refresh_token"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether CreateATokenAnyOf1 declares it.
-func (v *CreateATokenAnyOf1) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "grant_type":
-		return true, json.UnmarshalDecode(dec, &v.GrantType, jsonOptsOf(dec))
-	case "refresh_token":
-		return true, json.UnmarshalDecode(dec, &v.RefreshToken, jsonOptsOf(dec))
-	}
-
-	return false, nil
 }
 
 // CreateATokenOk defines a model
@@ -5349,10 +5659,9 @@ type CreateATokenOk struct {
 
 // CreateATokenOkOwner defines a model
 type CreateATokenOkOwner struct {
-	Type string    `json:"type"`
-	User *UserUser `json:"user,omitzero"`
-	// Always `true`
-	Workspace *bool `json:"workspace,omitzero"`
+	Type      string                       `json:"type"`
+	User      *CreateATokenOkOwnerUserUser `json:"user,omitzero"`
+	Workspace *bool                        `json:"workspace,omitzero"`
 }
 
 // tagsOfCreateATokenOkOwner says, for each value of type, whether the member named after it must, may or must not be set.
@@ -5402,6 +5711,99 @@ func (v *CreateATokenOkOwner) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+}
+
+// CreateATokenOkOwnerUserUser defines a model
+// CreateATokenOkOwnerUserUser is an untagged anyOf union: at least one field is set after unmarshaling.
+type CreateATokenOkOwnerUserUser struct {
+	CreateATokenOkOwnerUserUserPerson *CreateATokenOkOwnerUserUserPerson
+	PartialUserObjectResponse         *PartialUserObjectResponse
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *CreateATokenOkOwnerUserUser) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv CreateATokenOkOwnerUserUserPerson
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.CreateATokenOkOwnerUserUserPerson = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv PartialUserObjectResponse
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.PartialUserObjectResponse = &vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *CreateATokenOkOwnerUserUser) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.CreateATokenOkOwnerUserUserPerson != nil:
+		return json.MarshalEncode(enc, v.CreateATokenOkOwnerUserUserPerson, jsonOpts)
+	case v.PartialUserObjectResponse != nil:
+		return json.MarshalEncode(enc, v.PartialUserObjectResponse, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// CreateATokenOkOwnerUserUserPerson defines a model
+type CreateATokenOkOwnerUserUserPerson struct {
+	Type      string                                  `json:"type"`
+	Person    CreateATokenOkOwnerUserUserPersonPerson `json:"person"`
+	Name      string                                  `json:"name"`
+	AvatarURL string                                  `json:"avatar_url"`
+	ID        IDRequest                               `json:"id"`
+	Object    string                                  `json:"object"`
+}
+
+// CreateATokenOkOwnerUserUserPersonPerson defines a model
+type CreateATokenOkOwnerUserUserPersonPerson struct {
+	Email         string `json:"email"`
+	EmailVerified *bool  `json:"email_verified,omitzero"`
+}
+
+// CreateATokenOwnerWorkspace defines a model
+type CreateATokenOwnerWorkspace struct {
+	Type      string `json:"type"`
+	Workspace bool   `json:"workspace"`
+}
+
+// CreateATokenRefreshToken defines a model
+type CreateATokenRefreshToken struct {
+	GrantType    string `json:"grant_type"`
+	RefreshToken string `json:"refresh_token"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether CreateATokenRefreshToken declares it.
+func (v *CreateATokenRefreshToken) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "grant_type":
+		return true, json.UnmarshalDecode(dec, &v.GrantType, jsonOptsOf(dec))
+	case "refresh_token":
+		return true, json.UnmarshalDecode(dec, &v.RefreshToken, jsonOptsOf(dec))
+	}
+
+	return false, nil
 }
 
 // CreateDatabase defines a model
@@ -5502,7 +5904,7 @@ func (e CreateDatabaseDatabaseType) Valid() bool {
 // CreateDatabaseForViewRequest defines a model
 type CreateDatabaseForViewRequest struct {
 	// The parent page for the new linked database block.
-	Parent PageID2 `json:"parent"`
+	Parent CreateDatabaseParentAllOfPageID `json:"parent"`
 	// Where to place the new database block within the parent page. Defaults to appending at the end.
 	Position CreateDatabaseForViewRequestPosition `json:"position,omitzero"`
 }
@@ -5518,10 +5920,9 @@ type CreateDatabaseForViewRequestPosition struct {
 // CreateDatabaseParent defines a model
 type CreateDatabaseParent struct {
 	// The type of parent.
-	Type   CreateDatabaseParentAllOfType `json:"type"`
-	PageID IDRequest                     `json:"page_id,omitzero"`
-	// Always `true`
-	Workspace *bool `json:"workspace,omitzero"`
+	Type      CreateDatabaseParentAllOfType `json:"type"`
+	PageID    IDRequest                     `json:"page_id,omitzero"`
+	Workspace *bool                         `json:"workspace,omitzero"`
 }
 
 // tagsOfCreateDatabaseParent says, for each value of type, whether the member named after it must, may or must not be set.
@@ -5571,6 +5972,13 @@ func (v *CreateDatabaseParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+}
+
+// CreateDatabaseParentAllOfPageID defines a model
+type CreateDatabaseParentAllOfPageID struct {
+	// Always `page_id`
+	Type   string    `json:"type"`
+	PageID IDRequest `json:"page_id"`
 }
 
 // The type of parent.
@@ -5694,12 +6102,12 @@ func (v *CreateMeetingNote) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 			v.CreateMeetingNoteAllOf1.CreateMeetingNoteAllOf1OneOf0 = &vv
 		case 1:
-			var vv CreateMeetingNoteAllOf1OneOf1
+			var vv CreateMeetingNoteAllOf1Source
 			if err := json.Unmarshal(variant, &vv, opts); err != nil {
 				return err
 			}
 
-			v.CreateMeetingNoteAllOf1.CreateMeetingNoteAllOf1OneOf1 = &vv
+			v.CreateMeetingNoteAllOf1.CreateMeetingNoteAllOf1Source = &vv
 		}
 	}
 
@@ -5730,9 +6138,9 @@ func (v *CreateMeetingNote) MarshalJSONTo(enc *jsontext.Encoder) error {
 		set++
 	}
 
-	if v.CreateMeetingNoteAllOf1.CreateMeetingNoteAllOf1OneOf1 != nil {
+	if v.CreateMeetingNoteAllOf1.CreateMeetingNoteAllOf1Source != nil {
 
-		variant, err := json.Marshal(v.CreateMeetingNoteAllOf1.CreateMeetingNoteAllOf1OneOf1, jsonOpts)
+		variant, err := json.Marshal(v.CreateMeetingNoteAllOf1.CreateMeetingNoteAllOf1Source, jsonOpts)
 		if err != nil {
 			return err
 		}
@@ -5800,7 +6208,7 @@ type CreateMeetingNoteAllOf0Options struct {
 // CreateMeetingNoteAllOf1 is an untagged oneOf union: exactly one field is set after unmarshaling.
 type CreateMeetingNoteAllOf1 struct {
 	CreateMeetingNoteAllOf1OneOf0 *CreateMeetingNoteAllOf1OneOf0
-	CreateMeetingNoteAllOf1OneOf1 *CreateMeetingNoteAllOf1OneOf1
+	CreateMeetingNoteAllOf1Source *CreateMeetingNoteAllOf1Source
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -5826,9 +6234,9 @@ func (v *CreateMeetingNoteAllOf1) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv CreateMeetingNoteAllOf1OneOf1
+		var vv CreateMeetingNoteAllOf1Source
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CreateMeetingNoteAllOf1OneOf1 = &vv
+			v.CreateMeetingNoteAllOf1Source = &vv
 			matched++
 		}
 	}
@@ -5845,8 +6253,8 @@ func (v *CreateMeetingNoteAllOf1) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.CreateMeetingNoteAllOf1OneOf0 != nil:
 		return json.MarshalEncode(enc, v.CreateMeetingNoteAllOf1OneOf0, jsonOpts)
-	case v.CreateMeetingNoteAllOf1OneOf1 != nil:
-		return json.MarshalEncode(enc, v.CreateMeetingNoteAllOf1OneOf1, jsonOpts)
+	case v.CreateMeetingNoteAllOf1Source != nil:
+		return json.MarshalEncode(enc, v.CreateMeetingNoteAllOf1Source, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -5876,27 +6284,51 @@ type CreateMeetingNoteAllOf1OneOf0Source struct {
 	FileUploadID IDRequest `json:"file_upload_id"`
 }
 
-// CreateMeetingNoteAllOf1OneOf1 defines a model
-type CreateMeetingNoteAllOf1OneOf1 struct {
+// CreateMeetingNoteAllOf1Source defines a model
+type CreateMeetingNoteAllOf1Source struct {
 	// Audio or video source for the meeting note.
-	Source CreateMeetingNoteAllOf1OneOf1Source `json:"source"`
+	Source CreateMeetingNoteAllOf1SourceSource `json:"source"`
 	// Not accepted for block sources.
 	Parent any `json:"parent,omitzero"`
 }
 
 // Audio or video source for the meeting note.
-type CreateMeetingNoteAllOf1OneOf1Source struct {
+type CreateMeetingNoteAllOf1SourceSource struct {
 	// Always "block".
 	Type string `json:"type"`
 	// ID of an existing audio, video, or file block.
 	BlockID IDRequest `json:"block_id"`
 }
 
+// CreateMeetingNoteMeetingNotes defines a model
+type CreateMeetingNoteMeetingNotes struct {
+	// Always "block".
+	Object string `json:"object"`
+	// The ID of the meeting note block.
+	ID IDResponse `json:"id"`
+	// Always "meeting_notes".
+	Type string `json:"type"`
+	// Meeting note content fields.
+	MeetingNotes QueryMeetingNotesResultsItemMeetingNotes `json:"meeting_notes"`
+	// ISO-8601 timestamp when this meeting note was created.
+	CreatedTime string `json:"created_time"`
+	// ISO-8601 timestamp when this meeting note was last edited.
+	LastEditedTime string `json:"last_edited_time"`
+	// User who created this meeting note.
+	CreatedBy PartialUserObjectResponse `json:"created_by"`
+	// User who last edited this meeting note.
+	LastEditedBy PartialUserObjectResponse `json:"last_edited_by"`
+	// Whether this block has child blocks.
+	HasChildren bool `json:"has_children"`
+	// Whether this meeting note is in the trash.
+	InTrash bool `json:"in_trash"`
+}
+
 // CreateMeetingNoteOk defines a model
 // CreateMeetingNoteOk is an untagged oneOf union: exactly one field is set after unmarshaling.
 type CreateMeetingNoteOk struct {
-	CreateMeetingNoteOkOneOf0 *CreateMeetingNoteOkOneOf0
-	CreateMeetingNoteOneOf    *CreateMeetingNoteOneOf
+	CreateMeetingNoteOkOneOf0     *CreateMeetingNoteOkOneOf0
+	CreateMeetingNoteMeetingNotes *CreateMeetingNoteMeetingNotes
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -5922,9 +6354,9 @@ func (v *CreateMeetingNoteOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv CreateMeetingNoteOneOf
+		var vv CreateMeetingNoteMeetingNotes
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CreateMeetingNoteOneOf = &vv
+			v.CreateMeetingNoteMeetingNotes = &vv
 			matched++
 		}
 	}
@@ -5941,8 +6373,8 @@ func (v *CreateMeetingNoteOk) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.CreateMeetingNoteOkOneOf0 != nil:
 		return json.MarshalEncode(enc, v.CreateMeetingNoteOkOneOf0, jsonOpts)
-	case v.CreateMeetingNoteOneOf != nil:
-		return json.MarshalEncode(enc, v.CreateMeetingNoteOneOf, jsonOpts)
+	case v.CreateMeetingNoteMeetingNotes != nil:
+		return json.MarshalEncode(enc, v.CreateMeetingNoteMeetingNotes, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -5954,72 +6386,6 @@ type CreateMeetingNoteOkOneOf0 struct {
 	Object string `json:"object"`
 	// The ID of the meeting note block.
 	ID IDResponse `json:"id"`
-}
-
-// CreateMeetingNoteOneOf defines a model
-type CreateMeetingNoteOneOf struct {
-	// Always "block".
-	Object string `json:"object"`
-	// The ID of the meeting note block.
-	ID IDResponse `json:"id"`
-	// Always "meeting_notes".
-	Type string `json:"type"`
-	// Meeting note content fields.
-	MeetingNotes CreateMeetingNoteOneOfMeetingNotes `json:"meeting_notes"`
-	// ISO-8601 timestamp when this meeting note was created.
-	CreatedTime string `json:"created_time"`
-	// ISO-8601 timestamp when this meeting note was last edited.
-	LastEditedTime string `json:"last_edited_time"`
-	// User who created this meeting note.
-	CreatedBy PartialUserObjectResponse `json:"created_by"`
-	// User who last edited this meeting note.
-	LastEditedBy PartialUserObjectResponse `json:"last_edited_by"`
-	// Whether this block has child blocks.
-	HasChildren bool `json:"has_children"`
-	// Whether this meeting note is in the trash.
-	InTrash bool `json:"in_trash"`
-}
-
-// Meeting note content fields.
-type CreateMeetingNoteOneOfMeetingNotes struct {
-	// Title of the meeting note as rich text.
-	Title RichTexts `json:"title,omitzero"`
-	// Current processing status of the meeting note transcription.
-	Status APITranscriptionStatus `json:"status,omitzero"`
-	// Block IDs for each tab (summary, notes, transcript).
-	Children *CreateMeetingNoteOneOfMeetingNotesChildren `json:"children,omitzero"`
-	// Calendar event metadata associated with this meeting note.
-	CalendarEvent CreateMeetingNoteOneOfMeetingNotesCalendarEvent `json:"calendar_event,omitzero"`
-	// Start and end times of the actual recording.
-	Recording *CreateMeetingNoteOneOfMeetingNotesRecording `json:"recording,omitzero"`
-}
-
-// Calendar event metadata associated with this meeting note.
-type CreateMeetingNoteOneOfMeetingNotesCalendarEvent struct {
-	// ISO-8601 start time of the calendar event.
-	StartTime string `json:"start_time"`
-	// ISO-8601 end time of the calendar event.
-	EndTime string `json:"end_time"`
-	// List of attendee user IDs.
-	Attendees []IDResponse `json:"attendees,omitzero"`
-}
-
-// Block IDs for each tab (summary, notes, transcript).
-type CreateMeetingNoteOneOfMeetingNotesChildren struct {
-	// Block ID of the AI summary tab.
-	SummaryBlockID IDResponse `json:"summary_block_id,omitzero"`
-	// Block ID of the meeting notes tab.
-	NotesBlockID IDResponse `json:"notes_block_id,omitzero"`
-	// Block ID of the transcript tab.
-	TranscriptBlockID IDResponse `json:"transcript_block_id,omitzero"`
-}
-
-// Start and end times of the actual recording.
-type CreateMeetingNoteOneOfMeetingNotesRecording struct {
-	// ISO-8601 timestamp when the recording started.
-	StartTime string `json:"start_time,omitzero"`
-	// ISO-8601 timestamp when the recording ended.
-	EndTime string `json:"end_time,omitzero"`
 }
 
 // CreateView defines a model
@@ -6164,27 +6530,11 @@ func (v *CreatedTimeSimplePropertyValueResponse) unmarshalJSONMember(dec *jsonte
 	return false, nil
 }
 
-// CustomCustom defines a model
-type CustomCustom struct {
-	// The custom display name to use
-	Name string `json:"name"`
-}
-
-// CustomEmojiCustomEmoji defines a model
-type CustomEmojiCustomEmoji struct {
-	// The ID of the custom emoji.
-	ID IDRequest `json:"id"`
-	// The name of the custom emoji.
-	Name string `json:"name,omitzero"`
-	// The URL of the custom emoji.
-	URL string `json:"url,omitzero"`
-}
-
 // CustomEmojiPageIcon defines a model
 type CustomEmojiPageIcon struct {
 	// Always `custom_emoji`
-	Type        string                 `json:"type,omitzero"`
-	CustomEmoji CustomEmojiCustomEmoji `json:"custom_emoji"`
+	Type        string                         `json:"type,omitzero"`
+	CustomEmoji CustomEmojiPageIconCustomEmoji `json:"custom_emoji"`
 }
 
 // CustomEmojiPageIcon2 defines a model
@@ -6193,6 +6543,16 @@ type CustomEmojiPageIcon2 struct {
 	Type string `json:"type"`
 	// The custom emoji details for the icon.
 	CustomEmoji CustomEmojiResponse `json:"custom_emoji"`
+}
+
+// CustomEmojiPageIconCustomEmoji defines a model
+type CustomEmojiPageIconCustomEmoji struct {
+	// The ID of the custom emoji.
+	ID IDRequest `json:"id"`
+	// The name of the custom emoji.
+	Name string `json:"name,omitzero"`
+	// The URL of the custom emoji.
+	URL string `json:"url,omitzero"`
 }
 
 // CustomEmojiResponse defines a model
@@ -6499,12 +6859,6 @@ type DatabaseDeletedWebhookPayload struct {
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
 	Data PageMovedWebhookPayloadAllOfData `json:"data"`
-}
-
-// DatabaseID defines a model
-type DatabaseID struct {
-	DatabaseID IDRequest `json:"database_id"`
-	Type       string    `json:"type,omitzero"`
 }
 
 // DatabaseMovedWebhookPayload defines a model
@@ -6891,18 +7245,18 @@ func (v *DatePropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 // DatePropertyFilterAnyOf0 defines a model
 // DatePropertyFilterAnyOf0 is an untagged anyOf union: at least one field is set after unmarshaling.
 type DatePropertyFilterAnyOf0 struct {
-	DatePropertyFilterAnyOf0AnyOf0  *DatePropertyFilterAnyOf0AnyOf0
-	DatePropertyFilterAnyOf0AnyOf1  *DatePropertyFilterAnyOf0AnyOf1
-	DatePropertyFilterAnyOf0AnyOf2  *DatePropertyFilterAnyOf0AnyOf2
-	DatePropertyFilterAnyOf0AnyOf3  *DatePropertyFilterAnyOf0AnyOf3
-	DatePropertyFilterAnyOf0AnyOf4  *DatePropertyFilterAnyOf0AnyOf4
-	DatePropertyFilterAnyOf0AnyOf5  *DatePropertyFilterAnyOf0AnyOf5
-	DatePropertyFilterAnyOf0AnyOf6  *DatePropertyFilterAnyOf0AnyOf6
-	DatePropertyFilterAnyOf0AnyOf7  *DatePropertyFilterAnyOf0AnyOf7
-	DatePropertyFilterAnyOf0AnyOf8  *DatePropertyFilterAnyOf0AnyOf8
-	DatePropertyFilterAnyOf0AnyOf9  *DatePropertyFilterAnyOf0AnyOf9
-	DatePropertyFilterAnyOf0AnyOf10 *DatePropertyFilterAnyOf0AnyOf10
-	DatePropertyFilterAnyOf0AnyOf11 *DatePropertyFilterAnyOf0AnyOf11
+	DatePropertyFilterAnyOf0Equals     *DatePropertyFilterAnyOf0Equals
+	DatePropertyFilterAnyOf0Before     *DatePropertyFilterAnyOf0Before
+	DatePropertyFilterAnyOf0After      *DatePropertyFilterAnyOf0After
+	DatePropertyFilterAnyOf0OnOrBefore *DatePropertyFilterAnyOf0OnOrBefore
+	DatePropertyFilterAnyOf0OnOrAfter  *DatePropertyFilterAnyOf0OnOrAfter
+	DatePropertyFilterAnyOf0ThisWeek   *DatePropertyFilterAnyOf0ThisWeek
+	DatePropertyFilterAnyOf0PastWeek   *DatePropertyFilterAnyOf0PastWeek
+	DatePropertyFilterAnyOf0PastMonth  *DatePropertyFilterAnyOf0PastMonth
+	DatePropertyFilterAnyOf0PastYear   *DatePropertyFilterAnyOf0PastYear
+	DatePropertyFilterAnyOf0NextWeek   *DatePropertyFilterAnyOf0NextWeek
+	DatePropertyFilterAnyOf0NextMonth  *DatePropertyFilterAnyOf0NextMonth
+	DatePropertyFilterAnyOf0NextYear   *DatePropertyFilterAnyOf0NextYear
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -6917,97 +7271,97 @@ func (v *DatePropertyFilterAnyOf0) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 	var matched int
 
 	{
-		var vv DatePropertyFilterAnyOf0AnyOf0
+		var vv DatePropertyFilterAnyOf0Equals
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterAnyOf0AnyOf0 = &vv
+			v.DatePropertyFilterAnyOf0Equals = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv DatePropertyFilterAnyOf0AnyOf1
+		var vv DatePropertyFilterAnyOf0Before
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterAnyOf0AnyOf1 = &vv
+			v.DatePropertyFilterAnyOf0Before = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv DatePropertyFilterAnyOf0AnyOf2
+		var vv DatePropertyFilterAnyOf0After
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterAnyOf0AnyOf2 = &vv
+			v.DatePropertyFilterAnyOf0After = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv DatePropertyFilterAnyOf0AnyOf3
+		var vv DatePropertyFilterAnyOf0OnOrBefore
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterAnyOf0AnyOf3 = &vv
+			v.DatePropertyFilterAnyOf0OnOrBefore = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv DatePropertyFilterAnyOf0AnyOf4
+		var vv DatePropertyFilterAnyOf0OnOrAfter
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterAnyOf0AnyOf4 = &vv
+			v.DatePropertyFilterAnyOf0OnOrAfter = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv DatePropertyFilterAnyOf0AnyOf5
+		var vv DatePropertyFilterAnyOf0ThisWeek
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterAnyOf0AnyOf5 = &vv
+			v.DatePropertyFilterAnyOf0ThisWeek = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv DatePropertyFilterAnyOf0AnyOf6
+		var vv DatePropertyFilterAnyOf0PastWeek
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterAnyOf0AnyOf6 = &vv
+			v.DatePropertyFilterAnyOf0PastWeek = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv DatePropertyFilterAnyOf0AnyOf7
+		var vv DatePropertyFilterAnyOf0PastMonth
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterAnyOf0AnyOf7 = &vv
+			v.DatePropertyFilterAnyOf0PastMonth = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv DatePropertyFilterAnyOf0AnyOf8
+		var vv DatePropertyFilterAnyOf0PastYear
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterAnyOf0AnyOf8 = &vv
+			v.DatePropertyFilterAnyOf0PastYear = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv DatePropertyFilterAnyOf0AnyOf9
+		var vv DatePropertyFilterAnyOf0NextWeek
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterAnyOf0AnyOf9 = &vv
+			v.DatePropertyFilterAnyOf0NextWeek = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv DatePropertyFilterAnyOf0AnyOf10
+		var vv DatePropertyFilterAnyOf0NextMonth
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterAnyOf0AnyOf10 = &vv
+			v.DatePropertyFilterAnyOf0NextMonth = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv DatePropertyFilterAnyOf0AnyOf11
+		var vv DatePropertyFilterAnyOf0NextYear
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterAnyOf0AnyOf11 = &vv
+			v.DatePropertyFilterAnyOf0NextYear = &vv
 			matched++
 		}
 	}
@@ -7022,93 +7376,93 @@ func (v *DatePropertyFilterAnyOf0) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *DatePropertyFilterAnyOf0) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.DatePropertyFilterAnyOf0AnyOf0 != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0AnyOf0, jsonOpts)
-	case v.DatePropertyFilterAnyOf0AnyOf1 != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0AnyOf1, jsonOpts)
-	case v.DatePropertyFilterAnyOf0AnyOf2 != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0AnyOf2, jsonOpts)
-	case v.DatePropertyFilterAnyOf0AnyOf3 != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0AnyOf3, jsonOpts)
-	case v.DatePropertyFilterAnyOf0AnyOf4 != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0AnyOf4, jsonOpts)
-	case v.DatePropertyFilterAnyOf0AnyOf5 != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0AnyOf5, jsonOpts)
-	case v.DatePropertyFilterAnyOf0AnyOf6 != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0AnyOf6, jsonOpts)
-	case v.DatePropertyFilterAnyOf0AnyOf7 != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0AnyOf7, jsonOpts)
-	case v.DatePropertyFilterAnyOf0AnyOf8 != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0AnyOf8, jsonOpts)
-	case v.DatePropertyFilterAnyOf0AnyOf9 != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0AnyOf9, jsonOpts)
-	case v.DatePropertyFilterAnyOf0AnyOf10 != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0AnyOf10, jsonOpts)
-	case v.DatePropertyFilterAnyOf0AnyOf11 != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0AnyOf11, jsonOpts)
+	case v.DatePropertyFilterAnyOf0Equals != nil:
+		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0Equals, jsonOpts)
+	case v.DatePropertyFilterAnyOf0Before != nil:
+		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0Before, jsonOpts)
+	case v.DatePropertyFilterAnyOf0After != nil:
+		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0After, jsonOpts)
+	case v.DatePropertyFilterAnyOf0OnOrBefore != nil:
+		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0OnOrBefore, jsonOpts)
+	case v.DatePropertyFilterAnyOf0OnOrAfter != nil:
+		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0OnOrAfter, jsonOpts)
+	case v.DatePropertyFilterAnyOf0ThisWeek != nil:
+		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0ThisWeek, jsonOpts)
+	case v.DatePropertyFilterAnyOf0PastWeek != nil:
+		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0PastWeek, jsonOpts)
+	case v.DatePropertyFilterAnyOf0PastMonth != nil:
+		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0PastMonth, jsonOpts)
+	case v.DatePropertyFilterAnyOf0PastYear != nil:
+		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0PastYear, jsonOpts)
+	case v.DatePropertyFilterAnyOf0NextWeek != nil:
+		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0NextWeek, jsonOpts)
+	case v.DatePropertyFilterAnyOf0NextMonth != nil:
+		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0NextMonth, jsonOpts)
+	case v.DatePropertyFilterAnyOf0NextYear != nil:
+		return json.MarshalEncode(enc, v.DatePropertyFilterAnyOf0NextYear, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// DatePropertyFilterAnyOf0AnyOf0 defines a model
-type DatePropertyFilterAnyOf0AnyOf0 struct {
-	Equals DateOrRelativeDate `json:"equals"`
-}
-
-// DatePropertyFilterAnyOf0AnyOf1 defines a model
-type DatePropertyFilterAnyOf0AnyOf1 struct {
-	Before DateOrRelativeDate `json:"before"`
-}
-
-// DatePropertyFilterAnyOf0AnyOf10 defines a model
-type DatePropertyFilterAnyOf0AnyOf10 struct {
-	NextMonth EmptyObject `json:"next_month"`
-}
-
-// DatePropertyFilterAnyOf0AnyOf11 defines a model
-type DatePropertyFilterAnyOf0AnyOf11 struct {
-	NextYear EmptyObject `json:"next_year"`
-}
-
-// DatePropertyFilterAnyOf0AnyOf2 defines a model
-type DatePropertyFilterAnyOf0AnyOf2 struct {
+// DatePropertyFilterAnyOf0After defines a model
+type DatePropertyFilterAnyOf0After struct {
 	After DateOrRelativeDate `json:"after"`
 }
 
-// DatePropertyFilterAnyOf0AnyOf3 defines a model
-type DatePropertyFilterAnyOf0AnyOf3 struct {
-	OnOrBefore DateOrRelativeDate `json:"on_or_before"`
+// DatePropertyFilterAnyOf0Before defines a model
+type DatePropertyFilterAnyOf0Before struct {
+	Before DateOrRelativeDate `json:"before"`
 }
 
-// DatePropertyFilterAnyOf0AnyOf4 defines a model
-type DatePropertyFilterAnyOf0AnyOf4 struct {
+// DatePropertyFilterAnyOf0Equals defines a model
+type DatePropertyFilterAnyOf0Equals struct {
+	Equals DateOrRelativeDate `json:"equals"`
+}
+
+// DatePropertyFilterAnyOf0NextMonth defines a model
+type DatePropertyFilterAnyOf0NextMonth struct {
+	NextMonth EmptyObject `json:"next_month"`
+}
+
+// DatePropertyFilterAnyOf0NextWeek defines a model
+type DatePropertyFilterAnyOf0NextWeek struct {
+	NextWeek EmptyObject `json:"next_week"`
+}
+
+// DatePropertyFilterAnyOf0NextYear defines a model
+type DatePropertyFilterAnyOf0NextYear struct {
+	NextYear EmptyObject `json:"next_year"`
+}
+
+// DatePropertyFilterAnyOf0OnOrAfter defines a model
+type DatePropertyFilterAnyOf0OnOrAfter struct {
 	OnOrAfter DateOrRelativeDate `json:"on_or_after"`
 }
 
-// DatePropertyFilterAnyOf0AnyOf5 defines a model
-type DatePropertyFilterAnyOf0AnyOf5 struct {
-	ThisWeek EmptyObject `json:"this_week"`
+// DatePropertyFilterAnyOf0OnOrBefore defines a model
+type DatePropertyFilterAnyOf0OnOrBefore struct {
+	OnOrBefore DateOrRelativeDate `json:"on_or_before"`
 }
 
-// DatePropertyFilterAnyOf0AnyOf6 defines a model
-type DatePropertyFilterAnyOf0AnyOf6 struct {
-	PastWeek EmptyObject `json:"past_week"`
-}
-
-// DatePropertyFilterAnyOf0AnyOf7 defines a model
-type DatePropertyFilterAnyOf0AnyOf7 struct {
+// DatePropertyFilterAnyOf0PastMonth defines a model
+type DatePropertyFilterAnyOf0PastMonth struct {
 	PastMonth EmptyObject `json:"past_month"`
 }
 
-// DatePropertyFilterAnyOf0AnyOf8 defines a model
-type DatePropertyFilterAnyOf0AnyOf8 struct {
+// DatePropertyFilterAnyOf0PastWeek defines a model
+type DatePropertyFilterAnyOf0PastWeek struct {
+	PastWeek EmptyObject `json:"past_week"`
+}
+
+// DatePropertyFilterAnyOf0PastYear defines a model
+type DatePropertyFilterAnyOf0PastYear struct {
 	PastYear EmptyObject `json:"past_year"`
 }
 
-// DatePropertyFilterAnyOf0AnyOf9 defines a model
-type DatePropertyFilterAnyOf0AnyOf9 struct {
-	NextWeek EmptyObject `json:"next_week"`
+// DatePropertyFilterAnyOf0ThisWeek defines a model
+type DatePropertyFilterAnyOf0ThisWeek struct {
+	ThisWeek EmptyObject `json:"this_week"`
 }
 
 // DateRequest defines a model
@@ -7169,23 +7523,10 @@ type DeletedViewQueryResponse struct {
 	Deleted bool `json:"deleted"`
 }
 
-// Divider3 defines a model
-type Divider3 struct {
-	Divider EmptyObject `json:"divider"`
-	Type    string      `json:"type,omitzero"`
-	Object  string      `json:"object,omitzero"`
-}
-
 // DualPropertyDatabasePropertyRelationConfigResponseDualProperty defines a model
 type DualPropertyDatabasePropertyRelationConfigResponseDualProperty struct {
 	SyncedPropertyID   string `json:"synced_property_id"`
 	SyncedPropertyName string `json:"synced_property_name"`
-}
-
-// DualPropertyDualProperty defines a model
-type DualPropertyDualProperty struct {
-	SyncedPropertyID   string `json:"synced_property_id,omitzero"`
-	SyncedPropertyName string `json:"synced_property_name,omitzero"`
 }
 
 // EmailPropertyConfiguration defines a model
@@ -7212,119 +7553,6 @@ func (v *EmailSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Dec
 	}
 
 	return false, nil
-}
-
-// Embed2 defines a model
-// Embed2 is an untagged anyOf union: at least one field is set after unmarshaling.
-type Embed2 struct {
-	MediaContentWithURLAndCaptionRequest *MediaContentWithURLAndCaptionRequest
-	EmbedFileUpload                      *EmbedFileUpload
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *Embed2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv MediaContentWithURLAndCaptionRequest
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.MediaContentWithURLAndCaptionRequest = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv EmbedFileUpload
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.EmbedFileUpload = &vv
-			matched++
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *Embed2) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.MediaContentWithURLAndCaptionRequest != nil:
-		return json.MarshalEncode(enc, v.MediaContentWithURLAndCaptionRequest, jsonOpts)
-	case v.EmbedFileUpload != nil:
-		return json.MarshalEncode(enc, v.EmbedFileUpload, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// Embed3 defines a model
-type Embed3 struct {
-	Embed  Embed2 `json:"embed"`
-	Type   string `json:"type,omitzero"`
-	Object string `json:"object,omitzero"`
-}
-
-// EmbedEmbed defines a model
-// EmbedEmbed is an untagged anyOf union: at least one field is set after unmarshaling.
-type EmbedEmbed struct {
-	UpdateMediaContentWithURLAndCaptionRequest *UpdateMediaContentWithURLAndCaptionRequest
-	UpdateEmbedFileUploadRequest               *UpdateEmbedFileUploadRequest
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *EmbedEmbed) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv UpdateMediaContentWithURLAndCaptionRequest
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateMediaContentWithURLAndCaptionRequest = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv UpdateEmbedFileUploadRequest
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateEmbedFileUploadRequest = &vv
-			matched++
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *EmbedEmbed) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.UpdateMediaContentWithURLAndCaptionRequest != nil:
-		return json.MarshalEncode(enc, v.UpdateMediaContentWithURLAndCaptionRequest, jsonOpts)
-	case v.UpdateEmbedFileUploadRequest != nil:
-		return json.MarshalEncode(enc, v.UpdateEmbedFileUploadRequest, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
 // EmbedFileUpload defines a model
@@ -7356,13 +7584,6 @@ type EmptyObjectWorkspaceLimits struct {
 	MaxFileUploadSizeInBytes int `json:"max_file_upload_size_in_bytes"`
 }
 
-// Equation3 defines a model
-type Equation3 struct {
-	Equation ContentWithExpression `json:"equation"`
-	Type     string                `json:"type,omitzero"`
-	Object   string                `json:"object,omitzero"`
-}
-
 // Error defines a model
 type Error struct {
 	Object         string                                             `json:"object"`
@@ -7371,20 +7592,6 @@ type Error struct {
 	Code           ErrorCode                                          `json:"code"`
 	Status         int                                                `json:"status"`
 	ErrorAllOf
-}
-
-// Error3 defines a model
-type Error3 struct {
-	// The type of error that occurred during file import.
-	Type ErrorType `json:"type"`
-	// A short string code representing the error.
-	Code string `json:"code"`
-	// A human-readable message describing the error.
-	Message string `json:"message"`
-	// The parameter related to the error, if applicable. Null if not applicable.
-	Parameter string `json:"parameter"`
-	// The HTTP status code associated with the error, if available. Null if not applicable.
-	StatusCode *int `json:"status_code"`
 }
 
 // ErrorAllOf defines a model
@@ -7437,31 +7644,11 @@ func (e ErrorCode) Valid() bool {
 	}
 }
 
-// ErrorType defines a model
-type ErrorType string
-
-const (
-	ErrorTypeValidationError     ErrorType = "validation_error"
-	ErrorTypeInternalSystemError ErrorType = "internal_system_error"
-	ErrorTypeDownloadError       ErrorType = "download_error"
-	ErrorTypeUploadError         ErrorType = "upload_error"
-)
-
-// Valid indicates whether the value is a known member of the ErrorType enum.
-func (e ErrorType) Valid() bool {
-	switch e {
-	case ErrorTypeValidationError, ErrorTypeInternalSystemError, ErrorTypeDownloadError, ErrorTypeUploadError:
-		return true
-	default:
-		return false
-	}
-}
-
 // ExistencePropertyFilter defines a model
 // ExistencePropertyFilter is an untagged anyOf union: at least one field is set after unmarshaling.
 type ExistencePropertyFilter struct {
-	ExistencePropertyFilterAnyOf0 *ExistencePropertyFilterAnyOf0
-	ExistencePropertyFilterAnyOf1 *ExistencePropertyFilterAnyOf1
+	ExistencePropertyFilterIsEmpty    *ExistencePropertyFilterIsEmpty
+	ExistencePropertyFilterIsNotEmpty *ExistencePropertyFilterIsNotEmpty
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -7476,17 +7663,17 @@ func (v *ExistencePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	var matched int
 
 	{
-		var vv ExistencePropertyFilterAnyOf0
+		var vv ExistencePropertyFilterIsEmpty
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ExistencePropertyFilterAnyOf0 = &vv
+			v.ExistencePropertyFilterIsEmpty = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv ExistencePropertyFilterAnyOf1
+		var vv ExistencePropertyFilterIsNotEmpty
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ExistencePropertyFilterAnyOf1 = &vv
+			v.ExistencePropertyFilterIsNotEmpty = &vv
 			matched++
 		}
 	}
@@ -7501,22 +7688,22 @@ func (v *ExistencePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *ExistencePropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.ExistencePropertyFilterAnyOf0 != nil:
-		return json.MarshalEncode(enc, v.ExistencePropertyFilterAnyOf0, jsonOpts)
-	case v.ExistencePropertyFilterAnyOf1 != nil:
-		return json.MarshalEncode(enc, v.ExistencePropertyFilterAnyOf1, jsonOpts)
+	case v.ExistencePropertyFilterIsEmpty != nil:
+		return json.MarshalEncode(enc, v.ExistencePropertyFilterIsEmpty, jsonOpts)
+	case v.ExistencePropertyFilterIsNotEmpty != nil:
+		return json.MarshalEncode(enc, v.ExistencePropertyFilterIsNotEmpty, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// ExistencePropertyFilterAnyOf0 defines a model
-type ExistencePropertyFilterAnyOf0 struct {
+// ExistencePropertyFilterIsEmpty defines a model
+type ExistencePropertyFilterIsEmpty struct {
 	IsEmpty bool `json:"is_empty"`
 }
 
-// ExistencePropertyFilterAnyOf1 defines a model
-type ExistencePropertyFilterAnyOf1 struct {
+// ExistencePropertyFilterIsNotEmpty defines a model
+type ExistencePropertyFilterIsNotEmpty struct {
 	IsNotEmpty bool `json:"is_not_empty"`
 }
 
@@ -7533,8 +7720,8 @@ type ExternalFileRequest struct {
 // ExternalPageIcon defines a model
 type ExternalPageIcon struct {
 	// Always `external`
-	Type     string                   `json:"type,omitzero"`
-	External ExternalPageIconExternal `json:"external"`
+	Type     string                      `json:"type,omitzero"`
+	External TextRichTextItemTextLinkURL `json:"external"`
 }
 
 // ExternalPageIcon2 defines a model
@@ -7543,19 +7730,6 @@ type ExternalPageIcon2 struct {
 	Type string `json:"type"`
 	// The external URL for the icon.
 	External LinkPreviewMention `json:"external"`
-}
-
-// ExternalPageIconExternal defines a model
-type ExternalPageIconExternal struct {
-	// The URL of the external file.
-	URL string `json:"url"`
-}
-
-// File3 defines a model
-type File3 struct {
-	File   MediaContentWithFileNameAndCaptionRequest `json:"file"`
-	Type   string                                    `json:"type,omitzero"`
-	Object string                                    `json:"object,omitzero"`
 }
 
 // FilePageIcon defines a model
@@ -7598,6 +7772,40 @@ type FileUploadIDRequest struct {
 	ID IDRequest `json:"id"`
 }
 
+// FileUploadObjectFileImportResultAllOfError defines a model
+type FileUploadObjectFileImportResultAllOfError struct {
+	// The type of error that occurred during file import.
+	Type FileUploadObjectFileImportResultAllOfErrorType `json:"type"`
+	// A short string code representing the error.
+	Code string `json:"code"`
+	// A human-readable message describing the error.
+	Message string `json:"message"`
+	// The parameter related to the error, if applicable. Null if not applicable.
+	Parameter string `json:"parameter"`
+	// The HTTP status code associated with the error, if available. Null if not applicable.
+	StatusCode *int `json:"status_code"`
+}
+
+// FileUploadObjectFileImportResultAllOfErrorType defines a model
+type FileUploadObjectFileImportResultAllOfErrorType string
+
+const (
+	FileUploadObjectFileImportResultAllOfErrorTypeValidationError     FileUploadObjectFileImportResultAllOfErrorType = "validation_error"
+	FileUploadObjectFileImportResultAllOfErrorTypeInternalSystemError FileUploadObjectFileImportResultAllOfErrorType = "internal_system_error"
+	FileUploadObjectFileImportResultAllOfErrorTypeDownloadError       FileUploadObjectFileImportResultAllOfErrorType = "download_error"
+	FileUploadObjectFileImportResultAllOfErrorTypeUploadError         FileUploadObjectFileImportResultAllOfErrorType = "upload_error"
+)
+
+// Valid indicates whether the value is a known member of the FileUploadObjectFileImportResultAllOfErrorType enum.
+func (e FileUploadObjectFileImportResultAllOfErrorType) Valid() bool {
+	switch e {
+	case FileUploadObjectFileImportResultAllOfErrorTypeValidationError, FileUploadObjectFileImportResultAllOfErrorTypeInternalSystemError, FileUploadObjectFileImportResultAllOfErrorTypeDownloadError, FileUploadObjectFileImportResultAllOfErrorTypeUploadError:
+		return true
+	default:
+		return false
+	}
+}
+
 // FileUploadObjectResponse defines a model
 type FileUploadObjectResponse struct {
 	// Always `file_upload`
@@ -7609,7 +7817,7 @@ type FileUploadObjectResponse struct {
 	InTrash        bool                              `json:"in_trash"`
 	ExpiryTime     time.Time                         `json:"expiry_time"`
 	// One of: `pending`, `uploaded`, `expired`, `failed`
-	Status           Status2                                  `json:"status"`
+	Status           Status                                   `json:"status"`
 	Filename         string                                   `json:"filename"`
 	ContentType      string                                   `json:"content_type"`
 	ContentLength    *int                                     `json:"content_length"`
@@ -7653,7 +7861,7 @@ type FileUploadObjectResponseFileImportResult struct {
 	// Empty object for success type.
 	Success *EmptyObject `json:"success,omitzero"`
 	// Details about the error that occurred during file import.
-	Err *Error3 `json:"error,omitzero"`
+	Err *FileUploadObjectFileImportResultAllOfError `json:"error,omitzero"`
 }
 
 // tagsOfFileUploadObjectResponseFileImportResult says, for each value of type, whether the member named after it must, may or must not be set.
@@ -7743,7 +7951,7 @@ type FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult struct {
 	// Empty object indicating success.
 	Success *EmptyObject `json:"success,omitzero"`
 	// Details about the error.
-	Err *Error3 `json:"error,omitzero"`
+	Err *FileUploadObjectFileImportResultAllOfError `json:"error,omitzero"`
 }
 
 // tagsOfFileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult says, for each value of type, whether the member named after it must, may or must not be set.
@@ -7789,68 +7997,6 @@ func (v *FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult) Marshal
 	}
 
 	if err := jsonCheckTag("type", string(out.Type), tagsOfFileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult, set, true); err != nil {
-		return err
-	}
-
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
-}
-
-// FilesItem defines a model
-type FilesItem struct {
-	Name       StringRequest        `json:"name,omitzero"`
-	Type       string               `json:"type"`
-	File       *InternalFileRequest `json:"file,omitzero"`
-	External   *ExternalFileRequest `json:"external,omitzero"`
-	FileUpload *FileUploadIDRequest `json:"file_upload,omitzero"`
-}
-
-// tagsOfFilesItem says, for each value of type, whether the member named after it must, may or must not be set.
-var tagsOfFilesItem = map[string]jsonTagMember{
-	"file":        jsonTagRequired,
-	"external":    jsonTagRequired,
-	"file_upload": jsonTagRequired,
-}
-
-// taggedMembers returns those of the members named after a value of type that are set.
-func (v *FilesItem) taggedMembers() []string {
-	var set []string
-	if v.File != nil {
-		set = append(set, "file")
-	}
-	if v.External != nil {
-		set = append(set, "external")
-	}
-	if v.FileUpload != nil {
-		set = append(set, "file_upload")
-	}
-
-	return set
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those named after a
-// value of type, only the one it names is set.
-func (v *FilesItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain FilesItem
-
-	*v = FilesItem{}
-	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
-		return err
-	}
-
-	return jsonCheckTag("type", string(v.Type), tagsOfFilesItem, v.taggedMembers(), jsonStrict(dec))
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
-func (v *FilesItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain FilesItem
-
-	out, set := *v, v.taggedMembers()
-	if out.Type == "" && len(set) == 1 {
-		out.Type = string(set[0])
-	}
-
-	if err := jsonCheckTag("type", string(out.Type), tagsOfFilesItem, set, true); err != nil {
 		return err
 	}
 
@@ -7958,11 +8104,6 @@ func (e FormViewConfigSubmissionPermissions) Valid() bool {
 	default:
 		return false
 	}
-}
-
-// Formula defines a model
-type Formula struct {
-	Expression string `json:"expression,omitzero"`
 }
 
 // FormulaCheckboxSubGroupByRequest defines a model
@@ -8239,17 +8380,22 @@ func (v *FormulaNumberSubGroupByResponse) unmarshalJSONMember(dec *jsontext.Deco
 // FormulaPropertyConfiguration defines a model
 type FormulaPropertyConfiguration struct {
 	// Always `formula`
-	Type    string  `json:"type,omitzero"`
-	Formula Formula `json:"formula"`
+	Type    string                              `json:"type,omitzero"`
+	Formula FormulaPropertyConfigurationFormula `json:"formula"`
+}
+
+// FormulaPropertyConfigurationFormula defines a model
+type FormulaPropertyConfigurationFormula struct {
+	Expression string `json:"expression,omitzero"`
 }
 
 // FormulaPropertyFilter defines a model
 // FormulaPropertyFilter is an untagged anyOf union: at least one field is set after unmarshaling.
 type FormulaPropertyFilter struct {
-	FormulaPropertyFilterAnyOf0 *FormulaPropertyFilterAnyOf0
-	FormulaPropertyFilterAnyOf  *FormulaPropertyFilterAnyOf
-	RollupPropertyFilterAnyOf3  *RollupPropertyFilterAnyOf3
-	RollupPropertyFilterAnyOf   *RollupPropertyFilterAnyOf
+	FormulaPropertyFilterString   *FormulaPropertyFilterString
+	FormulaPropertyFilterCheckbox *FormulaPropertyFilterCheckbox
+	RollupPropertyFilterNumber    *RollupPropertyFilterNumber
+	RollupPropertyFilterDate      *RollupPropertyFilterDate
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -8264,33 +8410,33 @@ func (v *FormulaPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv FormulaPropertyFilterAnyOf0
+		var vv FormulaPropertyFilterString
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.FormulaPropertyFilterAnyOf0 = &vv
+			v.FormulaPropertyFilterString = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv FormulaPropertyFilterAnyOf
+		var vv FormulaPropertyFilterCheckbox
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.FormulaPropertyFilterAnyOf = &vv
+			v.FormulaPropertyFilterCheckbox = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv RollupPropertyFilterAnyOf3
+		var vv RollupPropertyFilterNumber
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterAnyOf3 = &vv
+			v.RollupPropertyFilterNumber = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv RollupPropertyFilterAnyOf
+		var vv RollupPropertyFilterDate
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterAnyOf = &vv
+			v.RollupPropertyFilterDate = &vv
 			matched++
 		}
 	}
@@ -8305,26 +8451,26 @@ func (v *FormulaPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *FormulaPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.FormulaPropertyFilterAnyOf0 != nil:
-		return json.MarshalEncode(enc, v.FormulaPropertyFilterAnyOf0, jsonOpts)
-	case v.FormulaPropertyFilterAnyOf != nil:
-		return json.MarshalEncode(enc, v.FormulaPropertyFilterAnyOf, jsonOpts)
-	case v.RollupPropertyFilterAnyOf3 != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterAnyOf3, jsonOpts)
-	case v.RollupPropertyFilterAnyOf != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterAnyOf, jsonOpts)
+	case v.FormulaPropertyFilterString != nil:
+		return json.MarshalEncode(enc, v.FormulaPropertyFilterString, jsonOpts)
+	case v.FormulaPropertyFilterCheckbox != nil:
+		return json.MarshalEncode(enc, v.FormulaPropertyFilterCheckbox, jsonOpts)
+	case v.RollupPropertyFilterNumber != nil:
+		return json.MarshalEncode(enc, v.RollupPropertyFilterNumber, jsonOpts)
+	case v.RollupPropertyFilterDate != nil:
+		return json.MarshalEncode(enc, v.RollupPropertyFilterDate, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// FormulaPropertyFilterAnyOf defines a model
-type FormulaPropertyFilterAnyOf struct {
+// FormulaPropertyFilterCheckbox defines a model
+type FormulaPropertyFilterCheckbox struct {
 	Checkbox CheckboxPropertyFilter `json:"checkbox"`
 }
 
-// FormulaPropertyFilterAnyOf0 defines a model
-type FormulaPropertyFilterAnyOf0 struct {
+// FormulaPropertyFilterString defines a model
+type FormulaPropertyFilterString struct {
 	String TextPropertyFilter `json:"string"`
 }
 
@@ -8844,10 +8990,10 @@ type GetAgentOk struct {
 	// "active" when the agent can run; "disabled" when it is paused (see pause_reason); "deleted" when it has been removed.
 	Status AgentStatus `json:"status"`
 	// Why the agent is paused when status is "disabled" (e.g. "credit_limit", "disabled_from_workspace_settings"); null when active.
-	PauseReason  AgentPauseReasonOneOf     `json:"pause_reason"`
-	CreatedBy    GetAgentOkCreatedByOneOf0 `json:"created_by"`
-	Version      AgentVersionOneOf         `json:"version"`
-	AgentVersion AgentVersionOneOf         `json:"agent_version"`
+	PauseReason  AgentPauseReasonOneOf   `json:"pause_reason"`
+	CreatedBy    GetAgentOkCreatedByUser `json:"created_by"`
+	Version      AgentVersionOneOf       `json:"version"`
+	AgentVersion AgentVersionOneOf       `json:"agent_version"`
 	// Whether the draft has edits not yet in the published version, or "hidden" when the caller lacks edit access to the agent.
 	HasUnpublishedChanges GetAgentOkHasUnpublishedChanges `json:"has_unpublished_changes"`
 	// ISO 8601 timestamp of the agent's most recent run, null if it has never run, or "hidden" when the caller lacks edit access to the agent.
@@ -8888,8 +9034,8 @@ func (e GetAgentOkAgentType) Valid() bool {
 	}
 }
 
-// GetAgentOkCreatedByOneOf0 defines a model
-type GetAgentOkCreatedByOneOf0 struct {
+// GetAgentOkCreatedByUser defines a model
+type GetAgentOkCreatedByUser struct {
 	// Always `user`
 	Object string `json:"object"`
 	// Always `user`
@@ -9378,8 +9524,8 @@ func (v *GroupFilterOperatorArrayItem) MarshalJSONTo(enc *jsontext.Encoder) erro
 // GroupFilterOperatorArrayItemAnyOf1 defines a model
 // GroupFilterOperatorArrayItemAnyOf1 is an untagged anyOf union: at least one field is set after unmarshaling.
 type GroupFilterOperatorArrayItemAnyOf1 struct {
-	GroupFilterOperatorArrayItemAnyOf1AnyOf0 *GroupFilterOperatorArrayItemAnyOf1AnyOf0
-	GroupFilterOperatorArrayItemAnyOf1AnyOf1 *GroupFilterOperatorArrayItemAnyOf1AnyOf1
+	GroupFilterOperatorArrayItemAnyOf1Or  *GroupFilterOperatorArrayItemAnyOf1Or
+	GroupFilterOperatorArrayItemAnyOf1And *GroupFilterOperatorArrayItemAnyOf1And
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -9394,17 +9540,17 @@ func (v *GroupFilterOperatorArrayItemAnyOf1) UnmarshalJSONFrom(dec *jsontext.Dec
 	var matched int
 
 	{
-		var vv GroupFilterOperatorArrayItemAnyOf1AnyOf0
+		var vv GroupFilterOperatorArrayItemAnyOf1Or
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.GroupFilterOperatorArrayItemAnyOf1AnyOf0 = &vv
+			v.GroupFilterOperatorArrayItemAnyOf1Or = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv GroupFilterOperatorArrayItemAnyOf1AnyOf1
+		var vv GroupFilterOperatorArrayItemAnyOf1And
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.GroupFilterOperatorArrayItemAnyOf1AnyOf1 = &vv
+			v.GroupFilterOperatorArrayItemAnyOf1And = &vv
 			matched++
 		}
 	}
@@ -9419,23 +9565,23 @@ func (v *GroupFilterOperatorArrayItemAnyOf1) UnmarshalJSONFrom(dec *jsontext.Dec
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *GroupFilterOperatorArrayItemAnyOf1) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.GroupFilterOperatorArrayItemAnyOf1AnyOf0 != nil:
-		return json.MarshalEncode(enc, v.GroupFilterOperatorArrayItemAnyOf1AnyOf0, jsonOpts)
-	case v.GroupFilterOperatorArrayItemAnyOf1AnyOf1 != nil:
-		return json.MarshalEncode(enc, v.GroupFilterOperatorArrayItemAnyOf1AnyOf1, jsonOpts)
+	case v.GroupFilterOperatorArrayItemAnyOf1Or != nil:
+		return json.MarshalEncode(enc, v.GroupFilterOperatorArrayItemAnyOf1Or, jsonOpts)
+	case v.GroupFilterOperatorArrayItemAnyOf1And != nil:
+		return json.MarshalEncode(enc, v.GroupFilterOperatorArrayItemAnyOf1And, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// GroupFilterOperatorArrayItemAnyOf1AnyOf0 defines a model
-type GroupFilterOperatorArrayItemAnyOf1AnyOf0 struct {
-	Or PropertyOrTimestampFilterArray `json:"or"`
+// GroupFilterOperatorArrayItemAnyOf1And defines a model
+type GroupFilterOperatorArrayItemAnyOf1And struct {
+	And PropertyOrTimestampFilterArray `json:"and"`
 }
 
-// GroupFilterOperatorArrayItemAnyOf1AnyOf1 defines a model
-type GroupFilterOperatorArrayItemAnyOf1AnyOf1 struct {
-	And PropertyOrTimestampFilterArray `json:"and"`
+// GroupFilterOperatorArrayItemAnyOf1Or defines a model
+type GroupFilterOperatorArrayItemAnyOf1Or struct {
+	Or PropertyOrTimestampFilterArray `json:"or"`
 }
 
 // GroupObjectRequest defines a model
@@ -9525,15 +9671,6 @@ type HeaderContentWithSingleLevelOfChildrenRequest struct {
 	Children     []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
 }
 
-// Heading defines a model
-type Heading struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color        APIColor                                      `json:"color,omitzero"`
-	IsToggleable *bool                                         `json:"is_toggleable,omitzero"`
-	Children     []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
-}
-
 // IDObject defines a model
 type IDObject struct {
 	ID string `json:"id"`
@@ -9563,75 +9700,10 @@ type IconPageIconRequestIcon struct {
 	Color NoticonColor `json:"color,omitzero"`
 }
 
-// Image3 defines a model
-type Image3 struct {
-	Image  MediaContentWithFileAndCaptionRequest `json:"image"`
-	Type   string                                `json:"type,omitzero"`
-	Object string                                `json:"object,omitzero"`
-}
-
 // InitialDataSourceRequest defines a model
 type InitialDataSourceRequest struct {
 	// Property schema for the initial data source, if you'd like to create one.
 	Properties map[string]PropertyConfigurationRequest `json:"properties,omitzero"`
-}
-
-// Insert new content into the page.
-type InsertContentInsertContent struct {
-	// The enhanced markdown content to insert into the page.
-	Content string `json:"content"`
-	// Selection of existing content to insert after, using the ellipsis format ("start text...end text"). Omit to append at the end of the page.
-	After string `json:"after,omitzero"`
-	// Explicit position for inserted content. Use {"type":"start"} to prepend or {"type":"end"} to append. Cannot be combined with after.
-	Position InsertContentInsertContentPosition `json:"position,omitzero"`
-}
-
-// Explicit position for inserted content. Use {"type":"start"} to prepend or {"type":"end"} to append. Cannot be combined with after.
-type InsertContentInsertContentPosition struct {
-	Type string `json:"type"`
-}
-
-// tagsOfInsertContentInsertContentPosition says, for each value of type, whether the member named after it must, may or must not be set.
-var tagsOfInsertContentInsertContentPosition = map[string]jsonTagMember{
-	"start": jsonTagNone,
-	"end":   jsonTagNone,
-}
-
-// taggedMembers returns those of the members named after a value of type that are set.
-func (v *InsertContentInsertContentPosition) taggedMembers() []string {
-	var set []string
-
-	return set
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those named after a
-// value of type, only the one it names is set.
-func (v *InsertContentInsertContentPosition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain InsertContentInsertContentPosition
-
-	*v = InsertContentInsertContentPosition{}
-	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
-		return err
-	}
-
-	return jsonCheckTag("type", string(v.Type), tagsOfInsertContentInsertContentPosition, v.taggedMembers(), jsonStrict(dec))
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
-func (v *InsertContentInsertContentPosition) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain InsertContentInsertContentPosition
-
-	out, set := *v, v.taggedMembers()
-	if out.Type == "" && len(set) == 1 {
-		out.Type = string(set[0])
-	}
-
-	if err := jsonCheckTag("type", string(out.Type), tagsOfInsertContentInsertContentPosition, set, true); err != nil {
-		return err
-	}
-
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
 // InternalFileRequest defines a model
@@ -9906,13 +9978,6 @@ type LinkPreviewMention struct {
 	URL string `json:"url"`
 }
 
-// LinkToPage3 defines a model
-type LinkToPage3 struct {
-	LinkToPage LinkToPageLinkToPage `json:"link_to_page"`
-	Type       string               `json:"type,omitzero"`
-	Object     string               `json:"object,omitzero"`
-}
-
 // LinkToPageBlockObjectResponseLinkToPage defines a model
 type LinkToPageBlockObjectResponseLinkToPage struct {
 	Type       string    `json:"type"`
@@ -9968,67 +10033,6 @@ func (v *LinkToPageBlockObjectResponseLinkToPage) MarshalJSONTo(enc *jsontext.En
 	}
 
 	if err := jsonCheckTag("type", string(out.Type), tagsOfLinkToPageBlockObjectResponseLinkToPage, set, true); err != nil {
-		return err
-	}
-
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
-}
-
-// LinkToPageLinkToPage defines a model
-type LinkToPageLinkToPage struct {
-	Type       string    `json:"type"`
-	PageID     IDRequest `json:"page_id,omitzero"`
-	DatabaseID IDRequest `json:"database_id,omitzero"`
-	CommentID  IDRequest `json:"comment_id,omitzero"`
-}
-
-// tagsOfLinkToPageLinkToPage says, for each value of type, whether the member named after it must, may or must not be set.
-var tagsOfLinkToPageLinkToPage = map[string]jsonTagMember{
-	"page_id":     jsonTagRequired,
-	"database_id": jsonTagRequired,
-	"comment_id":  jsonTagRequired,
-}
-
-// taggedMembers returns those of the members named after a value of type that are set.
-func (v *LinkToPageLinkToPage) taggedMembers() []string {
-	var set []string
-	if v.PageID != "" {
-		set = append(set, "page_id")
-	}
-	if v.DatabaseID != "" {
-		set = append(set, "database_id")
-	}
-	if v.CommentID != "" {
-		set = append(set, "comment_id")
-	}
-
-	return set
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those named after a
-// value of type, only the one it names is set.
-func (v *LinkToPageLinkToPage) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain LinkToPageLinkToPage
-
-	*v = LinkToPageLinkToPage{}
-	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
-		return err
-	}
-
-	return jsonCheckTag("type", string(v.Type), tagsOfLinkToPageLinkToPage, v.taggedMembers(), jsonStrict(dec))
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
-func (v *LinkToPageLinkToPage) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain LinkToPageLinkToPage
-
-	out, set := *v, v.taggedMembers()
-	if out.Type == "" && len(set) == 1 {
-		out.Type = string(set[0])
-	}
-
-	if err := jsonCheckTag("type", string(out.Type), tagsOfLinkToPageLinkToPage, set, true); err != nil {
 		return err
 	}
 
@@ -10502,6 +10506,12 @@ type MediaContentWithURLAndCaptionResponse struct {
 	Caption RichTexts `json:"caption"`
 }
 
+// MentionRichTextItemMentionPage defines a model
+type MentionRichTextItemMentionPage struct {
+	// The ID of the page in the mention.
+	ID IDResponse `json:"id"`
+}
+
 // Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.
 type MentionRichTextItemRequestMention struct {
 	Type string `json:"type"`
@@ -10514,8 +10524,8 @@ type MentionRichTextItemRequestMention struct {
 	// Details of the database mention.
 	Database *RelationItemPropertyValue `json:"database,omitzero"`
 	// Details of the template mention.
-	TemplateMention *TemplateMentionRequest `json:"template_mention,omitzero"`
-	CustomEmoji     *CustomEmojiCustomEmoji `json:"custom_emoji,omitzero"`
+	TemplateMention *TemplateMentionRequest         `json:"template_mention,omitzero"`
+	CustomEmoji     *CustomEmojiPageIconCustomEmoji `json:"custom_emoji,omitzero"`
 }
 
 // tagsOfMentionRichTextItemRequestMention says, for each value of type, whether the member named after it must, may or must not be set.
@@ -10595,9 +10605,9 @@ type MentionRichTextItemResponseMention struct {
 	// Details of the link mention.
 	LinkMention *LinkMentionResponse `json:"link_mention,omitzero"`
 	// Details of the page mention.
-	Page *Page4 `json:"page,omitzero"`
+	Page *MentionRichTextItemMentionPage `json:"page,omitzero"`
 	// Details of the database mention.
-	Database *Page4 `json:"database,omitzero"`
+	Database *MentionRichTextItemMentionPage `json:"database,omitzero"`
 	// Details of the template mention.
 	TemplateMention *TemplateMentionResponse `json:"template_mention,omitzero"`
 	// The custom emoji details for the icon.
@@ -10797,8 +10807,8 @@ func (v *MovePageParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
-// MovePageParentOneOf defines a model
-type MovePageParentOneOf struct {
+// MovePageParentPageID defines a model
+type MovePageParentPageID struct {
 	// The ID of the parent page (with or without dashes), for example, 195de9221179449fab8075a27c979105
 	PageID IDRequest `json:"page_id"`
 	// Always `page_id`
@@ -10808,59 +10818,6 @@ type MovePageParentOneOf struct {
 // MultiSelectDatabasePropertyConfigResponseMultiSelect defines a model
 type MultiSelectDatabasePropertyConfigResponseMultiSelect struct {
 	Options []SelectProperty `json:"options"`
-}
-
-// MultiSelectMultiSelectItem defines a model
-// MultiSelectMultiSelectItem is an untagged anyOf union: at least one field is set after unmarshaling.
-type MultiSelectMultiSelectItem struct {
-	SelectAnyOf  *SelectAnyOf
-	SelectAnyOf2 *SelectAnyOf2
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *MultiSelectMultiSelectItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv SelectAnyOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.SelectAnyOf = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv SelectAnyOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.SelectAnyOf2 = &vv
-			matched++
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *MultiSelectMultiSelectItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.SelectAnyOf != nil:
-		return json.MarshalEncode(enc, v.SelectAnyOf, jsonOpts)
-	case v.SelectAnyOf2 != nil:
-		return json.MarshalEncode(enc, v.SelectAnyOf2, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
 // MultiSelectPropertyFilter defines a model
@@ -10919,8 +10876,8 @@ func (v *MultiSelectPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 // MultiSelectPropertyFilterAnyOf0 defines a model
 // MultiSelectPropertyFilterAnyOf0 is an untagged anyOf union: at least one field is set after unmarshaling.
 type MultiSelectPropertyFilterAnyOf0 struct {
-	MultiSelectPropertyFilterAnyOf0AnyOf0 *MultiSelectPropertyFilterAnyOf0AnyOf0
-	MultiSelectPropertyFilterAnyOf0AnyOf1 *MultiSelectPropertyFilterAnyOf0AnyOf1
+	MultiSelectPropertyFilterAnyOf0Contains       *MultiSelectPropertyFilterAnyOf0Contains
+	MultiSelectPropertyFilterAnyOf0DoesNotContain *MultiSelectPropertyFilterAnyOf0DoesNotContain
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -10935,17 +10892,17 @@ func (v *MultiSelectPropertyFilterAnyOf0) UnmarshalJSONFrom(dec *jsontext.Decode
 	var matched int
 
 	{
-		var vv MultiSelectPropertyFilterAnyOf0AnyOf0
+		var vv MultiSelectPropertyFilterAnyOf0Contains
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.MultiSelectPropertyFilterAnyOf0AnyOf0 = &vv
+			v.MultiSelectPropertyFilterAnyOf0Contains = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv MultiSelectPropertyFilterAnyOf0AnyOf1
+		var vv MultiSelectPropertyFilterAnyOf0DoesNotContain
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.MultiSelectPropertyFilterAnyOf0AnyOf1 = &vv
+			v.MultiSelectPropertyFilterAnyOf0DoesNotContain = &vv
 			matched++
 		}
 	}
@@ -10960,22 +10917,22 @@ func (v *MultiSelectPropertyFilterAnyOf0) UnmarshalJSONFrom(dec *jsontext.Decode
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *MultiSelectPropertyFilterAnyOf0) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.MultiSelectPropertyFilterAnyOf0AnyOf0 != nil:
-		return json.MarshalEncode(enc, v.MultiSelectPropertyFilterAnyOf0AnyOf0, jsonOpts)
-	case v.MultiSelectPropertyFilterAnyOf0AnyOf1 != nil:
-		return json.MarshalEncode(enc, v.MultiSelectPropertyFilterAnyOf0AnyOf1, jsonOpts)
+	case v.MultiSelectPropertyFilterAnyOf0Contains != nil:
+		return json.MarshalEncode(enc, v.MultiSelectPropertyFilterAnyOf0Contains, jsonOpts)
+	case v.MultiSelectPropertyFilterAnyOf0DoesNotContain != nil:
+		return json.MarshalEncode(enc, v.MultiSelectPropertyFilterAnyOf0DoesNotContain, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// MultiSelectPropertyFilterAnyOf0AnyOf0 defines a model
-type MultiSelectPropertyFilterAnyOf0AnyOf0 struct {
+// MultiSelectPropertyFilterAnyOf0Contains defines a model
+type MultiSelectPropertyFilterAnyOf0Contains struct {
 	Contains StringOrStringArray `json:"contains"`
 }
 
-// MultiSelectPropertyFilterAnyOf0AnyOf1 defines a model
-type MultiSelectPropertyFilterAnyOf0AnyOf1 struct {
+// MultiSelectPropertyFilterAnyOf0DoesNotContain defines a model
+type MultiSelectPropertyFilterAnyOf0DoesNotContain struct {
 	DoesNotContain StringOrStringArray `json:"does_not_contain"`
 }
 
@@ -11071,11 +11028,6 @@ func (e NotionVersion) Valid() bool {
 	}
 }
 
-// Number3 defines a model
-type Number3 struct {
-	Format NumberFormat `json:"format,omitzero"`
-}
-
 // NumberDatabasePropertyConfigResponseNumber defines a model
 type NumberDatabasePropertyConfigResponseNumber struct {
 	// The number format for the property.
@@ -11126,8 +11078,13 @@ type NumberGroupByConfigResponse struct {
 // NumberPropertyConfiguration defines a model
 type NumberPropertyConfiguration struct {
 	// Always `number`
-	Type   string  `json:"type,omitzero"`
-	Number Number3 `json:"number"`
+	Type   string                            `json:"type,omitzero"`
+	Number NumberPropertyConfigurationNumber `json:"number"`
+}
+
+// NumberPropertyConfigurationNumber defines a model
+type NumberPropertyConfigurationNumber struct {
+	Format NumberFormat `json:"format,omitzero"`
 }
 
 // NumberPropertyFilter defines a model
@@ -11186,12 +11143,12 @@ func (v *NumberPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 // NumberPropertyFilterAnyOf0 defines a model
 // NumberPropertyFilterAnyOf0 is an untagged anyOf union: at least one field is set after unmarshaling.
 type NumberPropertyFilterAnyOf0 struct {
-	NumberPropertyFilterAnyOf0AnyOf0 *NumberPropertyFilterAnyOf0AnyOf0
-	NumberPropertyFilterAnyOf0AnyOf1 *NumberPropertyFilterAnyOf0AnyOf1
-	NumberPropertyFilterAnyOf0AnyOf2 *NumberPropertyFilterAnyOf0AnyOf2
-	NumberPropertyFilterAnyOf0AnyOf3 *NumberPropertyFilterAnyOf0AnyOf3
-	NumberPropertyFilterAnyOf0AnyOf4 *NumberPropertyFilterAnyOf0AnyOf4
-	NumberPropertyFilterAnyOf0AnyOf5 *NumberPropertyFilterAnyOf0AnyOf5
+	NumberPropertyFilterAnyOf0Equals               *NumberPropertyFilterAnyOf0Equals
+	NumberPropertyFilterAnyOf0DoesNotEqual         *NumberPropertyFilterAnyOf0DoesNotEqual
+	NumberPropertyFilterAnyOf0GreaterThan          *NumberPropertyFilterAnyOf0GreaterThan
+	NumberPropertyFilterAnyOf0LessThan             *NumberPropertyFilterAnyOf0LessThan
+	NumberPropertyFilterAnyOf0GreaterThanOrEqualTo *NumberPropertyFilterAnyOf0GreaterThanOrEqualTo
+	NumberPropertyFilterAnyOf0LessThanOrEqualTo    *NumberPropertyFilterAnyOf0LessThanOrEqualTo
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -11206,49 +11163,49 @@ func (v *NumberPropertyFilterAnyOf0) UnmarshalJSONFrom(dec *jsontext.Decoder) er
 	var matched int
 
 	{
-		var vv NumberPropertyFilterAnyOf0AnyOf0
+		var vv NumberPropertyFilterAnyOf0Equals
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.NumberPropertyFilterAnyOf0AnyOf0 = &vv
+			v.NumberPropertyFilterAnyOf0Equals = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv NumberPropertyFilterAnyOf0AnyOf1
+		var vv NumberPropertyFilterAnyOf0DoesNotEqual
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.NumberPropertyFilterAnyOf0AnyOf1 = &vv
+			v.NumberPropertyFilterAnyOf0DoesNotEqual = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv NumberPropertyFilterAnyOf0AnyOf2
+		var vv NumberPropertyFilterAnyOf0GreaterThan
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.NumberPropertyFilterAnyOf0AnyOf2 = &vv
+			v.NumberPropertyFilterAnyOf0GreaterThan = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv NumberPropertyFilterAnyOf0AnyOf3
+		var vv NumberPropertyFilterAnyOf0LessThan
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.NumberPropertyFilterAnyOf0AnyOf3 = &vv
+			v.NumberPropertyFilterAnyOf0LessThan = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv NumberPropertyFilterAnyOf0AnyOf4
+		var vv NumberPropertyFilterAnyOf0GreaterThanOrEqualTo
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.NumberPropertyFilterAnyOf0AnyOf4 = &vv
+			v.NumberPropertyFilterAnyOf0GreaterThanOrEqualTo = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv NumberPropertyFilterAnyOf0AnyOf5
+		var vv NumberPropertyFilterAnyOf0LessThanOrEqualTo
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.NumberPropertyFilterAnyOf0AnyOf5 = &vv
+			v.NumberPropertyFilterAnyOf0LessThanOrEqualTo = &vv
 			matched++
 		}
 	}
@@ -11263,50 +11220,50 @@ func (v *NumberPropertyFilterAnyOf0) UnmarshalJSONFrom(dec *jsontext.Decoder) er
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *NumberPropertyFilterAnyOf0) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.NumberPropertyFilterAnyOf0AnyOf0 != nil:
-		return json.MarshalEncode(enc, v.NumberPropertyFilterAnyOf0AnyOf0, jsonOpts)
-	case v.NumberPropertyFilterAnyOf0AnyOf1 != nil:
-		return json.MarshalEncode(enc, v.NumberPropertyFilterAnyOf0AnyOf1, jsonOpts)
-	case v.NumberPropertyFilterAnyOf0AnyOf2 != nil:
-		return json.MarshalEncode(enc, v.NumberPropertyFilterAnyOf0AnyOf2, jsonOpts)
-	case v.NumberPropertyFilterAnyOf0AnyOf3 != nil:
-		return json.MarshalEncode(enc, v.NumberPropertyFilterAnyOf0AnyOf3, jsonOpts)
-	case v.NumberPropertyFilterAnyOf0AnyOf4 != nil:
-		return json.MarshalEncode(enc, v.NumberPropertyFilterAnyOf0AnyOf4, jsonOpts)
-	case v.NumberPropertyFilterAnyOf0AnyOf5 != nil:
-		return json.MarshalEncode(enc, v.NumberPropertyFilterAnyOf0AnyOf5, jsonOpts)
+	case v.NumberPropertyFilterAnyOf0Equals != nil:
+		return json.MarshalEncode(enc, v.NumberPropertyFilterAnyOf0Equals, jsonOpts)
+	case v.NumberPropertyFilterAnyOf0DoesNotEqual != nil:
+		return json.MarshalEncode(enc, v.NumberPropertyFilterAnyOf0DoesNotEqual, jsonOpts)
+	case v.NumberPropertyFilterAnyOf0GreaterThan != nil:
+		return json.MarshalEncode(enc, v.NumberPropertyFilterAnyOf0GreaterThan, jsonOpts)
+	case v.NumberPropertyFilterAnyOf0LessThan != nil:
+		return json.MarshalEncode(enc, v.NumberPropertyFilterAnyOf0LessThan, jsonOpts)
+	case v.NumberPropertyFilterAnyOf0GreaterThanOrEqualTo != nil:
+		return json.MarshalEncode(enc, v.NumberPropertyFilterAnyOf0GreaterThanOrEqualTo, jsonOpts)
+	case v.NumberPropertyFilterAnyOf0LessThanOrEqualTo != nil:
+		return json.MarshalEncode(enc, v.NumberPropertyFilterAnyOf0LessThanOrEqualTo, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// NumberPropertyFilterAnyOf0AnyOf0 defines a model
-type NumberPropertyFilterAnyOf0AnyOf0 struct {
-	Equals float64 `json:"equals"`
-}
-
-// NumberPropertyFilterAnyOf0AnyOf1 defines a model
-type NumberPropertyFilterAnyOf0AnyOf1 struct {
+// NumberPropertyFilterAnyOf0DoesNotEqual defines a model
+type NumberPropertyFilterAnyOf0DoesNotEqual struct {
 	DoesNotEqual float64 `json:"does_not_equal"`
 }
 
-// NumberPropertyFilterAnyOf0AnyOf2 defines a model
-type NumberPropertyFilterAnyOf0AnyOf2 struct {
+// NumberPropertyFilterAnyOf0Equals defines a model
+type NumberPropertyFilterAnyOf0Equals struct {
+	Equals float64 `json:"equals"`
+}
+
+// NumberPropertyFilterAnyOf0GreaterThan defines a model
+type NumberPropertyFilterAnyOf0GreaterThan struct {
 	GreaterThan float64 `json:"greater_than"`
 }
 
-// NumberPropertyFilterAnyOf0AnyOf3 defines a model
-type NumberPropertyFilterAnyOf0AnyOf3 struct {
-	LessThan float64 `json:"less_than"`
-}
-
-// NumberPropertyFilterAnyOf0AnyOf4 defines a model
-type NumberPropertyFilterAnyOf0AnyOf4 struct {
+// NumberPropertyFilterAnyOf0GreaterThanOrEqualTo defines a model
+type NumberPropertyFilterAnyOf0GreaterThanOrEqualTo struct {
 	GreaterThanOrEqualTo float64 `json:"greater_than_or_equal_to"`
 }
 
-// NumberPropertyFilterAnyOf0AnyOf5 defines a model
-type NumberPropertyFilterAnyOf0AnyOf5 struct {
+// NumberPropertyFilterAnyOf0LessThan defines a model
+type NumberPropertyFilterAnyOf0LessThan struct {
+	LessThan float64 `json:"less_than"`
+}
+
+// NumberPropertyFilterAnyOf0LessThanOrEqualTo defines a model
+type NumberPropertyFilterAnyOf0LessThanOrEqualTo struct {
 	LessThanOrEqualTo float64 `json:"less_than_or_equal_to"`
 }
 
@@ -11383,21 +11340,15 @@ type Page struct {
 	RequestID    uuid.UUID                 `json:"request_id,omitzero"`
 }
 
-// Page4 defines a model
-type Page4 struct {
-	// The ID of the page in the mention.
-	ID IDResponse `json:"id"`
-}
-
-// Page5 defines a model
-// Page5 is an untagged anyOf union: at least one field is set after unmarshaling.
-type Page5 struct {
+// Page2 defines a model
+// Page2 is an untagged anyOf union: at least one field is set after unmarshaling.
+type Page2 struct {
 	Page                      *Page
 	PartialPageObjectResponse *PartialPageObjectResponse
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *Page5) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+func (v *Page2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	opts := jsonOptsOf(dec)
 
 	raw, err := dec.ReadValue()
@@ -11431,7 +11382,7 @@ func (v *Page5) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *Page5) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *Page2) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.Page != nil:
 		return json.MarshalEncode(enc, v.Page, jsonOpts)
@@ -11463,9 +11414,9 @@ type PageContentUpdatedWebhookPayloadAllOfData struct {
 
 // PageCoverRequest defines a model
 type PageCoverRequest struct {
-	Type       string                    `json:"type"`
-	FileUpload *IDObject                 `json:"file_upload,omitzero"`
-	External   *ExternalPageIconExternal `json:"external,omitzero"`
+	Type       string                       `json:"type"`
+	FileUpload *IDObject                    `json:"file_upload,omitzero"`
+	External   *TextRichTextItemTextLinkURL `json:"external,omitzero"`
 }
 
 // tagsOfPageCoverRequest says, for each value of type, whether the member named after it must, may or must not be set.
@@ -11597,19 +11548,6 @@ type PageDeletedWebhookPayload struct {
 	Data PageMovedWebhookPayloadAllOfData `json:"data"`
 }
 
-// PageID defines a model
-type PageID struct {
-	PageID IDRequest `json:"page_id"`
-	Type   string    `json:"type,omitzero"`
-}
-
-// PageID2 defines a model
-type PageID2 struct {
-	// Always `page_id`
-	Type   string    `json:"type"`
-	PageID IDRequest `json:"page_id"`
-}
-
 // PageIDParentForBlockBasedObject defines a model
 type PageIDParentForBlockBasedObject struct {
 	// The parent type.
@@ -11635,9 +11573,9 @@ type PageIconRequest struct {
 	Type       string    `json:"type"`
 	FileUpload *IDObject `json:"file_upload,omitzero"`
 	// An emoji character.
-	Emoji       EmojiRequest              `json:"emoji,omitzero"`
-	External    *ExternalPageIconExternal `json:"external,omitzero"`
-	CustomEmoji *CustomEmojiCustomEmoji   `json:"custom_emoji,omitzero"`
+	Emoji       EmojiRequest                    `json:"emoji,omitzero"`
+	External    *TextRichTextItemTextLinkURL    `json:"external,omitzero"`
+	CustomEmoji *CustomEmojiPageIconCustomEmoji `json:"custom_emoji,omitzero"`
 	// A Notion native icon, specified by name and optional color.
 	Icon *IconPageIconRequestIcon `json:"icon,omitzero"`
 }
@@ -11836,7 +11774,7 @@ type PageOrDataSource struct {
 // PageOrDataSourceResultsItem defines a model
 // PageOrDataSourceResultsItem is an untagged anyOf union: at least one field is set after unmarshaling.
 type PageOrDataSourceResultsItem struct {
-	Page5                            *Page5
+	Page2                            *Page2
 	PageOrDataSourceResultsItemAnyOf *PageOrDataSourceResultsItemAnyOf
 }
 
@@ -11852,9 +11790,9 @@ func (v *PageOrDataSourceResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 	var matched int
 
 	{
-		var vv Page5
+		var vv Page2
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.Page5 = &vv
+			v.Page2 = &vv
 			matched++
 		}
 	}
@@ -11877,8 +11815,8 @@ func (v *PageOrDataSourceResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *PageOrDataSourceResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.Page5 != nil:
-		return json.MarshalEncode(enc, v.Page5, jsonOpts)
+	case v.Page2 != nil:
+		return json.MarshalEncode(enc, v.Page2, jsonOpts)
 	case v.PageOrDataSourceResultsItemAnyOf != nil:
 		return json.MarshalEncode(enc, v.PageOrDataSourceResultsItemAnyOf, jsonOpts)
 	}
@@ -11962,6 +11900,18 @@ func (e PageOrDataSourceStatusIncompleteReason) Valid() bool {
 	}
 }
 
+// PageParentDatabaseID defines a model
+type PageParentDatabaseID struct {
+	DatabaseID IDRequest `json:"database_id"`
+	Type       string    `json:"type,omitzero"`
+}
+
+// PageParentPageID defines a model
+type PageParentPageID struct {
+	PageID IDRequest `json:"page_id"`
+	Type   string    `json:"type,omitzero"`
+}
+
 // PagePositionSchema defines a model
 type PagePositionSchema struct {
 	Type       string                     `json:"type"`
@@ -12015,8 +11965,8 @@ func (v *PagePositionSchema) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
-// PagePositionSchemaAnyOf defines a model
-type PagePositionSchemaAnyOf struct {
+// PagePositionSchemaAfterBlock defines a model
+type PagePositionSchemaAfterBlock struct {
 	Type       string                    `json:"type"`
 	AfterBlock RelationItemPropertyValue `json:"after_block"`
 }
@@ -12042,23 +11992,23 @@ type PagePropertiesUpdatedWebhookPayloadAllOf1Data struct {
 
 // PagePropertiesValue defines a model
 type PagePropertiesValue struct {
-	Type         string                       `json:"type"`
-	Title        []RichTextItemRequest        `json:"title,omitzero"`
-	RichText     []RichTextItemRequest        `json:"rich_text,omitzero"`
-	Number       *float64                     `json:"number,omitzero"`
-	URL          *TextRequest                 `json:"url,omitzero"`
-	Select       *Select2                     `json:"select,omitzero"`
-	MultiSelect  []MultiSelectMultiSelectItem `json:"multi_select,omitzero"`
-	People       []PeopleItem                 `json:"people,omitzero"`
-	Email        *StringRequest               `json:"email,omitzero"`
-	PhoneNumber  *StringRequest               `json:"phone_number,omitzero"`
-	Date         *DateRequest                 `json:"date,omitzero"`
-	Checkbox     *bool                        `json:"checkbox,omitzero"`
-	Relation     []RelationItemPropertyValue  `json:"relation,omitzero"`
-	Files        []FilesItem                  `json:"files,omitzero"`
-	Status       *Select2                     `json:"status,omitzero"`
-	Place        *Place2                      `json:"place,omitzero"`
-	Verification *Verification2               `json:"verification,omitzero"`
+	Type         string                                          `json:"type"`
+	Title        []RichTextItemRequest                           `json:"title,omitzero"`
+	RichText     []RichTextItemRequest                           `json:"rich_text,omitzero"`
+	Number       *float64                                        `json:"number,omitzero"`
+	URL          *TextRequest                                    `json:"url,omitzero"`
+	Select       *PagePropertiesValueSelect2                     `json:"select,omitzero"`
+	MultiSelect  []PagePropertiesValueMultiSelectMultiSelectItem `json:"multi_select,omitzero"`
+	People       []PagePropertiesValuePeopleItem                 `json:"people,omitzero"`
+	Email        *StringRequest                                  `json:"email,omitzero"`
+	PhoneNumber  *StringRequest                                  `json:"phone_number,omitzero"`
+	Date         *DateRequest                                    `json:"date,omitzero"`
+	Checkbox     *bool                                           `json:"checkbox,omitzero"`
+	Relation     []RelationItemPropertyValue                     `json:"relation,omitzero"`
+	Files        []PagePropertiesValueFilesItem                  `json:"files,omitzero"`
+	Status       *PagePropertiesValueSelect2                     `json:"status,omitzero"`
+	Place        *PagePropertiesValuePlace2                      `json:"place,omitzero"`
+	Verification *PagePropertiesValueVerification2               `json:"verification,omitzero"`
 }
 
 // tagsOfPagePropertiesValue says, for each value of type, whether the member named after it must, may or must not be set.
@@ -12166,6 +12116,365 @@ func (v *PagePropertiesValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
+// PagePropertiesValueFilesItem defines a model
+type PagePropertiesValueFilesItem struct {
+	Name       StringRequest        `json:"name,omitzero"`
+	Type       string               `json:"type"`
+	File       *InternalFileRequest `json:"file,omitzero"`
+	External   *ExternalFileRequest `json:"external,omitzero"`
+	FileUpload *FileUploadIDRequest `json:"file_upload,omitzero"`
+}
+
+// tagsOfPagePropertiesValueFilesItem says, for each value of type, whether the member named after it must, may or must not be set.
+var tagsOfPagePropertiesValueFilesItem = map[string]jsonTagMember{
+	"file":        jsonTagRequired,
+	"external":    jsonTagRequired,
+	"file_upload": jsonTagRequired,
+}
+
+// taggedMembers returns those of the members named after a value of type that are set.
+func (v *PagePropertiesValueFilesItem) taggedMembers() []string {
+	var set []string
+	if v.File != nil {
+		set = append(set, "file")
+	}
+	if v.External != nil {
+		set = append(set, "external")
+	}
+	if v.FileUpload != nil {
+		set = append(set, "file_upload")
+	}
+
+	return set
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those named after a
+// value of type, only the one it names is set.
+func (v *PagePropertiesValueFilesItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain PagePropertiesValueFilesItem
+
+	*v = PagePropertiesValueFilesItem{}
+	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
+		return err
+	}
+
+	return jsonCheckTag("type", string(v.Type), tagsOfPagePropertiesValueFilesItem, v.taggedMembers(), jsonStrict(dec))
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
+// the value whose member is set.
+func (v *PagePropertiesValueFilesItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain PagePropertiesValueFilesItem
+
+	out, set := *v, v.taggedMembers()
+	if out.Type == "" && len(set) == 1 {
+		out.Type = string(set[0])
+	}
+
+	if err := jsonCheckTag("type", string(out.Type), tagsOfPagePropertiesValueFilesItem, set, true); err != nil {
+		return err
+	}
+
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+}
+
+// PagePropertiesValueMultiSelectMultiSelectItem defines a model
+// PagePropertiesValueMultiSelectMultiSelectItem is an untagged anyOf union: at least one field is set after unmarshaling.
+type PagePropertiesValueMultiSelectMultiSelectItem struct {
+	PagePropertiesValueSelectID   *PagePropertiesValueSelectID
+	PagePropertiesValueSelectName *PagePropertiesValueSelectName
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *PagePropertiesValueMultiSelectMultiSelectItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv PagePropertiesValueSelectID
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.PagePropertiesValueSelectID = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv PagePropertiesValueSelectName
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.PagePropertiesValueSelectName = &vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *PagePropertiesValueMultiSelectMultiSelectItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.PagePropertiesValueSelectID != nil:
+		return json.MarshalEncode(enc, v.PagePropertiesValueSelectID, jsonOpts)
+	case v.PagePropertiesValueSelectName != nil:
+		return json.MarshalEncode(enc, v.PagePropertiesValueSelectName, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// PagePropertiesValuePeopleItem defines a model
+// PagePropertiesValuePeopleItem is an untagged anyOf union: at least one field is set after unmarshaling.
+type PagePropertiesValuePeopleItem struct {
+	PartialUserObjectRequest *PartialUserObjectRequest
+	GroupObjectRequest       *GroupObjectRequest
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member object names the alternative, which then
+// decodes each further member as it is read. With object first, nothing is read twice.
+func (v *PagePropertiesValuePeopleItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	tag, first, dec, err := jsonFirstMember(dec, "object")
+	if err != nil {
+		return err
+	}
+
+	switch tag {
+	case "user":
+		var vv PartialUserObjectRequest
+		if err := jsonMembersFrom(dec, "object", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.PartialUserObjectRequest = &vv
+	case "group":
+		var vv GroupObjectRequest
+		if err := jsonMembersFrom(dec, "object", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.GroupObjectRequest = &vv
+	default:
+		return jsonUnknownValue("object", tag)
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with object first, as decoding wants it, and set to the variant's value.
+func (v *PagePropertiesValuePeopleItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	var (
+		variant any
+		tag     string
+	)
+
+	switch {
+	case v.PartialUserObjectRequest != nil:
+		variant, tag = v.PartialUserObjectRequest, "user"
+	case v.GroupObjectRequest != nil:
+		variant, tag = v.GroupObjectRequest, "group"
+	default:
+		return &json.SemanticError{Err: errors.New("no alternative set")}
+	}
+
+	out, err := json.Marshal(variant, jsonOpts)
+	if err != nil {
+		return err
+	}
+
+	if out, err = jsonFirst(out, "object", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
+}
+
+// PagePropertiesValuePlace2 defines a model
+type PagePropertiesValuePlace2 struct {
+	Lat           float64 `json:"lat"`
+	Lon           float64 `json:"lon"`
+	Name          string  `json:"name,omitzero"`
+	Address       string  `json:"address,omitzero"`
+	AwsPlaceID    string  `json:"aws_place_id,omitzero"`
+	GooglePlaceID string  `json:"google_place_id,omitzero"`
+}
+
+// PagePropertiesValueSelect2 defines a model
+// PagePropertiesValueSelect2 is an untagged anyOf union: at least one field is set after unmarshaling.
+type PagePropertiesValueSelect2 struct {
+	PagePropertiesValueSelectID   *PagePropertiesValueSelectID
+	PagePropertiesValueSelectName *PagePropertiesValueSelectName
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *PagePropertiesValueSelect2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv PagePropertiesValueSelectID
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.PagePropertiesValueSelectID = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv PagePropertiesValueSelectName
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.PagePropertiesValueSelectName = &vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *PagePropertiesValueSelect2) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.PagePropertiesValueSelectID != nil:
+		return json.MarshalEncode(enc, v.PagePropertiesValueSelectID, jsonOpts)
+	case v.PagePropertiesValueSelectName != nil:
+		return json.MarshalEncode(enc, v.PagePropertiesValueSelectName, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// PagePropertiesValueSelectID defines a model
+type PagePropertiesValueSelectID struct {
+	ID   StringRequest `json:"id"`
+	Name TextRequest   `json:"name,omitzero"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
+	Color       SelectColor `json:"color,omitzero"`
+	Description TextRequest `json:"description,omitzero"`
+}
+
+// PagePropertiesValueSelectName defines a model
+type PagePropertiesValueSelectName struct {
+	Name TextRequest   `json:"name"`
+	ID   StringRequest `json:"id,omitzero"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
+	Color       SelectColor `json:"color,omitzero"`
+	Description TextRequest `json:"description,omitzero"`
+}
+
+// PagePropertiesValueVerification2 defines a model
+// PagePropertiesValueVerification2 is an untagged anyOf union: at least one field is set after unmarshaling.
+type PagePropertiesValueVerification2 struct {
+	PagePropertiesValueVerificationVerified   *PagePropertiesValueVerificationVerified
+	PagePropertiesValueVerificationUnverified *PagePropertiesValueVerificationUnverified
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member state names the alternative, which then
+// decodes each further member as it is read. With state first, nothing is read twice.
+func (v *PagePropertiesValueVerification2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	tag, first, dec, err := jsonFirstMember(dec, "state")
+	if err != nil {
+		return err
+	}
+
+	switch tag {
+	case "verified":
+		var vv PagePropertiesValueVerificationVerified
+		if err := jsonMembersFrom(dec, "state", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.PagePropertiesValueVerificationVerified = &vv
+	case "unverified":
+		var vv PagePropertiesValueVerificationUnverified
+		if err := jsonMembersFrom(dec, "state", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.PagePropertiesValueVerificationUnverified = &vv
+	default:
+		return jsonUnknownValue("state", tag)
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with state first, as decoding wants it, and set to the variant's value.
+func (v *PagePropertiesValueVerification2) MarshalJSONTo(enc *jsontext.Encoder) error {
+	var (
+		variant any
+		tag     string
+	)
+
+	switch {
+	case v.PagePropertiesValueVerificationVerified != nil:
+		variant, tag = v.PagePropertiesValueVerificationVerified, "verified"
+	case v.PagePropertiesValueVerificationUnverified != nil:
+		variant, tag = v.PagePropertiesValueVerificationUnverified, "unverified"
+	default:
+		return &json.SemanticError{Err: errors.New("no alternative set")}
+	}
+
+	out, err := json.Marshal(variant, jsonOpts)
+	if err != nil {
+		return err
+	}
+
+	if out, err = jsonFirst(out, "state", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
+}
+
+// PagePropertiesValueVerificationUnverified defines a model
+type PagePropertiesValueVerificationUnverified struct {
+	State string `json:"state"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PagePropertiesValueVerificationUnverified declares it.
+func (v *PagePropertiesValueVerificationUnverified) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "state":
+		return true, json.UnmarshalDecode(dec, &v.State, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// PagePropertiesValueVerificationVerified defines a model
+type PagePropertiesValueVerificationVerified struct {
+	State string      `json:"state"`
+	Date  DateRequest `json:"date,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PagePropertiesValueVerificationVerified declares it.
+func (v *PagePropertiesValueVerificationVerified) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "state":
+		return true, json.UnmarshalDecode(dec, &v.State, jsonOptsOf(dec))
+	case "date":
+		return true, json.UnmarshalDecode(dec, &v.Date, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
 // PageReferenceResponse defines a model
 type PageReferenceResponse struct {
 	// The object type.
@@ -12174,15 +12483,15 @@ type PageReferenceResponse struct {
 	ID IDResponse `json:"id"`
 }
 
-// PageTemplateAnyOf defines a model
-type PageTemplateAnyOf struct {
+// PageTemplateDefault defines a model
+type PageTemplateDefault struct {
 	Type string `json:"type"`
 	// IANA timezone to use when resolving template variables like @now and @today (e.g. 'America/New_York'). Defaults to the authorizing user's timezone for public integrations, or UTC for internal integrations.
 	Timezone TemplateTimezone `json:"timezone,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PageTemplateAnyOf declares it.
-func (v *PageTemplateAnyOf) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PageTemplateDefault declares it.
+func (v *PageTemplateDefault) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -12193,16 +12502,16 @@ func (v *PageTemplateAnyOf) unmarshalJSONMember(dec *jsontext.Decoder, name stri
 	return false, nil
 }
 
-// PageTemplateAnyOf2 defines a model
-type PageTemplateAnyOf2 struct {
+// PageTemplateID defines a model
+type PageTemplateID struct {
 	Type       string    `json:"type"`
 	TemplateID IDRequest `json:"template_id"`
 	// IANA timezone to use when resolving template variables like @now and @today (e.g. 'America/New_York'). Defaults to the authorizing user's timezone for public integrations, or UTC for internal integrations.
 	Timezone TemplateTimezone `json:"timezone,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PageTemplateAnyOf2 declares it.
-func (v *PageTemplateAnyOf2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PageTemplateID declares it.
+func (v *PageTemplateID) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -12759,13 +13068,6 @@ func (v *PatchPageTemplate) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
-// Pdf3 defines a model
-type Pdf3 struct {
-	PDF    MediaContentWithFileAndCaptionRequest `json:"pdf"`
-	Type   string                                `json:"type,omitzero"`
-	Object string                                `json:"object,omitzero"`
-}
-
 // PeopleArrayBasedPropertyValueResponse defines a model
 type PeopleArrayBasedPropertyValueResponse struct {
 	// Always `people`
@@ -12841,71 +13143,6 @@ func (v *PeopleArrayBasedPropertyValueResponsePeopleItem) MarshalJSONTo(enc *jso
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// PeopleItem defines a model
-// PeopleItem is an untagged anyOf union: at least one field is set after unmarshaling.
-type PeopleItem struct {
-	PartialUserObjectRequest *PartialUserObjectRequest
-	GroupObjectRequest       *GroupObjectRequest
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member object names the alternative, which then
-// decodes each further member as it is read. With object first, nothing is read twice.
-func (v *PeopleItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, dec, err := jsonFirstMember(dec, "object")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "user":
-		var vv PartialUserObjectRequest
-		if err := jsonMembersFrom(dec, "object", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.PartialUserObjectRequest = &vv
-	case "group":
-		var vv GroupObjectRequest
-		if err := jsonMembersFrom(dec, "object", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.GroupObjectRequest = &vv
-	default:
-		return jsonUnknownValue("object", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with object first, as decoding wants it, and set to the variant's value.
-func (v *PeopleItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.PartialUserObjectRequest != nil:
-		variant, tag = v.PartialUserObjectRequest, "user"
-	case v.GroupObjectRequest != nil:
-		variant, tag = v.GroupObjectRequest, "group"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "object", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
 // PeoplePropertyConfiguration defines a model
 type PeoplePropertyConfiguration struct {
 	// Always `people`
@@ -12969,8 +13206,8 @@ func (v *PeoplePropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 // PeoplePropertyFilterAnyOf0 defines a model
 // PeoplePropertyFilterAnyOf0 is an untagged anyOf union: at least one field is set after unmarshaling.
 type PeoplePropertyFilterAnyOf0 struct {
-	PeoplePropertyFilterAnyOf0AnyOf0 *PeoplePropertyFilterAnyOf0AnyOf0
-	PeoplePropertyFilterAnyOf0AnyOf1 *PeoplePropertyFilterAnyOf0AnyOf1
+	PeoplePropertyFilterAnyOf0Contains       *PeoplePropertyFilterAnyOf0Contains
+	PeoplePropertyFilterAnyOf0DoesNotContain *PeoplePropertyFilterAnyOf0DoesNotContain
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -12985,17 +13222,17 @@ func (v *PeoplePropertyFilterAnyOf0) UnmarshalJSONFrom(dec *jsontext.Decoder) er
 	var matched int
 
 	{
-		var vv PeoplePropertyFilterAnyOf0AnyOf0
+		var vv PeoplePropertyFilterAnyOf0Contains
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PeoplePropertyFilterAnyOf0AnyOf0 = &vv
+			v.PeoplePropertyFilterAnyOf0Contains = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv PeoplePropertyFilterAnyOf0AnyOf1
+		var vv PeoplePropertyFilterAnyOf0DoesNotContain
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PeoplePropertyFilterAnyOf0AnyOf1 = &vv
+			v.PeoplePropertyFilterAnyOf0DoesNotContain = &vv
 			matched++
 		}
 	}
@@ -13010,22 +13247,22 @@ func (v *PeoplePropertyFilterAnyOf0) UnmarshalJSONFrom(dec *jsontext.Decoder) er
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *PeoplePropertyFilterAnyOf0) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.PeoplePropertyFilterAnyOf0AnyOf0 != nil:
-		return json.MarshalEncode(enc, v.PeoplePropertyFilterAnyOf0AnyOf0, jsonOpts)
-	case v.PeoplePropertyFilterAnyOf0AnyOf1 != nil:
-		return json.MarshalEncode(enc, v.PeoplePropertyFilterAnyOf0AnyOf1, jsonOpts)
+	case v.PeoplePropertyFilterAnyOf0Contains != nil:
+		return json.MarshalEncode(enc, v.PeoplePropertyFilterAnyOf0Contains, jsonOpts)
+	case v.PeoplePropertyFilterAnyOf0DoesNotContain != nil:
+		return json.MarshalEncode(enc, v.PeoplePropertyFilterAnyOf0DoesNotContain, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// PeoplePropertyFilterAnyOf0AnyOf0 defines a model
-type PeoplePropertyFilterAnyOf0AnyOf0 struct {
+// PeoplePropertyFilterAnyOf0Contains defines a model
+type PeoplePropertyFilterAnyOf0Contains struct {
 	Contains PersonIDOrMe `json:"contains"`
 }
 
-// PeoplePropertyFilterAnyOf0AnyOf1 defines a model
-type PeoplePropertyFilterAnyOf0AnyOf1 struct {
+// PeoplePropertyFilterAnyOf0DoesNotContain defines a model
+type PeoplePropertyFilterAnyOf0DoesNotContain struct {
 	DoesNotContain PersonIDOrMe `json:"does_not_contain"`
 }
 
@@ -13080,16 +13317,6 @@ func (v *PeoplePropertyItemObjectPeople) MarshalJSONTo(enc *jsontext.Encoder) er
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// Person defines a model
-type Person struct {
-	Type      string       `json:"type"`
-	Person    PersonPerson `json:"person"`
-	Name      string       `json:"name"`
-	AvatarURL string       `json:"avatar_url"`
-	ID        IDRequest    `json:"id"`
-	Object    string       `json:"object"`
 }
 
 // PersonGroupByConfigRequest defines a model
@@ -13190,10 +13417,12 @@ func (v *PersonIDOrMe) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// PersonPerson defines a model
-type PersonPerson struct {
-	Email         string `json:"email"`
-	EmailVerified *bool  `json:"email_verified,omitzero"`
+// PersonUserObjectPerson defines a model
+type PersonUserObjectPerson struct {
+	// The email of the person.
+	Email string `json:"email,omitzero"`
+	// Whether the person's email is verified.
+	EmailVerified *bool `json:"email_verified,omitzero"`
 }
 
 // PersonUserObjectResponse defines a model
@@ -13201,7 +13430,7 @@ type PersonUserObjectResponse struct {
 	// Indicates this user is a person.
 	Type string `json:"type"`
 	// Details about the person, when the `type` of the user is `person`.
-	Person UserOneOfPerson             `json:"person"`
+	Person PersonUserObjectPerson      `json:"person"`
 	Bot    PersonUserObjectResponseBot `json:"bot,omitzero"`
 }
 
@@ -13251,16 +13480,6 @@ func (v *PhoneNumberSimplePropertyValueResponse) unmarshalJSONMember(dec *jsonte
 	}
 
 	return false, nil
-}
-
-// Place2 defines a model
-type Place2 struct {
-	Lat           float64 `json:"lat"`
-	Lon           float64 `json:"lon"`
-	Name          string  `json:"name,omitzero"`
-	Address       string  `json:"address,omitzero"`
-	AwsPlaceID    string  `json:"aws_place_id,omitzero"`
-	GooglePlaceID string  `json:"google_place_id,omitzero"`
 }
 
 // PlacePropertyConfiguration defines a model
@@ -13378,8 +13597,8 @@ func (v *PostDatabaseQueryFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 // PostDatabaseQueryFilterAnyOf0 defines a model
 // PostDatabaseQueryFilterAnyOf0 is an untagged anyOf union: at least one field is set after unmarshaling.
 type PostDatabaseQueryFilterAnyOf0 struct {
-	PostDatabaseQueryFilterAnyOf0AnyOf0 *PostDatabaseQueryFilterAnyOf0AnyOf0
-	PostDatabaseQueryFilterAnyOf0AnyOf1 *PostDatabaseQueryFilterAnyOf0AnyOf1
+	PostDatabaseQueryFilterAnyOf0Or  *PostDatabaseQueryFilterAnyOf0Or
+	PostDatabaseQueryFilterAnyOf0And *PostDatabaseQueryFilterAnyOf0And
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -13394,17 +13613,17 @@ func (v *PostDatabaseQueryFilterAnyOf0) UnmarshalJSONFrom(dec *jsontext.Decoder)
 	var matched int
 
 	{
-		var vv PostDatabaseQueryFilterAnyOf0AnyOf0
+		var vv PostDatabaseQueryFilterAnyOf0Or
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PostDatabaseQueryFilterAnyOf0AnyOf0 = &vv
+			v.PostDatabaseQueryFilterAnyOf0Or = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv PostDatabaseQueryFilterAnyOf0AnyOf1
+		var vv PostDatabaseQueryFilterAnyOf0And
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PostDatabaseQueryFilterAnyOf0AnyOf1 = &vv
+			v.PostDatabaseQueryFilterAnyOf0And = &vv
 			matched++
 		}
 	}
@@ -13419,23 +13638,23 @@ func (v *PostDatabaseQueryFilterAnyOf0) UnmarshalJSONFrom(dec *jsontext.Decoder)
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *PostDatabaseQueryFilterAnyOf0) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.PostDatabaseQueryFilterAnyOf0AnyOf0 != nil:
-		return json.MarshalEncode(enc, v.PostDatabaseQueryFilterAnyOf0AnyOf0, jsonOpts)
-	case v.PostDatabaseQueryFilterAnyOf0AnyOf1 != nil:
-		return json.MarshalEncode(enc, v.PostDatabaseQueryFilterAnyOf0AnyOf1, jsonOpts)
+	case v.PostDatabaseQueryFilterAnyOf0Or != nil:
+		return json.MarshalEncode(enc, v.PostDatabaseQueryFilterAnyOf0Or, jsonOpts)
+	case v.PostDatabaseQueryFilterAnyOf0And != nil:
+		return json.MarshalEncode(enc, v.PostDatabaseQueryFilterAnyOf0And, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// PostDatabaseQueryFilterAnyOf0AnyOf0 defines a model
-type PostDatabaseQueryFilterAnyOf0AnyOf0 struct {
-	Or GroupFilterOperatorArray `json:"or"`
+// PostDatabaseQueryFilterAnyOf0And defines a model
+type PostDatabaseQueryFilterAnyOf0And struct {
+	And GroupFilterOperatorArray `json:"and"`
 }
 
-// PostDatabaseQueryFilterAnyOf0AnyOf1 defines a model
-type PostDatabaseQueryFilterAnyOf0AnyOf1 struct {
-	And GroupFilterOperatorArray `json:"and"`
+// PostDatabaseQueryFilterAnyOf0Or defines a model
+type PostDatabaseQueryFilterAnyOf0Or struct {
+	Or GroupFilterOperatorArray `json:"or"`
 }
 
 // PostDatabaseQuerySortsItem defines a model
@@ -13527,8 +13746,8 @@ type PostPageAccepted struct {
 // PostPageAcceptedOperation defines a model
 // PostPageAcceptedOperation is an untagged anyOf union: at least one field is set after unmarshaling.
 type PostPageAcceptedOperation struct {
-	PostPageAcceptedOperationAnyOf0 *PostPageAcceptedOperationAnyOf0
-	PostPageAcceptedOperationAnyOf1 *PostPageAcceptedOperationAnyOf1
+	PostPageAcceptedOperationRest *PostPageAcceptedOperationRest
+	PostPageAcceptedOperationMcp  *PostPageAcceptedOperationMcp
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member surface names the alternative, which then
@@ -13541,19 +13760,19 @@ func (v *PostPageAcceptedOperation) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 
 	switch tag {
 	case "rest":
-		var vv PostPageAcceptedOperationAnyOf0
+		var vv PostPageAcceptedOperationRest
 		if err := jsonMembersFrom(dec, "surface", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.PostPageAcceptedOperationAnyOf0 = &vv
+		v.PostPageAcceptedOperationRest = &vv
 	case "mcp":
-		var vv PostPageAcceptedOperationAnyOf1
+		var vv PostPageAcceptedOperationMcp
 		if err := jsonMembersFrom(dec, "surface", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.PostPageAcceptedOperationAnyOf1 = &vv
+		v.PostPageAcceptedOperationMcp = &vv
 	default:
 		return jsonUnknownValue("surface", tag)
 	}
@@ -13569,10 +13788,10 @@ func (v *PostPageAcceptedOperation) MarshalJSONTo(enc *jsontext.Encoder) error {
 	)
 
 	switch {
-	case v.PostPageAcceptedOperationAnyOf0 != nil:
-		variant, tag = v.PostPageAcceptedOperationAnyOf0, "rest"
-	case v.PostPageAcceptedOperationAnyOf1 != nil:
-		variant, tag = v.PostPageAcceptedOperationAnyOf1, "mcp"
+	case v.PostPageAcceptedOperationRest != nil:
+		variant, tag = v.PostPageAcceptedOperationRest, "rest"
+	case v.PostPageAcceptedOperationMcp != nil:
+		variant, tag = v.PostPageAcceptedOperationMcp, "mcp"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -13589,14 +13808,14 @@ func (v *PostPageAcceptedOperation) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// PostPageAcceptedOperationAnyOf0 defines a model
-type PostPageAcceptedOperationAnyOf0 struct {
-	Surface string                     `json:"surface"`
-	Name    AsyncTaskRestOperationName `json:"name"`
+// PostPageAcceptedOperationMcp defines a model
+type PostPageAcceptedOperationMcp struct {
+	Surface string                    `json:"surface"`
+	Name    AsyncTaskMcpOperationName `json:"name"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PostPageAcceptedOperationAnyOf0 declares it.
-func (v *PostPageAcceptedOperationAnyOf0) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PostPageAcceptedOperationMcp declares it.
+func (v *PostPageAcceptedOperationMcp) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "surface":
 		return true, json.UnmarshalDecode(dec, &v.Surface, jsonOptsOf(dec))
@@ -13607,14 +13826,14 @@ func (v *PostPageAcceptedOperationAnyOf0) unmarshalJSONMember(dec *jsontext.Deco
 	return false, nil
 }
 
-// PostPageAcceptedOperationAnyOf1 defines a model
-type PostPageAcceptedOperationAnyOf1 struct {
-	Surface string                    `json:"surface"`
-	Name    AsyncTaskMcpOperationName `json:"name"`
+// PostPageAcceptedOperationRest defines a model
+type PostPageAcceptedOperationRest struct {
+	Surface string                     `json:"surface"`
+	Name    AsyncTaskRestOperationName `json:"name"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PostPageAcceptedOperationAnyOf1 declares it.
-func (v *PostPageAcceptedOperationAnyOf1) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PostPageAcceptedOperationRest declares it.
+func (v *PostPageAcceptedOperationRest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "surface":
 		return true, json.UnmarshalDecode(dec, &v.Surface, jsonOptsOf(dec))
@@ -13694,9 +13913,9 @@ func (v *PostPageParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 // PostPageTemplate defines a model
 // PostPageTemplate is an untagged anyOf union: at least one field is set after unmarshaling.
 type PostPageTemplate struct {
-	PostPageTemplateAnyOf0 *PostPageTemplateAnyOf0
-	PageTemplateAnyOf      *PageTemplateAnyOf
-	PageTemplateAnyOf2     *PageTemplateAnyOf2
+	PostPageTemplateNone *PostPageTemplateNone
+	PageTemplateDefault  *PageTemplateDefault
+	PageTemplateID       *PageTemplateID
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
@@ -13709,26 +13928,26 @@ func (v *PostPageTemplate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	switch tag {
 	case "none":
-		var vv PostPageTemplateAnyOf0
+		var vv PostPageTemplateNone
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.PostPageTemplateAnyOf0 = &vv
+		v.PostPageTemplateNone = &vv
 	case "default":
-		var vv PageTemplateAnyOf
+		var vv PageTemplateDefault
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.PageTemplateAnyOf = &vv
+		v.PageTemplateDefault = &vv
 	case "template_id":
-		var vv PageTemplateAnyOf2
+		var vv PageTemplateID
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.PageTemplateAnyOf2 = &vv
+		v.PageTemplateID = &vv
 	default:
 		return jsonUnknownValue("type", tag)
 	}
@@ -13744,12 +13963,12 @@ func (v *PostPageTemplate) MarshalJSONTo(enc *jsontext.Encoder) error {
 	)
 
 	switch {
-	case v.PostPageTemplateAnyOf0 != nil:
-		variant, tag = v.PostPageTemplateAnyOf0, "none"
-	case v.PageTemplateAnyOf != nil:
-		variant, tag = v.PageTemplateAnyOf, "default"
-	case v.PageTemplateAnyOf2 != nil:
-		variant, tag = v.PageTemplateAnyOf2, "template_id"
+	case v.PostPageTemplateNone != nil:
+		variant, tag = v.PostPageTemplateNone, "none"
+	case v.PageTemplateDefault != nil:
+		variant, tag = v.PageTemplateDefault, "default"
+	case v.PageTemplateID != nil:
+		variant, tag = v.PageTemplateID, "template_id"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -13766,13 +13985,13 @@ func (v *PostPageTemplate) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// PostPageTemplateAnyOf0 defines a model
-type PostPageTemplateAnyOf0 struct {
+// PostPageTemplateNone defines a model
+type PostPageTemplateNone struct {
 	Type string `json:"type"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PostPageTemplateAnyOf0 declares it.
-func (v *PostPageTemplateAnyOf0) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PostPageTemplateNone declares it.
+func (v *PostPageTemplateNone) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -13793,8 +14012,8 @@ type PostSearch struct {
 // PostSearchFilter defines a model
 // PostSearchFilter is an untagged anyOf union: at least one field is set after unmarshaling.
 type PostSearchFilter struct {
-	PostSearchFilterAnyOf0 *PostSearchFilterAnyOf0
-	PostSearchFilterAnyOf1 *PostSearchFilterAnyOf1
+	PostSearchFilterAnyOf0  *PostSearchFilterAnyOf0
+	PostSearchFilterInTrash *PostSearchFilterInTrash
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -13817,9 +14036,9 @@ func (v *PostSearchFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	{
-		var vv PostSearchFilterAnyOf1
+		var vv PostSearchFilterInTrash
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PostSearchFilterAnyOf1 = &vv
+			v.PostSearchFilterInTrash = &vv
 			matched++
 		}
 	}
@@ -13836,8 +14055,8 @@ func (v *PostSearchFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PostSearchFilterAnyOf0 != nil:
 		return json.MarshalEncode(enc, v.PostSearchFilterAnyOf0, jsonOpts)
-	case v.PostSearchFilterAnyOf1 != nil:
-		return json.MarshalEncode(enc, v.PostSearchFilterAnyOf1, jsonOpts)
+	case v.PostSearchFilterInTrash != nil:
+		return json.MarshalEncode(enc, v.PostSearchFilterInTrash, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -13867,16 +14086,16 @@ func (e PostSearchFilterAnyOf0Property) Valid() bool {
 	}
 }
 
-// PostSearchFilterAnyOf1 defines a model
-type PostSearchFilterAnyOf1 struct {
+// PostSearchFilterInTrash defines a model
+type PostSearchFilterInTrash struct {
 	InTrash bool `json:"in_trash"`
 }
 
 // PostSearchSort defines a model
 // PostSearchSort is an untagged anyOf union: at least one field is set after unmarshaling.
 type PostSearchSort struct {
-	PostSearchSortAnyOf0 *PostSearchSortAnyOf0
-	PostSearchSortAnyOf1 *PostSearchSortAnyOf1
+	PostSearchSortAnyOf0   *PostSearchSortAnyOf0
+	PostSearchSortProperty *PostSearchSortProperty
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -13899,9 +14118,9 @@ func (v *PostSearchSort) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	{
-		var vv PostSearchSortAnyOf1
+		var vv PostSearchSortProperty
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PostSearchSortAnyOf1 = &vv
+			v.PostSearchSortProperty = &vv
 			matched++
 		}
 	}
@@ -13918,8 +14137,8 @@ func (v *PostSearchSort) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PostSearchSortAnyOf0 != nil:
 		return json.MarshalEncode(enc, v.PostSearchSortAnyOf0, jsonOpts)
-	case v.PostSearchSortAnyOf1 != nil:
-		return json.MarshalEncode(enc, v.PostSearchSortAnyOf1, jsonOpts)
+	case v.PostSearchSortProperty != nil:
+		return json.MarshalEncode(enc, v.PostSearchSortProperty, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -13948,22 +14167,22 @@ func (e PostSearchSortAnyOf0Timestamp) Valid() bool {
 	}
 }
 
-// PostSearchSortAnyOf1 defines a model
-type PostSearchSortAnyOf1 struct {
-	Property PostSearchSortAnyOf1Property `json:"property"`
+// PostSearchSortProperty defines a model
+type PostSearchSortProperty struct {
+	Property PostSearchSortPropertyProperty `json:"property"`
 }
 
-// PostSearchSortAnyOf1Property defines a model
-type PostSearchSortAnyOf1Property string
+// PostSearchSortPropertyProperty defines a model
+type PostSearchSortPropertyProperty string
 
 const (
-	PostSearchSortAnyOf1PropertyRelevance PostSearchSortAnyOf1Property = "relevance"
+	PostSearchSortPropertyPropertyRelevance PostSearchSortPropertyProperty = "relevance"
 )
 
-// Valid indicates whether the value is a known member of the PostSearchSortAnyOf1Property enum.
-func (e PostSearchSortAnyOf1Property) Valid() bool {
+// Valid indicates whether the value is a known member of the PostSearchSortPropertyProperty enum.
+func (e PostSearchSortPropertyProperty) Valid() bool {
 	switch e {
-	case PostSearchSortAnyOf1PropertyRelevance:
+	case PostSearchSortPropertyPropertyRelevance:
 		return true
 	default:
 		return false
@@ -14130,34 +14349,34 @@ func (v *PropertyConfig) MarshalJSONTo(enc *jsontext.Encoder) error {
 // PropertyConfigurationRequest defines a model
 type PropertyConfigurationRequest struct {
 	// The description of the property.
-	Description     PropertyDescriptionRequest         `json:"description,omitzero"`
-	Type            string                             `json:"type"`
-	Number          *Number3                           `json:"number,omitzero"`
-	Formula         *Formula                           `json:"formula,omitzero"`
-	Select          *SelectPropertyConfigurationSelect `json:"select,omitzero"`
-	MultiSelect     *SelectPropertyConfigurationSelect `json:"multi_select,omitzero"`
-	Status          *StatusPropertyConfigRequest       `json:"status,omitzero"`
-	Relation        *Relation2                         `json:"relation,omitzero"`
-	Rollup          *Rollup                            `json:"rollup,omitzero"`
-	UniqueID        *UniqueIDUniqueID                  `json:"unique_id,omitzero"`
-	Title           *EmptyObject                       `json:"title,omitzero"`
-	RichText        *EmptyObject                       `json:"rich_text,omitzero"`
-	URL             *EmptyObject                       `json:"url,omitzero"`
-	People          *EmptyObject                       `json:"people,omitzero"`
-	Files           *EmptyObject                       `json:"files,omitzero"`
-	Email           *EmptyObject                       `json:"email,omitzero"`
-	PhoneNumber     *EmptyObject                       `json:"phone_number,omitzero"`
-	Date            *EmptyObject                       `json:"date,omitzero"`
-	Checkbox        *EmptyObject                       `json:"checkbox,omitzero"`
-	CreatedBy       *EmptyObject                       `json:"created_by,omitzero"`
-	CreatedTime     *EmptyObject                       `json:"created_time,omitzero"`
-	LastEditedBy    *EmptyObject                       `json:"last_edited_by,omitzero"`
-	LastEditedTime  *EmptyObject                       `json:"last_edited_time,omitzero"`
-	Button          *EmptyObject                       `json:"button,omitzero"`
-	Location        *EmptyObject                       `json:"location,omitzero"`
-	Verification    *EmptyObject                       `json:"verification,omitzero"`
-	LastVisitedTime *EmptyObject                       `json:"last_visited_time,omitzero"`
-	Place           *EmptyObject                       `json:"place,omitzero"`
+	Description     PropertyDescriptionRequest             `json:"description,omitzero"`
+	Type            string                                 `json:"type"`
+	Number          *NumberPropertyConfigurationNumber     `json:"number,omitzero"`
+	Formula         *FormulaPropertyConfigurationFormula   `json:"formula,omitzero"`
+	Select          *SelectPropertyConfigurationSelect     `json:"select,omitzero"`
+	MultiSelect     *SelectPropertyConfigurationSelect     `json:"multi_select,omitzero"`
+	Status          *StatusPropertyConfigRequest           `json:"status,omitzero"`
+	Relation        *RelationPropertyConfigurationRelation `json:"relation,omitzero"`
+	Rollup          *RollupPropertyConfigurationRollup     `json:"rollup,omitzero"`
+	UniqueID        *UniqueIDPropertyConfigurationUniqueID `json:"unique_id,omitzero"`
+	Title           *EmptyObject                           `json:"title,omitzero"`
+	RichText        *EmptyObject                           `json:"rich_text,omitzero"`
+	URL             *EmptyObject                           `json:"url,omitzero"`
+	People          *EmptyObject                           `json:"people,omitzero"`
+	Files           *EmptyObject                           `json:"files,omitzero"`
+	Email           *EmptyObject                           `json:"email,omitzero"`
+	PhoneNumber     *EmptyObject                           `json:"phone_number,omitzero"`
+	Date            *EmptyObject                           `json:"date,omitzero"`
+	Checkbox        *EmptyObject                           `json:"checkbox,omitzero"`
+	CreatedBy       *EmptyObject                           `json:"created_by,omitzero"`
+	CreatedTime     *EmptyObject                           `json:"created_time,omitzero"`
+	LastEditedBy    *EmptyObject                           `json:"last_edited_by,omitzero"`
+	LastEditedTime  *EmptyObject                           `json:"last_edited_time,omitzero"`
+	Button          *EmptyObject                           `json:"button,omitzero"`
+	Location        *EmptyObject                           `json:"location,omitzero"`
+	Verification    *EmptyObject                           `json:"verification,omitzero"`
+	LastVisitedTime *EmptyObject                           `json:"last_visited_time,omitzero"`
+	Place           *EmptyObject                           `json:"place,omitzero"`
 }
 
 // tagsOfPropertyConfigurationRequest says, for each value of type, whether the member named after it must, may or must not be set.
@@ -14310,30 +14529,30 @@ type PropertyDescriptionRequest string
 
 // PropertyFilter defines a model
 type PropertyFilter struct {
-	Property       string                     `json:"property"`
-	Type           string                     `json:"type"`
-	Title          *TextPropertyFilter        `json:"title,omitzero"`
-	RichText       *TextPropertyFilter        `json:"rich_text,omitzero"`
-	Number         *NumberPropertyFilter      `json:"number,omitzero"`
-	Checkbox       *CheckboxPropertyFilter    `json:"checkbox,omitzero"`
-	Select         *SelectPropertyFilter      `json:"select,omitzero"`
-	MultiSelect    *MultiSelectPropertyFilter `json:"multi_select,omitzero"`
-	Status         *SelectPropertyFilter      `json:"status,omitzero"`
-	Date           *DatePropertyFilter        `json:"date,omitzero"`
-	People         *PeoplePropertyFilter      `json:"people,omitzero"`
-	Files          *ExistencePropertyFilter   `json:"files,omitzero"`
-	URL            *TextPropertyFilter        `json:"url,omitzero"`
-	Email          *TextPropertyFilter        `json:"email,omitzero"`
-	PhoneNumber    *TextPropertyFilter        `json:"phone_number,omitzero"`
-	Relation       *RelationPropertyFilter    `json:"relation,omitzero"`
-	CreatedBy      *PeoplePropertyFilter      `json:"created_by,omitzero"`
-	CreatedTime    *DatePropertyFilter        `json:"created_time,omitzero"`
-	LastEditedBy   *PeoplePropertyFilter      `json:"last_edited_by,omitzero"`
-	LastEditedTime *DatePropertyFilter        `json:"last_edited_time,omitzero"`
-	Formula        *FormulaPropertyFilter     `json:"formula,omitzero"`
-	UniqueID       *NumberPropertyFilter      `json:"unique_id,omitzero"`
-	Rollup         *RollupPropertyFilter      `json:"rollup,omitzero"`
-	Verification   *VerificationVerification3 `json:"verification,omitzero"`
+	Property       string                                  `json:"property"`
+	Type           string                                  `json:"type"`
+	Title          *TextPropertyFilter                     `json:"title,omitzero"`
+	RichText       *TextPropertyFilter                     `json:"rich_text,omitzero"`
+	Number         *NumberPropertyFilter                   `json:"number,omitzero"`
+	Checkbox       *CheckboxPropertyFilter                 `json:"checkbox,omitzero"`
+	Select         *SelectPropertyFilter                   `json:"select,omitzero"`
+	MultiSelect    *MultiSelectPropertyFilter              `json:"multi_select,omitzero"`
+	Status         *SelectPropertyFilter                   `json:"status,omitzero"`
+	Date           *DatePropertyFilter                     `json:"date,omitzero"`
+	People         *PeoplePropertyFilter                   `json:"people,omitzero"`
+	Files          *ExistencePropertyFilter                `json:"files,omitzero"`
+	URL            *TextPropertyFilter                     `json:"url,omitzero"`
+	Email          *TextPropertyFilter                     `json:"email,omitzero"`
+	PhoneNumber    *TextPropertyFilter                     `json:"phone_number,omitzero"`
+	Relation       *RelationPropertyFilter                 `json:"relation,omitzero"`
+	CreatedBy      *PeoplePropertyFilter                   `json:"created_by,omitzero"`
+	CreatedTime    *DatePropertyFilter                     `json:"created_time,omitzero"`
+	LastEditedBy   *PeoplePropertyFilter                   `json:"last_edited_by,omitzero"`
+	LastEditedTime *DatePropertyFilter                     `json:"last_edited_time,omitzero"`
+	Formula        *FormulaPropertyFilter                  `json:"formula,omitzero"`
+	UniqueID       *NumberPropertyFilter                   `json:"unique_id,omitzero"`
+	Rollup         *RollupPropertyFilter                   `json:"rollup,omitzero"`
+	Verification   *PropertyFilterVerificationVerification `json:"verification,omitzero"`
 }
 
 // tagsOfPropertyFilter says, for each value of type, whether the member named after it must, may or must not be set.
@@ -14465,6 +14684,59 @@ func (v *PropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
+// PropertyFilterVerificationVerification defines a model
+// PropertyFilterVerificationVerification is an untagged anyOf union: at least one field is set after unmarshaling.
+type PropertyFilterVerificationVerification struct {
+	VerificationPropertyStatusFilter       *VerificationPropertyStatusFilter
+	VerificationPropertyDoesNotEqualFilter *VerificationPropertyDoesNotEqualFilter
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *PropertyFilterVerificationVerification) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv VerificationPropertyStatusFilter
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.VerificationPropertyStatusFilter = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv VerificationPropertyDoesNotEqualFilter
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.VerificationPropertyDoesNotEqualFilter = &vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *PropertyFilterVerificationVerification) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.VerificationPropertyStatusFilter != nil:
+		return json.MarshalEncode(enc, v.VerificationPropertyStatusFilter, jsonOpts)
+	case v.VerificationPropertyDoesNotEqualFilter != nil:
+		return json.MarshalEncode(enc, v.VerificationPropertyDoesNotEqualFilter, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
 // PropertyItemObjectResponse defines a model
 type PropertyItemObjectResponse struct {
 	Object         string                                      `json:"object"`
@@ -14488,12 +14760,12 @@ type PropertyItemObjectResponse struct {
 	Button         *EmptyObject                                `json:"button,omitzero"`
 	UniqueID       *UniqueIDPropertyItemObjectResponseUniqueID `json:"unique_id,omitzero"`
 	Verification   *VerificationPropertyValueResponse          `json:"verification,omitzero"`
-	Place          *Place2                                     `json:"place,omitzero"`
+	Place          *PagePropertiesValuePlace2                  `json:"place,omitzero"`
 	Title          *RichText                                   `json:"title,omitzero"`
 	RichText       *RichText                                   `json:"rich_text,omitzero"`
 	People         *PeoplePropertyItemObjectPeople             `json:"people,omitzero"`
 	Relation       *RelationPropertyItemObjectResponseRelation `json:"relation,omitzero"`
-	Rollup         *Rollup4                                    `json:"rollup,omitzero"`
+	Rollup         *RollupPropertyItemObjectRollup             `json:"rollup,omitzero"`
 }
 
 // tagsOfPropertyItemObjectResponse says, for each value of type, whether the member named after it must, may or must not be set.
@@ -14646,14 +14918,14 @@ type PropertyItemPropertyItemListResponse struct {
 
 // PropertyItemPropertyItemListResponsePropertyItem defines a model
 type PropertyItemPropertyItemListResponsePropertyItem struct {
-	NextURL  string       `json:"next_url"`
-	ID       string       `json:"id"`
-	Type     string       `json:"type"`
-	Title    *EmptyObject `json:"title,omitzero"`
-	RichText *EmptyObject `json:"rich_text,omitzero"`
-	People   *EmptyObject `json:"people,omitzero"`
-	Relation *EmptyObject `json:"relation,omitzero"`
-	Rollup   *Rollup4     `json:"rollup,omitzero"`
+	NextURL  string                          `json:"next_url"`
+	ID       string                          `json:"id"`
+	Type     string                          `json:"type"`
+	Title    *EmptyObject                    `json:"title,omitzero"`
+	RichText *EmptyObject                    `json:"rich_text,omitzero"`
+	People   *EmptyObject                    `json:"people,omitzero"`
+	Relation *EmptyObject                    `json:"relation,omitzero"`
+	Rollup   *RollupPropertyItemObjectRollup `json:"rollup,omitzero"`
 }
 
 // tagsOfPropertyItemPropertyItemListResponsePropertyItem says, for each value of type, whether the member named after it must, may or must not be set.
@@ -16080,16 +16352,16 @@ func (v *QueryAgentsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 // QueryAgentsFilterOneOf defines a model
 // QueryAgentsFilterOneOf is an untagged oneOf union: exactly one field is set after unmarshaling.
 type QueryAgentsFilterOneOf struct {
-	QueryAgentsFilterOneOfOneOf   *QueryAgentsFilterOneOfOneOf
-	QueryAgentsFilterOneOfOneOf2  *QueryAgentsFilterOneOfOneOf2
-	QueryAgentsFilterOneOfOneOf3  *QueryAgentsFilterOneOfOneOf3
-	QueryAgentsFilterOneOfOneOf4  *QueryAgentsFilterOneOfOneOf4
-	QueryAgentsFilterOneOfOneOf5  *QueryAgentsFilterOneOfOneOf5
-	QueryAgentsFilterOneOfOneOf6  *QueryAgentsFilterOneOfOneOf6
-	QueryAgentsFilterOneOfOneOf7  *QueryAgentsFilterOneOfOneOf7
-	QueryAgentsFilterOneOfOneOf8  *QueryAgentsFilterOneOfOneOf8
-	QueryAgentsFilterOneOfOneOf9  *QueryAgentsFilterOneOfOneOf9
-	QueryAgentsFilterOneOfOneOf10 *QueryAgentsFilterOneOfOneOf10
+	QueryAgentsFilterOneOfID           *QueryAgentsFilterOneOfID
+	QueryAgentsFilterOneOfAgentType    *QueryAgentsFilterOneOfAgentType
+	QueryAgentsFilterOneOfCreatedBy    *QueryAgentsFilterOneOfCreatedBy
+	QueryAgentsFilterOneOfCreatedTime  *QueryAgentsFilterOneOfCreatedTime
+	QueryAgentsFilterOneOfFavorited    *QueryAgentsFilterOneOfFavorited
+	QueryAgentsFilterOneOfConnections  *QueryAgentsFilterOneOfConnections
+	QueryAgentsFilterOneOfStatus       *QueryAgentsFilterOneOfStatus
+	QueryAgentsFilterOneOfModelMode    *QueryAgentsFilterOneOfModelMode
+	QueryAgentsFilterOneOfAgentVersion *QueryAgentsFilterOneOfAgentVersion
+	QueryAgentsFilterOneOfLastRunAt    *QueryAgentsFilterOneOfLastRunAt
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member property names the alternative, which then
@@ -16102,75 +16374,75 @@ func (v *QueryAgentsFilterOneOf) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 
 	switch tag {
 	case "id":
-		var vv QueryAgentsFilterOneOfOneOf
+		var vv QueryAgentsFilterOneOfID
 		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QueryAgentsFilterOneOfOneOf = &vv
+		v.QueryAgentsFilterOneOfID = &vv
 	case "agent_type":
-		var vv QueryAgentsFilterOneOfOneOf2
+		var vv QueryAgentsFilterOneOfAgentType
 		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QueryAgentsFilterOneOfOneOf2 = &vv
+		v.QueryAgentsFilterOneOfAgentType = &vv
 	case "created_by":
-		var vv QueryAgentsFilterOneOfOneOf3
+		var vv QueryAgentsFilterOneOfCreatedBy
 		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QueryAgentsFilterOneOfOneOf3 = &vv
+		v.QueryAgentsFilterOneOfCreatedBy = &vv
 	case "created_time":
-		var vv QueryAgentsFilterOneOfOneOf4
+		var vv QueryAgentsFilterOneOfCreatedTime
 		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QueryAgentsFilterOneOfOneOf4 = &vv
+		v.QueryAgentsFilterOneOfCreatedTime = &vv
 	case "favorited":
-		var vv QueryAgentsFilterOneOfOneOf5
+		var vv QueryAgentsFilterOneOfFavorited
 		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QueryAgentsFilterOneOfOneOf5 = &vv
+		v.QueryAgentsFilterOneOfFavorited = &vv
 	case "connections":
-		var vv QueryAgentsFilterOneOfOneOf6
+		var vv QueryAgentsFilterOneOfConnections
 		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QueryAgentsFilterOneOfOneOf6 = &vv
+		v.QueryAgentsFilterOneOfConnections = &vv
 	case "status":
-		var vv QueryAgentsFilterOneOfOneOf7
+		var vv QueryAgentsFilterOneOfStatus
 		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QueryAgentsFilterOneOfOneOf7 = &vv
+		v.QueryAgentsFilterOneOfStatus = &vv
 	case "model_mode":
-		var vv QueryAgentsFilterOneOfOneOf8
+		var vv QueryAgentsFilterOneOfModelMode
 		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QueryAgentsFilterOneOfOneOf8 = &vv
+		v.QueryAgentsFilterOneOfModelMode = &vv
 	case "agent_version":
-		var vv QueryAgentsFilterOneOfOneOf9
+		var vv QueryAgentsFilterOneOfAgentVersion
 		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QueryAgentsFilterOneOfOneOf9 = &vv
+		v.QueryAgentsFilterOneOfAgentVersion = &vv
 	case "last_run_at":
-		var vv QueryAgentsFilterOneOfOneOf10
+		var vv QueryAgentsFilterOneOfLastRunAt
 		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QueryAgentsFilterOneOfOneOf10 = &vv
+		v.QueryAgentsFilterOneOfLastRunAt = &vv
 	default:
 		return jsonUnknownValue("property", tag)
 	}
@@ -16186,26 +16458,26 @@ func (v *QueryAgentsFilterOneOf) MarshalJSONTo(enc *jsontext.Encoder) error {
 	)
 
 	switch {
-	case v.QueryAgentsFilterOneOfOneOf != nil:
-		variant, tag = v.QueryAgentsFilterOneOfOneOf, "id"
-	case v.QueryAgentsFilterOneOfOneOf2 != nil:
-		variant, tag = v.QueryAgentsFilterOneOfOneOf2, "agent_type"
-	case v.QueryAgentsFilterOneOfOneOf3 != nil:
-		variant, tag = v.QueryAgentsFilterOneOfOneOf3, "created_by"
-	case v.QueryAgentsFilterOneOfOneOf4 != nil:
-		variant, tag = v.QueryAgentsFilterOneOfOneOf4, "created_time"
-	case v.QueryAgentsFilterOneOfOneOf5 != nil:
-		variant, tag = v.QueryAgentsFilterOneOfOneOf5, "favorited"
-	case v.QueryAgentsFilterOneOfOneOf6 != nil:
-		variant, tag = v.QueryAgentsFilterOneOfOneOf6, "connections"
-	case v.QueryAgentsFilterOneOfOneOf7 != nil:
-		variant, tag = v.QueryAgentsFilterOneOfOneOf7, "status"
-	case v.QueryAgentsFilterOneOfOneOf8 != nil:
-		variant, tag = v.QueryAgentsFilterOneOfOneOf8, "model_mode"
-	case v.QueryAgentsFilterOneOfOneOf9 != nil:
-		variant, tag = v.QueryAgentsFilterOneOfOneOf9, "agent_version"
-	case v.QueryAgentsFilterOneOfOneOf10 != nil:
-		variant, tag = v.QueryAgentsFilterOneOfOneOf10, "last_run_at"
+	case v.QueryAgentsFilterOneOfID != nil:
+		variant, tag = v.QueryAgentsFilterOneOfID, "id"
+	case v.QueryAgentsFilterOneOfAgentType != nil:
+		variant, tag = v.QueryAgentsFilterOneOfAgentType, "agent_type"
+	case v.QueryAgentsFilterOneOfCreatedBy != nil:
+		variant, tag = v.QueryAgentsFilterOneOfCreatedBy, "created_by"
+	case v.QueryAgentsFilterOneOfCreatedTime != nil:
+		variant, tag = v.QueryAgentsFilterOneOfCreatedTime, "created_time"
+	case v.QueryAgentsFilterOneOfFavorited != nil:
+		variant, tag = v.QueryAgentsFilterOneOfFavorited, "favorited"
+	case v.QueryAgentsFilterOneOfConnections != nil:
+		variant, tag = v.QueryAgentsFilterOneOfConnections, "connections"
+	case v.QueryAgentsFilterOneOfStatus != nil:
+		variant, tag = v.QueryAgentsFilterOneOfStatus, "status"
+	case v.QueryAgentsFilterOneOfModelMode != nil:
+		variant, tag = v.QueryAgentsFilterOneOfModelMode, "model_mode"
+	case v.QueryAgentsFilterOneOfAgentVersion != nil:
+		variant, tag = v.QueryAgentsFilterOneOfAgentVersion, "agent_version"
+	case v.QueryAgentsFilterOneOfLastRunAt != nil:
+		variant, tag = v.QueryAgentsFilterOneOfLastRunAt, "last_run_at"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -16225,8 +16497,8 @@ func (v *QueryAgentsFilterOneOf) MarshalJSONTo(enc *jsontext.Encoder) error {
 // QueryAgentsFilterOneOf1 defines a model
 // QueryAgentsFilterOneOf1 is an untagged oneOf union: exactly one field is set after unmarshaling.
 type QueryAgentsFilterOneOf1 struct {
-	QueryAgentsFilterOneOf1OneOf0 *QueryAgentsFilterOneOf1OneOf0
-	QueryAgentsFilterOneOf1OneOf1 *QueryAgentsFilterOneOf1OneOf1
+	QueryAgentsFilterOneOf1And *QueryAgentsFilterOneOf1And
+	QueryAgentsFilterOneOf1Or  *QueryAgentsFilterOneOf1Or
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -16243,18 +16515,18 @@ func (v *QueryAgentsFilterOneOf1) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterOneOf1OneOf0
+		var vv QueryAgentsFilterOneOf1And
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterOneOf1OneOf0 = &vv
+			v.QueryAgentsFilterOneOf1And = &vv
 			matched++
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterOneOf1OneOf1
+		var vv QueryAgentsFilterOneOf1Or
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterOneOf1OneOf1 = &vv
+			v.QueryAgentsFilterOneOf1Or = &vv
 			matched++
 		}
 	}
@@ -16269,69 +16541,33 @@ func (v *QueryAgentsFilterOneOf1) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *QueryAgentsFilterOneOf1) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.QueryAgentsFilterOneOf1OneOf0 != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterOneOf1OneOf0, jsonOpts)
-	case v.QueryAgentsFilterOneOf1OneOf1 != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterOneOf1OneOf1, jsonOpts)
+	case v.QueryAgentsFilterOneOf1And != nil:
+		return json.MarshalEncode(enc, v.QueryAgentsFilterOneOf1And, jsonOpts)
+	case v.QueryAgentsFilterOneOf1Or != nil:
+		return json.MarshalEncode(enc, v.QueryAgentsFilterOneOf1Or, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// QueryAgentsFilterOneOf1OneOf0 defines a model
-type QueryAgentsFilterOneOf1OneOf0 struct {
-	And []QueryAgentsFilterOneOfOneOfOrItem `json:"and"`
+// QueryAgentsFilterOneOf1And defines a model
+type QueryAgentsFilterOneOf1And struct {
+	And []QueryAgentsFilterOneOfOrItem `json:"and"`
 }
 
-// QueryAgentsFilterOneOf1OneOf1 defines a model
-type QueryAgentsFilterOneOf1OneOf1 struct {
-	Or []QueryAgentsFilterOneOfOneOfOrItem `json:"or"`
+// QueryAgentsFilterOneOf1Or defines a model
+type QueryAgentsFilterOneOf1Or struct {
+	Or []QueryAgentsFilterOneOfOrItem `json:"or"`
 }
 
-// QueryAgentsFilterOneOfOneOf defines a model
-type QueryAgentsFilterOneOfOneOf struct {
-	Property string                        `json:"property"`
-	ID       QueryAgentsFilterOneOfOneOfID `json:"id"`
+// QueryAgentsFilterOneOfAgentType defines a model
+type QueryAgentsFilterOneOfAgentType struct {
+	Property string                                `json:"property"`
+	String   QueryAgentsFilterOneOfAgentTypeString `json:"string"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfOneOf declares it.
-func (v *QueryAgentsFilterOneOfOneOf) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "property":
-		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
-	case "id":
-		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QueryAgentsFilterOneOfOneOf10 defines a model
-type QueryAgentsFilterOneOfOneOf10 struct {
-	Property string                          `json:"property"`
-	Date     QueryAgentsFilterOneOfOneOfDate `json:"date"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfOneOf10 declares it.
-func (v *QueryAgentsFilterOneOfOneOf10) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "property":
-		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
-	case "date":
-		return true, json.UnmarshalDecode(dec, &v.Date, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QueryAgentsFilterOneOfOneOf2 defines a model
-type QueryAgentsFilterOneOfOneOf2 struct {
-	Property string                            `json:"property"`
-	String   QueryAgentsFilterOneOfOneOfString `json:"string"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfOneOf2 declares it.
-func (v *QueryAgentsFilterOneOfOneOf2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfAgentType declares it.
+func (v *QueryAgentsFilterOneOfAgentType) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "property":
 		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
@@ -16342,122 +16578,19 @@ func (v *QueryAgentsFilterOneOfOneOf2) unmarshalJSONMember(dec *jsontext.Decoder
 	return false, nil
 }
 
-// QueryAgentsFilterOneOfOneOf3 defines a model
-type QueryAgentsFilterOneOfOneOf3 struct {
-	Property string                            `json:"property"`
-	People   QueryAgentsFilterOneOfOneOfPeople `json:"people"`
+// QueryAgentsFilterOneOfAgentTypeString defines a model
+type QueryAgentsFilterOneOfAgentTypeString struct {
+	Equals AgentInsightsAgentType `json:"equals"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfOneOf3 declares it.
-func (v *QueryAgentsFilterOneOfOneOf3) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "property":
-		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
-	case "people":
-		return true, json.UnmarshalDecode(dec, &v.People, jsonOptsOf(dec))
-	}
-
-	return false, nil
+// QueryAgentsFilterOneOfAgentVersion defines a model
+type QueryAgentsFilterOneOfAgentVersion struct {
+	Property string                                   `json:"property"`
+	Number   QueryAgentsFilterOneOfAgentVersionNumber `json:"number"`
 }
 
-// QueryAgentsFilterOneOfOneOf4 defines a model
-type QueryAgentsFilterOneOfOneOf4 struct {
-	Property string                          `json:"property"`
-	Date     QueryAgentsFilterOneOfOneOfDate `json:"date"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfOneOf4 declares it.
-func (v *QueryAgentsFilterOneOfOneOf4) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "property":
-		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
-	case "date":
-		return true, json.UnmarshalDecode(dec, &v.Date, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QueryAgentsFilterOneOfOneOf5 defines a model
-type QueryAgentsFilterOneOfOneOf5 struct {
-	Property string                              `json:"property"`
-	Checkbox QueryAgentsFilterOneOfOneOfCheckbox `json:"checkbox"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfOneOf5 declares it.
-func (v *QueryAgentsFilterOneOfOneOf5) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "property":
-		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
-	case "checkbox":
-		return true, json.UnmarshalDecode(dec, &v.Checkbox, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QueryAgentsFilterOneOfOneOf6 defines a model
-type QueryAgentsFilterOneOfOneOf6 struct {
-	Property  string                            `json:"property"`
-	McpServer QueryAgentsFilterOneOfOneOfPeople `json:"mcp_server"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfOneOf6 declares it.
-func (v *QueryAgentsFilterOneOfOneOf6) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "property":
-		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
-	case "mcp_server":
-		return true, json.UnmarshalDecode(dec, &v.McpServer, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QueryAgentsFilterOneOfOneOf7 defines a model
-type QueryAgentsFilterOneOfOneOf7 struct {
-	Property string                            `json:"property"`
-	Status   QueryAgentsFilterOneOfOneOfStatus `json:"status"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfOneOf7 declares it.
-func (v *QueryAgentsFilterOneOfOneOf7) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "property":
-		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
-	case "status":
-		return true, json.UnmarshalDecode(dec, &v.Status, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QueryAgentsFilterOneOfOneOf8 defines a model
-type QueryAgentsFilterOneOfOneOf8 struct {
-	Property string                            `json:"property"`
-	Select   QueryAgentsFilterOneOfOneOfSelect `json:"select"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfOneOf8 declares it.
-func (v *QueryAgentsFilterOneOfOneOf8) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "property":
-		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
-	case "select":
-		return true, json.UnmarshalDecode(dec, &v.Select, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QueryAgentsFilterOneOfOneOf9 defines a model
-type QueryAgentsFilterOneOfOneOf9 struct {
-	Property string                            `json:"property"`
-	Number   QueryAgentsFilterOneOfOneOfNumber `json:"number"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfOneOf9 declares it.
-func (v *QueryAgentsFilterOneOfOneOf9) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfAgentVersion declares it.
+func (v *QueryAgentsFilterOneOfAgentVersion) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "property":
 		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
@@ -16468,36 +16601,190 @@ func (v *QueryAgentsFilterOneOfOneOf9) unmarshalJSONMember(dec *jsontext.Decoder
 	return false, nil
 }
 
-// QueryAgentsFilterOneOfOneOfCheckbox defines a model
-type QueryAgentsFilterOneOfOneOfCheckbox struct {
+// QueryAgentsFilterOneOfAgentVersionNumber defines a model
+type QueryAgentsFilterOneOfAgentVersionNumber struct {
+	Equals int `json:"equals"`
+}
+
+// QueryAgentsFilterOneOfConnections defines a model
+type QueryAgentsFilterOneOfConnections struct {
+	Property  string                                `json:"property"`
+	McpServer QueryAgentsFilterOneOfCreatedByPeople `json:"mcp_server"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfConnections declares it.
+func (v *QueryAgentsFilterOneOfConnections) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "property":
+		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
+	case "mcp_server":
+		return true, json.UnmarshalDecode(dec, &v.McpServer, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// QueryAgentsFilterOneOfCreatedBy defines a model
+type QueryAgentsFilterOneOfCreatedBy struct {
+	Property string                                `json:"property"`
+	People   QueryAgentsFilterOneOfCreatedByPeople `json:"people"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfCreatedBy declares it.
+func (v *QueryAgentsFilterOneOfCreatedBy) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "property":
+		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
+	case "people":
+		return true, json.UnmarshalDecode(dec, &v.People, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// QueryAgentsFilterOneOfCreatedByPeople defines a model
+type QueryAgentsFilterOneOfCreatedByPeople struct {
+	Contains string `json:"contains"`
+}
+
+// QueryAgentsFilterOneOfCreatedTime defines a model
+type QueryAgentsFilterOneOfCreatedTime struct {
+	Property string                              `json:"property"`
+	Date     QueryAgentsFilterOneOfLastRunAtDate `json:"date"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfCreatedTime declares it.
+func (v *QueryAgentsFilterOneOfCreatedTime) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "property":
+		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
+	case "date":
+		return true, json.UnmarshalDecode(dec, &v.Date, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// QueryAgentsFilterOneOfFavorited defines a model
+type QueryAgentsFilterOneOfFavorited struct {
+	Property string                                  `json:"property"`
+	Checkbox QueryAgentsFilterOneOfFavoritedCheckbox `json:"checkbox"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfFavorited declares it.
+func (v *QueryAgentsFilterOneOfFavorited) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "property":
+		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
+	case "checkbox":
+		return true, json.UnmarshalDecode(dec, &v.Checkbox, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// QueryAgentsFilterOneOfFavoritedCheckbox defines a model
+type QueryAgentsFilterOneOfFavoritedCheckbox struct {
 	Equals bool `json:"equals"`
 }
 
-// QueryAgentsFilterOneOfOneOfDate defines a model
-type QueryAgentsFilterOneOfOneOfDate struct {
+// QueryAgentsFilterOneOfID defines a model
+type QueryAgentsFilterOneOfID struct {
+	Property string                     `json:"property"`
+	ID       QueryAgentsFilterOneOfIDID `json:"id"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfID declares it.
+func (v *QueryAgentsFilterOneOfID) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "property":
+		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// QueryAgentsFilterOneOfIDID defines a model
+type QueryAgentsFilterOneOfIDID struct {
+	Equals string `json:"equals"`
+}
+
+// QueryAgentsFilterOneOfLastRunAt defines a model
+type QueryAgentsFilterOneOfLastRunAt struct {
+	Property string                              `json:"property"`
+	Date     QueryAgentsFilterOneOfLastRunAtDate `json:"date"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfLastRunAt declares it.
+func (v *QueryAgentsFilterOneOfLastRunAt) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "property":
+		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
+	case "date":
+		return true, json.UnmarshalDecode(dec, &v.Date, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// QueryAgentsFilterOneOfLastRunAtDate defines a model
+type QueryAgentsFilterOneOfLastRunAtDate struct {
 	After  time.Time `json:"after,omitzero"`
 	Before time.Time `json:"before,omitzero"`
 }
 
-// QueryAgentsFilterOneOfOneOfID defines a model
-type QueryAgentsFilterOneOfOneOfID struct {
-	Equals string `json:"equals"`
+// QueryAgentsFilterOneOfModelMode defines a model
+type QueryAgentsFilterOneOfModelMode struct {
+	Property string                                `json:"property"`
+	Select   QueryAgentsFilterOneOfModelModeSelect `json:"select"`
 }
 
-// QueryAgentsFilterOneOfOneOfNumber defines a model
-type QueryAgentsFilterOneOfOneOfNumber struct {
-	Equals int `json:"equals"`
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfModelMode declares it.
+func (v *QueryAgentsFilterOneOfModelMode) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "property":
+		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
+	case "select":
+		return true, json.UnmarshalDecode(dec, &v.Select, jsonOptsOf(dec))
+	}
+
+	return false, nil
 }
 
-// QueryAgentsFilterOneOfOneOfOrItem defines a model
-// QueryAgentsFilterOneOfOneOfOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QueryAgentsFilterOneOfOneOfOrItem struct {
-	QueryAgentsFilterOneOf                 *QueryAgentsFilterOneOf
-	QueryAgentsFilterOneOfOneOfOrItemOneOf *QueryAgentsFilterOneOfOneOfOrItemOneOf
+// QueryAgentsFilterOneOfModelModeSelect defines a model
+type QueryAgentsFilterOneOfModelModeSelect struct {
+	Equals QueryAgentsFilterOneOfModelModeSelectEquals `json:"equals"`
+}
+
+// QueryAgentsFilterOneOfModelModeSelectEquals defines a model
+type QueryAgentsFilterOneOfModelModeSelectEquals string
+
+const (
+	QueryAgentsFilterOneOfModelModeSelectEqualsAuto   QueryAgentsFilterOneOfModelModeSelectEquals = "auto"
+	QueryAgentsFilterOneOfModelModeSelectEqualsPinned QueryAgentsFilterOneOfModelModeSelectEquals = "pinned"
+)
+
+// Valid indicates whether the value is a known member of the QueryAgentsFilterOneOfModelModeSelectEquals enum.
+func (e QueryAgentsFilterOneOfModelModeSelectEquals) Valid() bool {
+	switch e {
+	case QueryAgentsFilterOneOfModelModeSelectEqualsAuto, QueryAgentsFilterOneOfModelModeSelectEqualsPinned:
+		return true
+	default:
+		return false
+	}
+}
+
+// QueryAgentsFilterOneOfOrItem defines a model
+// QueryAgentsFilterOneOfOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
+type QueryAgentsFilterOneOfOrItem struct {
+	QueryAgentsFilterOneOf            *QueryAgentsFilterOneOf
+	QueryAgentsFilterOneOfOrItemOneOf *QueryAgentsFilterOneOfOrItemOneOf
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *QueryAgentsFilterOneOfOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+func (v *QueryAgentsFilterOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	opts := jsonOptsOf(dec)
 	strict := jsonStrict(dec)
 
@@ -16519,9 +16806,9 @@ func (v *QueryAgentsFilterOneOfOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Deco
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterOneOfOneOfOrItemOneOf
+		var vv QueryAgentsFilterOneOfOrItemOneOf
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterOneOfOneOfOrItemOneOf = &vv
+			v.QueryAgentsFilterOneOfOrItemOneOf = &vv
 			matched++
 		}
 	}
@@ -16534,26 +16821,26 @@ func (v *QueryAgentsFilterOneOfOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Deco
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *QueryAgentsFilterOneOfOneOfOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *QueryAgentsFilterOneOfOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.QueryAgentsFilterOneOf != nil:
 		return json.MarshalEncode(enc, v.QueryAgentsFilterOneOf, jsonOpts)
-	case v.QueryAgentsFilterOneOfOneOfOrItemOneOf != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterOneOfOneOfOrItemOneOf, jsonOpts)
+	case v.QueryAgentsFilterOneOfOrItemOneOf != nil:
+		return json.MarshalEncode(enc, v.QueryAgentsFilterOneOfOrItemOneOf, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// QueryAgentsFilterOneOfOneOfOrItemOneOf defines a model
-// QueryAgentsFilterOneOfOneOfOrItemOneOf is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QueryAgentsFilterOneOfOneOfOrItemOneOf struct {
-	QueryAgentsFilterOneOfOneOfOrItemOneOfOneOf  *QueryAgentsFilterOneOfOneOfOrItemOneOfOneOf
-	QueryAgentsFilterOneOfOneOfOrItemOneOfOneOf2 *QueryAgentsFilterOneOfOneOfOrItemOneOfOneOf2
+// QueryAgentsFilterOneOfOrItemOneOf defines a model
+// QueryAgentsFilterOneOfOrItemOneOf is an untagged oneOf union: exactly one field is set after unmarshaling.
+type QueryAgentsFilterOneOfOrItemOneOf struct {
+	QueryAgentsFilterOneOfOrItemOneOfAnd *QueryAgentsFilterOneOfOrItemOneOfAnd
+	QueryAgentsFilterOneOfOrItemOneOfOr  *QueryAgentsFilterOneOfOrItemOneOfOr
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *QueryAgentsFilterOneOfOneOfOrItemOneOf) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+func (v *QueryAgentsFilterOneOfOrItemOneOf) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	opts := jsonOptsOf(dec)
 	strict := jsonStrict(dec)
 
@@ -16566,18 +16853,18 @@ func (v *QueryAgentsFilterOneOfOneOfOrItemOneOf) UnmarshalJSONFrom(dec *jsontext
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterOneOfOneOfOrItemOneOfOneOf
+		var vv QueryAgentsFilterOneOfOrItemOneOfAnd
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterOneOfOneOfOrItemOneOfOneOf = &vv
+			v.QueryAgentsFilterOneOfOrItemOneOfAnd = &vv
 			matched++
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterOneOfOneOfOrItemOneOfOneOf2
+		var vv QueryAgentsFilterOneOfOrItemOneOfOr
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterOneOfOneOfOrItemOneOfOneOf2 = &vv
+			v.QueryAgentsFilterOneOfOrItemOneOfOr = &vv
 			matched++
 		}
 	}
@@ -16590,67 +16877,52 @@ func (v *QueryAgentsFilterOneOfOneOfOrItemOneOf) UnmarshalJSONFrom(dec *jsontext
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *QueryAgentsFilterOneOfOneOfOrItemOneOf) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *QueryAgentsFilterOneOfOrItemOneOf) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.QueryAgentsFilterOneOfOneOfOrItemOneOfOneOf != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterOneOfOneOfOrItemOneOfOneOf, jsonOpts)
-	case v.QueryAgentsFilterOneOfOneOfOrItemOneOfOneOf2 != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterOneOfOneOfOrItemOneOfOneOf2, jsonOpts)
+	case v.QueryAgentsFilterOneOfOrItemOneOfAnd != nil:
+		return json.MarshalEncode(enc, v.QueryAgentsFilterOneOfOrItemOneOfAnd, jsonOpts)
+	case v.QueryAgentsFilterOneOfOrItemOneOfOr != nil:
+		return json.MarshalEncode(enc, v.QueryAgentsFilterOneOfOrItemOneOfOr, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// QueryAgentsFilterOneOfOneOfOrItemOneOfOneOf defines a model
-type QueryAgentsFilterOneOfOneOfOrItemOneOfOneOf struct {
+// QueryAgentsFilterOneOfOrItemOneOfAnd defines a model
+type QueryAgentsFilterOneOfOrItemOneOfAnd struct {
 	And []QueryAgentsFilterOneOf `json:"and"`
 }
 
-// QueryAgentsFilterOneOfOneOfOrItemOneOfOneOf2 defines a model
-type QueryAgentsFilterOneOfOneOfOrItemOneOfOneOf2 struct {
+// QueryAgentsFilterOneOfOrItemOneOfOr defines a model
+type QueryAgentsFilterOneOfOrItemOneOfOr struct {
 	Or []QueryAgentsFilterOneOf `json:"or"`
 }
 
-// QueryAgentsFilterOneOfOneOfPeople defines a model
-type QueryAgentsFilterOneOfOneOfPeople struct {
-	Contains string `json:"contains"`
+// QueryAgentsFilterOneOfStatus defines a model
+type QueryAgentsFilterOneOfStatus struct {
+	Property string                        `json:"property"`
+	Status   QueryAgentsFilterOneOfStatus2 `json:"status"`
 }
 
-// QueryAgentsFilterOneOfOneOfSelect defines a model
-type QueryAgentsFilterOneOfOneOfSelect struct {
-	Equals QueryAgentsFilterOneOfOneOfSelectEquals `json:"equals"`
-}
-
-// QueryAgentsFilterOneOfOneOfSelectEquals defines a model
-type QueryAgentsFilterOneOfOneOfSelectEquals string
-
-const (
-	QueryAgentsFilterOneOfOneOfSelectEqualsAuto   QueryAgentsFilterOneOfOneOfSelectEquals = "auto"
-	QueryAgentsFilterOneOfOneOfSelectEqualsPinned QueryAgentsFilterOneOfOneOfSelectEquals = "pinned"
-)
-
-// Valid indicates whether the value is a known member of the QueryAgentsFilterOneOfOneOfSelectEquals enum.
-func (e QueryAgentsFilterOneOfOneOfSelectEquals) Valid() bool {
-	switch e {
-	case QueryAgentsFilterOneOfOneOfSelectEqualsAuto, QueryAgentsFilterOneOfOneOfSelectEqualsPinned:
-		return true
-	default:
-		return false
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterOneOfStatus declares it.
+func (v *QueryAgentsFilterOneOfStatus) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "property":
+		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
+	case "status":
+		return true, json.UnmarshalDecode(dec, &v.Status, jsonOptsOf(dec))
 	}
+
+	return false, nil
 }
 
-// QueryAgentsFilterOneOfOneOfStatus defines a model
-type QueryAgentsFilterOneOfOneOfStatus struct {
-	In QueryAgentsFilterOneOfOneOfStatusIn `json:"in"`
+// QueryAgentsFilterOneOfStatus2 defines a model
+type QueryAgentsFilterOneOfStatus2 struct {
+	In QueryAgentsFilterOneOfStatusIn `json:"in"`
 }
 
-// QueryAgentsFilterOneOfOneOfStatusIn defines a model
-type QueryAgentsFilterOneOfOneOfStatusIn []AgentStatus
-
-// QueryAgentsFilterOneOfOneOfString defines a model
-type QueryAgentsFilterOneOfOneOfString struct {
-	Equals AgentInsightsAgentType `json:"equals"`
-}
+// QueryAgentsFilterOneOfStatusIn defines a model
+type QueryAgentsFilterOneOfStatusIn []AgentStatus
 
 // QueryAgentsOk defines a model
 type QueryAgentsOk struct {
@@ -16666,8 +16938,8 @@ type QueryAgentsOk struct {
 // QueryAgentsOkResultsItem defines a model
 // QueryAgentsOkResultsItem is an untagged oneOf union: exactly one field is set after unmarshaling.
 type QueryAgentsOkResultsItem struct {
-	QueryAgentsOkResultsItemOneOf0 *QueryAgentsOkResultsItemOneOf0
-	QueryAgentsOkResultsItemOneOf1 *QueryAgentsOkResultsItemOneOf1
+	QueryAgentsOkResultsItemOneOf0   *QueryAgentsOkResultsItemOneOf0
+	QueryAgentsOkResultsItemNotionAi *QueryAgentsOkResultsItemNotionAi
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -16693,9 +16965,9 @@ func (v *QueryAgentsOkResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsOkResultsItemOneOf1
+		var vv QueryAgentsOkResultsItemNotionAi
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsOkResultsItemOneOf1 = &vv
+			v.QueryAgentsOkResultsItemNotionAi = &vv
 			matched++
 		}
 	}
@@ -16712,11 +16984,119 @@ func (v *QueryAgentsOkResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.QueryAgentsOkResultsItemOneOf0 != nil:
 		return json.MarshalEncode(enc, v.QueryAgentsOkResultsItemOneOf0, jsonOpts)
-	case v.QueryAgentsOkResultsItemOneOf1 != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsOkResultsItemOneOf1, jsonOpts)
+	case v.QueryAgentsOkResultsItemNotionAi != nil:
+		return json.MarshalEncode(enc, v.QueryAgentsOkResultsItemNotionAi, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// QueryAgentsOkResultsItemNotionAi defines a model
+type QueryAgentsOkResultsItemNotionAi struct {
+	// Always `agent`
+	Object string `json:"object"`
+	// Always `notion_ai`
+	ID string `json:"id"`
+	// Always `notion_ai`
+	AgentType          string                               `json:"agent_type"`
+	Name               string                               `json:"name"`
+	Description        *struct{}                            `json:"description"`
+	InstructionsPageID *struct{}                            `json:"instructions_page_id"`
+	Icon               QueryAgentsOkResultsItemNotionAiIcon `json:"icon"`
+	Model              AgentModel                           `json:"model"`
+	Connections        []AgentConnectionsItem               `json:"connections"`
+	// Always `active`
+	Status         string        `json:"status"`
+	PauseReason    *struct{}     `json:"pause_reason"`
+	CreatedBy      *struct{}     `json:"created_by"`
+	AgentVersion   *struct{}     `json:"agent_version"`
+	CreatedTime    *struct{}     `json:"created_time"`
+	LastEditedTime *struct{}     `json:"last_edited_time"`
+	LastRunAt      *struct{}     `json:"last_run_at"`
+	CreditLimit    *struct{}     `json:"credit_limit"`
+	Triggers       AgentTriggers `json:"triggers"`
+}
+
+// QueryAgentsOkResultsItemNotionAiIcon defines a model
+type QueryAgentsOkResultsItemNotionAiIcon struct {
+	Type string `json:"type"`
+	// The emoji character used as the icon.
+	Emoji EmojiRequest `json:"emoji,omitzero"`
+	// The file URL for the icon.
+	File *InternalFileResponse `json:"file,omitzero"`
+	// The external URL for the icon.
+	External *LinkPreviewMention `json:"external,omitzero"`
+	// The custom emoji details for the icon.
+	CustomEmoji *CustomEmojiResponse `json:"custom_emoji,omitzero"`
+	// The Notion native icon, specified by name and color.
+	Icon *NoticonIconResponse `json:"icon,omitzero"`
+	// The static and animated URLs for the agent avatar.
+	CustomAgentAvatar *AgentIconCustomAgentAvatarCustomAgentAvatar `json:"custom_agent_avatar,omitzero"`
+}
+
+// tagsOfQueryAgentsOkResultsItemNotionAiIcon says, for each value of type, whether the member named after it must, may or must not be set.
+var tagsOfQueryAgentsOkResultsItemNotionAiIcon = map[string]jsonTagMember{
+	"emoji":               jsonTagRequired,
+	"file":                jsonTagRequired,
+	"external":            jsonTagRequired,
+	"custom_emoji":        jsonTagRequired,
+	"icon":                jsonTagRequired,
+	"custom_agent_avatar": jsonTagRequired,
+}
+
+// taggedMembers returns those of the members named after a value of type that are set.
+func (v *QueryAgentsOkResultsItemNotionAiIcon) taggedMembers() []string {
+	var set []string
+	if v.Emoji != "" {
+		set = append(set, "emoji")
+	}
+	if v.File != nil {
+		set = append(set, "file")
+	}
+	if v.External != nil {
+		set = append(set, "external")
+	}
+	if v.CustomEmoji != nil {
+		set = append(set, "custom_emoji")
+	}
+	if v.Icon != nil {
+		set = append(set, "icon")
+	}
+	if v.CustomAgentAvatar != nil {
+		set = append(set, "custom_agent_avatar")
+	}
+
+	return set
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those named after a
+// value of type, only the one it names is set.
+func (v *QueryAgentsOkResultsItemNotionAiIcon) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain QueryAgentsOkResultsItemNotionAiIcon
+
+	*v = QueryAgentsOkResultsItemNotionAiIcon{}
+	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
+		return err
+	}
+
+	return jsonCheckTag("type", string(v.Type), tagsOfQueryAgentsOkResultsItemNotionAiIcon, v.taggedMembers(), jsonStrict(dec))
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
+// the value whose member is set.
+func (v *QueryAgentsOkResultsItemNotionAiIcon) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain QueryAgentsOkResultsItemNotionAiIcon
+
+	out, set := *v, v.taggedMembers()
+	if out.Type == "" && len(set) == 1 {
+		out.Type = string(set[0])
+	}
+
+	if err := jsonCheckTag("type", string(out.Type), tagsOfQueryAgentsOkResultsItemNotionAiIcon, set, true); err != nil {
+		return err
+	}
+
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
 // QueryAgentsOkResultsItemOneOf0 defines a model
@@ -16778,114 +17158,6 @@ type QueryAgentsOkResultsItemOneOf0CreatedByOneOf0 struct {
 	Type RetrieveSessionCreatedByType `json:"type"`
 	// The ID of the user or bot that created this agent.
 	ID IDResponse `json:"id"`
-}
-
-// QueryAgentsOkResultsItemOneOf1 defines a model
-type QueryAgentsOkResultsItemOneOf1 struct {
-	// Always `agent`
-	Object string `json:"object"`
-	// Always `notion_ai`
-	ID string `json:"id"`
-	// Always `notion_ai`
-	AgentType          string                             `json:"agent_type"`
-	Name               string                             `json:"name"`
-	Description        *struct{}                          `json:"description"`
-	InstructionsPageID *struct{}                          `json:"instructions_page_id"`
-	Icon               QueryAgentsOkResultsItemOneOf1Icon `json:"icon"`
-	Model              AgentModel                         `json:"model"`
-	Connections        []AgentConnectionsItem             `json:"connections"`
-	// Always `active`
-	Status         string        `json:"status"`
-	PauseReason    *struct{}     `json:"pause_reason"`
-	CreatedBy      *struct{}     `json:"created_by"`
-	AgentVersion   *struct{}     `json:"agent_version"`
-	CreatedTime    *struct{}     `json:"created_time"`
-	LastEditedTime *struct{}     `json:"last_edited_time"`
-	LastRunAt      *struct{}     `json:"last_run_at"`
-	CreditLimit    *struct{}     `json:"credit_limit"`
-	Triggers       AgentTriggers `json:"triggers"`
-}
-
-// QueryAgentsOkResultsItemOneOf1Icon defines a model
-type QueryAgentsOkResultsItemOneOf1Icon struct {
-	Type string `json:"type"`
-	// The emoji character used as the icon.
-	Emoji EmojiRequest `json:"emoji,omitzero"`
-	// The file URL for the icon.
-	File *InternalFileResponse `json:"file,omitzero"`
-	// The external URL for the icon.
-	External *LinkPreviewMention `json:"external,omitzero"`
-	// The custom emoji details for the icon.
-	CustomEmoji *CustomEmojiResponse `json:"custom_emoji,omitzero"`
-	// The Notion native icon, specified by name and color.
-	Icon *NoticonIconResponse `json:"icon,omitzero"`
-	// The static and animated URLs for the agent avatar.
-	CustomAgentAvatar *AgentIconOneOfCustomAgentAvatar `json:"custom_agent_avatar,omitzero"`
-}
-
-// tagsOfQueryAgentsOkResultsItemOneOf1Icon says, for each value of type, whether the member named after it must, may or must not be set.
-var tagsOfQueryAgentsOkResultsItemOneOf1Icon = map[string]jsonTagMember{
-	"emoji":               jsonTagRequired,
-	"file":                jsonTagRequired,
-	"external":            jsonTagRequired,
-	"custom_emoji":        jsonTagRequired,
-	"icon":                jsonTagRequired,
-	"custom_agent_avatar": jsonTagRequired,
-}
-
-// taggedMembers returns those of the members named after a value of type that are set.
-func (v *QueryAgentsOkResultsItemOneOf1Icon) taggedMembers() []string {
-	var set []string
-	if v.Emoji != "" {
-		set = append(set, "emoji")
-	}
-	if v.File != nil {
-		set = append(set, "file")
-	}
-	if v.External != nil {
-		set = append(set, "external")
-	}
-	if v.CustomEmoji != nil {
-		set = append(set, "custom_emoji")
-	}
-	if v.Icon != nil {
-		set = append(set, "icon")
-	}
-	if v.CustomAgentAvatar != nil {
-		set = append(set, "custom_agent_avatar")
-	}
-
-	return set
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those named after a
-// value of type, only the one it names is set.
-func (v *QueryAgentsOkResultsItemOneOf1Icon) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain QueryAgentsOkResultsItemOneOf1Icon
-
-	*v = QueryAgentsOkResultsItemOneOf1Icon{}
-	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
-		return err
-	}
-
-	return jsonCheckTag("type", string(v.Type), tagsOfQueryAgentsOkResultsItemOneOf1Icon, v.taggedMembers(), jsonStrict(dec))
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
-func (v *QueryAgentsOkResultsItemOneOf1Icon) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain QueryAgentsOkResultsItemOneOf1Icon
-
-	out, set := *v, v.taggedMembers()
-	if out.Type == "" && len(set) == 1 {
-		out.Type = string(set[0])
-	}
-
-	if err := jsonCheckTag("type", string(out.Type), tagsOfQueryAgentsOkResultsItemOneOf1Icon, set, true); err != nil {
-		return err
-	}
-
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
 // Ordered sort precedence. Defaults to created_time descending.
@@ -17013,11 +17285,11 @@ type QueryMeetingNotesFilterFiltersItemOneOf1Filters []QueryMeetingNotesFilterFi
 // The comparison to apply. Use the arm matching the property's type.
 // QueryMeetingNotesFilterFiltersItemOneOfFilter is an untagged oneOf union: exactly one field is set after unmarshaling.
 type QueryMeetingNotesFilterFiltersItemOneOfFilter struct {
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf  *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2 *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3 *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4 *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf5 *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf5
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf    *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2   *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3   *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4   *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOperator *QueryMeetingNotesFilterFiltersItemOneOfFilterOperator
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -17070,9 +17342,9 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilter) UnmarshalJSONFrom(dec *j
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf5
+		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOperator
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf5 = &vv
+			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOperator = &vv
 			matched++
 		}
 	}
@@ -17095,8 +17367,8 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilter) MarshalJSONTo(enc *jsont
 		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3, jsonOpts)
 	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4 != nil:
 		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4, jsonOpts)
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf5 != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf5, jsonOpts)
+	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOperator != nil:
+		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOperator, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -17136,12 +17408,6 @@ type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4 struct {
 	Value QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue3 `json:"value"`
 	// Compare against the end of a date range rather than its start.
 	UseEnd *bool `json:"use_end,omitzero"`
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf5 defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf5 struct {
-	// Whether the property must be empty or set.
-	Operator QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator5 `json:"operator"`
 }
 
 // How to compare the text.
@@ -17223,24 +17489,6 @@ func (e QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator4) Valid() boo
 	}
 }
 
-// Whether the property must be empty or set.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator5 string
-
-const (
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator5IsEmpty    QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator5 = "is_empty"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator5IsNotEmpty QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator5 = "is_not_empty"
-)
-
-// Valid indicates whether the value is a known member of the QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator5 enum.
-func (e QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator5) Valid() bool {
-	switch e {
-	case QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator5IsEmpty, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator5IsNotEmpty:
-		return true
-	default:
-		return false
-	}
-}
-
 // The text to compare against.
 type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue struct {
 	// Always `exact`
@@ -17252,8 +17500,8 @@ type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue struct {
 // The date to compare against.
 // QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue2 is an untagged oneOf union: exactly one field is set after unmarshaling.
 type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue2 struct {
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf  *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf2 *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf2
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact    *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
@@ -17266,19 +17514,19 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue2) UnmarshalJSON
 
 	switch tag {
 	case "relative":
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf
+		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf = &vv
+		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative = &vv
 	case "exact":
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf2
+		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf2 = &vv
+		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact = &vv
 	default:
 		return jsonUnknownValue("type", tag)
 	}
@@ -17294,10 +17542,10 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue2) MarshalJSONTo
 	)
 
 	switch {
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf != nil:
-		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf, "relative"
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf2 != nil:
-		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf2, "exact"
+	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative != nil:
+		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative, "relative"
+	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact != nil:
+		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact, "exact"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -17317,10 +17565,10 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue2) MarshalJSONTo
 // The range to compare against.
 // QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue3 is an untagged oneOf union: exactly one field is set after unmarshaling.
 type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue3 struct {
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf3 *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf3
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf4 *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf4
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf5 *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf5
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf6 *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf6
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom      *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf       *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2      *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -17337,36 +17585,36 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue3) UnmarshalJSON
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf3
+		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf3 = &vv
+			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom = &vv
 			matched++
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf4
+		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf4 = &vv
+			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding = &vv
 			matched++
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf5
+		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf5 = &vv
+			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf = &vv
 			matched++
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf6
+		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf6 = &vv
+			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2 = &vv
 			matched++
 		}
 	}
@@ -17381,24 +17629,227 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue3) UnmarshalJSON
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue3) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf3 != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf3, jsonOpts)
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf4 != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf4, jsonOpts)
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf5 != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf5, jsonOpts)
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf6 != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf6, jsonOpts)
+	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom != nil:
+		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom, jsonOpts)
+	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding != nil:
+		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding, jsonOpts)
+	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf != nil:
+		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf, jsonOpts)
+	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2 != nil:
+		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
+// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom defines a model
+type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom struct {
+	// Always `relative`
+	Type string `json:"type"`
+	// Always `custom`
+	Value string `json:"value"`
+	// Whether the window runs backwards or forwards from now.
+	Direction QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirection `json:"direction"`
+	// One of: `year`, `month`, `week`, `day`
+	Unit QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit `json:"unit"`
+	// How many units wide the window is.
+	Count int `json:"count"`
+}
+
+// Whether the window runs backwards or forwards from now.
+type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirection string
+
+const (
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirectionPast   QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirection = "past"
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirectionFuture QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirection = "future"
+)
+
+// Valid indicates whether the value is a known member of the QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirection enum.
+func (e QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirection) Valid() bool {
+	switch e {
+	case QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirectionPast, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirectionFuture:
+		return true
+	default:
+		return false
+	}
+}
+
+// One of: `year`, `month`, `week`, `day`
+type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit string
+
+const (
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnitYear  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit = "year"
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnitMonth QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit = "month"
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnitWeek  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit = "week"
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnitDay   QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit = "day"
+)
+
+// Valid indicates whether the value is a known member of the QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit enum.
+func (e QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit) Valid() bool {
+	switch e {
+	case QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnitYear, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnitMonth, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnitWeek, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnitDay:
+		return true
+	default:
+		return false
+	}
+}
+
+// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact defines a model
+type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact struct {
+	// Always `exact`
+	Type string `json:"type"`
+	// Use the is_empty operator to match an unset date.
+	Value QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue `json:"value"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact declares it.
+func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "value":
+		return true, json.UnmarshalDecode(dec, &v.Value, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2 defines a model
+type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2 struct {
+	// Always `exact`
+	Type string `json:"type"`
+	// Use the is_empty operator to match an unset date.
+	Value QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue2 `json:"value"`
+}
+
+// Use the is_empty operator to match an unset date.
+// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue is an untagged oneOf union: exactly one field is set after unmarshaling.
+type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue struct {
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate     *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
+// decodes each further member as it is read. With type first, nothing is read twice.
+func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if err != nil {
+		return err
+	}
+
+	switch tag {
+	case "date":
+		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate = &vv
+	case "datetime":
+		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime = &vv
+	default:
+		return jsonUnknownValue("type", tag)
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue) MarshalJSONTo(enc *jsontext.Encoder) error {
+	var (
+		variant any
+		tag     string
+	)
+
+	switch {
+	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate != nil:
+		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate, "date"
+	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime != nil:
+		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime, "datetime"
+	default:
+		return &json.SemanticError{Err: errors.New("no alternative set")}
+	}
+
+	out, err := json.Marshal(variant, jsonOpts)
+	if err != nil {
+		return err
+	}
+
+	if out, err = jsonFirst(out, "type", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
+}
+
+// Use the is_empty operator to match an unset date.
+type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue2 struct {
+	// Always `daterange`
+	Type string `json:"type"`
+	// Inclusive start of the range as an ISO 8601 date string, if any.
+	StartDate civil.Date `json:"start_date,omitzero"`
+	// Inclusive end of the range as an ISO 8601 date string, if any.
+	EndDate civil.Date `json:"end_date,omitzero"`
+}
+
+// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate defines a model
+type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate struct {
+	// Always `date`
+	Type string `json:"type"`
+	// The calendar date as an ISO 8601 date string.
+	StartDate civil.Date `json:"start_date"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate declares it.
+func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "start_date":
+		return true, json.UnmarshalDecode(dec, &v.StartDate, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime defines a model
+type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime struct {
+	// Always `datetime`
+	Type string `json:"type"`
+	// The calendar date as an ISO 8601 date string.
+	StartDate civil.Date `json:"start_date"`
+	// The time of day in 24-hour HH:MM format.
+	StartTime string `json:"start_time"`
+	// The IANA time zone name the time is interpreted in.
+	TimeZone string `json:"time_zone"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime declares it.
+func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "start_date":
+		return true, json.UnmarshalDecode(dec, &v.StartDate, jsonOptsOf(dec))
+	case "start_time":
+		return true, json.UnmarshalDecode(dec, &v.StartTime, jsonOptsOf(dec))
+	case "time_zone":
+		return true, json.UnmarshalDecode(dec, &v.TimeZone, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
 // QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItem defines a model
 // QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItem is an untagged oneOf union: exactly one field is set after unmarshaling.
 type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItem struct {
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf  *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf2 *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf2
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact    *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
@@ -17411,19 +17862,19 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItem) UnmarshalJ
 
 	switch tag {
 	case "exact":
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf
+		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf = &vv
+		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact = &vv
 	case "relative":
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf2
+		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf2 = &vv
+		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative = &vv
 	default:
 		return jsonUnknownValue("type", tag)
 	}
@@ -17439,10 +17890,10 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItem) MarshalJSO
 	)
 
 	switch {
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf != nil:
-		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf, "exact"
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf2 != nil:
-		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf2, "relative"
+	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact != nil:
+		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact, "exact"
+	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative != nil:
+		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative, "relative"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -17459,36 +17910,16 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItem) MarshalJSO
 	return enc.WriteValue(out)
 }
 
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf struct {
+// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact defines a model
+type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact struct {
 	// Always `exact`
 	Type string `json:"type"`
 	// Pointer to the Notion user to match.
-	Value QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOfValue `json:"value"`
+	Value QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExactValue `json:"value"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf declares it.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "value":
-		return true, json.UnmarshalDecode(dec, &v.Value, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf2 defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf2 struct {
-	// Always `relative`
-	Type string `json:"type"`
-	// Always `me`
-	Value string `json:"value"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf2 declares it.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact declares it.
+func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -17500,23 +17931,74 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOf2) unma
 }
 
 // Pointer to the Notion user to match.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemOneOfValue struct {
+type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExactValue struct {
 	// Always `notion_user`
 	Table string `json:"table"`
 	// The user's ID, as a UUID or the `user://<uuid>` form returned by user search.
 	ID string `json:"id"`
 }
 
+// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative defines a model
+type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative struct {
+	// Always `relative`
+	Type string `json:"type"`
+	// Always `me`
+	Value string `json:"value"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative declares it.
+func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "value":
+		return true, json.UnmarshalDecode(dec, &v.Value, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
 // QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf defines a model
 type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf struct {
+	// Always `relative`
+	Type string `json:"type"`
+	// One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`
+	Value QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue `json:"value"`
+}
+
+// One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`
+type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue string
+
+const (
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueThisWeek     QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue = "this_week"
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueThePastWeek  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue = "the_past_week"
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueThePastMonth QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue = "the_past_month"
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueThePastYear  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue = "the_past_year"
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueTheNextWeek  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue = "the_next_week"
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueTheNextMonth QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue = "the_next_month"
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueTheNextYear  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue = "the_next_year"
+)
+
+// Valid indicates whether the value is a known member of the QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue enum.
+func (e QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue) Valid() bool {
+	switch e {
+	case QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueThisWeek, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueThePastWeek, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueThePastMonth, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueThePastYear, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueTheNextWeek, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueTheNextMonth, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueTheNextYear:
+		return true
+	default:
+		return false
+	}
+}
+
+// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative defines a model
+type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative struct {
 	// Always `relative`
 	Type string `json:"type"`
 	// One of: `today`, `tomorrow`, `yesterday`, `one_week_ago`, `one_week_from_now`, `one_month_ago`, `one_month_from_now`
 	Value RelativeDateValue `json:"value"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf declares it.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative declares it.
+func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -17527,248 +18009,38 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf) unmarshal
 	return false, nil
 }
 
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf2 defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf2 struct {
-	// Always `exact`
-	Type string `json:"type"`
-	// Use the is_empty operator to match an unset date.
-	Value QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue `json:"value"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf2 declares it.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "value":
-		return true, json.UnmarshalDecode(dec, &v.Value, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf3 defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf3 struct {
-	// Always `relative`
-	Type string `json:"type"`
-	// Always `custom`
-	Value string `json:"value"`
-	// Whether the window runs backwards or forwards from now.
-	Direction QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfDirection `json:"direction"`
-	// One of: `year`, `month`, `week`, `day`
-	Unit QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfUnit `json:"unit"`
-	// How many units wide the window is.
-	Count int `json:"count"`
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf4 defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf4 struct {
+// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding defines a model
+type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding struct {
 	// Always `relative`
 	Type string `json:"type"`
 	// Always `surrounding`
 	Value string `json:"value"`
 	// One of: `year`, `month`, `week`, `day`
-	Unit QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfUnit `json:"unit"`
+	Unit QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit `json:"unit"`
 }
 
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf5 defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf5 struct {
-	// Always `relative`
-	Type string `json:"type"`
-	// One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`
-	Value QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2 `json:"value"`
+// QueryMeetingNotesFilterFiltersItemOneOfFilterOperator defines a model
+type QueryMeetingNotesFilterFiltersItemOneOfFilterOperator struct {
+	// Whether the property must be empty or set.
+	Operator QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2 `json:"operator"`
 }
 
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf6 defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf6 struct {
-	// Always `exact`
-	Type string `json:"type"`
-	// Use the is_empty operator to match an unset date.
-	Value QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue3 `json:"value"`
-}
-
-// Whether the window runs backwards or forwards from now.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfDirection string
+// Whether the property must be empty or set.
+type QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2 string
 
 const (
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfDirectionPast   QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfDirection = "past"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfDirectionFuture QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfDirection = "future"
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2IsEmpty    QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2 = "is_empty"
+	QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2IsNotEmpty QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2 = "is_not_empty"
 )
 
-// Valid indicates whether the value is a known member of the QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfDirection enum.
-func (e QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfDirection) Valid() bool {
+// Valid indicates whether the value is a known member of the QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2 enum.
+func (e QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2) Valid() bool {
 	switch e {
-	case QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfDirectionPast, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfDirectionFuture:
+	case QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2IsEmpty, QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2IsNotEmpty:
 		return true
 	default:
 		return false
 	}
-}
-
-// One of: `year`, `month`, `week`, `day`
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfUnit string
-
-const (
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfUnitYear  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfUnit = "year"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfUnitMonth QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfUnit = "month"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfUnitWeek  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfUnit = "week"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfUnitDay   QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfUnit = "day"
-)
-
-// Valid indicates whether the value is a known member of the QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfUnit enum.
-func (e QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfUnit) Valid() bool {
-	switch e {
-	case QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfUnitYear, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfUnitMonth, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfUnitWeek, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfUnitDay:
-		return true
-	default:
-		return false
-	}
-}
-
-// Use the is_empty operator to match an unset date.
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue struct {
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf  *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf2 *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf2
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, dec, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "date":
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf = &vv
-	case "datetime":
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf2
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf2 = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf != nil:
-		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf, "date"
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf2 != nil:
-		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf2, "datetime"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
-// One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2 string
-
-const (
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2ThisWeek     QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2 = "this_week"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2ThePastWeek  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2 = "the_past_week"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2ThePastMonth QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2 = "the_past_month"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2ThePastYear  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2 = "the_past_year"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2TheNextWeek  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2 = "the_next_week"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2TheNextMonth QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2 = "the_next_month"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2TheNextYear  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2 = "the_next_year"
-)
-
-// Valid indicates whether the value is a known member of the QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2 enum.
-func (e QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2) Valid() bool {
-	switch e {
-	case QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2ThisWeek, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2ThePastWeek, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2ThePastMonth, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2ThePastYear, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2TheNextWeek, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2TheNextMonth, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue2TheNextYear:
-		return true
-	default:
-		return false
-	}
-}
-
-// Use the is_empty operator to match an unset date.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue3 struct {
-	// Always `daterange`
-	Type string `json:"type"`
-	// Inclusive start of the range as an ISO 8601 date string, if any.
-	StartDate civil.Date `json:"start_date,omitzero"`
-	// Inclusive end of the range as an ISO 8601 date string, if any.
-	EndDate civil.Date `json:"end_date,omitzero"`
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf struct {
-	// Always `date`
-	Type string `json:"type"`
-	// The calendar date as an ISO 8601 date string.
-	StartDate civil.Date `json:"start_date"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf declares it.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "start_date":
-		return true, json.UnmarshalDecode(dec, &v.StartDate, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf2 defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf2 struct {
-	// Always `datetime`
-	Type string `json:"type"`
-	// The calendar date as an ISO 8601 date string.
-	StartDate civil.Date `json:"start_date"`
-	// The time of day in 24-hour HH:MM format.
-	StartTime string `json:"start_time"`
-	// The IANA time zone name the time is interpreted in.
-	TimeZone string `json:"time_zone"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf2 declares it.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueOneOf2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "start_date":
-		return true, json.UnmarshalDecode(dec, &v.StartDate, jsonOptsOf(dec))
-	case "start_time":
-		return true, json.UnmarshalDecode(dec, &v.StartTime, jsonOptsOf(dec))
-	case "time_zone":
-		return true, json.UnmarshalDecode(dec, &v.TimeZone, jsonOptsOf(dec))
-	}
-
-	return false, nil
 }
 
 // Which meeting-note property to filter on. Prefer the short names; the schema URI form is accepted for compatibility.
@@ -17821,7 +18093,49 @@ type QueryMeetingNotesOk struct {
 }
 
 // Meeting note block objects.
-type QueryMeetingNotesOkResults []CreateMeetingNoteOneOf
+type QueryMeetingNotesOkResults []CreateMeetingNoteMeetingNotes
+
+// Meeting note content fields.
+type QueryMeetingNotesResultsItemMeetingNotes struct {
+	// Title of the meeting note as rich text.
+	Title RichTexts `json:"title,omitzero"`
+	// Current processing status of the meeting note transcription.
+	Status APITranscriptionStatus `json:"status,omitzero"`
+	// Block IDs for each tab (summary, notes, transcript).
+	Children *QueryMeetingNotesResultsItemMeetingNotesChildren `json:"children,omitzero"`
+	// Calendar event metadata associated with this meeting note.
+	CalendarEvent QueryMeetingNotesResultsItemMeetingNotesCalendarEvent `json:"calendar_event,omitzero"`
+	// Start and end times of the actual recording.
+	Recording *QueryMeetingNotesResultsItemMeetingNotesRecording `json:"recording,omitzero"`
+}
+
+// Calendar event metadata associated with this meeting note.
+type QueryMeetingNotesResultsItemMeetingNotesCalendarEvent struct {
+	// ISO-8601 start time of the calendar event.
+	StartTime string `json:"start_time"`
+	// ISO-8601 end time of the calendar event.
+	EndTime string `json:"end_time"`
+	// List of attendee user IDs.
+	Attendees []IDResponse `json:"attendees,omitzero"`
+}
+
+// Block IDs for each tab (summary, notes, transcript).
+type QueryMeetingNotesResultsItemMeetingNotesChildren struct {
+	// Block ID of the AI summary tab.
+	SummaryBlockID IDResponse `json:"summary_block_id,omitzero"`
+	// Block ID of the meeting notes tab.
+	NotesBlockID IDResponse `json:"notes_block_id,omitzero"`
+	// Block ID of the transcript tab.
+	TranscriptBlockID IDResponse `json:"transcript_block_id,omitzero"`
+}
+
+// Start and end times of the actual recording.
+type QueryMeetingNotesResultsItemMeetingNotesRecording struct {
+	// ISO-8601 timestamp when the recording started.
+	StartTime string `json:"start_time,omitzero"`
+	// ISO-8601 timestamp when the recording ended.
+	EndTime string `json:"end_time,omitzero"`
+}
 
 // Optional sort order for the results. Each entry specifies a property name and direction.
 type QueryMeetingNotesSort []QueryMeetingNotesSortItem
@@ -17873,10 +18187,10 @@ type QuerySessionEvents struct {
 type QuerySessionEventsFilter struct {
 	QuerySessionsFilterOneOf       *QuerySessionsFilterOneOf
 	QuerySessionEventsFilterOneOf  *QuerySessionEventsFilterOneOf
-	QuerySessionEventsFilterOneOf6 *QuerySessionEventsFilterOneOf6
-	QuerySessionEventsFilterOneOf2 *QuerySessionEventsFilterOneOf2
 	QuerySessionEventsFilterOneOf4 *QuerySessionEventsFilterOneOf4
-	QuerySessionEventsFilterOneOf5 *QuerySessionEventsFilterOneOf5
+	QuerySessionEventsFilterOneOf2 *QuerySessionEventsFilterOneOf2
+	QuerySessionEventsFilterAnd    *QuerySessionEventsFilterAnd
+	QuerySessionEventsFilterOr     *QuerySessionEventsFilterOr
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -17911,9 +18225,9 @@ func (v *QuerySessionEventsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOneOf6
+		var vv QuerySessionEventsFilterOneOf4
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOneOf6 = &vv
+			v.QuerySessionEventsFilterOneOf4 = &vv
 			matched++
 		}
 	}
@@ -17929,18 +18243,18 @@ func (v *QuerySessionEventsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOneOf4
+		var vv QuerySessionEventsFilterAnd
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOneOf4 = &vv
+			v.QuerySessionEventsFilterAnd = &vv
 			matched++
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOneOf5
+		var vv QuerySessionEventsFilterOr
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOneOf5 = &vv
+			v.QuerySessionEventsFilterOr = &vv
 			matched++
 		}
 	}
@@ -17959,17 +18273,22 @@ func (v *QuerySessionEventsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOpts)
 	case v.QuerySessionEventsFilterOneOf != nil:
 		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf, jsonOpts)
-	case v.QuerySessionEventsFilterOneOf6 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf6, jsonOpts)
-	case v.QuerySessionEventsFilterOneOf2 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf2, jsonOpts)
 	case v.QuerySessionEventsFilterOneOf4 != nil:
 		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf4, jsonOpts)
-	case v.QuerySessionEventsFilterOneOf5 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf5, jsonOpts)
+	case v.QuerySessionEventsFilterOneOf2 != nil:
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf2, jsonOpts)
+	case v.QuerySessionEventsFilterAnd != nil:
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterAnd, jsonOpts)
+	case v.QuerySessionEventsFilterOr != nil:
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOr, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// QuerySessionEventsFilterAnd defines a model
+type QuerySessionEventsFilterAnd struct {
+	And []QuerySessionEventsFilterOrItem `json:"and"`
 }
 
 // QuerySessionEventsFilterOneOf defines a model
@@ -18010,22 +18329,12 @@ func (v *QuerySessionEventsFilterOneOf2) unmarshalJSONMember(dec *jsontext.Decod
 
 // QuerySessionEventsFilterOneOf4 defines a model
 type QuerySessionEventsFilterOneOf4 struct {
-	And []QuerySessionEventsFilterOneOfOrItem `json:"and"`
-}
-
-// QuerySessionEventsFilterOneOf5 defines a model
-type QuerySessionEventsFilterOneOf5 struct {
-	Or []QuerySessionEventsFilterOneOfOrItem `json:"or"`
-}
-
-// QuerySessionEventsFilterOneOf6 defines a model
-type QuerySessionEventsFilterOneOf6 struct {
 	Property QuerySessionEventsFilterOneOfProperty2 `json:"property"`
 	Number   QuerySessionEventsFilterOneOfNumber    `json:"number"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsFilterOneOf6 declares it.
-func (v *QuerySessionEventsFilterOneOf6) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsFilterOneOf4 declares it.
+func (v *QuerySessionEventsFilterOneOf4) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "property":
 		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
@@ -18073,319 +18382,6 @@ type QuerySessionEventsFilterOneOfNumber struct {
 	GreaterThanOrEqualTo *float64 `json:"greater_than_or_equal_to,omitzero"`
 	LessThan             *float64 `json:"less_than,omitzero"`
 	LessThanOrEqualTo    *float64 `json:"less_than_or_equal_to,omitzero"`
-}
-
-// QuerySessionEventsFilterOneOfOrItem defines a model
-// QuerySessionEventsFilterOneOfOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QuerySessionEventsFilterOneOfOrItem struct {
-	QuerySessionsFilterOneOf                  *QuerySessionsFilterOneOf
-	QuerySessionEventsFilterOneOf             *QuerySessionEventsFilterOneOf
-	QuerySessionEventsFilterOneOf6            *QuerySessionEventsFilterOneOf6
-	QuerySessionEventsFilterOneOf2            *QuerySessionEventsFilterOneOf2
-	QuerySessionEventsFilterOneOfOrItemOneOf  *QuerySessionEventsFilterOneOfOrItemOneOf
-	QuerySessionEventsFilterOneOfOrItemOneOf2 *QuerySessionEventsFilterOneOfOrItemOneOf2
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *QuerySessionEventsFilterOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOf = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOneOf = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOneOf6
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOneOf6 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOneOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOneOf2 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOneOfOrItemOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOneOfOrItemOneOf = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOneOfOrItemOneOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOneOfOrItemOneOf2 = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *QuerySessionEventsFilterOneOfOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.QuerySessionsFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOpts)
-	case v.QuerySessionEventsFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf, jsonOpts)
-	case v.QuerySessionEventsFilterOneOf6 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf6, jsonOpts)
-	case v.QuerySessionEventsFilterOneOf2 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf2, jsonOpts)
-	case v.QuerySessionEventsFilterOneOfOrItemOneOf != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOfOrItemOneOf, jsonOpts)
-	case v.QuerySessionEventsFilterOneOfOrItemOneOf2 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOfOrItemOneOf2, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// QuerySessionEventsFilterOneOfOrItemOneOf defines a model
-type QuerySessionEventsFilterOneOfOrItemOneOf struct {
-	And []QuerySessionEventsFilterOneOfOrItemOneOfOrItem `json:"and"`
-}
-
-// QuerySessionEventsFilterOneOfOrItemOneOf2 defines a model
-type QuerySessionEventsFilterOneOfOrItemOneOf2 struct {
-	Or []QuerySessionEventsFilterOneOfOrItemOneOfOrItem `json:"or"`
-}
-
-// QuerySessionEventsFilterOneOfOrItemOneOfOrItem defines a model
-// QuerySessionEventsFilterOneOfOrItemOneOfOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QuerySessionEventsFilterOneOfOrItemOneOfOrItem struct {
-	QuerySessionsFilterOneOf                             *QuerySessionsFilterOneOf
-	QuerySessionEventsFilterOneOf                        *QuerySessionEventsFilterOneOf
-	QuerySessionEventsFilterOneOf6                       *QuerySessionEventsFilterOneOf6
-	QuerySessionEventsFilterOneOf2                       *QuerySessionEventsFilterOneOf2
-	QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOf  *QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOf
-	QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOf2 *QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOf2
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *QuerySessionEventsFilterOneOfOrItemOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOf = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOneOf = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOneOf6
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOneOf6 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOneOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOneOf2 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOf = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOf2 = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *QuerySessionEventsFilterOneOfOrItemOneOfOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.QuerySessionsFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOpts)
-	case v.QuerySessionEventsFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf, jsonOpts)
-	case v.QuerySessionEventsFilterOneOf6 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf6, jsonOpts)
-	case v.QuerySessionEventsFilterOneOf2 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf2, jsonOpts)
-	case v.QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOf != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOf, jsonOpts)
-	case v.QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOf2 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOf2, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOf defines a model
-type QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOf struct {
-	And []QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOfOrItem `json:"and"`
-}
-
-// QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOf2 defines a model
-type QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOf2 struct {
-	Or []QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOfOrItem `json:"or"`
-}
-
-// QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOfOrItem defines a model
-// QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOfOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOfOrItem struct {
-	QuerySessionsFilterOneOf       *QuerySessionsFilterOneOf
-	QuerySessionEventsFilterOneOf  *QuerySessionEventsFilterOneOf
-	QuerySessionEventsFilterOneOf6 *QuerySessionEventsFilterOneOf6
-	QuerySessionEventsFilterOneOf2 *QuerySessionEventsFilterOneOf2
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member property names the alternative, which then
-// decodes each further member as it is read. With property first, nothing is read twice.
-func (v *QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, dec, err := jsonFirstMember(dec, "property")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "id":
-		var vv QuerySessionsFilterOneOf
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QuerySessionsFilterOneOf = &vv
-	case "type":
-		var vv QuerySessionEventsFilterOneOf
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QuerySessionEventsFilterOneOf = &vv
-	case "sequence":
-		var vv QuerySessionEventsFilterOneOf6
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QuerySessionEventsFilterOneOf6 = &vv
-	case "created_at":
-		var vv QuerySessionEventsFilterOneOf2
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QuerySessionEventsFilterOneOf2 = &vv
-	default:
-		return jsonUnknownValue("property", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with property first, as decoding wants it, and set to the variant's value.
-func (v *QuerySessionEventsFilterOneOfOrItemOneOfOrItemOneOfOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.QuerySessionsFilterOneOf != nil:
-		variant, tag = v.QuerySessionsFilterOneOf, "id"
-	case v.QuerySessionEventsFilterOneOf != nil:
-		variant, tag = v.QuerySessionEventsFilterOneOf, "type"
-	case v.QuerySessionEventsFilterOneOf6 != nil:
-		variant, tag = v.QuerySessionEventsFilterOneOf6, "sequence"
-	case v.QuerySessionEventsFilterOneOf2 != nil:
-		variant, tag = v.QuerySessionEventsFilterOneOf2, "created_at"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "property", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
 }
 
 // QuerySessionEventsFilterOneOfProperty defines a model
@@ -18448,6 +18444,324 @@ type QuerySessionEventsFilterOneOfTimestamp struct {
 	OnOrAfter  time.Time `json:"on_or_after,omitzero"`
 }
 
+// QuerySessionEventsFilterOr defines a model
+type QuerySessionEventsFilterOr struct {
+	Or []QuerySessionEventsFilterOrItem `json:"or"`
+}
+
+// QuerySessionEventsFilterOrItem defines a model
+// QuerySessionEventsFilterOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
+type QuerySessionEventsFilterOrItem struct {
+	QuerySessionsFilterOneOf          *QuerySessionsFilterOneOf
+	QuerySessionEventsFilterOneOf     *QuerySessionEventsFilterOneOf
+	QuerySessionEventsFilterOneOf4    *QuerySessionEventsFilterOneOf4
+	QuerySessionEventsFilterOneOf2    *QuerySessionEventsFilterOneOf2
+	QuerySessionEventsFilterOrItemAnd *QuerySessionEventsFilterOrItemAnd
+	QuerySessionEventsFilterOrItemOr  *QuerySessionEventsFilterOrItemOr
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *QuerySessionEventsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionsFilterOneOf
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionsFilterOneOf = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionEventsFilterOneOf
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionEventsFilterOneOf = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionEventsFilterOneOf4
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionEventsFilterOneOf4 = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionEventsFilterOneOf2
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionEventsFilterOneOf2 = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionEventsFilterOrItemAnd
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionEventsFilterOrItemAnd = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionEventsFilterOrItemOr
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionEventsFilterOrItemOr = &vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *QuerySessionEventsFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.QuerySessionsFilterOneOf != nil:
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOpts)
+	case v.QuerySessionEventsFilterOneOf != nil:
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf, jsonOpts)
+	case v.QuerySessionEventsFilterOneOf4 != nil:
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf4, jsonOpts)
+	case v.QuerySessionEventsFilterOneOf2 != nil:
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf2, jsonOpts)
+	case v.QuerySessionEventsFilterOrItemAnd != nil:
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOrItemAnd, jsonOpts)
+	case v.QuerySessionEventsFilterOrItemOr != nil:
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOrItemOr, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// QuerySessionEventsFilterOrItemAnd defines a model
+type QuerySessionEventsFilterOrItemAnd struct {
+	And []QuerySessionEventsFilterOrItemOrItem `json:"and"`
+}
+
+// QuerySessionEventsFilterOrItemOr defines a model
+type QuerySessionEventsFilterOrItemOr struct {
+	Or []QuerySessionEventsFilterOrItemOrItem `json:"or"`
+}
+
+// QuerySessionEventsFilterOrItemOrItem defines a model
+// QuerySessionEventsFilterOrItemOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
+type QuerySessionEventsFilterOrItemOrItem struct {
+	QuerySessionsFilterOneOf                *QuerySessionsFilterOneOf
+	QuerySessionEventsFilterOneOf           *QuerySessionEventsFilterOneOf
+	QuerySessionEventsFilterOneOf4          *QuerySessionEventsFilterOneOf4
+	QuerySessionEventsFilterOneOf2          *QuerySessionEventsFilterOneOf2
+	QuerySessionEventsFilterOrItemOrItemAnd *QuerySessionEventsFilterOrItemOrItemAnd
+	QuerySessionEventsFilterOrItemOrItemOr  *QuerySessionEventsFilterOrItemOrItemOr
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *QuerySessionEventsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionsFilterOneOf
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionsFilterOneOf = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionEventsFilterOneOf
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionEventsFilterOneOf = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionEventsFilterOneOf4
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionEventsFilterOneOf4 = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionEventsFilterOneOf2
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionEventsFilterOneOf2 = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionEventsFilterOrItemOrItemAnd
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionEventsFilterOrItemOrItemAnd = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionEventsFilterOrItemOrItemOr
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionEventsFilterOrItemOrItemOr = &vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *QuerySessionEventsFilterOrItemOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.QuerySessionsFilterOneOf != nil:
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOpts)
+	case v.QuerySessionEventsFilterOneOf != nil:
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf, jsonOpts)
+	case v.QuerySessionEventsFilterOneOf4 != nil:
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf4, jsonOpts)
+	case v.QuerySessionEventsFilterOneOf2 != nil:
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOneOf2, jsonOpts)
+	case v.QuerySessionEventsFilterOrItemOrItemAnd != nil:
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOrItemOrItemAnd, jsonOpts)
+	case v.QuerySessionEventsFilterOrItemOrItemOr != nil:
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOrItemOrItemOr, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// QuerySessionEventsFilterOrItemOrItemAnd defines a model
+type QuerySessionEventsFilterOrItemOrItemAnd struct {
+	And []QuerySessionEventsFilterOrItemOrItemOrItem `json:"and"`
+}
+
+// QuerySessionEventsFilterOrItemOrItemOr defines a model
+type QuerySessionEventsFilterOrItemOrItemOr struct {
+	Or []QuerySessionEventsFilterOrItemOrItemOrItem `json:"or"`
+}
+
+// QuerySessionEventsFilterOrItemOrItemOrItem defines a model
+// QuerySessionEventsFilterOrItemOrItemOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
+type QuerySessionEventsFilterOrItemOrItemOrItem struct {
+	QuerySessionsFilterOneOf       *QuerySessionsFilterOneOf
+	QuerySessionEventsFilterOneOf  *QuerySessionEventsFilterOneOf
+	QuerySessionEventsFilterOneOf4 *QuerySessionEventsFilterOneOf4
+	QuerySessionEventsFilterOneOf2 *QuerySessionEventsFilterOneOf2
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member property names the alternative, which then
+// decodes each further member as it is read. With property first, nothing is read twice.
+func (v *QuerySessionEventsFilterOrItemOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	tag, first, dec, err := jsonFirstMember(dec, "property")
+	if err != nil {
+		return err
+	}
+
+	switch tag {
+	case "id":
+		var vv QuerySessionsFilterOneOf
+		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.QuerySessionsFilterOneOf = &vv
+	case "type":
+		var vv QuerySessionEventsFilterOneOf
+		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.QuerySessionEventsFilterOneOf = &vv
+	case "sequence":
+		var vv QuerySessionEventsFilterOneOf4
+		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.QuerySessionEventsFilterOneOf4 = &vv
+	case "created_at":
+		var vv QuerySessionEventsFilterOneOf2
+		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.QuerySessionEventsFilterOneOf2 = &vv
+	default:
+		return jsonUnknownValue("property", tag)
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with property first, as decoding wants it, and set to the variant's value.
+func (v *QuerySessionEventsFilterOrItemOrItemOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	var (
+		variant any
+		tag     string
+	)
+
+	switch {
+	case v.QuerySessionsFilterOneOf != nil:
+		variant, tag = v.QuerySessionsFilterOneOf, "id"
+	case v.QuerySessionEventsFilterOneOf != nil:
+		variant, tag = v.QuerySessionEventsFilterOneOf, "type"
+	case v.QuerySessionEventsFilterOneOf4 != nil:
+		variant, tag = v.QuerySessionEventsFilterOneOf4, "sequence"
+	case v.QuerySessionEventsFilterOneOf2 != nil:
+		variant, tag = v.QuerySessionEventsFilterOneOf2, "created_at"
+	default:
+		return &json.SemanticError{Err: errors.New("no alternative set")}
+	}
+
+	out, err := json.Marshal(variant, jsonOpts)
+	if err != nil {
+		return err
+	}
+
+	if out, err = jsonFirst(out, "property", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
+}
+
 // QuerySessionEventsOk defines a model
 type QuerySessionEventsOk struct {
 	// Always `list`
@@ -18463,12 +18777,12 @@ type QuerySessionEventsOk struct {
 // QuerySessionEventsOkResultsItem defines a model
 // QuerySessionEventsOkResultsItem is an untagged oneOf union: exactly one field is set after unmarshaling.
 type QuerySessionEventsOkResultsItem struct {
-	QuerySessionEventsOkResultsItemOneOf0 *QuerySessionEventsOkResultsItemOneOf0
-	QuerySessionEventsOkResultsItemOneOf1 *QuerySessionEventsOkResultsItemOneOf1
-	QuerySessionEventsOkResultsItemOneOf2 *QuerySessionEventsOkResultsItemOneOf2
-	QuerySessionEventsOkResultsItemOneOf3 *QuerySessionEventsOkResultsItemOneOf3
-	QuerySessionEventsOkResultsItemOneOf4 *QuerySessionEventsOkResultsItemOneOf4
-	QuerySessionEventsOkResultsItemOneOf5 *QuerySessionEventsOkResultsItemOneOf5
+	QuerySessionEventsOkResultsItemUserMessage     *QuerySessionEventsOkResultsItemUserMessage
+	QuerySessionEventsOkResultsItemAgentMessage    *QuerySessionEventsOkResultsItemAgentMessage
+	QuerySessionEventsOkResultsItemAgentThinking   *QuerySessionEventsOkResultsItemAgentThinking
+	QuerySessionEventsOkResultsItemAgentToolUse    *QuerySessionEventsOkResultsItemAgentToolUse
+	QuerySessionEventsOkResultsItemAgentToolResult *QuerySessionEventsOkResultsItemAgentToolResult
+	QuerySessionEventsOkResultsItemSessionStatus   *QuerySessionEventsOkResultsItemSessionStatus
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
@@ -18481,47 +18795,47 @@ func (v *QuerySessionEventsOkResultsItem) UnmarshalJSONFrom(dec *jsontext.Decode
 
 	switch tag {
 	case "user.message":
-		var vv QuerySessionEventsOkResultsItemOneOf0
+		var vv QuerySessionEventsOkResultsItemUserMessage
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QuerySessionEventsOkResultsItemOneOf0 = &vv
+		v.QuerySessionEventsOkResultsItemUserMessage = &vv
 	case "agent.message":
-		var vv QuerySessionEventsOkResultsItemOneOf1
+		var vv QuerySessionEventsOkResultsItemAgentMessage
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QuerySessionEventsOkResultsItemOneOf1 = &vv
+		v.QuerySessionEventsOkResultsItemAgentMessage = &vv
 	case "agent.thinking":
-		var vv QuerySessionEventsOkResultsItemOneOf2
+		var vv QuerySessionEventsOkResultsItemAgentThinking
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QuerySessionEventsOkResultsItemOneOf2 = &vv
+		v.QuerySessionEventsOkResultsItemAgentThinking = &vv
 	case "agent.tool_use":
-		var vv QuerySessionEventsOkResultsItemOneOf3
+		var vv QuerySessionEventsOkResultsItemAgentToolUse
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QuerySessionEventsOkResultsItemOneOf3 = &vv
+		v.QuerySessionEventsOkResultsItemAgentToolUse = &vv
 	case "agent.tool_result":
-		var vv QuerySessionEventsOkResultsItemOneOf4
+		var vv QuerySessionEventsOkResultsItemAgentToolResult
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QuerySessionEventsOkResultsItemOneOf4 = &vv
+		v.QuerySessionEventsOkResultsItemAgentToolResult = &vv
 	case "session.status":
-		var vv QuerySessionEventsOkResultsItemOneOf5
+		var vv QuerySessionEventsOkResultsItemSessionStatus
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QuerySessionEventsOkResultsItemOneOf5 = &vv
+		v.QuerySessionEventsOkResultsItemSessionStatus = &vv
 	default:
 		return jsonUnknownValue("type", tag)
 	}
@@ -18537,18 +18851,18 @@ func (v *QuerySessionEventsOkResultsItem) MarshalJSONTo(enc *jsontext.Encoder) e
 	)
 
 	switch {
-	case v.QuerySessionEventsOkResultsItemOneOf0 != nil:
-		variant, tag = v.QuerySessionEventsOkResultsItemOneOf0, "user.message"
-	case v.QuerySessionEventsOkResultsItemOneOf1 != nil:
-		variant, tag = v.QuerySessionEventsOkResultsItemOneOf1, "agent.message"
-	case v.QuerySessionEventsOkResultsItemOneOf2 != nil:
-		variant, tag = v.QuerySessionEventsOkResultsItemOneOf2, "agent.thinking"
-	case v.QuerySessionEventsOkResultsItemOneOf3 != nil:
-		variant, tag = v.QuerySessionEventsOkResultsItemOneOf3, "agent.tool_use"
-	case v.QuerySessionEventsOkResultsItemOneOf4 != nil:
-		variant, tag = v.QuerySessionEventsOkResultsItemOneOf4, "agent.tool_result"
-	case v.QuerySessionEventsOkResultsItemOneOf5 != nil:
-		variant, tag = v.QuerySessionEventsOkResultsItemOneOf5, "session.status"
+	case v.QuerySessionEventsOkResultsItemUserMessage != nil:
+		variant, tag = v.QuerySessionEventsOkResultsItemUserMessage, "user.message"
+	case v.QuerySessionEventsOkResultsItemAgentMessage != nil:
+		variant, tag = v.QuerySessionEventsOkResultsItemAgentMessage, "agent.message"
+	case v.QuerySessionEventsOkResultsItemAgentThinking != nil:
+		variant, tag = v.QuerySessionEventsOkResultsItemAgentThinking, "agent.thinking"
+	case v.QuerySessionEventsOkResultsItemAgentToolUse != nil:
+		variant, tag = v.QuerySessionEventsOkResultsItemAgentToolUse, "agent.tool_use"
+	case v.QuerySessionEventsOkResultsItemAgentToolResult != nil:
+		variant, tag = v.QuerySessionEventsOkResultsItemAgentToolResult, "agent.tool_result"
+	case v.QuerySessionEventsOkResultsItemSessionStatus != nil:
+		variant, tag = v.QuerySessionEventsOkResultsItemSessionStatus, "session.status"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -18565,49 +18879,8 @@ func (v *QuerySessionEventsOkResultsItem) MarshalJSONTo(enc *jsontext.Encoder) e
 	return enc.WriteValue(out)
 }
 
-// QuerySessionEventsOkResultsItemOneOf0 defines a model
-type QuerySessionEventsOkResultsItemOneOf0 struct {
-	// Always `session_event`
-	Object    string `json:"object"`
-	ID        string `json:"id"`
-	SessionID string `json:"session_id"`
-	Sequence  int    `json:"sequence"`
-	CreatedAt string `json:"created_at"`
-	// Always `user.message`
-	Type      string                                          `json:"type"`
-	Content   []QuerySessionEventsResultsItemOneOfContentItem `json:"content"`
-	CreatedBy RetrieveSessionCreatedBy                        `json:"created_by"`
-	Metadata  map[string]string                               `json:"metadata"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemOneOf0 declares it.
-func (v *QuerySessionEventsOkResultsItemOneOf0) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "object":
-		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
-	case "id":
-		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
-	case "session_id":
-		return true, json.UnmarshalDecode(dec, &v.SessionID, jsonOptsOf(dec))
-	case "sequence":
-		return true, json.UnmarshalDecode(dec, &v.Sequence, jsonOptsOf(dec))
-	case "created_at":
-		return true, json.UnmarshalDecode(dec, &v.CreatedAt, jsonOptsOf(dec))
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "content":
-		return true, json.UnmarshalDecode(dec, &v.Content, jsonOptsOf(dec))
-	case "created_by":
-		return true, json.UnmarshalDecode(dec, &v.CreatedBy, jsonOptsOf(dec))
-	case "metadata":
-		return true, json.UnmarshalDecode(dec, &v.Metadata, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QuerySessionEventsOkResultsItemOneOf1 defines a model
-type QuerySessionEventsOkResultsItemOneOf1 struct {
+// QuerySessionEventsOkResultsItemAgentMessage defines a model
+type QuerySessionEventsOkResultsItemAgentMessage struct {
 	// Always `session_event`
 	Object    string `json:"object"`
 	ID        string `json:"id"`
@@ -18615,14 +18888,14 @@ type QuerySessionEventsOkResultsItemOneOf1 struct {
 	Sequence  int    `json:"sequence"`
 	CreatedAt string `json:"created_at"`
 	// Always `agent.message`
-	Type      string                                              `json:"type"`
-	Content   []QuerySessionEventsResultsItemOneOfContentItem     `json:"content"`
-	CreatedBy RetrieveSessionCreatedBy                            `json:"created_by"`
-	Metadata  QuerySessionEventsOkResultsItemOneOf1MetadataOneOf0 `json:"metadata"`
+	Type      string                                                   `json:"type"`
+	Content   []QuerySessionEventsResultsItemUserMessageContentItem    `json:"content"`
+	CreatedBy RetrieveSessionCreatedBy                                 `json:"created_by"`
+	Metadata  QuerySessionEventsOkResultsItemAgentMessageMetadataModel `json:"metadata"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemOneOf1 declares it.
-func (v *QuerySessionEventsOkResultsItemOneOf1) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemAgentMessage declares it.
+func (v *QuerySessionEventsOkResultsItemAgentMessage) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -18647,13 +18920,13 @@ func (v *QuerySessionEventsOkResultsItemOneOf1) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// QuerySessionEventsOkResultsItemOneOf1MetadataOneOf0 defines a model
-type QuerySessionEventsOkResultsItemOneOf1MetadataOneOf0 struct {
+// QuerySessionEventsOkResultsItemAgentMessageMetadataModel defines a model
+type QuerySessionEventsOkResultsItemAgentMessageMetadataModel struct {
 	Model string `json:"model"`
 }
 
-// QuerySessionEventsOkResultsItemOneOf2 defines a model
-type QuerySessionEventsOkResultsItemOneOf2 struct {
+// QuerySessionEventsOkResultsItemAgentThinking defines a model
+type QuerySessionEventsOkResultsItemAgentThinking struct {
 	// Always `session_event`
 	Object    string `json:"object"`
 	ID        string `json:"id"`
@@ -18661,12 +18934,12 @@ type QuerySessionEventsOkResultsItemOneOf2 struct {
 	Sequence  int    `json:"sequence"`
 	CreatedAt string `json:"created_at"`
 	// Always `agent.thinking`
-	Type    string                                       `json:"type"`
-	Content QuerySessionEventsOkResultsItemOneOf2Content `json:"content"`
+	Type    string                                              `json:"type"`
+	Content QuerySessionEventsOkResultsItemAgentThinkingContent `json:"content"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemOneOf2 declares it.
-func (v *QuerySessionEventsOkResultsItemOneOf2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemAgentThinking declares it.
+func (v *QuerySessionEventsOkResultsItemAgentThinking) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -18687,46 +18960,11 @@ func (v *QuerySessionEventsOkResultsItemOneOf2) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// QuerySessionEventsOkResultsItemOneOf2Content defines a model
-type QuerySessionEventsOkResultsItemOneOf2Content []QuerySessionEventsResultsItemOneOfContentItem2
+// QuerySessionEventsOkResultsItemAgentThinkingContent defines a model
+type QuerySessionEventsOkResultsItemAgentThinkingContent []QuerySessionEventsResultsItemUserMessageContentItemText
 
-// QuerySessionEventsOkResultsItemOneOf3 defines a model
-type QuerySessionEventsOkResultsItemOneOf3 struct {
-	// Always `session_event`
-	Object    string `json:"object"`
-	ID        string `json:"id"`
-	SessionID string `json:"session_id"`
-	Sequence  int    `json:"sequence"`
-	CreatedAt string `json:"created_at"`
-	// Always `agent.tool_use`
-	Type     string `json:"type"`
-	ToolName string `json:"tool_name"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemOneOf3 declares it.
-func (v *QuerySessionEventsOkResultsItemOneOf3) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "object":
-		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
-	case "id":
-		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
-	case "session_id":
-		return true, json.UnmarshalDecode(dec, &v.SessionID, jsonOptsOf(dec))
-	case "sequence":
-		return true, json.UnmarshalDecode(dec, &v.Sequence, jsonOptsOf(dec))
-	case "created_at":
-		return true, json.UnmarshalDecode(dec, &v.CreatedAt, jsonOptsOf(dec))
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "tool_name":
-		return true, json.UnmarshalDecode(dec, &v.ToolName, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QuerySessionEventsOkResultsItemOneOf4 defines a model
-type QuerySessionEventsOkResultsItemOneOf4 struct {
+// QuerySessionEventsOkResultsItemAgentToolResult defines a model
+type QuerySessionEventsOkResultsItemAgentToolResult struct {
 	// Always `session_event`
 	Object    string `json:"object"`
 	ID        string `json:"id"`
@@ -18740,8 +18978,8 @@ type QuerySessionEventsOkResultsItemOneOf4 struct {
 	IsError   bool   `json:"is_error"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemOneOf4 declares it.
-func (v *QuerySessionEventsOkResultsItemOneOf4) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemAgentToolResult declares it.
+func (v *QuerySessionEventsOkResultsItemAgentToolResult) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -18766,8 +19004,43 @@ func (v *QuerySessionEventsOkResultsItemOneOf4) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// QuerySessionEventsOkResultsItemOneOf5 defines a model
-type QuerySessionEventsOkResultsItemOneOf5 struct {
+// QuerySessionEventsOkResultsItemAgentToolUse defines a model
+type QuerySessionEventsOkResultsItemAgentToolUse struct {
+	// Always `session_event`
+	Object    string `json:"object"`
+	ID        string `json:"id"`
+	SessionID string `json:"session_id"`
+	Sequence  int    `json:"sequence"`
+	CreatedAt string `json:"created_at"`
+	// Always `agent.tool_use`
+	Type     string `json:"type"`
+	ToolName string `json:"tool_name"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemAgentToolUse declares it.
+func (v *QuerySessionEventsOkResultsItemAgentToolUse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "session_id":
+		return true, json.UnmarshalDecode(dec, &v.SessionID, jsonOptsOf(dec))
+	case "sequence":
+		return true, json.UnmarshalDecode(dec, &v.Sequence, jsonOptsOf(dec))
+	case "created_at":
+		return true, json.UnmarshalDecode(dec, &v.CreatedAt, jsonOptsOf(dec))
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "tool_name":
+		return true, json.UnmarshalDecode(dec, &v.ToolName, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// QuerySessionEventsOkResultsItemSessionStatus defines a model
+type QuerySessionEventsOkResultsItemSessionStatus struct {
 	// Always `session_event`
 	Object    string `json:"object"`
 	ID        string `json:"id"`
@@ -18777,13 +19050,13 @@ type QuerySessionEventsOkResultsItemOneOf5 struct {
 	// Always `session.status`
 	Type string `json:"type"`
 	// One of: `requires_action`, `completed`, `failed`, `canceled`, `terminated`
-	Status          QuerySessionEventsOkResultsItemOneOf5Status `json:"status"`
-	RequiredActions RetrieveSessionRequiredActions              `json:"required_actions,omitzero"`
-	Err             CancelSessionError                          `json:"error,omitzero"`
+	Status          QuerySessionEventsOkResultsItemSessionStatusStatus `json:"status"`
+	RequiredActions RetrieveSessionRequiredActions                     `json:"required_actions,omitzero"`
+	Err             CancelSessionError                                 `json:"error,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemOneOf5 declares it.
-func (v *QuerySessionEventsOkResultsItemOneOf5) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemSessionStatus declares it.
+func (v *QuerySessionEventsOkResultsItemSessionStatus) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -18809,36 +19082,77 @@ func (v *QuerySessionEventsOkResultsItemOneOf5) unmarshalJSONMember(dec *jsontex
 }
 
 // One of: `requires_action`, `completed`, `failed`, `canceled`, `terminated`
-type QuerySessionEventsOkResultsItemOneOf5Status string
+type QuerySessionEventsOkResultsItemSessionStatusStatus string
 
 const (
-	QuerySessionEventsOkResultsItemOneOf5StatusRequiresAction QuerySessionEventsOkResultsItemOneOf5Status = "requires_action"
-	QuerySessionEventsOkResultsItemOneOf5StatusCompleted      QuerySessionEventsOkResultsItemOneOf5Status = "completed"
-	QuerySessionEventsOkResultsItemOneOf5StatusFailed         QuerySessionEventsOkResultsItemOneOf5Status = "failed"
-	QuerySessionEventsOkResultsItemOneOf5StatusCanceled       QuerySessionEventsOkResultsItemOneOf5Status = "canceled"
-	QuerySessionEventsOkResultsItemOneOf5StatusTerminated     QuerySessionEventsOkResultsItemOneOf5Status = "terminated"
+	QuerySessionEventsOkResultsItemSessionStatusStatusRequiresAction QuerySessionEventsOkResultsItemSessionStatusStatus = "requires_action"
+	QuerySessionEventsOkResultsItemSessionStatusStatusCompleted      QuerySessionEventsOkResultsItemSessionStatusStatus = "completed"
+	QuerySessionEventsOkResultsItemSessionStatusStatusFailed         QuerySessionEventsOkResultsItemSessionStatusStatus = "failed"
+	QuerySessionEventsOkResultsItemSessionStatusStatusCanceled       QuerySessionEventsOkResultsItemSessionStatusStatus = "canceled"
+	QuerySessionEventsOkResultsItemSessionStatusStatusTerminated     QuerySessionEventsOkResultsItemSessionStatusStatus = "terminated"
 )
 
-// Valid indicates whether the value is a known member of the QuerySessionEventsOkResultsItemOneOf5Status enum.
-func (e QuerySessionEventsOkResultsItemOneOf5Status) Valid() bool {
+// Valid indicates whether the value is a known member of the QuerySessionEventsOkResultsItemSessionStatusStatus enum.
+func (e QuerySessionEventsOkResultsItemSessionStatusStatus) Valid() bool {
 	switch e {
-	case QuerySessionEventsOkResultsItemOneOf5StatusRequiresAction, QuerySessionEventsOkResultsItemOneOf5StatusCompleted, QuerySessionEventsOkResultsItemOneOf5StatusFailed, QuerySessionEventsOkResultsItemOneOf5StatusCanceled, QuerySessionEventsOkResultsItemOneOf5StatusTerminated:
+	case QuerySessionEventsOkResultsItemSessionStatusStatusRequiresAction, QuerySessionEventsOkResultsItemSessionStatusStatusCompleted, QuerySessionEventsOkResultsItemSessionStatusStatusFailed, QuerySessionEventsOkResultsItemSessionStatusStatusCanceled, QuerySessionEventsOkResultsItemSessionStatusStatusTerminated:
 		return true
 	default:
 		return false
 	}
 }
 
-// QuerySessionEventsResultsItemOneOfContentItem defines a model
-// QuerySessionEventsResultsItemOneOfContentItem is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QuerySessionEventsResultsItemOneOfContentItem struct {
-	QuerySessionEventsResultsItemOneOfContentItem2     *QuerySessionEventsResultsItemOneOfContentItem2
-	QuerySessionEventsResultsItemOneOfContentItemOneOf *QuerySessionEventsResultsItemOneOfContentItemOneOf
+// QuerySessionEventsOkResultsItemUserMessage defines a model
+type QuerySessionEventsOkResultsItemUserMessage struct {
+	// Always `session_event`
+	Object    string `json:"object"`
+	ID        string `json:"id"`
+	SessionID string `json:"session_id"`
+	Sequence  int    `json:"sequence"`
+	CreatedAt string `json:"created_at"`
+	// Always `user.message`
+	Type      string                                                `json:"type"`
+	Content   []QuerySessionEventsResultsItemUserMessageContentItem `json:"content"`
+	CreatedBy RetrieveSessionCreatedBy                              `json:"created_by"`
+	Metadata  map[string]string                                     `json:"metadata"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemUserMessage declares it.
+func (v *QuerySessionEventsOkResultsItemUserMessage) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "session_id":
+		return true, json.UnmarshalDecode(dec, &v.SessionID, jsonOptsOf(dec))
+	case "sequence":
+		return true, json.UnmarshalDecode(dec, &v.Sequence, jsonOptsOf(dec))
+	case "created_at":
+		return true, json.UnmarshalDecode(dec, &v.CreatedAt, jsonOptsOf(dec))
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "content":
+		return true, json.UnmarshalDecode(dec, &v.Content, jsonOptsOf(dec))
+	case "created_by":
+		return true, json.UnmarshalDecode(dec, &v.CreatedBy, jsonOptsOf(dec))
+	case "metadata":
+		return true, json.UnmarshalDecode(dec, &v.Metadata, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// QuerySessionEventsResultsItemUserMessageContentItem defines a model
+// QuerySessionEventsResultsItemUserMessageContentItem is an untagged oneOf union: exactly one field is set after unmarshaling.
+type QuerySessionEventsResultsItemUserMessageContentItem struct {
+	QuerySessionEventsResultsItemUserMessageContentItemText *QuerySessionEventsResultsItemUserMessageContentItemText
+	QuerySessionEventsResultsItemUserMessageContentItemFile *QuerySessionEventsResultsItemUserMessageContentItemFile
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
 // decodes each further member as it is read. With type first, nothing is read twice.
-func (v *QuerySessionEventsResultsItemOneOfContentItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+func (v *QuerySessionEventsResultsItemUserMessageContentItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	tag, first, dec, err := jsonFirstMember(dec, "type")
 	if err != nil {
 		return err
@@ -18846,19 +19160,19 @@ func (v *QuerySessionEventsResultsItemOneOfContentItem) UnmarshalJSONFrom(dec *j
 
 	switch tag {
 	case "text":
-		var vv QuerySessionEventsResultsItemOneOfContentItem2
+		var vv QuerySessionEventsResultsItemUserMessageContentItemText
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QuerySessionEventsResultsItemOneOfContentItem2 = &vv
+		v.QuerySessionEventsResultsItemUserMessageContentItemText = &vv
 	case "file":
-		var vv QuerySessionEventsResultsItemOneOfContentItemOneOf
+		var vv QuerySessionEventsResultsItemUserMessageContentItemFile
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QuerySessionEventsResultsItemOneOfContentItemOneOf = &vv
+		v.QuerySessionEventsResultsItemUserMessageContentItemFile = &vv
 	default:
 		return jsonUnknownValue("type", tag)
 	}
@@ -18867,17 +19181,17 @@ func (v *QuerySessionEventsResultsItemOneOfContentItem) UnmarshalJSONFrom(dec *j
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *QuerySessionEventsResultsItemOneOfContentItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *QuerySessionEventsResultsItemUserMessageContentItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
 		tag     string
 	)
 
 	switch {
-	case v.QuerySessionEventsResultsItemOneOfContentItem2 != nil:
-		variant, tag = v.QuerySessionEventsResultsItemOneOfContentItem2, "text"
-	case v.QuerySessionEventsResultsItemOneOfContentItemOneOf != nil:
-		variant, tag = v.QuerySessionEventsResultsItemOneOfContentItemOneOf, "file"
+	case v.QuerySessionEventsResultsItemUserMessageContentItemText != nil:
+		variant, tag = v.QuerySessionEventsResultsItemUserMessageContentItemText, "text"
+	case v.QuerySessionEventsResultsItemUserMessageContentItemFile != nil:
+		variant, tag = v.QuerySessionEventsResultsItemUserMessageContentItemFile, "file"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -18894,27 +19208,8 @@ func (v *QuerySessionEventsResultsItemOneOfContentItem) MarshalJSONTo(enc *jsont
 	return enc.WriteValue(out)
 }
 
-// QuerySessionEventsResultsItemOneOfContentItem2 defines a model
-type QuerySessionEventsResultsItemOneOfContentItem2 struct {
-	// Always `text`
-	Type string `json:"type"`
-	Text string `json:"text"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsResultsItemOneOfContentItem2 declares it.
-func (v *QuerySessionEventsResultsItemOneOfContentItem2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "text":
-		return true, json.UnmarshalDecode(dec, &v.Text, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QuerySessionEventsResultsItemOneOfContentItemOneOf defines a model
-type QuerySessionEventsResultsItemOneOfContentItemOneOf struct {
+// QuerySessionEventsResultsItemUserMessageContentItemFile defines a model
+type QuerySessionEventsResultsItemUserMessageContentItemFile struct {
 	// Always `file`
 	Type        string `json:"type"`
 	Name        string `json:"name"`
@@ -18923,8 +19218,8 @@ type QuerySessionEventsResultsItemOneOfContentItemOneOf struct {
 	ExpiryTime  string `json:"expiry_time,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsResultsItemOneOfContentItemOneOf declares it.
-func (v *QuerySessionEventsResultsItemOneOfContentItemOneOf) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsResultsItemUserMessageContentItemFile declares it.
+func (v *QuerySessionEventsResultsItemUserMessageContentItemFile) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -18936,6 +19231,25 @@ func (v *QuerySessionEventsResultsItemOneOfContentItemOneOf) unmarshalJSONMember
 		return true, json.UnmarshalDecode(dec, &v.URL, jsonOptsOf(dec))
 	case "expiry_time":
 		return true, json.UnmarshalDecode(dec, &v.ExpiryTime, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// QuerySessionEventsResultsItemUserMessageContentItemText defines a model
+type QuerySessionEventsResultsItemUserMessageContentItemText struct {
+	// Always `text`
+	Type string `json:"type"`
+	Text string `json:"text"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsResultsItemUserMessageContentItemText declares it.
+func (v *QuerySessionEventsResultsItemUserMessageContentItemText) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "text":
+		return true, json.UnmarshalDecode(dec, &v.Text, jsonOptsOf(dec))
 	}
 
 	return false, nil
@@ -18988,11 +19302,11 @@ type QuerySessions struct {
 // QuerySessionsFilter is an untagged oneOf union: exactly one field is set after unmarshaling.
 type QuerySessionsFilter struct {
 	QuerySessionsFilterOneOf  *QuerySessionsFilterOneOf
-	QuerySessionsFilterOneOf6 *QuerySessionsFilterOneOf6
-	QuerySessionsFilterOneOf7 *QuerySessionsFilterOneOf7
-	QuerySessionsFilterOneOf2 *QuerySessionsFilterOneOf2
 	QuerySessionsFilterOneOf4 *QuerySessionsFilterOneOf4
 	QuerySessionsFilterOneOf5 *QuerySessionsFilterOneOf5
+	QuerySessionsFilterOneOf2 *QuerySessionsFilterOneOf2
+	QuerySessionsFilterAnd    *QuerySessionsFilterAnd
+	QuerySessionsFilterOr     *QuerySessionsFilterOr
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -19018,33 +19332,6 @@ func (v *QuerySessionsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOf6
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOf6 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOf7
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOf7 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOf2 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
 		var vv QuerySessionsFilterOneOf4
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
 			v.QuerySessionsFilterOneOf4 = &vv
@@ -19061,6 +19348,33 @@ func (v *QuerySessionsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		}
 	}
 
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionsFilterOneOf2
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionsFilterOneOf2 = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionsFilterAnd
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionsFilterAnd = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionsFilterOr
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionsFilterOr = &vv
+			matched++
+		}
+	}
+
 	if matched != 1 {
 		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
 	}
@@ -19073,19 +19387,25 @@ func (v *QuerySessionsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.QuerySessionsFilterOneOf != nil:
 		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOpts)
-	case v.QuerySessionsFilterOneOf6 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf6, jsonOpts)
-	case v.QuerySessionsFilterOneOf7 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf7, jsonOpts)
-	case v.QuerySessionsFilterOneOf2 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf2, jsonOpts)
 	case v.QuerySessionsFilterOneOf4 != nil:
 		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf4, jsonOpts)
 	case v.QuerySessionsFilterOneOf5 != nil:
 		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf5, jsonOpts)
+	case v.QuerySessionsFilterOneOf2 != nil:
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf2, jsonOpts)
+	case v.QuerySessionsFilterAnd != nil:
+		return json.MarshalEncode(enc, v.QuerySessionsFilterAnd, jsonOpts)
+	case v.QuerySessionsFilterOr != nil:
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOr, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// QuerySessionsFilterAnd defines a model
+type QuerySessionsFilterAnd struct {
+	// Return sessions that match every child filter.
+	And []QuerySessionsFilterOrItem `json:"and"`
 }
 
 // QuerySessionsFilterOneOf defines a model
@@ -19093,7 +19413,7 @@ type QuerySessionsFilterOneOf struct {
 	// Filter sessions by id.
 	Property QuerySessionsFilterOneOfProperty `json:"property"`
 	// An exact string comparison.
-	String QueryAgentsFilterOneOfOneOfID `json:"string"`
+	String QueryAgentsFilterOneOfIDID `json:"string"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionsFilterOneOf declares it.
@@ -19118,226 +19438,18 @@ type QuerySessionsFilterOneOf2 struct {
 
 // QuerySessionsFilterOneOf4 defines a model
 type QuerySessionsFilterOneOf4 struct {
-	// Return sessions that match every child filter.
-	And []QuerySessionsFilterOneOfOrItem `json:"and"`
+	// Filter sessions by agent_id.
+	Property QuerySessionsFilterOneOfProperty2 `json:"property"`
+	// An exact string comparison.
+	String QueryAgentsFilterOneOfIDID `json:"string"`
 }
 
 // QuerySessionsFilterOneOf5 defines a model
 type QuerySessionsFilterOneOf5 struct {
-	// Return sessions that match any child filter.
-	Or []QuerySessionsFilterOneOfOrItem `json:"or"`
-}
-
-// QuerySessionsFilterOneOf6 defines a model
-type QuerySessionsFilterOneOf6 struct {
-	// Filter sessions by agent_id.
-	Property QuerySessionsFilterOneOfProperty2 `json:"property"`
-	// An exact string comparison.
-	String QueryAgentsFilterOneOfOneOfID `json:"string"`
-}
-
-// QuerySessionsFilterOneOf7 defines a model
-type QuerySessionsFilterOneOf7 struct {
 	// Filter sessions by status.
 	Property QuerySessionsFilterOneOfProperty3 `json:"property"`
 	// A session status comparison.
 	Status QuerySessionsFilterOneOfStatus `json:"status"`
-}
-
-// QuerySessionsFilterOneOfOrItem defines a model
-// QuerySessionsFilterOneOfOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QuerySessionsFilterOneOfOrItem struct {
-	QuerySessionsFilterOneOf             *QuerySessionsFilterOneOf
-	QuerySessionsFilterOneOf6            *QuerySessionsFilterOneOf6
-	QuerySessionsFilterOneOf7            *QuerySessionsFilterOneOf7
-	QuerySessionsFilterOneOf2            *QuerySessionsFilterOneOf2
-	QuerySessionsFilterOneOfOrItemOneOf  *QuerySessionsFilterOneOfOrItemOneOf
-	QuerySessionsFilterOneOfOrItemOneOf2 *QuerySessionsFilterOneOfOrItemOneOf2
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *QuerySessionsFilterOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOf = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOf6
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOf6 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOf7
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOf7 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOf2 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOfOrItemOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOfOrItemOneOf = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOfOrItemOneOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOfOrItemOneOf2 = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *QuerySessionsFilterOneOfOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.QuerySessionsFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOpts)
-	case v.QuerySessionsFilterOneOf6 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf6, jsonOpts)
-	case v.QuerySessionsFilterOneOf7 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf7, jsonOpts)
-	case v.QuerySessionsFilterOneOf2 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf2, jsonOpts)
-	case v.QuerySessionsFilterOneOfOrItemOneOf != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOfOrItemOneOf, jsonOpts)
-	case v.QuerySessionsFilterOneOfOrItemOneOf2 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOfOrItemOneOf2, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// QuerySessionsFilterOneOfOrItemOneOf defines a model
-type QuerySessionsFilterOneOfOrItemOneOf struct {
-	// Return sessions that match every child filter.
-	And []QuerySessionsFilterOneOfOrItemOneOfOrItem `json:"and"`
-}
-
-// QuerySessionsFilterOneOfOrItemOneOf2 defines a model
-type QuerySessionsFilterOneOfOrItemOneOf2 struct {
-	// Return sessions that match any child filter.
-	Or []QuerySessionsFilterOneOfOrItemOneOfOrItem `json:"or"`
-}
-
-// QuerySessionsFilterOneOfOrItemOneOfOrItem defines a model
-// QuerySessionsFilterOneOfOrItemOneOfOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QuerySessionsFilterOneOfOrItemOneOfOrItem struct {
-	QuerySessionsFilterOneOf  *QuerySessionsFilterOneOf
-	QuerySessionsFilterOneOf6 *QuerySessionsFilterOneOf6
-	QuerySessionsFilterOneOf7 *QuerySessionsFilterOneOf7
-	QuerySessionsFilterOneOf2 *QuerySessionsFilterOneOf2
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *QuerySessionsFilterOneOfOrItemOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOf = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOf6
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOf6 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOf7
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOf7 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOf2 = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *QuerySessionsFilterOneOfOrItemOneOfOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.QuerySessionsFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOpts)
-	case v.QuerySessionsFilterOneOf6 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf6, jsonOpts)
-	case v.QuerySessionsFilterOneOf7 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf7, jsonOpts)
-	case v.QuerySessionsFilterOneOf2 != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf2, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
 // QuerySessionsFilterOneOfProperty defines a model
@@ -19414,6 +19526,208 @@ type QuerySessionsFilterOneOfTimestamp struct {
 	OnOrAfter time.Time `json:"on_or_after,omitzero"`
 }
 
+// QuerySessionsFilterOr defines a model
+type QuerySessionsFilterOr struct {
+	// Return sessions that match any child filter.
+	Or []QuerySessionsFilterOrItem `json:"or"`
+}
+
+// QuerySessionsFilterOrItem defines a model
+// QuerySessionsFilterOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
+type QuerySessionsFilterOrItem struct {
+	QuerySessionsFilterOneOf     *QuerySessionsFilterOneOf
+	QuerySessionsFilterOneOf4    *QuerySessionsFilterOneOf4
+	QuerySessionsFilterOneOf5    *QuerySessionsFilterOneOf5
+	QuerySessionsFilterOneOf2    *QuerySessionsFilterOneOf2
+	QuerySessionsFilterOrItemAnd *QuerySessionsFilterOrItemAnd
+	QuerySessionsFilterOrItemOr  *QuerySessionsFilterOrItemOr
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *QuerySessionsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionsFilterOneOf
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionsFilterOneOf = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionsFilterOneOf4
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionsFilterOneOf4 = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionsFilterOneOf5
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionsFilterOneOf5 = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionsFilterOneOf2
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionsFilterOneOf2 = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionsFilterOrItemAnd
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionsFilterOrItemAnd = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionsFilterOrItemOr
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionsFilterOrItemOr = &vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *QuerySessionsFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.QuerySessionsFilterOneOf != nil:
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOpts)
+	case v.QuerySessionsFilterOneOf4 != nil:
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf4, jsonOpts)
+	case v.QuerySessionsFilterOneOf5 != nil:
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf5, jsonOpts)
+	case v.QuerySessionsFilterOneOf2 != nil:
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf2, jsonOpts)
+	case v.QuerySessionsFilterOrItemAnd != nil:
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOrItemAnd, jsonOpts)
+	case v.QuerySessionsFilterOrItemOr != nil:
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOrItemOr, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// QuerySessionsFilterOrItemAnd defines a model
+type QuerySessionsFilterOrItemAnd struct {
+	// Return sessions that match every child filter.
+	And []QuerySessionsFilterOrItemOrItem `json:"and"`
+}
+
+// QuerySessionsFilterOrItemOr defines a model
+type QuerySessionsFilterOrItemOr struct {
+	// Return sessions that match any child filter.
+	Or []QuerySessionsFilterOrItemOrItem `json:"or"`
+}
+
+// QuerySessionsFilterOrItemOrItem defines a model
+// QuerySessionsFilterOrItemOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
+type QuerySessionsFilterOrItemOrItem struct {
+	QuerySessionsFilterOneOf  *QuerySessionsFilterOneOf
+	QuerySessionsFilterOneOf4 *QuerySessionsFilterOneOf4
+	QuerySessionsFilterOneOf5 *QuerySessionsFilterOneOf5
+	QuerySessionsFilterOneOf2 *QuerySessionsFilterOneOf2
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *QuerySessionsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionsFilterOneOf
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionsFilterOneOf = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionsFilterOneOf4
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionsFilterOneOf4 = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionsFilterOneOf5
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionsFilterOneOf5 = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv QuerySessionsFilterOneOf2
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.QuerySessionsFilterOneOf2 = &vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *QuerySessionsFilterOrItemOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.QuerySessionsFilterOneOf != nil:
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOpts)
+	case v.QuerySessionsFilterOneOf4 != nil:
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf4, jsonOpts)
+	case v.QuerySessionsFilterOneOf5 != nil:
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf5, jsonOpts)
+	case v.QuerySessionsFilterOneOf2 != nil:
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf2, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
 // QuerySessionsOk defines a model
 type QuerySessionsOk struct {
 	// Always `list`
@@ -19487,71 +19801,6 @@ func (e QuerySessionsSortsItemProperty) Valid() bool {
 	}
 }
 
-// Quote5 defines a model
-type Quote5 struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                                      `json:"color,omitzero"`
-	Children []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
-}
-
-// Relation2 defines a model
-type Relation2 struct {
-	DataSourceID   IDRequest                 `json:"data_source_id"`
-	Type           string                    `json:"type"`
-	SingleProperty *EmptyObject              `json:"single_property,omitzero"`
-	DualProperty   *DualPropertyDualProperty `json:"dual_property,omitzero"`
-}
-
-// tagsOfRelation2 says, for each value of type, whether the member named after it must, may or must not be set.
-var tagsOfRelation2 = map[string]jsonTagMember{
-	"single_property": jsonTagRequired,
-	"dual_property":   jsonTagRequired,
-}
-
-// taggedMembers returns those of the members named after a value of type that are set.
-func (v *Relation2) taggedMembers() []string {
-	var set []string
-	if v.SingleProperty != nil {
-		set = append(set, "single_property")
-	}
-	if v.DualProperty != nil {
-		set = append(set, "dual_property")
-	}
-
-	return set
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those named after a
-// value of type, only the one it names is set.
-func (v *Relation2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain Relation2
-
-	*v = Relation2{}
-	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
-		return err
-	}
-
-	return jsonCheckTag("type", string(v.Type), tagsOfRelation2, v.taggedMembers(), jsonStrict(dec))
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
-func (v *Relation2) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain Relation2
-
-	out, set := *v, v.taggedMembers()
-	if out.Type == "" && len(set) == 1 {
-		out.Type = string(set[0])
-	}
-
-	if err := jsonCheckTag("type", string(out.Type), tagsOfRelation2, set, true); err != nil {
-		return err
-	}
-
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
-}
-
 // RelationArrayBasedPropertyValueResponse defines a model
 type RelationArrayBasedPropertyValueResponse struct {
 	// Always `relation`
@@ -19608,8 +19857,71 @@ type RelationItemPropertyValue struct {
 // RelationPropertyConfiguration defines a model
 type RelationPropertyConfiguration struct {
 	// Always `relation`
-	Type     string    `json:"type,omitzero"`
-	Relation Relation2 `json:"relation"`
+	Type     string                                `json:"type,omitzero"`
+	Relation RelationPropertyConfigurationRelation `json:"relation"`
+}
+
+// RelationPropertyConfigurationRelation defines a model
+type RelationPropertyConfigurationRelation struct {
+	DataSourceID   IDRequest                                                           `json:"data_source_id"`
+	Type           string                                                              `json:"type"`
+	SingleProperty *EmptyObject                                                        `json:"single_property,omitzero"`
+	DualProperty   *RelationPropertyConfigurationRelationAllOfDualPropertyDualProperty `json:"dual_property,omitzero"`
+}
+
+// tagsOfRelationPropertyConfigurationRelation says, for each value of type, whether the member named after it must, may or must not be set.
+var tagsOfRelationPropertyConfigurationRelation = map[string]jsonTagMember{
+	"single_property": jsonTagRequired,
+	"dual_property":   jsonTagRequired,
+}
+
+// taggedMembers returns those of the members named after a value of type that are set.
+func (v *RelationPropertyConfigurationRelation) taggedMembers() []string {
+	var set []string
+	if v.SingleProperty != nil {
+		set = append(set, "single_property")
+	}
+	if v.DualProperty != nil {
+		set = append(set, "dual_property")
+	}
+
+	return set
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those named after a
+// value of type, only the one it names is set.
+func (v *RelationPropertyConfigurationRelation) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain RelationPropertyConfigurationRelation
+
+	*v = RelationPropertyConfigurationRelation{}
+	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
+		return err
+	}
+
+	return jsonCheckTag("type", string(v.Type), tagsOfRelationPropertyConfigurationRelation, v.taggedMembers(), jsonStrict(dec))
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
+// the value whose member is set.
+func (v *RelationPropertyConfigurationRelation) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain RelationPropertyConfigurationRelation
+
+	out, set := *v, v.taggedMembers()
+	if out.Type == "" && len(set) == 1 {
+		out.Type = string(set[0])
+	}
+
+	if err := jsonCheckTag("type", string(out.Type), tagsOfRelationPropertyConfigurationRelation, set, true); err != nil {
+		return err
+	}
+
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+}
+
+// RelationPropertyConfigurationRelationAllOfDualPropertyDualProperty defines a model
+type RelationPropertyConfigurationRelationAllOfDualPropertyDualProperty struct {
+	SyncedPropertyID   string `json:"synced_property_id,omitzero"`
+	SyncedPropertyName string `json:"synced_property_name,omitzero"`
 }
 
 // RelationPropertyFilter defines a model
@@ -19668,8 +19980,8 @@ func (v *RelationPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 // RelationPropertyFilterAnyOf0 defines a model
 // RelationPropertyFilterAnyOf0 is an untagged anyOf union: at least one field is set after unmarshaling.
 type RelationPropertyFilterAnyOf0 struct {
-	RelationPropertyFilterAnyOf0AnyOf0 *RelationPropertyFilterAnyOf0AnyOf0
-	RelationPropertyFilterAnyOf0AnyOf1 *RelationPropertyFilterAnyOf0AnyOf1
+	RelationPropertyFilterAnyOf0Contains       *RelationPropertyFilterAnyOf0Contains
+	RelationPropertyFilterAnyOf0DoesNotContain *RelationPropertyFilterAnyOf0DoesNotContain
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -19684,17 +19996,17 @@ func (v *RelationPropertyFilterAnyOf0) UnmarshalJSONFrom(dec *jsontext.Decoder) 
 	var matched int
 
 	{
-		var vv RelationPropertyFilterAnyOf0AnyOf0
+		var vv RelationPropertyFilterAnyOf0Contains
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RelationPropertyFilterAnyOf0AnyOf0 = &vv
+			v.RelationPropertyFilterAnyOf0Contains = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv RelationPropertyFilterAnyOf0AnyOf1
+		var vv RelationPropertyFilterAnyOf0DoesNotContain
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RelationPropertyFilterAnyOf0AnyOf1 = &vv
+			v.RelationPropertyFilterAnyOf0DoesNotContain = &vv
 			matched++
 		}
 	}
@@ -19709,22 +20021,22 @@ func (v *RelationPropertyFilterAnyOf0) UnmarshalJSONFrom(dec *jsontext.Decoder) 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *RelationPropertyFilterAnyOf0) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.RelationPropertyFilterAnyOf0AnyOf0 != nil:
-		return json.MarshalEncode(enc, v.RelationPropertyFilterAnyOf0AnyOf0, jsonOpts)
-	case v.RelationPropertyFilterAnyOf0AnyOf1 != nil:
-		return json.MarshalEncode(enc, v.RelationPropertyFilterAnyOf0AnyOf1, jsonOpts)
+	case v.RelationPropertyFilterAnyOf0Contains != nil:
+		return json.MarshalEncode(enc, v.RelationPropertyFilterAnyOf0Contains, jsonOpts)
+	case v.RelationPropertyFilterAnyOf0DoesNotContain != nil:
+		return json.MarshalEncode(enc, v.RelationPropertyFilterAnyOf0DoesNotContain, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// RelationPropertyFilterAnyOf0AnyOf0 defines a model
-type RelationPropertyFilterAnyOf0AnyOf0 struct {
+// RelationPropertyFilterAnyOf0Contains defines a model
+type RelationPropertyFilterAnyOf0Contains struct {
 	Contains IDRequest `json:"contains"`
 }
 
-// RelationPropertyFilterAnyOf0AnyOf1 defines a model
-type RelationPropertyFilterAnyOf0AnyOf1 struct {
+// RelationPropertyFilterAnyOf0DoesNotContain defines a model
+type RelationPropertyFilterAnyOf0DoesNotContain struct {
 	DoesNotContain IDRequest `json:"does_not_contain"`
 }
 
@@ -19754,24 +20066,6 @@ func (e RelativeDateValue) Valid() bool {
 	default:
 		return false
 	}
-}
-
-// Replace a range of content in the page.
-type ReplaceContentRangeReplaceContentRange struct {
-	// The new enhanced markdown content to replace the matched range.
-	Content string `json:"content"`
-	// Selection of existing content to replace, using the ellipsis format ("start text...end text").
-	ContentRange string `json:"content_range"`
-	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
-	AllowDeletingContent *bool `json:"allow_deleting_content,omitzero"`
-}
-
-// Replace the entire page content with new markdown.
-type ReplaceContentReplaceContent struct {
-	// The new enhanced markdown content to replace the entire page content.
-	NewStr string `json:"new_str"`
-	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
-	AllowDeletingContent *bool `json:"allow_deleting_content,omitzero"`
 }
 
 // RequestStatusResponse defines a model
@@ -19838,9 +20132,9 @@ func (v *RetrieveAPagePropertyOk) MarshalJSONTo(enc *jsontext.Encoder) error {
 // RetrieveAsyncTaskOk defines a model
 // RetrieveAsyncTaskOk is an untagged oneOf union: exactly one field is set after unmarshaling.
 type RetrieveAsyncTaskOk struct {
-	AgentBatch2               *AgentBatch2
-	RetrieveAsyncTaskOkOneOf1 *RetrieveAsyncTaskOkOneOf1
-	RetrieveAsyncTaskOkOneOf2 *RetrieveAsyncTaskOkOneOf2
+	AgentBatch2                  *AgentBatch2
+	RetrieveAsyncTaskOkSucceeded *RetrieveAsyncTaskOkSucceeded
+	RetrieveAsyncTaskOkFailed    *RetrieveAsyncTaskOkFailed
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -19866,18 +20160,18 @@ func (v *RetrieveAsyncTaskOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv RetrieveAsyncTaskOkOneOf1
+		var vv RetrieveAsyncTaskOkSucceeded
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RetrieveAsyncTaskOkOneOf1 = &vv
+			v.RetrieveAsyncTaskOkSucceeded = &vv
 			matched++
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv RetrieveAsyncTaskOkOneOf2
+		var vv RetrieveAsyncTaskOkFailed
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RetrieveAsyncTaskOkOneOf2 = &vv
+			v.RetrieveAsyncTaskOkFailed = &vv
 			matched++
 		}
 	}
@@ -19894,68 +20188,57 @@ func (v *RetrieveAsyncTaskOk) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.AgentBatch2 != nil:
 		return json.MarshalEncode(enc, v.AgentBatch2, jsonOpts)
-	case v.RetrieveAsyncTaskOkOneOf1 != nil:
-		return json.MarshalEncode(enc, v.RetrieveAsyncTaskOkOneOf1, jsonOpts)
-	case v.RetrieveAsyncTaskOkOneOf2 != nil:
-		return json.MarshalEncode(enc, v.RetrieveAsyncTaskOkOneOf2, jsonOpts)
+	case v.RetrieveAsyncTaskOkSucceeded != nil:
+		return json.MarshalEncode(enc, v.RetrieveAsyncTaskOkSucceeded, jsonOpts)
+	case v.RetrieveAsyncTaskOkFailed != nil:
+		return json.MarshalEncode(enc, v.RetrieveAsyncTaskOkFailed, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// RetrieveAsyncTaskOkOneOf1 defines a model
-type RetrieveAsyncTaskOkOneOf1 struct {
-	Object      string                                             `json:"object"`
-	ID          string                                             `json:"id"`
-	StatusURL   string                                             `json:"status_url"`
-	CreatedTime time.Time                                          `json:"created_time"`
-	Operation   AgentBatchOperation                                `json:"operation"`
-	Status      string                                             `json:"status"`
-	Result      map[string]PublicAPIAsyncTaskStatusResultJSONValue `json:"result"`
-}
-
-// RetrieveAsyncTaskOkOneOf2 defines a model
-type RetrieveAsyncTaskOkOneOf2 struct {
+// RetrieveAsyncTaskOkFailed defines a model
+type RetrieveAsyncTaskOkFailed struct {
 	Object      string                         `json:"object"`
 	ID          string                         `json:"id"`
 	StatusURL   string                         `json:"status_url"`
 	CreatedTime time.Time                      `json:"created_time"`
 	Operation   AgentBatchOperation            `json:"operation"`
 	Status      string                         `json:"status"`
-	Err         RetrieveAsyncTaskOkOneOf2Error `json:"error"`
+	Err         RetrieveAsyncTaskOkFailedError `json:"error"`
 }
 
-// RetrieveAsyncTaskOkOneOf2Error defines a model
-// RetrieveAsyncTaskOkOneOf2Error is an untagged oneOf union: exactly one field is set after unmarshaling.
-type RetrieveAsyncTaskOkOneOf2Error struct {
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf0  *RetrieveAsyncTaskOkOneOf2ErrorOneOf0
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf1  *RetrieveAsyncTaskOkOneOf2ErrorOneOf1
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf2  *RetrieveAsyncTaskOkOneOf2ErrorOneOf2
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf3  *RetrieveAsyncTaskOkOneOf2ErrorOneOf3
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf4  *RetrieveAsyncTaskOkOneOf2ErrorOneOf4
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf5  *RetrieveAsyncTaskOkOneOf2ErrorOneOf5
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf6  *RetrieveAsyncTaskOkOneOf2ErrorOneOf6
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf7  *RetrieveAsyncTaskOkOneOf2ErrorOneOf7
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf8  *RetrieveAsyncTaskOkOneOf2ErrorOneOf8
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf9  *RetrieveAsyncTaskOkOneOf2ErrorOneOf9
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf10 *RetrieveAsyncTaskOkOneOf2ErrorOneOf10
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf11 *RetrieveAsyncTaskOkOneOf2ErrorOneOf11
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf12 *RetrieveAsyncTaskOkOneOf2ErrorOneOf12
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf13 *RetrieveAsyncTaskOkOneOf2ErrorOneOf13
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf14 *RetrieveAsyncTaskOkOneOf2ErrorOneOf14
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf15 *RetrieveAsyncTaskOkOneOf2ErrorOneOf15
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf16 *RetrieveAsyncTaskOkOneOf2ErrorOneOf16
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf17 *RetrieveAsyncTaskOkOneOf2ErrorOneOf17
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf18 *RetrieveAsyncTaskOkOneOf2ErrorOneOf18
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf19 *RetrieveAsyncTaskOkOneOf2ErrorOneOf19
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf20 *RetrieveAsyncTaskOkOneOf2ErrorOneOf20
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf21 *RetrieveAsyncTaskOkOneOf2ErrorOneOf21
-	RetrieveAsyncTaskOkOneOf2ErrorOneOf22 *RetrieveAsyncTaskOkOneOf2ErrorOneOf22
+// RetrieveAsyncTaskOkFailedError defines a model
+// RetrieveAsyncTaskOkFailedError is an untagged oneOf union: exactly one field is set after unmarshaling.
+type RetrieveAsyncTaskOkFailedError struct {
+	RetrieveAsyncTaskOkFailedErrorInvalidJSON               *RetrieveAsyncTaskOkFailedErrorInvalidJSON
+	RetrieveAsyncTaskOkFailedErrorInvalidRequestURL         *RetrieveAsyncTaskOkFailedErrorInvalidRequestURL
+	RetrieveAsyncTaskOkFailedErrorInvalidRequest            *RetrieveAsyncTaskOkFailedErrorInvalidRequest
+	RetrieveAsyncTaskOkFailedErrorMissingVersion            *RetrieveAsyncTaskOkFailedErrorMissingVersion
+	RetrieveAsyncTaskOkFailedErrorInvalidBeta               *RetrieveAsyncTaskOkFailedErrorInvalidBeta
+	RetrieveAsyncTaskOkFailedErrorValidationError           *RetrieveAsyncTaskOkFailedErrorValidationError
+	RetrieveAsyncTaskOkFailedErrorUnauthorized              *RetrieveAsyncTaskOkFailedErrorUnauthorized
+	RetrieveAsyncTaskOkFailedErrorRestrictedResource        *RetrieveAsyncTaskOkFailedErrorRestrictedResource
+	RetrieveAsyncTaskOkFailedErrorObjectNotFound            *RetrieveAsyncTaskOkFailedErrorObjectNotFound
+	RetrieveAsyncTaskOkFailedErrorDirectoryNotFound         *RetrieveAsyncTaskOkFailedErrorDirectoryNotFound
+	RetrieveAsyncTaskOkFailedErrorRateLimited               *RetrieveAsyncTaskOkFailedErrorRateLimited
+	RetrieveAsyncTaskOkFailedErrorServiceOverload           *RetrieveAsyncTaskOkFailedErrorServiceOverload
+	RetrieveAsyncTaskOkFailedErrorInternalServerError       *RetrieveAsyncTaskOkFailedErrorInternalServerError
+	RetrieveAsyncTaskOkFailedErrorServiceUnavailable        *RetrieveAsyncTaskOkFailedErrorServiceUnavailable
+	RetrieveAsyncTaskOkFailedErrorGatewayTimeout            *RetrieveAsyncTaskOkFailedErrorGatewayTimeout
+	RetrieveAsyncTaskOkFailedErrorConflictError             *RetrieveAsyncTaskOkFailedErrorConflictError
+	RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused      *RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused
+	RetrieveAsyncTaskOkFailedErrorRowLimitExceeded          *RetrieveAsyncTaskOkFailedErrorRowLimitExceeded
+	RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed    *RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed
+	RetrieveAsyncTaskOkFailedErrorAgentDeleted              *RetrieveAsyncTaskOkFailedErrorAgentDeleted
+	RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit        *RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit
+	RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted *RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted
+	RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached   *RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member code names the alternative, which then
 // decodes each further member as it is read. With code first, nothing is read twice.
-func (v *RetrieveAsyncTaskOkOneOf2Error) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+func (v *RetrieveAsyncTaskOkFailedError) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	tag, first, dec, err := jsonFirstMember(dec, "code")
 	if err != nil {
 		return err
@@ -19963,166 +20246,166 @@ func (v *RetrieveAsyncTaskOkOneOf2Error) UnmarshalJSONFrom(dec *jsontext.Decoder
 
 	switch tag {
 	case "invalid_json":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf0
+		var vv RetrieveAsyncTaskOkFailedErrorInvalidJSON
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf0 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorInvalidJSON = &vv
 	case "invalid_request_url":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf1
+		var vv RetrieveAsyncTaskOkFailedErrorInvalidRequestURL
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf1 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorInvalidRequestURL = &vv
 	case "invalid_request":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf2
+		var vv RetrieveAsyncTaskOkFailedErrorInvalidRequest
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf2 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorInvalidRequest = &vv
 	case "missing_version":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf3
+		var vv RetrieveAsyncTaskOkFailedErrorMissingVersion
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf3 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorMissingVersion = &vv
 	case "invalid_beta":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf4
+		var vv RetrieveAsyncTaskOkFailedErrorInvalidBeta
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf4 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorInvalidBeta = &vv
 	case "validation_error":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf5
+		var vv RetrieveAsyncTaskOkFailedErrorValidationError
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf5 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorValidationError = &vv
 	case "unauthorized":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf6
+		var vv RetrieveAsyncTaskOkFailedErrorUnauthorized
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf6 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorUnauthorized = &vv
 	case "restricted_resource":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf7
+		var vv RetrieveAsyncTaskOkFailedErrorRestrictedResource
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf7 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorRestrictedResource = &vv
 	case "object_not_found":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf8
+		var vv RetrieveAsyncTaskOkFailedErrorObjectNotFound
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf8 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorObjectNotFound = &vv
 	case "directory_not_found":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf9
+		var vv RetrieveAsyncTaskOkFailedErrorDirectoryNotFound
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf9 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorDirectoryNotFound = &vv
 	case "rate_limited":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf10
+		var vv RetrieveAsyncTaskOkFailedErrorRateLimited
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf10 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorRateLimited = &vv
 	case "service_overload":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf11
+		var vv RetrieveAsyncTaskOkFailedErrorServiceOverload
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf11 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorServiceOverload = &vv
 	case "internal_server_error":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf12
+		var vv RetrieveAsyncTaskOkFailedErrorInternalServerError
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf12 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorInternalServerError = &vv
 	case "service_unavailable":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf13
+		var vv RetrieveAsyncTaskOkFailedErrorServiceUnavailable
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf13 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorServiceUnavailable = &vv
 	case "gateway_timeout":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf14
+		var vv RetrieveAsyncTaskOkFailedErrorGatewayTimeout
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf14 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorGatewayTimeout = &vv
 	case "conflict_error":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf15
+		var vv RetrieveAsyncTaskOkFailedErrorConflictError
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf15 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorConflictError = &vv
 	case "idempotency_key_reused":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf16
+		var vv RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf16 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused = &vv
 	case "row_limit_exceeded":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf17
+		var vv RetrieveAsyncTaskOkFailedErrorRowLimitExceeded
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf17 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorRowLimitExceeded = &vv
 	case "status_change_not_allowed":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf18
+		var vv RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf18 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed = &vv
 	case "agent_deleted":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf19
+		var vv RetrieveAsyncTaskOkFailedErrorAgentDeleted
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf19 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorAgentDeleted = &vv
 	case "invalid_credit_limit":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf20
+		var vv RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf20 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit = &vv
 	case "workspace_credits_exhausted":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf21
+		var vv RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf21 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted = &vv
 	case "agent_credit_limit_reached":
-		var vv RetrieveAsyncTaskOkOneOf2ErrorOneOf22
+		var vv RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached
 		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveAsyncTaskOkOneOf2ErrorOneOf22 = &vv
+		v.RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached = &vv
 	default:
 		return jsonUnknownValue("code", tag)
 	}
@@ -20131,59 +20414,59 @@ func (v *RetrieveAsyncTaskOkOneOf2Error) UnmarshalJSONFrom(dec *jsontext.Decoder
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with code first, as decoding wants it, and set to the variant's value.
-func (v *RetrieveAsyncTaskOkOneOf2Error) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *RetrieveAsyncTaskOkFailedError) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
 		tag     string
 	)
 
 	switch {
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf0 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf0, "invalid_json"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf1 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf1, "invalid_request_url"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf2 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf2, "invalid_request"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf3 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf3, "missing_version"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf4 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf4, "invalid_beta"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf5 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf5, "validation_error"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf6 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf6, "unauthorized"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf7 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf7, "restricted_resource"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf8 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf8, "object_not_found"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf9 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf9, "directory_not_found"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf10 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf10, "rate_limited"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf11 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf11, "service_overload"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf12 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf12, "internal_server_error"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf13 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf13, "service_unavailable"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf14 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf14, "gateway_timeout"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf15 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf15, "conflict_error"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf16 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf16, "idempotency_key_reused"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf17 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf17, "row_limit_exceeded"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf18 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf18, "status_change_not_allowed"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf19 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf19, "agent_deleted"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf20 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf20, "invalid_credit_limit"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf21 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf21, "workspace_credits_exhausted"
-	case v.RetrieveAsyncTaskOkOneOf2ErrorOneOf22 != nil:
-		variant, tag = v.RetrieveAsyncTaskOkOneOf2ErrorOneOf22, "agent_credit_limit_reached"
+	case v.RetrieveAsyncTaskOkFailedErrorInvalidJSON != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorInvalidJSON, "invalid_json"
+	case v.RetrieveAsyncTaskOkFailedErrorInvalidRequestURL != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorInvalidRequestURL, "invalid_request_url"
+	case v.RetrieveAsyncTaskOkFailedErrorInvalidRequest != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorInvalidRequest, "invalid_request"
+	case v.RetrieveAsyncTaskOkFailedErrorMissingVersion != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorMissingVersion, "missing_version"
+	case v.RetrieveAsyncTaskOkFailedErrorInvalidBeta != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorInvalidBeta, "invalid_beta"
+	case v.RetrieveAsyncTaskOkFailedErrorValidationError != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorValidationError, "validation_error"
+	case v.RetrieveAsyncTaskOkFailedErrorUnauthorized != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorUnauthorized, "unauthorized"
+	case v.RetrieveAsyncTaskOkFailedErrorRestrictedResource != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorRestrictedResource, "restricted_resource"
+	case v.RetrieveAsyncTaskOkFailedErrorObjectNotFound != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorObjectNotFound, "object_not_found"
+	case v.RetrieveAsyncTaskOkFailedErrorDirectoryNotFound != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorDirectoryNotFound, "directory_not_found"
+	case v.RetrieveAsyncTaskOkFailedErrorRateLimited != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorRateLimited, "rate_limited"
+	case v.RetrieveAsyncTaskOkFailedErrorServiceOverload != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorServiceOverload, "service_overload"
+	case v.RetrieveAsyncTaskOkFailedErrorInternalServerError != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorInternalServerError, "internal_server_error"
+	case v.RetrieveAsyncTaskOkFailedErrorServiceUnavailable != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorServiceUnavailable, "service_unavailable"
+	case v.RetrieveAsyncTaskOkFailedErrorGatewayTimeout != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorGatewayTimeout, "gateway_timeout"
+	case v.RetrieveAsyncTaskOkFailedErrorConflictError != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorConflictError, "conflict_error"
+	case v.RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused, "idempotency_key_reused"
+	case v.RetrieveAsyncTaskOkFailedErrorRowLimitExceeded != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorRowLimitExceeded, "row_limit_exceeded"
+	case v.RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed, "status_change_not_allowed"
+	case v.RetrieveAsyncTaskOkFailedErrorAgentDeleted != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorAgentDeleted, "agent_deleted"
+	case v.RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit, "invalid_credit_limit"
+	case v.RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted, "workspace_credits_exhausted"
+	case v.RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached != nil:
+		variant, tag = v.RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached, "agent_credit_limit_reached"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -20200,8 +20483,8 @@ func (v *RetrieveAsyncTaskOkOneOf2Error) MarshalJSONTo(enc *jsontext.Encoder) er
 	return enc.WriteValue(out)
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf0 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf0 struct {
+// RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached defines a model
+type RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20209,8 +20492,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf0 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf0 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf0) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20227,8 +20510,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf0) unmarshalJSONMember(dec *jsontext
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf1 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf1 struct {
+// RetrieveAsyncTaskOkFailedErrorAgentDeleted defines a model
+type RetrieveAsyncTaskOkFailedErrorAgentDeleted struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20236,8 +20519,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf1 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf1 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf1) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorAgentDeleted declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorAgentDeleted) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20254,8 +20537,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf1) unmarshalJSONMember(dec *jsontext
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf10 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf10 struct {
+// RetrieveAsyncTaskOkFailedErrorConflictError defines a model
+type RetrieveAsyncTaskOkFailedErrorConflictError struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20263,8 +20546,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf10 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf10 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf10) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorConflictError declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorConflictError) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20281,8 +20564,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf10) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf11 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf11 struct {
+// RetrieveAsyncTaskOkFailedErrorDirectoryNotFound defines a model
+type RetrieveAsyncTaskOkFailedErrorDirectoryNotFound struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20290,8 +20573,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf11 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf11 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf11) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorDirectoryNotFound declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorDirectoryNotFound) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20308,8 +20591,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf11) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf12 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf12 struct {
+// RetrieveAsyncTaskOkFailedErrorGatewayTimeout defines a model
+type RetrieveAsyncTaskOkFailedErrorGatewayTimeout struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20317,8 +20600,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf12 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf12 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf12) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorGatewayTimeout declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorGatewayTimeout) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20335,8 +20618,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf12) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf13 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf13 struct {
+// RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused defines a model
+type RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20344,8 +20627,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf13 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf13 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf13) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20362,8 +20645,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf13) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf14 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf14 struct {
+// RetrieveAsyncTaskOkFailedErrorInternalServerError defines a model
+type RetrieveAsyncTaskOkFailedErrorInternalServerError struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20371,8 +20654,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf14 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf14 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf14) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorInternalServerError declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorInternalServerError) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20389,8 +20672,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf14) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf15 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf15 struct {
+// RetrieveAsyncTaskOkFailedErrorInvalidBeta defines a model
+type RetrieveAsyncTaskOkFailedErrorInvalidBeta struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20398,8 +20681,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf15 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf15 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf15) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorInvalidBeta declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorInvalidBeta) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20416,8 +20699,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf15) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf16 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf16 struct {
+// RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit defines a model
+type RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20425,8 +20708,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf16 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf16 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf16) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20443,8 +20726,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf16) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf17 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf17 struct {
+// RetrieveAsyncTaskOkFailedErrorInvalidJSON defines a model
+type RetrieveAsyncTaskOkFailedErrorInvalidJSON struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20452,8 +20735,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf17 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf17 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf17) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorInvalidJSON declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorInvalidJSON) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20470,8 +20753,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf17) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf18 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf18 struct {
+// RetrieveAsyncTaskOkFailedErrorInvalidRequest defines a model
+type RetrieveAsyncTaskOkFailedErrorInvalidRequest struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20479,8 +20762,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf18 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf18 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf18) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorInvalidRequest declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorInvalidRequest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20497,8 +20780,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf18) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf19 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf19 struct {
+// RetrieveAsyncTaskOkFailedErrorInvalidRequestURL defines a model
+type RetrieveAsyncTaskOkFailedErrorInvalidRequestURL struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20506,8 +20789,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf19 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf19 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf19) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorInvalidRequestURL declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorInvalidRequestURL) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20524,8 +20807,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf19) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf2 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf2 struct {
+// RetrieveAsyncTaskOkFailedErrorMissingVersion defines a model
+type RetrieveAsyncTaskOkFailedErrorMissingVersion struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20533,8 +20816,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf2 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf2 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorMissingVersion declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorMissingVersion) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20551,8 +20834,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf2) unmarshalJSONMember(dec *jsontext
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf20 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf20 struct {
+// RetrieveAsyncTaskOkFailedErrorObjectNotFound defines a model
+type RetrieveAsyncTaskOkFailedErrorObjectNotFound struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20560,8 +20843,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf20 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf20 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf20) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorObjectNotFound declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorObjectNotFound) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20578,8 +20861,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf20) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf21 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf21 struct {
+// RetrieveAsyncTaskOkFailedErrorRateLimited defines a model
+type RetrieveAsyncTaskOkFailedErrorRateLimited struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20587,8 +20870,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf21 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf21 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf21) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorRateLimited declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorRateLimited) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20605,8 +20888,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf21) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf22 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf22 struct {
+// RetrieveAsyncTaskOkFailedErrorRestrictedResource defines a model
+type RetrieveAsyncTaskOkFailedErrorRestrictedResource struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20614,8 +20897,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf22 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf22 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf22) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorRestrictedResource declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorRestrictedResource) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20632,8 +20915,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf22) unmarshalJSONMember(dec *jsontex
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf3 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf3 struct {
+// RetrieveAsyncTaskOkFailedErrorRowLimitExceeded defines a model
+type RetrieveAsyncTaskOkFailedErrorRowLimitExceeded struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20641,8 +20924,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf3 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf3 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf3) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorRowLimitExceeded declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorRowLimitExceeded) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20659,8 +20942,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf3) unmarshalJSONMember(dec *jsontext
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf4 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf4 struct {
+// RetrieveAsyncTaskOkFailedErrorServiceOverload defines a model
+type RetrieveAsyncTaskOkFailedErrorServiceOverload struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20668,8 +20951,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf4 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf4 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf4) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorServiceOverload declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorServiceOverload) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20686,8 +20969,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf4) unmarshalJSONMember(dec *jsontext
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf5 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf5 struct {
+// RetrieveAsyncTaskOkFailedErrorServiceUnavailable defines a model
+type RetrieveAsyncTaskOkFailedErrorServiceUnavailable struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20695,8 +20978,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf5 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf5 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf5) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorServiceUnavailable declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorServiceUnavailable) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20713,8 +20996,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf5) unmarshalJSONMember(dec *jsontext
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf6 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf6 struct {
+// RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed defines a model
+type RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20722,8 +21005,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf6 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf6 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf6) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20740,8 +21023,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf6) unmarshalJSONMember(dec *jsontext
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf7 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf7 struct {
+// RetrieveAsyncTaskOkFailedErrorUnauthorized defines a model
+type RetrieveAsyncTaskOkFailedErrorUnauthorized struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20749,8 +21032,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf7 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf7 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf7) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorUnauthorized declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorUnauthorized) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20767,8 +21050,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf7) unmarshalJSONMember(dec *jsontext
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf8 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf8 struct {
+// RetrieveAsyncTaskOkFailedErrorValidationError defines a model
+type RetrieveAsyncTaskOkFailedErrorValidationError struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20776,8 +21059,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf8 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf8 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf8) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorValidationError declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorValidationError) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20794,8 +21077,8 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf8) unmarshalJSONMember(dec *jsontext
 	return false, nil
 }
 
-// RetrieveAsyncTaskOkOneOf2ErrorOneOf9 defines a model
-type RetrieveAsyncTaskOkOneOf2ErrorOneOf9 struct {
+// RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted defines a model
+type RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted struct {
 	Object         string                                             `json:"object"`
 	Status         int                                                `json:"status"`
 	Code           string                                             `json:"code"`
@@ -20803,8 +21086,8 @@ type RetrieveAsyncTaskOkOneOf2ErrorOneOf9 struct {
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkOneOf2ErrorOneOf9 declares it.
-func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf9) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted declares it.
+func (v *RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "object":
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
@@ -20819,6 +21102,17 @@ func (v *RetrieveAsyncTaskOkOneOf2ErrorOneOf9) unmarshalJSONMember(dec *jsontext
 	}
 
 	return false, nil
+}
+
+// RetrieveAsyncTaskOkSucceeded defines a model
+type RetrieveAsyncTaskOkSucceeded struct {
+	Object      string                                             `json:"object"`
+	ID          string                                             `json:"id"`
+	StatusURL   string                                             `json:"status_url"`
+	CreatedTime time.Time                                          `json:"created_time"`
+	Operation   AgentBatchOperation                                `json:"operation"`
+	Status      string                                             `json:"status"`
+	Result      map[string]PublicAPIAsyncTaskStatusResultJSONValue `json:"result"`
 }
 
 // RetrieveSessionAgentVersionOneOf defines a model
@@ -20856,8 +21150,8 @@ func (e RetrieveSessionCreatedByType) Valid() bool {
 // RetrieveSessionModels defines a model
 // RetrieveSessionModels is an untagged oneOf union: exactly one field is set after unmarshaling.
 type RetrieveSessionModels struct {
-	RetrieveSessionModelsOneOf  *RetrieveSessionModelsOneOf
-	RetrieveSessionModelsOneOf2 *RetrieveSessionModelsOneOf2
+	RetrieveSessionModelsAuto   *RetrieveSessionModelsAuto
+	RetrieveSessionModelsPinned *RetrieveSessionModelsPinned
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
@@ -20870,19 +21164,19 @@ func (v *RetrieveSessionModels) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	switch tag {
 	case "auto":
-		var vv RetrieveSessionModelsOneOf
+		var vv RetrieveSessionModelsAuto
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveSessionModelsOneOf = &vv
+		v.RetrieveSessionModelsAuto = &vv
 	case "pinned":
-		var vv RetrieveSessionModelsOneOf2
+		var vv RetrieveSessionModelsPinned
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.RetrieveSessionModelsOneOf2 = &vv
+		v.RetrieveSessionModelsPinned = &vv
 	default:
 		return jsonUnknownValue("type", tag)
 	}
@@ -20898,10 +21192,10 @@ func (v *RetrieveSessionModels) MarshalJSONTo(enc *jsontext.Encoder) error {
 	)
 
 	switch {
-	case v.RetrieveSessionModelsOneOf != nil:
-		variant, tag = v.RetrieveSessionModelsOneOf, "auto"
-	case v.RetrieveSessionModelsOneOf2 != nil:
-		variant, tag = v.RetrieveSessionModelsOneOf2, "pinned"
+	case v.RetrieveSessionModelsAuto != nil:
+		variant, tag = v.RetrieveSessionModelsAuto, "auto"
+	case v.RetrieveSessionModelsPinned != nil:
+		variant, tag = v.RetrieveSessionModelsPinned, "pinned"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -20918,14 +21212,14 @@ func (v *RetrieveSessionModels) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// RetrieveSessionModelsOneOf defines a model
-type RetrieveSessionModelsOneOf struct {
+// RetrieveSessionModelsAuto defines a model
+type RetrieveSessionModelsAuto struct {
 	// Always `auto`
 	Type string `json:"type"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveSessionModelsOneOf declares it.
-func (v *RetrieveSessionModelsOneOf) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveSessionModelsAuto declares it.
+func (v *RetrieveSessionModelsAuto) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -20934,15 +21228,15 @@ func (v *RetrieveSessionModelsOneOf) unmarshalJSONMember(dec *jsontext.Decoder, 
 	return false, nil
 }
 
-// RetrieveSessionModelsOneOf2 defines a model
-type RetrieveSessionModelsOneOf2 struct {
+// RetrieveSessionModelsPinned defines a model
+type RetrieveSessionModelsPinned struct {
 	// Always `pinned`
 	Type string   `json:"type"`
 	Ids  []string `json:"ids"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveSessionModelsOneOf2 declares it.
-func (v *RetrieveSessionModelsOneOf2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveSessionModelsPinned declares it.
+func (v *RetrieveSessionModelsPinned) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -21152,357 +21446,6 @@ type RichTextPropertyConfiguration struct {
 // RichTexts defines a model
 type RichTexts []RichText
 
-// Rollup defines a model
-type Rollup struct {
-	// The function to use for the rollup, e.g. count, count_values, percent_not_empty, max.
-	Function     RollupFunction `json:"function"`
-	RollupAllOf2 RollupAllOf2   `json:"-"`
-}
-
-// fieldsOfRollup is Rollup without its methods, to encode the fields outside its union.
-type fieldsOfRollup Rollup
-
-// membersOfRollup are the members Rollup declares outside its union.
-var membersOfRollup = map[string]bool{"function": true}
-
-// variantsOfRollup are the alternatives its union is decoded as, in order.
-var variantsOfRollup = []jsonVariant{
-	{
-		value:    "",
-		members:  map[string]bool{"relation_property_name": true, "rollup_property_name": true},
-		required: []string{"relation_property_name", "rollup_property_name"},
-	},
-	{
-		value:    "",
-		members:  map[string]bool{"relation_property_id": true, "rollup_property_name": true},
-		required: []string{"relation_property_id", "rollup_property_name"},
-	},
-	{
-		value:    "",
-		members:  map[string]bool{"relation_property_name": true, "rollup_property_id": true},
-		required: []string{"relation_property_name", "rollup_property_id"},
-	},
-	{
-		value:    "",
-		members:  map[string]bool{"relation_property_id": true, "rollup_property_id": true},
-		required: []string{"relation_property_id", "rollup_property_id"},
-	},
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of RollupAllOf2 each
-// decode the members they declare, and a member neither declares is an error.
-func (v *Rollup) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	chosen, err := jsonChooseVariants(raw, "", variantsOfRollup, membersOfRollup, true, strict)
-	if err != nil {
-		return err
-	}
-
-	fields, err := jsonSelect(raw, membersOfRollup)
-	if err != nil {
-		return err
-	}
-
-	if err := json.Unmarshal(fields, (*fieldsOfRollup)(v), opts); err != nil {
-		return err
-	}
-
-	for _, i := range chosen {
-		variant, err := jsonSelect(raw, variantsOfRollup[i].members)
-		if err != nil {
-			return err
-		}
-
-		switch i {
-		case 0:
-			var vv RollupAllOfOneOf
-			if err := json.Unmarshal(variant, &vv, opts); err != nil {
-				return err
-			}
-
-			v.RollupAllOf2.RollupAllOfOneOf = &vv
-		case 1:
-			var vv RollupAllOfOneOf2
-			if err := json.Unmarshal(variant, &vv, opts); err != nil {
-				return err
-			}
-
-			v.RollupAllOf2.RollupAllOfOneOf2 = &vv
-		case 2:
-			var vv RollupAllOfOneOf3
-			if err := json.Unmarshal(variant, &vv, opts); err != nil {
-				return err
-			}
-
-			v.RollupAllOf2.RollupAllOfOneOf3 = &vv
-		case 3:
-			var vv RollupAllOfOneOf4
-			if err := json.Unmarshal(variant, &vv, opts); err != nil {
-				return err
-			}
-
-			v.RollupAllOf2.RollupAllOfOneOf4 = &vv
-		}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of RollupAllOf2 that is set;
-// a member both write must have the same value in each.
-func (v *Rollup) MarshalJSONTo(enc *jsontext.Encoder) error {
-	out, err := json.Marshal((*fieldsOfRollup)(v), jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	var set int
-
-	if v.RollupAllOf2.RollupAllOfOneOf != nil {
-
-		variant, err := json.Marshal(v.RollupAllOf2.RollupAllOfOneOf, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.RollupAllOf2.RollupAllOfOneOf2 != nil {
-
-		variant, err := json.Marshal(v.RollupAllOf2.RollupAllOfOneOf2, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.RollupAllOf2.RollupAllOfOneOf3 != nil {
-
-		variant, err := json.Marshal(v.RollupAllOf2.RollupAllOfOneOf3, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.RollupAllOf2.RollupAllOfOneOf4 != nil {
-
-		variant, err := json.Marshal(v.RollupAllOf2.RollupAllOfOneOf4, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if set != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of RollupAllOf2 set, got %d", set)}
-	}
-
-	return enc.WriteValue(out)
-}
-
-// Rollup4 defines a model
-type Rollup4 struct {
-	Function    RollupFunction `json:"function"`
-	Type        string         `json:"type"`
-	Number      *float64       `json:"number,omitzero"`
-	Date        *DateResponse  `json:"date,omitzero"`
-	Array       []EmptyObject  `json:"array,omitzero"`
-	Unsupported *EmptyObject   `json:"unsupported,omitzero"`
-	Incomplete  *EmptyObject   `json:"incomplete,omitzero"`
-}
-
-// tagsOfRollup4 says, for each value of type, whether the member named after it must, may or must not be set.
-var tagsOfRollup4 = map[string]jsonTagMember{
-	"number":      jsonTagRequired,
-	"date":        jsonTagOptional,
-	"array":       jsonTagRequired,
-	"unsupported": jsonTagRequired,
-	"incomplete":  jsonTagRequired,
-}
-
-// taggedMembers returns those of the members named after a value of type that are set.
-func (v *Rollup4) taggedMembers() []string {
-	var set []string
-	if v.Number != nil {
-		set = append(set, "number")
-	}
-	if v.Date != nil {
-		set = append(set, "date")
-	}
-	if v.Array != nil {
-		set = append(set, "array")
-	}
-	if v.Unsupported != nil {
-		set = append(set, "unsupported")
-	}
-	if v.Incomplete != nil {
-		set = append(set, "incomplete")
-	}
-
-	return set
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those named after a
-// value of type, only the one it names is set.
-func (v *Rollup4) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain Rollup4
-
-	*v = Rollup4{}
-	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
-		return err
-	}
-
-	return jsonCheckTag("type", string(v.Type), tagsOfRollup4, v.taggedMembers(), jsonStrict(dec))
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
-func (v *Rollup4) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain Rollup4
-
-	out, set := *v, v.taggedMembers()
-	if out.Type == "" && len(set) == 1 {
-		out.Type = string(set[0])
-	}
-
-	if err := jsonCheckTag("type", string(out.Type), tagsOfRollup4, set, true); err != nil {
-		return err
-	}
-
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
-}
-
-// RollupAllOf2 defines a model
-// RollupAllOf2 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type RollupAllOf2 struct {
-	RollupAllOfOneOf  *RollupAllOfOneOf
-	RollupAllOfOneOf2 *RollupAllOfOneOf2
-	RollupAllOfOneOf3 *RollupAllOfOneOf3
-	RollupAllOfOneOf4 *RollupAllOfOneOf4
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *RollupAllOf2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv RollupAllOfOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupAllOfOneOf = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv RollupAllOfOneOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupAllOfOneOf2 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv RollupAllOfOneOf3
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupAllOfOneOf3 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv RollupAllOfOneOf4
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupAllOfOneOf4 = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *RollupAllOf2) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.RollupAllOfOneOf != nil:
-		return json.MarshalEncode(enc, v.RollupAllOfOneOf, jsonOpts)
-	case v.RollupAllOfOneOf2 != nil:
-		return json.MarshalEncode(enc, v.RollupAllOfOneOf2, jsonOpts)
-	case v.RollupAllOfOneOf3 != nil:
-		return json.MarshalEncode(enc, v.RollupAllOfOneOf3, jsonOpts)
-	case v.RollupAllOfOneOf4 != nil:
-		return json.MarshalEncode(enc, v.RollupAllOfOneOf4, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// RollupAllOfOneOf defines a model
-type RollupAllOfOneOf struct {
-	RelationPropertyName string `json:"relation_property_name"`
-	RollupPropertyName   string `json:"rollup_property_name"`
-}
-
-// RollupAllOfOneOf2 defines a model
-type RollupAllOfOneOf2 struct {
-	RelationPropertyID string `json:"relation_property_id"`
-	RollupPropertyName string `json:"rollup_property_name"`
-}
-
-// RollupAllOfOneOf3 defines a model
-type RollupAllOfOneOf3 struct {
-	RelationPropertyName string `json:"relation_property_name"`
-	RollupPropertyID     string `json:"rollup_property_id"`
-}
-
-// RollupAllOfOneOf4 defines a model
-type RollupAllOfOneOf4 struct {
-	RelationPropertyID string `json:"relation_property_id"`
-	RollupPropertyID   string `json:"rollup_property_id"`
-}
-
 // RollupDatabasePropertyConfigResponseRollup defines a model
 type RollupDatabasePropertyConfigResponseRollup struct {
 	// The function to use for the rollup, e.g. count, count_values, percent_not_empty, max.
@@ -21556,18 +21499,297 @@ func (e RollupFunction) Valid() bool {
 // RollupPropertyConfiguration defines a model
 type RollupPropertyConfiguration struct {
 	// Always `rollup`
-	Type   string `json:"type,omitzero"`
-	Rollup Rollup `json:"rollup"`
+	Type   string                            `json:"type,omitzero"`
+	Rollup RollupPropertyConfigurationRollup `json:"rollup"`
+}
+
+// RollupPropertyConfigurationRollup defines a model
+type RollupPropertyConfigurationRollup struct {
+	// The function to use for the rollup, e.g. count, count_values, percent_not_empty, max.
+	Function                                RollupFunction                          `json:"function"`
+	RollupPropertyConfigurationRollupAllOf2 RollupPropertyConfigurationRollupAllOf2 `json:"-"`
+}
+
+// fieldsOfRollupPropertyConfigurationRollup is RollupPropertyConfigurationRollup without its methods, to encode the fields outside its union.
+type fieldsOfRollupPropertyConfigurationRollup RollupPropertyConfigurationRollup
+
+// membersOfRollupPropertyConfigurationRollup are the members RollupPropertyConfigurationRollup declares outside its union.
+var membersOfRollupPropertyConfigurationRollup = map[string]bool{"function": true}
+
+// variantsOfRollupPropertyConfigurationRollup are the alternatives its union is decoded as, in order.
+var variantsOfRollupPropertyConfigurationRollup = []jsonVariant{
+	{
+		value:    "",
+		members:  map[string]bool{"relation_property_name": true, "rollup_property_name": true},
+		required: []string{"relation_property_name", "rollup_property_name"},
+	},
+	{
+		value:    "",
+		members:  map[string]bool{"relation_property_id": true, "rollup_property_name": true},
+		required: []string{"relation_property_id", "rollup_property_name"},
+	},
+	{
+		value:    "",
+		members:  map[string]bool{"relation_property_name": true, "rollup_property_id": true},
+		required: []string{"relation_property_name", "rollup_property_id"},
+	},
+	{
+		value:    "",
+		members:  map[string]bool{"relation_property_id": true, "rollup_property_id": true},
+		required: []string{"relation_property_id", "rollup_property_id"},
+	},
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of RollupPropertyConfigurationRollupAllOf2 each
+// decode the members they declare, and a member neither declares is an error.
+func (v *RollupPropertyConfigurationRollup) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	chosen, err := jsonChooseVariants(raw, "", variantsOfRollupPropertyConfigurationRollup, membersOfRollupPropertyConfigurationRollup, true, strict)
+	if err != nil {
+		return err
+	}
+
+	fields, err := jsonSelect(raw, membersOfRollupPropertyConfigurationRollup)
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(fields, (*fieldsOfRollupPropertyConfigurationRollup)(v), opts); err != nil {
+		return err
+	}
+
+	for _, i := range chosen {
+		variant, err := jsonSelect(raw, variantsOfRollupPropertyConfigurationRollup[i].members)
+		if err != nil {
+			return err
+		}
+
+		switch i {
+		case 0:
+			var vv RollupPropertyConfigurationRollupAllOfOneOf
+			if err := json.Unmarshal(variant, &vv, opts); err != nil {
+				return err
+			}
+
+			v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf = &vv
+		case 1:
+			var vv RollupPropertyConfigurationRollupAllOfOneOf2
+			if err := json.Unmarshal(variant, &vv, opts); err != nil {
+				return err
+			}
+
+			v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf2 = &vv
+		case 2:
+			var vv RollupPropertyConfigurationRollupAllOfOneOf3
+			if err := json.Unmarshal(variant, &vv, opts); err != nil {
+				return err
+			}
+
+			v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf3 = &vv
+		case 3:
+			var vv RollupPropertyConfigurationRollupAllOfOneOf4
+			if err := json.Unmarshal(variant, &vv, opts); err != nil {
+				return err
+			}
+
+			v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf4 = &vv
+		}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of RollupPropertyConfigurationRollupAllOf2 that is set;
+// a member both write must have the same value in each.
+func (v *RollupPropertyConfigurationRollup) MarshalJSONTo(enc *jsontext.Encoder) error {
+	out, err := json.Marshal((*fieldsOfRollupPropertyConfigurationRollup)(v), jsonOpts)
+	if err != nil {
+		return err
+	}
+
+	var set int
+
+	if v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf != nil {
+
+		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf, jsonOpts)
+		if err != nil {
+			return err
+		}
+
+		if out, err = jsonMerge(out, variant); err != nil {
+			return err
+		}
+
+		set++
+	}
+
+	if v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf2 != nil {
+
+		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf2, jsonOpts)
+		if err != nil {
+			return err
+		}
+
+		if out, err = jsonMerge(out, variant); err != nil {
+			return err
+		}
+
+		set++
+	}
+
+	if v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf3 != nil {
+
+		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf3, jsonOpts)
+		if err != nil {
+			return err
+		}
+
+		if out, err = jsonMerge(out, variant); err != nil {
+			return err
+		}
+
+		set++
+	}
+
+	if v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf4 != nil {
+
+		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf4, jsonOpts)
+		if err != nil {
+			return err
+		}
+
+		if out, err = jsonMerge(out, variant); err != nil {
+			return err
+		}
+
+		set++
+	}
+
+	if set != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of RollupPropertyConfigurationRollupAllOf2 set, got %d", set)}
+	}
+
+	return enc.WriteValue(out)
+}
+
+// RollupPropertyConfigurationRollupAllOf2 defines a model
+// RollupPropertyConfigurationRollupAllOf2 is an untagged oneOf union: exactly one field is set after unmarshaling.
+type RollupPropertyConfigurationRollupAllOf2 struct {
+	RollupPropertyConfigurationRollupAllOfOneOf  *RollupPropertyConfigurationRollupAllOfOneOf
+	RollupPropertyConfigurationRollupAllOfOneOf2 *RollupPropertyConfigurationRollupAllOfOneOf2
+	RollupPropertyConfigurationRollupAllOfOneOf3 *RollupPropertyConfigurationRollupAllOfOneOf3
+	RollupPropertyConfigurationRollupAllOfOneOf4 *RollupPropertyConfigurationRollupAllOfOneOf4
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *RollupPropertyConfigurationRollupAllOf2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv RollupPropertyConfigurationRollupAllOfOneOf
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.RollupPropertyConfigurationRollupAllOfOneOf = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv RollupPropertyConfigurationRollupAllOfOneOf2
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.RollupPropertyConfigurationRollupAllOfOneOf2 = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv RollupPropertyConfigurationRollupAllOfOneOf3
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.RollupPropertyConfigurationRollupAllOfOneOf3 = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv RollupPropertyConfigurationRollupAllOfOneOf4
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.RollupPropertyConfigurationRollupAllOfOneOf4 = &vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *RollupPropertyConfigurationRollupAllOf2) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.RollupPropertyConfigurationRollupAllOfOneOf != nil:
+		return json.MarshalEncode(enc, v.RollupPropertyConfigurationRollupAllOfOneOf, jsonOpts)
+	case v.RollupPropertyConfigurationRollupAllOfOneOf2 != nil:
+		return json.MarshalEncode(enc, v.RollupPropertyConfigurationRollupAllOfOneOf2, jsonOpts)
+	case v.RollupPropertyConfigurationRollupAllOfOneOf3 != nil:
+		return json.MarshalEncode(enc, v.RollupPropertyConfigurationRollupAllOfOneOf3, jsonOpts)
+	case v.RollupPropertyConfigurationRollupAllOfOneOf4 != nil:
+		return json.MarshalEncode(enc, v.RollupPropertyConfigurationRollupAllOfOneOf4, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// RollupPropertyConfigurationRollupAllOfOneOf defines a model
+type RollupPropertyConfigurationRollupAllOfOneOf struct {
+	RelationPropertyName string `json:"relation_property_name"`
+	RollupPropertyName   string `json:"rollup_property_name"`
+}
+
+// RollupPropertyConfigurationRollupAllOfOneOf2 defines a model
+type RollupPropertyConfigurationRollupAllOfOneOf2 struct {
+	RelationPropertyID string `json:"relation_property_id"`
+	RollupPropertyName string `json:"rollup_property_name"`
+}
+
+// RollupPropertyConfigurationRollupAllOfOneOf3 defines a model
+type RollupPropertyConfigurationRollupAllOfOneOf3 struct {
+	RelationPropertyName string `json:"relation_property_name"`
+	RollupPropertyID     string `json:"rollup_property_id"`
+}
+
+// RollupPropertyConfigurationRollupAllOfOneOf4 defines a model
+type RollupPropertyConfigurationRollupAllOfOneOf4 struct {
+	RelationPropertyID string `json:"relation_property_id"`
+	RollupPropertyID   string `json:"rollup_property_id"`
 }
 
 // RollupPropertyFilter defines a model
 // RollupPropertyFilter is an untagged anyOf union: at least one field is set after unmarshaling.
 type RollupPropertyFilter struct {
-	RollupPropertyFilterAnyOf0 *RollupPropertyFilterAnyOf0
-	RollupPropertyFilterAnyOf1 *RollupPropertyFilterAnyOf1
-	RollupPropertyFilterAnyOf2 *RollupPropertyFilterAnyOf2
-	RollupPropertyFilterAnyOf  *RollupPropertyFilterAnyOf
-	RollupPropertyFilterAnyOf3 *RollupPropertyFilterAnyOf3
+	RollupPropertyFilterAny    *RollupPropertyFilterAny
+	RollupPropertyFilterNone   *RollupPropertyFilterNone
+	RollupPropertyFilterEvery  *RollupPropertyFilterEvery
+	RollupPropertyFilterDate   *RollupPropertyFilterDate
+	RollupPropertyFilterNumber *RollupPropertyFilterNumber
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -21582,41 +21804,41 @@ func (v *RollupPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv RollupPropertyFilterAnyOf0
+		var vv RollupPropertyFilterAny
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterAnyOf0 = &vv
+			v.RollupPropertyFilterAny = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv RollupPropertyFilterAnyOf1
+		var vv RollupPropertyFilterNone
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterAnyOf1 = &vv
+			v.RollupPropertyFilterNone = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv RollupPropertyFilterAnyOf2
+		var vv RollupPropertyFilterEvery
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterAnyOf2 = &vv
+			v.RollupPropertyFilterEvery = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv RollupPropertyFilterAnyOf
+		var vv RollupPropertyFilterDate
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterAnyOf = &vv
+			v.RollupPropertyFilterDate = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv RollupPropertyFilterAnyOf3
+		var vv RollupPropertyFilterNumber
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterAnyOf3 = &vv
+			v.RollupPropertyFilterNumber = &vv
 			matched++
 		}
 	}
@@ -21631,59 +21853,131 @@ func (v *RollupPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *RollupPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.RollupPropertyFilterAnyOf0 != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterAnyOf0, jsonOpts)
-	case v.RollupPropertyFilterAnyOf1 != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterAnyOf1, jsonOpts)
-	case v.RollupPropertyFilterAnyOf2 != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterAnyOf2, jsonOpts)
-	case v.RollupPropertyFilterAnyOf != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterAnyOf, jsonOpts)
-	case v.RollupPropertyFilterAnyOf3 != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterAnyOf3, jsonOpts)
+	case v.RollupPropertyFilterAny != nil:
+		return json.MarshalEncode(enc, v.RollupPropertyFilterAny, jsonOpts)
+	case v.RollupPropertyFilterNone != nil:
+		return json.MarshalEncode(enc, v.RollupPropertyFilterNone, jsonOpts)
+	case v.RollupPropertyFilterEvery != nil:
+		return json.MarshalEncode(enc, v.RollupPropertyFilterEvery, jsonOpts)
+	case v.RollupPropertyFilterDate != nil:
+		return json.MarshalEncode(enc, v.RollupPropertyFilterDate, jsonOpts)
+	case v.RollupPropertyFilterNumber != nil:
+		return json.MarshalEncode(enc, v.RollupPropertyFilterNumber, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// RollupPropertyFilterAnyOf defines a model
-type RollupPropertyFilterAnyOf struct {
-	Date DatePropertyFilter `json:"date"`
-}
-
-// RollupPropertyFilterAnyOf0 defines a model
-type RollupPropertyFilterAnyOf0 struct {
+// RollupPropertyFilterAny defines a model
+type RollupPropertyFilterAny struct {
 	Any RollupSubfilterPropertyFilter `json:"any"`
 }
 
-// RollupPropertyFilterAnyOf1 defines a model
-type RollupPropertyFilterAnyOf1 struct {
-	None RollupSubfilterPropertyFilter `json:"none"`
+// RollupPropertyFilterDate defines a model
+type RollupPropertyFilterDate struct {
+	Date DatePropertyFilter `json:"date"`
 }
 
-// RollupPropertyFilterAnyOf2 defines a model
-type RollupPropertyFilterAnyOf2 struct {
+// RollupPropertyFilterEvery defines a model
+type RollupPropertyFilterEvery struct {
 	Every RollupSubfilterPropertyFilter `json:"every"`
 }
 
-// RollupPropertyFilterAnyOf3 defines a model
-type RollupPropertyFilterAnyOf3 struct {
+// RollupPropertyFilterNone defines a model
+type RollupPropertyFilterNone struct {
+	None RollupSubfilterPropertyFilter `json:"none"`
+}
+
+// RollupPropertyFilterNumber defines a model
+type RollupPropertyFilterNumber struct {
 	Number NumberPropertyFilter `json:"number"`
+}
+
+// RollupPropertyItemObjectRollup defines a model
+type RollupPropertyItemObjectRollup struct {
+	Function    RollupFunction `json:"function"`
+	Type        string         `json:"type"`
+	Number      *float64       `json:"number,omitzero"`
+	Date        *DateResponse  `json:"date,omitzero"`
+	Array       []EmptyObject  `json:"array,omitzero"`
+	Unsupported *EmptyObject   `json:"unsupported,omitzero"`
+	Incomplete  *EmptyObject   `json:"incomplete,omitzero"`
+}
+
+// tagsOfRollupPropertyItemObjectRollup says, for each value of type, whether the member named after it must, may or must not be set.
+var tagsOfRollupPropertyItemObjectRollup = map[string]jsonTagMember{
+	"number":      jsonTagRequired,
+	"date":        jsonTagOptional,
+	"array":       jsonTagRequired,
+	"unsupported": jsonTagRequired,
+	"incomplete":  jsonTagRequired,
+}
+
+// taggedMembers returns those of the members named after a value of type that are set.
+func (v *RollupPropertyItemObjectRollup) taggedMembers() []string {
+	var set []string
+	if v.Number != nil {
+		set = append(set, "number")
+	}
+	if v.Date != nil {
+		set = append(set, "date")
+	}
+	if v.Array != nil {
+		set = append(set, "array")
+	}
+	if v.Unsupported != nil {
+		set = append(set, "unsupported")
+	}
+	if v.Incomplete != nil {
+		set = append(set, "incomplete")
+	}
+
+	return set
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those named after a
+// value of type, only the one it names is set.
+func (v *RollupPropertyItemObjectRollup) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain RollupPropertyItemObjectRollup
+
+	*v = RollupPropertyItemObjectRollup{}
+	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
+		return err
+	}
+
+	return jsonCheckTag("type", string(v.Type), tagsOfRollupPropertyItemObjectRollup, v.taggedMembers(), jsonStrict(dec))
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
+// the value whose member is set.
+func (v *RollupPropertyItemObjectRollup) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain RollupPropertyItemObjectRollup
+
+	out, set := *v, v.taggedMembers()
+	if out.Type == "" && len(set) == 1 {
+		out.Type = string(set[0])
+	}
+
+	if err := jsonCheckTag("type", string(out.Type), tagsOfRollupPropertyItemObjectRollup, set, true); err != nil {
+		return err
+	}
+
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
 // RollupSubfilterPropertyFilter defines a model
 // RollupSubfilterPropertyFilter is an untagged anyOf union: at least one field is set after unmarshaling.
 type RollupSubfilterPropertyFilter struct {
-	RollupSubfilterPropertyFilterAnyOf0 *RollupSubfilterPropertyFilterAnyOf0
-	RollupPropertyFilterAnyOf3          *RollupPropertyFilterAnyOf3
-	FormulaPropertyFilterAnyOf          *FormulaPropertyFilterAnyOf
-	RollupSubfilterPropertyFilterAnyOf3 *RollupSubfilterPropertyFilterAnyOf3
-	RollupSubfilterPropertyFilterAnyOf4 *RollupSubfilterPropertyFilterAnyOf4
-	RollupSubfilterPropertyFilterAnyOf5 *RollupSubfilterPropertyFilterAnyOf5
-	RollupPropertyFilterAnyOf           *RollupPropertyFilterAnyOf
-	RollupSubfilterPropertyFilterAnyOf7 *RollupSubfilterPropertyFilterAnyOf7
-	RollupSubfilterPropertyFilterAnyOf8 *RollupSubfilterPropertyFilterAnyOf8
-	RollupSubfilterPropertyFilterAnyOf9 *RollupSubfilterPropertyFilterAnyOf9
+	RollupSubfilterPropertyFilterRichText    *RollupSubfilterPropertyFilterRichText
+	RollupPropertyFilterNumber               *RollupPropertyFilterNumber
+	FormulaPropertyFilterCheckbox            *FormulaPropertyFilterCheckbox
+	RollupSubfilterPropertyFilterSelect      *RollupSubfilterPropertyFilterSelect
+	RollupSubfilterPropertyFilterMultiSelect *RollupSubfilterPropertyFilterMultiSelect
+	RollupSubfilterPropertyFilterRelation    *RollupSubfilterPropertyFilterRelation
+	RollupPropertyFilterDate                 *RollupPropertyFilterDate
+	RollupSubfilterPropertyFilterPeople      *RollupSubfilterPropertyFilterPeople
+	RollupSubfilterPropertyFilterFiles       *RollupSubfilterPropertyFilterFiles
+	RollupSubfilterPropertyFilterStatus      *RollupSubfilterPropertyFilterStatus
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -21698,81 +21992,81 @@ func (v *RollupSubfilterPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder)
 	var matched int
 
 	{
-		var vv RollupSubfilterPropertyFilterAnyOf0
+		var vv RollupSubfilterPropertyFilterRichText
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupSubfilterPropertyFilterAnyOf0 = &vv
+			v.RollupSubfilterPropertyFilterRichText = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv RollupPropertyFilterAnyOf3
+		var vv RollupPropertyFilterNumber
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterAnyOf3 = &vv
+			v.RollupPropertyFilterNumber = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv FormulaPropertyFilterAnyOf
+		var vv FormulaPropertyFilterCheckbox
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.FormulaPropertyFilterAnyOf = &vv
+			v.FormulaPropertyFilterCheckbox = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv RollupSubfilterPropertyFilterAnyOf3
+		var vv RollupSubfilterPropertyFilterSelect
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupSubfilterPropertyFilterAnyOf3 = &vv
+			v.RollupSubfilterPropertyFilterSelect = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv RollupSubfilterPropertyFilterAnyOf4
+		var vv RollupSubfilterPropertyFilterMultiSelect
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupSubfilterPropertyFilterAnyOf4 = &vv
+			v.RollupSubfilterPropertyFilterMultiSelect = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv RollupSubfilterPropertyFilterAnyOf5
+		var vv RollupSubfilterPropertyFilterRelation
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupSubfilterPropertyFilterAnyOf5 = &vv
+			v.RollupSubfilterPropertyFilterRelation = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv RollupPropertyFilterAnyOf
+		var vv RollupPropertyFilterDate
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterAnyOf = &vv
+			v.RollupPropertyFilterDate = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv RollupSubfilterPropertyFilterAnyOf7
+		var vv RollupSubfilterPropertyFilterPeople
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupSubfilterPropertyFilterAnyOf7 = &vv
+			v.RollupSubfilterPropertyFilterPeople = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv RollupSubfilterPropertyFilterAnyOf8
+		var vv RollupSubfilterPropertyFilterFiles
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupSubfilterPropertyFilterAnyOf8 = &vv
+			v.RollupSubfilterPropertyFilterFiles = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv RollupSubfilterPropertyFilterAnyOf9
+		var vv RollupSubfilterPropertyFilterStatus
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupSubfilterPropertyFilterAnyOf9 = &vv
+			v.RollupSubfilterPropertyFilterStatus = &vv
 			matched++
 		}
 	}
@@ -21787,140 +22081,64 @@ func (v *RollupSubfilterPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder)
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *RollupSubfilterPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.RollupSubfilterPropertyFilterAnyOf0 != nil:
-		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterAnyOf0, jsonOpts)
-	case v.RollupPropertyFilterAnyOf3 != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterAnyOf3, jsonOpts)
-	case v.FormulaPropertyFilterAnyOf != nil:
-		return json.MarshalEncode(enc, v.FormulaPropertyFilterAnyOf, jsonOpts)
-	case v.RollupSubfilterPropertyFilterAnyOf3 != nil:
-		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterAnyOf3, jsonOpts)
-	case v.RollupSubfilterPropertyFilterAnyOf4 != nil:
-		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterAnyOf4, jsonOpts)
-	case v.RollupSubfilterPropertyFilterAnyOf5 != nil:
-		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterAnyOf5, jsonOpts)
-	case v.RollupPropertyFilterAnyOf != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterAnyOf, jsonOpts)
-	case v.RollupSubfilterPropertyFilterAnyOf7 != nil:
-		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterAnyOf7, jsonOpts)
-	case v.RollupSubfilterPropertyFilterAnyOf8 != nil:
-		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterAnyOf8, jsonOpts)
-	case v.RollupSubfilterPropertyFilterAnyOf9 != nil:
-		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterAnyOf9, jsonOpts)
+	case v.RollupSubfilterPropertyFilterRichText != nil:
+		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterRichText, jsonOpts)
+	case v.RollupPropertyFilterNumber != nil:
+		return json.MarshalEncode(enc, v.RollupPropertyFilterNumber, jsonOpts)
+	case v.FormulaPropertyFilterCheckbox != nil:
+		return json.MarshalEncode(enc, v.FormulaPropertyFilterCheckbox, jsonOpts)
+	case v.RollupSubfilterPropertyFilterSelect != nil:
+		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterSelect, jsonOpts)
+	case v.RollupSubfilterPropertyFilterMultiSelect != nil:
+		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterMultiSelect, jsonOpts)
+	case v.RollupSubfilterPropertyFilterRelation != nil:
+		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterRelation, jsonOpts)
+	case v.RollupPropertyFilterDate != nil:
+		return json.MarshalEncode(enc, v.RollupPropertyFilterDate, jsonOpts)
+	case v.RollupSubfilterPropertyFilterPeople != nil:
+		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterPeople, jsonOpts)
+	case v.RollupSubfilterPropertyFilterFiles != nil:
+		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterFiles, jsonOpts)
+	case v.RollupSubfilterPropertyFilterStatus != nil:
+		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterStatus, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// RollupSubfilterPropertyFilterAnyOf0 defines a model
-type RollupSubfilterPropertyFilterAnyOf0 struct {
-	RichText TextPropertyFilter `json:"rich_text"`
-}
-
-// RollupSubfilterPropertyFilterAnyOf3 defines a model
-type RollupSubfilterPropertyFilterAnyOf3 struct {
-	Select SelectPropertyFilter `json:"select"`
-}
-
-// RollupSubfilterPropertyFilterAnyOf4 defines a model
-type RollupSubfilterPropertyFilterAnyOf4 struct {
-	MultiSelect MultiSelectPropertyFilter `json:"multi_select"`
-}
-
-// RollupSubfilterPropertyFilterAnyOf5 defines a model
-type RollupSubfilterPropertyFilterAnyOf5 struct {
-	Relation RelationPropertyFilter `json:"relation"`
-}
-
-// RollupSubfilterPropertyFilterAnyOf7 defines a model
-type RollupSubfilterPropertyFilterAnyOf7 struct {
-	People PeoplePropertyFilter `json:"people"`
-}
-
-// RollupSubfilterPropertyFilterAnyOf8 defines a model
-type RollupSubfilterPropertyFilterAnyOf8 struct {
+// RollupSubfilterPropertyFilterFiles defines a model
+type RollupSubfilterPropertyFilterFiles struct {
 	Files ExistencePropertyFilter `json:"files"`
 }
 
-// RollupSubfilterPropertyFilterAnyOf9 defines a model
-type RollupSubfilterPropertyFilterAnyOf9 struct {
+// RollupSubfilterPropertyFilterMultiSelect defines a model
+type RollupSubfilterPropertyFilterMultiSelect struct {
+	MultiSelect MultiSelectPropertyFilter `json:"multi_select"`
+}
+
+// RollupSubfilterPropertyFilterPeople defines a model
+type RollupSubfilterPropertyFilterPeople struct {
+	People PeoplePropertyFilter `json:"people"`
+}
+
+// RollupSubfilterPropertyFilterRelation defines a model
+type RollupSubfilterPropertyFilterRelation struct {
+	Relation RelationPropertyFilter `json:"relation"`
+}
+
+// RollupSubfilterPropertyFilterRichText defines a model
+type RollupSubfilterPropertyFilterRichText struct {
+	RichText TextPropertyFilter `json:"rich_text"`
+}
+
+// RollupSubfilterPropertyFilterSelect defines a model
+type RollupSubfilterPropertyFilterSelect struct {
+	Select SelectPropertyFilter `json:"select"`
+}
+
+// RollupSubfilterPropertyFilterStatus defines a model
+type RollupSubfilterPropertyFilterStatus struct {
 	Status SelectPropertyFilter `json:"status"`
-}
-
-// Select2 defines a model
-// Select2 is an untagged anyOf union: at least one field is set after unmarshaling.
-type Select2 struct {
-	SelectAnyOf  *SelectAnyOf
-	SelectAnyOf2 *SelectAnyOf2
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *Select2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv SelectAnyOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.SelectAnyOf = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv SelectAnyOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.SelectAnyOf2 = &vv
-			matched++
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *Select2) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.SelectAnyOf != nil:
-		return json.MarshalEncode(enc, v.SelectAnyOf, jsonOpts)
-	case v.SelectAnyOf2 != nil:
-		return json.MarshalEncode(enc, v.SelectAnyOf2, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// Select5 defines a model
-type Select5 struct {
-	Options []SelectItem `json:"options,omitzero"`
-}
-
-// SelectAnyOf defines a model
-type SelectAnyOf struct {
-	ID   StringRequest `json:"id"`
-	Name TextRequest   `json:"name,omitzero"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
-	Color       SelectColor `json:"color,omitzero"`
-	Description TextRequest `json:"description,omitzero"`
-}
-
-// SelectAnyOf2 defines a model
-type SelectAnyOf2 struct {
-	Name TextRequest   `json:"name"`
-	ID   StringRequest `json:"id,omitzero"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
-	Color       SelectColor `json:"color,omitzero"`
-	Description TextRequest `json:"description,omitzero"`
 }
 
 // One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
@@ -21996,198 +22214,6 @@ func (e SelectGroupByConfigType) Valid() bool {
 	default:
 		return false
 	}
-}
-
-// SelectItem defines a model
-type SelectItem struct {
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
-	Color            SelectColor      `json:"color,omitzero"`
-	Description      string           `json:"description,omitzero"`
-	SelectItemAllOf2 SelectItemAllOf2 `json:"-"`
-}
-
-// fieldsOfSelectItem is SelectItem without its methods, to encode the fields outside its union.
-type fieldsOfSelectItem SelectItem
-
-// membersOfSelectItem are the members SelectItem declares outside its union.
-var membersOfSelectItem = map[string]bool{"color": true, "description": true}
-
-// variantsOfSelectItem are the alternatives its union is decoded as, in order.
-var variantsOfSelectItem = []jsonVariant{
-	{
-		value:    "",
-		members:  map[string]bool{"id": true, "name": true},
-		required: []string{"name"},
-	},
-	{
-		value:    "",
-		members:  map[string]bool{"id": true, "name": true},
-		required: []string{"id"},
-	},
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of SelectItemAllOf2 each
-// decode the members they declare, and a member neither declares is an error.
-func (v *SelectItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	chosen, err := jsonChooseVariants(raw, "", variantsOfSelectItem, membersOfSelectItem, true, strict)
-	if err != nil {
-		return err
-	}
-
-	fields, err := jsonSelect(raw, membersOfSelectItem)
-	if err != nil {
-		return err
-	}
-
-	if err := json.Unmarshal(fields, (*fieldsOfSelectItem)(v), opts); err != nil {
-		return err
-	}
-
-	for _, i := range chosen {
-		variant, err := jsonSelect(raw, variantsOfSelectItem[i].members)
-		if err != nil {
-			return err
-		}
-
-		switch i {
-		case 0:
-			var vv SelectItemAllOfOneOf
-			if err := json.Unmarshal(variant, &vv, opts); err != nil {
-				return err
-			}
-
-			v.SelectItemAllOf2.SelectItemAllOfOneOf = &vv
-		case 1:
-			var vv SelectItemAllOfOneOf2
-			if err := json.Unmarshal(variant, &vv, opts); err != nil {
-				return err
-			}
-
-			v.SelectItemAllOf2.SelectItemAllOfOneOf2 = &vv
-		}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of SelectItemAllOf2 that is set;
-// a member both write must have the same value in each.
-func (v *SelectItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	out, err := json.Marshal((*fieldsOfSelectItem)(v), jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	var set int
-
-	if v.SelectItemAllOf2.SelectItemAllOfOneOf != nil {
-
-		variant, err := json.Marshal(v.SelectItemAllOf2.SelectItemAllOfOneOf, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.SelectItemAllOf2.SelectItemAllOfOneOf2 != nil {
-
-		variant, err := json.Marshal(v.SelectItemAllOf2.SelectItemAllOfOneOf2, jsonOpts)
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if set != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of SelectItemAllOf2 set, got %d", set)}
-	}
-
-	return enc.WriteValue(out)
-}
-
-// SelectItemAllOf2 defines a model
-// SelectItemAllOf2 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type SelectItemAllOf2 struct {
-	SelectItemAllOfOneOf  *SelectItemAllOfOneOf
-	SelectItemAllOfOneOf2 *SelectItemAllOfOneOf2
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *SelectItemAllOf2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv SelectItemAllOfOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.SelectItemAllOfOneOf = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv SelectItemAllOfOneOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.SelectItemAllOfOneOf2 = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *SelectItemAllOf2) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.SelectItemAllOfOneOf != nil:
-		return json.MarshalEncode(enc, v.SelectItemAllOfOneOf, jsonOpts)
-	case v.SelectItemAllOfOneOf2 != nil:
-		return json.MarshalEncode(enc, v.SelectItemAllOfOneOf2, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// SelectItemAllOfOneOf defines a model
-type SelectItemAllOfOneOf struct {
-	Name string `json:"name"`
-	ID   string `json:"id,omitzero"`
-}
-
-// SelectItemAllOfOneOf2 defines a model
-type SelectItemAllOfOneOf2 struct {
-	ID   string `json:"id"`
-	Name string `json:"name,omitzero"`
 }
 
 // SelectProperty defines a model
@@ -22271,8 +22297,8 @@ func (v *SelectPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 // SelectPropertyFilterAnyOf defines a model
 // SelectPropertyFilterAnyOf is an untagged anyOf union: at least one field is set after unmarshaling.
 type SelectPropertyFilterAnyOf struct {
-	SelectPropertyFilterAnyOfAnyOf  *SelectPropertyFilterAnyOfAnyOf
-	SelectPropertyFilterAnyOfAnyOf2 *SelectPropertyFilterAnyOfAnyOf2
+	SelectPropertyFilterAnyOfEquals       *SelectPropertyFilterAnyOfEquals
+	SelectPropertyFilterAnyOfDoesNotEqual *SelectPropertyFilterAnyOfDoesNotEqual
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -22287,17 +22313,17 @@ func (v *SelectPropertyFilterAnyOf) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 	var matched int
 
 	{
-		var vv SelectPropertyFilterAnyOfAnyOf
+		var vv SelectPropertyFilterAnyOfEquals
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.SelectPropertyFilterAnyOfAnyOf = &vv
+			v.SelectPropertyFilterAnyOfEquals = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv SelectPropertyFilterAnyOfAnyOf2
+		var vv SelectPropertyFilterAnyOfDoesNotEqual
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.SelectPropertyFilterAnyOfAnyOf2 = &vv
+			v.SelectPropertyFilterAnyOfDoesNotEqual = &vv
 			matched++
 		}
 	}
@@ -22312,23 +22338,23 @@ func (v *SelectPropertyFilterAnyOf) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *SelectPropertyFilterAnyOf) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.SelectPropertyFilterAnyOfAnyOf != nil:
-		return json.MarshalEncode(enc, v.SelectPropertyFilterAnyOfAnyOf, jsonOpts)
-	case v.SelectPropertyFilterAnyOfAnyOf2 != nil:
-		return json.MarshalEncode(enc, v.SelectPropertyFilterAnyOfAnyOf2, jsonOpts)
+	case v.SelectPropertyFilterAnyOfEquals != nil:
+		return json.MarshalEncode(enc, v.SelectPropertyFilterAnyOfEquals, jsonOpts)
+	case v.SelectPropertyFilterAnyOfDoesNotEqual != nil:
+		return json.MarshalEncode(enc, v.SelectPropertyFilterAnyOfDoesNotEqual, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// SelectPropertyFilterAnyOfAnyOf defines a model
-type SelectPropertyFilterAnyOfAnyOf struct {
-	Equals StringOrStringArray `json:"equals"`
+// SelectPropertyFilterAnyOfDoesNotEqual defines a model
+type SelectPropertyFilterAnyOfDoesNotEqual struct {
+	DoesNotEqual StringOrStringArray `json:"does_not_equal"`
 }
 
-// SelectPropertyFilterAnyOfAnyOf2 defines a model
-type SelectPropertyFilterAnyOfAnyOf2 struct {
-	DoesNotEqual StringOrStringArray `json:"does_not_equal"`
+// SelectPropertyFilterAnyOfEquals defines a model
+type SelectPropertyFilterAnyOfEquals struct {
+	Equals StringOrStringArray `json:"equals"`
 }
 
 // SelectSimplePropertyValueResponse defines a model
@@ -22565,20 +22591,20 @@ func (e SortDirection) Valid() bool {
 	}
 }
 
-// Status2 defines a model
-type Status2 string
+// Status defines a model
+type Status string
 
 const (
-	Status2Pending  Status2 = "pending"
-	Status2Uploaded Status2 = "uploaded"
-	Status2Expired  Status2 = "expired"
-	Status2Failed   Status2 = "failed"
+	StatusPending  Status = "pending"
+	StatusUploaded Status = "uploaded"
+	StatusExpired  Status = "expired"
+	StatusFailed   Status = "failed"
 )
 
-// Valid indicates whether the value is a known member of the Status2 enum.
-func (e Status2) Valid() bool {
+// Valid indicates whether the value is a known member of the Status enum.
+func (e Status) Valid() bool {
 	switch e {
-	case Status2Pending, Status2Uploaded, Status2Expired, Status2Failed:
+	case StatusPending, StatusUploaded, StatusExpired, StatusFailed:
 		return true
 	default:
 		return false
@@ -22688,14 +22714,82 @@ type StatusOptionRequest struct {
 // StatusOptionRequestArray defines a model
 type StatusOptionRequestArray []StatusOptionRequest
 
+// StatusOptionUpdateAllOf defines a model
+// StatusOptionUpdateAllOf is an untagged oneOf union: exactly one field is set after unmarshaling.
+type StatusOptionUpdateAllOf struct {
+	StatusOptionUpdateAllOfName *StatusOptionUpdateAllOfName
+	StatusOptionUpdateAllOfID   *StatusOptionUpdateAllOfID
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *StatusOptionUpdateAllOf) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv StatusOptionUpdateAllOfName
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.StatusOptionUpdateAllOfName = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv StatusOptionUpdateAllOfID
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.StatusOptionUpdateAllOfID = &vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *StatusOptionUpdateAllOf) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.StatusOptionUpdateAllOfName != nil:
+		return json.MarshalEncode(enc, v.StatusOptionUpdateAllOfName, jsonOpts)
+	case v.StatusOptionUpdateAllOfID != nil:
+		return json.MarshalEncode(enc, v.StatusOptionUpdateAllOfID, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// StatusOptionUpdateAllOfID defines a model
+type StatusOptionUpdateAllOfID struct {
+	ID   string `json:"id"`
+	Name string `json:"name,omitzero"`
+}
+
+// StatusOptionUpdateAllOfName defines a model
+type StatusOptionUpdateAllOfName struct {
+	Name string `json:"name"`
+	ID   string `json:"id,omitzero"`
+}
+
 // StatusOptionUpdateRequest defines a model
 type StatusOptionUpdateRequest struct {
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
 	Color       SelectColor `json:"color,omitzero"`
 	Description string      `json:"description,omitzero"`
 	// One of: `To-do`, `In progress`, `Complete`
-	Group            StatusOptionGroup `json:"group,omitzero"`
-	SelectItemAllOf2 SelectItemAllOf2  `json:"-"`
+	Group                   StatusOptionGroup       `json:"group,omitzero"`
+	StatusOptionUpdateAllOf StatusOptionUpdateAllOf `json:"-"`
 }
 
 // fieldsOfStatusOptionUpdateRequest is StatusOptionUpdateRequest without its methods, to encode the fields outside its union.
@@ -22718,7 +22812,7 @@ var variantsOfStatusOptionUpdateRequest = []jsonVariant{
 	},
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of SelectItemAllOf2 each
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of StatusOptionUpdateAllOf each
 // decode the members they declare, and a member neither declares is an error.
 func (v *StatusOptionUpdateRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
@@ -22750,26 +22844,26 @@ func (v *StatusOptionUpdateRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 
 		switch i {
 		case 0:
-			var vv SelectItemAllOfOneOf
+			var vv StatusOptionUpdateAllOfName
 			if err := json.Unmarshal(variant, &vv, opts); err != nil {
 				return err
 			}
 
-			v.SelectItemAllOf2.SelectItemAllOfOneOf = &vv
+			v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName = &vv
 		case 1:
-			var vv SelectItemAllOfOneOf2
+			var vv StatusOptionUpdateAllOfID
 			if err := json.Unmarshal(variant, &vv, opts); err != nil {
 				return err
 			}
 
-			v.SelectItemAllOf2.SelectItemAllOfOneOf2 = &vv
+			v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID = &vv
 		}
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of SelectItemAllOf2 that is set;
+// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of StatusOptionUpdateAllOf that is set;
 // a member both write must have the same value in each.
 func (v *StatusOptionUpdateRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 	out, err := json.Marshal((*fieldsOfStatusOptionUpdateRequest)(v), jsonOpts)
@@ -22779,9 +22873,9 @@ func (v *StatusOptionUpdateRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 	var set int
 
-	if v.SelectItemAllOf2.SelectItemAllOfOneOf != nil {
+	if v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName != nil {
 
-		variant, err := json.Marshal(v.SelectItemAllOf2.SelectItemAllOfOneOf, jsonOpts)
+		variant, err := json.Marshal(v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName, jsonOpts)
 		if err != nil {
 			return err
 		}
@@ -22793,9 +22887,9 @@ func (v *StatusOptionUpdateRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 		set++
 	}
 
-	if v.SelectItemAllOf2.SelectItemAllOfOneOf2 != nil {
+	if v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID != nil {
 
-		variant, err := json.Marshal(v.SelectItemAllOf2.SelectItemAllOfOneOf2, jsonOpts)
+		variant, err := json.Marshal(v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID, jsonOpts)
 		if err != nil {
 			return err
 		}
@@ -22808,7 +22902,7 @@ func (v *StatusOptionUpdateRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	if set != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of SelectItemAllOf2 set, got %d", set)}
+		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of StatusOptionUpdateAllOf set, got %d", set)}
 	}
 
 	return enc.WriteValue(out)
@@ -22996,29 +23090,6 @@ type SyncedBlockBlockObjectResponseSyncedBlockSyncedFrom struct {
 	BlockID IDRequest `json:"block_id"`
 }
 
-// SyncedBlockSyncedBlock defines a model
-type SyncedBlockSyncedBlock struct {
-	SyncedFrom SyncedBlockSyncedBlockSyncedFrom `json:"synced_from"`
-}
-
-// SyncedBlockSyncedBlock2 defines a model
-type SyncedBlockSyncedBlock2 struct {
-	SyncedFrom SyncedBlockSyncedBlockSyncedFrom              `json:"synced_from"`
-	Children   []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
-}
-
-// SyncedBlockSyncedBlock4 defines a model
-type SyncedBlockSyncedBlock4 struct {
-	SyncedFrom SyncedBlockSyncedBlockSyncedFrom    `json:"synced_from"`
-	Children   []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
-}
-
-// SyncedBlockSyncedBlockSyncedFrom defines a model
-type SyncedBlockSyncedBlockSyncedFrom struct {
-	BlockID IDRequest `json:"block_id"`
-	Type    string    `json:"type,omitzero"`
-}
-
 // TabItemWithSingleLevelOfChildren defines a model
 type TabItemWithSingleLevelOfChildren struct {
 	Paragraph ParagraphWithSingleLevelOfChildren `json:"paragraph"`
@@ -23043,51 +23114,25 @@ type TabRequestWithTabItemChildren struct {
 	Children []TabItemWithoutChildren `json:"children"`
 }
 
-// Table3 defines a model
-type Table3 struct {
-	Table  TableRequestWithTableRowChildren `json:"table"`
-	Type   string                           `json:"type,omitzero"`
-	Object string                           `json:"object,omitzero"`
-}
-
-// TableOfContents3 defines a model
-type TableOfContents3 struct {
-	TableOfContents TableOfContentsTableOfContents `json:"table_of_contents"`
-	Type            string                         `json:"type,omitzero"`
-	Object          string                         `json:"object,omitzero"`
-}
-
 // TableOfContentsBlockObjectResponseTableOfContents defines a model
 type TableOfContentsBlockObjectResponseTableOfContents struct {
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor `json:"color"`
 }
 
-// TableOfContentsTableOfContents defines a model
-type TableOfContentsTableOfContents struct {
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color APIColor `json:"color,omitzero"`
-}
-
 // TableRequestWithTableRowChildren defines a model
 type TableRequestWithTableRowChildren struct {
-	TableWidth      int         `json:"table_width"`
-	Children        []TableRow2 `json:"children"`
-	HasColumnHeader *bool       `json:"has_column_header,omitzero"`
-	HasRowHeader    *bool       `json:"has_row_header,omitzero"`
+	TableWidth      int        `json:"table_width"`
+	Children        []TableRow `json:"children"`
+	HasColumnHeader *bool      `json:"has_column_header,omitzero"`
+	HasRowHeader    *bool      `json:"has_row_header,omitzero"`
 }
 
-// TableRow2 defines a model
-type TableRow2 struct {
+// TableRow defines a model
+type TableRow struct {
 	TableRow ContentWithTableRowRequest `json:"table_row"`
 	Type     string                     `json:"type,omitzero"`
 	Object   string                     `json:"object,omitzero"`
-}
-
-// TableTable defines a model
-type TableTable struct {
-	HasColumnHeader *bool `json:"has_column_header,omitzero"`
-	HasRowHeader    *bool `json:"has_row_header,omitzero"`
 }
 
 // TableViewConfigRequest defines a model
@@ -23309,18 +23354,6 @@ func (v *TemplateMentionResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
-// TemplateTemplate defines a model
-type TemplateTemplate struct {
-	RichText []RichTextItemRequest                         `json:"rich_text"`
-	Children []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
-}
-
-// TemplateTemplate2 defines a model
-type TemplateTemplate2 struct {
-	RichText []RichTextItemRequest               `json:"rich_text"`
-	Children []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
-}
-
 // IANA timezone to use when resolving template variables like @now and @today (e.g. 'America/New_York'). Defaults to the authorizing user's timezone for public integrations, or UTC for internal integrations.
 type TemplateTimezone string
 
@@ -23449,12 +23482,12 @@ func (v *TextPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 // TextPropertyFilterAnyOf0 defines a model
 // TextPropertyFilterAnyOf0 is an untagged anyOf union: at least one field is set after unmarshaling.
 type TextPropertyFilterAnyOf0 struct {
-	TextPropertyFilterAnyOfAnyOf   *TextPropertyFilterAnyOfAnyOf
-	TextPropertyFilterAnyOfAnyOf2  *TextPropertyFilterAnyOfAnyOf2
-	TextPropertyFilterAnyOf0AnyOf2 *TextPropertyFilterAnyOf0AnyOf2
-	TextPropertyFilterAnyOf0AnyOf3 *TextPropertyFilterAnyOf0AnyOf3
-	TextPropertyFilterAnyOf0AnyOf4 *TextPropertyFilterAnyOf0AnyOf4
-	TextPropertyFilterAnyOf0AnyOf5 *TextPropertyFilterAnyOf0AnyOf5
+	TextPropertyFilterAnyOfEquals          *TextPropertyFilterAnyOfEquals
+	TextPropertyFilterAnyOfDoesNotEqual    *TextPropertyFilterAnyOfDoesNotEqual
+	TextPropertyFilterAnyOf0Contains       *TextPropertyFilterAnyOf0Contains
+	TextPropertyFilterAnyOf0DoesNotContain *TextPropertyFilterAnyOf0DoesNotContain
+	TextPropertyFilterAnyOf0StartsWith     *TextPropertyFilterAnyOf0StartsWith
+	TextPropertyFilterAnyOf0EndsWith       *TextPropertyFilterAnyOf0EndsWith
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -23469,49 +23502,49 @@ func (v *TextPropertyFilterAnyOf0) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 	var matched int
 
 	{
-		var vv TextPropertyFilterAnyOfAnyOf
+		var vv TextPropertyFilterAnyOfEquals
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TextPropertyFilterAnyOfAnyOf = &vv
+			v.TextPropertyFilterAnyOfEquals = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv TextPropertyFilterAnyOfAnyOf2
+		var vv TextPropertyFilterAnyOfDoesNotEqual
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TextPropertyFilterAnyOfAnyOf2 = &vv
+			v.TextPropertyFilterAnyOfDoesNotEqual = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv TextPropertyFilterAnyOf0AnyOf2
+		var vv TextPropertyFilterAnyOf0Contains
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TextPropertyFilterAnyOf0AnyOf2 = &vv
+			v.TextPropertyFilterAnyOf0Contains = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv TextPropertyFilterAnyOf0AnyOf3
+		var vv TextPropertyFilterAnyOf0DoesNotContain
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TextPropertyFilterAnyOf0AnyOf3 = &vv
+			v.TextPropertyFilterAnyOf0DoesNotContain = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv TextPropertyFilterAnyOf0AnyOf4
+		var vv TextPropertyFilterAnyOf0StartsWith
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TextPropertyFilterAnyOf0AnyOf4 = &vv
+			v.TextPropertyFilterAnyOf0StartsWith = &vv
 			matched++
 		}
 	}
 
 	{
-		var vv TextPropertyFilterAnyOf0AnyOf5
+		var vv TextPropertyFilterAnyOf0EndsWith
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TextPropertyFilterAnyOf0AnyOf5 = &vv
+			v.TextPropertyFilterAnyOf0EndsWith = &vv
 			matched++
 		}
 	}
@@ -23526,51 +23559,51 @@ func (v *TextPropertyFilterAnyOf0) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *TextPropertyFilterAnyOf0) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.TextPropertyFilterAnyOfAnyOf != nil:
-		return json.MarshalEncode(enc, v.TextPropertyFilterAnyOfAnyOf, jsonOpts)
-	case v.TextPropertyFilterAnyOfAnyOf2 != nil:
-		return json.MarshalEncode(enc, v.TextPropertyFilterAnyOfAnyOf2, jsonOpts)
-	case v.TextPropertyFilterAnyOf0AnyOf2 != nil:
-		return json.MarshalEncode(enc, v.TextPropertyFilterAnyOf0AnyOf2, jsonOpts)
-	case v.TextPropertyFilterAnyOf0AnyOf3 != nil:
-		return json.MarshalEncode(enc, v.TextPropertyFilterAnyOf0AnyOf3, jsonOpts)
-	case v.TextPropertyFilterAnyOf0AnyOf4 != nil:
-		return json.MarshalEncode(enc, v.TextPropertyFilterAnyOf0AnyOf4, jsonOpts)
-	case v.TextPropertyFilterAnyOf0AnyOf5 != nil:
-		return json.MarshalEncode(enc, v.TextPropertyFilterAnyOf0AnyOf5, jsonOpts)
+	case v.TextPropertyFilterAnyOfEquals != nil:
+		return json.MarshalEncode(enc, v.TextPropertyFilterAnyOfEquals, jsonOpts)
+	case v.TextPropertyFilterAnyOfDoesNotEqual != nil:
+		return json.MarshalEncode(enc, v.TextPropertyFilterAnyOfDoesNotEqual, jsonOpts)
+	case v.TextPropertyFilterAnyOf0Contains != nil:
+		return json.MarshalEncode(enc, v.TextPropertyFilterAnyOf0Contains, jsonOpts)
+	case v.TextPropertyFilterAnyOf0DoesNotContain != nil:
+		return json.MarshalEncode(enc, v.TextPropertyFilterAnyOf0DoesNotContain, jsonOpts)
+	case v.TextPropertyFilterAnyOf0StartsWith != nil:
+		return json.MarshalEncode(enc, v.TextPropertyFilterAnyOf0StartsWith, jsonOpts)
+	case v.TextPropertyFilterAnyOf0EndsWith != nil:
+		return json.MarshalEncode(enc, v.TextPropertyFilterAnyOf0EndsWith, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// TextPropertyFilterAnyOf0AnyOf2 defines a model
-type TextPropertyFilterAnyOf0AnyOf2 struct {
+// TextPropertyFilterAnyOf0Contains defines a model
+type TextPropertyFilterAnyOf0Contains struct {
 	Contains string `json:"contains"`
 }
 
-// TextPropertyFilterAnyOf0AnyOf3 defines a model
-type TextPropertyFilterAnyOf0AnyOf3 struct {
+// TextPropertyFilterAnyOf0DoesNotContain defines a model
+type TextPropertyFilterAnyOf0DoesNotContain struct {
 	DoesNotContain string `json:"does_not_contain"`
 }
 
-// TextPropertyFilterAnyOf0AnyOf4 defines a model
-type TextPropertyFilterAnyOf0AnyOf4 struct {
-	StartsWith string `json:"starts_with"`
-}
-
-// TextPropertyFilterAnyOf0AnyOf5 defines a model
-type TextPropertyFilterAnyOf0AnyOf5 struct {
+// TextPropertyFilterAnyOf0EndsWith defines a model
+type TextPropertyFilterAnyOf0EndsWith struct {
 	EndsWith string `json:"ends_with"`
 }
 
-// TextPropertyFilterAnyOfAnyOf defines a model
-type TextPropertyFilterAnyOfAnyOf struct {
-	Equals string `json:"equals"`
+// TextPropertyFilterAnyOf0StartsWith defines a model
+type TextPropertyFilterAnyOf0StartsWith struct {
+	StartsWith string `json:"starts_with"`
 }
 
-// TextPropertyFilterAnyOfAnyOf2 defines a model
-type TextPropertyFilterAnyOfAnyOf2 struct {
+// TextPropertyFilterAnyOfDoesNotEqual defines a model
+type TextPropertyFilterAnyOfDoesNotEqual struct {
 	DoesNotEqual string `json:"does_not_equal"`
+}
+
+// TextPropertyFilterAnyOfEquals defines a model
+type TextPropertyFilterAnyOfEquals struct {
+	Equals string `json:"equals"`
 }
 
 // TextRequest defines a model
@@ -23581,7 +23614,7 @@ type TextRichTextItemRequestText struct {
 	// The actual text content of the text.
 	Content string `json:"content"`
 	// An object with information about any inline link in this text, if included.
-	Link ExternalPageIconExternal `json:"link,omitzero"`
+	Link TextRichTextItemTextLinkURL `json:"link,omitzero"`
 }
 
 // If a rich text object's type value is `text`, then the corresponding text field contains an object including the text content and any inline link.
@@ -23590,6 +23623,12 @@ type TextRichTextItemResponseText struct {
 	Content string `json:"content"`
 	// An object with information about any inline link in this text, if included.
 	Link LinkPreviewMention `json:"link"`
+}
+
+// TextRichTextItemTextLinkURL defines a model
+type TextRichTextItemTextLinkURL struct {
+	// The URL of the link.
+	URL string `json:"url"`
 }
 
 // TimeZoneRequest defines a model
@@ -23923,40 +23962,6 @@ type ToDoBlockObjectResponseToDo struct {
 	Checked bool     `json:"checked"`
 }
 
-// ToDoToDo defines a model
-type ToDoToDo struct {
-	RichText []RichTextItemRequest `json:"rich_text,omitzero"`
-	Checked  *bool                 `json:"checked,omitzero"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color APIColor `json:"color,omitzero"`
-}
-
-// ToDoToDo2 defines a model
-type ToDoToDo2 struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                                      `json:"color,omitzero"`
-	Children []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
-	Checked  *bool                                         `json:"checked,omitzero"`
-}
-
-// ToDoToDo3 defines a model
-type ToDoToDo3 struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
-	Checked  *bool                 `json:"checked,omitzero"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color APIColor `json:"color,omitzero"`
-}
-
-// ToDoToDo4 defines a model
-type ToDoToDo4 struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                            `json:"color,omitzero"`
-	Children []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
-	Checked  *bool                               `json:"checked,omitzero"`
-}
-
 // TranscriptionBlockResponse defines a model
 type TranscriptionBlockResponse struct {
 	Title         RichTexts                          `json:"title,omitzero"`
@@ -24021,8 +24026,13 @@ type UniqueIDDatabasePropertyConfigResponseUniqueID struct {
 // UniqueIDPropertyConfiguration defines a model
 type UniqueIDPropertyConfiguration struct {
 	// Always `unique_id`
-	Type     string           `json:"type,omitzero"`
-	UniqueID UniqueIDUniqueID `json:"unique_id"`
+	Type     string                                `json:"type,omitzero"`
+	UniqueID UniqueIDPropertyConfigurationUniqueID `json:"unique_id"`
+}
+
+// UniqueIDPropertyConfigurationUniqueID defines a model
+type UniqueIDPropertyConfigurationUniqueID struct {
+	Prefix string `json:"prefix,omitzero"`
 }
 
 // UniqueIDPropertyItemObjectResponseUniqueID defines a model
@@ -24054,11 +24064,6 @@ func (v *UniqueIDSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.
 	}
 
 	return false, nil
-}
-
-// UniqueIDUniqueID defines a model
-type UniqueIDUniqueID struct {
-	Prefix string `json:"prefix,omitzero"`
 }
 
 // UnsupportedBlockObjectResponseUnsupported defines a model
@@ -24130,20 +24135,20 @@ func (v *UpdateABlock) MarshalJSONTo(enc *jsontext.Encoder) error {
 type UpdateABlockAnyOf0 struct {
 	InTrash          *bool                                            `json:"in_trash,omitzero"`
 	Type             string                                           `json:"type"`
-	Embed            *EmbedEmbed                                      `json:"embed,omitzero"`
+	Embed            *UpdateABlockAnyOf0EmbedEmbed                    `json:"embed,omitzero"`
 	Bookmark         *UpdateMediaContentWithURLAndCaptionRequest      `json:"bookmark,omitzero"`
 	Image            *UpdateMediaContentWithFileAndCaptionRequest     `json:"image,omitzero"`
 	Video            *UpdateMediaContentWithFileAndCaptionRequest     `json:"video,omitzero"`
 	PDF              *UpdateMediaContentWithFileAndCaptionRequest     `json:"pdf,omitzero"`
 	File             *UpdateMediaContentWithFileNameAndCaptionRequest `json:"file,omitzero"`
 	Audio            *UpdateMediaContentWithFileAndCaptionRequest     `json:"audio,omitzero"`
-	Code             *CodeCode                                        `json:"code,omitzero"`
+	Code             *UpdateABlockAnyOf0CodeCode                      `json:"code,omitzero"`
 	Equation         *ContentWithExpression                           `json:"equation,omitzero"`
 	Divider          *EmptyObject                                     `json:"divider,omitzero"`
 	Breadcrumb       *EmptyObject                                     `json:"breadcrumb,omitzero"`
 	Tab              *EmptyObject                                     `json:"tab,omitzero"`
-	TableOfContents  *TableOfContentsTableOfContents                  `json:"table_of_contents,omitzero"`
-	LinkToPage       *LinkToPageLinkToPage                            `json:"link_to_page,omitzero"`
+	TableOfContents  *BlockObjectTableOfContentsTableOfContents       `json:"table_of_contents,omitzero"`
+	LinkToPage       *BlockObjectLinkToPageLinkToPage                 `json:"link_to_page,omitzero"`
 	TableRow         *ContentWithTableRowRequest                      `json:"table_row,omitzero"`
 	Heading1         *HeaderContentWithRichTextAndColorRequest        `json:"heading_1,omitzero"`
 	Heading2         *HeaderContentWithRichTextAndColorRequest        `json:"heading_2,omitzero"`
@@ -24153,13 +24158,13 @@ type UpdateABlockAnyOf0 struct {
 	BulletedListItem *ContentWithRichTextAndColorRequest              `json:"bulleted_list_item,omitzero"`
 	NumberedListItem *ContentWithRichTextAndColorRequest              `json:"numbered_list_item,omitzero"`
 	Quote            *ContentWithRichTextAndColorRequest              `json:"quote,omitzero"`
-	ToDo             *ToDoToDo                                        `json:"to_do,omitzero"`
+	ToDo             *UpdateABlockAnyOf0ToDoToDo                      `json:"to_do,omitzero"`
 	Toggle           *ContentWithRichTextAndColorRequest              `json:"toggle,omitzero"`
 	Template         *ContentWithRichTextRequest                      `json:"template,omitzero"`
 	Callout          *ContentWithRichTextColorAndIconUpdate           `json:"callout,omitzero"`
-	SyncedBlock      *SyncedBlockSyncedBlock                          `json:"synced_block,omitzero"`
-	Table            *TableTable                                      `json:"table,omitzero"`
-	Column           *ColumnColumn                                    `json:"column,omitzero"`
+	SyncedBlock      *UpdateABlockAnyOfSyncedBlockSyncedBlock         `json:"synced_block,omitzero"`
+	Table            *UpdateABlockAnyOf0TableTable                    `json:"table,omitzero"`
+	Column           *UpdateABlockAnyOf0ColumnColumn                  `json:"column,omitzero"`
 }
 
 // tagsOfUpdateABlockAnyOf0 says, for each value of type, whether the member named after it must, may or must not be set.
@@ -24323,16 +24328,101 @@ func (v *UpdateABlockAnyOf0) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
+// UpdateABlockAnyOf0CodeCode defines a model
+type UpdateABlockAnyOf0CodeCode struct {
+	RichText []RichTextItemRequest `json:"rich_text,omitzero"`
+	Language LanguageRequest       `json:"language,omitzero"`
+	Caption  []RichTextItemRequest `json:"caption,omitzero"`
+}
+
+// UpdateABlockAnyOf0ColumnColumn defines a model
+type UpdateABlockAnyOf0ColumnColumn struct {
+	// Ratio between 0 and 1 of the width of this column relative to all columns in the list. If not provided, uses an equal width.
+	WidthRatio float64 `json:"width_ratio,omitzero"`
+}
+
+// UpdateABlockAnyOf0EmbedEmbed defines a model
+// UpdateABlockAnyOf0EmbedEmbed is an untagged anyOf union: at least one field is set after unmarshaling.
+type UpdateABlockAnyOf0EmbedEmbed struct {
+	UpdateMediaContentWithURLAndCaptionRequest *UpdateMediaContentWithURLAndCaptionRequest
+	UpdateEmbedFileUploadRequest               *UpdateEmbedFileUploadRequest
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *UpdateABlockAnyOf0EmbedEmbed) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv UpdateMediaContentWithURLAndCaptionRequest
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.UpdateMediaContentWithURLAndCaptionRequest = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv UpdateEmbedFileUploadRequest
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.UpdateEmbedFileUploadRequest = &vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *UpdateABlockAnyOf0EmbedEmbed) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.UpdateMediaContentWithURLAndCaptionRequest != nil:
+		return json.MarshalEncode(enc, v.UpdateMediaContentWithURLAndCaptionRequest, jsonOpts)
+	case v.UpdateEmbedFileUploadRequest != nil:
+		return json.MarshalEncode(enc, v.UpdateEmbedFileUploadRequest, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// UpdateABlockAnyOf0TableTable defines a model
+type UpdateABlockAnyOf0TableTable struct {
+	HasColumnHeader *bool `json:"has_column_header,omitzero"`
+	HasRowHeader    *bool `json:"has_row_header,omitzero"`
+}
+
+// UpdateABlockAnyOf0ToDoToDo defines a model
+type UpdateABlockAnyOf0ToDoToDo struct {
+	RichText []RichTextItemRequest `json:"rich_text,omitzero"`
+	Checked  *bool                 `json:"checked,omitzero"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color APIColor `json:"color,omitzero"`
+}
+
 // UpdateABlockAnyOf1 defines a model
 type UpdateABlockAnyOf1 struct {
 	InTrash *bool `json:"in_trash,omitzero"`
 }
 
+// UpdateABlockAnyOfSyncedBlockSyncedBlock defines a model
+type UpdateABlockAnyOfSyncedBlockSyncedBlock struct {
+	SyncedFrom BlockObjectSyncedBlockSyncedBlockSyncedFrom `json:"synced_from"`
+}
+
 // UpdateAComment defines a model
 // UpdateAComment is an untagged oneOf union: exactly one field is set after unmarshaling.
 type UpdateAComment struct {
-	UpdateACommentOneOf0 *UpdateACommentOneOf0
-	UpdateACommentOneOf1 *UpdateACommentOneOf1
+	UpdateACommentRichText *UpdateACommentRichText
+	UpdateACommentMarkdown *UpdateACommentMarkdown
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -24349,18 +24439,18 @@ func (v *UpdateAComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv UpdateACommentOneOf0
+		var vv UpdateACommentRichText
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateACommentOneOf0 = &vv
+			v.UpdateACommentRichText = &vv
 			matched++
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv UpdateACommentOneOf1
+		var vv UpdateACommentMarkdown
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateACommentOneOf1 = &vv
+			v.UpdateACommentMarkdown = &vv
 			matched++
 		}
 	}
@@ -24375,25 +24465,25 @@ func (v *UpdateAComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *UpdateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.UpdateACommentOneOf0 != nil:
-		return json.MarshalEncode(enc, v.UpdateACommentOneOf0, jsonOpts)
-	case v.UpdateACommentOneOf1 != nil:
-		return json.MarshalEncode(enc, v.UpdateACommentOneOf1, jsonOpts)
+	case v.UpdateACommentRichText != nil:
+		return json.MarshalEncode(enc, v.UpdateACommentRichText, jsonOpts)
+	case v.UpdateACommentMarkdown != nil:
+		return json.MarshalEncode(enc, v.UpdateACommentMarkdown, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// UpdateACommentOneOf0 defines a model
-type UpdateACommentOneOf0 struct {
-	// An array of rich text objects that represent the updated content of the comment.
-	RichText []RichTextItemRequest `json:"rich_text"`
-}
-
-// UpdateACommentOneOf1 defines a model
-type UpdateACommentOneOf1 struct {
+// UpdateACommentMarkdown defines a model
+type UpdateACommentMarkdown struct {
 	// The updated content of the comment as a Markdown string. Comment Markdown supports inline formatting only (bold, italic, strikethrough, code, links), inline equations ($expression$), and mentions. Block-level Markdown such as fenced code blocks, headings, lists, tables, and blockquotes does not render as structured blocks in comments.
 	Markdown string `json:"markdown"`
+}
+
+// UpdateACommentRichText defines a model
+type UpdateACommentRichText struct {
+	// An array of rich text objects that represent the updated content of the comment.
+	RichText []RichTextItemRequest `json:"rich_text"`
 }
 
 // UpdateADataSource defines a model
@@ -24414,7 +24504,7 @@ type UpdateADataSource struct {
 // UpdateADataSourcePropertiesValue is an untagged oneOf union: exactly one field is set after unmarshaling.
 type UpdateADataSourcePropertiesValue struct {
 	UpdateADataSourcePropertiesValueOneOf0 *UpdateADataSourcePropertiesValueOneOf0
-	UpdateADataSourcePropertiesValueOneOf1 *UpdateADataSourcePropertiesValueOneOf1
+	UpdateADataSourcePropertiesValueName   *UpdateADataSourcePropertiesValueName
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -24440,9 +24530,9 @@ func (v *UpdateADataSourcePropertiesValue) UnmarshalJSONFrom(dec *jsontext.Decod
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv UpdateADataSourcePropertiesValueOneOf1
+		var vv UpdateADataSourcePropertiesValueName
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateADataSourcePropertiesValueOneOf1 = &vv
+			v.UpdateADataSourcePropertiesValueName = &vv
 			matched++
 		}
 	}
@@ -24459,11 +24549,17 @@ func (v *UpdateADataSourcePropertiesValue) MarshalJSONTo(enc *jsontext.Encoder) 
 	switch {
 	case v.UpdateADataSourcePropertiesValueOneOf0 != nil:
 		return json.MarshalEncode(enc, v.UpdateADataSourcePropertiesValueOneOf0, jsonOpts)
-	case v.UpdateADataSourcePropertiesValueOneOf1 != nil:
-		return json.MarshalEncode(enc, v.UpdateADataSourcePropertiesValueOneOf1, jsonOpts)
+	case v.UpdateADataSourcePropertiesValueName != nil:
+		return json.MarshalEncode(enc, v.UpdateADataSourcePropertiesValueName, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// UpdateADataSourcePropertiesValueName defines a model
+type UpdateADataSourcePropertiesValueName struct {
+	// The new name of the property.
+	Name string `json:"name"`
 }
 
 // UpdateADataSourcePropertiesValueOneOf0 defines a model
@@ -24471,30 +24567,30 @@ type UpdateADataSourcePropertiesValueOneOf0 struct {
 	// The name of the property.
 	Name string `json:"name,omitzero"`
 	// The description of the property.
-	Description    PropertyDescriptionRequest         `json:"description,omitzero"`
-	Type           string                             `json:"type"`
-	Number         *Number3                           `json:"number,omitzero"`
-	Formula        *Formula                           `json:"formula,omitzero"`
-	Select         *Select5                           `json:"select,omitzero"`
-	MultiSelect    *Select5                           `json:"multi_select,omitzero"`
-	Status         *StatusPropertyConfigUpdateRequest `json:"status,omitzero"`
-	Relation       *Relation2                         `json:"relation,omitzero"`
-	Rollup         *Rollup                            `json:"rollup,omitzero"`
-	UniqueID       *UniqueIDUniqueID                  `json:"unique_id,omitzero"`
-	Title          *EmptyObject                       `json:"title,omitzero"`
-	RichText       *EmptyObject                       `json:"rich_text,omitzero"`
-	URL            *EmptyObject                       `json:"url,omitzero"`
-	People         *EmptyObject                       `json:"people,omitzero"`
-	Files          *EmptyObject                       `json:"files,omitzero"`
-	Email          *EmptyObject                       `json:"email,omitzero"`
-	PhoneNumber    *EmptyObject                       `json:"phone_number,omitzero"`
-	Date           *EmptyObject                       `json:"date,omitzero"`
-	Checkbox       *EmptyObject                       `json:"checkbox,omitzero"`
-	CreatedBy      *EmptyObject                       `json:"created_by,omitzero"`
-	CreatedTime    *EmptyObject                       `json:"created_time,omitzero"`
-	LastEditedBy   *EmptyObject                       `json:"last_edited_by,omitzero"`
-	LastEditedTime *EmptyObject                       `json:"last_edited_time,omitzero"`
-	Place          *EmptyObject                       `json:"place,omitzero"`
+	Description    PropertyDescriptionRequest                        `json:"description,omitzero"`
+	Type           string                                            `json:"type"`
+	Number         *NumberPropertyConfigurationNumber                `json:"number,omitzero"`
+	Formula        *FormulaPropertyConfigurationFormula              `json:"formula,omitzero"`
+	Select         *UpdateADataSourcePropertiesValueOneOfAllOfSelect `json:"select,omitzero"`
+	MultiSelect    *UpdateADataSourcePropertiesValueOneOfAllOfSelect `json:"multi_select,omitzero"`
+	Status         *StatusPropertyConfigUpdateRequest                `json:"status,omitzero"`
+	Relation       *RelationPropertyConfigurationRelation            `json:"relation,omitzero"`
+	Rollup         *RollupPropertyConfigurationRollup                `json:"rollup,omitzero"`
+	UniqueID       *UniqueIDPropertyConfigurationUniqueID            `json:"unique_id,omitzero"`
+	Title          *EmptyObject                                      `json:"title,omitzero"`
+	RichText       *EmptyObject                                      `json:"rich_text,omitzero"`
+	URL            *EmptyObject                                      `json:"url,omitzero"`
+	People         *EmptyObject                                      `json:"people,omitzero"`
+	Files          *EmptyObject                                      `json:"files,omitzero"`
+	Email          *EmptyObject                                      `json:"email,omitzero"`
+	PhoneNumber    *EmptyObject                                      `json:"phone_number,omitzero"`
+	Date           *EmptyObject                                      `json:"date,omitzero"`
+	Checkbox       *EmptyObject                                      `json:"checkbox,omitzero"`
+	CreatedBy      *EmptyObject                                      `json:"created_by,omitzero"`
+	CreatedTime    *EmptyObject                                      `json:"created_time,omitzero"`
+	LastEditedBy   *EmptyObject                                      `json:"last_edited_by,omitzero"`
+	LastEditedTime *EmptyObject                                      `json:"last_edited_time,omitzero"`
+	Place          *EmptyObject                                      `json:"place,omitzero"`
 }
 
 // tagsOfUpdateADataSourcePropertiesValueOneOf0 says, for each value of type, whether the member named after it must, may or must not be set.
@@ -24626,10 +24722,133 @@ func (v *UpdateADataSourcePropertiesValueOneOf0) MarshalJSONTo(enc *jsontext.Enc
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
-// UpdateADataSourcePropertiesValueOneOf1 defines a model
-type UpdateADataSourcePropertiesValueOneOf1 struct {
-	// The new name of the property.
-	Name string `json:"name"`
+// UpdateADataSourcePropertiesValueOneOfAllOfSelect defines a model
+type UpdateADataSourcePropertiesValueOneOfAllOfSelect struct {
+	Options []UpdateADataSourcePropertiesValueOneOfAllOfSelectItem `json:"options,omitzero"`
+}
+
+// UpdateADataSourcePropertiesValueOneOfAllOfSelectItem defines a model
+type UpdateADataSourcePropertiesValueOneOfAllOfSelectItem struct {
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
+	Color                   SelectColor             `json:"color,omitzero"`
+	Description             string                  `json:"description,omitzero"`
+	StatusOptionUpdateAllOf StatusOptionUpdateAllOf `json:"-"`
+}
+
+// fieldsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem is UpdateADataSourcePropertiesValueOneOfAllOfSelectItem without its methods, to encode the fields outside its union.
+type fieldsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem UpdateADataSourcePropertiesValueOneOfAllOfSelectItem
+
+// membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem are the members UpdateADataSourcePropertiesValueOneOfAllOfSelectItem declares outside its union.
+var membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem = map[string]bool{"color": true, "description": true}
+
+// variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem are the alternatives its union is decoded as, in order.
+var variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem = []jsonVariant{
+	{
+		value:    "",
+		members:  map[string]bool{"id": true, "name": true},
+		required: []string{"name"},
+	},
+	{
+		value:    "",
+		members:  map[string]bool{"id": true, "name": true},
+		required: []string{"id"},
+	},
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of StatusOptionUpdateAllOf each
+// decode the members they declare, and a member neither declares is an error.
+func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	chosen, err := jsonChooseVariants(raw, "", variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem, membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem, true, strict)
+	if err != nil {
+		return err
+	}
+
+	fields, err := jsonSelect(raw, membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem)
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(fields, (*fieldsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem)(v), opts); err != nil {
+		return err
+	}
+
+	for _, i := range chosen {
+		variant, err := jsonSelect(raw, variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem[i].members)
+		if err != nil {
+			return err
+		}
+
+		switch i {
+		case 0:
+			var vv StatusOptionUpdateAllOfName
+			if err := json.Unmarshal(variant, &vv, opts); err != nil {
+				return err
+			}
+
+			v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName = &vv
+		case 1:
+			var vv StatusOptionUpdateAllOfID
+			if err := json.Unmarshal(variant, &vv, opts); err != nil {
+				return err
+			}
+
+			v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID = &vv
+		}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of StatusOptionUpdateAllOf that is set;
+// a member both write must have the same value in each.
+func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	out, err := json.Marshal((*fieldsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem)(v), jsonOpts)
+	if err != nil {
+		return err
+	}
+
+	var set int
+
+	if v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName != nil {
+
+		variant, err := json.Marshal(v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName, jsonOpts)
+		if err != nil {
+			return err
+		}
+
+		if out, err = jsonMerge(out, variant); err != nil {
+			return err
+		}
+
+		set++
+	}
+
+	if v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID != nil {
+
+		variant, err := json.Marshal(v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID, jsonOpts)
+		if err != nil {
+			return err
+		}
+
+		if out, err = jsonMerge(out, variant); err != nil {
+			return err
+		}
+
+		set++
+	}
+
+	if set != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of StatusOptionUpdateAllOf set, got %d", set)}
+	}
+
+	return enc.WriteValue(out)
 }
 
 // UpdateAgentCreditLimit defines a model
@@ -24680,27 +24899,6 @@ type UpdateAgentStatusOk struct {
 	PauseReason AgentPauseReasonOneOf `json:"pause_reason"`
 	// ISO 8601 timestamp of when the agent was last edited.
 	LastEditedTime string `json:"last_edited_time"`
-}
-
-// Update specific content using search-and-replace operations.
-type UpdateContentUpdateContent struct {
-	// An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content).
-	ContentUpdates UpdateContentUpdateContentContentUpdates `json:"content_updates"`
-	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
-	AllowDeletingContent *bool `json:"allow_deleting_content,omitzero"`
-}
-
-// An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content).
-type UpdateContentUpdateContentContentUpdates []UpdateContentUpdateContentContentUpdatesItem
-
-// UpdateContentUpdateContentContentUpdatesItem defines a model
-type UpdateContentUpdateContentContentUpdatesItem struct {
-	// The existing content string to find and replace. Must exactly match the page content.
-	OldStr string `json:"old_str"`
-	// The new content string to replace old_str with.
-	NewStr string `json:"new_str"`
-	// If true, replaces all occurrences of old_str. If false (default), the operation fails if there are multiple matches.
-	ReplaceAllMatches *bool `json:"replace_all_matches,omitzero"`
 }
 
 // UpdateDatabase defines a model
@@ -24756,13 +24954,13 @@ type UpdatePageMarkdown struct {
 	AllowAsync *bool  `json:"allow_async,omitzero"`
 	Type       string `json:"type"`
 	// Insert new content into the page.
-	InsertContent *InsertContentInsertContent `json:"insert_content,omitzero"`
+	InsertContent *UpdatePageMarkdownAllOf1InsertContentInsertContent `json:"insert_content,omitzero"`
 	// Replace a range of content in the page.
-	ReplaceContentRange *ReplaceContentRangeReplaceContentRange `json:"replace_content_range,omitzero"`
+	ReplaceContentRange *UpdatePageMarkdownAllOf1ReplaceContentRangeReplaceContentRange `json:"replace_content_range,omitzero"`
 	// Update specific content using search-and-replace operations.
-	UpdateContent *UpdateContentUpdateContent `json:"update_content,omitzero"`
+	UpdateContent *UpdatePageMarkdownAllOf1UpdateContentUpdateContent `json:"update_content,omitzero"`
 	// Replace the entire page content with new markdown.
-	ReplaceContent *ReplaceContentReplaceContent `json:"replace_content,omitzero"`
+	ReplaceContent *UpdatePageMarkdownAllOf1ReplaceContentReplaceContent `json:"replace_content,omitzero"`
 }
 
 // tagsOfUpdatePageMarkdown says, for each value of type, whether the member named after it must, may or must not be set.
@@ -25019,6 +25217,103 @@ func (e UpdatePageMarkdownAcceptedOperationOneOf1Surface) Valid() bool {
 	}
 }
 
+// Insert new content into the page.
+type UpdatePageMarkdownAllOf1InsertContentInsertContent struct {
+	// The enhanced markdown content to insert into the page.
+	Content string `json:"content"`
+	// Selection of existing content to insert after, using the ellipsis format ("start text...end text"). Omit to append at the end of the page.
+	After string `json:"after,omitzero"`
+	// Explicit position for inserted content. Use {"type":"start"} to prepend or {"type":"end"} to append. Cannot be combined with after.
+	Position UpdatePageMarkdownAllOf1InsertContentInsertContentPosition `json:"position,omitzero"`
+}
+
+// Explicit position for inserted content. Use {"type":"start"} to prepend or {"type":"end"} to append. Cannot be combined with after.
+type UpdatePageMarkdownAllOf1InsertContentInsertContentPosition struct {
+	Type string `json:"type"`
+}
+
+// tagsOfUpdatePageMarkdownAllOf1InsertContentInsertContentPosition says, for each value of type, whether the member named after it must, may or must not be set.
+var tagsOfUpdatePageMarkdownAllOf1InsertContentInsertContentPosition = map[string]jsonTagMember{
+	"start": jsonTagNone,
+	"end":   jsonTagNone,
+}
+
+// taggedMembers returns those of the members named after a value of type that are set.
+func (v *UpdatePageMarkdownAllOf1InsertContentInsertContentPosition) taggedMembers() []string {
+	var set []string
+
+	return set
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those named after a
+// value of type, only the one it names is set.
+func (v *UpdatePageMarkdownAllOf1InsertContentInsertContentPosition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain UpdatePageMarkdownAllOf1InsertContentInsertContentPosition
+
+	*v = UpdatePageMarkdownAllOf1InsertContentInsertContentPosition{}
+	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
+		return err
+	}
+
+	return jsonCheckTag("type", string(v.Type), tagsOfUpdatePageMarkdownAllOf1InsertContentInsertContentPosition, v.taggedMembers(), jsonStrict(dec))
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
+// the value whose member is set.
+func (v *UpdatePageMarkdownAllOf1InsertContentInsertContentPosition) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain UpdatePageMarkdownAllOf1InsertContentInsertContentPosition
+
+	out, set := *v, v.taggedMembers()
+	if out.Type == "" && len(set) == 1 {
+		out.Type = string(set[0])
+	}
+
+	if err := jsonCheckTag("type", string(out.Type), tagsOfUpdatePageMarkdownAllOf1InsertContentInsertContentPosition, set, true); err != nil {
+		return err
+	}
+
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+}
+
+// Replace a range of content in the page.
+type UpdatePageMarkdownAllOf1ReplaceContentRangeReplaceContentRange struct {
+	// The new enhanced markdown content to replace the matched range.
+	Content string `json:"content"`
+	// Selection of existing content to replace, using the ellipsis format ("start text...end text").
+	ContentRange string `json:"content_range"`
+	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
+	AllowDeletingContent *bool `json:"allow_deleting_content,omitzero"`
+}
+
+// Replace the entire page content with new markdown.
+type UpdatePageMarkdownAllOf1ReplaceContentReplaceContent struct {
+	// The new enhanced markdown content to replace the entire page content.
+	NewStr string `json:"new_str"`
+	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
+	AllowDeletingContent *bool `json:"allow_deleting_content,omitzero"`
+}
+
+// Update specific content using search-and-replace operations.
+type UpdatePageMarkdownAllOf1UpdateContentUpdateContent struct {
+	// An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content).
+	ContentUpdates UpdatePageMarkdownAllOf1UpdateContentUpdateContentContentUpdates `json:"content_updates"`
+	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
+	AllowDeletingContent *bool `json:"allow_deleting_content,omitzero"`
+}
+
+// An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content).
+type UpdatePageMarkdownAllOf1UpdateContentUpdateContentContentUpdates []UpdatePageMarkdownAllOf1UpdateContentUpdateContentContentUpdatesItem
+
+// UpdatePageMarkdownAllOf1UpdateContentUpdateContentContentUpdatesItem defines a model
+type UpdatePageMarkdownAllOf1UpdateContentUpdateContentContentUpdatesItem struct {
+	// The existing content string to find and replace. Must exactly match the page content.
+	OldStr string `json:"old_str"`
+	// The new content string to replace old_str with.
+	NewStr string `json:"new_str"`
+	// If true, replaces all occurrences of old_str. If false (default), the operation fails if there are multiple matches.
+	ReplaceAllMatches *bool `json:"replace_all_matches,omitzero"`
+}
+
 // One of: `approve`, `reject`
 type UpdateSessionOneOfActionsItemOptionID string
 
@@ -25040,9 +25335,9 @@ func (e UpdateSessionOneOfActionsItemOptionID) Valid() bool {
 // Exactly one mode: append a message, answer pending actions, or replay from an event.
 // UpdateSessionRequest is an untagged oneOf union: exactly one field is set after unmarshaling.
 type UpdateSessionRequest struct {
-	UpdateSessionRequestOneOf0 *UpdateSessionRequestOneOf0
-	UpdateSessionRequestOneOf1 *UpdateSessionRequestOneOf1
-	UpdateSessionRequestOneOf2 *UpdateSessionRequestOneOf2
+	UpdateSessionRequestMessage *UpdateSessionRequestMessage
+	UpdateSessionRequestOneOf1  *UpdateSessionRequestOneOf1
+	UpdateSessionRequestOneOf2  *UpdateSessionRequestOneOf2
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -25059,9 +25354,9 @@ func (v *UpdateSessionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv UpdateSessionRequestOneOf0
+		var vv UpdateSessionRequestMessage
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateSessionRequestOneOf0 = &vv
+			v.UpdateSessionRequestMessage = &vv
 			matched++
 		}
 	}
@@ -25094,8 +25389,8 @@ func (v *UpdateSessionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *UpdateSessionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.UpdateSessionRequestOneOf0 != nil:
-		return json.MarshalEncode(enc, v.UpdateSessionRequestOneOf0, jsonOpts)
+	case v.UpdateSessionRequestMessage != nil:
+		return json.MarshalEncode(enc, v.UpdateSessionRequestMessage, jsonOpts)
 	case v.UpdateSessionRequestOneOf1 != nil:
 		return json.MarshalEncode(enc, v.UpdateSessionRequestOneOf1, jsonOpts)
 	case v.UpdateSessionRequestOneOf2 != nil:
@@ -25105,29 +25400,29 @@ func (v *UpdateSessionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// UpdateSessionRequestOneOf0 defines a model
-type UpdateSessionRequestOneOf0 struct {
-	Message       string                                `json:"message"`
-	AgentID       AgentID                               `json:"agent_id,omitzero"`
-	SessionID     IDRequest                             `json:"session_id,omitzero"`
-	Attachments   UpdateSessionRequestOneOf0Attachments `json:"attachments,omitzero"`
-	Metadata      map[string]string                     `json:"metadata,omitzero"`
-	PromptContext string                                `json:"prompt_context,omitzero"`
+// UpdateSessionRequestMessage defines a model
+type UpdateSessionRequestMessage struct {
+	Message       string                                 `json:"message"`
+	AgentID       AgentID                                `json:"agent_id,omitzero"`
+	SessionID     IDRequest                              `json:"session_id,omitzero"`
+	Attachments   UpdateSessionRequestMessageAttachments `json:"attachments,omitzero"`
+	Metadata      map[string]string                      `json:"metadata,omitzero"`
+	PromptContext string                                 `json:"prompt_context,omitzero"`
 }
 
-// UpdateSessionRequestOneOf0Attachments defines a model
-type UpdateSessionRequestOneOf0Attachments []UpdateSessionRequestOneOf0AttachmentsItem
+// UpdateSessionRequestMessageAttachments defines a model
+type UpdateSessionRequestMessageAttachments []UpdateSessionRequestMessageAttachmentsItem
 
-// UpdateSessionRequestOneOf0AttachmentsItem defines a model
-type UpdateSessionRequestOneOf0AttachmentsItem struct {
-	FileUpload UpdateSessionRequestOneOf0AttachmentsItemFileUpload `json:"file_upload"`
+// UpdateSessionRequestMessageAttachmentsItem defines a model
+type UpdateSessionRequestMessageAttachmentsItem struct {
+	FileUpload UpdateSessionRequestMessageAttachmentsItemFileUpload `json:"file_upload"`
 	// Always `file_upload`
 	Type string `json:"type,omitzero"`
 	Name string `json:"name,omitzero"`
 }
 
-// UpdateSessionRequestOneOf0AttachmentsItemFileUpload defines a model
-type UpdateSessionRequestOneOf0AttachmentsItemFileUpload struct {
+// UpdateSessionRequestMessageAttachmentsItemFileUpload defines a model
+type UpdateSessionRequestMessageAttachmentsItemFileUpload struct {
 	ID string `json:"id"`
 }
 
@@ -25392,139 +25687,6 @@ func (v *UserObjectResponseAllOf1) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// UserOneOfPerson defines a model
-type UserOneOfPerson struct {
-	// The email of the person.
-	Email string `json:"email,omitzero"`
-	// Whether the person's email is verified.
-	EmailVerified *bool `json:"email_verified,omitzero"`
-}
-
-// UserUser defines a model
-// UserUser is an untagged anyOf union: at least one field is set after unmarshaling.
-type UserUser struct {
-	Person                    *Person
-	PartialUserObjectResponse *PartialUserObjectResponse
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *UserUser) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv Person
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.Person = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv PartialUserObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialUserObjectResponse = &vv
-			matched++
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *UserUser) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.Person != nil:
-		return json.MarshalEncode(enc, v.Person, jsonOpts)
-	case v.PartialUserObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialUserObjectResponse, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// Details about the owner of the bot, when the `type` of the owner is `user`. This means the bot is for a integration.
-// UserUser2 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type UserUser2 struct {
-	UserUserOneOf0            *UserUserOneOf0
-	PartialUserObjectResponse *PartialUserObjectResponse
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *UserUser2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv UserUserOneOf0
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UserUserOneOf0 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv PartialUserObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialUserObjectResponse = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *UserUser2) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.UserUserOneOf0 != nil:
-		return json.MarshalEncode(enc, v.UserUserOneOf0, jsonOpts)
-	case v.PartialUserObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialUserObjectResponse, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// UserUserOneOf0 defines a model
-type UserUserOneOf0 struct {
-	// The ID of the user.
-	ID IDResponse `json:"id"`
-	// The user object type name.
-	Object string `json:"object"`
-	// The name of the user.
-	Name string `json:"name"`
-	// The avatar URL of the user.
-	AvatarURL string `json:"avatar_url"`
-	// The type of the user.
-	Type string `json:"type"`
-	// The person info of the user.
-	Person UserOneOfPerson `json:"person"`
-}
-
 // UserValueResponse defines a model
 // UserValueResponse is an untagged oneOf union: exactly one field is set after unmarshaling.
 type UserValueResponse struct {
@@ -25579,104 +25741,6 @@ func (v *UserValueResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// Verification2 defines a model
-// Verification2 is an untagged anyOf union: at least one field is set after unmarshaling.
-type Verification2 struct {
-	VerificationAnyOf  *VerificationAnyOf
-	VerificationAnyOf2 *VerificationAnyOf2
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member state names the alternative, which then
-// decodes each further member as it is read. With state first, nothing is read twice.
-func (v *Verification2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, dec, err := jsonFirstMember(dec, "state")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "verified":
-		var vv VerificationAnyOf
-		if err := jsonMembersFrom(dec, "state", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.VerificationAnyOf = &vv
-	case "unverified":
-		var vv VerificationAnyOf2
-		if err := jsonMembersFrom(dec, "state", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.VerificationAnyOf2 = &vv
-	default:
-		return jsonUnknownValue("state", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with state first, as decoding wants it, and set to the variant's value.
-func (v *Verification2) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.VerificationAnyOf != nil:
-		variant, tag = v.VerificationAnyOf, "verified"
-	case v.VerificationAnyOf2 != nil:
-		variant, tag = v.VerificationAnyOf2, "unverified"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "state", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
-// VerificationAnyOf defines a model
-type VerificationAnyOf struct {
-	State string      `json:"state"`
-	Date  DateRequest `json:"date,omitzero"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether VerificationAnyOf declares it.
-func (v *VerificationAnyOf) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "state":
-		return true, json.UnmarshalDecode(dec, &v.State, jsonOptsOf(dec))
-	case "date":
-		return true, json.UnmarshalDecode(dec, &v.Date, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// VerificationAnyOf2 defines a model
-type VerificationAnyOf2 struct {
-	State string `json:"state"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether VerificationAnyOf2 declares it.
-func (v *VerificationAnyOf2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "state":
-		return true, json.UnmarshalDecode(dec, &v.State, jsonOptsOf(dec))
-	}
-
-	return false, nil
 }
 
 // VerificationPropertyDoesNotEqualFilter defines a model
@@ -25815,66 +25879,6 @@ func (v *VerificationSimplePropertyValueResponse) unmarshalJSONMember(dec *jsont
 	}
 
 	return false, nil
-}
-
-// VerificationVerification3 defines a model
-// VerificationVerification3 is an untagged anyOf union: at least one field is set after unmarshaling.
-type VerificationVerification3 struct {
-	VerificationPropertyStatusFilter       *VerificationPropertyStatusFilter
-	VerificationPropertyDoesNotEqualFilter *VerificationPropertyDoesNotEqualFilter
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *VerificationVerification3) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv VerificationPropertyStatusFilter
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.VerificationPropertyStatusFilter = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv VerificationPropertyDoesNotEqualFilter
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.VerificationPropertyDoesNotEqualFilter = &vv
-			matched++
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *VerificationVerification3) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.VerificationPropertyStatusFilter != nil:
-		return json.MarshalEncode(enc, v.VerificationPropertyStatusFilter, jsonOpts)
-	case v.VerificationPropertyDoesNotEqualFilter != nil:
-		return json.MarshalEncode(enc, v.VerificationPropertyDoesNotEqualFilter, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// Video3 defines a model
-type Video3 struct {
-	Video  MediaContentWithFileAndCaptionRequest `json:"video"`
-	Type   string                                `json:"type,omitzero"`
-	Object string                                `json:"object,omitzero"`
 }
 
 // View configuration, discriminated by the type field.
@@ -26190,18 +26194,12 @@ type ViewDeletedWebhookPayload struct {
 // ViewFilter defines a model
 type ViewFilter struct{}
 
-// A filter condition on a timestamp (created_time or last_edited_time). The timestamp field specifies which timestamp, and a matching field contains the date filter condition.
-type ViewFilterOneOf struct {
-	// The timestamp to filter on.
-	Timestamp TimestampSortTimestamp `json:"timestamp"`
-}
-
 // A filter that can be a property filter, timestamp filter, or nested compound filter.
 // ViewFilterOneOfOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
 type ViewFilterOneOfOrItem struct {
-	ViewFilterOneOfOrItemOneOf  *ViewFilterOneOfOrItemOneOf
-	ViewFilterOneOf             *ViewFilterOneOf
-	ViewFilterOneOfOrItemOneOf2 *ViewFilterOneOfOrItemOneOf2
+	ViewFilterOneOfOrItemProperty *ViewFilterOneOfOrItemProperty
+	ViewFilterTimestamp           *ViewFilterTimestamp
+	ViewFilterOneOfOrItemOneOf    *ViewFilterOneOfOrItemOneOf
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -26218,27 +26216,27 @@ func (v *ViewFilterOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
+		var vv ViewFilterOneOfOrItemProperty
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.ViewFilterOneOfOrItemProperty = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv ViewFilterTimestamp
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.ViewFilterTimestamp = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
 		var vv ViewFilterOneOfOrItemOneOf
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
 			v.ViewFilterOneOfOrItemOneOf = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv ViewFilterOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ViewFilterOneOf = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv ViewFilterOneOfOrItemOneOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ViewFilterOneOfOrItemOneOf2 = &vv
 			matched++
 		}
 	}
@@ -26253,25 +26251,19 @@ func (v *ViewFilterOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *ViewFilterOneOfOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
+	case v.ViewFilterOneOfOrItemProperty != nil:
+		return json.MarshalEncode(enc, v.ViewFilterOneOfOrItemProperty, jsonOpts)
+	case v.ViewFilterTimestamp != nil:
+		return json.MarshalEncode(enc, v.ViewFilterTimestamp, jsonOpts)
 	case v.ViewFilterOneOfOrItemOneOf != nil:
 		return json.MarshalEncode(enc, v.ViewFilterOneOfOrItemOneOf, jsonOpts)
-	case v.ViewFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.ViewFilterOneOf, jsonOpts)
-	case v.ViewFilterOneOfOrItemOneOf2 != nil:
-		return json.MarshalEncode(enc, v.ViewFilterOneOfOrItemOneOf2, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// A filter condition on a specific property. The property field specifies which property to filter, and an additional field specifies the filter type and condition (e.g., title, rich_text, number, checkbox, select, multi_select, date, people, files, relation, formula, rollup, etc.).
-type ViewFilterOneOfOrItemOneOf struct {
-	// The name or ID of the property to filter on.
-	Property string `json:"property"`
-}
-
 // A compound filter at the deepest nesting level. Can only contain property or timestamp filters (no further nesting).
-type ViewFilterOneOfOrItemOneOf2 struct {
+type ViewFilterOneOfOrItemOneOf struct {
 	// Filters combined with OR logic.
 	Or []ViewFilterOneOfOrItemOneOfOrItem `json:"or,omitzero"`
 	// Filters combined with AND logic.
@@ -26281,8 +26273,8 @@ type ViewFilterOneOfOrItemOneOf2 struct {
 // A property filter or timestamp filter.
 // ViewFilterOneOfOrItemOneOfOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
 type ViewFilterOneOfOrItemOneOfOrItem struct {
-	ViewFilterOneOfOrItemOneOf *ViewFilterOneOfOrItemOneOf
-	ViewFilterOneOf            *ViewFilterOneOf
+	ViewFilterOneOfOrItemProperty *ViewFilterOneOfOrItemProperty
+	ViewFilterTimestamp           *ViewFilterTimestamp
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -26299,18 +26291,18 @@ func (v *ViewFilterOneOfOrItemOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decod
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv ViewFilterOneOfOrItemOneOf
+		var vv ViewFilterOneOfOrItemProperty
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ViewFilterOneOfOrItemOneOf = &vv
+			v.ViewFilterOneOfOrItemProperty = &vv
 			matched++
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv ViewFilterOneOf
+		var vv ViewFilterTimestamp
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ViewFilterOneOf = &vv
+			v.ViewFilterTimestamp = &vv
 			matched++
 		}
 	}
@@ -26325,21 +26317,27 @@ func (v *ViewFilterOneOfOrItemOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decod
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *ViewFilterOneOfOrItemOneOfOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.ViewFilterOneOfOrItemOneOf != nil:
-		return json.MarshalEncode(enc, v.ViewFilterOneOfOrItemOneOf, jsonOpts)
-	case v.ViewFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.ViewFilterOneOf, jsonOpts)
+	case v.ViewFilterOneOfOrItemProperty != nil:
+		return json.MarshalEncode(enc, v.ViewFilterOneOfOrItemProperty, jsonOpts)
+	case v.ViewFilterTimestamp != nil:
+		return json.MarshalEncode(enc, v.ViewFilterTimestamp, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
+// A filter condition on a specific property. The property field specifies which property to filter, and an additional field specifies the filter type and condition (e.g., title, rich_text, number, checkbox, select, multi_select, date, people, files, relation, formula, rollup, etc.).
+type ViewFilterOneOfOrItemProperty struct {
+	// The name or ID of the property to filter on.
+	Property string `json:"property"`
+}
+
 // Filter for the view. Can be a property filter (filter by property value), timestamp filter (filter by created_time or last_edited_time), or compound filter (combine filters with and/or logic). Compound filters support up to 2 levels of nesting.
 // ViewFilterResponse is an untagged oneOf union: exactly one field is set after unmarshaling.
 type ViewFilterResponse struct {
-	ViewFilterResponseOneOf0 *ViewFilterResponseOneOf0
-	ViewFilterOneOf          *ViewFilterOneOf
-	ViewFilterResponseOneOf2 *ViewFilterResponseOneOf2
+	ViewFilterResponseProperty *ViewFilterResponseProperty
+	ViewFilterTimestamp        *ViewFilterTimestamp
+	ViewFilterResponseOneOf2   *ViewFilterResponseOneOf2
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -26356,18 +26354,18 @@ func (v *ViewFilterResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv ViewFilterResponseOneOf0
+		var vv ViewFilterResponseProperty
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ViewFilterResponseOneOf0 = &vv
+			v.ViewFilterResponseProperty = &vv
 			matched++
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv ViewFilterOneOf
+		var vv ViewFilterTimestamp
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ViewFilterOneOf = &vv
+			v.ViewFilterTimestamp = &vv
 			matched++
 		}
 	}
@@ -26391,76 +26389,15 @@ func (v *ViewFilterResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *ViewFilterResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.ViewFilterResponseOneOf0 != nil:
-		return json.MarshalEncode(enc, v.ViewFilterResponseOneOf0, jsonOpts)
-	case v.ViewFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.ViewFilterOneOf, jsonOpts)
+	case v.ViewFilterResponseProperty != nil:
+		return json.MarshalEncode(enc, v.ViewFilterResponseProperty, jsonOpts)
+	case v.ViewFilterTimestamp != nil:
+		return json.MarshalEncode(enc, v.ViewFilterTimestamp, jsonOpts)
 	case v.ViewFilterResponseOneOf2 != nil:
 		return json.MarshalEncode(enc, v.ViewFilterResponseOneOf2, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// A filter condition on a specific property. The property field specifies which property to filter, and an additional field specifies the filter type and condition (e.g., title, rich_text, number, checkbox, select, multi_select, date, people, files, relation, formula, rollup, etc.).
-type ViewFilterResponseOneOf0 struct {
-	// The name or ID of the property to filter on.
-	Property string                     `json:"property"`
-	Or       ViewFilterResponseOneOf0Or `json:"or,omitzero"`
-}
-
-// ViewFilterResponseOneOf0Or defines a model
-type ViewFilterResponseOneOf0Or []ViewFilterResponseOneOf0OrItem
-
-// ViewFilterResponseOneOf0OrItem defines a model
-type ViewFilterResponseOneOf0OrItem struct {
-	Or  ViewFilterResponseOneOf0OrItemOr  `json:"or"`
-	And ViewFilterResponseOneOf0OrItemAnd `json:"and,omitzero"`
-}
-
-// ViewFilterResponseOneOf0OrItemAnd defines a model
-type ViewFilterResponseOneOf0OrItemAnd []ViewFilterResponseOneOf0OrItemAndItem
-
-// ViewFilterResponseOneOf0OrItemAndItem defines a model
-type ViewFilterResponseOneOf0OrItemAndItem struct {
-	Property    string                                           `json:"property"`
-	Select      TextPropertyFilterAnyOfAnyOf2                    `json:"select"`
-	CreatedTime ViewFilterResponseOneOf0OrItemAndItemCreatedTime `json:"created_time,omitzero"`
-}
-
-// ViewFilterResponseOneOf0OrItemAndItemCreatedTime defines a model
-type ViewFilterResponseOneOf0OrItemAndItemCreatedTime struct {
-	OnOrAfter string `json:"on_or_after"`
-}
-
-// ViewFilterResponseOneOf0OrItemOr defines a model
-type ViewFilterResponseOneOf0OrItemOr []ViewFilterResponseOneOf0OrItemOrItem
-
-// ViewFilterResponseOneOf0OrItemOrItem defines a model
-type ViewFilterResponseOneOf0OrItemOrItem struct {
-	Property string                                  `json:"property"`
-	Date     TextPropertyFilterAnyOfAnyOf            `json:"date"`
-	And      ViewFilterResponseOneOf0OrItemOrItemAnd `json:"and,omitzero"`
-}
-
-// ViewFilterResponseOneOf0OrItemOrItemAnd defines a model
-type ViewFilterResponseOneOf0OrItemOrItemAnd []ViewFilterResponseOneOf0OrItemOrItemAndItem
-
-// ViewFilterResponseOneOf0OrItemOrItemAndItem defines a model
-type ViewFilterResponseOneOf0OrItemOrItemAndItem struct {
-	Property string                                             `json:"property"`
-	Date     TextPropertyFilterAnyOfAnyOf                       `json:"date"`
-	Formula  ViewFilterResponseOneOf0OrItemOrItemAndItemFormula `json:"formula,omitzero"`
-}
-
-// ViewFilterResponseOneOf0OrItemOrItemAndItemFormula defines a model
-type ViewFilterResponseOneOf0OrItemOrItemAndItemFormula struct {
-	Number ViewFilterResponseOneOf0OrItemOrItemAndItemFormulaNumber `json:"number"`
-}
-
-// ViewFilterResponseOneOf0OrItemOrItemAndItemFormulaNumber defines a model
-type ViewFilterResponseOneOf0OrItemOrItemAndItemFormulaNumber struct {
-	LessThan int `json:"less_than"`
 }
 
 // A compound filter that combines multiple filters with AND or OR logic. Supports up to 2 levels of nesting.
@@ -26471,30 +26408,81 @@ type ViewFilterResponseOneOf2 struct {
 	And []ViewFilterOneOfOrItem `json:"and,omitzero"`
 }
 
-// ViewPositionOneOf defines a model
-type ViewPositionOneOf struct {
-	// Position type. "start" places the view as the first tab.
-	Type string `json:"type"`
+// A filter condition on a specific property. The property field specifies which property to filter, and an additional field specifies the filter type and condition (e.g., title, rich_text, number, checkbox, select, multi_select, date, people, files, relation, formula, rollup, etc.).
+type ViewFilterResponseProperty struct {
+	// The name or ID of the property to filter on.
+	Property string                       `json:"property"`
+	Or       ViewFilterResponsePropertyOr `json:"or,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether ViewPositionOneOf declares it.
-func (v *ViewPositionOneOf) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	}
+// ViewFilterResponsePropertyOr defines a model
+type ViewFilterResponsePropertyOr []ViewFilterResponsePropertyOrItem
 
-	return false, nil
+// ViewFilterResponsePropertyOrItem defines a model
+type ViewFilterResponsePropertyOrItem struct {
+	Or  ViewFilterResponsePropertyOrItemOr  `json:"or"`
+	And ViewFilterResponsePropertyOrItemAnd `json:"and,omitzero"`
 }
 
-// ViewPositionOneOf2 defines a model
-type ViewPositionOneOf2 struct {
+// ViewFilterResponsePropertyOrItemAnd defines a model
+type ViewFilterResponsePropertyOrItemAnd []ViewFilterResponsePropertyOrItemAndItem
+
+// ViewFilterResponsePropertyOrItemAndItem defines a model
+type ViewFilterResponsePropertyOrItemAndItem struct {
+	Property    string                                             `json:"property"`
+	Select      TextPropertyFilterAnyOfDoesNotEqual                `json:"select"`
+	CreatedTime ViewFilterResponsePropertyOrItemAndItemCreatedTime `json:"created_time,omitzero"`
+}
+
+// ViewFilterResponsePropertyOrItemAndItemCreatedTime defines a model
+type ViewFilterResponsePropertyOrItemAndItemCreatedTime struct {
+	OnOrAfter string `json:"on_or_after"`
+}
+
+// ViewFilterResponsePropertyOrItemOr defines a model
+type ViewFilterResponsePropertyOrItemOr []ViewFilterResponsePropertyOrItemOrItem
+
+// ViewFilterResponsePropertyOrItemOrItem defines a model
+type ViewFilterResponsePropertyOrItemOrItem struct {
+	Property string                                    `json:"property"`
+	Date     TextPropertyFilterAnyOfEquals             `json:"date"`
+	And      ViewFilterResponsePropertyOrItemOrItemAnd `json:"and,omitzero"`
+}
+
+// ViewFilterResponsePropertyOrItemOrItemAnd defines a model
+type ViewFilterResponsePropertyOrItemOrItemAnd []ViewFilterResponsePropertyOrItemOrItemAndItem
+
+// ViewFilterResponsePropertyOrItemOrItemAndItem defines a model
+type ViewFilterResponsePropertyOrItemOrItemAndItem struct {
+	Property string                                               `json:"property"`
+	Date     TextPropertyFilterAnyOfEquals                        `json:"date"`
+	Formula  ViewFilterResponsePropertyOrItemOrItemAndItemFormula `json:"formula,omitzero"`
+}
+
+// ViewFilterResponsePropertyOrItemOrItemAndItemFormula defines a model
+type ViewFilterResponsePropertyOrItemOrItemAndItemFormula struct {
+	Number ViewFilterResponsePropertyOrItemOrItemAndItemFormulaNumber `json:"number"`
+}
+
+// ViewFilterResponsePropertyOrItemOrItemAndItemFormulaNumber defines a model
+type ViewFilterResponsePropertyOrItemOrItemAndItemFormulaNumber struct {
+	LessThan int `json:"less_than"`
+}
+
+// A filter condition on a timestamp (created_time or last_edited_time). The timestamp field specifies which timestamp, and a matching field contains the date filter condition.
+type ViewFilterTimestamp struct {
+	// The timestamp to filter on.
+	Timestamp TimestampSortTimestamp `json:"timestamp"`
+}
+
+// ViewPositionEnd defines a model
+type ViewPositionEnd struct {
 	// Position type. "end" places the view as the last tab.
 	Type string `json:"type"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether ViewPositionOneOf2 declares it.
-func (v *ViewPositionOneOf2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether ViewPositionEnd declares it.
+func (v *ViewPositionEnd) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -26506,9 +26494,9 @@ func (v *ViewPositionOneOf2) unmarshalJSONMember(dec *jsontext.Decoder, name str
 // Position of the new view in the database's view tab bar.
 // ViewPositionRequest is an untagged oneOf union: exactly one field is set after unmarshaling.
 type ViewPositionRequest struct {
-	ViewPositionOneOf         *ViewPositionOneOf
-	ViewPositionOneOf2        *ViewPositionOneOf2
-	ViewPositionRequestOneOf2 *ViewPositionRequestOneOf2
+	ViewPositionStart            *ViewPositionStart
+	ViewPositionEnd              *ViewPositionEnd
+	ViewPositionRequestAfterView *ViewPositionRequestAfterView
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
@@ -26521,26 +26509,26 @@ func (v *ViewPositionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	switch tag {
 	case "start":
-		var vv ViewPositionOneOf
+		var vv ViewPositionStart
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.ViewPositionOneOf = &vv
+		v.ViewPositionStart = &vv
 	case "end":
-		var vv ViewPositionOneOf2
+		var vv ViewPositionEnd
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.ViewPositionOneOf2 = &vv
+		v.ViewPositionEnd = &vv
 	case "after_view":
-		var vv ViewPositionRequestOneOf2
+		var vv ViewPositionRequestAfterView
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.ViewPositionRequestOneOf2 = &vv
+		v.ViewPositionRequestAfterView = &vv
 	default:
 		return jsonUnknownValue("type", tag)
 	}
@@ -26556,12 +26544,12 @@ func (v *ViewPositionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 	)
 
 	switch {
-	case v.ViewPositionOneOf != nil:
-		variant, tag = v.ViewPositionOneOf, "start"
-	case v.ViewPositionOneOf2 != nil:
-		variant, tag = v.ViewPositionOneOf2, "end"
-	case v.ViewPositionRequestOneOf2 != nil:
-		variant, tag = v.ViewPositionRequestOneOf2, "after_view"
+	case v.ViewPositionStart != nil:
+		variant, tag = v.ViewPositionStart, "start"
+	case v.ViewPositionEnd != nil:
+		variant, tag = v.ViewPositionEnd, "end"
+	case v.ViewPositionRequestAfterView != nil:
+		variant, tag = v.ViewPositionRequestAfterView, "after_view"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -26578,21 +26566,37 @@ func (v *ViewPositionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// ViewPositionRequestOneOf2 defines a model
-type ViewPositionRequestOneOf2 struct {
+// ViewPositionRequestAfterView defines a model
+type ViewPositionRequestAfterView struct {
 	// Position type. "after_view" places the new view immediately after the specified view.
 	Type string `json:"type"`
 	// The ID of an existing view in the database. The new view will be placed after this view.
 	ViewID IDRequest `json:"view_id"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether ViewPositionRequestOneOf2 declares it.
-func (v *ViewPositionRequestOneOf2) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether ViewPositionRequestAfterView declares it.
+func (v *ViewPositionRequestAfterView) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
 	case "view_id":
 		return true, json.UnmarshalDecode(dec, &v.ViewID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// ViewPositionStart defines a model
+type ViewPositionStart struct {
+	// Position type. "start" places the view as the first tab.
+	Type string `json:"type"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether ViewPositionStart declares it.
+func (v *ViewPositionStart) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
 	}
 
 	return false, nil
@@ -27043,14 +27047,6 @@ func (v *WidgetPlacementRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
-}
-
-// Workspace3 defines a model
-type Workspace3 struct {
-	// Always `workspace`
-	Type string `json:"type"`
-	// Always `true`
-	Workspace bool `json:"workspace"`
 }
 
 // WorkspaceParentForBlockBasedObject defines a model
