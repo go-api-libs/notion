@@ -9,9 +9,12 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"maps"
 	"net/http"
 	"os"
 	"slices"
+	"strconv"
+	"time"
 	"uuid"
 
 	"github.com/MarkRosemaker/openapi-enrich/cassette"
@@ -321,13 +324,49 @@ func (w *walker) database(id string) error {
 	}
 
 	for _, ds := range db.DataSources {
-		for _, r := range []cassette.Request{
-			get("data_sources/" + ds.ID),
-			{Method: http.MethodPost, URL: baseURL + "data_sources/" + ds.ID + "/query", Body: []byte(`{"page_size":3}`)},
-		} {
-			if _, err := w.record(r); err != nil {
-				return err
-			}
+		if _, err := w.record(get("data_sources/" + ds.ID)); err != nil {
+			return err
+		}
+
+		query, err := w.record(cassette.Request{
+			Method: http.MethodPost, URL: baseURL + "data_sources/" + ds.ID + "/query", Body: []byte(`{"page_size":3}`),
+		})
+		if err != nil {
+			return err
+		}
+
+		if err := w.properties(query.Response.Body); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// properties records each property of the first entry of a query, as the endpoint for one property returns it.
+// Notion gives property IDs already escaped for a URL.
+func (w *walker) properties(query []byte) error {
+	var list struct {
+		Results []struct {
+			ID         string `json:"id"`
+			Properties map[string]struct {
+				ID string `json:"id"`
+			} `json:"properties"`
+		} `json:"results"`
+	}
+	if err := json.Unmarshal(query, &list); err != nil {
+		return fmt.Errorf("decoding query: %w", err)
+	}
+
+	if len(list.Results) == 0 {
+		return nil
+	}
+
+	page := list.Results[0]
+
+	for _, name := range slices.Sorted(maps.Keys(page.Properties)) {
+		if _, err := w.record(get("pages/" + page.ID + "/properties/" + page.Properties[name].ID)); err != nil {
+			return err
 		}
 	}
 
@@ -380,8 +419,36 @@ func get(path string) cassette.Request {
 	return cassette.Request{Method: http.MethodGet, URL: baseURL + path}
 }
 
-// do sends r to Notion and records the interaction.
+// pace spaces requests out to the three a second Notion allows on average.
+var pace = time.Tick(time.Second / 3)
+
+// do sends r to Notion at the pace it allows, again after the wait it asks for when it limits the rate, and records
+// the interaction.
 func do(ctx context.Context, r cassette.Request) (cassette.Interaction, error) {
+	for {
+		select {
+		case <-pace:
+		case <-ctx.Done():
+			return cassette.Interaction{}, ctx.Err()
+		}
+
+		ia, err := send(ctx, r)
+		if err != nil || ia.Response.StatusCode != http.StatusTooManyRequests {
+			return ia, err
+		}
+
+		wait, _ := strconv.Atoi(ia.Response.Headers.Get("Retry-After"))
+
+		select {
+		case <-time.After(time.Duration(max(wait, 1)) * time.Second):
+		case <-ctx.Done():
+			return ia, ctx.Err()
+		}
+	}
+}
+
+// send sends r to Notion and records the interaction.
+func send(ctx context.Context, r cassette.Request) (cassette.Interaction, error) {
 	var reqBody io.Reader
 	if len(r.Body) > 0 {
 		reqBody = bytes.NewReader(r.Body)
