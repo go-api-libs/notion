@@ -6064,6 +6064,292 @@
           }
         ]
       },
+      "AgentList": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `list`",
+            "type": "string",
+            "const": "list"
+          },
+          "type": {
+            "description": "Always `agent`",
+            "type": "string",
+            "const": "agent"
+          },
+          "results": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/AgentListResultsItem"
+            }
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "object",
+          "type",
+          "results",
+          "has_more",
+          "next_cursor"
+        ],
+        "additionalProperties": false
+      },
+      "AgentListResultsItem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/AgentListResultsItemOneOf0"
+          },
+          {
+            "$ref": "#/components/schemas/AgentListResultsItemNotionAi"
+          }
+        ]
+      },
+      "AgentListResultsItemNotionAi": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `agent`",
+            "type": "string",
+            "const": "agent"
+          },
+          "id": {
+            "description": "Always `notion_ai`",
+            "type": "string",
+            "const": "notion_ai"
+          },
+          "agent_type": {
+            "description": "Always `notion_ai`",
+            "type": "string",
+            "const": "notion_ai"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "null"
+          },
+          "instructions_page_id": {
+            "type": "null"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/AgentListResultsItemNotionAiIcon"
+          },
+          "model": {
+            "$ref": "#/components/schemas/AgentModel"
+          },
+          "connections": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/AgentConnectionsItem"
+            }
+          },
+          "status": {
+            "description": "Always `active`",
+            "type": "string",
+            "const": "active"
+          },
+          "pause_reason": {
+            "type": "null"
+          },
+          "created_by": {
+            "type": "null"
+          },
+          "agent_version": {
+            "type": "null"
+          },
+          "created_time": {
+            "type": "null"
+          },
+          "last_edited_time": {
+            "type": "null"
+          },
+          "last_run_at": {
+            "type": "null"
+          },
+          "credit_limit": {
+            "type": "null"
+          },
+          "triggers": {
+            "$ref": "#/components/schemas/AgentTriggers"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "agent_type",
+          "name",
+          "description",
+          "instructions_page_id",
+          "icon",
+          "model",
+          "connections",
+          "status",
+          "pause_reason",
+          "created_by",
+          "agent_version",
+          "created_time",
+          "last_edited_time",
+          "last_run_at",
+          "credit_limit",
+          "triggers"
+        ],
+        "additionalProperties": false
+      },
+      "AgentListResultsItemNotionAiIcon": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/pageIconResponse"
+          },
+          {
+            "$ref": "#/components/schemas/AgentIconCustomAgentAvatar"
+          }
+        ]
+      },
+      "AgentListResultsItemOneOf0": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `agent`",
+            "type": "string",
+            "const": "agent"
+          },
+          "id": {
+            "$ref": "#/components/schemas/idResponse"
+          },
+          "agent_type": {
+            "$ref": "#/components/schemas/AgentListResultsItemOneOf0AgentType"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+          },
+          "instructions_page_id": {
+            "$ref": "#/components/schemas/PageListNextCursor"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/AgentIcon"
+          },
+          "model": {
+            "description": "The model selection: automatic, or pinned to a public model ID.",
+            "$ref": "#/components/schemas/AgentModel"
+          },
+          "connections": {
+            "description": "Integrations the agent is connected to (Notion, Slack, Discord, MCP servers, and other connectors), each with an account and per-target permissions.",
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/AgentConnectionsItem"
+            }
+          },
+          "status": {
+            "description": "\"active\" when the agent can run; \"disabled\" when it is paused (see pause_reason); \"deleted\" when it has been removed.",
+            "$ref": "#/components/schemas/AgentStatus"
+          },
+          "pause_reason": {
+            "description": "Why the agent is paused when status is \"disabled\" (e.g. \"credit_limit\", \"disabled_from_workspace_settings\"); null when active.",
+            "$ref": "#/components/schemas/AgentPauseReason"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/AgentListResultsItemOneOf0CreatedBy"
+          },
+          "agent_version": {
+            "$ref": "#/components/schemas/AgentVersion"
+          },
+          "created_time": {
+            "description": "Date and time when this agent was created.",
+            "type": "string",
+            "format": "date-time"
+          },
+          "last_edited_time": {
+            "description": "Date and time when this agent was last edited.",
+            "type": "string",
+            "format": "date-time"
+          },
+          "last_run_at": {
+            "$ref": "#/components/schemas/AgentLastRunAt"
+          },
+          "credit_limit": {
+            "$ref": "#/components/schemas/AgentCreditLimit"
+          },
+          "triggers": {
+            "description": "The agent's configured triggers, each with a machine type, an enabled flag, and a structured recurrence schedule when applicable.",
+            "$ref": "#/components/schemas/AgentTriggers"
+          },
+          "instructions": {
+            "description": "The agent's inline instructions when verbose=true, or null when its instructions are stored on a page.",
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "agent_type",
+          "name",
+          "description",
+          "instructions_page_id",
+          "icon",
+          "model",
+          "connections",
+          "status",
+          "pause_reason",
+          "created_by",
+          "agent_version",
+          "created_time",
+          "last_edited_time",
+          "last_run_at",
+          "credit_limit",
+          "triggers"
+        ],
+        "additionalProperties": false
+      },
+      "AgentListResultsItemOneOf0AgentType": {
+        "description": "What kind of agent this is: \"custom_agent\" is a standalone agent you chat with; \"autofill_custom_agent\" fills a database property.",
+        "type": "string",
+        "enum": [
+          "custom_agent",
+          "autofill_custom_agent"
+        ]
+      },
+      "AgentListResultsItemOneOf0CreatedBy": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/AgentListResultsItemOneOf0CreatedByOneOf0"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "AgentListResultsItemOneOf0CreatedByOneOf0": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/RetrieveSessionCreatedByType"
+          },
+          "id": {
+            "description": "The ID of the user or bot that created this agent.",
+            "$ref": "#/components/schemas/idResponse"
+          }
+        },
+        "required": [
+          "type",
+          "id"
+        ],
+        "additionalProperties": false
+      },
       "AgentModel": {
         "oneOf": [
           {
@@ -6498,7 +6784,7 @@
           }
         ]
       },
-      "Block2": {
+      "BlockList": {
         "title": "Block",
         "type": "object",
         "properties": {
@@ -6532,46 +6818,6 @@
             "type": "string",
             "format": "uuid",
             "example": "baa8866e-795b-4ffe-be96-04fba930dc8a"
-          }
-        },
-        "required": [
-          "type",
-          "block",
-          "object",
-          "next_cursor",
-          "has_more",
-          "results"
-        ]
-      },
-      "Block3": {
-        "title": "Block",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "block"
-          },
-          "block": {
-            "$ref": "#/components/schemas/emptyObject"
-          },
-          "object": {
-            "type": "string",
-            "const": "list"
-          },
-          "next_cursor": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
-          "has_more": {
-            "type": "boolean"
-          },
-          "results": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/BlockOrPartial"
-            }
           }
         },
         "required": [
@@ -8731,6 +8977,52 @@
         ],
         "additionalProperties": false
       },
+      "CommentList": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `list`",
+            "type": "string",
+            "const": "list"
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/PageListNextCursor"
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/commentObjectResponse"
+            }
+          },
+          "type": {
+            "description": "Always `comment`",
+            "type": "string",
+            "const": "comment"
+          },
+          "comment": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "request_status": {
+            "$ref": "#/components/schemas/requestStatusResponse"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "object",
+          "next_cursor",
+          "has_more",
+          "results",
+          "type",
+          "comment"
+        ],
+        "additionalProperties": false
+      },
       "CommentObjectResponseAttachments": {
         "description": "Any file attachments associated with the comment.",
         "type": "array",
@@ -8992,7 +9284,7 @@
             "$ref": "#/components/schemas/Integration"
           },
           {
-            "$ref": "#/components/schemas/User2"
+            "$ref": "#/components/schemas/User"
           },
           {
             "$ref": "#/components/schemas/Custom"
@@ -9735,6 +10027,49 @@
           "name"
         ]
       },
+      "CustomEmojiList": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `list`",
+            "type": "string",
+            "const": "list"
+          },
+          "type": {
+            "description": "Always `custom_emoji`",
+            "type": "string",
+            "const": "custom_emoji"
+          },
+          "results": {
+            "description": "The list of custom emojis.",
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/customEmojiResponse"
+            }
+          },
+          "has_more": {
+            "description": "Whether there are more results available.",
+            "type": "boolean"
+          },
+          "next_cursor": {
+            "description": "The cursor to use for the next page of results, or null if there are no more results.",
+            "$ref": "#/components/schemas/PageListNextCursor"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "object",
+          "type",
+          "results",
+          "has_more",
+          "next_cursor"
+        ],
+        "additionalProperties": false
+      },
       "CustomEmojiPageIconCustomEmoji": {
         "type": "object",
         "properties": {
@@ -10398,6 +10733,52 @@
           "is_not_empty"
         ]
       },
+      "FileUploadList": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `list`",
+            "type": "string",
+            "const": "list"
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/PageListNextCursor"
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/fileUploadObjectResponse"
+            }
+          },
+          "type": {
+            "description": "Always `file_upload`",
+            "type": "string",
+            "const": "file_upload"
+          },
+          "file_upload": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "request_status": {
+            "$ref": "#/components/schemas/requestStatusResponse"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "object",
+          "next_cursor",
+          "has_more",
+          "results",
+          "type",
+          "file_upload"
+        ],
+        "additionalProperties": false
+      },
       "FileUploadObjectFileImportResultAllOfError": {
         "type": "object",
         "properties": {
@@ -10810,7 +11191,7 @@
             "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "instructions_page_id": {
-            "$ref": "#/components/schemas/ListViewsNextCursor"
+            "$ref": "#/components/schemas/PageListNextCursor"
           },
           "icon": {
             "$ref": "#/components/schemas/AgentIcon"
@@ -11024,48 +11405,6 @@
         ],
         "additionalProperties": false
       },
-      "GetViewQueryResultsOk": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `list`",
-            "type": "string",
-            "const": "list"
-          },
-          "next_cursor": {
-            "$ref": "#/components/schemas/ListViewsNextCursor"
-          },
-          "has_more": {
-            "type": "boolean"
-          },
-          "results": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/partialPageObjectResponse"
-            }
-          },
-          "type": {
-            "description": "Always `page`",
-            "type": "string",
-            "const": "page"
-          },
-          "page": {
-            "$ref": "#/components/schemas/emptyObject"
-          },
-          "request_status": {
-            "$ref": "#/components/schemas/requestStatusResponse"
-          }
-        },
-        "required": [
-          "object",
-          "next_cursor",
-          "has_more",
-          "results",
-          "type",
-          "page"
-        ],
-        "additionalProperties": false
-      },
       "GroupFilterOperatorArrayItemAnd": {
         "type": "object",
         "properties": {
@@ -11239,87 +11578,6 @@
           "database_id"
         ]
       },
-      "ListCommentsOk": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `list`",
-            "type": "string",
-            "const": "list"
-          },
-          "next_cursor": {
-            "$ref": "#/components/schemas/ListViewsNextCursor"
-          },
-          "has_more": {
-            "type": "boolean"
-          },
-          "results": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/commentObjectResponse"
-            }
-          },
-          "type": {
-            "description": "Always `comment`",
-            "type": "string",
-            "const": "comment"
-          },
-          "comment": {
-            "$ref": "#/components/schemas/emptyObject"
-          },
-          "request_status": {
-            "$ref": "#/components/schemas/requestStatusResponse"
-          }
-        },
-        "required": [
-          "object",
-          "next_cursor",
-          "has_more",
-          "results",
-          "type",
-          "comment"
-        ],
-        "additionalProperties": false
-      },
-      "ListCustomEmojisOk": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `list`",
-            "type": "string",
-            "const": "list"
-          },
-          "type": {
-            "description": "Always `custom_emoji`",
-            "type": "string",
-            "const": "custom_emoji"
-          },
-          "results": {
-            "description": "The list of custom emojis.",
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/customEmojiResponse"
-            }
-          },
-          "has_more": {
-            "description": "Whether there are more results available.",
-            "type": "boolean"
-          },
-          "next_cursor": {
-            "description": "The cursor to use for the next page of results, or null if there are no more results.",
-            "$ref": "#/components/schemas/ListViewsNextCursor"
-          }
-        },
-        "required": [
-          "object",
-          "type",
-          "results",
-          "has_more",
-          "next_cursor"
-        ],
-        "additionalProperties": false
-      },
       "ListDataSourceTemplatesOk": {
         "type": "object",
         "properties": {
@@ -11332,7 +11590,7 @@
           },
           "next_cursor": {
             "description": "Cursor to use for the next page of results. Null if there are no more results.",
-            "$ref": "#/components/schemas/ListViewsNextCursor"
+            "$ref": "#/components/schemas/PageListNextCursor"
           }
         },
         "required": [
@@ -11370,171 +11628,6 @@
           "id",
           "name",
           "is_default"
-        ],
-        "additionalProperties": false
-      },
-      "ListFileUploadsOk": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `list`",
-            "type": "string",
-            "const": "list"
-          },
-          "next_cursor": {
-            "$ref": "#/components/schemas/ListViewsNextCursor"
-          },
-          "has_more": {
-            "type": "boolean"
-          },
-          "results": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/fileUploadObjectResponse"
-            }
-          },
-          "type": {
-            "description": "Always `file_upload`",
-            "type": "string",
-            "const": "file_upload"
-          },
-          "file_upload": {
-            "$ref": "#/components/schemas/emptyObject"
-          },
-          "request_status": {
-            "$ref": "#/components/schemas/requestStatusResponse"
-          }
-        },
-        "required": [
-          "object",
-          "next_cursor",
-          "has_more",
-          "results",
-          "type",
-          "file_upload"
-        ],
-        "additionalProperties": false
-      },
-      "ListSkillsPluginsOk": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `list`",
-            "type": "string",
-            "const": "list"
-          },
-          "results": {
-            "$ref": "#/components/schemas/ListSkillsPluginsOkResults"
-          },
-          "next_cursor": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
-          },
-          "has_more": {
-            "type": "boolean"
-          },
-          "type": {
-            "description": "Always `plugin`",
-            "type": "string",
-            "const": "plugin"
-          }
-        },
-        "required": [
-          "object",
-          "results",
-          "next_cursor",
-          "has_more",
-          "type"
-        ],
-        "additionalProperties": false
-      },
-      "ListSkillsPluginsOkResults": {
-        "type": "array",
-        "maxItems": 100,
-        "items": {
-          "$ref": "#/components/schemas/ListSkillsPluginsOkResultsItem"
-        }
-      },
-      "ListSkillsPluginsOkResultsItem": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "version_id": {
-            "description": "Opaque version identifier for the plugin. Compare this value for equality to determine whether the plugin has changed.",
-            "type": "string",
-            "minLength": 64,
-            "maxLength": 64
-          }
-        },
-        "required": [
-          "id",
-          "name",
-          "description",
-          "version_id"
-        ],
-        "additionalProperties": false
-      },
-      "ListViewsNextCursor": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/idResponse"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "ListViewsOk": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `list`",
-            "type": "string",
-            "const": "list"
-          },
-          "next_cursor": {
-            "$ref": "#/components/schemas/ListViewsNextCursor"
-          },
-          "has_more": {
-            "type": "boolean"
-          },
-          "results": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/dataSourceViewReferenceResponse"
-            }
-          },
-          "type": {
-            "description": "Always `view`",
-            "type": "string",
-            "const": "view"
-          },
-          "view": {
-            "$ref": "#/components/schemas/emptyObject"
-          },
-          "request_status": {
-            "$ref": "#/components/schemas/requestStatusResponse"
-          },
-          "request_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "6cc5e987-9254-45c5-a971-b776ccefe223"
-          }
-        },
-        "required": [
-          "object",
-          "next_cursor",
-          "has_more",
-          "results",
-          "type",
-          "view"
         ],
         "additionalProperties": false
       },
@@ -12311,6 +12404,62 @@
           }
         ]
       },
+      "PageList": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `list`",
+            "type": "string",
+            "const": "list"
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/PageListNextCursor"
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/partialPageObjectResponse"
+            }
+          },
+          "type": {
+            "description": "Always `page`",
+            "type": "string",
+            "const": "page"
+          },
+          "page": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "request_status": {
+            "$ref": "#/components/schemas/requestStatusResponse"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "object",
+          "next_cursor",
+          "has_more",
+          "results",
+          "type",
+          "page"
+        ],
+        "additionalProperties": false
+      },
+      "PageListNextCursor": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/idResponse"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "PageMovedWebhookPayloadData": {
         "description": "Additional event-specific data.",
         "type": "object",
@@ -12325,7 +12474,7 @@
         ],
         "additionalProperties": false
       },
-      "PageOrDataSource": {
+      "PageOrDataSourceList": {
         "title": "Page Or Data Source",
         "type": "object",
         "properties": {
@@ -12345,7 +12494,7 @@
               "string",
               "null"
             ],
-            "example": "s:12c4cdac-434e-4d5b-9164-619098206e05:3ee88fcd-daf4-813f-97c1-d9a875c22962"
+            "example": "9201f6db-2895-4450-9435-041541a181dd"
           },
           "has_more": {
             "type": "boolean"
@@ -12353,16 +12502,16 @@
           "results": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/PageOrDataSourceResultsItem"
+              "$ref": "#/components/schemas/PageOrDataSourceListResultsItem"
             }
           },
           "request_status": {
-            "$ref": "#/components/schemas/PageOrDataSourceStatus"
+            "$ref": "#/components/schemas/PageOrDataSourceListRequestStatus"
           },
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "56db361f-2bf2-43e6-8170-5fb7bcaebf3d"
+            "example": "34d96cb8-8293-4906-8347-a54d7fa88e34"
           }
         },
         "required": [
@@ -12374,7 +12523,27 @@
           "results"
         ]
       },
-      "PageOrDataSourceResultsItem": {
+      "PageOrDataSourceListRequestStatus": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/StatusType"
+          },
+          "incomplete_reason": {
+            "$ref": "#/components/schemas/PageOrDataSourceListRequestStatusIncompleteReason"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "PageOrDataSourceListRequestStatusIncompleteReason": {
+        "type": "string",
+        "enum": [
+          "query_result_limit_reached"
+        ]
+      },
+      "PageOrDataSourceListResultsItem": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/PageOrPartial"
@@ -12382,26 +12551,6 @@
           {
             "$ref": "#/components/schemas/DataSourceOrPartial"
           }
-        ]
-      },
-      "PageOrDataSourceStatus": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "$ref": "#/components/schemas/StatusType"
-          },
-          "incomplete_reason": {
-            "$ref": "#/components/schemas/PageOrDataSourceStatusIncompleteReason"
-          }
-        },
-        "required": [
-          "type"
-        ]
-      },
-      "PageOrDataSourceStatusIncompleteReason": {
-        "type": "string",
-        "enum": [
-          "query_result_limit_reached"
         ]
       },
       "PageOrPartial": {
@@ -13262,6 +13411,76 @@
             "type": "null"
           }
         ]
+      },
+      "PluginList": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `list`",
+            "type": "string",
+            "const": "list"
+          },
+          "results": {
+            "$ref": "#/components/schemas/PluginListResults"
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "type": {
+            "description": "Always `plugin`",
+            "type": "string",
+            "const": "plugin"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "object",
+          "results",
+          "next_cursor",
+          "has_more",
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      "PluginListResults": {
+        "type": "array",
+        "maxItems": 100,
+        "items": {
+          "$ref": "#/components/schemas/PluginListResultsItem"
+        }
+      },
+      "PluginListResultsItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "version_id": {
+            "description": "Opaque version identifier for the plugin. Compare this value for equality to determine whether the plugin has changed.",
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "version_id"
+        ],
+        "additionalProperties": false
       },
       "PostDatabaseQuery": {
         "type": "object",
@@ -14991,288 +15210,6 @@
           "$ref": "#/components/schemas/AgentStatus"
         }
       },
-      "QueryAgentsOk": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `list`",
-            "type": "string",
-            "const": "list"
-          },
-          "type": {
-            "description": "Always `agent`",
-            "type": "string",
-            "const": "agent"
-          },
-          "results": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/QueryAgentsOkResultsItem"
-            }
-          },
-          "has_more": {
-            "type": "boolean"
-          },
-          "next_cursor": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
-          }
-        },
-        "required": [
-          "object",
-          "type",
-          "results",
-          "has_more",
-          "next_cursor"
-        ],
-        "additionalProperties": false
-      },
-      "QueryAgentsOkResultsItem": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/QueryAgentsOkResultsItemOneOf0"
-          },
-          {
-            "$ref": "#/components/schemas/QueryAgentsOkResultsItemNotionAi"
-          }
-        ]
-      },
-      "QueryAgentsOkResultsItemNotionAi": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `agent`",
-            "type": "string",
-            "const": "agent"
-          },
-          "id": {
-            "description": "Always `notion_ai`",
-            "type": "string",
-            "const": "notion_ai"
-          },
-          "agent_type": {
-            "description": "Always `notion_ai`",
-            "type": "string",
-            "const": "notion_ai"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "null"
-          },
-          "instructions_page_id": {
-            "type": "null"
-          },
-          "icon": {
-            "$ref": "#/components/schemas/QueryAgentsOkResultsItemNotionAiIcon"
-          },
-          "model": {
-            "$ref": "#/components/schemas/AgentModel"
-          },
-          "connections": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/AgentConnectionsItem"
-            }
-          },
-          "status": {
-            "description": "Always `active`",
-            "type": "string",
-            "const": "active"
-          },
-          "pause_reason": {
-            "type": "null"
-          },
-          "created_by": {
-            "type": "null"
-          },
-          "agent_version": {
-            "type": "null"
-          },
-          "created_time": {
-            "type": "null"
-          },
-          "last_edited_time": {
-            "type": "null"
-          },
-          "last_run_at": {
-            "type": "null"
-          },
-          "credit_limit": {
-            "type": "null"
-          },
-          "triggers": {
-            "$ref": "#/components/schemas/AgentTriggers"
-          }
-        },
-        "required": [
-          "object",
-          "id",
-          "agent_type",
-          "name",
-          "description",
-          "instructions_page_id",
-          "icon",
-          "model",
-          "connections",
-          "status",
-          "pause_reason",
-          "created_by",
-          "agent_version",
-          "created_time",
-          "last_edited_time",
-          "last_run_at",
-          "credit_limit",
-          "triggers"
-        ],
-        "additionalProperties": false
-      },
-      "QueryAgentsOkResultsItemNotionAiIcon": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/pageIconResponse"
-          },
-          {
-            "$ref": "#/components/schemas/AgentIconCustomAgentAvatar"
-          }
-        ]
-      },
-      "QueryAgentsOkResultsItemOneOf0": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `agent`",
-            "type": "string",
-            "const": "agent"
-          },
-          "id": {
-            "$ref": "#/components/schemas/idResponse"
-          },
-          "agent_type": {
-            "$ref": "#/components/schemas/QueryAgentsOkResultsItemOneOf0AgentType"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
-          },
-          "instructions_page_id": {
-            "$ref": "#/components/schemas/ListViewsNextCursor"
-          },
-          "icon": {
-            "$ref": "#/components/schemas/AgentIcon"
-          },
-          "model": {
-            "description": "The model selection: automatic, or pinned to a public model ID.",
-            "$ref": "#/components/schemas/AgentModel"
-          },
-          "connections": {
-            "description": "Integrations the agent is connected to (Notion, Slack, Discord, MCP servers, and other connectors), each with an account and per-target permissions.",
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/AgentConnectionsItem"
-            }
-          },
-          "status": {
-            "description": "\"active\" when the agent can run; \"disabled\" when it is paused (see pause_reason); \"deleted\" when it has been removed.",
-            "$ref": "#/components/schemas/AgentStatus"
-          },
-          "pause_reason": {
-            "description": "Why the agent is paused when status is \"disabled\" (e.g. \"credit_limit\", \"disabled_from_workspace_settings\"); null when active.",
-            "$ref": "#/components/schemas/AgentPauseReason"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/QueryAgentsOkResultsItemOneOf0CreatedBy"
-          },
-          "agent_version": {
-            "$ref": "#/components/schemas/AgentVersion"
-          },
-          "created_time": {
-            "description": "Date and time when this agent was created.",
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_edited_time": {
-            "description": "Date and time when this agent was last edited.",
-            "type": "string",
-            "format": "date-time"
-          },
-          "last_run_at": {
-            "$ref": "#/components/schemas/AgentLastRunAt"
-          },
-          "credit_limit": {
-            "$ref": "#/components/schemas/AgentCreditLimit"
-          },
-          "triggers": {
-            "description": "The agent's configured triggers, each with a machine type, an enabled flag, and a structured recurrence schedule when applicable.",
-            "$ref": "#/components/schemas/AgentTriggers"
-          },
-          "instructions": {
-            "description": "The agent's inline instructions when verbose=true, or null when its instructions are stored on a page.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
-          }
-        },
-        "required": [
-          "object",
-          "id",
-          "agent_type",
-          "name",
-          "description",
-          "instructions_page_id",
-          "icon",
-          "model",
-          "connections",
-          "status",
-          "pause_reason",
-          "created_by",
-          "agent_version",
-          "created_time",
-          "last_edited_time",
-          "last_run_at",
-          "credit_limit",
-          "triggers"
-        ],
-        "additionalProperties": false
-      },
-      "QueryAgentsOkResultsItemOneOf0AgentType": {
-        "description": "What kind of agent this is: \"custom_agent\" is a standalone agent you chat with; \"autofill_custom_agent\" fills a database property.",
-        "type": "string",
-        "enum": [
-          "custom_agent",
-          "autofill_custom_agent"
-        ]
-      },
-      "QueryAgentsOkResultsItemOneOf0CreatedBy": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/QueryAgentsOkResultsItemOneOf0CreatedByOneOf0"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "QueryAgentsOkResultsItemOneOf0CreatedByOneOf0": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "$ref": "#/components/schemas/RetrieveSessionCreatedByType"
-          },
-          "id": {
-            "description": "The ID of the user or bot that created this agent.",
-            "$ref": "#/components/schemas/idResponse"
-          }
-        },
-        "required": [
-          "type",
-          "id"
-        ],
-        "additionalProperties": false
-      },
       "QueryAgentsSorts": {
         "description": "Ordered sort precedence. Defaults to created_time descending.",
         "type": "array",
@@ -16438,461 +16375,6 @@
           }
         ]
       },
-      "QuerySessionEventsOk": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `list`",
-            "type": "string",
-            "const": "list"
-          },
-          "type": {
-            "description": "Always `session_event`",
-            "type": "string",
-            "const": "session_event"
-          },
-          "session_event": {
-            "type": "object",
-            "additionalProperties": false
-          },
-          "results": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/QuerySessionEventsOkResultsItem"
-            }
-          },
-          "has_more": {
-            "type": "boolean"
-          },
-          "next_cursor": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
-          }
-        },
-        "required": [
-          "object",
-          "type",
-          "session_event",
-          "results",
-          "has_more",
-          "next_cursor"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionEventsOkResultsItem": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/QuerySessionEventsOkResultsItemUserMessage"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionEventsOkResultsItemAgentMessage"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionEventsOkResultsItemAgentThinking"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionEventsOkResultsItemAgentToolUse"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionEventsOkResultsItemAgentToolResult"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionEventsOkResultsItemSessionStatus"
-          }
-        ]
-      },
-      "QuerySessionEventsOkResultsItemAgentMessage": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `session_event`",
-            "type": "string",
-            "const": "session_event"
-          },
-          "id": {
-            "type": "string"
-          },
-          "session_id": {
-            "type": "string"
-          },
-          "sequence": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "created_at": {
-            "type": "string"
-          },
-          "type": {
-            "description": "Always `agent.message`",
-            "type": "string",
-            "const": "agent.message"
-          },
-          "content": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/QuerySessionEventsResultsItemUserMessageContentItem"
-            }
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/AgentInsightsCreatedBy"
-          },
-          "metadata": {
-            "$ref": "#/components/schemas/QuerySessionEventsOkResultsItemAgentMessageMetadata"
-          }
-        },
-        "required": [
-          "object",
-          "id",
-          "session_id",
-          "sequence",
-          "created_at",
-          "type",
-          "content",
-          "created_by",
-          "metadata"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionEventsOkResultsItemAgentMessageMetadata": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/QuerySessionEventsOkResultsItemAgentMessageMetadataModel"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "QuerySessionEventsOkResultsItemAgentMessageMetadataModel": {
-        "type": "object",
-        "properties": {
-          "model": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "model"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionEventsOkResultsItemAgentThinking": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `session_event`",
-            "type": "string",
-            "const": "session_event"
-          },
-          "id": {
-            "type": "string"
-          },
-          "session_id": {
-            "type": "string"
-          },
-          "sequence": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "created_at": {
-            "type": "string"
-          },
-          "type": {
-            "description": "Always `agent.thinking`",
-            "type": "string",
-            "const": "agent.thinking"
-          },
-          "content": {
-            "$ref": "#/components/schemas/QuerySessionEventsOkResultsItemAgentThinkingContent"
-          }
-        },
-        "required": [
-          "object",
-          "id",
-          "session_id",
-          "sequence",
-          "created_at",
-          "type",
-          "content"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionEventsOkResultsItemAgentThinkingContent": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/QuerySessionEventsResultsItemUserMessageContentItemText"
-        }
-      },
-      "QuerySessionEventsOkResultsItemAgentToolResult": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `session_event`",
-            "type": "string",
-            "const": "session_event"
-          },
-          "id": {
-            "type": "string"
-          },
-          "session_id": {
-            "type": "string"
-          },
-          "sequence": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "created_at": {
-            "type": "string"
-          },
-          "type": {
-            "description": "Always `agent.tool_result`",
-            "type": "string",
-            "const": "agent.tool_result"
-          },
-          "tool_use_id": {
-            "type": "string"
-          },
-          "tool_name": {
-            "type": "string"
-          },
-          "is_error": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "object",
-          "id",
-          "session_id",
-          "sequence",
-          "created_at",
-          "type",
-          "tool_use_id",
-          "tool_name",
-          "is_error"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionEventsOkResultsItemAgentToolUse": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `session_event`",
-            "type": "string",
-            "const": "session_event"
-          },
-          "id": {
-            "type": "string"
-          },
-          "session_id": {
-            "type": "string"
-          },
-          "sequence": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "created_at": {
-            "type": "string"
-          },
-          "type": {
-            "description": "Always `agent.tool_use`",
-            "type": "string",
-            "const": "agent.tool_use"
-          },
-          "tool_name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "object",
-          "id",
-          "session_id",
-          "sequence",
-          "created_at",
-          "type",
-          "tool_name"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionEventsOkResultsItemSessionStatus": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `session_event`",
-            "type": "string",
-            "const": "session_event"
-          },
-          "id": {
-            "type": "string"
-          },
-          "session_id": {
-            "type": "string"
-          },
-          "sequence": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "created_at": {
-            "type": "string"
-          },
-          "type": {
-            "description": "Always `session.status`",
-            "type": "string",
-            "const": "session.status"
-          },
-          "status": {
-            "$ref": "#/components/schemas/QuerySessionEventsOkResultsItemSessionStatusStatus"
-          },
-          "required_actions": {
-            "$ref": "#/components/schemas/RetrieveSessionRequiredActions"
-          },
-          "error": {
-            "$ref": "#/components/schemas/CancelSessionError"
-          }
-        },
-        "required": [
-          "object",
-          "id",
-          "session_id",
-          "sequence",
-          "created_at",
-          "type",
-          "status"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionEventsOkResultsItemSessionStatusStatus": {
-        "description": "One of: `requires_action`, `completed`, `failed`, `canceled`, `terminated`",
-        "type": "string",
-        "enum": [
-          "requires_action",
-          "completed",
-          "failed",
-          "canceled",
-          "terminated"
-        ]
-      },
-      "QuerySessionEventsOkResultsItemUserMessage": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `session_event`",
-            "type": "string",
-            "const": "session_event"
-          },
-          "id": {
-            "type": "string"
-          },
-          "session_id": {
-            "type": "string"
-          },
-          "sequence": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "created_at": {
-            "type": "string"
-          },
-          "type": {
-            "description": "Always `user.message`",
-            "type": "string",
-            "const": "user.message"
-          },
-          "content": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/QuerySessionEventsResultsItemUserMessageContentItem"
-            }
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/AgentInsightsCreatedBy"
-          },
-          "metadata": {
-            "$ref": "#/components/schemas/QuerySessionEventsOkResultsItemUserMessageMetadata"
-          }
-        },
-        "required": [
-          "object",
-          "id",
-          "session_id",
-          "sequence",
-          "created_at",
-          "type",
-          "content",
-          "created_by",
-          "metadata"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionEventsOkResultsItemUserMessageMetadata": {
-        "oneOf": [
-          {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string",
-              "maxLength": 2000
-            }
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "QuerySessionEventsResultsItemUserMessageContentItem": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/QuerySessionEventsResultsItemUserMessageContentItemText"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionEventsResultsItemUserMessageContentItemFile"
-          }
-        ]
-      },
-      "QuerySessionEventsResultsItemUserMessageContentItemFile": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `file`",
-            "type": "string",
-            "const": "file"
-          },
-          "name": {
-            "type": "string"
-          },
-          "content_type": {
-            "type": "string"
-          },
-          "url": {
-            "type": "string"
-          },
-          "expiry_time": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "type",
-          "name",
-          "content_type",
-          "url"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionEventsResultsItemUserMessageContentItemText": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `text`",
-            "type": "string",
-            "const": "text"
-          },
-          "text": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "type",
-          "text"
-        ],
-        "additionalProperties": false
-      },
       "QuerySessionEventsSorts": {
         "description": "Ordered sort precedence. Defaults to sequence ascending.",
         "type": "array",
@@ -17217,147 +16699,6 @@
           },
           {
             "$ref": "#/components/schemas/QuerySessionsFilterOneOf2"
-          }
-        ]
-      },
-      "QuerySessionsOk": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `list`",
-            "type": "string",
-            "const": "list"
-          },
-          "type": {
-            "description": "Always `session`",
-            "type": "string",
-            "const": "session"
-          },
-          "session": {
-            "type": "object",
-            "additionalProperties": false
-          },
-          "results": {
-            "$ref": "#/components/schemas/QuerySessionsOkResults"
-          },
-          "has_more": {
-            "description": "Whether more session candidates remain after this bounded scan.",
-            "type": "boolean"
-          },
-          "next_cursor": {
-            "description": "Pass this cursor as start_cursor when has_more is true, even when results is empty.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
-          }
-        },
-        "required": [
-          "object",
-          "type",
-          "session",
-          "results",
-          "has_more",
-          "next_cursor"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionsOkResults": {
-        "description": "Sessions found in this bounded scan. Access filtering can leave this array empty while has_more is true.",
-        "type": "array",
-        "maxItems": 100,
-        "items": {
-          "$ref": "#/components/schemas/QuerySessionsOkResultsItem"
-        }
-      },
-      "QuerySessionsOkResultsItem": {
-        "type": "object",
-        "properties": {
-          "object": {
-            "description": "Always `session`",
-            "type": "string",
-            "const": "session"
-          },
-          "id": {
-            "type": "string"
-          },
-          "agent_id": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "status": {
-            "description": "One of: `queued`, `in_progress`, `requires_action`, `completed`, `failed`, `canceled`, `terminated`",
-            "$ref": "#/components/schemas/CancelSessionStatus"
-          },
-          "created_by": {
-            "$ref": "#/components/schemas/RetrieveSessionCreatedBy"
-          },
-          "agent_version": {
-            "$ref": "#/components/schemas/RetrieveSessionAgentVersion"
-          },
-          "models": {
-            "$ref": "#/components/schemas/RetrieveSessionModels"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "required_actions": {
-            "$ref": "#/components/schemas/RetrieveSessionRequiredActions"
-          },
-          "error": {
-            "$ref": "#/components/schemas/CancelSessionError"
-          },
-          "trigger_type": {
-            "type": "string"
-          },
-          "type_labels": {
-            "$ref": "#/components/schemas/RetrieveSessionToolTypes"
-          },
-          "chat_user_emails": {
-            "$ref": "#/components/schemas/RetrieveSessionToolTypes"
-          },
-          "tool_types": {
-            "$ref": "#/components/schemas/RetrieveSessionToolTypes"
-          },
-          "tool_call_count": {
-            "$ref": "#/components/schemas/RetrieveSessionMessageCount"
-          },
-          "credits_used": {
-            "$ref": "#/components/schemas/QuerySessionsOkResultsItemCreditsUsed"
-          },
-          "runs_completed": {
-            "$ref": "#/components/schemas/RetrieveSessionMessageCount"
-          },
-          "message_count": {
-            "$ref": "#/components/schemas/RetrieveSessionMessageCount"
-          }
-        },
-        "required": [
-          "object",
-          "id",
-          "agent_id",
-          "title",
-          "status",
-          "created_by",
-          "agent_version",
-          "models",
-          "created_at",
-          "updated_at"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionsOkResultsItemCreditsUsed": {
-        "oneOf": [
-          {
-            "type": "number",
-            "minimum": 0
-          },
-          {
-            "type": "null"
           }
         ]
       },
@@ -19214,6 +18555,610 @@
         "oneOf": [
           {
             "$ref": "#/components/schemas/partialSelectPropertyValueResponse"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "SessionEventList": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `list`",
+            "type": "string",
+            "const": "list"
+          },
+          "type": {
+            "description": "Always `session_event`",
+            "type": "string",
+            "const": "session_event"
+          },
+          "session_event": {
+            "type": "object",
+            "additionalProperties": false
+          },
+          "results": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/SessionEventListResultsItem"
+            }
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "object",
+          "type",
+          "session_event",
+          "results",
+          "has_more",
+          "next_cursor"
+        ],
+        "additionalProperties": false
+      },
+      "SessionEventListResultsItem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/SessionEventListResultsItemUserMessage"
+          },
+          {
+            "$ref": "#/components/schemas/SessionEventListResultsItemAgentMessage"
+          },
+          {
+            "$ref": "#/components/schemas/SessionEventListResultsItemAgentThinking"
+          },
+          {
+            "$ref": "#/components/schemas/SessionEventListResultsItemAgentToolUse"
+          },
+          {
+            "$ref": "#/components/schemas/SessionEventListResultsItemAgentToolResult"
+          },
+          {
+            "$ref": "#/components/schemas/SessionEventListResultsItemSessionStatus"
+          }
+        ]
+      },
+      "SessionEventListResultsItemAgentMessage": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `session_event`",
+            "type": "string",
+            "const": "session_event"
+          },
+          "id": {
+            "type": "string"
+          },
+          "session_id": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "type": {
+            "description": "Always `agent.message`",
+            "type": "string",
+            "const": "agent.message"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SessionEventListResultsItemUserMessageContentItem"
+            }
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/AgentInsightsCreatedBy"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/SessionEventListResultsItemAgentMessageMetadata"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "session_id",
+          "sequence",
+          "created_at",
+          "type",
+          "content",
+          "created_by",
+          "metadata"
+        ],
+        "additionalProperties": false
+      },
+      "SessionEventListResultsItemAgentMessageMetadata": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/SessionEventListResultsItemAgentMessageMetadataModel"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "SessionEventListResultsItemAgentMessageMetadataModel": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "model"
+        ],
+        "additionalProperties": false
+      },
+      "SessionEventListResultsItemAgentThinking": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `session_event`",
+            "type": "string",
+            "const": "session_event"
+          },
+          "id": {
+            "type": "string"
+          },
+          "session_id": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "type": {
+            "description": "Always `agent.thinking`",
+            "type": "string",
+            "const": "agent.thinking"
+          },
+          "content": {
+            "$ref": "#/components/schemas/SessionEventListResultsItemAgentThinkingContent"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "session_id",
+          "sequence",
+          "created_at",
+          "type",
+          "content"
+        ],
+        "additionalProperties": false
+      },
+      "SessionEventListResultsItemAgentThinkingContent": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/SessionEventListResultsItemUserMessageContentItemText"
+        }
+      },
+      "SessionEventListResultsItemAgentToolResult": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `session_event`",
+            "type": "string",
+            "const": "session_event"
+          },
+          "id": {
+            "type": "string"
+          },
+          "session_id": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "type": {
+            "description": "Always `agent.tool_result`",
+            "type": "string",
+            "const": "agent.tool_result"
+          },
+          "tool_use_id": {
+            "type": "string"
+          },
+          "tool_name": {
+            "type": "string"
+          },
+          "is_error": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "session_id",
+          "sequence",
+          "created_at",
+          "type",
+          "tool_use_id",
+          "tool_name",
+          "is_error"
+        ],
+        "additionalProperties": false
+      },
+      "SessionEventListResultsItemAgentToolUse": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `session_event`",
+            "type": "string",
+            "const": "session_event"
+          },
+          "id": {
+            "type": "string"
+          },
+          "session_id": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "type": {
+            "description": "Always `agent.tool_use`",
+            "type": "string",
+            "const": "agent.tool_use"
+          },
+          "tool_name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "session_id",
+          "sequence",
+          "created_at",
+          "type",
+          "tool_name"
+        ],
+        "additionalProperties": false
+      },
+      "SessionEventListResultsItemSessionStatus": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `session_event`",
+            "type": "string",
+            "const": "session_event"
+          },
+          "id": {
+            "type": "string"
+          },
+          "session_id": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "type": {
+            "description": "Always `session.status`",
+            "type": "string",
+            "const": "session.status"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SessionEventListResultsItemSessionStatusStatus"
+          },
+          "required_actions": {
+            "$ref": "#/components/schemas/RetrieveSessionRequiredActions"
+          },
+          "error": {
+            "$ref": "#/components/schemas/CancelSessionError"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "session_id",
+          "sequence",
+          "created_at",
+          "type",
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "SessionEventListResultsItemSessionStatusStatus": {
+        "description": "One of: `requires_action`, `completed`, `failed`, `canceled`, `terminated`",
+        "type": "string",
+        "enum": [
+          "requires_action",
+          "completed",
+          "failed",
+          "canceled",
+          "terminated"
+        ]
+      },
+      "SessionEventListResultsItemUserMessage": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `session_event`",
+            "type": "string",
+            "const": "session_event"
+          },
+          "id": {
+            "type": "string"
+          },
+          "session_id": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "created_at": {
+            "type": "string"
+          },
+          "type": {
+            "description": "Always `user.message`",
+            "type": "string",
+            "const": "user.message"
+          },
+          "content": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SessionEventListResultsItemUserMessageContentItem"
+            }
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/AgentInsightsCreatedBy"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/SessionEventListResultsItemUserMessageMetadata"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "session_id",
+          "sequence",
+          "created_at",
+          "type",
+          "content",
+          "created_by",
+          "metadata"
+        ],
+        "additionalProperties": false
+      },
+      "SessionEventListResultsItemUserMessageContentItem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/SessionEventListResultsItemUserMessageContentItemText"
+          },
+          {
+            "$ref": "#/components/schemas/SessionEventListResultsItemUserMessageContentItemFile"
+          }
+        ]
+      },
+      "SessionEventListResultsItemUserMessageContentItemFile": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `file`",
+            "type": "string",
+            "const": "file"
+          },
+          "name": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "expiry_time": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "name",
+          "content_type",
+          "url"
+        ],
+        "additionalProperties": false
+      },
+      "SessionEventListResultsItemUserMessageContentItemText": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `text`",
+            "type": "string",
+            "const": "text"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "text"
+        ],
+        "additionalProperties": false
+      },
+      "SessionEventListResultsItemUserMessageMetadata": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string",
+              "maxLength": 2000
+            }
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "SessionList": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `list`",
+            "type": "string",
+            "const": "list"
+          },
+          "type": {
+            "description": "Always `session`",
+            "type": "string",
+            "const": "session"
+          },
+          "session": {
+            "type": "object",
+            "additionalProperties": false
+          },
+          "results": {
+            "$ref": "#/components/schemas/SessionListResults"
+          },
+          "has_more": {
+            "description": "Whether more session candidates remain after this bounded scan.",
+            "type": "boolean"
+          },
+          "next_cursor": {
+            "description": "Pass this cursor as start_cursor when has_more is true, even when results is empty.",
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "object",
+          "type",
+          "session",
+          "results",
+          "has_more",
+          "next_cursor"
+        ],
+        "additionalProperties": false
+      },
+      "SessionListResults": {
+        "description": "Sessions found in this bounded scan. Access filtering can leave this array empty while has_more is true.",
+        "type": "array",
+        "maxItems": 100,
+        "items": {
+          "$ref": "#/components/schemas/SessionListResultsItem"
+        }
+      },
+      "SessionListResultsItem": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `session`",
+            "type": "string",
+            "const": "session"
+          },
+          "id": {
+            "type": "string"
+          },
+          "agent_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "description": "One of: `queued`, `in_progress`, `requires_action`, `completed`, `failed`, `canceled`, `terminated`",
+            "$ref": "#/components/schemas/CancelSessionStatus"
+          },
+          "created_by": {
+            "$ref": "#/components/schemas/RetrieveSessionCreatedBy"
+          },
+          "agent_version": {
+            "$ref": "#/components/schemas/RetrieveSessionAgentVersion"
+          },
+          "models": {
+            "$ref": "#/components/schemas/RetrieveSessionModels"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "required_actions": {
+            "$ref": "#/components/schemas/RetrieveSessionRequiredActions"
+          },
+          "error": {
+            "$ref": "#/components/schemas/CancelSessionError"
+          },
+          "trigger_type": {
+            "type": "string"
+          },
+          "type_labels": {
+            "$ref": "#/components/schemas/RetrieveSessionToolTypes"
+          },
+          "chat_user_emails": {
+            "$ref": "#/components/schemas/RetrieveSessionToolTypes"
+          },
+          "tool_types": {
+            "$ref": "#/components/schemas/RetrieveSessionToolTypes"
+          },
+          "tool_call_count": {
+            "$ref": "#/components/schemas/RetrieveSessionMessageCount"
+          },
+          "credits_used": {
+            "$ref": "#/components/schemas/SessionListResultsItemCreditsUsed"
+          },
+          "runs_completed": {
+            "$ref": "#/components/schemas/RetrieveSessionMessageCount"
+          },
+          "message_count": {
+            "$ref": "#/components/schemas/RetrieveSessionMessageCount"
+          }
+        },
+        "required": [
+          "object",
+          "id",
+          "agent_id",
+          "title",
+          "status",
+          "created_by",
+          "agent_version",
+          "models",
+          "created_at",
+          "updated_at"
+        ],
+        "additionalProperties": false
+      },
+      "SessionListResultsItemCreditsUsed": {
+        "oneOf": [
+          {
+            "type": "number",
+            "minimum": 0
           },
           {
             "type": "null"
@@ -21554,6 +21499,20 @@
         "type": "object",
         "properties": {
           "type": {
+            "description": "Always `user`",
+            "type": "string",
+            "const": "user"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "UserList": {
+        "title": "User",
+        "type": "object",
+        "properties": {
+          "type": {
             "type": "string",
             "const": "user"
           },
@@ -21592,20 +21551,6 @@
           "next_cursor",
           "has_more",
           "results"
-        ]
-      },
-      "User2": {
-        "title": "User",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `user`",
-            "type": "string",
-            "const": "user"
-          }
-        },
-        "required": [
-          "type"
         ]
       },
       "UserObjectCommonAvatarURL": {
@@ -21926,6 +21871,53 @@
           "timestamp"
         ],
         "additionalProperties": true
+      },
+      "ViewList": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always `list`",
+            "type": "string",
+            "const": "list"
+          },
+          "next_cursor": {
+            "$ref": "#/components/schemas/PageListNextCursor"
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/dataSourceViewReferenceResponse"
+            }
+          },
+          "type": {
+            "description": "Always `view`",
+            "type": "string",
+            "const": "view"
+          },
+          "view": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "request_status": {
+            "$ref": "#/components/schemas/requestStatusResponse"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "6cc5e987-9254-45c5-a971-b776ccefe223"
+          }
+        },
+        "required": [
+          "object",
+          "next_cursor",
+          "has_more",
+          "results",
+          "type",
+          "view"
+        ],
+        "additionalProperties": false
       },
       "ViewPositionEnd": {
         "type": "object",
@@ -34524,7 +34516,7 @@
           },
           "next_cursor": {
             "description": "Cursor for the next page of results.",
-            "$ref": "#/components/schemas/ListViewsNextCursor"
+            "$ref": "#/components/schemas/PageListNextCursor"
           },
           "has_more": {
             "description": "Whether there are more results.",
@@ -36944,7 +36936,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/Block2"
+              "$ref": "#/components/schemas/BlockList"
             }
           }
         }
@@ -37544,7 +37536,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/User"
+              "$ref": "#/components/schemas/UserList"
             }
           }
         }
@@ -37664,7 +37656,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/GetViewQueryResultsOk"
+              "$ref": "#/components/schemas/PageList"
             }
           }
         }
@@ -37834,7 +37826,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/ListCommentsOk"
+              "$ref": "#/components/schemas/CommentList"
             }
           }
         }
@@ -37954,7 +37946,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/ListCustomEmojisOk"
+              "$ref": "#/components/schemas/CustomEmojiList"
             }
           }
         }
@@ -38194,7 +38186,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/ListFileUploadsOk"
+              "$ref": "#/components/schemas/FileUploadList"
             }
           }
         }
@@ -38314,7 +38306,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/ListSkillsPluginsOk"
+              "$ref": "#/components/schemas/PluginList"
             }
           }
         }
@@ -38434,7 +38426,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/ListViewsOk"
+              "$ref": "#/components/schemas/ViewList"
             }
           }
         }
@@ -38674,7 +38666,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/Block3"
+              "$ref": "#/components/schemas/BlockList"
             }
           }
         }
@@ -38914,7 +38906,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/PageOrDataSource"
+              "$ref": "#/components/schemas/PageOrDataSourceList"
             }
           }
         }
@@ -39164,7 +39156,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/PageOrDataSource"
+              "$ref": "#/components/schemas/PageOrDataSourceList"
             }
           }
         }
@@ -39284,7 +39276,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/QueryAgentsOk"
+              "$ref": "#/components/schemas/AgentList"
             }
           }
         }
@@ -39524,7 +39516,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/QuerySessionEventsOk"
+              "$ref": "#/components/schemas/SessionEventList"
             }
           }
         }
@@ -39644,7 +39636,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/QuerySessionsOk"
+              "$ref": "#/components/schemas/SessionList"
             }
           }
         }

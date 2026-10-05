@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"iter"
 	"log"
 	"net/http"
 	"os"
@@ -308,28 +309,76 @@ func nameBranches(doc *openapi.Document) {
 		nameBranchesIn(doc, s, name)
 	}
 
-	// the bodies, under the names flatten gives them
-	inContent := func(c openapi.Content, name string) {
-		for _, mt := range c {
-			if mt.Schema != nil {
-				nameBranchesIn(doc, mt.Schema, strcase.ToGoPascal(cmp.Or(mt.Schema.Title, name)))
-			}
-		}
+	for s, name := range bodies(doc) {
+		nameBranchesIn(doc, s, name)
 	}
+}
 
-	for _, p := range doc.Paths.ByIndex() {
-		for _, op := range p.Operations {
-			if op.RequestBody != nil && op.RequestBody.Value != nil {
-				inContent(op.RequestBody.Value.Content, op.OperationID)
+// bodies yields the schema of each request and response body, with the name flatten gives it.
+func bodies(doc *openapi.Document) iter.Seq2[*openapi.Schema, string] {
+	return func(yield func(*openapi.Schema, string) bool) {
+		inContent := func(c openapi.Content, name string) bool {
+			for _, mt := range c {
+				if mt.Schema != nil && !yield(mt.Schema, strcase.ToGoPascal(cmp.Or(mt.Schema.Title, name))) {
+					return false
+				}
 			}
 
-			for code, rsp := range op.Responses.ByIndex() {
-				if rsp.Value != nil {
-					inContent(rsp.Value.Content, op.OperationID+" "+cmp.Or(code.StatusText(), string(code)))
+			return true
+		}
+
+		for _, p := range doc.Paths.ByIndex() {
+			for _, op := range p.Operations {
+				if op.RequestBody != nil && op.RequestBody.Value != nil &&
+					!inContent(op.RequestBody.Value.Content, op.OperationID) {
+					return
+				}
+
+				for code, rsp := range op.Responses.ByIndex() {
+					if rsp.Value != nil &&
+						!inContent(rsp.Value.Content, op.OperationID+" "+cmp.Or(code.StatusText(), string(code))) {
+						return
+					}
 				}
 			}
 		}
 	}
+}
+
+// nameLists names each list Notion responds with after what it lists, such as BlockList, and gives it the request_id
+// Notion sends with every response. Lists of the same are then one schema.
+func nameLists(doc *openapi.Document) {
+	for s := range bodies(doc) {
+		object, _ := constString(s.Properties["object"])
+		of, ok := constString(s.Properties["type"])
+		if object != "list" || !ok || s.Ref != nil {
+			continue
+		}
+
+		if _, ok := s.Properties["request_id"]; !ok {
+			s.Properties.Set("request_id", requestID())
+		}
+
+		name := strcase.ToGoPascal(of) + "List"
+		if same, ok := doc.Components.Schemas[name]; ok && equalJSON(same, s) {
+			s.Replace(&openapi.Schema{Ref: &openapi.SchemaRef{Identifier: schemaRefPrefix + name, Value: same}})
+		} else {
+			moveToComponents(doc, s, name)
+		}
+	}
+}
+
+// requestID is the schema of the request_id Notion sends with every response.
+func requestID() *openapi.Schema {
+	return &openapi.Schema{Type: openapi.TypeString, Format: openapi.FormatUUID}
+}
+
+// equalJSON reports whether a and b are written the same.
+func equalJSON(a, b *openapi.Schema) bool {
+	ja, errA := json.Marshal(a)
+	jb, errB := json.Marshal(b)
+
+	return errA == nil && errB == nil && string(ja) == string(jb)
 }
 
 // nameBranchesIn is nameBranches for s, the schema flatten would name name, and what it holds.
@@ -552,7 +601,7 @@ func addRequestID(doc *openapi.Document, names ...string) error {
 			return propertyErr(n, "request_id", errors.New("already there"))
 		}
 
-		s.Properties.Set("request_id", &openapi.Schema{Type: openapi.TypeString, Format: openapi.FormatUUID})
+		s.Properties.Set("request_id", requestID())
 	}
 
 	return nil
@@ -704,6 +753,7 @@ func fixOpenAPI() (*openapi.Document, error) {
 		return nil, err
 	}
 
+	nameLists(doc)
 	nameBranches(doc)
 
 	if err := allowDateTimes(doc, "dateResponse", "start", "end"); err != nil {

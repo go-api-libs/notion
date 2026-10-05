@@ -502,8 +502,8 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID IDRequest)
 // List all users
 //
 //	GET /users
-func (c *Client) GetUsers(ctx context.Context, params *GetUsersParams) (*User, error) {
-	return c.GetUsersWithResult[User](ctx, params)
+func (c *Client) GetUsers(ctx context.Context, params *GetUsersParams) (*UserList, error) {
+	return c.GetUsersWithResult[UserList](ctx, params)
 }
 
 // List all users
@@ -3019,8 +3019,8 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID IDRe
 // Retrieve block children
 //
 //	GET /blocks/{block_id}/children
-func (c *Client) GetBlockChildren(ctx context.Context, blockID IDRequest, params *GetBlockChildrenParams) (*Block2, error) {
-	return c.GetBlockChildrenWithResult[Block2](ctx, blockID, params)
+func (c *Client) GetBlockChildren(ctx context.Context, blockID IDRequest, params *GetBlockChildrenParams) (*BlockList, error) {
+	return c.GetBlockChildrenWithResult[BlockList](ctx, blockID, params)
 }
 
 // Retrieve block children
@@ -3232,8 +3232,8 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 // Append block children
 //
 //	PATCH /blocks/{block_id}/children
-func (c *Client) PatchBlockChildren(ctx context.Context, blockID IDRequest, body PatchBlockChildren) (*Block3, error) {
-	return c.PatchBlockChildrenWithResult[Block3](ctx, blockID, body)
+func (c *Client) PatchBlockChildren(ctx context.Context, blockID IDRequest, body PatchBlockChildren) (*BlockList, error) {
+	return c.PatchBlockChildrenWithResult[BlockList](ctx, blockID, body)
 }
 
 // Append block children
@@ -3843,8 +3843,8 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 // Query a data source
 //
 //	POST /data_sources/{data_source_id}/query
-func (c *Client) PostDatabaseQuery(ctx context.Context, dataSourceID IDRequest, params *PostDatabaseQueryParams, body PostDatabaseQuery) (*PageOrDataSource, error) {
-	return c.PostDatabaseQueryWithResult[PageOrDataSource](ctx, dataSourceID, params, body)
+func (c *Client) PostDatabaseQuery(ctx context.Context, dataSourceID IDRequest, params *PostDatabaseQueryParams, body PostDatabaseQuery) (*PageOrDataSourceList, error) {
+	return c.PostDatabaseQueryWithResult[PageOrDataSourceList](ctx, dataSourceID, params, body)
 }
 
 // Query a data source
@@ -5093,8 +5093,8 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 // Search by title
 //
 //	POST /search
-func (c *Client) PostSearch(ctx context.Context, body PostSearch) (*PageOrDataSource, error) {
-	return c.PostSearchWithResult[PageOrDataSource](ctx, body)
+func (c *Client) PostSearch(ctx context.Context, body PostSearch) (*PageOrDataSourceList, error) {
+	return c.PostSearchWithResult[PageOrDataSourceList](ctx, body)
 }
 
 // Search by title
@@ -5299,8 +5299,8 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 // List comments
 //
 //	GET /comments
-func (c *Client) ListComments(ctx context.Context, params ListCommentsParams) (*ListCommentsOk, error) {
-	return c.ListCommentsWithResult[ListCommentsOk](ctx, params)
+func (c *Client) ListComments(ctx context.Context, params ListCommentsParams) (*CommentList, error) {
+	return c.ListCommentsWithResult[CommentList](ctx, params)
 }
 
 // List comments
@@ -6323,8 +6323,8 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 // List file uploads
 //
 //	GET /file_uploads
-func (c *Client) ListFileUploads(ctx context.Context, params *ListFileUploadsParams) (*ListFileUploadsOk, error) {
-	return c.ListFileUploadsWithResult[ListFileUploadsOk](ctx, params)
+func (c *Client) ListFileUploads(ctx context.Context, params *ListFileUploadsParams) (*FileUploadList, error) {
+	return c.ListFileUploadsWithResult[FileUploadList](ctx, params)
 }
 
 // List file uploads
@@ -7350,8 +7350,8 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 // List custom emojis
 //
 //	GET /custom_emojis
-func (c *Client) ListCustomEmojis(ctx context.Context, params *ListCustomEmojisParams) (*ListCustomEmojisOk, error) {
-	return c.ListCustomEmojisWithResult[ListCustomEmojisOk](ctx, params)
+func (c *Client) ListCustomEmojis(ctx context.Context, params *ListCustomEmojisParams) (*CustomEmojiList, error) {
+	return c.ListCustomEmojisWithResult[CustomEmojiList](ctx, params)
 }
 
 // List custom emojis
@@ -7567,8 +7567,8 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 // List views
 //
 //	GET /views
-func (c *Client) ListViews(ctx context.Context, params *ListViewsParams) (*ListViewsOk, error) {
-	return c.ListViewsWithResult[ListViewsOk](ctx, params)
+func (c *Client) ListViews(ctx context.Context, params *ListViewsParams) (*ViewList, error) {
+	return c.ListViewsWithResult[ViewList](ctx, params)
 }
 
 // List views
@@ -8804,8 +8804,8 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 // Get view query results
 //
 //	GET /views/{view_id}/queries/{query_id}
-func (c *Client) GetViewQueryResults(ctx context.Context, viewID IDRequest, queryID IDRequest, params *GetViewQueryResultsParams) (*GetViewQueryResultsOk, error) {
-	return c.GetViewQueryResultsWithResult[GetViewQueryResultsOk](ctx, viewID, queryID, params)
+func (c *Client) GetViewQueryResults(ctx context.Context, viewID IDRequest, queryID IDRequest, params *GetViewQueryResultsParams) (*PageList, error) {
+	return c.GetViewQueryResultsWithResult[PageList](ctx, viewID, queryID, params)
 }
 
 // Get view query results
@@ -9628,8 +9628,8 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 // Query agents
 //
 //	POST /agents/query
-func (c *Client) QueryAgents(ctx context.Context, body QueryAgents) (*QueryAgentsOk, error) {
-	return c.QueryAgentsWithResult[QueryAgentsOk](ctx, body)
+func (c *Client) QueryAgents(ctx context.Context, body QueryAgents) (*AgentList, error) {
+	return c.QueryAgentsWithResult[AgentList](ctx, body)
 }
 
 // Query agents
@@ -11073,8 +11073,8 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 // List skills plugins
 //
 //	GET /ai/plugins
-func (c *Client) ListSkillsPlugins(ctx context.Context, params *ListSkillsPluginsParams) (*ListSkillsPluginsOk, error) {
-	return c.ListSkillsPluginsWithResult[ListSkillsPluginsOk](ctx, params)
+func (c *Client) ListSkillsPlugins(ctx context.Context, params *ListSkillsPluginsParams) (*PluginList, error) {
+	return c.ListSkillsPluginsWithResult[PluginList](ctx, params)
 }
 
 // List skills plugins
@@ -12089,8 +12089,8 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 // Query sessions
 //
 //	POST /sessions/query
-func (c *Client) QuerySessions(ctx context.Context, body QuerySessions) (*QuerySessionsOk, error) {
-	return c.QuerySessionsWithResult[QuerySessionsOk](ctx, body)
+func (c *Client) QuerySessions(ctx context.Context, body QuerySessions) (*SessionList, error) {
+	return c.QuerySessionsWithResult[SessionList](ctx, body)
 }
 
 // Query sessions
@@ -12295,8 +12295,8 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 // Query session events
 //
 //	POST /sessions/{session_id}/events/query
-func (c *Client) QuerySessionEvents(ctx context.Context, sessionID IDRequest, body QuerySessionEvents) (*QuerySessionEventsOk, error) {
-	return c.QuerySessionEventsWithResult[QuerySessionEventsOk](ctx, sessionID, body)
+func (c *Client) QuerySessionEvents(ctx context.Context, sessionID IDRequest, body QuerySessionEvents) (*SessionEventList, error) {
+	return c.QuerySessionEventsWithResult[SessionEventList](ctx, sessionID, body)
 }
 
 // Query session events

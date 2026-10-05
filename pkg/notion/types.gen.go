@@ -1668,6 +1668,243 @@ func (v *AgentLastRunAt) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
+// AgentList defines a model
+type AgentList struct {
+	// Always `list`
+	Object string `json:"object"`
+	// Always `agent`
+	Type       string                 `json:"type"`
+	Results    []AgentListResultsItem `json:"results"`
+	HasMore    bool                   `json:"has_more"`
+	NextCursor string                 `json:"next_cursor"`
+	RequestID  uuid.UUID              `json:"request_id,omitzero"`
+}
+
+// AgentListResultsItem defines a model
+// AgentListResultsItem is an untagged oneOf union: exactly one field is set after unmarshaling.
+type AgentListResultsItem struct {
+	AgentListResultsItemOneOf0   *AgentListResultsItemOneOf0
+	AgentListResultsItemNotionAi *AgentListResultsItemNotionAi
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *AgentListResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv AgentListResultsItemOneOf0
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.AgentListResultsItemOneOf0 = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv AgentListResultsItemNotionAi
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.AgentListResultsItemNotionAi = &vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *AgentListResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.AgentListResultsItemOneOf0 != nil:
+		return json.MarshalEncode(enc, v.AgentListResultsItemOneOf0, jsonOpts)
+	case v.AgentListResultsItemNotionAi != nil:
+		return json.MarshalEncode(enc, v.AgentListResultsItemNotionAi, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// AgentListResultsItemNotionAi defines a model
+type AgentListResultsItemNotionAi struct {
+	// Always `agent`
+	Object string `json:"object"`
+	// Always `notion_ai`
+	ID string `json:"id"`
+	// Always `notion_ai`
+	AgentType          string                           `json:"agent_type"`
+	Name               string                           `json:"name"`
+	Description        *struct{}                        `json:"description"`
+	InstructionsPageID *struct{}                        `json:"instructions_page_id"`
+	Icon               AgentListResultsItemNotionAiIcon `json:"icon"`
+	Model              AgentModel                       `json:"model"`
+	Connections        []AgentConnectionsItem           `json:"connections"`
+	// Always `active`
+	Status         string        `json:"status"`
+	PauseReason    *struct{}     `json:"pause_reason"`
+	CreatedBy      *struct{}     `json:"created_by"`
+	AgentVersion   *struct{}     `json:"agent_version"`
+	CreatedTime    *struct{}     `json:"created_time"`
+	LastEditedTime *struct{}     `json:"last_edited_time"`
+	LastRunAt      *struct{}     `json:"last_run_at"`
+	CreditLimit    *struct{}     `json:"credit_limit"`
+	Triggers       AgentTriggers `json:"triggers"`
+}
+
+// AgentListResultsItemNotionAiIcon defines a model
+type AgentListResultsItemNotionAiIcon struct {
+	Type string `json:"type"`
+	// The emoji character used as the icon.
+	Emoji EmojiRequest `json:"emoji,omitzero"`
+	// The file URL for the icon.
+	File *InternalFileResponse `json:"file,omitzero"`
+	// The external URL for the icon.
+	External *LinkPreviewMention `json:"external,omitzero"`
+	// The custom emoji details for the icon.
+	CustomEmoji *CustomEmojiResponse `json:"custom_emoji,omitzero"`
+	// The Notion native icon, specified by name and color.
+	Icon *NoticonIconResponse `json:"icon,omitzero"`
+	// The static and animated URLs for the agent avatar.
+	CustomAgentAvatar *AgentIconCustomAgentAvatarCustomAgentAvatar `json:"custom_agent_avatar,omitzero"`
+}
+
+// tagsOfAgentListResultsItemNotionAiIcon says, for each value of type, whether the member named after it must, may or must not be set.
+var tagsOfAgentListResultsItemNotionAiIcon = map[string]jsonTagMember{
+	"emoji":               jsonTagRequired,
+	"file":                jsonTagRequired,
+	"external":            jsonTagRequired,
+	"custom_emoji":        jsonTagRequired,
+	"icon":                jsonTagRequired,
+	"custom_agent_avatar": jsonTagRequired,
+}
+
+// taggedMembers returns those of the members named after a value of type that are set.
+func (v *AgentListResultsItemNotionAiIcon) taggedMembers() []string {
+	var set []string
+	if v.Emoji != "" {
+		set = append(set, "emoji")
+	}
+	if v.File != nil {
+		set = append(set, "file")
+	}
+	if v.External != nil {
+		set = append(set, "external")
+	}
+	if v.CustomEmoji != nil {
+		set = append(set, "custom_emoji")
+	}
+	if v.Icon != nil {
+		set = append(set, "icon")
+	}
+	if v.CustomAgentAvatar != nil {
+		set = append(set, "custom_agent_avatar")
+	}
+
+	return set
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those named after a
+// value of type, only the one it names is set.
+func (v *AgentListResultsItemNotionAiIcon) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain AgentListResultsItemNotionAiIcon
+
+	*v = AgentListResultsItemNotionAiIcon{}
+	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
+		return err
+	}
+
+	return jsonCheckTag("type", string(v.Type), tagsOfAgentListResultsItemNotionAiIcon, v.taggedMembers(), jsonStrict(dec))
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
+// the value whose member is set.
+func (v *AgentListResultsItemNotionAiIcon) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain AgentListResultsItemNotionAiIcon
+
+	out, set := *v, v.taggedMembers()
+	if out.Type == "" && len(set) == 1 {
+		out.Type = string(set[0])
+	}
+
+	if err := jsonCheckTag("type", string(out.Type), tagsOfAgentListResultsItemNotionAiIcon, set, true); err != nil {
+		return err
+	}
+
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+}
+
+// AgentListResultsItemOneOf0 defines a model
+type AgentListResultsItemOneOf0 struct {
+	// Always `agent`
+	Object string     `json:"object"`
+	ID     IDResponse `json:"id"`
+	// What kind of agent this is: "custom_agent" is a standalone agent you chat with; "autofill_custom_agent" fills a database property.
+	AgentType          AgentListResultsItemOneOf0AgentType `json:"agent_type"`
+	Name               string                              `json:"name"`
+	Description        string                              `json:"description"`
+	InstructionsPageID IDResponse                          `json:"instructions_page_id"`
+	Icon               AgentIcon                           `json:"icon"`
+	// The model selection: automatic, or pinned to a public model ID.
+	Model AgentModel `json:"model"`
+	// Integrations the agent is connected to (Notion, Slack, Discord, MCP servers, and other connectors), each with an account and per-target permissions.
+	Connections []AgentConnectionsItem `json:"connections"`
+	// "active" when the agent can run; "disabled" when it is paused (see pause_reason); "deleted" when it has been removed.
+	Status AgentStatus `json:"status"`
+	// Why the agent is paused when status is "disabled" (e.g. "credit_limit", "disabled_from_workspace_settings"); null when active.
+	PauseReason  AgentPauseReasonOneOf                     `json:"pause_reason"`
+	CreatedBy    AgentListResultsItemOneOf0CreatedByOneOf0 `json:"created_by"`
+	AgentVersion AgentVersionOneOf                         `json:"agent_version"`
+	// Date and time when this agent was created.
+	CreatedTime time.Time `json:"created_time"`
+	// Date and time when this agent was last edited.
+	LastEditedTime time.Time `json:"last_edited_time"`
+	// ISO 8601 timestamp of the agent's most recent run, null if it has never run, or "hidden" when the caller lacks edit access to the agent.
+	LastRunAt AgentLastRunAt `json:"last_run_at"`
+	// The per-agent credit limit that applies to this agent, null when uncapped, or "hidden" when the caller lacks full access to the agent. This is the effective limit computed at runtime, folding in both the agent's own limit and any workspace-admin default.
+	CreditLimit AgentCreditLimit `json:"credit_limit"`
+	// The agent's configured triggers, each with a machine type, an enabled flag, and a structured recurrence schedule when applicable.
+	Triggers AgentTriggers `json:"triggers"`
+	// The agent's inline instructions when verbose=true, or null when its instructions are stored on a page.
+	Instructions string `json:"instructions,omitzero"`
+}
+
+// What kind of agent this is: "custom_agent" is a standalone agent you chat with; "autofill_custom_agent" fills a database property.
+type AgentListResultsItemOneOf0AgentType string
+
+const (
+	AgentListResultsItemOneOf0AgentTypeCustomAgent         AgentListResultsItemOneOf0AgentType = "custom_agent"
+	AgentListResultsItemOneOf0AgentTypeAutofillCustomAgent AgentListResultsItemOneOf0AgentType = "autofill_custom_agent"
+)
+
+// Valid indicates whether the value is a known member of the AgentListResultsItemOneOf0AgentType enum.
+func (e AgentListResultsItemOneOf0AgentType) Valid() bool {
+	switch e {
+	case AgentListResultsItemOneOf0AgentTypeCustomAgent, AgentListResultsItemOneOf0AgentTypeAutofillCustomAgent:
+		return true
+	default:
+		return false
+	}
+}
+
+// AgentListResultsItemOneOf0CreatedByOneOf0 defines a model
+type AgentListResultsItemOneOf0CreatedByOneOf0 struct {
+	// One of: `user`, `bot`
+	Type RetrieveSessionCreatedByType `json:"type"`
+	// The ID of the user or bot that created this agent.
+	ID IDResponse `json:"id"`
+}
+
 // AgentModel defines a model
 // AgentModel is an untagged oneOf union: exactly one field is set after unmarshaling.
 type AgentModel struct {
@@ -2451,27 +2688,6 @@ func (v *Block) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
-// Block2 defines a model
-type Block2 struct {
-	Type       string           `json:"type"`
-	Block      EmptyObject      `json:"block"`
-	Object     string           `json:"object"`
-	NextCursor string           `json:"next_cursor"`
-	HasMore    bool             `json:"has_more"`
-	Results    []BlockOrPartial `json:"results"`
-	RequestID  uuid.UUID        `json:"request_id,omitzero"`
-}
-
-// Block3 defines a model
-type Block3 struct {
-	Type       string           `json:"type"`
-	Block      EmptyObject      `json:"block"`
-	Object     string           `json:"object"`
-	NextCursor string           `json:"next_cursor"`
-	HasMore    bool             `json:"has_more"`
-	Results    []BlockOrPartial `json:"results"`
-}
-
 // BlockIDParentForBlockBasedObject defines a model
 type BlockIDParentForBlockBasedObject struct {
 	// The parent type.
@@ -2490,6 +2706,17 @@ func (v *BlockIDParentForBlockBasedObject) unmarshalJSONMember(dec *jsontext.Dec
 	}
 
 	return false, nil
+}
+
+// BlockList defines a model
+type BlockList struct {
+	Type       string           `json:"type"`
+	Block      EmptyObject      `json:"block"`
+	Object     string           `json:"object"`
+	NextCursor string           `json:"next_cursor"`
+	HasMore    bool             `json:"has_more"`
+	Results    []BlockOrPartial `json:"results"`
+	RequestID  uuid.UUID        `json:"request_id,omitzero"`
 }
 
 // BlockObjectAudio defines a model
@@ -4590,6 +4817,20 @@ type CommentDeletedWebhookPayload struct {
 	Data CommentCreatedWebhookPayloadData `json:"data"`
 }
 
+// CommentList defines a model
+type CommentList struct {
+	// Always `list`
+	Object     string                  `json:"object"`
+	NextCursor IDResponse              `json:"next_cursor"`
+	HasMore    bool                    `json:"has_more"`
+	Results    []CommentObjectResponse `json:"results"`
+	// Always `comment`
+	Type          string                `json:"type"`
+	Comment       EmptyObject           `json:"comment"`
+	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
+	RequestID     uuid.UUID             `json:"request_id,omitzero"`
+}
+
 // CommentObjectResponse defines a model
 type CommentObjectResponse struct {
 	// The comment object type name.
@@ -6286,6 +6527,21 @@ type CustomCustom struct {
 	Name string `json:"name"`
 }
 
+// CustomEmojiList defines a model
+type CustomEmojiList struct {
+	// Always `list`
+	Object string `json:"object"`
+	// Always `custom_emoji`
+	Type string `json:"type"`
+	// The list of custom emojis.
+	Results []CustomEmojiResponse `json:"results"`
+	// Whether there are more results available.
+	HasMore bool `json:"has_more"`
+	// The cursor to use for the next page of results, or null if there are no more results.
+	NextCursor IDResponse `json:"next_cursor"`
+	RequestID  uuid.UUID  `json:"request_id,omitzero"`
+}
+
 // CustomEmojiPageIcon defines a model
 type CustomEmojiPageIcon struct {
 	// Always `custom_emoji`
@@ -7643,6 +7899,20 @@ type FileUploadExpiredWebhookPayload struct {
 // FileUploadIDRequest defines a model
 type FileUploadIDRequest struct {
 	ID IDRequest `json:"id"`
+}
+
+// FileUploadList defines a model
+type FileUploadList struct {
+	// Always `list`
+	Object     string                     `json:"object"`
+	NextCursor IDResponse                 `json:"next_cursor"`
+	HasMore    bool                       `json:"has_more"`
+	Results    []FileUploadObjectResponse `json:"results"`
+	// Always `file_upload`
+	Type          string                `json:"type"`
+	FileUpload    EmptyObject           `json:"file_upload"`
+	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
+	RequestID     uuid.UUID             `json:"request_id,omitzero"`
 }
 
 // FileUploadObjectFileImportResultAllOfError defines a model
@@ -9045,19 +9315,6 @@ type GetSkillDirectoryOk struct {
 	URL string `json:"url"`
 }
 
-// GetViewQueryResultsOk defines a model
-type GetViewQueryResultsOk struct {
-	// Always `list`
-	Object     string                      `json:"object"`
-	NextCursor IDResponse                  `json:"next_cursor"`
-	HasMore    bool                        `json:"has_more"`
-	Results    []PartialPageObjectResponse `json:"results"`
-	// Always `page`
-	Type          string                `json:"type"`
-	Page          EmptyObject           `json:"page"`
-	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
-}
-
 // Group-by configuration based on property type.
 // GroupByConfigRequest is an untagged oneOf union: exactly one field is set after unmarshaling.
 type GroupByConfigRequest struct {
@@ -9870,33 +10127,6 @@ func (v *LinkToPageBlockObjectResponseLinkToPage) MarshalJSONTo(enc *jsontext.En
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
-// ListCommentsOk defines a model
-type ListCommentsOk struct {
-	// Always `list`
-	Object     string                  `json:"object"`
-	NextCursor IDResponse              `json:"next_cursor"`
-	HasMore    bool                    `json:"has_more"`
-	Results    []CommentObjectResponse `json:"results"`
-	// Always `comment`
-	Type          string                `json:"type"`
-	Comment       EmptyObject           `json:"comment"`
-	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
-}
-
-// ListCustomEmojisOk defines a model
-type ListCustomEmojisOk struct {
-	// Always `list`
-	Object string `json:"object"`
-	// Always `custom_emoji`
-	Type string `json:"type"`
-	// The list of custom emojis.
-	Results []CustomEmojiResponse `json:"results"`
-	// Whether there are more results available.
-	HasMore bool `json:"has_more"`
-	// The cursor to use for the next page of results, or null if there are no more results.
-	NextCursor IDResponse `json:"next_cursor"`
-}
-
 // ListDataSourceTemplatesOk defines a model
 type ListDataSourceTemplatesOk struct {
 	// Array of templates available in this data source.
@@ -9918,42 +10148,6 @@ type ListDataSourceTemplatesOkTemplatesItem struct {
 	Name string `json:"name"`
 	// Whether this template is the default template for the data source.
 	IsDefault bool `json:"is_default"`
-}
-
-// ListFileUploadsOk defines a model
-type ListFileUploadsOk struct {
-	// Always `list`
-	Object     string                     `json:"object"`
-	NextCursor IDResponse                 `json:"next_cursor"`
-	HasMore    bool                       `json:"has_more"`
-	Results    []FileUploadObjectResponse `json:"results"`
-	// Always `file_upload`
-	Type          string                `json:"type"`
-	FileUpload    EmptyObject           `json:"file_upload"`
-	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
-}
-
-// ListSkillsPluginsOk defines a model
-type ListSkillsPluginsOk struct {
-	// Always `list`
-	Object     string                     `json:"object"`
-	Results    ListSkillsPluginsOkResults `json:"results"`
-	NextCursor string                     `json:"next_cursor"`
-	HasMore    bool                       `json:"has_more"`
-	// Always `plugin`
-	Type string `json:"type"`
-}
-
-// ListSkillsPluginsOkResults defines a model
-type ListSkillsPluginsOkResults []ListSkillsPluginsOkResultsItem
-
-// ListSkillsPluginsOkResultsItem defines a model
-type ListSkillsPluginsOkResultsItem struct {
-	ID          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	// Opaque version identifier for the plugin. Compare this value for equality to determine whether the plugin has changed.
-	VersionID string `json:"version_id"`
 }
 
 // ListViewConfigRequest defines a model
@@ -9994,20 +10188,6 @@ func (v *ListViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name
 	}
 
 	return false, nil
-}
-
-// ListViewsOk defines a model
-type ListViewsOk struct {
-	// Always `list`
-	Object     string                            `json:"object"`
-	NextCursor IDResponse                        `json:"next_cursor"`
-	HasMore    bool                              `json:"has_more"`
-	Results    []DataSourceViewReferenceResponse `json:"results"`
-	// Always `view`
-	Type          string                `json:"type"`
-	View          EmptyObject           `json:"view"`
-	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
-	RequestID     uuid.UUID             `json:"request_id,omitzero"`
 }
 
 // MapViewConfigHeight2 defines a model
@@ -11355,6 +11535,20 @@ func (v *PageIconResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
+// PageList defines a model
+type PageList struct {
+	// Always `list`
+	Object     string                      `json:"object"`
+	NextCursor IDResponse                  `json:"next_cursor"`
+	HasMore    bool                        `json:"has_more"`
+	Results    []PartialPageObjectResponse `json:"results"`
+	// Always `page`
+	Type          string                `json:"type"`
+	Page          EmptyObject           `json:"page"`
+	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
+	RequestID     uuid.UUID             `json:"request_id,omitzero"`
+}
+
 // PageLockedWebhookPayload defines a model
 type PageLockedWebhookPayload struct {
 	BaseWebhookPayload
@@ -11397,27 +11591,50 @@ type PageMovedWebhookPayloadData struct {
 	Parent WebhookParentBlock `json:"parent"`
 }
 
-// PageOrDataSource defines a model
-type PageOrDataSource struct {
-	Type             string                        `json:"type"`
-	PageOrDataSource EmptyObject                   `json:"page_or_data_source"`
-	Object           string                        `json:"object"`
-	NextCursor       string                        `json:"next_cursor"`
-	HasMore          bool                          `json:"has_more"`
-	Results          []PageOrDataSourceResultsItem `json:"results"`
-	RequestStatus    PageOrDataSourceStatus        `json:"request_status,omitzero"`
-	RequestID        uuid.UUID                     `json:"request_id,omitzero"`
+// PageOrDataSourceList defines a model
+type PageOrDataSourceList struct {
+	Type             string                            `json:"type"`
+	PageOrDataSource EmptyObject                       `json:"page_or_data_source"`
+	Object           string                            `json:"object"`
+	NextCursor       string                            `json:"next_cursor"`
+	HasMore          bool                              `json:"has_more"`
+	Results          []PageOrDataSourceListResultsItem `json:"results"`
+	RequestStatus    PageOrDataSourceListRequestStatus `json:"request_status,omitzero"`
+	RequestID        uuid.UUID                         `json:"request_id,omitzero"`
 }
 
-// PageOrDataSourceResultsItem defines a model
-// PageOrDataSourceResultsItem is an untagged anyOf union: at least one field is set after unmarshaling.
-type PageOrDataSourceResultsItem struct {
+// PageOrDataSourceListRequestStatus defines a model
+type PageOrDataSourceListRequestStatus struct {
+	Type             StatusType                                        `json:"type"`
+	IncompleteReason PageOrDataSourceListRequestStatusIncompleteReason `json:"incomplete_reason,omitzero"`
+}
+
+// PageOrDataSourceListRequestStatusIncompleteReason defines a model
+type PageOrDataSourceListRequestStatusIncompleteReason string
+
+const (
+	PageOrDataSourceListRequestStatusIncompleteReasonQueryResultLimitReached PageOrDataSourceListRequestStatusIncompleteReason = "query_result_limit_reached"
+)
+
+// Valid indicates whether the value is a known member of the PageOrDataSourceListRequestStatusIncompleteReason enum.
+func (e PageOrDataSourceListRequestStatusIncompleteReason) Valid() bool {
+	switch e {
+	case PageOrDataSourceListRequestStatusIncompleteReasonQueryResultLimitReached:
+		return true
+	default:
+		return false
+	}
+}
+
+// PageOrDataSourceListResultsItem defines a model
+// PageOrDataSourceListResultsItem is an untagged anyOf union: at least one field is set after unmarshaling.
+type PageOrDataSourceListResultsItem struct {
 	PageOrPartial       *PageOrPartial
 	DataSourceOrPartial *DataSourceOrPartial
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *PageOrDataSourceResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+func (v *PageOrDataSourceListResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	opts := jsonOptsOf(dec)
 
 	raw, err := dec.ReadValue()
@@ -11451,7 +11668,7 @@ func (v *PageOrDataSourceResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *PageOrDataSourceResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *PageOrDataSourceListResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PageOrPartial != nil:
 		return json.MarshalEncode(enc, v.PageOrPartial, jsonOpts)
@@ -11460,29 +11677,6 @@ func (v *PageOrDataSourceResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// PageOrDataSourceStatus defines a model
-type PageOrDataSourceStatus struct {
-	Type             StatusType                             `json:"type"`
-	IncompleteReason PageOrDataSourceStatusIncompleteReason `json:"incomplete_reason,omitzero"`
-}
-
-// PageOrDataSourceStatusIncompleteReason defines a model
-type PageOrDataSourceStatusIncompleteReason string
-
-const (
-	PageOrDataSourceStatusIncompleteReasonQueryResultLimitReached PageOrDataSourceStatusIncompleteReason = "query_result_limit_reached"
-)
-
-// Valid indicates whether the value is a known member of the PageOrDataSourceStatusIncompleteReason enum.
-func (e PageOrDataSourceStatusIncompleteReason) Valid() bool {
-	switch e {
-	case PageOrDataSourceStatusIncompleteReasonQueryResultLimitReached:
-		return true
-	default:
-		return false
-	}
 }
 
 // PageOrPartial defines a model
@@ -13059,6 +13253,30 @@ func (v *PlaceSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.Dec
 	}
 
 	return false, nil
+}
+
+// PluginList defines a model
+type PluginList struct {
+	// Always `list`
+	Object     string            `json:"object"`
+	Results    PluginListResults `json:"results"`
+	NextCursor string            `json:"next_cursor"`
+	HasMore    bool              `json:"has_more"`
+	// Always `plugin`
+	Type      string    `json:"type"`
+	RequestID uuid.UUID `json:"request_id,omitzero"`
+}
+
+// PluginListResults defines a model
+type PluginListResults []PluginListResultsItem
+
+// PluginListResultsItem defines a model
+type PluginListResultsItem struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	// Opaque version identifier for the plugin. Compare this value for equality to determine whether the plugin has changed.
+	VersionID string `json:"version_id"`
 }
 
 // PostDatabaseQuery defines a model
@@ -16553,242 +16771,6 @@ type QueryAgentsFilterStatus2 struct {
 // QueryAgentsFilterStatusIn defines a model
 type QueryAgentsFilterStatusIn []AgentStatus
 
-// QueryAgentsOk defines a model
-type QueryAgentsOk struct {
-	// Always `list`
-	Object string `json:"object"`
-	// Always `agent`
-	Type       string                     `json:"type"`
-	Results    []QueryAgentsOkResultsItem `json:"results"`
-	HasMore    bool                       `json:"has_more"`
-	NextCursor string                     `json:"next_cursor"`
-}
-
-// QueryAgentsOkResultsItem defines a model
-// QueryAgentsOkResultsItem is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QueryAgentsOkResultsItem struct {
-	QueryAgentsOkResultsItemOneOf0   *QueryAgentsOkResultsItemOneOf0
-	QueryAgentsOkResultsItemNotionAi *QueryAgentsOkResultsItemNotionAi
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *QueryAgentsOkResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QueryAgentsOkResultsItemOneOf0
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsOkResultsItemOneOf0 = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv QueryAgentsOkResultsItemNotionAi
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsOkResultsItemNotionAi = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *QueryAgentsOkResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.QueryAgentsOkResultsItemOneOf0 != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsOkResultsItemOneOf0, jsonOpts)
-	case v.QueryAgentsOkResultsItemNotionAi != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsOkResultsItemNotionAi, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// QueryAgentsOkResultsItemNotionAi defines a model
-type QueryAgentsOkResultsItemNotionAi struct {
-	// Always `agent`
-	Object string `json:"object"`
-	// Always `notion_ai`
-	ID string `json:"id"`
-	// Always `notion_ai`
-	AgentType          string                               `json:"agent_type"`
-	Name               string                               `json:"name"`
-	Description        *struct{}                            `json:"description"`
-	InstructionsPageID *struct{}                            `json:"instructions_page_id"`
-	Icon               QueryAgentsOkResultsItemNotionAiIcon `json:"icon"`
-	Model              AgentModel                           `json:"model"`
-	Connections        []AgentConnectionsItem               `json:"connections"`
-	// Always `active`
-	Status         string        `json:"status"`
-	PauseReason    *struct{}     `json:"pause_reason"`
-	CreatedBy      *struct{}     `json:"created_by"`
-	AgentVersion   *struct{}     `json:"agent_version"`
-	CreatedTime    *struct{}     `json:"created_time"`
-	LastEditedTime *struct{}     `json:"last_edited_time"`
-	LastRunAt      *struct{}     `json:"last_run_at"`
-	CreditLimit    *struct{}     `json:"credit_limit"`
-	Triggers       AgentTriggers `json:"triggers"`
-}
-
-// QueryAgentsOkResultsItemNotionAiIcon defines a model
-type QueryAgentsOkResultsItemNotionAiIcon struct {
-	Type string `json:"type"`
-	// The emoji character used as the icon.
-	Emoji EmojiRequest `json:"emoji,omitzero"`
-	// The file URL for the icon.
-	File *InternalFileResponse `json:"file,omitzero"`
-	// The external URL for the icon.
-	External *LinkPreviewMention `json:"external,omitzero"`
-	// The custom emoji details for the icon.
-	CustomEmoji *CustomEmojiResponse `json:"custom_emoji,omitzero"`
-	// The Notion native icon, specified by name and color.
-	Icon *NoticonIconResponse `json:"icon,omitzero"`
-	// The static and animated URLs for the agent avatar.
-	CustomAgentAvatar *AgentIconCustomAgentAvatarCustomAgentAvatar `json:"custom_agent_avatar,omitzero"`
-}
-
-// tagsOfQueryAgentsOkResultsItemNotionAiIcon says, for each value of type, whether the member named after it must, may or must not be set.
-var tagsOfQueryAgentsOkResultsItemNotionAiIcon = map[string]jsonTagMember{
-	"emoji":               jsonTagRequired,
-	"file":                jsonTagRequired,
-	"external":            jsonTagRequired,
-	"custom_emoji":        jsonTagRequired,
-	"icon":                jsonTagRequired,
-	"custom_agent_avatar": jsonTagRequired,
-}
-
-// taggedMembers returns those of the members named after a value of type that are set.
-func (v *QueryAgentsOkResultsItemNotionAiIcon) taggedMembers() []string {
-	var set []string
-	if v.Emoji != "" {
-		set = append(set, "emoji")
-	}
-	if v.File != nil {
-		set = append(set, "file")
-	}
-	if v.External != nil {
-		set = append(set, "external")
-	}
-	if v.CustomEmoji != nil {
-		set = append(set, "custom_emoji")
-	}
-	if v.Icon != nil {
-		set = append(set, "icon")
-	}
-	if v.CustomAgentAvatar != nil {
-		set = append(set, "custom_agent_avatar")
-	}
-
-	return set
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those named after a
-// value of type, only the one it names is set.
-func (v *QueryAgentsOkResultsItemNotionAiIcon) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain QueryAgentsOkResultsItemNotionAiIcon
-
-	*v = QueryAgentsOkResultsItemNotionAiIcon{}
-	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
-		return err
-	}
-
-	return jsonCheckTag("type", string(v.Type), tagsOfQueryAgentsOkResultsItemNotionAiIcon, v.taggedMembers(), jsonStrict(dec))
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
-func (v *QueryAgentsOkResultsItemNotionAiIcon) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain QueryAgentsOkResultsItemNotionAiIcon
-
-	out, set := *v, v.taggedMembers()
-	if out.Type == "" && len(set) == 1 {
-		out.Type = string(set[0])
-	}
-
-	if err := jsonCheckTag("type", string(out.Type), tagsOfQueryAgentsOkResultsItemNotionAiIcon, set, true); err != nil {
-		return err
-	}
-
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
-}
-
-// QueryAgentsOkResultsItemOneOf0 defines a model
-type QueryAgentsOkResultsItemOneOf0 struct {
-	// Always `agent`
-	Object string     `json:"object"`
-	ID     IDResponse `json:"id"`
-	// What kind of agent this is: "custom_agent" is a standalone agent you chat with; "autofill_custom_agent" fills a database property.
-	AgentType          QueryAgentsOkResultsItemOneOf0AgentType `json:"agent_type"`
-	Name               string                                  `json:"name"`
-	Description        string                                  `json:"description"`
-	InstructionsPageID IDResponse                              `json:"instructions_page_id"`
-	Icon               AgentIcon                               `json:"icon"`
-	// The model selection: automatic, or pinned to a public model ID.
-	Model AgentModel `json:"model"`
-	// Integrations the agent is connected to (Notion, Slack, Discord, MCP servers, and other connectors), each with an account and per-target permissions.
-	Connections []AgentConnectionsItem `json:"connections"`
-	// "active" when the agent can run; "disabled" when it is paused (see pause_reason); "deleted" when it has been removed.
-	Status AgentStatus `json:"status"`
-	// Why the agent is paused when status is "disabled" (e.g. "credit_limit", "disabled_from_workspace_settings"); null when active.
-	PauseReason  AgentPauseReasonOneOf                         `json:"pause_reason"`
-	CreatedBy    QueryAgentsOkResultsItemOneOf0CreatedByOneOf0 `json:"created_by"`
-	AgentVersion AgentVersionOneOf                             `json:"agent_version"`
-	// Date and time when this agent was created.
-	CreatedTime time.Time `json:"created_time"`
-	// Date and time when this agent was last edited.
-	LastEditedTime time.Time `json:"last_edited_time"`
-	// ISO 8601 timestamp of the agent's most recent run, null if it has never run, or "hidden" when the caller lacks edit access to the agent.
-	LastRunAt AgentLastRunAt `json:"last_run_at"`
-	// The per-agent credit limit that applies to this agent, null when uncapped, or "hidden" when the caller lacks full access to the agent. This is the effective limit computed at runtime, folding in both the agent's own limit and any workspace-admin default.
-	CreditLimit AgentCreditLimit `json:"credit_limit"`
-	// The agent's configured triggers, each with a machine type, an enabled flag, and a structured recurrence schedule when applicable.
-	Triggers AgentTriggers `json:"triggers"`
-	// The agent's inline instructions when verbose=true, or null when its instructions are stored on a page.
-	Instructions string `json:"instructions,omitzero"`
-}
-
-// What kind of agent this is: "custom_agent" is a standalone agent you chat with; "autofill_custom_agent" fills a database property.
-type QueryAgentsOkResultsItemOneOf0AgentType string
-
-const (
-	QueryAgentsOkResultsItemOneOf0AgentTypeCustomAgent         QueryAgentsOkResultsItemOneOf0AgentType = "custom_agent"
-	QueryAgentsOkResultsItemOneOf0AgentTypeAutofillCustomAgent QueryAgentsOkResultsItemOneOf0AgentType = "autofill_custom_agent"
-)
-
-// Valid indicates whether the value is a known member of the QueryAgentsOkResultsItemOneOf0AgentType enum.
-func (e QueryAgentsOkResultsItemOneOf0AgentType) Valid() bool {
-	switch e {
-	case QueryAgentsOkResultsItemOneOf0AgentTypeCustomAgent, QueryAgentsOkResultsItemOneOf0AgentTypeAutofillCustomAgent:
-		return true
-	default:
-		return false
-	}
-}
-
-// QueryAgentsOkResultsItemOneOf0CreatedByOneOf0 defines a model
-type QueryAgentsOkResultsItemOneOf0CreatedByOneOf0 struct {
-	// One of: `user`, `bot`
-	Type RetrieveSessionCreatedByType `json:"type"`
-	// The ID of the user or bot that created this agent.
-	ID IDResponse `json:"id"`
-}
-
 // Ordered sort precedence. Defaults to created_time descending.
 type QueryAgentsSorts []QueryAgentsSortsItem
 
@@ -18391,499 +18373,6 @@ func (v *QuerySessionEventsFilterOrItemOrItemOrItem) MarshalJSONTo(enc *jsontext
 	return enc.WriteValue(out)
 }
 
-// QuerySessionEventsOk defines a model
-type QuerySessionEventsOk struct {
-	// Always `list`
-	Object string `json:"object"`
-	// Always `session_event`
-	Type         string                            `json:"type"`
-	SessionEvent struct{}                          `json:"session_event"`
-	Results      []QuerySessionEventsOkResultsItem `json:"results"`
-	HasMore      bool                              `json:"has_more"`
-	NextCursor   string                            `json:"next_cursor"`
-}
-
-// QuerySessionEventsOkResultsItem defines a model
-// QuerySessionEventsOkResultsItem is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QuerySessionEventsOkResultsItem struct {
-	QuerySessionEventsOkResultsItemUserMessage     *QuerySessionEventsOkResultsItemUserMessage
-	QuerySessionEventsOkResultsItemAgentMessage    *QuerySessionEventsOkResultsItemAgentMessage
-	QuerySessionEventsOkResultsItemAgentThinking   *QuerySessionEventsOkResultsItemAgentThinking
-	QuerySessionEventsOkResultsItemAgentToolUse    *QuerySessionEventsOkResultsItemAgentToolUse
-	QuerySessionEventsOkResultsItemAgentToolResult *QuerySessionEventsOkResultsItemAgentToolResult
-	QuerySessionEventsOkResultsItemSessionStatus   *QuerySessionEventsOkResultsItemSessionStatus
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
-func (v *QuerySessionEventsOkResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, dec, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "user.message":
-		var vv QuerySessionEventsOkResultsItemUserMessage
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QuerySessionEventsOkResultsItemUserMessage = &vv
-	case "agent.message":
-		var vv QuerySessionEventsOkResultsItemAgentMessage
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QuerySessionEventsOkResultsItemAgentMessage = &vv
-	case "agent.thinking":
-		var vv QuerySessionEventsOkResultsItemAgentThinking
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QuerySessionEventsOkResultsItemAgentThinking = &vv
-	case "agent.tool_use":
-		var vv QuerySessionEventsOkResultsItemAgentToolUse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QuerySessionEventsOkResultsItemAgentToolUse = &vv
-	case "agent.tool_result":
-		var vv QuerySessionEventsOkResultsItemAgentToolResult
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QuerySessionEventsOkResultsItemAgentToolResult = &vv
-	case "session.status":
-		var vv QuerySessionEventsOkResultsItemSessionStatus
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QuerySessionEventsOkResultsItemSessionStatus = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *QuerySessionEventsOkResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.QuerySessionEventsOkResultsItemUserMessage != nil:
-		variant, tag = v.QuerySessionEventsOkResultsItemUserMessage, "user.message"
-	case v.QuerySessionEventsOkResultsItemAgentMessage != nil:
-		variant, tag = v.QuerySessionEventsOkResultsItemAgentMessage, "agent.message"
-	case v.QuerySessionEventsOkResultsItemAgentThinking != nil:
-		variant, tag = v.QuerySessionEventsOkResultsItemAgentThinking, "agent.thinking"
-	case v.QuerySessionEventsOkResultsItemAgentToolUse != nil:
-		variant, tag = v.QuerySessionEventsOkResultsItemAgentToolUse, "agent.tool_use"
-	case v.QuerySessionEventsOkResultsItemAgentToolResult != nil:
-		variant, tag = v.QuerySessionEventsOkResultsItemAgentToolResult, "agent.tool_result"
-	case v.QuerySessionEventsOkResultsItemSessionStatus != nil:
-		variant, tag = v.QuerySessionEventsOkResultsItemSessionStatus, "session.status"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
-// QuerySessionEventsOkResultsItemAgentMessage defines a model
-type QuerySessionEventsOkResultsItemAgentMessage struct {
-	// Always `session_event`
-	Object    string `json:"object"`
-	ID        string `json:"id"`
-	SessionID string `json:"session_id"`
-	Sequence  int    `json:"sequence"`
-	CreatedAt string `json:"created_at"`
-	// Always `agent.message`
-	Type      string                                                   `json:"type"`
-	Content   []QuerySessionEventsResultsItemUserMessageContentItem    `json:"content"`
-	CreatedBy RetrieveSessionCreatedBy                                 `json:"created_by"`
-	Metadata  QuerySessionEventsOkResultsItemAgentMessageMetadataModel `json:"metadata"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemAgentMessage declares it.
-func (v *QuerySessionEventsOkResultsItemAgentMessage) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "object":
-		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
-	case "id":
-		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
-	case "session_id":
-		return true, json.UnmarshalDecode(dec, &v.SessionID, jsonOptsOf(dec))
-	case "sequence":
-		return true, json.UnmarshalDecode(dec, &v.Sequence, jsonOptsOf(dec))
-	case "created_at":
-		return true, json.UnmarshalDecode(dec, &v.CreatedAt, jsonOptsOf(dec))
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "content":
-		return true, json.UnmarshalDecode(dec, &v.Content, jsonOptsOf(dec))
-	case "created_by":
-		return true, json.UnmarshalDecode(dec, &v.CreatedBy, jsonOptsOf(dec))
-	case "metadata":
-		return true, json.UnmarshalDecode(dec, &v.Metadata, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QuerySessionEventsOkResultsItemAgentMessageMetadataModel defines a model
-type QuerySessionEventsOkResultsItemAgentMessageMetadataModel struct {
-	Model string `json:"model"`
-}
-
-// QuerySessionEventsOkResultsItemAgentThinking defines a model
-type QuerySessionEventsOkResultsItemAgentThinking struct {
-	// Always `session_event`
-	Object    string `json:"object"`
-	ID        string `json:"id"`
-	SessionID string `json:"session_id"`
-	Sequence  int    `json:"sequence"`
-	CreatedAt string `json:"created_at"`
-	// Always `agent.thinking`
-	Type    string                                              `json:"type"`
-	Content QuerySessionEventsOkResultsItemAgentThinkingContent `json:"content"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemAgentThinking declares it.
-func (v *QuerySessionEventsOkResultsItemAgentThinking) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "object":
-		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
-	case "id":
-		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
-	case "session_id":
-		return true, json.UnmarshalDecode(dec, &v.SessionID, jsonOptsOf(dec))
-	case "sequence":
-		return true, json.UnmarshalDecode(dec, &v.Sequence, jsonOptsOf(dec))
-	case "created_at":
-		return true, json.UnmarshalDecode(dec, &v.CreatedAt, jsonOptsOf(dec))
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "content":
-		return true, json.UnmarshalDecode(dec, &v.Content, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QuerySessionEventsOkResultsItemAgentThinkingContent defines a model
-type QuerySessionEventsOkResultsItemAgentThinkingContent []QuerySessionEventsResultsItemUserMessageContentItemText
-
-// QuerySessionEventsOkResultsItemAgentToolResult defines a model
-type QuerySessionEventsOkResultsItemAgentToolResult struct {
-	// Always `session_event`
-	Object    string `json:"object"`
-	ID        string `json:"id"`
-	SessionID string `json:"session_id"`
-	Sequence  int    `json:"sequence"`
-	CreatedAt string `json:"created_at"`
-	// Always `agent.tool_result`
-	Type      string `json:"type"`
-	ToolUseID string `json:"tool_use_id"`
-	ToolName  string `json:"tool_name"`
-	IsError   bool   `json:"is_error"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemAgentToolResult declares it.
-func (v *QuerySessionEventsOkResultsItemAgentToolResult) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "object":
-		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
-	case "id":
-		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
-	case "session_id":
-		return true, json.UnmarshalDecode(dec, &v.SessionID, jsonOptsOf(dec))
-	case "sequence":
-		return true, json.UnmarshalDecode(dec, &v.Sequence, jsonOptsOf(dec))
-	case "created_at":
-		return true, json.UnmarshalDecode(dec, &v.CreatedAt, jsonOptsOf(dec))
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "tool_use_id":
-		return true, json.UnmarshalDecode(dec, &v.ToolUseID, jsonOptsOf(dec))
-	case "tool_name":
-		return true, json.UnmarshalDecode(dec, &v.ToolName, jsonOptsOf(dec))
-	case "is_error":
-		return true, json.UnmarshalDecode(dec, &v.IsError, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QuerySessionEventsOkResultsItemAgentToolUse defines a model
-type QuerySessionEventsOkResultsItemAgentToolUse struct {
-	// Always `session_event`
-	Object    string `json:"object"`
-	ID        string `json:"id"`
-	SessionID string `json:"session_id"`
-	Sequence  int    `json:"sequence"`
-	CreatedAt string `json:"created_at"`
-	// Always `agent.tool_use`
-	Type     string `json:"type"`
-	ToolName string `json:"tool_name"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemAgentToolUse declares it.
-func (v *QuerySessionEventsOkResultsItemAgentToolUse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "object":
-		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
-	case "id":
-		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
-	case "session_id":
-		return true, json.UnmarshalDecode(dec, &v.SessionID, jsonOptsOf(dec))
-	case "sequence":
-		return true, json.UnmarshalDecode(dec, &v.Sequence, jsonOptsOf(dec))
-	case "created_at":
-		return true, json.UnmarshalDecode(dec, &v.CreatedAt, jsonOptsOf(dec))
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "tool_name":
-		return true, json.UnmarshalDecode(dec, &v.ToolName, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QuerySessionEventsOkResultsItemSessionStatus defines a model
-type QuerySessionEventsOkResultsItemSessionStatus struct {
-	// Always `session_event`
-	Object    string `json:"object"`
-	ID        string `json:"id"`
-	SessionID string `json:"session_id"`
-	Sequence  int    `json:"sequence"`
-	CreatedAt string `json:"created_at"`
-	// Always `session.status`
-	Type string `json:"type"`
-	// One of: `requires_action`, `completed`, `failed`, `canceled`, `terminated`
-	Status          QuerySessionEventsOkResultsItemSessionStatusStatus `json:"status"`
-	RequiredActions RetrieveSessionRequiredActions                     `json:"required_actions,omitzero"`
-	Err             CancelSessionError                                 `json:"error,omitzero"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemSessionStatus declares it.
-func (v *QuerySessionEventsOkResultsItemSessionStatus) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "object":
-		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
-	case "id":
-		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
-	case "session_id":
-		return true, json.UnmarshalDecode(dec, &v.SessionID, jsonOptsOf(dec))
-	case "sequence":
-		return true, json.UnmarshalDecode(dec, &v.Sequence, jsonOptsOf(dec))
-	case "created_at":
-		return true, json.UnmarshalDecode(dec, &v.CreatedAt, jsonOptsOf(dec))
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "status":
-		return true, json.UnmarshalDecode(dec, &v.Status, jsonOptsOf(dec))
-	case "required_actions":
-		return true, json.UnmarshalDecode(dec, &v.RequiredActions, jsonOptsOf(dec))
-	case "error":
-		return true, json.UnmarshalDecode(dec, &v.Err, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// One of: `requires_action`, `completed`, `failed`, `canceled`, `terminated`
-type QuerySessionEventsOkResultsItemSessionStatusStatus string
-
-const (
-	QuerySessionEventsOkResultsItemSessionStatusStatusRequiresAction QuerySessionEventsOkResultsItemSessionStatusStatus = "requires_action"
-	QuerySessionEventsOkResultsItemSessionStatusStatusCompleted      QuerySessionEventsOkResultsItemSessionStatusStatus = "completed"
-	QuerySessionEventsOkResultsItemSessionStatusStatusFailed         QuerySessionEventsOkResultsItemSessionStatusStatus = "failed"
-	QuerySessionEventsOkResultsItemSessionStatusStatusCanceled       QuerySessionEventsOkResultsItemSessionStatusStatus = "canceled"
-	QuerySessionEventsOkResultsItemSessionStatusStatusTerminated     QuerySessionEventsOkResultsItemSessionStatusStatus = "terminated"
-)
-
-// Valid indicates whether the value is a known member of the QuerySessionEventsOkResultsItemSessionStatusStatus enum.
-func (e QuerySessionEventsOkResultsItemSessionStatusStatus) Valid() bool {
-	switch e {
-	case QuerySessionEventsOkResultsItemSessionStatusStatusRequiresAction, QuerySessionEventsOkResultsItemSessionStatusStatusCompleted, QuerySessionEventsOkResultsItemSessionStatusStatusFailed, QuerySessionEventsOkResultsItemSessionStatusStatusCanceled, QuerySessionEventsOkResultsItemSessionStatusStatusTerminated:
-		return true
-	default:
-		return false
-	}
-}
-
-// QuerySessionEventsOkResultsItemUserMessage defines a model
-type QuerySessionEventsOkResultsItemUserMessage struct {
-	// Always `session_event`
-	Object    string `json:"object"`
-	ID        string `json:"id"`
-	SessionID string `json:"session_id"`
-	Sequence  int    `json:"sequence"`
-	CreatedAt string `json:"created_at"`
-	// Always `user.message`
-	Type      string                                                `json:"type"`
-	Content   []QuerySessionEventsResultsItemUserMessageContentItem `json:"content"`
-	CreatedBy RetrieveSessionCreatedBy                              `json:"created_by"`
-	Metadata  map[string]string                                     `json:"metadata"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsOkResultsItemUserMessage declares it.
-func (v *QuerySessionEventsOkResultsItemUserMessage) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "object":
-		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
-	case "id":
-		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
-	case "session_id":
-		return true, json.UnmarshalDecode(dec, &v.SessionID, jsonOptsOf(dec))
-	case "sequence":
-		return true, json.UnmarshalDecode(dec, &v.Sequence, jsonOptsOf(dec))
-	case "created_at":
-		return true, json.UnmarshalDecode(dec, &v.CreatedAt, jsonOptsOf(dec))
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "content":
-		return true, json.UnmarshalDecode(dec, &v.Content, jsonOptsOf(dec))
-	case "created_by":
-		return true, json.UnmarshalDecode(dec, &v.CreatedBy, jsonOptsOf(dec))
-	case "metadata":
-		return true, json.UnmarshalDecode(dec, &v.Metadata, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QuerySessionEventsResultsItemUserMessageContentItem defines a model
-// QuerySessionEventsResultsItemUserMessageContentItem is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QuerySessionEventsResultsItemUserMessageContentItem struct {
-	QuerySessionEventsResultsItemUserMessageContentItemText *QuerySessionEventsResultsItemUserMessageContentItemText
-	QuerySessionEventsResultsItemUserMessageContentItemFile *QuerySessionEventsResultsItemUserMessageContentItemFile
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
-func (v *QuerySessionEventsResultsItemUserMessageContentItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	tag, first, dec, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "text":
-		var vv QuerySessionEventsResultsItemUserMessageContentItemText
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QuerySessionEventsResultsItemUserMessageContentItemText = &vv
-	case "file":
-		var vv QuerySessionEventsResultsItemUserMessageContentItemFile
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QuerySessionEventsResultsItemUserMessageContentItemFile = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *QuerySessionEventsResultsItemUserMessageContentItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.QuerySessionEventsResultsItemUserMessageContentItemText != nil:
-		variant, tag = v.QuerySessionEventsResultsItemUserMessageContentItemText, "text"
-	case v.QuerySessionEventsResultsItemUserMessageContentItemFile != nil:
-		variant, tag = v.QuerySessionEventsResultsItemUserMessageContentItemFile, "file"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOpts)
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
-// QuerySessionEventsResultsItemUserMessageContentItemFile defines a model
-type QuerySessionEventsResultsItemUserMessageContentItemFile struct {
-	// Always `file`
-	Type        string `json:"type"`
-	Name        string `json:"name"`
-	ContentType string `json:"content_type"`
-	URL         string `json:"url"`
-	ExpiryTime  string `json:"expiry_time,omitzero"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsResultsItemUserMessageContentItemFile declares it.
-func (v *QuerySessionEventsResultsItemUserMessageContentItemFile) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "name":
-		return true, json.UnmarshalDecode(dec, &v.Name, jsonOptsOf(dec))
-	case "content_type":
-		return true, json.UnmarshalDecode(dec, &v.ContentType, jsonOptsOf(dec))
-	case "url":
-		return true, json.UnmarshalDecode(dec, &v.URL, jsonOptsOf(dec))
-	case "expiry_time":
-		return true, json.UnmarshalDecode(dec, &v.ExpiryTime, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QuerySessionEventsResultsItemUserMessageContentItemText defines a model
-type QuerySessionEventsResultsItemUserMessageContentItemText struct {
-	// Always `text`
-	Type string `json:"type"`
-	Text string `json:"text"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsResultsItemUserMessageContentItemText declares it.
-func (v *QuerySessionEventsResultsItemUserMessageContentItemText) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "text":
-		return true, json.UnmarshalDecode(dec, &v.Text, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
 // Ordered sort precedence. Defaults to sequence ascending.
 type QuerySessionEventsSorts []QuerySessionEventsSortsItem
 
@@ -19355,50 +18844,6 @@ func (v *QuerySessionsFilterOrItemOrItem) MarshalJSONTo(enc *jsontext.Encoder) e
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// QuerySessionsOk defines a model
-type QuerySessionsOk struct {
-	// Always `list`
-	Object string `json:"object"`
-	// Always `session`
-	Type    string   `json:"type"`
-	Session struct{} `json:"session"`
-	// Sessions found in this bounded scan. Access filtering can leave this array empty while has_more is true.
-	Results QuerySessionsOkResults `json:"results"`
-	// Whether more session candidates remain after this bounded scan.
-	HasMore bool `json:"has_more"`
-	// Pass this cursor as start_cursor when has_more is true, even when results is empty.
-	NextCursor string `json:"next_cursor"`
-}
-
-// Sessions found in this bounded scan. Access filtering can leave this array empty while has_more is true.
-type QuerySessionsOkResults []QuerySessionsOkResultsItem
-
-// QuerySessionsOkResultsItem defines a model
-type QuerySessionsOkResultsItem struct {
-	// Always `session`
-	Object  string `json:"object"`
-	ID      string `json:"id"`
-	AgentID string `json:"agent_id"`
-	Title   string `json:"title"`
-	// One of: `queued`, `in_progress`, `requires_action`, `completed`, `failed`, `canceled`, `terminated`
-	Status          CancelSessionStatus              `json:"status"`
-	CreatedBy       RetrieveSessionCreatedBy         `json:"created_by"`
-	AgentVersion    RetrieveSessionAgentVersionOneOf `json:"agent_version"`
-	Models          RetrieveSessionModels            `json:"models"`
-	CreatedAt       time.Time                        `json:"created_at"`
-	UpdatedAt       time.Time                        `json:"updated_at"`
-	RequiredActions RetrieveSessionRequiredActions   `json:"required_actions,omitzero"`
-	Err             CancelSessionError               `json:"error,omitzero"`
-	TriggerType     string                           `json:"trigger_type,omitzero"`
-	TypeLabels      []string                         `json:"type_labels,omitzero"`
-	ChatUserEmails  []string                         `json:"chat_user_emails,omitzero"`
-	ToolTypes       []string                         `json:"tool_types,omitzero"`
-	ToolCallCount   *int                             `json:"tool_call_count,omitzero"`
-	CreditsUsed     *float64                         `json:"credits_used,omitzero"`
-	RunsCompleted   *int                             `json:"runs_completed,omitzero"`
-	MessageCount    *int                             `json:"message_count,omitzero"`
 }
 
 // Ordered sort precedence. Defaults to updated_at descending.
@@ -21919,6 +21364,545 @@ func (v *SelectSimplePropertyValueResponse) unmarshalJSONMember(dec *jsontext.De
 	}
 
 	return false, nil
+}
+
+// SessionEventList defines a model
+type SessionEventList struct {
+	// Always `list`
+	Object string `json:"object"`
+	// Always `session_event`
+	Type         string                        `json:"type"`
+	SessionEvent struct{}                      `json:"session_event"`
+	Results      []SessionEventListResultsItem `json:"results"`
+	HasMore      bool                          `json:"has_more"`
+	NextCursor   string                        `json:"next_cursor"`
+	RequestID    uuid.UUID                     `json:"request_id,omitzero"`
+}
+
+// SessionEventListResultsItem defines a model
+// SessionEventListResultsItem is an untagged oneOf union: exactly one field is set after unmarshaling.
+type SessionEventListResultsItem struct {
+	SessionEventListResultsItemUserMessage     *SessionEventListResultsItemUserMessage
+	SessionEventListResultsItemAgentMessage    *SessionEventListResultsItemAgentMessage
+	SessionEventListResultsItemAgentThinking   *SessionEventListResultsItemAgentThinking
+	SessionEventListResultsItemAgentToolUse    *SessionEventListResultsItemAgentToolUse
+	SessionEventListResultsItemAgentToolResult *SessionEventListResultsItemAgentToolResult
+	SessionEventListResultsItemSessionStatus   *SessionEventListResultsItemSessionStatus
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
+// decodes each further member as it is read. With type first, nothing is read twice.
+func (v *SessionEventListResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if err != nil {
+		return err
+	}
+
+	switch tag {
+	case "user.message":
+		var vv SessionEventListResultsItemUserMessage
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.SessionEventListResultsItemUserMessage = &vv
+	case "agent.message":
+		var vv SessionEventListResultsItemAgentMessage
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.SessionEventListResultsItemAgentMessage = &vv
+	case "agent.thinking":
+		var vv SessionEventListResultsItemAgentThinking
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.SessionEventListResultsItemAgentThinking = &vv
+	case "agent.tool_use":
+		var vv SessionEventListResultsItemAgentToolUse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.SessionEventListResultsItemAgentToolUse = &vv
+	case "agent.tool_result":
+		var vv SessionEventListResultsItemAgentToolResult
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.SessionEventListResultsItemAgentToolResult = &vv
+	case "session.status":
+		var vv SessionEventListResultsItemSessionStatus
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.SessionEventListResultsItemSessionStatus = &vv
+	default:
+		return jsonUnknownValue("type", tag)
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+func (v *SessionEventListResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	var (
+		variant any
+		tag     string
+	)
+
+	switch {
+	case v.SessionEventListResultsItemUserMessage != nil:
+		variant, tag = v.SessionEventListResultsItemUserMessage, "user.message"
+	case v.SessionEventListResultsItemAgentMessage != nil:
+		variant, tag = v.SessionEventListResultsItemAgentMessage, "agent.message"
+	case v.SessionEventListResultsItemAgentThinking != nil:
+		variant, tag = v.SessionEventListResultsItemAgentThinking, "agent.thinking"
+	case v.SessionEventListResultsItemAgentToolUse != nil:
+		variant, tag = v.SessionEventListResultsItemAgentToolUse, "agent.tool_use"
+	case v.SessionEventListResultsItemAgentToolResult != nil:
+		variant, tag = v.SessionEventListResultsItemAgentToolResult, "agent.tool_result"
+	case v.SessionEventListResultsItemSessionStatus != nil:
+		variant, tag = v.SessionEventListResultsItemSessionStatus, "session.status"
+	default:
+		return &json.SemanticError{Err: errors.New("no alternative set")}
+	}
+
+	out, err := json.Marshal(variant, jsonOpts)
+	if err != nil {
+		return err
+	}
+
+	if out, err = jsonFirst(out, "type", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
+}
+
+// SessionEventListResultsItemAgentMessage defines a model
+type SessionEventListResultsItemAgentMessage struct {
+	// Always `session_event`
+	Object    string `json:"object"`
+	ID        string `json:"id"`
+	SessionID string `json:"session_id"`
+	Sequence  int    `json:"sequence"`
+	CreatedAt string `json:"created_at"`
+	// Always `agent.message`
+	Type      string                                               `json:"type"`
+	Content   []SessionEventListResultsItemUserMessageContentItem  `json:"content"`
+	CreatedBy RetrieveSessionCreatedBy                             `json:"created_by"`
+	Metadata  SessionEventListResultsItemAgentMessageMetadataModel `json:"metadata"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether SessionEventListResultsItemAgentMessage declares it.
+func (v *SessionEventListResultsItemAgentMessage) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "session_id":
+		return true, json.UnmarshalDecode(dec, &v.SessionID, jsonOptsOf(dec))
+	case "sequence":
+		return true, json.UnmarshalDecode(dec, &v.Sequence, jsonOptsOf(dec))
+	case "created_at":
+		return true, json.UnmarshalDecode(dec, &v.CreatedAt, jsonOptsOf(dec))
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "content":
+		return true, json.UnmarshalDecode(dec, &v.Content, jsonOptsOf(dec))
+	case "created_by":
+		return true, json.UnmarshalDecode(dec, &v.CreatedBy, jsonOptsOf(dec))
+	case "metadata":
+		return true, json.UnmarshalDecode(dec, &v.Metadata, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// SessionEventListResultsItemAgentMessageMetadataModel defines a model
+type SessionEventListResultsItemAgentMessageMetadataModel struct {
+	Model string `json:"model"`
+}
+
+// SessionEventListResultsItemAgentThinking defines a model
+type SessionEventListResultsItemAgentThinking struct {
+	// Always `session_event`
+	Object    string `json:"object"`
+	ID        string `json:"id"`
+	SessionID string `json:"session_id"`
+	Sequence  int    `json:"sequence"`
+	CreatedAt string `json:"created_at"`
+	// Always `agent.thinking`
+	Type    string                                          `json:"type"`
+	Content SessionEventListResultsItemAgentThinkingContent `json:"content"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether SessionEventListResultsItemAgentThinking declares it.
+func (v *SessionEventListResultsItemAgentThinking) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "session_id":
+		return true, json.UnmarshalDecode(dec, &v.SessionID, jsonOptsOf(dec))
+	case "sequence":
+		return true, json.UnmarshalDecode(dec, &v.Sequence, jsonOptsOf(dec))
+	case "created_at":
+		return true, json.UnmarshalDecode(dec, &v.CreatedAt, jsonOptsOf(dec))
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "content":
+		return true, json.UnmarshalDecode(dec, &v.Content, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// SessionEventListResultsItemAgentThinkingContent defines a model
+type SessionEventListResultsItemAgentThinkingContent []SessionEventListResultsItemUserMessageContentItemText
+
+// SessionEventListResultsItemAgentToolResult defines a model
+type SessionEventListResultsItemAgentToolResult struct {
+	// Always `session_event`
+	Object    string `json:"object"`
+	ID        string `json:"id"`
+	SessionID string `json:"session_id"`
+	Sequence  int    `json:"sequence"`
+	CreatedAt string `json:"created_at"`
+	// Always `agent.tool_result`
+	Type      string `json:"type"`
+	ToolUseID string `json:"tool_use_id"`
+	ToolName  string `json:"tool_name"`
+	IsError   bool   `json:"is_error"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether SessionEventListResultsItemAgentToolResult declares it.
+func (v *SessionEventListResultsItemAgentToolResult) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "session_id":
+		return true, json.UnmarshalDecode(dec, &v.SessionID, jsonOptsOf(dec))
+	case "sequence":
+		return true, json.UnmarshalDecode(dec, &v.Sequence, jsonOptsOf(dec))
+	case "created_at":
+		return true, json.UnmarshalDecode(dec, &v.CreatedAt, jsonOptsOf(dec))
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "tool_use_id":
+		return true, json.UnmarshalDecode(dec, &v.ToolUseID, jsonOptsOf(dec))
+	case "tool_name":
+		return true, json.UnmarshalDecode(dec, &v.ToolName, jsonOptsOf(dec))
+	case "is_error":
+		return true, json.UnmarshalDecode(dec, &v.IsError, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// SessionEventListResultsItemAgentToolUse defines a model
+type SessionEventListResultsItemAgentToolUse struct {
+	// Always `session_event`
+	Object    string `json:"object"`
+	ID        string `json:"id"`
+	SessionID string `json:"session_id"`
+	Sequence  int    `json:"sequence"`
+	CreatedAt string `json:"created_at"`
+	// Always `agent.tool_use`
+	Type     string `json:"type"`
+	ToolName string `json:"tool_name"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether SessionEventListResultsItemAgentToolUse declares it.
+func (v *SessionEventListResultsItemAgentToolUse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "session_id":
+		return true, json.UnmarshalDecode(dec, &v.SessionID, jsonOptsOf(dec))
+	case "sequence":
+		return true, json.UnmarshalDecode(dec, &v.Sequence, jsonOptsOf(dec))
+	case "created_at":
+		return true, json.UnmarshalDecode(dec, &v.CreatedAt, jsonOptsOf(dec))
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "tool_name":
+		return true, json.UnmarshalDecode(dec, &v.ToolName, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// SessionEventListResultsItemSessionStatus defines a model
+type SessionEventListResultsItemSessionStatus struct {
+	// Always `session_event`
+	Object    string `json:"object"`
+	ID        string `json:"id"`
+	SessionID string `json:"session_id"`
+	Sequence  int    `json:"sequence"`
+	CreatedAt string `json:"created_at"`
+	// Always `session.status`
+	Type string `json:"type"`
+	// One of: `requires_action`, `completed`, `failed`, `canceled`, `terminated`
+	Status          SessionEventListResultsItemSessionStatusStatus `json:"status"`
+	RequiredActions RetrieveSessionRequiredActions                 `json:"required_actions,omitzero"`
+	Err             CancelSessionError                             `json:"error,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether SessionEventListResultsItemSessionStatus declares it.
+func (v *SessionEventListResultsItemSessionStatus) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "session_id":
+		return true, json.UnmarshalDecode(dec, &v.SessionID, jsonOptsOf(dec))
+	case "sequence":
+		return true, json.UnmarshalDecode(dec, &v.Sequence, jsonOptsOf(dec))
+	case "created_at":
+		return true, json.UnmarshalDecode(dec, &v.CreatedAt, jsonOptsOf(dec))
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "status":
+		return true, json.UnmarshalDecode(dec, &v.Status, jsonOptsOf(dec))
+	case "required_actions":
+		return true, json.UnmarshalDecode(dec, &v.RequiredActions, jsonOptsOf(dec))
+	case "error":
+		return true, json.UnmarshalDecode(dec, &v.Err, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// One of: `requires_action`, `completed`, `failed`, `canceled`, `terminated`
+type SessionEventListResultsItemSessionStatusStatus string
+
+const (
+	SessionEventListResultsItemSessionStatusStatusRequiresAction SessionEventListResultsItemSessionStatusStatus = "requires_action"
+	SessionEventListResultsItemSessionStatusStatusCompleted      SessionEventListResultsItemSessionStatusStatus = "completed"
+	SessionEventListResultsItemSessionStatusStatusFailed         SessionEventListResultsItemSessionStatusStatus = "failed"
+	SessionEventListResultsItemSessionStatusStatusCanceled       SessionEventListResultsItemSessionStatusStatus = "canceled"
+	SessionEventListResultsItemSessionStatusStatusTerminated     SessionEventListResultsItemSessionStatusStatus = "terminated"
+)
+
+// Valid indicates whether the value is a known member of the SessionEventListResultsItemSessionStatusStatus enum.
+func (e SessionEventListResultsItemSessionStatusStatus) Valid() bool {
+	switch e {
+	case SessionEventListResultsItemSessionStatusStatusRequiresAction, SessionEventListResultsItemSessionStatusStatusCompleted, SessionEventListResultsItemSessionStatusStatusFailed, SessionEventListResultsItemSessionStatusStatusCanceled, SessionEventListResultsItemSessionStatusStatusTerminated:
+		return true
+	default:
+		return false
+	}
+}
+
+// SessionEventListResultsItemUserMessage defines a model
+type SessionEventListResultsItemUserMessage struct {
+	// Always `session_event`
+	Object    string `json:"object"`
+	ID        string `json:"id"`
+	SessionID string `json:"session_id"`
+	Sequence  int    `json:"sequence"`
+	CreatedAt string `json:"created_at"`
+	// Always `user.message`
+	Type      string                                              `json:"type"`
+	Content   []SessionEventListResultsItemUserMessageContentItem `json:"content"`
+	CreatedBy RetrieveSessionCreatedBy                            `json:"created_by"`
+	Metadata  map[string]string                                   `json:"metadata"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether SessionEventListResultsItemUserMessage declares it.
+func (v *SessionEventListResultsItemUserMessage) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "session_id":
+		return true, json.UnmarshalDecode(dec, &v.SessionID, jsonOptsOf(dec))
+	case "sequence":
+		return true, json.UnmarshalDecode(dec, &v.Sequence, jsonOptsOf(dec))
+	case "created_at":
+		return true, json.UnmarshalDecode(dec, &v.CreatedAt, jsonOptsOf(dec))
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "content":
+		return true, json.UnmarshalDecode(dec, &v.Content, jsonOptsOf(dec))
+	case "created_by":
+		return true, json.UnmarshalDecode(dec, &v.CreatedBy, jsonOptsOf(dec))
+	case "metadata":
+		return true, json.UnmarshalDecode(dec, &v.Metadata, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// SessionEventListResultsItemUserMessageContentItem defines a model
+// SessionEventListResultsItemUserMessageContentItem is an untagged oneOf union: exactly one field is set after unmarshaling.
+type SessionEventListResultsItemUserMessageContentItem struct {
+	SessionEventListResultsItemUserMessageContentItemText *SessionEventListResultsItemUserMessageContentItemText
+	SessionEventListResultsItemUserMessageContentItemFile *SessionEventListResultsItemUserMessageContentItemFile
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
+// decodes each further member as it is read. With type first, nothing is read twice.
+func (v *SessionEventListResultsItemUserMessageContentItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if err != nil {
+		return err
+	}
+
+	switch tag {
+	case "text":
+		var vv SessionEventListResultsItemUserMessageContentItemText
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.SessionEventListResultsItemUserMessageContentItemText = &vv
+	case "file":
+		var vv SessionEventListResultsItemUserMessageContentItemFile
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.SessionEventListResultsItemUserMessageContentItemFile = &vv
+	default:
+		return jsonUnknownValue("type", tag)
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+func (v *SessionEventListResultsItemUserMessageContentItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	var (
+		variant any
+		tag     string
+	)
+
+	switch {
+	case v.SessionEventListResultsItemUserMessageContentItemText != nil:
+		variant, tag = v.SessionEventListResultsItemUserMessageContentItemText, "text"
+	case v.SessionEventListResultsItemUserMessageContentItemFile != nil:
+		variant, tag = v.SessionEventListResultsItemUserMessageContentItemFile, "file"
+	default:
+		return &json.SemanticError{Err: errors.New("no alternative set")}
+	}
+
+	out, err := json.Marshal(variant, jsonOpts)
+	if err != nil {
+		return err
+	}
+
+	if out, err = jsonFirst(out, "type", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
+}
+
+// SessionEventListResultsItemUserMessageContentItemFile defines a model
+type SessionEventListResultsItemUserMessageContentItemFile struct {
+	// Always `file`
+	Type        string `json:"type"`
+	Name        string `json:"name"`
+	ContentType string `json:"content_type"`
+	URL         string `json:"url"`
+	ExpiryTime  string `json:"expiry_time,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether SessionEventListResultsItemUserMessageContentItemFile declares it.
+func (v *SessionEventListResultsItemUserMessageContentItemFile) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "name":
+		return true, json.UnmarshalDecode(dec, &v.Name, jsonOptsOf(dec))
+	case "content_type":
+		return true, json.UnmarshalDecode(dec, &v.ContentType, jsonOptsOf(dec))
+	case "url":
+		return true, json.UnmarshalDecode(dec, &v.URL, jsonOptsOf(dec))
+	case "expiry_time":
+		return true, json.UnmarshalDecode(dec, &v.ExpiryTime, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// SessionEventListResultsItemUserMessageContentItemText defines a model
+type SessionEventListResultsItemUserMessageContentItemText struct {
+	// Always `text`
+	Type string `json:"type"`
+	Text string `json:"text"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether SessionEventListResultsItemUserMessageContentItemText declares it.
+func (v *SessionEventListResultsItemUserMessageContentItemText) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "text":
+		return true, json.UnmarshalDecode(dec, &v.Text, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// SessionList defines a model
+type SessionList struct {
+	// Always `list`
+	Object string `json:"object"`
+	// Always `session`
+	Type    string   `json:"type"`
+	Session struct{} `json:"session"`
+	// Sessions found in this bounded scan. Access filtering can leave this array empty while has_more is true.
+	Results SessionListResults `json:"results"`
+	// Whether more session candidates remain after this bounded scan.
+	HasMore bool `json:"has_more"`
+	// Pass this cursor as start_cursor when has_more is true, even when results is empty.
+	NextCursor string    `json:"next_cursor"`
+	RequestID  uuid.UUID `json:"request_id,omitzero"`
+}
+
+// Sessions found in this bounded scan. Access filtering can leave this array empty while has_more is true.
+type SessionListResults []SessionListResultsItem
+
+// SessionListResultsItem defines a model
+type SessionListResultsItem struct {
+	// Always `session`
+	Object  string `json:"object"`
+	ID      string `json:"id"`
+	AgentID string `json:"agent_id"`
+	Title   string `json:"title"`
+	// One of: `queued`, `in_progress`, `requires_action`, `completed`, `failed`, `canceled`, `terminated`
+	Status          CancelSessionStatus              `json:"status"`
+	CreatedBy       RetrieveSessionCreatedBy         `json:"created_by"`
+	AgentVersion    RetrieveSessionAgentVersionOneOf `json:"agent_version"`
+	Models          RetrieveSessionModels            `json:"models"`
+	CreatedAt       time.Time                        `json:"created_at"`
+	UpdatedAt       time.Time                        `json:"updated_at"`
+	RequiredActions RetrieveSessionRequiredActions   `json:"required_actions,omitzero"`
+	Err             CancelSessionError               `json:"error,omitzero"`
+	TriggerType     string                           `json:"trigger_type,omitzero"`
+	TypeLabels      []string                         `json:"type_labels,omitzero"`
+	ChatUserEmails  []string                         `json:"chat_user_emails,omitzero"`
+	ToolTypes       []string                         `json:"tool_types,omitzero"`
+	ToolCallCount   *int                             `json:"tool_call_count,omitzero"`
+	CreditsUsed     *float64                         `json:"credits_used,omitzero"`
+	RunsCompleted   *int                             `json:"runs_completed,omitzero"`
+	MessageCount    *int                             `json:"message_count,omitzero"`
 }
 
 // SimpleOrArrayPropertyValueResponse defines a model
@@ -25379,8 +25363,8 @@ type UploadFile struct {
 	PartNumber string `json:"part_number,omitzero"`
 }
 
-// User defines a model
-type User struct {
+// UserList defines a model
+type UserList struct {
 	Type       string               `json:"type"`
 	User       EmptyObject          `json:"user"`
 	Object     string               `json:"object"`
@@ -26434,6 +26418,20 @@ type ViewFilterResponsePropertyOrItemOrItemAndItemFormulaNumber struct {
 type ViewFilterTimestamp struct {
 	// The timestamp to filter on.
 	Timestamp TimestampSortTimestamp `json:"timestamp"`
+}
+
+// ViewList defines a model
+type ViewList struct {
+	// Always `list`
+	Object     string                            `json:"object"`
+	NextCursor IDResponse                        `json:"next_cursor"`
+	HasMore    bool                              `json:"has_more"`
+	Results    []DataSourceViewReferenceResponse `json:"results"`
+	// Always `view`
+	Type          string                `json:"type"`
+	View          EmptyObject           `json:"view"`
+	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
+	RequestID     uuid.UUID             `json:"request_id,omitzero"`
 }
 
 // ViewPositionEnd defines a model
