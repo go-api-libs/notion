@@ -698,14 +698,16 @@ func applyPasses(doc *openapi.Document) error {
 	// the placeholder for the next interaction to record has no response
 	ias = slices.DeleteFunc(ias, func(ia cassette.Interaction) bool { return ia.Response.StatusCode == 0 })
 
+	flattenDoc := func(d *openapi.Document) error { return flatten.Document(d, flatten.Config{MarkOrigin: true}) }
+
 	for _, pass := range []struct {
 		name string
 		run  func(*openapi.Document) error
 	}{
 		{"enrich", func(d *openapi.Document) error { return enrich.Enrich(d, ias) }},
-		{"flatten", flatten.Document},
+		{"flatten", flattenDoc},
 		{"compress", func(d *openapi.Document) error { return compress.Document(d, compress.Config{}) }},
-		{"flatten again", flatten.Document},
+		{"flatten again", flattenDoc},
 	} {
 		if err := pass.run(doc); err != nil {
 			return fmt.Errorf("%s: %w", pass.name, err)
