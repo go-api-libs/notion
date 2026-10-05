@@ -60,12 +60,23 @@ How the specification maps onto Go:
   says it is not set: nil for a slice or a map, `""` for a string. An alternative that is only `null` needs no field. Where a member tells
   the alternatives apart (the `discriminator`'s `propertyName`, or a member each
   alternative fixes to a string of its own, such as Notion's `type`), that member
-  must come first: decoding reads it, and the alternative it names decodes each
-  further member as it is read, without reading the whole value first. An unknown
-  value, or a different first member, is an error. An alternative that is a union of
+  names the alternative. When it comes first, the alternative it names decodes
+  each further member as it is read, without reading the whole value first;
+  when it does not, the value is read whole and then decoded the same way. An
+  unknown value, or a value without that member, is an error. An alternative that is a union of
   its own counts by its alternatives, however deep, so its leaves are chosen the same
   way. Encoding writes the discriminator first, with the value of the alternative
   set, and refuses a different one. Otherwise each alternative is tried in turn.
+- **Tagged unions** — a union whose alternatives differ only in a tag, a member
+  each fixes to a string of its own, and in at most one member named after that
+  value, such as Notion's blocks (`{"type": "paragraph", "paragraph": {...}}`),
+  becomes one struct instead: the members all alternatives share, the tag, and
+  one optional field per alternative's member. Its methods check that only the
+  member the tag names is set, and that it is where its alternative requires it,
+  unless it can be `null`. Encoding with the tag left empty sends the value whose
+  member is set. Alternatives that are unions tagged alike count by their own
+  alternatives, and as part of an `allOf` the union's fields join the struct's.
+  Alternatives nothing else refers to get no type of their own.
 - **allOf** — each part referenced by this schema alone is folded into its fields;
   a part other schemas share stays an embedded type. A union among the parts is a
   field of its own, decoded by the struct's methods: the fields and the chosen
@@ -79,9 +90,12 @@ How the specification maps onto Go:
   unions, is generated with methods that return an "unimplemented" error.
 - **Debug mode** — with `-debug`, a client given `WithDebug` records each
   response it fails to decode to `api/interactions.json`, for `openapi-enrich` to
-  learn from. Nothing the specification leaves open decodes into `any` then: the
-  empty schema, an array without `items`, a free-form object and `not` alone
-  become `struct{}`, so any value in them fails and is recorded.
+  learn from, then decodes it again without rejecting members the specification
+  does not know. Only if that fails too does the call fail, so a response that
+  merely holds more than the specification says still reaches the caller.
+  Nothing the specification leaves open decodes into `any` then: the empty
+  schema, an array without `items`, a free-form object and `not` alone become
+  `struct{}`, so any value in them is recorded, and any but an object fails.
 - **Fields** — a field is a pointer only where its zero value must be told apart
   from something else: from leaving the field out, if it is optional, or from
   null, if it is nullable. That is a boolean, a number that may be 0, or an object
@@ -113,6 +127,12 @@ How the specification maps onto Go:
   operation whose success body is an empty object returns just `error`, and the
   server writes `{}`. Its body is read only in debug mode, where it is decoded so
   that anything in it fails loudly and is recorded.
+- **Binary responses** — a success body that is not text, such as a zip, a PDF,
+  an image or a video, is returned as an `io.ReadCloser` that reads it as it
+  arrives, never held whole in memory; the caller closes it. A text body that is
+  not JSON is returned as `[]byte`. The server copies a returned reader into
+  the response, and the JavaScript client returns such a body as a `Blob`, or
+  text as a string.
 - **Error responses** — an error body's type is returned wrapped in
   `api.Error`, so it needs an `Error() string` method. The generator does not
   write one, since a good message depends on the API: add it by hand beside the

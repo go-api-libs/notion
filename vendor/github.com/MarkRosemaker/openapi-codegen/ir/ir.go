@@ -124,6 +124,9 @@ type Operation struct {
 	// the response body rather than a JSON-decoded type. Such operations
 	// are generated as a single concrete method, not a generic function.
 	RawBytesSuccess bool `json:"rawBytesSuccess,omitzero"`
+	// StreamSuccess is true when the operation's success response is not text (see Response.IsStream), so
+	// SuccessReturn is io.ReadCloser and the method leaves the response body open for the caller.
+	StreamSuccess bool `json:"streamSuccess,omitzero"`
 }
 
 func (op Operation) ParamsInStruct() Params {
@@ -226,6 +229,8 @@ type Schema struct {
 	Streamed bool `json:"streamed,omitzero"`
 	// MemberDecoder is set for a struct that decodes one member at a time, as an alternative of a streamed union.
 	MemberDecoder bool `json:"memberDecoder,omitzero"`
+	// Tagged is set for a struct made from a tagged union, whose methods check that only the member the tag names is set.
+	Tagged *Tagged `json:"tagged,omitzero"`
 }
 
 // AllOfUnion is the union part of an allOf.
@@ -500,6 +505,14 @@ type Response struct {
 	// it, so GoType is a raw []byte read directly from the response body
 	// rather than something to json.Unmarshal into.
 	IsRawBytes bool `json:"isRawBytes,omitzero"`
+	// IsStream is true for a success response whose media type is not text, such as a zip, a PDF or an image: GoType
+	// is io.ReadCloser, the response body itself, which the caller reads and closes.
+	IsStream bool `json:"isStream,omitzero"`
+}
+
+// IsJSON reports whether the response's media type is a JSON one, whose body the client decodes.
+func (r Response) IsJSON() bool {
+	return r.ContentType != "" && !r.IsRawBytes && !r.IsStream
 }
 
 // ReqBody is the IR representation of an operation request body.
@@ -546,9 +559,14 @@ func (op Operation) BaseURLExpr() string {
 		op.BaseURL.Scheme, op.BaseURL.Host, cmp.Or(op.BaseURL.Path, "/"))
 }
 
+// HasTagged reports whether a generated type is a [Tagged] struct, needing the helpers that check one.
+func (doc Document) HasTagged() bool {
+	return slices.ContainsFunc(doc.Schemas, func(s Schema) bool { return s.Tagged != nil })
+}
+
 // NeedsJSONHelpers reports whether a generated type decodes its alternatives itself, needing the JSON helpers.
 func (doc Document) NeedsJSONHelpers() bool {
 	return slices.ContainsFunc(doc.Schemas, func(s Schema) bool {
-		return s.Discriminator != "" || s.AllOfUnion != nil && s.Unimplemented == "" || s.MemberDecoder
+		return s.Discriminator != "" || s.AllOfUnion != nil && s.Unimplemented == "" || s.MemberDecoder || s.Tagged != nil
 	})
 }
