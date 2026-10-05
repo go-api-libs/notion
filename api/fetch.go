@@ -530,10 +530,20 @@ func telling(alts openapi.SchemaList, i int) (string, bool) {
 	return "", false
 }
 
-// constString is the string p fixes its value to, if it does.
+// constString is the string p fixes its value to, if it does, as its const or the one value of its enum.
 func constString(p *openapi.Schema) (string, bool) {
+	if p == nil {
+		return "", false
+	}
+
+	c := p.Const
+	if len(p.Enum) == 1 {
+		c = p.Enum[0]
+	}
+
 	var v string
-	return v, p != nil && json.Unmarshal(p.Const, &v) == nil
+
+	return v, json.Unmarshal(c, &v) == nil
 }
 
 // deref is the schema s stands for: the one it refers to, if it is a reference.

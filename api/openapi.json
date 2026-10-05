@@ -13808,36 +13808,11 @@
       "PostSearchFilter": {
         "anyOf": [
           {
-            "$ref": "#/components/schemas/PostSearchFilterAnyOf0"
+            "$ref": "#/components/schemas/PostSearchFilterObject"
           },
           {
             "$ref": "#/components/schemas/PostSearchFilterInTrash"
           }
-        ]
-      },
-      "PostSearchFilterAnyOf0": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "$ref": "#/components/schemas/PostSearchFilterAnyOf0Property"
-          },
-          "value": {
-            "$ref": "#/components/schemas/DatabaseQueryResultType"
-          },
-          "in_trash": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "property",
-          "value"
-        ],
-        "additionalProperties": false
-      },
-      "PostSearchFilterAnyOf0Property": {
-        "type": "string",
-        "enum": [
-          "object"
         ]
       },
       "PostSearchFilterInTrash": {
@@ -13852,21 +13827,46 @@
         ],
         "additionalProperties": false
       },
+      "PostSearchFilterObject": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "$ref": "#/components/schemas/PostSearchFilterObjectProperty"
+          },
+          "value": {
+            "$ref": "#/components/schemas/DatabaseQueryResultType"
+          },
+          "in_trash": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "property",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "PostSearchFilterObjectProperty": {
+        "type": "string",
+        "enum": [
+          "object"
+        ]
+      },
       "PostSearchSort": {
         "anyOf": [
           {
-            "$ref": "#/components/schemas/PostSearchSortAnyOf0"
+            "$ref": "#/components/schemas/PostSearchSortLastEditedTime"
           },
           {
-            "$ref": "#/components/schemas/PostSearchSortProperty"
+            "$ref": "#/components/schemas/PostSearchSortRelevance"
           }
         ]
       },
-      "PostSearchSortAnyOf0": {
+      "PostSearchSortLastEditedTime": {
         "type": "object",
         "properties": {
           "timestamp": {
-            "$ref": "#/components/schemas/PostSearchSortAnyOf0Timestamp"
+            "$ref": "#/components/schemas/PostSearchSortLastEditedTimeTimestamp"
           },
           "direction": {
             "$ref": "#/components/schemas/sortDirection"
@@ -13878,17 +13878,17 @@
         ],
         "additionalProperties": false
       },
-      "PostSearchSortAnyOf0Timestamp": {
+      "PostSearchSortLastEditedTimeTimestamp": {
         "type": "string",
         "enum": [
           "last_edited_time"
         ]
       },
-      "PostSearchSortProperty": {
+      "PostSearchSortRelevance": {
         "type": "object",
         "properties": {
           "property": {
-            "$ref": "#/components/schemas/PostSearchSortPropertyProperty"
+            "$ref": "#/components/schemas/PostSearchSortRelevanceProperty"
           }
         },
         "required": [
@@ -13896,7 +13896,7 @@
         ],
         "additionalProperties": false
       },
-      "PostSearchSortPropertyProperty": {
+      "PostSearchSortRelevanceProperty": {
         "type": "string",
         "enum": [
           "relevance"
@@ -16009,16 +16009,16 @@
         "description": "A session event property filter, or an and/or compound filter nested up to three levels deep.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOf"
+            "$ref": "#/components/schemas/QuerySessionsFilterID"
           },
           {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOf"
+            "$ref": "#/components/schemas/QuerySessionEventsFilterType"
           },
           {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOf4"
+            "$ref": "#/components/schemas/QuerySessionEventsFilterSequence"
           },
           {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOf2"
+            "$ref": "#/components/schemas/QuerySessionEventsFilterCreatedAt"
           },
           {
             "$ref": "#/components/schemas/QuerySessionEventsFilterAnd"
@@ -16043,30 +16043,14 @@
         ],
         "additionalProperties": false
       },
-      "QuerySessionEventsFilterOneOf": {
+      "QuerySessionEventsFilterCreatedAt": {
         "type": "object",
         "properties": {
           "property": {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOfProperty"
-          },
-          "event_type": {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOfEventType"
-          }
-        },
-        "required": [
-          "property",
-          "event_type"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionEventsFilterOneOf2": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOfProperty3"
+            "$ref": "#/components/schemas/QuerySessionEventsFilterCreatedAtProperty"
           },
           "timestamp": {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOfTimestamp"
+            "$ref": "#/components/schemas/QuerySessionEventsFilterCreatedAtTimestamp"
           }
         },
         "required": [
@@ -16075,88 +16059,13 @@
         ],
         "additionalProperties": false
       },
-      "QuerySessionEventsFilterOneOf4": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOfProperty2"
-          },
-          "number": {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOfNumber"
-          }
-        },
-        "required": [
-          "property",
-          "number"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionEventsFilterOneOfEventType": {
-        "type": "object",
-        "properties": {
-          "equals": {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOfEventTypeEquals"
-          },
-          "in": {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOfEventTypeIn"
-          }
-        },
-        "additionalProperties": false
-      },
-      "QuerySessionEventsFilterOneOfEventTypeEquals": {
-        "type": "string",
-        "enum": [
-          "user.message",
-          "agent.message",
-          "agent.thinking",
-          "agent.tool_use",
-          "agent.tool_result",
-          "session.status"
-        ]
-      },
-      "QuerySessionEventsFilterOneOfEventTypeIn": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/QuerySessionEventsFilterOneOfEventTypeEquals"
-        }
-      },
-      "QuerySessionEventsFilterOneOfNumber": {
-        "type": "object",
-        "properties": {
-          "greater_than": {
-            "type": "number"
-          },
-          "greater_than_or_equal_to": {
-            "type": "number"
-          },
-          "less_than": {
-            "type": "number"
-          },
-          "less_than_or_equal_to": {
-            "type": "number"
-          }
-        },
-        "additionalProperties": false
-      },
-      "QuerySessionEventsFilterOneOfProperty": {
-        "type": "string",
-        "enum": [
-          "type"
-        ]
-      },
-      "QuerySessionEventsFilterOneOfProperty2": {
-        "type": "string",
-        "enum": [
-          "sequence"
-        ]
-      },
-      "QuerySessionEventsFilterOneOfProperty3": {
+      "QuerySessionEventsFilterCreatedAtProperty": {
         "type": "string",
         "enum": [
           "created_at"
         ]
       },
-      "QuerySessionEventsFilterOneOfTimestamp": {
+      "QuerySessionEventsFilterCreatedAtTimestamp": {
         "type": "object",
         "properties": {
           "equals": {
@@ -16200,16 +16109,16 @@
       "QuerySessionEventsFilterOrItem": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOf"
+            "$ref": "#/components/schemas/QuerySessionsFilterID"
           },
           {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOf"
+            "$ref": "#/components/schemas/QuerySessionEventsFilterType"
           },
           {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOf4"
+            "$ref": "#/components/schemas/QuerySessionEventsFilterSequence"
           },
           {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOf2"
+            "$ref": "#/components/schemas/QuerySessionEventsFilterCreatedAt"
           },
           {
             "$ref": "#/components/schemas/QuerySessionEventsFilterOrItemAnd"
@@ -16252,16 +16161,16 @@
       "QuerySessionEventsFilterOrItemOrItem": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOf"
+            "$ref": "#/components/schemas/QuerySessionsFilterID"
           },
           {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOf"
+            "$ref": "#/components/schemas/QuerySessionEventsFilterType"
           },
           {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOf4"
+            "$ref": "#/components/schemas/QuerySessionEventsFilterSequence"
           },
           {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOf2"
+            "$ref": "#/components/schemas/QuerySessionEventsFilterCreatedAt"
           },
           {
             "$ref": "#/components/schemas/QuerySessionEventsFilterOrItemOrItemAnd"
@@ -16304,17 +16213,108 @@
       "QuerySessionEventsFilterOrItemOrItemOrItem": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOf"
+            "$ref": "#/components/schemas/QuerySessionsFilterID"
           },
           {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOf"
+            "$ref": "#/components/schemas/QuerySessionEventsFilterType"
           },
           {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOf4"
+            "$ref": "#/components/schemas/QuerySessionEventsFilterSequence"
           },
           {
-            "$ref": "#/components/schemas/QuerySessionEventsFilterOneOf2"
+            "$ref": "#/components/schemas/QuerySessionEventsFilterCreatedAt"
           }
+        ]
+      },
+      "QuerySessionEventsFilterSequence": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "$ref": "#/components/schemas/QuerySessionEventsFilterSequenceProperty"
+          },
+          "number": {
+            "$ref": "#/components/schemas/QuerySessionEventsFilterSequenceNumber"
+          }
+        },
+        "required": [
+          "property",
+          "number"
+        ],
+        "additionalProperties": false
+      },
+      "QuerySessionEventsFilterSequenceNumber": {
+        "type": "object",
+        "properties": {
+          "greater_than": {
+            "type": "number"
+          },
+          "greater_than_or_equal_to": {
+            "type": "number"
+          },
+          "less_than": {
+            "type": "number"
+          },
+          "less_than_or_equal_to": {
+            "type": "number"
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuerySessionEventsFilterSequenceProperty": {
+        "type": "string",
+        "enum": [
+          "sequence"
+        ]
+      },
+      "QuerySessionEventsFilterType": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "$ref": "#/components/schemas/QuerySessionEventsFilterTypeProperty"
+          },
+          "event_type": {
+            "$ref": "#/components/schemas/QuerySessionEventsFilterTypeEventType"
+          }
+        },
+        "required": [
+          "property",
+          "event_type"
+        ],
+        "additionalProperties": false
+      },
+      "QuerySessionEventsFilterTypeEventType": {
+        "type": "object",
+        "properties": {
+          "equals": {
+            "$ref": "#/components/schemas/QuerySessionEventsFilterTypeEventTypeEquals"
+          },
+          "in": {
+            "$ref": "#/components/schemas/QuerySessionEventsFilterTypeEventTypeIn"
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuerySessionEventsFilterTypeEventTypeEquals": {
+        "type": "string",
+        "enum": [
+          "user.message",
+          "agent.message",
+          "agent.thinking",
+          "agent.tool_use",
+          "agent.tool_result",
+          "session.status"
+        ]
+      },
+      "QuerySessionEventsFilterTypeEventTypeIn": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/QuerySessionEventsFilterTypeEventTypeEquals"
+        }
+      },
+      "QuerySessionEventsFilterTypeProperty": {
+        "type": "string",
+        "enum": [
+          "type"
         ]
       },
       "QuerySessionEventsSorts": {
@@ -16382,16 +16382,16 @@
         "description": "A session property filter, or an and/or compound filter nested up to two levels deep.",
         "oneOf": [
           {
+            "$ref": "#/components/schemas/QuerySessionsFilterID"
+          },
+          {
+            "$ref": "#/components/schemas/QuerySessionsFilterAgentID"
+          },
+          {
+            "$ref": "#/components/schemas/QuerySessionsFilterStatus"
+          },
+          {
             "$ref": "#/components/schemas/QuerySessionsFilterOneOf"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOf4"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOf5"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOf2"
           },
           {
             "$ref": "#/components/schemas/QuerySessionsFilterAnd"
@@ -16399,6 +16399,30 @@
           {
             "$ref": "#/components/schemas/QuerySessionsFilterOr"
           }
+        ]
+      },
+      "QuerySessionsFilterAgentID": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "$ref": "#/components/schemas/QuerySessionsFilterAgentIDProperty"
+          },
+          "string": {
+            "description": "An exact string comparison.",
+            "$ref": "#/components/schemas/QueryAgentsFilterIDID"
+          }
+        },
+        "required": [
+          "property",
+          "string"
+        ],
+        "additionalProperties": false
+      },
+      "QuerySessionsFilterAgentIDProperty": {
+        "description": "Filter sessions by agent_id.",
+        "type": "string",
+        "enum": [
+          "agent_id"
         ]
       },
       "QuerySessionsFilterAnd": {
@@ -16418,12 +16442,12 @@
         ],
         "additionalProperties": false
       },
-      "QuerySessionsFilterOneOf": {
+      "QuerySessionsFilterID": {
         "type": "object",
         "properties": {
           "property": {
             "description": "Filter sessions by id.",
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOfProperty"
+            "$ref": "#/components/schemas/QuerySessionsFilterIDProperty"
           },
           "string": {
             "description": "An exact string comparison.",
@@ -16436,7 +16460,13 @@
         ],
         "additionalProperties": false
       },
-      "QuerySessionsFilterOneOf2": {
+      "QuerySessionsFilterIDProperty": {
+        "type": "string",
+        "enum": [
+          "id"
+        ]
+      },
+      "QuerySessionsFilterOneOf": {
         "type": "object",
         "properties": {
           "property": {
@@ -16452,81 +16482,6 @@
           "timestamp"
         ],
         "additionalProperties": false
-      },
-      "QuerySessionsFilterOneOf4": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOfProperty2"
-          },
-          "string": {
-            "description": "An exact string comparison.",
-            "$ref": "#/components/schemas/QueryAgentsFilterIDID"
-          }
-        },
-        "required": [
-          "property",
-          "string"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionsFilterOneOf5": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOfProperty3"
-          },
-          "status": {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOfStatus"
-          }
-        },
-        "required": [
-          "property",
-          "status"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionsFilterOneOfProperty": {
-        "type": "string",
-        "enum": [
-          "id"
-        ]
-      },
-      "QuerySessionsFilterOneOfProperty2": {
-        "description": "Filter sessions by agent_id.",
-        "type": "string",
-        "enum": [
-          "agent_id"
-        ]
-      },
-      "QuerySessionsFilterOneOfProperty3": {
-        "description": "Filter sessions by status.",
-        "type": "string",
-        "enum": [
-          "status"
-        ]
-      },
-      "QuerySessionsFilterOneOfStatus": {
-        "description": "A session status comparison.",
-        "type": "object",
-        "properties": {
-          "equals": {
-            "description": "Return sessions with this status.",
-            "$ref": "#/components/schemas/CancelSessionStatus"
-          },
-          "in": {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOfStatusIn"
-          }
-        },
-        "additionalProperties": false
-      },
-      "QuerySessionsFilterOneOfStatusIn": {
-        "description": "Return sessions with any of these statuses.",
-        "type": "array",
-        "maxItems": 7,
-        "items": {
-          "$ref": "#/components/schemas/CancelSessionStatus"
-        }
       },
       "QuerySessionsFilterOneOfTimestamp": {
         "description": "A timestamp range.",
@@ -16575,16 +16530,16 @@
       "QuerySessionsFilterOrItem": {
         "oneOf": [
           {
+            "$ref": "#/components/schemas/QuerySessionsFilterID"
+          },
+          {
+            "$ref": "#/components/schemas/QuerySessionsFilterAgentID"
+          },
+          {
+            "$ref": "#/components/schemas/QuerySessionsFilterStatus"
+          },
+          {
             "$ref": "#/components/schemas/QuerySessionsFilterOneOf"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOf4"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOf5"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOf2"
           },
           {
             "$ref": "#/components/schemas/QuerySessionsFilterOrItemAnd"
@@ -16631,17 +16586,62 @@
       "QuerySessionsFilterOrItemOrItem": {
         "oneOf": [
           {
+            "$ref": "#/components/schemas/QuerySessionsFilterID"
+          },
+          {
+            "$ref": "#/components/schemas/QuerySessionsFilterAgentID"
+          },
+          {
+            "$ref": "#/components/schemas/QuerySessionsFilterStatus"
+          },
+          {
             "$ref": "#/components/schemas/QuerySessionsFilterOneOf"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOf4"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOf5"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOf2"
           }
+        ]
+      },
+      "QuerySessionsFilterStatus": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "$ref": "#/components/schemas/QuerySessionsFilterStatusProperty"
+          },
+          "status": {
+            "$ref": "#/components/schemas/QuerySessionsFilterStatus2"
+          }
+        },
+        "required": [
+          "property",
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "QuerySessionsFilterStatus2": {
+        "description": "A session status comparison.",
+        "type": "object",
+        "properties": {
+          "equals": {
+            "description": "Return sessions with this status.",
+            "$ref": "#/components/schemas/CancelSessionStatus"
+          },
+          "in": {
+            "$ref": "#/components/schemas/QuerySessionsFilterStatusIn"
+          }
+        },
+        "additionalProperties": false
+      },
+      "QuerySessionsFilterStatusIn": {
+        "description": "Return sessions with any of these statuses.",
+        "type": "array",
+        "maxItems": 7,
+        "items": {
+          "$ref": "#/components/schemas/CancelSessionStatus"
+        }
+      },
+      "QuerySessionsFilterStatusProperty": {
+        "description": "Filter sessions by status.",
+        "type": "string",
+        "enum": [
+          "status"
         ]
       },
       "QuerySessionsSorts": {
@@ -20907,21 +20907,21 @@
       "UpdatePageMarkdownAcceptedOperation": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/UpdatePageMarkdownAcceptedOperationOneOf0"
+            "$ref": "#/components/schemas/UpdatePageMarkdownAcceptedOperationRest"
           },
           {
-            "$ref": "#/components/schemas/UpdatePageMarkdownAcceptedOperationOneOf1"
+            "$ref": "#/components/schemas/UpdatePageMarkdownAcceptedOperationMcp"
           }
         ]
       },
-      "UpdatePageMarkdownAcceptedOperationOneOf0": {
+      "UpdatePageMarkdownAcceptedOperationMcp": {
         "type": "object",
         "properties": {
           "surface": {
-            "$ref": "#/components/schemas/UpdatePageMarkdownAcceptedOperationOneOf0Surface"
+            "$ref": "#/components/schemas/UpdatePageMarkdownAcceptedOperationMcpSurface"
           },
           "name": {
-            "$ref": "#/components/schemas/UpdatePageMarkdownAcceptedOperationOneOf0Name"
+            "$ref": "#/components/schemas/UpdatePageMarkdownAcceptedOperationMcpName"
           }
         },
         "required": [
@@ -20930,44 +20930,44 @@
         ],
         "additionalProperties": false
       },
-      "UpdatePageMarkdownAcceptedOperationOneOf0Name": {
-        "type": "string",
-        "enum": [
-          "PATCH /v1/pages/:page_id/markdown"
-        ]
-      },
-      "UpdatePageMarkdownAcceptedOperationOneOf0Surface": {
-        "type": "string",
-        "enum": [
-          "rest"
-        ]
-      },
-      "UpdatePageMarkdownAcceptedOperationOneOf1": {
-        "type": "object",
-        "properties": {
-          "surface": {
-            "$ref": "#/components/schemas/UpdatePageMarkdownAcceptedOperationOneOf1Surface"
-          },
-          "name": {
-            "$ref": "#/components/schemas/UpdatePageMarkdownAcceptedOperationOneOf1Name"
-          }
-        },
-        "required": [
-          "surface",
-          "name"
-        ],
-        "additionalProperties": false
-      },
-      "UpdatePageMarkdownAcceptedOperationOneOf1Name": {
+      "UpdatePageMarkdownAcceptedOperationMcpName": {
         "type": "string",
         "enum": [
           "create_pages"
         ]
       },
-      "UpdatePageMarkdownAcceptedOperationOneOf1Surface": {
+      "UpdatePageMarkdownAcceptedOperationMcpSurface": {
         "type": "string",
         "enum": [
           "mcp"
+        ]
+      },
+      "UpdatePageMarkdownAcceptedOperationRest": {
+        "type": "object",
+        "properties": {
+          "surface": {
+            "$ref": "#/components/schemas/UpdatePageMarkdownAcceptedOperationRestSurface"
+          },
+          "name": {
+            "$ref": "#/components/schemas/UpdatePageMarkdownAcceptedOperationRestName"
+          }
+        },
+        "required": [
+          "surface",
+          "name"
+        ],
+        "additionalProperties": false
+      },
+      "UpdatePageMarkdownAcceptedOperationRestName": {
+        "type": "string",
+        "enum": [
+          "PATCH /v1/pages/:page_id/markdown"
+        ]
+      },
+      "UpdatePageMarkdownAcceptedOperationRestSurface": {
+        "type": "string",
+        "enum": [
+          "rest"
         ]
       },
       "UpdatePageMarkdownAllOf0": {
