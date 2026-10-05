@@ -7099,11 +7099,11 @@ type CreateViewRequest struct {
 	// The ID of a dashboard view to add this view to as a widget. Mutually exclusive with database_id and create_database.
 	ViewID IDRequest `json:"view_id,omitzero"`
 	// Filter to apply to the view. Uses the same format as the data source query filter.
-	Filter *ViewFilter `json:"filter,omitzero"`
+	Filter Filter `json:"filter,omitzero"`
 	// Sorts to apply to the view. Uses the same format as the data source query sorts.
 	Sorts Sorts `json:"sorts,omitzero"`
 	// Quick filters to pin in the view's filter bar. Keys are property names or IDs. Values are filter conditions (same shape as a property filter but without the property field). Each quick filter appears as a clickable pill above the view, independent of the advanced filter.
-	QuickFilters map[string]ViewFilter `json:"quick_filters,omitzero"`
+	QuickFilters map[string]QuickFilterCondition `json:"quick_filters,omitzero"`
 	// Create a new linked database block on a page and add the view to it. Mutually exclusive with database_id and view_id.
 	CreateDatabase CreateDatabaseForViewRequest `json:"create_database,omitzero"`
 	// View presentation configuration. The type field must match the view type.
@@ -7479,11 +7479,11 @@ type DataSourceViewObjectResponse struct {
 	// The user who last edited the view, or null if not available.
 	LastEditedBy PartialUserObjectResponse `json:"last_edited_by,omitzero"`
 	// The filter applied to this view (same shape as data source query filter).
-	Filter *ViewFilterResponse `json:"filter,omitzero"`
+	Filter *Filter `json:"filter,omitzero"`
 	// The sorts applied to this view (same shape as data source query sorts).
 	Sorts Sorts `json:"sorts,omitzero"`
 	// Quick filters pinned to the view's filter bar. Keys are property IDs. Values are filter conditions (same shape as a property filter without the property field). Null when no quick filters are set.
-	QuickFilters map[string]ViewFilter `json:"quick_filters,omitzero"`
+	QuickFilters map[string]QuickFilterCondition `json:"quick_filters,omitzero"`
 	// View presentation configuration.
 	Configuration *ViewConfigResponse `json:"configuration,omitzero"`
 	// For dashboard widget views, the ID of the parent dashboard view. Only present when this view is a widget inside a dashboard.
@@ -8886,6 +8886,100 @@ func (v *FilesPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Deco
 	return false, nil
 }
 
+// A filter of a data source's entries: by a property or a timestamp, or by any or all of other filters.
+// Filter is an untagged oneOf union: exactly one field is set after unmarshaling.
+type Filter struct {
+	FilterOr        *FilterOr
+	FilterAnd       *FilterAnd
+	PropertyFilter  *PropertyFilter
+	TimestampFilter *TimestampFilter
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *Filter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = Filter{}
+
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv FilterOr
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.FilterOr = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv FilterAnd
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.FilterAnd = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv PropertyFilter
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.PropertyFilter = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv TimestampFilter
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.TimestampFilter = &vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *Filter) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.FilterOr != nil:
+		return json.MarshalEncode(enc, v.FilterOr, jsonOpts)
+	case v.FilterAnd != nil:
+		return json.MarshalEncode(enc, v.FilterAnd, jsonOpts)
+	case v.PropertyFilter != nil:
+		return json.MarshalEncode(enc, v.PropertyFilter, jsonOpts)
+	case v.TimestampFilter != nil:
+		return json.MarshalEncode(enc, v.TimestampFilter, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// FilterAnd defines a model
+type FilterAnd struct {
+	// The entries all of the filters allow.
+	And []Filter `json:"and"`
+}
+
+// FilterOr defines a model
+type FilterOr struct {
+	// The entries any of the filters allow.
+	Or []Filter `json:"or"`
+}
+
 // FormViewConfigRequest defines a model
 type FormViewConfigRequest struct {
 	// The view type. Must be "form".
@@ -10046,115 +10140,6 @@ func (v *GroupByConfigResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// GroupFilterOperatorArray defines a model
-type GroupFilterOperatorArray []GroupFilterOperatorArrayItem
-
-// GroupFilterOperatorArrayItem defines a model
-// GroupFilterOperatorArrayItem is an untagged anyOf union: at least one field is set after unmarshaling.
-type GroupFilterOperatorArrayItem struct {
-	PropertyOrTimestampFilter       *PropertyOrTimestampFilter
-	GroupFilterOperatorArrayItemOr  *GroupFilterOperatorArrayItemOr
-	GroupFilterOperatorArrayItemAnd *GroupFilterOperatorArrayItemAnd
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *GroupFilterOperatorArrayItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = GroupFilterOperatorArrayItem{}
-
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv PropertyOrTimestampFilter
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PropertyOrTimestampFilter = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv GroupFilterOperatorArrayItemOr
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.GroupFilterOperatorArrayItemOr = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv GroupFilterOperatorArrayItemAnd
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.GroupFilterOperatorArrayItemAnd = &vv
-			matched++
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *GroupFilterOperatorArrayItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.PropertyOrTimestampFilter != nil:
-		return json.MarshalEncode(enc, v.PropertyOrTimestampFilter, jsonOpts)
-	case v.GroupFilterOperatorArrayItemOr != nil:
-		return json.MarshalEncode(enc, v.GroupFilterOperatorArrayItemOr, jsonOpts)
-	case v.GroupFilterOperatorArrayItemAnd != nil:
-		return json.MarshalEncode(enc, v.GroupFilterOperatorArrayItemAnd, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// GroupFilterOperatorArrayItemAnd defines a model
-type GroupFilterOperatorArrayItemAnd struct {
-	And PropertyOrTimestampFilterArray `json:"and"`
-}
-
-// GroupFilterOperatorArrayItemOr defines a model
-type GroupFilterOperatorArrayItemOr struct {
-	Or       PropertyOrTimestampFilterArray    `json:"or"`
-	Date     TextPropertyFilterEquals          `json:"date,omitzero"`
-	Property string                            `json:"property,omitzero"`
-	And      GroupFilterOperatorArrayItemOrAnd `json:"and,omitzero"`
-}
-
-// GroupFilterOperatorArrayItemOrAnd defines a model
-type GroupFilterOperatorArrayItemOrAnd []GroupFilterOperatorArrayItemOrAndItem
-
-// GroupFilterOperatorArrayItemOrAndItem defines a model
-type GroupFilterOperatorArrayItemOrAndItem struct {
-	Date        TextPropertyFilterEquals                         `json:"date"`
-	Property    string                                           `json:"property"`
-	Formula     GroupFilterOperatorArrayItemOrAndItemFormula     `json:"formula,omitzero"`
-	Select      TextPropertyFilterDoesNotEqual                   `json:"select,omitzero"`
-	CreatedTime GroupFilterOperatorArrayItemOrAndItemCreatedTime `json:"created_time,omitzero"`
-}
-
-// GroupFilterOperatorArrayItemOrAndItemCreatedTime defines a model
-type GroupFilterOperatorArrayItemOrAndItemCreatedTime struct {
-	OnOrAfter string `json:"on_or_after"`
-}
-
-// GroupFilterOperatorArrayItemOrAndItemFormula defines a model
-type GroupFilterOperatorArrayItemOrAndItemFormula struct {
-	Number GroupFilterOperatorArrayItemOrAndItemFormulaNumber `json:"number"`
-}
-
-// GroupFilterOperatorArrayItemOrAndItemFormulaNumber defines a model
-type GroupFilterOperatorArrayItemOrAndItemFormulaNumber struct {
-	LessThan int `json:"less_than"`
 }
 
 // GroupObjectRequest defines a model
@@ -14636,101 +14621,15 @@ type PluginListResultsItem struct {
 
 // PostDatabaseQuery defines a model
 type PostDatabaseQuery struct {
-	Sorts       Sorts                   `json:"sorts,omitzero"`
-	Filter      PostDatabaseQueryFilter `json:"filter,omitzero"`
-	StartCursor string                  `json:"start_cursor,omitzero"`
-	PageSize    *float64                `json:"page_size,omitzero"`
+	Sorts       Sorts    `json:"sorts,omitzero"`
+	StartCursor string   `json:"start_cursor,omitzero"`
+	PageSize    *float64 `json:"page_size,omitzero"`
 	// Whether to return archived pages. When omitted or false, returns non-archived pages. When true, returns archived pages.
 	IsArchived *bool `json:"is_archived,omitzero"`
 	// Optionally filter the results to only include pages or data sources. Regular, non-wiki databases only support page children. The default behavior is no result type filtering, in other words, returning both pages and data sources for wikis.
 	ResultType DatabaseQueryResultType `json:"result_type,omitzero"`
-}
-
-// PostDatabaseQueryFilter defines a model
-// PostDatabaseQueryFilter is an untagged anyOf union: at least one field is set after unmarshaling.
-type PostDatabaseQueryFilter struct {
-	PostDatabaseQueryFilterOr  *PostDatabaseQueryFilterOr
-	PostDatabaseQueryFilterAnd *PostDatabaseQueryFilterAnd
-	PropertyFilter             *PropertyFilter
-	TimestampFilter            *TimestampFilter
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *PostDatabaseQueryFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = PostDatabaseQueryFilter{}
-
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv PostDatabaseQueryFilterOr
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PostDatabaseQueryFilterOr = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv PostDatabaseQueryFilterAnd
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PostDatabaseQueryFilterAnd = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv PropertyFilter
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PropertyFilter = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv TimestampFilter
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TimestampFilter = &vv
-			matched++
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *PostDatabaseQueryFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.PostDatabaseQueryFilterOr != nil:
-		return json.MarshalEncode(enc, v.PostDatabaseQueryFilterOr, jsonOpts)
-	case v.PostDatabaseQueryFilterAnd != nil:
-		return json.MarshalEncode(enc, v.PostDatabaseQueryFilterAnd, jsonOpts)
-	case v.PropertyFilter != nil:
-		return json.MarshalEncode(enc, v.PropertyFilter, jsonOpts)
-	case v.TimestampFilter != nil:
-		return json.MarshalEncode(enc, v.TimestampFilter, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// PostDatabaseQueryFilterAnd defines a model
-type PostDatabaseQueryFilterAnd struct {
-	And GroupFilterOperatorArray `json:"and"`
-}
-
-// PostDatabaseQueryFilterOr defines a model
-type PostDatabaseQueryFilterOr struct {
-	Or GroupFilterOperatorArray `json:"or"`
+	// A filter of a data source's entries: by a property or a timestamp, or by any or all of other filters.
+	Filter Filter `json:"filter,omitzero"`
 }
 
 // PostPage defines a model
@@ -16173,64 +16072,6 @@ func (v *PropertyItemPropertyItemListResponsePropertyItem) MarshalJSONTo(enc *js
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
-
-// PropertyOrTimestampFilter defines a model
-// PropertyOrTimestampFilter is an untagged anyOf union: at least one field is set after unmarshaling.
-type PropertyOrTimestampFilter struct {
-	PropertyFilter  *PropertyFilter
-	TimestampFilter *TimestampFilter
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *PropertyOrTimestampFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = PropertyOrTimestampFilter{}
-
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv PropertyFilter
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PropertyFilter = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv TimestampFilter
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TimestampFilter = &vv
-			matched++
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *PropertyOrTimestampFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.PropertyFilter != nil:
-		return json.MarshalEncode(enc, v.PropertyFilter, jsonOpts)
-	case v.TimestampFilter != nil:
-		return json.MarshalEncode(enc, v.TimestampFilter, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// PropertyOrTimestampFilterArray defines a model
-type PropertyOrTimestampFilterArray []PropertyOrTimestampFilter
 
 // PropertySort defines a model
 type PropertySort struct {
@@ -19514,6 +19355,9 @@ func (e QuerySessionsSortsItemProperty) Valid() bool {
 		return false
 	}
 }
+
+// QuickFilterCondition defines a model
+type QuickFilterCondition struct{}
 
 // RelationGroupByConfigRequest defines a model
 type RelationGroupByConfigRequest struct {
@@ -24357,7 +24201,7 @@ type TimestampSort struct {
 	Direction SortDirection `json:"direction"`
 }
 
-// TimestampSortTimestamp defines a model
+// The timestamp to sort by.
 type TimestampSortTimestamp string
 
 const (
@@ -26417,11 +26261,11 @@ type UpdateViewRequest struct {
 	// New name for the view.
 	Name string `json:"name,omitzero"`
 	// Filter to apply to the view. Uses the same format as the data source query filter. Pass null to clear the filter.
-	Filter *ViewFilter `json:"filter,omitzero"`
+	Filter *Filter `json:"filter,omitzero"`
 	// Property sorts to apply to the view. Only property-based sorts are supported. Pass null to clear the sorts.
 	Sorts PropertySorts `json:"sorts,omitzero"`
 	// Quick filters for the view's filter bar. Keys are property names or IDs. Set a key to a filter condition to add/update that quick filter. Set a key to null to remove it. Pass null for the entire field to clear all quick filters. Unmentioned quick filters are preserved.
-	QuickFilters map[string]ViewFilter `json:"quick_filters,omitzero"`
+	QuickFilters map[string]QuickFilterCondition `json:"quick_filters,omitzero"`
 	// View presentation configuration. The type field must match the view type. Individual nullable fields within the configuration can be set to null to clear them.
 	Configuration ViewConfigRequest `json:"configuration,omitzero"`
 }
@@ -27099,281 +26943,6 @@ type ViewDeletedWebhookPayload struct {
 	Entity WebhookViewEntity `json:"entity"`
 	// Additional event-specific data.
 	Data PageMovedWebhookPayloadData `json:"data"`
-}
-
-// ViewFilter defines a model
-type ViewFilter struct{}
-
-// A filter that can be a property filter, timestamp filter, or nested compound filter.
-// ViewFilterOneOfOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
-type ViewFilterOneOfOrItem struct {
-	ViewFilterOneOfOrItemProperty *ViewFilterOneOfOrItemProperty
-	ViewFilterTimestamp           *ViewFilterTimestamp
-	ViewFilterOneOfOrItemOneOf    *ViewFilterOneOfOrItemOneOf
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *ViewFilterOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = ViewFilterOneOfOrItem{}
-
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv ViewFilterOneOfOrItemProperty
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ViewFilterOneOfOrItemProperty = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv ViewFilterTimestamp
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ViewFilterTimestamp = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv ViewFilterOneOfOrItemOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ViewFilterOneOfOrItemOneOf = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *ViewFilterOneOfOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.ViewFilterOneOfOrItemProperty != nil:
-		return json.MarshalEncode(enc, v.ViewFilterOneOfOrItemProperty, jsonOpts)
-	case v.ViewFilterTimestamp != nil:
-		return json.MarshalEncode(enc, v.ViewFilterTimestamp, jsonOpts)
-	case v.ViewFilterOneOfOrItemOneOf != nil:
-		return json.MarshalEncode(enc, v.ViewFilterOneOfOrItemOneOf, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// A compound filter at the deepest nesting level. Can only contain property or timestamp filters (no further nesting).
-type ViewFilterOneOfOrItemOneOf struct {
-	// Filters combined with OR logic.
-	Or []ViewFilterOneOfOrItemOneOfOrItem `json:"or,omitzero"`
-	// Filters combined with AND logic.
-	And []ViewFilterOneOfOrItemOneOfOrItem `json:"and,omitzero"`
-}
-
-// A property filter or timestamp filter.
-// ViewFilterOneOfOrItemOneOfOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
-type ViewFilterOneOfOrItemOneOfOrItem struct {
-	ViewFilterOneOfOrItemProperty *ViewFilterOneOfOrItemProperty
-	ViewFilterTimestamp           *ViewFilterTimestamp
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *ViewFilterOneOfOrItemOneOfOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = ViewFilterOneOfOrItemOneOfOrItem{}
-
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv ViewFilterOneOfOrItemProperty
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ViewFilterOneOfOrItemProperty = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv ViewFilterTimestamp
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ViewFilterTimestamp = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *ViewFilterOneOfOrItemOneOfOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.ViewFilterOneOfOrItemProperty != nil:
-		return json.MarshalEncode(enc, v.ViewFilterOneOfOrItemProperty, jsonOpts)
-	case v.ViewFilterTimestamp != nil:
-		return json.MarshalEncode(enc, v.ViewFilterTimestamp, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// A filter condition on a specific property. The property field specifies which property to filter, and an additional field specifies the filter type and condition (e.g., title, rich_text, number, checkbox, select, multi_select, date, people, files, relation, formula, rollup, etc.).
-type ViewFilterOneOfOrItemProperty struct {
-	// The name or ID of the property to filter on.
-	Property string `json:"property"`
-}
-
-// Filter for the view. Can be a property filter (filter by property value), timestamp filter (filter by created_time or last_edited_time), or compound filter (combine filters with and/or logic). Compound filters support up to 2 levels of nesting.
-// ViewFilterResponse is an untagged oneOf union: exactly one field is set after unmarshaling.
-type ViewFilterResponse struct {
-	ViewFilterResponseProperty *ViewFilterResponseProperty
-	ViewFilterTimestamp        *ViewFilterTimestamp
-	ViewFilterResponseOneOf2   *ViewFilterResponseOneOf2
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *ViewFilterResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = ViewFilterResponse{}
-
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv ViewFilterResponseProperty
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ViewFilterResponseProperty = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv ViewFilterTimestamp
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ViewFilterTimestamp = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv ViewFilterResponseOneOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ViewFilterResponseOneOf2 = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *ViewFilterResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.ViewFilterResponseProperty != nil:
-		return json.MarshalEncode(enc, v.ViewFilterResponseProperty, jsonOpts)
-	case v.ViewFilterTimestamp != nil:
-		return json.MarshalEncode(enc, v.ViewFilterTimestamp, jsonOpts)
-	case v.ViewFilterResponseOneOf2 != nil:
-		return json.MarshalEncode(enc, v.ViewFilterResponseOneOf2, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// A compound filter that combines multiple filters with AND or OR logic. Supports up to 2 levels of nesting.
-type ViewFilterResponseOneOf2 struct {
-	// Filters combined with OR logic.
-	Or []ViewFilterOneOfOrItem `json:"or,omitzero"`
-	// Filters combined with AND logic.
-	And []ViewFilterOneOfOrItem `json:"and,omitzero"`
-}
-
-// A filter condition on a specific property. The property field specifies which property to filter, and an additional field specifies the filter type and condition (e.g., title, rich_text, number, checkbox, select, multi_select, date, people, files, relation, formula, rollup, etc.).
-type ViewFilterResponseProperty struct {
-	// The name or ID of the property to filter on.
-	Property string                       `json:"property"`
-	Or       ViewFilterResponsePropertyOr `json:"or,omitzero"`
-}
-
-// ViewFilterResponsePropertyOr defines a model
-type ViewFilterResponsePropertyOr []ViewFilterResponsePropertyOrItem
-
-// ViewFilterResponsePropertyOrItem defines a model
-type ViewFilterResponsePropertyOrItem struct {
-	Or  ViewFilterResponsePropertyOrItemOr  `json:"or"`
-	And ViewFilterResponsePropertyOrItemAnd `json:"and,omitzero"`
-}
-
-// ViewFilterResponsePropertyOrItemAnd defines a model
-type ViewFilterResponsePropertyOrItemAnd []ViewFilterResponsePropertyOrItemAndItem
-
-// ViewFilterResponsePropertyOrItemAndItem defines a model
-type ViewFilterResponsePropertyOrItemAndItem struct {
-	Property    string                                           `json:"property"`
-	Select      TextPropertyFilterDoesNotEqual                   `json:"select"`
-	CreatedTime GroupFilterOperatorArrayItemOrAndItemCreatedTime `json:"created_time,omitzero"`
-}
-
-// ViewFilterResponsePropertyOrItemOr defines a model
-type ViewFilterResponsePropertyOrItemOr []ViewFilterResponsePropertyOrItemOrItem
-
-// ViewFilterResponsePropertyOrItemOrItem defines a model
-type ViewFilterResponsePropertyOrItemOrItem struct {
-	Property string                                    `json:"property"`
-	Date     TextPropertyFilterEquals                  `json:"date"`
-	And      ViewFilterResponsePropertyOrItemOrItemAnd `json:"and,omitzero"`
-}
-
-// ViewFilterResponsePropertyOrItemOrItemAnd defines a model
-type ViewFilterResponsePropertyOrItemOrItemAnd []ViewFilterResponsePropertyOrItemOrItemAndItem
-
-// ViewFilterResponsePropertyOrItemOrItemAndItem defines a model
-type ViewFilterResponsePropertyOrItemOrItemAndItem struct {
-	Property string                                       `json:"property"`
-	Date     TextPropertyFilterEquals                     `json:"date"`
-	Formula  GroupFilterOperatorArrayItemOrAndItemFormula `json:"formula,omitzero"`
-}
-
-// A filter condition on a timestamp (created_time or last_edited_time). The timestamp field specifies which timestamp, and a matching field contains the date filter condition.
-type ViewFilterTimestamp struct {
-	// The timestamp to filter on.
-	Timestamp TimestampSortTimestamp `json:"timestamp"`
 }
 
 // ViewList defines a model
