@@ -4566,11 +4566,11 @@ type CommentCreatedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookCommentEntity `json:"entity"`
 	// Additional event-specific data.
-	Data CommentCreatedWebhookPayloadAllOfData `json:"data"`
+	Data CommentCreatedWebhookPayloadData `json:"data"`
 }
 
 // Additional event-specific data.
-type CommentCreatedWebhookPayloadAllOfData struct {
+type CommentCreatedWebhookPayloadData struct {
 	// The parent of the comment (the page or block the comment is attached to).
 	Parent WebhookExternalBlock `json:"parent"`
 	// The ID of the page containing the comment.
@@ -4587,7 +4587,7 @@ type CommentDeletedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookCommentEntity `json:"entity"`
 	// Additional event-specific data.
-	Data CommentCreatedWebhookPayloadAllOfData `json:"data"`
+	Data CommentCreatedWebhookPayloadData `json:"data"`
 }
 
 // CommentObjectResponse defines a model
@@ -4741,7 +4741,7 @@ type CommentUpdatedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookCommentEntity `json:"entity"`
 	// Additional event-specific data.
-	Data CommentCreatedWebhookPayloadAllOfData `json:"data"`
+	Data CommentCreatedWebhookPayloadData `json:"data"`
 }
 
 // ContentPositionSchema defines a model
@@ -4939,8 +4939,8 @@ type CreateAComment struct {
 	// An array of files to attach to the comment. Maximum of 3 allowed.
 	Attachments CreateACommentAllOf0Attachments `json:"attachments,omitzero"`
 	// Display name for the comment.
-	DisplayName          CreateACommentAllOf0DisplayName `json:"display_name,omitzero"`
-	CreateACommentAllOf1 CreateACommentAllOf1            `json:"-"`
+	DisplayName          CreateACommentDisplayName `json:"display_name,omitzero"`
+	CreateACommentAllOf1 CreateACommentAllOf1      `json:"-"`
 }
 
 // fieldsOfCreateAComment is CreateAComment without its methods, to encode the fields outside its union.
@@ -5178,65 +5178,6 @@ type CreateACommentAllOf0AttachmentsItem struct {
 	Type string `json:"type,omitzero"`
 }
 
-// Display name for the comment.
-type CreateACommentAllOf0DisplayName struct {
-	Type   string                                       `json:"type"`
-	Custom *CreateACommentAllOf0DisplayNameCustomCustom `json:"custom,omitzero"`
-}
-
-// tagsOfCreateACommentAllOf0DisplayName says, for each value of type, whether the member named after it must, may or must not be set.
-var tagsOfCreateACommentAllOf0DisplayName = map[string]jsonTagMember{
-	"integration": jsonTagNone,
-	"user":        jsonTagNone,
-	"custom":      jsonTagRequired,
-}
-
-// taggedMembers returns those of the members named after a value of type that are set.
-func (v *CreateACommentAllOf0DisplayName) taggedMembers() []string {
-	var set []string
-	if v.Custom != nil {
-		set = append(set, "custom")
-	}
-
-	return set
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those named after a
-// value of type, only the one it names is set.
-func (v *CreateACommentAllOf0DisplayName) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain CreateACommentAllOf0DisplayName
-
-	*v = CreateACommentAllOf0DisplayName{}
-	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
-		return err
-	}
-
-	return jsonCheckTag("type", string(v.Type), tagsOfCreateACommentAllOf0DisplayName, v.taggedMembers(), jsonStrict(dec))
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
-func (v *CreateACommentAllOf0DisplayName) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain CreateACommentAllOf0DisplayName
-
-	out, set := *v, v.taggedMembers()
-	if out.Type == "" && len(set) == 1 {
-		out.Type = string(set[0])
-	}
-
-	if err := jsonCheckTag("type", string(out.Type), tagsOfCreateACommentAllOf0DisplayName, set, true); err != nil {
-		return err
-	}
-
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
-}
-
-// CreateACommentAllOf0DisplayNameCustomCustom defines a model
-type CreateACommentAllOf0DisplayNameCustomCustom struct {
-	// The custom display name to use
-	Name string `json:"name"`
-}
-
 // CreateACommentAllOf1 defines a model
 // CreateACommentAllOf1 is an untagged oneOf union: exactly one field is set after unmarshaling.
 type CreateACommentAllOf1 struct {
@@ -5401,6 +5342,59 @@ func (v *CreateACommentAllOfOneOfParent) MarshalJSONTo(enc *jsontext.Encoder) er
 	}
 
 	if err := jsonCheckTag("type", string(out.Type), tagsOfCreateACommentAllOfOneOfParent, set, true); err != nil {
+		return err
+	}
+
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+}
+
+// Display name for the comment.
+type CreateACommentDisplayName struct {
+	Type   string        `json:"type"`
+	Custom *CustomCustom `json:"custom,omitzero"`
+}
+
+// tagsOfCreateACommentDisplayName says, for each value of type, whether the member named after it must, may or must not be set.
+var tagsOfCreateACommentDisplayName = map[string]jsonTagMember{
+	"integration": jsonTagNone,
+	"user":        jsonTagNone,
+	"custom":      jsonTagRequired,
+}
+
+// taggedMembers returns those of the members named after a value of type that are set.
+func (v *CreateACommentDisplayName) taggedMembers() []string {
+	var set []string
+	if v.Custom != nil {
+		set = append(set, "custom")
+	}
+
+	return set
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those named after a
+// value of type, only the one it names is set.
+func (v *CreateACommentDisplayName) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain CreateACommentDisplayName
+
+	*v = CreateACommentDisplayName{}
+	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
+		return err
+	}
+
+	return jsonCheckTag("type", string(v.Type), tagsOfCreateACommentDisplayName, v.taggedMembers(), jsonStrict(dec))
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
+// the value whose member is set.
+func (v *CreateACommentDisplayName) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain CreateACommentDisplayName
+
+	out, set := *v, v.taggedMembers()
+	if out.Type == "" && len(set) == 1 {
+		out.Type = string(set[0])
+	}
+
+	if err := jsonCheckTag("type", string(out.Type), tagsOfCreateACommentDisplayName, set, true); err != nil {
 		return err
 	}
 
@@ -5966,8 +5960,8 @@ type CreateMeetingNote struct {
 	// Language hint for transcription. Defaults to automatic detection.
 	Language CreateMeetingNoteAllOf0Language `json:"language,omitzero"`
 	// Optional processing settings.
-	Options                 *CreateMeetingNoteAllOf0Options `json:"options,omitzero"`
-	CreateMeetingNoteAllOf1 CreateMeetingNoteAllOf1         `json:"-"`
+	Options                 *CreateMeetingNoteOptions `json:"options,omitzero"`
+	CreateMeetingNoteAllOf1 CreateMeetingNoteAllOf1   `json:"-"`
 }
 
 // fieldsOfCreateMeetingNote is CreateMeetingNote without its methods, to encode the fields outside its union.
@@ -6123,12 +6117,6 @@ func (e CreateMeetingNoteAllOf0Language) Valid() bool {
 	default:
 		return false
 	}
-}
-
-// Optional processing settings.
-type CreateMeetingNoteAllOf0Options struct {
-	// Whether to start summary generation after transcription.
-	KickoffSummary *bool `json:"kickoff_summary,omitzero"`
 }
 
 // CreateMeetingNoteAllOf1 defines a model
@@ -6315,6 +6303,12 @@ type CreateMeetingNoteOkOneOf0 struct {
 	ID IDResponse `json:"id"`
 }
 
+// Optional processing settings.
+type CreateMeetingNoteOptions struct {
+	// Whether to start summary generation after transcription.
+	KickoffSummary *bool `json:"kickoff_summary,omitzero"`
+}
+
 // CreateView defines a model
 // CreateView is an untagged oneOf union: exactly one field is set after unmarshaling.
 type CreateView struct {
@@ -6457,6 +6451,12 @@ func (v *CreatedTimeSimplePropertyValueResponse) unmarshalJSONMember(dec *jsonte
 	return false, nil
 }
 
+// CustomCustom defines a model
+type CustomCustom struct {
+	// The custom display name to use
+	Name string `json:"name"`
+}
+
 // CustomEmojiPageIcon defines a model
 type CustomEmojiPageIcon struct {
 	// Always `custom_emoji`
@@ -6542,7 +6542,7 @@ type DataSourceContentUpdatedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageContentUpdatedWebhookPayloadAllOfData `json:"data"`
+	Data PageContentUpdatedWebhookPayloadData `json:"data"`
 }
 
 // DataSourceCreatedWebhookPayload defines a model
@@ -6553,7 +6553,7 @@ type DataSourceCreatedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageMovedWebhookPayloadAllOfData `json:"data"`
+	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
 // DataSourceDeletedWebhookPayload defines a model
@@ -6564,7 +6564,7 @@ type DataSourceDeletedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageMovedWebhookPayloadAllOfData `json:"data"`
+	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
 // DataSourceMovedWebhookPayload defines a model
@@ -6575,7 +6575,7 @@ type DataSourceMovedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageMovedWebhookPayloadAllOfData `json:"data"`
+	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
 // DataSourceObjectResponse defines a model
@@ -6659,7 +6659,7 @@ type DataSourceSchemaUpdatedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
-	Data DatabaseSchemaUpdatedWebhookPayloadAllOfData `json:"data"`
+	Data DatabaseSchemaUpdatedWebhookPayloadData `json:"data"`
 }
 
 // DataSourceUndeletedWebhookPayload defines a model
@@ -6670,7 +6670,7 @@ type DataSourceUndeletedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageMovedWebhookPayloadAllOfData `json:"data"`
+	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
 // DataSourceViewObjectResponse defines a model
@@ -6763,7 +6763,7 @@ type DatabaseContentUpdatedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageContentUpdatedWebhookPayloadAllOfData `json:"data"`
+	Data PageContentUpdatedWebhookPayloadData `json:"data"`
 }
 
 // DatabaseCreatedWebhookPayload defines a model
@@ -6774,7 +6774,7 @@ type DatabaseCreatedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageMovedWebhookPayloadAllOfData `json:"data"`
+	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
 // DatabaseDeletedWebhookPayload defines a model
@@ -6785,7 +6785,7 @@ type DatabaseDeletedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageMovedWebhookPayloadAllOfData `json:"data"`
+	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
 // DatabaseMovedWebhookPayload defines a model
@@ -6796,7 +6796,7 @@ type DatabaseMovedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageMovedWebhookPayloadAllOfData `json:"data"`
+	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
 // DatabaseParentResponse defines a model
@@ -6903,43 +6903,43 @@ type DatabaseSchemaUpdatedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
-	Data DatabaseSchemaUpdatedWebhookPayloadAllOfData `json:"data"`
+	Data DatabaseSchemaUpdatedWebhookPayloadData `json:"data"`
 }
 
 // Additional event-specific data.
-type DatabaseSchemaUpdatedWebhookPayloadAllOfData struct {
+type DatabaseSchemaUpdatedWebhookPayloadData struct {
 	// The parent of the database whose schema was updated.
 	Parent WebhookParentBlock `json:"parent"`
 	// The database properties that were created, updated, or deleted.
-	UpdatedProperties DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedProperties `json:"updated_properties,omitzero"`
+	UpdatedProperties DatabaseSchemaUpdatedWebhookPayloadDataUpdatedProperties `json:"updated_properties,omitzero"`
 }
 
 // The database properties that were created, updated, or deleted.
-type DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedProperties []DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItem
+type DatabaseSchemaUpdatedWebhookPayloadDataUpdatedProperties []DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItem
 
-// DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItem defines a model
-type DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItem struct {
+// DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItem defines a model
+type DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItem struct {
 	// The ID of the database property that changed.
 	ID string `json:"id"`
 	// The name of the database property, or `null` if deleted.
 	Name string `json:"name"`
 	// The action taken on the property.
-	Action DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItemAction `json:"action"`
+	Action DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemAction `json:"action"`
 }
 
 // The action taken on the property.
-type DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItemAction string
+type DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemAction string
 
 const (
-	DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItemActionCreated DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItemAction = "created"
-	DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItemActionUpdated DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItemAction = "updated"
-	DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItemActionDeleted DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItemAction = "deleted"
+	DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemActionCreated DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemAction = "created"
+	DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemActionUpdated DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemAction = "updated"
+	DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemActionDeleted DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemAction = "deleted"
 )
 
-// Valid indicates whether the value is a known member of the DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItemAction enum.
-func (e DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItemAction) Valid() bool {
+// Valid indicates whether the value is a known member of the DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemAction enum.
+func (e DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemAction) Valid() bool {
 	switch e {
-	case DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItemActionCreated, DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItemActionUpdated, DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItemActionDeleted:
+	case DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemActionCreated, DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemActionUpdated, DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemActionDeleted:
 		return true
 	default:
 		return false
@@ -6979,7 +6979,7 @@ type DatabaseUndeletedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageMovedWebhookPayloadAllOfData `json:"data"`
+	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
 // Granularity for date grouping.
@@ -7819,17 +7819,17 @@ type FileUploadUploadFailedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookFileUploadEntity `json:"entity"`
 	// Additional event-specific data.
-	Data FileUploadUploadFailedWebhookPayloadAllOf1Data `json:"data"`
+	Data FileUploadUploadFailedWebhookPayloadData `json:"data"`
 }
 
 // Additional event-specific data.
-type FileUploadUploadFailedWebhookPayloadAllOf1Data struct {
+type FileUploadUploadFailedWebhookPayloadData struct {
 	// The result of the file import attempt.
-	FileImportResult FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult `json:"file_import_result"`
+	FileImportResult FileUploadUploadFailedWebhookPayloadDataFileImportResult `json:"file_import_result"`
 }
 
 // The result of the file import attempt.
-type FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult struct {
+type FileUploadUploadFailedWebhookPayloadDataFileImportResult struct {
 	// ISO 8601 timestamp of when the file was imported.
 	ImportedTime string `json:"imported_time"`
 	Type         string `json:"type"`
@@ -7839,14 +7839,14 @@ type FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult struct {
 	Err *FileUploadObjectFileImportResultAllOfError `json:"error,omitzero"`
 }
 
-// tagsOfFileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult says, for each value of type, whether the member named after it must, may or must not be set.
-var tagsOfFileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult = map[string]jsonTagMember{
+// tagsOfFileUploadUploadFailedWebhookPayloadDataFileImportResult says, for each value of type, whether the member named after it must, may or must not be set.
+var tagsOfFileUploadUploadFailedWebhookPayloadDataFileImportResult = map[string]jsonTagMember{
 	"success": jsonTagRequired,
 	"error":   jsonTagRequired,
 }
 
 // taggedMembers returns those of the members named after a value of type that are set.
-func (v *FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult) taggedMembers() []string {
+func (v *FileUploadUploadFailedWebhookPayloadDataFileImportResult) taggedMembers() []string {
 	var set []string
 	if v.Success != nil {
 		set = append(set, "success")
@@ -7860,28 +7860,28 @@ func (v *FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult) taggedM
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those named after a
 // value of type, only the one it names is set.
-func (v *FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult
+func (v *FileUploadUploadFailedWebhookPayloadDataFileImportResult) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain FileUploadUploadFailedWebhookPayloadDataFileImportResult
 
-	*v = FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult{}
+	*v = FileUploadUploadFailedWebhookPayloadDataFileImportResult{}
 	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfFileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult, v.taggedMembers(), jsonStrict(dec))
+	return jsonCheckTag("type", string(v.Type), tagsOfFileUploadUploadFailedWebhookPayloadDataFileImportResult, v.taggedMembers(), jsonStrict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
 // the value whose member is set.
-func (v *FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult
+func (v *FileUploadUploadFailedWebhookPayloadDataFileImportResult) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain FileUploadUploadFailedWebhookPayloadDataFileImportResult
 
 	out, set := *v, v.taggedMembers()
 	if out.Type == "" && len(set) == 1 {
 		out.Type = string(set[0])
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfFileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult, set, true); err != nil {
+	if err := jsonCheckTag("type", string(out.Type), tagsOfFileUploadUploadFailedWebhookPayloadDataFileImportResult, set, true); err != nil {
 		return err
 	}
 
@@ -11160,11 +11160,11 @@ type PageContentUpdatedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookPageEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageContentUpdatedWebhookPayloadAllOfData `json:"data"`
+	Data PageContentUpdatedWebhookPayloadData `json:"data"`
 }
 
 // Additional event-specific data.
-type PageContentUpdatedWebhookPayloadAllOfData struct {
+type PageContentUpdatedWebhookPayloadData struct {
 	// The parent of the entity whose content was updated.
 	Parent WebhookParentBlock `json:"parent"`
 	// The blocks that were updated in this event.
@@ -11293,7 +11293,7 @@ type PageCreatedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookPageEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageMovedWebhookPayloadAllOfData `json:"data"`
+	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
 // PageDeletedWebhookPayload defines a model
@@ -11304,7 +11304,7 @@ type PageDeletedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookPageEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageMovedWebhookPayloadAllOfData `json:"data"`
+	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
 // PageIDParentForBlockBasedObject defines a model
@@ -11484,7 +11484,7 @@ type PageLockedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookPageEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageMovedWebhookPayloadAllOfData `json:"data"`
+	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
 // PageMarkdownResponse defines a model
@@ -11509,11 +11509,11 @@ type PageMovedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookPageEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageMovedWebhookPayloadAllOfData `json:"data"`
+	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
 // Additional event-specific data.
-type PageMovedWebhookPayloadAllOfData struct {
+type PageMovedWebhookPayloadData struct {
 	// The parent of the entity that triggered the event.
 	Parent WebhookParentBlock `json:"parent"`
 }
@@ -11707,11 +11707,11 @@ type PagePropertiesUpdatedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookPageEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PagePropertiesUpdatedWebhookPayloadAllOf1Data `json:"data"`
+	Data PagePropertiesUpdatedWebhookPayloadData `json:"data"`
 }
 
 // Additional event-specific data.
-type PagePropertiesUpdatedWebhookPayloadAllOf1Data struct {
+type PagePropertiesUpdatedWebhookPayloadData struct {
 	// The parent of the page whose properties were updated.
 	Parent WebhookParentBlock `json:"parent"`
 	// The IDs of the properties that were updated.
@@ -12260,11 +12260,11 @@ type PageTranscriptionBlockTranscriptDeletedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookPageEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageTranscriptionBlockTranscriptDeletedWebhookPayloadAllOf1Data `json:"data"`
+	Data PageTranscriptionBlockTranscriptDeletedWebhookPayloadData `json:"data"`
 }
 
 // Additional event-specific data.
-type PageTranscriptionBlockTranscriptDeletedWebhookPayloadAllOf1Data struct {
+type PageTranscriptionBlockTranscriptDeletedWebhookPayloadData struct {
 	// The block that contained the deleted transcript.
 	Target WebhookExternalBlock `json:"target"`
 	// The ID of the deleted transcript, or `null` if not available.
@@ -12279,7 +12279,7 @@ type PageUndeletedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookPageEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageMovedWebhookPayloadAllOfData `json:"data"`
+	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
 // PageUnlockedWebhookPayload defines a model
@@ -12290,7 +12290,7 @@ type PageUnlockedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookPageEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageMovedWebhookPayloadAllOfData `json:"data"`
+	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
 // ParagraphWithSingleLevelOfChildren defines a model
@@ -26220,11 +26220,11 @@ type ViewCreatedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookViewEntity `json:"entity"`
 	// Additional event-specific data.
-	Data ViewCreatedWebhookPayloadAllOf1Data `json:"data"`
+	Data ViewCreatedWebhookPayloadData `json:"data"`
 }
 
 // Additional event-specific data.
-type ViewCreatedWebhookPayloadAllOf1Data struct {
+type ViewCreatedWebhookPayloadData struct {
 	// The parent of the created view.
 	Parent WebhookParentBlock `json:"parent"`
 	// The type of the created view (e.g. `table`, `board`, `list`, `calendar`, `gallery`, `timeline`).
@@ -26239,7 +26239,7 @@ type ViewDeletedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookViewEntity `json:"entity"`
 	// Additional event-specific data.
-	Data PageMovedWebhookPayloadAllOfData `json:"data"`
+	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
 // ViewFilter defines a model
@@ -26898,34 +26898,34 @@ type ViewUpdatedWebhookPayload struct {
 	// The object that triggered the event.
 	Entity WebhookViewEntity `json:"entity"`
 	// Additional event-specific data.
-	Data ViewUpdatedWebhookPayloadAllOf1Data `json:"data"`
+	Data ViewUpdatedWebhookPayloadData `json:"data"`
 }
 
 // Additional event-specific data.
-type ViewUpdatedWebhookPayloadAllOf1Data struct {
+type ViewUpdatedWebhookPayloadData struct {
 	// The parent of the updated view.
 	Parent WebhookParentBlock `json:"parent"`
 	// The fields of the view that were updated.
-	UpdatedFields ViewUpdatedWebhookPayloadAllOf1DataUpdatedFields `json:"updated_fields"`
+	UpdatedFields ViewUpdatedWebhookPayloadDataUpdatedFields `json:"updated_fields"`
 }
 
 // The fields of the view that were updated.
-type ViewUpdatedWebhookPayloadAllOf1DataUpdatedFields []ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItem
+type ViewUpdatedWebhookPayloadDataUpdatedFields []ViewUpdatedWebhookPayloadDataUpdatedFieldsItem
 
 // One of: `name`, `filter`, `sorts`, `configuration`
-type ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItem string
+type ViewUpdatedWebhookPayloadDataUpdatedFieldsItem string
 
 const (
-	ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItemName          ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItem = "name"
-	ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItemFilter        ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItem = "filter"
-	ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItemSorts         ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItem = "sorts"
-	ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItemConfiguration ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItem = "configuration"
+	ViewUpdatedWebhookPayloadDataUpdatedFieldsItemName          ViewUpdatedWebhookPayloadDataUpdatedFieldsItem = "name"
+	ViewUpdatedWebhookPayloadDataUpdatedFieldsItemFilter        ViewUpdatedWebhookPayloadDataUpdatedFieldsItem = "filter"
+	ViewUpdatedWebhookPayloadDataUpdatedFieldsItemSorts         ViewUpdatedWebhookPayloadDataUpdatedFieldsItem = "sorts"
+	ViewUpdatedWebhookPayloadDataUpdatedFieldsItemConfiguration ViewUpdatedWebhookPayloadDataUpdatedFieldsItem = "configuration"
 )
 
-// Valid indicates whether the value is a known member of the ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItem enum.
-func (e ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItem) Valid() bool {
+// Valid indicates whether the value is a known member of the ViewUpdatedWebhookPayloadDataUpdatedFieldsItem enum.
+func (e ViewUpdatedWebhookPayloadDataUpdatedFieldsItem) Valid() bool {
 	switch e {
-	case ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItemName, ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItemFilter, ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItemSorts, ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItemConfiguration:
+	case ViewUpdatedWebhookPayloadDataUpdatedFieldsItemName, ViewUpdatedWebhookPayloadDataUpdatedFieldsItemFilter, ViewUpdatedWebhookPayloadDataUpdatedFieldsItemSorts, ViewUpdatedWebhookPayloadDataUpdatedFieldsItemConfiguration:
 		return true
 	default:
 		return false

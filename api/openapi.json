@@ -5443,7 +5443,7 @@
             "type": "string"
           },
           "title": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -5694,7 +5694,7 @@
           },
           "account": {
             "description": "The provider-side account identifier, null when none is linked, or \"hidden\" when the caller lacks edit access to the agent.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "permissions": {
             "$ref": "#/components/schemas/AgentConnectionsItemOneOfPermissions"
@@ -6108,7 +6108,7 @@
           },
           "id": {
             "description": "The public model this agent maps to (e.g. \"claude-sonnet-5\"), or null for a pre-release / early-access model.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -8178,11 +8178,11 @@
           },
           "name": {
             "description": "The name of the user.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "avatar_url": {
             "description": "The avatar URL of the user.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "type": {
             "description": "The type of the user.",
@@ -8707,7 +8707,7 @@
           "language"
         ]
       },
-      "CommentCreatedWebhookPayloadAllOfData": {
+      "CommentCreatedWebhookPayloadData": {
         "description": "Additional event-specific data.",
         "type": "object",
         "properties": {
@@ -8774,7 +8774,7 @@
             "$ref": "#/components/schemas/CommentObjectResponseDisplayNameType"
           },
           "resolved_name": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -8838,7 +8838,7 @@
             "$ref": "#/components/schemas/CreateACommentAllOf0Attachments"
           },
           "display_name": {
-            "$ref": "#/components/schemas/CreateACommentAllOf0DisplayName"
+            "$ref": "#/components/schemas/CreateACommentDisplayName"
           }
         }
       },
@@ -8865,79 +8865,6 @@
         },
         "required": [
           "file_upload_id"
-        ]
-      },
-      "CreateACommentAllOf0DisplayName": {
-        "description": "Display name for the comment.",
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/CreateACommentAllOf0DisplayNameIntegration"
-          },
-          {
-            "$ref": "#/components/schemas/CreateACommentAllOf0DisplayNameUser"
-          },
-          {
-            "$ref": "#/components/schemas/CreateACommentAllOf0DisplayNameCustom"
-          }
-        ]
-      },
-      "CreateACommentAllOf0DisplayNameCustom": {
-        "title": "Custom",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `custom`",
-            "type": "string",
-            "const": "custom"
-          },
-          "custom": {
-            "$ref": "#/components/schemas/CreateACommentAllOf0DisplayNameCustomCustom"
-          }
-        },
-        "required": [
-          "type",
-          "custom"
-        ]
-      },
-      "CreateACommentAllOf0DisplayNameCustomCustom": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The custom display name to use",
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "required": [
-          "name"
-        ]
-      },
-      "CreateACommentAllOf0DisplayNameIntegration": {
-        "title": "Integration",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `integration`",
-            "type": "string",
-            "const": "integration"
-          }
-        },
-        "required": [
-          "type"
-        ]
-      },
-      "CreateACommentAllOf0DisplayNameUser": {
-        "title": "User",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `user`",
-            "type": "string",
-            "const": "user"
-          }
-        },
-        "required": [
-          "type"
         ]
       },
       "CreateACommentAllOf1": {
@@ -9056,6 +8983,20 @@
         },
         "required": [
           "block_id"
+        ]
+      },
+      "CreateACommentDisplayName": {
+        "description": "Display name for the comment.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/Integration"
+          },
+          {
+            "$ref": "#/components/schemas/User2"
+          },
+          {
+            "$ref": "#/components/schemas/Custom"
+          }
         ]
       },
       "CreateADatabase": {
@@ -9551,7 +9492,7 @@
             "$ref": "#/components/schemas/CreateMeetingNoteAllOf0Language"
           },
           "options": {
-            "$ref": "#/components/schemas/CreateMeetingNoteAllOf0Options"
+            "$ref": "#/components/schemas/CreateMeetingNoteOptions"
           }
         }
       },
@@ -9583,17 +9524,6 @@
           "he",
           "pl"
         ]
-      },
-      "CreateMeetingNoteAllOf0Options": {
-        "description": "Optional processing settings.",
-        "type": "object",
-        "properties": {
-          "kickoff_summary": {
-            "description": "Whether to start summary generation after transcription.",
-            "type": "boolean"
-          }
-        },
-        "additionalProperties": false
       },
       "CreateMeetingNoteAllOf1": {
         "oneOf": [
@@ -9783,6 +9713,17 @@
         ],
         "additionalProperties": false
       },
+      "CreateMeetingNoteOptions": {
+        "description": "Optional processing settings.",
+        "type": "object",
+        "properties": {
+          "kickoff_summary": {
+            "description": "Whether to start summary generation after transcription.",
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
       "CreateView": {
         "oneOf": [
           {
@@ -9791,6 +9732,37 @@
           {
             "$ref": "#/components/schemas/dataSourceViewObjectResponse"
           }
+        ]
+      },
+      "Custom": {
+        "title": "Custom",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `custom`",
+            "type": "string",
+            "const": "custom"
+          },
+          "custom": {
+            "$ref": "#/components/schemas/CustomCustom"
+          }
+        },
+        "required": [
+          "type",
+          "custom"
+        ]
+      },
+      "CustomCustom": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "The custom display name to use",
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "name"
         ]
       },
       "CustomEmojiPageIconCustomEmoji": {
@@ -9948,7 +9920,7 @@
           },
           "public_url": {
             "description": "The public URL of the database if it is publicly accessible.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "request_id": {
             "type": "string",
@@ -9983,7 +9955,7 @@
           "data_source"
         ]
       },
-      "DatabaseSchemaUpdatedWebhookPayloadAllOfData": {
+      "DatabaseSchemaUpdatedWebhookPayloadData": {
         "description": "Additional event-specific data.",
         "type": "object",
         "properties": {
@@ -9992,7 +9964,7 @@
             "$ref": "#/components/schemas/webhookParentBlock"
           },
           "updated_properties": {
-            "$ref": "#/components/schemas/DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedProperties"
+            "$ref": "#/components/schemas/DatabaseSchemaUpdatedWebhookPayloadDataUpdatedProperties"
           }
         },
         "required": [
@@ -10000,15 +9972,15 @@
         ],
         "additionalProperties": false
       },
-      "DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedProperties": {
+      "DatabaseSchemaUpdatedWebhookPayloadDataUpdatedProperties": {
         "description": "The database properties that were created, updated, or deleted.",
         "type": "array",
         "maxItems": 100,
         "items": {
-          "$ref": "#/components/schemas/DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItem"
+          "$ref": "#/components/schemas/DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItem"
         }
       },
-      "DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItem": {
+      "DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItem": {
         "type": "object",
         "properties": {
           "id": {
@@ -10017,10 +9989,10 @@
           },
           "name": {
             "description": "The name of the database property, or `null` if deleted.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "action": {
-            "$ref": "#/components/schemas/DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItemAction"
+            "$ref": "#/components/schemas/DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemAction"
           }
         },
         "required": [
@@ -10030,7 +10002,7 @@
         ],
         "additionalProperties": false
       },
-      "DatabaseSchemaUpdatedWebhookPayloadAllOfDataUpdatedPropertiesItemAction": {
+      "DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemAction": {
         "description": "The action taken on the property.",
         "type": "string",
         "enum": [
@@ -10443,7 +10415,7 @@
           },
           "parameter": {
             "description": "The parameter related to the error, if applicable. Null if not applicable.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "status_code": {
             "description": "The HTTP status code associated with the error, if available. Null if not applicable.",
@@ -10594,12 +10566,12 @@
         ],
         "additionalProperties": false
       },
-      "FileUploadUploadFailedWebhookPayloadAllOf1Data": {
+      "FileUploadUploadFailedWebhookPayloadData": {
         "description": "Additional event-specific data.",
         "type": "object",
         "properties": {
           "file_import_result": {
-            "$ref": "#/components/schemas/FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult"
+            "$ref": "#/components/schemas/FileUploadUploadFailedWebhookPayloadDataFileImportResult"
           }
         },
         "required": [
@@ -10607,42 +10579,18 @@
         ],
         "additionalProperties": false
       },
-      "FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResult": {
+      "FileUploadUploadFailedWebhookPayloadDataFileImportResult": {
         "description": "The result of the file import attempt.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResultSuccess"
+            "$ref": "#/components/schemas/FileUploadUploadFailedWebhookPayloadDataFileImportResultOneOf0"
           },
           {
-            "$ref": "#/components/schemas/FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResultError"
+            "$ref": "#/components/schemas/FileUploadUploadFailedWebhookPayloadDataFileImportResultOneOf1"
           }
         ]
       },
-      "FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResultError": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `error`",
-            "type": "string",
-            "const": "error"
-          },
-          "imported_time": {
-            "description": "ISO 8601 timestamp of when the import was attempted.",
-            "type": "string"
-          },
-          "error": {
-            "description": "Details about the error.",
-            "$ref": "#/components/schemas/FileUploadObjectFileImportResultAllOfError"
-          }
-        },
-        "required": [
-          "type",
-          "imported_time",
-          "error"
-        ],
-        "additionalProperties": false
-      },
-      "FileUploadUploadFailedWebhookPayloadAllOf1DataFileImportResultSuccess": {
+      "FileUploadUploadFailedWebhookPayloadDataFileImportResultOneOf0": {
         "type": "object",
         "properties": {
           "type": {
@@ -10663,6 +10611,30 @@
           "type",
           "imported_time",
           "success"
+        ],
+        "additionalProperties": false
+      },
+      "FileUploadUploadFailedWebhookPayloadDataFileImportResultOneOf1": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `error`",
+            "type": "string",
+            "const": "error"
+          },
+          "imported_time": {
+            "description": "ISO 8601 timestamp of when the import was attempted.",
+            "type": "string"
+          },
+          "error": {
+            "description": "Details about the error.",
+            "$ref": "#/components/schemas/FileUploadObjectFileImportResultAllOfError"
+          }
+        },
+        "required": [
+          "type",
+          "imported_time",
+          "error"
         ],
         "additionalProperties": false
       },
@@ -10835,7 +10807,7 @@
             "type": "string"
           },
           "description": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "instructions_page_id": {
             "$ref": "#/components/schemas/ListViewsNextCursor"
@@ -10904,7 +10876,7 @@
           },
           "instructions": {
             "description": "The agent's inline instructions when verbose=true, or null when its instructions are stored on a page.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -11141,6 +11113,20 @@
         },
         "required": [
           "name"
+        ]
+      },
+      "Integration": {
+        "title": "Integration",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `integration`",
+            "type": "string",
+            "const": "integration"
+          }
+        },
+        "required": [
+          "type"
         ]
       },
       "InternalOrExternalFileWithNameRequestExternal": {
@@ -11441,7 +11427,7 @@
             "$ref": "#/components/schemas/ListSkillsPluginsOkResults"
           },
           "next_cursor": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "has_more": {
             "type": "boolean"
@@ -12218,7 +12204,7 @@
           },
           "public_url": {
             "description": "The public URL of the Notion page, if it has been published to the web.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "parent": {
             "description": "Information about the page's parent.",
@@ -12282,7 +12268,7 @@
           }
         ]
       },
-      "PageContentUpdatedWebhookPayloadAllOfData": {
+      "PageContentUpdatedWebhookPayloadData": {
         "description": "Additional event-specific data.",
         "type": "object",
         "properties": {
@@ -12345,7 +12331,7 @@
           }
         ]
       },
-      "PageMovedWebhookPayloadAllOfData": {
+      "PageMovedWebhookPayloadData": {
         "description": "Additional event-specific data.",
         "type": "object",
         "properties": {
@@ -12518,7 +12504,7 @@
           "type"
         ]
       },
-      "PagePropertiesUpdatedWebhookPayloadAllOf1Data": {
+      "PagePropertiesUpdatedWebhookPayloadData": {
         "description": "Additional event-specific data.",
         "type": "object",
         "properties": {
@@ -13086,17 +13072,6 @@
           "state"
         ]
       },
-      "PagePublicURL": {
-        "oneOf": [
-          {
-            "type": "string",
-            "example": "2026-10-03T18:11:00.000+00:00"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
       "PageTemplateDefault": {
         "type": "object",
         "properties": {
@@ -13131,7 +13106,7 @@
           "template_id"
         ]
       },
-      "PageTranscriptionBlockTranscriptDeletedWebhookPayloadAllOf1Data": {
+      "PageTranscriptionBlockTranscriptDeletedWebhookPayloadData": {
         "description": "Additional event-specific data.",
         "type": "object",
         "properties": {
@@ -13141,7 +13116,7 @@
           },
           "transcript_id": {
             "description": "The ID of the deleted transcript, or `null` if not available.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -13811,17 +13786,6 @@
           },
           {
             "$ref": "#/components/schemas/lastEditedTimeDatabasePropertyConfigResponse"
-          }
-        ]
-      },
-      "PropertyConfigurationCommonDescription": {
-        "description": "The description of the property.",
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/propertyDescriptionRequest"
-          },
-          {
-            "type": "null"
           }
         ]
       },
@@ -15077,7 +15041,7 @@
             "type": "boolean"
           },
           "next_cursor": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -15219,7 +15183,7 @@
             "type": "string"
           },
           "description": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "instructions_page_id": {
             "$ref": "#/components/schemas/ListViewsNextCursor"
@@ -15275,7 +15239,7 @@
           },
           "instructions": {
             "description": "The agent's inline instructions when verbose=true, or null when its instructions are stored on a page.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -16528,7 +16492,7 @@
             "type": "boolean"
           },
           "next_cursor": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -17308,7 +17272,7 @@
           },
           "next_cursor": {
             "description": "Pass this cursor as start_cursor when has_more is true, even when results is empty.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -18642,7 +18606,7 @@
           "ids": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/PagePublicURL"
+              "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
             }
           }
         },
@@ -19233,7 +19197,7 @@
             "$ref": "#/components/schemas/selectColor"
           },
           "description": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -19715,7 +19679,7 @@
         "properties": {
           "prefix": {
             "description": "The prefix for the unique ID.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -19727,7 +19691,7 @@
         "type": "object",
         "properties": {
           "prefix": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         }
       },
@@ -20732,7 +20696,7 @@
             "type": "string"
           },
           "description": {
-            "$ref": "#/components/schemas/PropertyConfigurationCommonDescription"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfDescription"
           }
         }
       },
@@ -20886,9 +20850,31 @@
             "$ref": "#/components/schemas/selectColor"
           },
           "description": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         }
+      },
+      "UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription": {
+        "oneOf": [
+          {
+            "type": "string",
+            "example": "2026-10-03T18:11:00.000+00:00"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "UpdateADataSourcePropertiesValueOneOfDescription": {
+        "description": "The description of the property.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/propertyDescriptionRequest"
+          },
+          {
+            "type": "null"
+          }
+        ]
       },
       "UpdateAgentCreditLimit": {
         "type": "object",
@@ -21634,6 +21620,20 @@
           "results"
         ]
       },
+      "User2": {
+        "title": "User",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `user`",
+            "type": "string",
+            "const": "user"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
       "UserObjectCommonAvatarURL": {
         "oneOf": [
           {
@@ -21704,7 +21704,7 @@
           }
         ]
       },
-      "ViewCreatedWebhookPayloadAllOf1Data": {
+      "ViewCreatedWebhookPayloadData": {
         "description": "Additional event-specific data.",
         "type": "object",
         "properties": {
@@ -22021,7 +22021,7 @@
           "hidden"
         ]
       },
-      "ViewUpdatedWebhookPayloadAllOf1Data": {
+      "ViewUpdatedWebhookPayloadData": {
         "description": "Additional event-specific data.",
         "type": "object",
         "properties": {
@@ -22030,7 +22030,7 @@
             "$ref": "#/components/schemas/webhookParentBlock"
           },
           "updated_fields": {
-            "$ref": "#/components/schemas/ViewUpdatedWebhookPayloadAllOf1DataUpdatedFields"
+            "$ref": "#/components/schemas/ViewUpdatedWebhookPayloadDataUpdatedFields"
           }
         },
         "required": [
@@ -22039,15 +22039,15 @@
         ],
         "additionalProperties": false
       },
-      "ViewUpdatedWebhookPayloadAllOf1DataUpdatedFields": {
+      "ViewUpdatedWebhookPayloadDataUpdatedFields": {
         "description": "The fields of the view that were updated.",
         "type": "array",
         "maxItems": 100,
         "items": {
-          "$ref": "#/components/schemas/ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItem"
+          "$ref": "#/components/schemas/ViewUpdatedWebhookPayloadDataUpdatedFieldsItem"
         }
       },
-      "ViewUpdatedWebhookPayloadAllOf1DataUpdatedFieldsItem": {
+      "ViewUpdatedWebhookPayloadDataUpdatedFieldsItem": {
         "description": "One of: `name`, `filter`, `sorts`, `configuration`",
         "type": "string",
         "enum": [
@@ -22911,7 +22911,7 @@
           },
           "workspace_name": {
             "description": "The name of the bot's workspace.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -23373,11 +23373,11 @@
           },
           "x_axis_property_id": {
             "description": "Property ID for x-axis values in results mode. Pass null to clear.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "y_axis_property_id": {
             "description": "Property ID for y-axis values in results mode. Pass null to clear.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "value": {
             "description": "Aggregation for number charts. Pass null to clear.",
@@ -23449,7 +23449,7 @@
           },
           "caption": {
             "description": "Chart caption text. Pass null to clear.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "color_by_value": {
             "description": "Whether to color chart elements by their numeric value (gradient coloring). Pass null to clear.",
@@ -23565,7 +23565,7 @@
           },
           "caption": {
             "description": "Text caption displayed below the chart. Null when no caption is shown.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "color_by_value": {
             "description": "Whether chart elements are colored by their numeric value (gradient coloring).",
@@ -24113,7 +24113,7 @@
             "$ref": "#/components/schemas/webhookCommentEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/CommentCreatedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/CommentCreatedWebhookPayloadData"
           }
         },
         "required": [
@@ -24145,7 +24145,7 @@
             "$ref": "#/components/schemas/webhookCommentEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/CommentCreatedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/CommentCreatedWebhookPayloadData"
           }
         },
         "required": [
@@ -24255,7 +24255,7 @@
             "$ref": "#/components/schemas/webhookCommentEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/CommentCreatedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/CommentCreatedWebhookPayloadData"
           }
         },
         "required": [
@@ -24945,7 +24945,7 @@
             "$ref": "#/components/schemas/webhookDatabaseEventEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageContentUpdatedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageContentUpdatedWebhookPayloadData"
           }
         },
         "required": [
@@ -24977,7 +24977,7 @@
             "$ref": "#/components/schemas/webhookDatabaseEventEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageMovedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageMovedWebhookPayloadData"
           }
         },
         "required": [
@@ -25009,7 +25009,7 @@
             "$ref": "#/components/schemas/webhookDatabaseEventEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageMovedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageMovedWebhookPayloadData"
           }
         },
         "required": [
@@ -25041,7 +25041,7 @@
             "$ref": "#/components/schemas/webhookDatabaseEventEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageMovedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageMovedWebhookPayloadData"
           }
         },
         "required": [
@@ -25132,7 +25132,7 @@
           },
           "public_url": {
             "description": "The public URL of the data source if it is publicly accessible.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "request_id": {
             "type": "string",
@@ -25228,7 +25228,7 @@
             "$ref": "#/components/schemas/webhookDatabaseEventEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/DatabaseSchemaUpdatedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/DatabaseSchemaUpdatedWebhookPayloadData"
           }
         },
         "required": [
@@ -25260,7 +25260,7 @@
             "$ref": "#/components/schemas/webhookDatabaseEventEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageMovedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageMovedWebhookPayloadData"
           }
         },
         "required": [
@@ -25313,7 +25313,7 @@
           },
           "data_source_id": {
             "description": "The ID of the data source this view is scoped to, or null for dashboard views.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "created_by": {
             "description": "The user who created the view, or null if not available.",
@@ -25399,7 +25399,7 @@
             "$ref": "#/components/schemas/webhookDatabaseEventEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageContentUpdatedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageContentUpdatedWebhookPayloadData"
           }
         },
         "required": [
@@ -25431,7 +25431,7 @@
             "$ref": "#/components/schemas/webhookDatabaseEventEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageMovedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageMovedWebhookPayloadData"
           }
         },
         "required": [
@@ -25463,7 +25463,7 @@
             "$ref": "#/components/schemas/webhookDatabaseEventEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageMovedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageMovedWebhookPayloadData"
           }
         },
         "required": [
@@ -25495,7 +25495,7 @@
             "$ref": "#/components/schemas/webhookDatabaseEventEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageMovedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageMovedWebhookPayloadData"
           }
         },
         "required": [
@@ -25537,7 +25537,7 @@
             "example": "Duration"
           },
           "description": {
-            "$ref": "#/components/schemas/PropertyConfigurationCommonDescription"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfDescription"
           }
         },
         "required": [
@@ -25606,7 +25606,7 @@
             "$ref": "#/components/schemas/webhookDatabaseEventEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/DatabaseSchemaUpdatedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/DatabaseSchemaUpdatedWebhookPayloadData"
           }
         },
         "required": [
@@ -25638,7 +25638,7 @@
             "$ref": "#/components/schemas/webhookDatabaseEventEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageMovedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageMovedWebhookPayloadData"
           }
         },
         "required": [
@@ -25910,7 +25910,7 @@
           },
           "end": {
             "description": "The end date of the date object, if any.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "time_zone": {
             "description": "The time zone of the date object.",
@@ -26119,7 +26119,7 @@
             "const": "email"
           },
           "email": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -26786,10 +26786,10 @@
             "$ref": "#/components/schemas/Status"
           },
           "filename": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "content_type": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "content_length": {
             "$ref": "#/components/schemas/RetrieveSessionMessageCount"
@@ -26862,7 +26862,7 @@
             "$ref": "#/components/schemas/webhookFileUploadEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/FileUploadUploadFailedWebhookPayloadAllOf1Data"
+            "$ref": "#/components/schemas/FileUploadUploadFailedWebhookPayloadData"
           }
         },
         "required": [
@@ -27630,7 +27630,7 @@
           },
           "name": {
             "description": "The name of the group.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -28722,7 +28722,7 @@
           },
           "map_by": {
             "description": "Property ID of the location property used to position items on the map. Pass null to clear.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "properties": {
             "description": "Property visibility and display configuration on map pin cards. Pass null to clear.",
@@ -29446,7 +29446,7 @@
             "$ref": "#/components/schemas/webhookPageEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageContentUpdatedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageContentUpdatedWebhookPayloadData"
           }
         },
         "required": [
@@ -29498,7 +29498,7 @@
             "$ref": "#/components/schemas/webhookPageEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageMovedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageMovedWebhookPayloadData"
           }
         },
         "required": [
@@ -29530,7 +29530,7 @@
             "$ref": "#/components/schemas/webhookPageEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageMovedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageMovedWebhookPayloadData"
           }
         },
         "required": [
@@ -29619,7 +29619,7 @@
             "$ref": "#/components/schemas/webhookPageEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageMovedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageMovedWebhookPayloadData"
           }
         },
         "required": [
@@ -29689,7 +29689,7 @@
             "$ref": "#/components/schemas/webhookPageEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageMovedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageMovedWebhookPayloadData"
           }
         },
         "required": [
@@ -29734,7 +29734,7 @@
             "$ref": "#/components/schemas/webhookPageEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PagePropertiesUpdatedWebhookPayloadAllOf1Data"
+            "$ref": "#/components/schemas/PagePropertiesUpdatedWebhookPayloadData"
           }
         },
         "required": [
@@ -29784,7 +29784,7 @@
             "$ref": "#/components/schemas/webhookPageEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageTranscriptionBlockTranscriptDeletedWebhookPayloadAllOf1Data"
+            "$ref": "#/components/schemas/PageTranscriptionBlockTranscriptDeletedWebhookPayloadData"
           }
         },
         "required": [
@@ -29816,7 +29816,7 @@
             "$ref": "#/components/schemas/webhookPageEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageMovedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageMovedWebhookPayloadData"
           }
         },
         "required": [
@@ -29848,7 +29848,7 @@
             "$ref": "#/components/schemas/webhookPageEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageMovedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageMovedWebhookPayloadData"
           }
         },
         "required": [
@@ -30597,7 +30597,7 @@
             "const": "phone_number"
           },
           "phone_number": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -30659,16 +30659,16 @@
             "type": "number"
           },
           "name": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "address": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "aws_place_id": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "google_place_id": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -30792,7 +30792,7 @@
         "type": "object",
         "properties": {
           "description": {
-            "$ref": "#/components/schemas/PropertyConfigurationCommonDescription"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfDescription"
           }
         }
       },
@@ -31422,7 +31422,7 @@
           },
           "href": {
             "description": "A URL that the rich text object links to or mentions.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "annotations": {
             "description": "All rich text objects contain an annotations object that sets the styling for the rich text.",
@@ -31730,7 +31730,7 @@
             "$ref": "#/components/schemas/selectColor"
           },
           "description": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -32017,7 +32017,7 @@
             "$ref": "#/components/schemas/selectColor"
           },
           "description": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "group": {
             "$ref": "#/components/schemas/statusOptionGroup"
@@ -32068,7 +32068,7 @@
             "$ref": "#/components/schemas/selectColor"
           },
           "description": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "group": {
             "$ref": "#/components/schemas/statusOptionGroup"
@@ -33066,7 +33066,7 @@
         "properties": {
           "property_id": {
             "description": "Relation property ID used for dependency arrows, or null to disable arrows.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         }
       },
@@ -33075,7 +33075,7 @@
         "properties": {
           "property_id": {
             "description": "Relation property ID used for dependency arrows.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "additionalProperties": false
@@ -33126,7 +33126,7 @@
           },
           "end_date_property_id": {
             "description": "Property ID of the date property used for the end of timeline items. Pass null to clear.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "properties": {
             "description": "Property visibility and display configuration on timeline items. Pass null to clear.",
@@ -33642,7 +33642,7 @@
         "type": "object",
         "properties": {
           "prefix": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "number": {
             "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
@@ -33943,7 +33943,7 @@
             "const": "url"
           },
           "url": {
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           }
         },
         "required": [
@@ -33986,7 +33986,7 @@
           },
           "name": {
             "description": "The name of the user.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
           },
           "avatar_url": {
             "description": "The avatar URL of the user.",
@@ -34302,7 +34302,7 @@
             "$ref": "#/components/schemas/webhookViewEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/ViewCreatedWebhookPayloadAllOf1Data"
+            "$ref": "#/components/schemas/ViewCreatedWebhookPayloadData"
           }
         },
         "required": [
@@ -34334,7 +34334,7 @@
             "$ref": "#/components/schemas/webhookViewEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/PageMovedWebhookPayloadAllOfData"
+            "$ref": "#/components/schemas/PageMovedWebhookPayloadData"
           }
         },
         "required": [
@@ -34621,7 +34621,7 @@
             "$ref": "#/components/schemas/webhookViewEntity"
           },
           "data": {
-            "$ref": "#/components/schemas/ViewUpdatedWebhookPayloadAllOf1Data"
+            "$ref": "#/components/schemas/ViewUpdatedWebhookPayloadData"
           }
         },
         "required": [

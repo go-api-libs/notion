@@ -312,12 +312,8 @@ func nameBranchesIn(doc *openapi.Document, s *openapi.Schema, name string) {
 		for i, alt := range union.alts {
 			branch := fmt.Sprintf("%s%s%d", name, union.kind, i)
 
-			if v, ok := telling(union.alts, i); ok && alt.Ref == nil && alt.Type == openapi.TypeObject {
-				if n := strcase.ToGoPascal(name + " " + v); doc.Components.Schemas[n] == nil {
-					moved := new(openapi.Schema)
-					moved.Replace(alt)
-					doc.Components.Schemas.Set(n, moved)
-					alt.Replace(&openapi.Schema{Ref: &openapi.SchemaRef{Identifier: schemaRefPrefix + n, Value: moved}})
+			if v, ok := telling(union.alts, i); ok && alt.Type == openapi.TypeObject {
+				if moved, n, ok := moveToComponents(doc, alt, strcase.ToGoPascal(name+" "+v)); ok {
 					alt, branch = moved, n
 				}
 			}
@@ -327,6 +323,13 @@ func nameBranchesIn(doc *openapi.Document, s *openapi.Schema, name string) {
 	}
 
 	for i, part := range s.AllOf {
+		// codegen folds an inline part into s, so what it holds is named as if s held it
+		for prop, p := range part.Properties.ByIndex() {
+			if p.Type == openapi.TypeObject || len(alternatives(p)) > 0 {
+				moveToComponents(doc, p, strcase.ToGoPascal(name+" "+prop))
+			}
+		}
+
 		nameBranchesIn(doc, part, fmt.Sprintf("%sAllOf%d", name, i))
 	}
 
@@ -339,6 +342,21 @@ func nameBranchesIn(doc *openapi.Document, s *openapi.Schema, name string) {
 	if s.AdditionalProperties != nil {
 		nameBranchesIn(doc, s.AdditionalProperties.Schema, name+"Value")
 	}
+}
+
+// moveToComponents moves s, if inline, into the component schemas as name, if free, leaving a reference to it in its
+// place, and returns the moved schema.
+func moveToComponents(doc *openapi.Document, s *openapi.Schema, name string) (*openapi.Schema, string, bool) {
+	if s.Ref != nil || doc.Components.Schemas[name] != nil {
+		return nil, "", false
+	}
+
+	moved := new(openapi.Schema)
+	moved.Replace(s)
+	doc.Components.Schemas.Set(name, moved)
+	s.Replace(&openapi.Schema{Ref: &openapi.SchemaRef{Identifier: schemaRefPrefix + name, Value: moved}})
+
+	return moved, name, true
 }
 
 // spliceUnions lists, instead of each inline alternative in alts that is only a union of the same kind, that union's
