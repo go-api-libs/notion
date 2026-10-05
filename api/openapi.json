@@ -5433,7 +5433,7 @@
             "type": "string"
           },
           "title": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "required": [
@@ -5684,7 +5684,7 @@
           },
           "account": {
             "description": "The provider-side account identifier, null when none is linked, or \"hidden\" when the caller lacks edit access to the agent.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "permissions": {
             "$ref": "#/components/schemas/AgentConnectionsItemOneOfPermissions"
@@ -6088,7 +6088,7 @@
             "type": "boolean"
           },
           "next_cursor": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "request_id": {
             "type": "string",
@@ -6234,7 +6234,7 @@
             "type": "string"
           },
           "description": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "instructions_page_id": {
             "$ref": "#/components/schemas/PageListNextCursor"
@@ -6290,7 +6290,7 @@
           },
           "instructions": {
             "description": "The agent's inline instructions when verbose=true, or null when its instructions are stored on a page.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "required": [
@@ -6384,7 +6384,7 @@
           },
           "id": {
             "description": "The public model this agent maps to (e.g. \"claude-sonnet-5\"), or null for a pre-release / early-access model.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "required": [
@@ -8424,11 +8424,11 @@
           },
           "name": {
             "description": "The name of the user.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "avatar_url": {
             "description": "The avatar URL of the user.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "type": {
             "description": "The type of the user.",
@@ -9066,7 +9066,7 @@
             "$ref": "#/components/schemas/CommentObjectResponseDisplayNameType"
           },
           "resolved_name": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "required": [
@@ -9114,68 +9114,38 @@
         ]
       },
       "CreateAComment": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/CreateACommentAllOf0"
-          },
-          {
-            "$ref": "#/components/schemas/CreateACommentAllOf1"
           }
-        ]
-      },
-      "CreateACommentAllOf0": {
-        "type": "object",
+        ],
         "properties": {
           "attachments": {
-            "$ref": "#/components/schemas/CreateACommentAllOf0Attachments"
+            "$ref": "#/components/schemas/CreateACommentAttachments"
           },
           "display_name": {
             "$ref": "#/components/schemas/CreateACommentDisplayName"
           }
         }
       },
-      "CreateACommentAllOf0Attachments": {
-        "description": "An array of files to attach to the comment. Maximum of 3 allowed.",
-        "type": "array",
-        "maxItems": 3,
-        "items": {
-          "$ref": "#/components/schemas/CreateACommentAllOf0AttachmentsItem"
-        }
-      },
-      "CreateACommentAllOf0AttachmentsItem": {
-        "type": "object",
-        "properties": {
-          "file_upload_id": {
-            "description": "ID of a FileUpload object that has the status `uploaded`.",
-            "type": "string"
-          },
-          "type": {
-            "description": "Always `file_upload`",
-            "type": "string",
-            "const": "file_upload"
-          }
-        },
-        "required": [
-          "file_upload_id"
-        ]
-      },
-      "CreateACommentAllOf1": {
+      "CreateACommentAllOf0": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/CreateACommentAllOf1OneOf0"
+            "$ref": "#/components/schemas/CreateACommentAllOf0OneOf0"
           },
           {
-            "$ref": "#/components/schemas/CreateACommentAllOf1OneOf1"
+            "$ref": "#/components/schemas/CreateACommentAllOf0OneOf1"
           },
           {
-            "$ref": "#/components/schemas/CreateACommentAllOf1OneOf2"
+            "$ref": "#/components/schemas/CreateACommentAllOf0OneOf2"
           },
           {
-            "$ref": "#/components/schemas/CreateACommentAllOf1OneOf3"
+            "$ref": "#/components/schemas/CreateACommentAllOf0OneOf3"
           }
         ]
       },
-      "CreateACommentAllOf1OneOf0": {
+      "CreateACommentAllOf0OneOf0": {
         "type": "object",
         "properties": {
           "parent": {
@@ -9195,7 +9165,7 @@
           "rich_text"
         ]
       },
-      "CreateACommentAllOf1OneOf1": {
+      "CreateACommentAllOf0OneOf1": {
         "type": "object",
         "properties": {
           "parent": {
@@ -9211,7 +9181,7 @@
           "markdown"
         ]
       },
-      "CreateACommentAllOf1OneOf2": {
+      "CreateACommentAllOf0OneOf2": {
         "type": "object",
         "properties": {
           "discussion_id": {
@@ -9232,7 +9202,7 @@
           "rich_text"
         ]
       },
-      "CreateACommentAllOf1OneOf3": {
+      "CreateACommentAllOf0OneOf3": {
         "type": "object",
         "properties": {
           "discussion_id": {
@@ -9277,18 +9247,102 @@
           "block_id"
         ]
       },
+      "CreateACommentAttachments": {
+        "description": "An array of files to attach to the comment. Maximum of 3 allowed.",
+        "type": "array",
+        "maxItems": 3,
+        "items": {
+          "$ref": "#/components/schemas/CreateACommentAttachmentsItem"
+        }
+      },
+      "CreateACommentAttachmentsItem": {
+        "type": "object",
+        "properties": {
+          "file_upload_id": {
+            "description": "ID of a FileUpload object that has the status `uploaded`.",
+            "type": "string"
+          },
+          "type": {
+            "description": "Always `file_upload`",
+            "type": "string",
+            "const": "file_upload"
+          }
+        },
+        "required": [
+          "file_upload_id"
+        ]
+      },
       "CreateACommentDisplayName": {
         "description": "Display name for the comment.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/Integration"
+            "$ref": "#/components/schemas/CreateACommentDisplayNameIntegration"
           },
           {
-            "$ref": "#/components/schemas/User"
+            "$ref": "#/components/schemas/CreateACommentDisplayNameUser"
           },
           {
-            "$ref": "#/components/schemas/Custom"
+            "$ref": "#/components/schemas/CreateACommentDisplayNameCustom"
           }
+        ]
+      },
+      "CreateACommentDisplayNameCustom": {
+        "title": "Custom",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `custom`",
+            "type": "string",
+            "const": "custom"
+          },
+          "custom": {
+            "$ref": "#/components/schemas/CreateACommentDisplayNameCustomCustom"
+          }
+        },
+        "required": [
+          "type",
+          "custom"
+        ]
+      },
+      "CreateACommentDisplayNameCustomCustom": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "The custom display name to use",
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "CreateACommentDisplayNameIntegration": {
+        "title": "Integration",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `integration`",
+            "type": "string",
+            "const": "integration"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "CreateACommentDisplayNameUser": {
+        "title": "User",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `user`",
+            "type": "string",
+            "const": "user"
+          }
+        },
+        "required": [
+          "type"
         ]
       },
       "CreateADatabase": {
@@ -9645,27 +9699,22 @@
         ]
       },
       "CreateDatabaseParent": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/CreateDatabaseParentAllOf"
-          },
-          {
-            "$ref": "#/components/schemas/CreateDatabaseParentAllOf2"
           }
-        ]
-      },
-      "CreateDatabaseParentAllOf": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
-            "$ref": "#/components/schemas/CreateDatabaseParentAllOfType"
+            "$ref": "#/components/schemas/CreateDatabaseParentType"
           }
         },
         "required": [
           "type"
         ]
       },
-      "CreateDatabaseParentAllOf2": {
+      "CreateDatabaseParentAllOf": {
         "oneOf": [
           {
             "$ref": "#/components/schemas/CreateDatabaseParentAllOfPageID"
@@ -9693,7 +9742,7 @@
           "page_id"
         ]
       },
-      "CreateDatabaseParentAllOfType": {
+      "CreateDatabaseParentType": {
         "description": "The type of parent.",
         "type": "string",
         "enum": [
@@ -9743,17 +9792,12 @@
         ]
       },
       "CreateMeetingNote": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/CreateMeetingNoteAllOf0"
-          },
-          {
-            "$ref": "#/components/schemas/CreateMeetingNoteAllOf1"
           }
-        ]
-      },
-      "CreateMeetingNoteAllOf0": {
-        "type": "object",
+        ],
         "properties": {
           "title": {
             "description": "Title for the meeting note.",
@@ -9761,14 +9805,114 @@
             "maxLength": 2000
           },
           "language": {
-            "$ref": "#/components/schemas/CreateMeetingNoteAllOf0Language"
+            "$ref": "#/components/schemas/CreateMeetingNoteLanguage"
           },
           "options": {
             "$ref": "#/components/schemas/CreateMeetingNoteOptions"
           }
         }
       },
-      "CreateMeetingNoteAllOf0Language": {
+      "CreateMeetingNoteAllOf0": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/CreateMeetingNoteAllOf0OneOf0"
+          },
+          {
+            "$ref": "#/components/schemas/CreateMeetingNoteAllOf0Source"
+          }
+        ]
+      },
+      "CreateMeetingNoteAllOf0OneOf0": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "$ref": "#/components/schemas/CreateMeetingNoteAllOf0OneOf0Source"
+          },
+          "parent": {
+            "$ref": "#/components/schemas/CreateMeetingNoteAllOf0OneOf0Parent"
+          }
+        },
+        "required": [
+          "source",
+          "parent"
+        ]
+      },
+      "CreateMeetingNoteAllOf0OneOf0Parent": {
+        "description": "Parent page for the new meeting note.",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always \"page_id\".",
+            "type": "string",
+            "const": "page_id"
+          },
+          "page_id": {
+            "description": "Page ID where the meeting note should be created. Required for file_upload sources.",
+            "$ref": "#/components/schemas/idRequest"
+          }
+        },
+        "required": [
+          "type",
+          "page_id"
+        ],
+        "additionalProperties": false
+      },
+      "CreateMeetingNoteAllOf0OneOf0Source": {
+        "description": "Audio or video source for the meeting note.",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always \"file_upload\".",
+            "type": "string",
+            "const": "file_upload"
+          },
+          "file_upload_id": {
+            "description": "ID of a completed public API file upload.",
+            "$ref": "#/components/schemas/idRequest"
+          }
+        },
+        "required": [
+          "type",
+          "file_upload_id"
+        ],
+        "additionalProperties": false
+      },
+      "CreateMeetingNoteAllOf0Source": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "$ref": "#/components/schemas/CreateMeetingNoteAllOf0SourceSource"
+          },
+          "parent": {
+            "description": "Not accepted for block sources.",
+            "not": {}
+          }
+        },
+        "required": [
+          "source"
+        ]
+      },
+      "CreateMeetingNoteAllOf0SourceSource": {
+        "description": "Audio or video source for the meeting note.",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always \"block\".",
+            "type": "string",
+            "const": "block"
+          },
+          "block_id": {
+            "description": "ID of an existing audio, video, or file block.",
+            "$ref": "#/components/schemas/idRequest"
+          }
+        },
+        "required": [
+          "type",
+          "block_id"
+        ],
+        "additionalProperties": false
+      },
+      "CreateMeetingNoteLanguage": {
         "description": "Language hint for transcription. Defaults to automatic detection.",
         "type": "string",
         "enum": [
@@ -9796,106 +9940,6 @@
           "he",
           "pl"
         ]
-      },
-      "CreateMeetingNoteAllOf1": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/CreateMeetingNoteAllOf1OneOf0"
-          },
-          {
-            "$ref": "#/components/schemas/CreateMeetingNoteAllOf1Source"
-          }
-        ]
-      },
-      "CreateMeetingNoteAllOf1OneOf0": {
-        "type": "object",
-        "properties": {
-          "source": {
-            "$ref": "#/components/schemas/CreateMeetingNoteAllOf1OneOf0Source"
-          },
-          "parent": {
-            "$ref": "#/components/schemas/CreateMeetingNoteAllOf1OneOf0Parent"
-          }
-        },
-        "required": [
-          "source",
-          "parent"
-        ]
-      },
-      "CreateMeetingNoteAllOf1OneOf0Parent": {
-        "description": "Parent page for the new meeting note.",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always \"page_id\".",
-            "type": "string",
-            "const": "page_id"
-          },
-          "page_id": {
-            "description": "Page ID where the meeting note should be created. Required for file_upload sources.",
-            "$ref": "#/components/schemas/idRequest"
-          }
-        },
-        "required": [
-          "type",
-          "page_id"
-        ],
-        "additionalProperties": false
-      },
-      "CreateMeetingNoteAllOf1OneOf0Source": {
-        "description": "Audio or video source for the meeting note.",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always \"file_upload\".",
-            "type": "string",
-            "const": "file_upload"
-          },
-          "file_upload_id": {
-            "description": "ID of a completed public API file upload.",
-            "$ref": "#/components/schemas/idRequest"
-          }
-        },
-        "required": [
-          "type",
-          "file_upload_id"
-        ],
-        "additionalProperties": false
-      },
-      "CreateMeetingNoteAllOf1Source": {
-        "type": "object",
-        "properties": {
-          "source": {
-            "$ref": "#/components/schemas/CreateMeetingNoteAllOf1SourceSource"
-          },
-          "parent": {
-            "description": "Not accepted for block sources.",
-            "not": {}
-          }
-        },
-        "required": [
-          "source"
-        ]
-      },
-      "CreateMeetingNoteAllOf1SourceSource": {
-        "description": "Audio or video source for the meeting note.",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always \"block\".",
-            "type": "string",
-            "const": "block"
-          },
-          "block_id": {
-            "description": "ID of an existing audio, video, or file block.",
-            "$ref": "#/components/schemas/idRequest"
-          }
-        },
-        "required": [
-          "type",
-          "block_id"
-        ],
-        "additionalProperties": false
       },
       "CreateMeetingNoteMeetingNotes": {
         "type": "object",
@@ -9995,37 +10039,6 @@
           }
         },
         "additionalProperties": false
-      },
-      "Custom": {
-        "title": "Custom",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `custom`",
-            "type": "string",
-            "const": "custom"
-          },
-          "custom": {
-            "$ref": "#/components/schemas/CustomCustom"
-          }
-        },
-        "required": [
-          "type",
-          "custom"
-        ]
-      },
-      "CustomCustom": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The custom display name to use",
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "required": [
-          "name"
-        ]
       },
       "CustomEmojiList": {
         "type": "object",
@@ -10245,7 +10258,7 @@
           },
           "public_url": {
             "description": "The public URL of the database if it is publicly accessible.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "request_id": {
             "type": "string",
@@ -10324,7 +10337,7 @@
           },
           "name": {
             "description": "The name of the database property, or `null` if deleted.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "action": {
             "$ref": "#/components/schemas/DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemAction"
@@ -10623,30 +10636,15 @@
         ]
       },
       "Error": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/publicApiCommonErrorResponse"
           },
           {
-            "$ref": "#/components/schemas/ErrorAllOf1"
-          },
-          {
             "$ref": "#/components/schemas/ErrorAllOf"
           }
-        ]
-      },
-      "ErrorAllOf": {
-        "type": "object",
-        "properties": {
-          "request_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "9e1aef9a-66e7-461d-89d2-2072f799276a"
-          }
-        }
-      },
-      "ErrorAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "code": {
             "$ref": "#/components/schemas/ErrorCode"
@@ -10673,6 +10671,16 @@
           "code",
           "status"
         ]
+      },
+      "ErrorAllOf": {
+        "type": "object",
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "9e1aef9a-66e7-461d-89d2-2072f799276a"
+          }
+        }
       },
       "ErrorCode": {
         "type": "string",
@@ -10796,7 +10804,7 @@
           },
           "parameter": {
             "description": "The parameter related to the error, if applicable. Null if not applicable.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "status_code": {
             "description": "The HTTP status code associated with the error, if available. Null if not applicable.",
@@ -10964,38 +10972,14 @@
         "description": "The result of the file import attempt.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/FileUploadUploadFailedWebhookPayloadDataFileImportResultOneOf0"
+            "$ref": "#/components/schemas/FileUploadUploadFailedWebhookPayloadDataFileImportResultSuccess"
           },
           {
-            "$ref": "#/components/schemas/FileUploadUploadFailedWebhookPayloadDataFileImportResultOneOf1"
+            "$ref": "#/components/schemas/FileUploadUploadFailedWebhookPayloadDataFileImportResultError"
           }
         ]
       },
-      "FileUploadUploadFailedWebhookPayloadDataFileImportResultOneOf0": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `success`",
-            "type": "string",
-            "const": "success"
-          },
-          "imported_time": {
-            "description": "ISO 8601 timestamp of when the file was imported.",
-            "type": "string"
-          },
-          "success": {
-            "description": "Empty object indicating success.",
-            "$ref": "#/components/schemas/emptyObject"
-          }
-        },
-        "required": [
-          "type",
-          "imported_time",
-          "success"
-        ],
-        "additionalProperties": false
-      },
-      "FileUploadUploadFailedWebhookPayloadDataFileImportResultOneOf1": {
+      "FileUploadUploadFailedWebhookPayloadDataFileImportResultError": {
         "type": "object",
         "properties": {
           "type": {
@@ -11016,6 +11000,30 @@
           "type",
           "imported_time",
           "error"
+        ],
+        "additionalProperties": false
+      },
+      "FileUploadUploadFailedWebhookPayloadDataFileImportResultSuccess": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `success`",
+            "type": "string",
+            "const": "success"
+          },
+          "imported_time": {
+            "description": "ISO 8601 timestamp of when the file was imported.",
+            "type": "string"
+          },
+          "success": {
+            "description": "Empty object indicating success.",
+            "$ref": "#/components/schemas/emptyObject"
+          }
+        },
+        "required": [
+          "type",
+          "imported_time",
+          "success"
         ],
         "additionalProperties": false
       },
@@ -11188,7 +11196,7 @@
             "type": "string"
           },
           "description": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "instructions_page_id": {
             "$ref": "#/components/schemas/PageListNextCursor"
@@ -11257,7 +11265,7 @@
           },
           "instructions": {
             "description": "The agent's inline instructions when verbose=true, or null when its instructions are stored on a page.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "required": [
@@ -11452,20 +11460,6 @@
         },
         "required": [
           "name"
-        ]
-      },
-      "Integration": {
-        "title": "Integration",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `integration`",
-            "type": "string",
-            "const": "integration"
-          }
-        },
-        "required": [
-          "type"
         ]
       },
       "InternalOrExternalFileWithNameRequestExternal": {
@@ -12287,7 +12281,7 @@
           },
           "public_url": {
             "description": "The public URL of the Notion page, if it has been published to the web.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "parent": {
             "description": "Information about the page's parent.",
@@ -13205,6 +13199,17 @@
           "state"
         ]
       },
+      "PagePublicURL": {
+        "oneOf": [
+          {
+            "type": "string",
+            "example": "2026-10-03T18:11:00.000+00:00"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "PageTemplateDefault": {
         "type": "object",
         "properties": {
@@ -13249,7 +13254,7 @@
           },
           "transcript_id": {
             "description": "The ID of the deleted transcript, or `null` if not available.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "required": [
@@ -13424,7 +13429,7 @@
             "$ref": "#/components/schemas/PluginListResults"
           },
           "next_cursor": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "has_more": {
             "type": "boolean"
@@ -13979,6 +13984,17 @@
           },
           {
             "$ref": "#/components/schemas/lastEditedTimeDatabasePropertyConfigResponse"
+          }
+        ]
+      },
+      "PropertyConfigurationCommonDescription": {
+        "description": "The description of the property.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/propertyDescriptionRequest"
+          },
+          {
+            "type": "null"
           }
         ]
       },
@@ -16671,17 +16687,12 @@
         ]
       },
       "RelationPropertyConfigurationRelation": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/RelationPropertyConfigurationRelationAllOf"
-          },
-          {
-            "$ref": "#/components/schemas/RelationPropertyConfigurationRelationAllOf2"
           }
-        ]
-      },
-      "RelationPropertyConfigurationRelationAllOf": {
-        "type": "object",
+        ],
         "properties": {
           "data_source_id": {
             "$ref": "#/components/schemas/idRequest"
@@ -16691,7 +16702,7 @@
           "data_source_id"
         ]
       },
-      "RelationPropertyConfigurationRelationAllOf2": {
+      "RelationPropertyConfigurationRelationAllOf": {
         "oneOf": [
           {
             "$ref": "#/components/schemas/RelationPropertyConfigurationRelationAllOfSingleProperty"
@@ -17855,7 +17866,7 @@
           "ids": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+              "$ref": "#/components/schemas/PagePublicURL"
             }
           }
         },
@@ -18037,17 +18048,12 @@
         "additionalProperties": false
       },
       "RollupPropertyConfigurationRollup": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/RollupPropertyConfigurationRollupAllOf"
-          },
-          {
-            "$ref": "#/components/schemas/RollupPropertyConfigurationRollupAllOf2"
           }
-        ]
-      },
-      "RollupPropertyConfigurationRollupAllOf": {
-        "type": "object",
+        ],
         "properties": {
           "function": {
             "description": "The function to use for the rollup, e.g. count, count_values, percent_not_empty, max.",
@@ -18058,7 +18064,7 @@
           "function"
         ]
       },
-      "RollupPropertyConfigurationRollupAllOf2": {
+      "RollupPropertyConfigurationRollupAllOf": {
         "oneOf": [
           {
             "$ref": "#/components/schemas/RollupPropertyConfigurationRollupAllOfOneOf"
@@ -18446,7 +18452,7 @@
             "$ref": "#/components/schemas/selectColor"
           },
           "description": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "required": [
@@ -18523,7 +18529,7 @@
             "type": "boolean"
           },
           "next_cursor": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "request_id": {
             "type": "string",
@@ -18980,7 +18986,7 @@
           },
           "next_cursor": {
             "description": "Pass this cursor as start_cursor when has_more is true, even when results is empty.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "request_id": {
             "type": "string",
@@ -19532,7 +19538,7 @@
         "properties": {
           "prefix": {
             "description": "The prefix for the unique ID.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "required": [
@@ -19544,7 +19550,7 @@
         "type": "object",
         "properties": {
           "prefix": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         }
       },
@@ -20532,28 +20538,23 @@
         ]
       },
       "UpdateADataSourcePropertiesValueOneOf0": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOf0AllOf0"
-          },
-          {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOf0AllOf1"
           }
-        ]
-      },
-      "UpdateADataSourcePropertiesValueOneOf0AllOf0": {
-        "type": "object",
+        ],
         "properties": {
           "name": {
             "description": "The name of the property.",
             "type": "string"
           },
           "description": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfDescription"
+            "$ref": "#/components/schemas/PropertyConfigurationCommonDescription"
           }
         }
       },
-      "UpdateADataSourcePropertiesValueOneOf0AllOf1": {
+      "UpdateADataSourcePropertiesValueOneOf0AllOf0": {
         "oneOf": [
           {
             "$ref": "#/components/schemas/numberPropertyConfiguration"
@@ -20562,13 +20563,13 @@
             "$ref": "#/components/schemas/formulaPropertyConfiguration"
           },
           {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOf0AllOf1Select"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOf0AllOf0Select"
           },
           {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOf0AllOf1MultiSelect"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOf0AllOf0MultiSelect"
           },
           {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOf0AllOf1Status"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOf0AllOf0Status"
           },
           {
             "$ref": "#/components/schemas/relationPropertyConfiguration"
@@ -20623,7 +20624,7 @@
           }
         ]
       },
-      "UpdateADataSourcePropertiesValueOneOf0AllOf1MultiSelect": {
+      "UpdateADataSourcePropertiesValueOneOf0AllOf0MultiSelect": {
         "title": "Multi Select",
         "type": "object",
         "properties": {
@@ -20640,7 +20641,7 @@
           "multi_select"
         ]
       },
-      "UpdateADataSourcePropertiesValueOneOf0AllOf1Select": {
+      "UpdateADataSourcePropertiesValueOneOf0AllOf0Select": {
         "title": "Select",
         "type": "object",
         "properties": {
@@ -20657,7 +20658,7 @@
           "select"
         ]
       },
-      "UpdateADataSourcePropertiesValueOneOf0AllOf1Status": {
+      "UpdateADataSourcePropertiesValueOneOf0AllOf0Status": {
         "title": "Status",
         "type": "object",
         "properties": {
@@ -20678,56 +20679,32 @@
         "type": "object",
         "properties": {
           "options": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItem"
-            }
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelect2"
           }
         }
       },
+      "UpdateADataSourcePropertiesValueOneOfAllOfSelect2": {
+        "type": "array",
+        "maxItems": 100,
+        "items": {
+          "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItem"
+        }
+      },
       "UpdateADataSourcePropertiesValueOneOfAllOfSelectItem": {
+        "type": "object",
         "allOf": [
-          {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemAllOf"
-          },
           {
             "$ref": "#/components/schemas/statusOptionUpdateAllOf"
           }
-        ]
-      },
-      "UpdateADataSourcePropertiesValueOneOfAllOfSelectItemAllOf": {
-        "type": "object",
+        ],
         "properties": {
           "color": {
             "$ref": "#/components/schemas/selectColor"
           },
           "description": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         }
-      },
-      "UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription": {
-        "oneOf": [
-          {
-            "type": "string",
-            "example": "2026-10-03T18:11:00.000+00:00"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "UpdateADataSourcePropertiesValueOneOfDescription": {
-        "description": "The description of the property.",
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/propertyDescriptionRequest"
-          },
-          {
-            "type": "null"
-          }
-        ]
       },
       "UpdateAgentCreditLimit": {
         "type": "object",
@@ -20867,14 +20844,18 @@
         }
       },
       "UpdatePageMarkdown": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/UpdatePageMarkdownAllOf0"
-          },
-          {
-            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf1"
           }
-        ]
+        ],
+        "properties": {
+          "allow_async": {
+            "description": "Set to true to opt into receiving an async_task result when this update operation is accepted for background execution. If omitted or false, the endpoint keeps the existing synchronous response shape.",
+            "type": "boolean"
+          }
+        }
       },
       "UpdatePageMarkdownAccepted": {
         "type": "object",
@@ -20989,31 +20970,22 @@
         ]
       },
       "UpdatePageMarkdownAllOf0": {
-        "type": "object",
-        "properties": {
-          "allow_async": {
-            "description": "Set to true to opt into receiving an async_task result when this update operation is accepted for background execution. If omitted or false, the endpoint keeps the existing synchronous response shape.",
-            "type": "boolean"
-          }
-        }
-      },
-      "UpdatePageMarkdownAllOf1": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf1InsertContent"
+            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf0InsertContent"
           },
           {
-            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf1ReplaceContentRange"
+            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf0ReplaceContentRange"
           },
           {
-            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf1UpdateContent"
+            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf0UpdateContent"
           },
           {
-            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf1ReplaceContent"
+            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf0ReplaceContent"
           }
         ]
       },
-      "UpdatePageMarkdownAllOf1InsertContent": {
+      "UpdatePageMarkdownAllOf0InsertContent": {
         "title": "Insert Content",
         "type": "object",
         "properties": {
@@ -21023,7 +20995,7 @@
             "const": "insert_content"
           },
           "insert_content": {
-            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf1InsertContentInsertContent"
+            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf0InsertContentInsertContent"
           }
         },
         "required": [
@@ -21032,7 +21004,7 @@
         ],
         "deprecated": true
       },
-      "UpdatePageMarkdownAllOf1InsertContentInsertContent": {
+      "UpdatePageMarkdownAllOf0InsertContentInsertContent": {
         "description": "Insert new content into the page.",
         "type": "object",
         "properties": {
@@ -21048,14 +21020,14 @@
             "type": "string"
           },
           "position": {
-            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf1InsertContentInsertContentPosition"
+            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf0InsertContentInsertContentPosition"
           }
         },
         "required": [
           "content"
         ]
       },
-      "UpdatePageMarkdownAllOf1InsertContentInsertContentPosition": {
+      "UpdatePageMarkdownAllOf0InsertContentInsertContentPosition": {
         "description": "Explicit position for inserted content. Use {\"type\":\"start\"} to prepend or {\"type\":\"end\"} to append. Cannot be combined with after.",
         "oneOf": [
           {
@@ -21066,7 +21038,7 @@
           }
         ]
       },
-      "UpdatePageMarkdownAllOf1ReplaceContent": {
+      "UpdatePageMarkdownAllOf0ReplaceContent": {
         "title": "Replace Content",
         "type": "object",
         "properties": {
@@ -21076,7 +21048,7 @@
             "const": "replace_content"
           },
           "replace_content": {
-            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf1ReplaceContentReplaceContent"
+            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf0ReplaceContentReplaceContent"
           }
         },
         "required": [
@@ -21084,7 +21056,7 @@
           "replace_content"
         ]
       },
-      "UpdatePageMarkdownAllOf1ReplaceContentRange": {
+      "UpdatePageMarkdownAllOf0ReplaceContentRange": {
         "title": "Replace Content Range",
         "type": "object",
         "properties": {
@@ -21094,7 +21066,7 @@
             "const": "replace_content_range"
           },
           "replace_content_range": {
-            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf1ReplaceContentRangeReplaceContentRange"
+            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf0ReplaceContentRangeReplaceContentRange"
           }
         },
         "required": [
@@ -21103,7 +21075,7 @@
         ],
         "deprecated": true
       },
-      "UpdatePageMarkdownAllOf1ReplaceContentRangeReplaceContentRange": {
+      "UpdatePageMarkdownAllOf0ReplaceContentRangeReplaceContentRange": {
         "description": "Replace a range of content in the page.",
         "type": "object",
         "properties": {
@@ -21128,7 +21100,7 @@
           "content_range"
         ]
       },
-      "UpdatePageMarkdownAllOf1ReplaceContentReplaceContent": {
+      "UpdatePageMarkdownAllOf0ReplaceContentReplaceContent": {
         "description": "Replace the entire page content with new markdown.",
         "type": "object",
         "properties": {
@@ -21148,7 +21120,7 @@
           "new_str"
         ]
       },
-      "UpdatePageMarkdownAllOf1UpdateContent": {
+      "UpdatePageMarkdownAllOf0UpdateContent": {
         "title": "Update Content",
         "type": "object",
         "properties": {
@@ -21158,7 +21130,7 @@
             "const": "update_content"
           },
           "update_content": {
-            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf1UpdateContentUpdateContent"
+            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf0UpdateContentUpdateContent"
           }
         },
         "required": [
@@ -21166,12 +21138,12 @@
           "update_content"
         ]
       },
-      "UpdatePageMarkdownAllOf1UpdateContentUpdateContent": {
+      "UpdatePageMarkdownAllOf0UpdateContentUpdateContent": {
         "description": "Update specific content using search-and-replace operations.",
         "type": "object",
         "properties": {
           "content_updates": {
-            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf1UpdateContentUpdateContentContentUpdates"
+            "$ref": "#/components/schemas/UpdatePageMarkdownAllOf0UpdateContentUpdateContentContentUpdates"
           },
           "allow_deleting_content": {
             "description": "Set to true to allow the operation to delete child pages or databases. Defaults to false.",
@@ -21182,15 +21154,15 @@
           "content_updates"
         ]
       },
-      "UpdatePageMarkdownAllOf1UpdateContentUpdateContentContentUpdates": {
+      "UpdatePageMarkdownAllOf0UpdateContentUpdateContentContentUpdates": {
         "description": "An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content).",
         "type": "array",
         "maxItems": 100,
         "items": {
-          "$ref": "#/components/schemas/UpdatePageMarkdownAllOf1UpdateContentUpdateContentContentUpdatesItem"
+          "$ref": "#/components/schemas/UpdatePageMarkdownAllOf0UpdateContentUpdateContentContentUpdatesItem"
         }
       },
-      "UpdatePageMarkdownAllOf1UpdateContentUpdateContentContentUpdatesItem": {
+      "UpdatePageMarkdownAllOf0UpdateContentUpdateContentContentUpdatesItem": {
         "type": "object",
         "properties": {
           "old_str": {
@@ -21426,20 +21398,6 @@
         },
         "required": [
           "file"
-        ]
-      },
-      "User": {
-        "title": "User",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `user`",
-            "type": "string",
-            "const": "user"
-          }
-        },
-        "required": [
-          "type"
         ]
       },
       "UserList": {
@@ -22821,7 +22779,7 @@
           },
           "workspace_name": {
             "description": "The name of the bot's workspace.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "required": [
@@ -23283,11 +23241,11 @@
           },
           "x_axis_property_id": {
             "description": "Property ID for x-axis values in results mode. Pass null to clear.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "y_axis_property_id": {
             "description": "Property ID for y-axis values in results mode. Pass null to clear.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "value": {
             "description": "Aggregation for number charts. Pass null to clear.",
@@ -23359,7 +23317,7 @@
           },
           "caption": {
             "description": "Chart caption text. Pass null to clear.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "color_by_value": {
             "description": "Whether to color chart elements by their numeric value (gradient coloring). Pass null to clear.",
@@ -23475,7 +23433,7 @@
           },
           "caption": {
             "description": "Text caption displayed below the chart. Null when no caption is shown.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "color_by_value": {
             "description": "Whether chart elements are colored by their numeric value (gradient coloring).",
@@ -24001,17 +23959,12 @@
         "additionalProperties": false
       },
       "commentCreatedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/commentCreatedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "commentCreatedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `comment.created`",
@@ -24033,17 +23986,12 @@
         ]
       },
       "commentDeletedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/commentDeletedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "commentDeletedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `comment.deleted`",
@@ -24143,17 +24091,12 @@
         ]
       },
       "commentUpdatedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/commentUpdatedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "commentUpdatedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `comment.updated`",
@@ -24833,17 +24776,12 @@
         "additionalProperties": false
       },
       "dataSourceContentUpdatedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/dataSourceContentUpdatedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "dataSourceContentUpdatedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `data_source.content_updated`",
@@ -24865,17 +24803,12 @@
         ]
       },
       "dataSourceCreatedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/dataSourceCreatedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "dataSourceCreatedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `data_source.created`",
@@ -24897,17 +24830,12 @@
         ]
       },
       "dataSourceDeletedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/dataSourceDeletedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "dataSourceDeletedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `data_source.deleted`",
@@ -24929,17 +24857,12 @@
         ]
       },
       "dataSourceMovedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/dataSourceMovedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "dataSourceMovedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `data_source.moved`",
@@ -25042,7 +24965,7 @@
           },
           "public_url": {
             "description": "The public URL of the data source if it is publicly accessible.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "request_id": {
             "type": "string",
@@ -25116,17 +25039,12 @@
         "additionalProperties": false
       },
       "dataSourceSchemaUpdatedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/dataSourceSchemaUpdatedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "dataSourceSchemaUpdatedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `data_source.schema_updated`",
@@ -25148,17 +25066,12 @@
         ]
       },
       "dataSourceUndeletedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/dataSourceUndeletedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "dataSourceUndeletedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `data_source.undeleted`",
@@ -25223,7 +25136,7 @@
           },
           "data_source_id": {
             "description": "The ID of the data source this view is scoped to, or null for dashboard views.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "created_by": {
             "description": "The user who created the view, or null if not available.",
@@ -25287,17 +25200,12 @@
         "additionalProperties": false
       },
       "databaseContentUpdatedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/databaseContentUpdatedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "databaseContentUpdatedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `database.content_updated`",
@@ -25319,17 +25227,12 @@
         ]
       },
       "databaseCreatedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/databaseCreatedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "databaseCreatedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `database.created`",
@@ -25351,17 +25254,12 @@
         ]
       },
       "databaseDeletedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/databaseDeletedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "databaseDeletedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `database.deleted`",
@@ -25383,17 +25281,12 @@
         ]
       },
       "databaseMovedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/databaseMovedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "databaseMovedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `database.moved`",
@@ -25447,7 +25340,7 @@
             "example": "Duration"
           },
           "description": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfDescription"
+            "$ref": "#/components/schemas/PropertyConfigurationCommonDescription"
           }
         },
         "required": [
@@ -25494,17 +25387,12 @@
         "additionalProperties": false
       },
       "databaseSchemaUpdatedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/databaseSchemaUpdatedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "databaseSchemaUpdatedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `database.schema_updated`",
@@ -25526,17 +25414,12 @@
         ]
       },
       "databaseUndeletedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/databaseUndeletedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "databaseUndeletedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `database.undeleted`",
@@ -25820,7 +25703,7 @@
           },
           "end": {
             "description": "The end date of the date object, if any.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "time_zone": {
             "description": "The time zone of the date object.",
@@ -26029,7 +25912,7 @@
             "const": "email"
           },
           "email": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "required": [
@@ -26568,17 +26451,12 @@
         "additionalProperties": false
       },
       "fileUploadCompletedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/fileUploadCompletedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "fileUploadCompletedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `file_upload.completed`",
@@ -26596,17 +26474,12 @@
         ]
       },
       "fileUploadCreatedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/fileUploadCreatedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "fileUploadCreatedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `file_upload.created`",
@@ -26624,17 +26497,12 @@
         ]
       },
       "fileUploadExpiredWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/fileUploadExpiredWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "fileUploadExpiredWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `file_upload.expired`",
@@ -26696,10 +26564,10 @@
             "$ref": "#/components/schemas/Status"
           },
           "filename": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "content_type": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "content_length": {
             "$ref": "#/components/schemas/RetrieveSessionMessageCount"
@@ -26750,17 +26618,12 @@
         ]
       },
       "fileUploadUploadFailedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/fileUploadUploadFailedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "fileUploadUploadFailedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `file_upload.upload_failed`",
@@ -27540,7 +27403,7 @@
           },
           "name": {
             "description": "The name of the group.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "required": [
@@ -28632,7 +28495,7 @@
           },
           "map_by": {
             "description": "Property ID of the location property used to position items on the map. Pass null to clear.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "properties": {
             "description": "Property visibility and display configuration on map pin cards. Pass null to clear.",
@@ -29334,17 +29197,12 @@
         ]
       },
       "pageContentUpdatedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/pageContentUpdatedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "pageContentUpdatedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `page.content_updated`",
@@ -29386,17 +29244,12 @@
         ]
       },
       "pageCreatedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/pageCreatedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "pageCreatedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `page.created`",
@@ -29418,17 +29271,12 @@
         ]
       },
       "pageDeletedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/pageDeletedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "pageDeletedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `page.deleted`",
@@ -29507,17 +29355,12 @@
         "additionalProperties": false
       },
       "pageLockedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/pageLockedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "pageLockedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `page.locked`",
@@ -29577,17 +29420,12 @@
         "additionalProperties": false
       },
       "pageMovedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/pageMovedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "pageMovedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `page.moved`",
@@ -29622,17 +29460,12 @@
         ]
       },
       "pagePropertiesUpdatedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/pagePropertiesUpdatedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "pagePropertiesUpdatedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `page.properties_updated`",
@@ -29672,17 +29505,12 @@
         "additionalProperties": false
       },
       "pageTranscriptionBlockTranscriptDeletedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/pageTranscriptionBlockTranscriptDeletedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "pageTranscriptionBlockTranscriptDeletedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `page.transcription_block.transcript_deleted`",
@@ -29704,17 +29532,12 @@
         ]
       },
       "pageUndeletedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/pageUndeletedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "pageUndeletedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `page.undeleted`",
@@ -29736,17 +29559,12 @@
         ]
       },
       "pageUnlockedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/pageUnlockedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "pageUnlockedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `page.unlocked`",
@@ -30507,7 +30325,7 @@
             "const": "phone_number"
           },
           "phone_number": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "required": [
@@ -30569,16 +30387,16 @@
             "type": "number"
           },
           "name": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "address": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "aws_place_id": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "google_place_id": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "required": [
@@ -30702,7 +30520,7 @@
         "type": "object",
         "properties": {
           "description": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfDescription"
+            "$ref": "#/components/schemas/PropertyConfigurationCommonDescription"
           }
         }
       },
@@ -31332,7 +31150,7 @@
           },
           "href": {
             "description": "A URL that the rich text object links to or mentions.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "annotations": {
             "description": "All rich text objects contain an annotations object that sets the styling for the rich text.",
@@ -31640,7 +31458,7 @@
             "$ref": "#/components/schemas/selectColor"
           },
           "description": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "required": [
@@ -31927,7 +31745,7 @@
             "$ref": "#/components/schemas/selectColor"
           },
           "description": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "group": {
             "$ref": "#/components/schemas/statusOptionGroup"
@@ -31978,7 +31796,7 @@
             "$ref": "#/components/schemas/selectColor"
           },
           "description": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "group": {
             "$ref": "#/components/schemas/statusOptionGroup"
@@ -32976,7 +32794,7 @@
         "properties": {
           "property_id": {
             "description": "Relation property ID used for dependency arrows, or null to disable arrows.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         }
       },
@@ -32985,7 +32803,7 @@
         "properties": {
           "property_id": {
             "description": "Relation property ID used for dependency arrows.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "additionalProperties": false
@@ -33036,7 +32854,7 @@
           },
           "end_date_property_id": {
             "description": "Property ID of the date property used for the end of timeline items. Pass null to clear.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "properties": {
             "description": "Property visibility and display configuration on timeline items. Pass null to clear.",
@@ -33552,7 +33370,7 @@
         "type": "object",
         "properties": {
           "prefix": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "number": {
             "$ref": "#/components/schemas/RetrieveSessionCreditsUsed"
@@ -33853,7 +33671,7 @@
             "const": "url"
           },
           "url": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           }
         },
         "required": [
@@ -33896,7 +33714,7 @@
           },
           "name": {
             "description": "The name of the user.",
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItemDescription"
+            "$ref": "#/components/schemas/PagePublicURL"
           },
           "avatar_url": {
             "description": "The avatar URL of the user.",
@@ -34190,17 +34008,12 @@
         ]
       },
       "viewCreatedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/viewCreatedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "viewCreatedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `view.created`",
@@ -34222,17 +34035,12 @@
         ]
       },
       "viewDeletedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/viewDeletedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "viewDeletedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `view.deleted`",
@@ -34509,17 +34317,12 @@
         "example": "board"
       },
       "viewUpdatedWebhookPayload": {
+        "type": "object",
         "allOf": [
           {
             "$ref": "#/components/schemas/baseWebhookPayload"
-          },
-          {
-            "$ref": "#/components/schemas/viewUpdatedWebhookPayloadAllOf1"
           }
-        ]
-      },
-      "viewUpdatedWebhookPayloadAllOf1": {
-        "type": "object",
+        ],
         "properties": {
           "type": {
             "description": "Always `view.updated`",

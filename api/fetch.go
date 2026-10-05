@@ -388,6 +388,7 @@ func nameBranchesIn(doc *openapi.Document, s *openapi.Schema, name string) {
 	}
 
 	s.OneOf, s.AnyOf = spliceUnions(s.OneOf, true), spliceUnions(s.AnyOf, false)
+	hoistParts(s)
 
 	for _, union := range []struct {
 		alts openapi.SchemaList
@@ -441,6 +442,35 @@ func moveToComponents(doc *openapi.Document, s *openapi.Schema, name string) (*o
 	s.Replace(&openapi.Schema{Ref: &openapi.SchemaRef{Identifier: schemaRefPrefix + name, Value: moved}})
 
 	return moved, name, true
+}
+
+// hoistParts moves the properties of each inline part of s's allOf that is only an object with properties onto s
+// itself, which allows the same values, so that they are named after s rather than after the part's position.
+func hoistParts(s *openapi.Schema) {
+	s.AllOf = slices.DeleteFunc(s.AllOf, func(part *openapi.Schema) bool {
+		if part.Ref != nil || part.Type != openapi.TypeObject || len(part.Properties) == 0 ||
+			len(alternatives(part)) > 0 || len(part.AllOf) > 0 || part.AdditionalProperties != nil {
+			return false
+		}
+
+		for prop := range part.Properties {
+			if _, ok := s.Properties[prop]; ok {
+				return false
+			}
+		}
+
+		if s.Properties == nil {
+			s.Properties = openapi.Schemas{}
+		}
+
+		for prop, p := range part.Properties.ByIndex() {
+			s.Properties.Set(prop, p)
+		}
+
+		s.Type, s.Required = openapi.TypeObject, append(s.Required, part.Required...)
+
+		return true
+	})
 }
 
 // spliceUnions lists, instead of each inline alternative in alts that is only a union of the same kind, that union's

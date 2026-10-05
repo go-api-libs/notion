@@ -5368,10 +5368,10 @@ func (e CoverConfigResponseType) Valid() bool {
 // CreateAComment defines a model
 type CreateAComment struct {
 	// An array of files to attach to the comment. Maximum of 3 allowed.
-	Attachments CreateACommentAllOf0Attachments `json:"attachments,omitzero"`
+	Attachments CreateACommentAttachments `json:"attachments,omitzero"`
 	// Display name for the comment.
 	DisplayName          CreateACommentDisplayName `json:"display_name,omitzero"`
-	CreateACommentAllOf1 CreateACommentAllOf1      `json:"-"`
+	CreateACommentAllOf0 CreateACommentAllOf0      `json:"-"`
 }
 
 // fieldsOfCreateAComment is CreateAComment without its methods, to encode the fields outside its union.
@@ -5404,7 +5404,7 @@ var variantsOfCreateAComment = []jsonVariant{
 	},
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of CreateACommentAllOf1 each
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of CreateACommentAllOf0 each
 // decode the members they declare, and a member neither declares is an error.
 func (v *CreateAComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
@@ -5438,40 +5438,40 @@ func (v *CreateAComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 		switch i {
 		case 0:
-			var vv CreateACommentAllOf1OneOf0
+			var vv CreateACommentAllOf0OneOf0
 			if err := json.Unmarshal(variant, &vv, opts); err != nil {
 				return err
 			}
 
-			v.CreateACommentAllOf1.CreateACommentAllOf1OneOf0 = &vv
+			v.CreateACommentAllOf0.CreateACommentAllOf0OneOf0 = &vv
 		case 1:
-			var vv CreateACommentAllOf1OneOf1
+			var vv CreateACommentAllOf0OneOf1
 			if err := json.Unmarshal(variant, &vv, opts); err != nil {
 				return err
 			}
 
-			v.CreateACommentAllOf1.CreateACommentAllOf1OneOf1 = &vv
+			v.CreateACommentAllOf0.CreateACommentAllOf0OneOf1 = &vv
 		case 2:
-			var vv CreateACommentAllOf1OneOf2
+			var vv CreateACommentAllOf0OneOf2
 			if err := json.Unmarshal(variant, &vv, opts); err != nil {
 				return err
 			}
 
-			v.CreateACommentAllOf1.CreateACommentAllOf1OneOf2 = &vv
+			v.CreateACommentAllOf0.CreateACommentAllOf0OneOf2 = &vv
 		case 3:
-			var vv CreateACommentAllOf1OneOf3
+			var vv CreateACommentAllOf0OneOf3
 			if err := json.Unmarshal(variant, &vv, opts); err != nil {
 				return err
 			}
 
-			v.CreateACommentAllOf1.CreateACommentAllOf1OneOf3 = &vv
+			v.CreateACommentAllOf0.CreateACommentAllOf0OneOf3 = &vv
 		}
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of CreateACommentAllOf1 that is set;
+// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of CreateACommentAllOf0 that is set;
 // a member both write must have the same value in each.
 func (v *CreateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 	out, err := json.Marshal((*fieldsOfCreateAComment)(v), jsonOpts)
@@ -5481,9 +5481,9 @@ func (v *CreateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 	var set int
 
-	if v.CreateACommentAllOf1.CreateACommentAllOf1OneOf0 != nil {
+	if v.CreateACommentAllOf0.CreateACommentAllOf0OneOf0 != nil {
 
-		variant, err := json.Marshal(v.CreateACommentAllOf1.CreateACommentAllOf1OneOf0, jsonOpts)
+		variant, err := json.Marshal(v.CreateACommentAllOf0.CreateACommentAllOf0OneOf0, jsonOpts)
 		if err != nil {
 			return err
 		}
@@ -5495,9 +5495,9 @@ func (v *CreateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 		set++
 	}
 
-	if v.CreateACommentAllOf1.CreateACommentAllOf1OneOf1 != nil {
+	if v.CreateACommentAllOf0.CreateACommentAllOf0OneOf1 != nil {
 
-		variant, err := json.Marshal(v.CreateACommentAllOf1.CreateACommentAllOf1OneOf1, jsonOpts)
+		variant, err := json.Marshal(v.CreateACommentAllOf0.CreateACommentAllOf0OneOf1, jsonOpts)
 		if err != nil {
 			return err
 		}
@@ -5509,9 +5509,9 @@ func (v *CreateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 		set++
 	}
 
-	if v.CreateACommentAllOf1.CreateACommentAllOf1OneOf2 != nil {
+	if v.CreateACommentAllOf0.CreateACommentAllOf0OneOf2 != nil {
 
-		variant, err := json.Marshal(v.CreateACommentAllOf1.CreateACommentAllOf1OneOf2, jsonOpts)
+		variant, err := json.Marshal(v.CreateACommentAllOf0.CreateACommentAllOf0OneOf2, jsonOpts)
 		if err != nil {
 			return err
 		}
@@ -5523,9 +5523,9 @@ func (v *CreateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 		set++
 	}
 
-	if v.CreateACommentAllOf1.CreateACommentAllOf1OneOf3 != nil {
+	if v.CreateACommentAllOf0.CreateACommentAllOf0OneOf3 != nil {
 
-		variant, err := json.Marshal(v.CreateACommentAllOf1.CreateACommentAllOf1OneOf3, jsonOpts)
+		variant, err := json.Marshal(v.CreateACommentAllOf0.CreateACommentAllOf0OneOf3, jsonOpts)
 		if err != nil {
 			return err
 		}
@@ -5538,35 +5538,24 @@ func (v *CreateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	if set != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of CreateACommentAllOf1 set, got %d", set)}
+		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of CreateACommentAllOf0 set, got %d", set)}
 	}
 
 	return enc.WriteValue(out)
 }
 
-// An array of files to attach to the comment. Maximum of 3 allowed.
-type CreateACommentAllOf0Attachments []CreateACommentAllOf0AttachmentsItem
-
-// CreateACommentAllOf0AttachmentsItem defines a model
-type CreateACommentAllOf0AttachmentsItem struct {
-	// ID of a FileUpload object that has the status `uploaded`.
-	FileUploadID string `json:"file_upload_id"`
-	// Always `file_upload`
-	Type string `json:"type,omitzero"`
-}
-
-// CreateACommentAllOf1 defines a model
-// CreateACommentAllOf1 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type CreateACommentAllOf1 struct {
-	CreateACommentAllOf1OneOf0 *CreateACommentAllOf1OneOf0
-	CreateACommentAllOf1OneOf1 *CreateACommentAllOf1OneOf1
-	CreateACommentAllOf1OneOf2 *CreateACommentAllOf1OneOf2
-	CreateACommentAllOf1OneOf3 *CreateACommentAllOf1OneOf3
+// CreateACommentAllOf0 defines a model
+// CreateACommentAllOf0 is an untagged oneOf union: exactly one field is set after unmarshaling.
+type CreateACommentAllOf0 struct {
+	CreateACommentAllOf0OneOf0 *CreateACommentAllOf0OneOf0
+	CreateACommentAllOf0OneOf1 *CreateACommentAllOf0OneOf1
+	CreateACommentAllOf0OneOf2 *CreateACommentAllOf0OneOf2
+	CreateACommentAllOf0OneOf3 *CreateACommentAllOf0OneOf3
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *CreateACommentAllOf1) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = CreateACommentAllOf1{}
+func (v *CreateACommentAllOf0) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = CreateACommentAllOf0{}
 
 	opts := jsonOptsOf(dec)
 	strict := jsonStrict(dec)
@@ -5580,36 +5569,36 @@ func (v *CreateACommentAllOf1) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv CreateACommentAllOf1OneOf0
+		var vv CreateACommentAllOf0OneOf0
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CreateACommentAllOf1OneOf0 = &vv
+			v.CreateACommentAllOf0OneOf0 = &vv
 			matched++
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv CreateACommentAllOf1OneOf1
+		var vv CreateACommentAllOf0OneOf1
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CreateACommentAllOf1OneOf1 = &vv
+			v.CreateACommentAllOf0OneOf1 = &vv
 			matched++
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv CreateACommentAllOf1OneOf2
+		var vv CreateACommentAllOf0OneOf2
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CreateACommentAllOf1OneOf2 = &vv
+			v.CreateACommentAllOf0OneOf2 = &vv
 			matched++
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv CreateACommentAllOf1OneOf3
+		var vv CreateACommentAllOf0OneOf3
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CreateACommentAllOf1OneOf3 = &vv
+			v.CreateACommentAllOf0OneOf3 = &vv
 			matched++
 		}
 	}
@@ -5622,47 +5611,47 @@ func (v *CreateACommentAllOf1) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *CreateACommentAllOf1) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *CreateACommentAllOf0) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.CreateACommentAllOf1OneOf0 != nil:
-		return json.MarshalEncode(enc, v.CreateACommentAllOf1OneOf0, jsonOpts)
-	case v.CreateACommentAllOf1OneOf1 != nil:
-		return json.MarshalEncode(enc, v.CreateACommentAllOf1OneOf1, jsonOpts)
-	case v.CreateACommentAllOf1OneOf2 != nil:
-		return json.MarshalEncode(enc, v.CreateACommentAllOf1OneOf2, jsonOpts)
-	case v.CreateACommentAllOf1OneOf3 != nil:
-		return json.MarshalEncode(enc, v.CreateACommentAllOf1OneOf3, jsonOpts)
+	case v.CreateACommentAllOf0OneOf0 != nil:
+		return json.MarshalEncode(enc, v.CreateACommentAllOf0OneOf0, jsonOpts)
+	case v.CreateACommentAllOf0OneOf1 != nil:
+		return json.MarshalEncode(enc, v.CreateACommentAllOf0OneOf1, jsonOpts)
+	case v.CreateACommentAllOf0OneOf2 != nil:
+		return json.MarshalEncode(enc, v.CreateACommentAllOf0OneOf2, jsonOpts)
+	case v.CreateACommentAllOf0OneOf3 != nil:
+		return json.MarshalEncode(enc, v.CreateACommentAllOf0OneOf3, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// CreateACommentAllOf1OneOf0 defines a model
-type CreateACommentAllOf1OneOf0 struct {
+// CreateACommentAllOf0OneOf0 defines a model
+type CreateACommentAllOf0OneOf0 struct {
 	// The parent of the comment. This can be a page or a block.
 	Parent CreateACommentAllOfOneOfParent `json:"parent"`
 	// An array of rich text objects that represent the content of the comment.
 	RichText []RichTextItemRequest `json:"rich_text"`
 }
 
-// CreateACommentAllOf1OneOf1 defines a model
-type CreateACommentAllOf1OneOf1 struct {
+// CreateACommentAllOf0OneOf1 defines a model
+type CreateACommentAllOf0OneOf1 struct {
 	// The parent of the comment. This can be a page or a block.
 	Parent CreateACommentAllOfOneOfParent `json:"parent"`
 	// The content of the comment as a Markdown string. Comment Markdown supports inline formatting only (bold, italic, strikethrough, code, links), inline equations ($expression$), and mentions. Block-level Markdown such as fenced code blocks, headings, lists, tables, and blockquotes does not render as structured blocks in comments.
 	Markdown string `json:"markdown"`
 }
 
-// CreateACommentAllOf1OneOf2 defines a model
-type CreateACommentAllOf1OneOf2 struct {
+// CreateACommentAllOf0OneOf2 defines a model
+type CreateACommentAllOf0OneOf2 struct {
 	// The ID of the discussion to comment on.
 	DiscussionID IDRequest `json:"discussion_id"`
 	// An array of rich text objects that represent the content of the comment.
 	RichText []RichTextItemRequest `json:"rich_text"`
 }
 
-// CreateACommentAllOf1OneOf3 defines a model
-type CreateACommentAllOf1OneOf3 struct {
+// CreateACommentAllOf0OneOf3 defines a model
+type CreateACommentAllOf0OneOf3 struct {
 	// The ID of the discussion to comment on.
 	DiscussionID IDRequest `json:"discussion_id"`
 	// The content of the comment as a Markdown string. Comment Markdown supports inline formatting only (bold, italic, strikethrough, code, links), inline equations ($expression$), and mentions. Block-level Markdown such as fenced code blocks, headings, lists, tables, and blockquotes does not render as structured blocks in comments.
@@ -5741,10 +5730,21 @@ func (v *CreateACommentAllOfOneOfParent) MarshalJSONTo(enc *jsontext.Encoder) er
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
 }
 
+// An array of files to attach to the comment. Maximum of 3 allowed.
+type CreateACommentAttachments []CreateACommentAttachmentsItem
+
+// CreateACommentAttachmentsItem defines a model
+type CreateACommentAttachmentsItem struct {
+	// ID of a FileUpload object that has the status `uploaded`.
+	FileUploadID string `json:"file_upload_id"`
+	// Always `file_upload`
+	Type string `json:"type,omitzero"`
+}
+
 // Display name for the comment.
 type CreateACommentDisplayName struct {
-	Type   CreateACommentDisplayNameType `json:"type"`
-	Custom *CustomCustom                 `json:"custom,omitzero"`
+	Type   CreateACommentDisplayNameType          `json:"type"`
+	Custom *CreateACommentDisplayNameCustomCustom `json:"custom,omitzero"`
 }
 
 // CreateACommentDisplayNameType is a value of CreateACommentDisplayName's type, naming the members it holds.
@@ -5807,6 +5807,12 @@ func (v *CreateACommentDisplayName) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+}
+
+// CreateACommentDisplayNameCustomCustom defines a model
+type CreateACommentDisplayNameCustomCustom struct {
+	// The custom display name to use
+	Name string `json:"name"`
 }
 
 // CreateADatabase defines a model
@@ -6155,9 +6161,9 @@ type CreateDatabaseForViewRequestPosition struct {
 // CreateDatabaseParent defines a model
 type CreateDatabaseParent struct {
 	// The type of parent.
-	Type      CreateDatabaseParentAllOfType `json:"type"`
-	PageID    IDRequest                     `json:"page_id,omitzero"`
-	Workspace *bool                         `json:"workspace,omitzero"`
+	Type      CreateDatabaseParentType `json:"type"`
+	PageID    IDRequest                `json:"page_id,omitzero"`
+	Workspace *bool                    `json:"workspace,omitzero"`
 }
 
 // tagsOfCreateDatabaseParent holds, for each value of type, the members of its alternative's own, each with whether it is required.
@@ -6199,7 +6205,7 @@ func (v *CreateDatabaseParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 	out, set := *v, v.taggedMembers()
 	if tag, ok := jsonInferTag(tagsOfCreateDatabaseParent, set); ok && out.Type == "" {
-		out.Type = CreateDatabaseParentAllOfType(tag)
+		out.Type = CreateDatabaseParentType(tag)
 	}
 
 	if err := jsonCheckTag("type", string(out.Type), tagsOfCreateDatabaseParent, set, true); err != nil {
@@ -6217,17 +6223,17 @@ type CreateDatabaseParentAllOfPageID struct {
 }
 
 // The type of parent.
-type CreateDatabaseParentAllOfType string
+type CreateDatabaseParentType string
 
 const (
-	CreateDatabaseParentAllOfTypePageID    CreateDatabaseParentAllOfType = "page_id"
-	CreateDatabaseParentAllOfTypeWorkspace CreateDatabaseParentAllOfType = "workspace"
+	CreateDatabaseParentTypePageID    CreateDatabaseParentType = "page_id"
+	CreateDatabaseParentTypeWorkspace CreateDatabaseParentType = "workspace"
 )
 
-// Valid indicates whether the value is a known member of the CreateDatabaseParentAllOfType enum.
-func (e CreateDatabaseParentAllOfType) Valid() bool {
+// Valid indicates whether the value is a known member of the CreateDatabaseParentType enum.
+func (e CreateDatabaseParentType) Valid() bool {
 	switch e {
-	case CreateDatabaseParentAllOfTypePageID, CreateDatabaseParentAllOfTypeWorkspace:
+	case CreateDatabaseParentTypePageID, CreateDatabaseParentTypeWorkspace:
 		return true
 	default:
 		return false
@@ -6272,10 +6278,10 @@ type CreateMeetingNote struct {
 	// Title for the meeting note.
 	Title string `json:"title,omitzero"`
 	// Language hint for transcription. Defaults to automatic detection.
-	Language CreateMeetingNoteAllOf0Language `json:"language,omitzero"`
+	Language CreateMeetingNoteLanguage `json:"language,omitzero"`
 	// Optional processing settings.
 	Options                 *CreateMeetingNoteOptions `json:"options,omitzero"`
-	CreateMeetingNoteAllOf1 CreateMeetingNoteAllOf1   `json:"-"`
+	CreateMeetingNoteAllOf0 CreateMeetingNoteAllOf0   `json:"-"`
 }
 
 // fieldsOfCreateMeetingNote is CreateMeetingNote without its methods, to encode the fields outside its union.
@@ -6298,7 +6304,7 @@ var variantsOfCreateMeetingNote = []jsonVariant{
 	},
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of CreateMeetingNoteAllOf1 each
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of CreateMeetingNoteAllOf0 each
 // decode the members they declare, and a member neither declares is an error.
 func (v *CreateMeetingNote) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
@@ -6332,26 +6338,26 @@ func (v *CreateMeetingNote) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 		switch i {
 		case 0:
-			var vv CreateMeetingNoteAllOf1OneOf0
+			var vv CreateMeetingNoteAllOf0OneOf0
 			if err := json.Unmarshal(variant, &vv, opts); err != nil {
 				return err
 			}
 
-			v.CreateMeetingNoteAllOf1.CreateMeetingNoteAllOf1OneOf0 = &vv
+			v.CreateMeetingNoteAllOf0.CreateMeetingNoteAllOf0OneOf0 = &vv
 		case 1:
-			var vv CreateMeetingNoteAllOf1Source
+			var vv CreateMeetingNoteAllOf0Source
 			if err := json.Unmarshal(variant, &vv, opts); err != nil {
 				return err
 			}
 
-			v.CreateMeetingNoteAllOf1.CreateMeetingNoteAllOf1Source = &vv
+			v.CreateMeetingNoteAllOf0.CreateMeetingNoteAllOf0Source = &vv
 		}
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of CreateMeetingNoteAllOf1 that is set;
+// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of CreateMeetingNoteAllOf0 that is set;
 // a member both write must have the same value in each.
 func (v *CreateMeetingNote) MarshalJSONTo(enc *jsontext.Encoder) error {
 	out, err := json.Marshal((*fieldsOfCreateMeetingNote)(v), jsonOpts)
@@ -6361,9 +6367,9 @@ func (v *CreateMeetingNote) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 	var set int
 
-	if v.CreateMeetingNoteAllOf1.CreateMeetingNoteAllOf1OneOf0 != nil {
+	if v.CreateMeetingNoteAllOf0.CreateMeetingNoteAllOf0OneOf0 != nil {
 
-		variant, err := json.Marshal(v.CreateMeetingNoteAllOf1.CreateMeetingNoteAllOf1OneOf0, jsonOpts)
+		variant, err := json.Marshal(v.CreateMeetingNoteAllOf0.CreateMeetingNoteAllOf0OneOf0, jsonOpts)
 		if err != nil {
 			return err
 		}
@@ -6375,9 +6381,9 @@ func (v *CreateMeetingNote) MarshalJSONTo(enc *jsontext.Encoder) error {
 		set++
 	}
 
-	if v.CreateMeetingNoteAllOf1.CreateMeetingNoteAllOf1Source != nil {
+	if v.CreateMeetingNoteAllOf0.CreateMeetingNoteAllOf0Source != nil {
 
-		variant, err := json.Marshal(v.CreateMeetingNoteAllOf1.CreateMeetingNoteAllOf1Source, jsonOpts)
+		variant, err := json.Marshal(v.CreateMeetingNoteAllOf0.CreateMeetingNoteAllOf0Source, jsonOpts)
 		if err != nil {
 			return err
 		}
@@ -6390,61 +6396,22 @@ func (v *CreateMeetingNote) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	if set != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of CreateMeetingNoteAllOf1 set, got %d", set)}
+		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of CreateMeetingNoteAllOf0 set, got %d", set)}
 	}
 
 	return enc.WriteValue(out)
 }
 
-// Language hint for transcription. Defaults to automatic detection.
-type CreateMeetingNoteAllOf0Language string
-
-const (
-	CreateMeetingNoteAllOf0LanguageAuto CreateMeetingNoteAllOf0Language = "auto"
-	CreateMeetingNoteAllOf0LanguageEn   CreateMeetingNoteAllOf0Language = "en"
-	CreateMeetingNoteAllOf0LanguageZhCn CreateMeetingNoteAllOf0Language = "zh-CN"
-	CreateMeetingNoteAllOf0LanguageZhTw CreateMeetingNoteAllOf0Language = "zh-TW"
-	CreateMeetingNoteAllOf0LanguageEs   CreateMeetingNoteAllOf0Language = "es"
-	CreateMeetingNoteAllOf0LanguageFr   CreateMeetingNoteAllOf0Language = "fr"
-	CreateMeetingNoteAllOf0LanguageDe   CreateMeetingNoteAllOf0Language = "de"
-	CreateMeetingNoteAllOf0LanguageJa   CreateMeetingNoteAllOf0Language = "ja"
-	CreateMeetingNoteAllOf0LanguageKo   CreateMeetingNoteAllOf0Language = "ko"
-	CreateMeetingNoteAllOf0LanguagePt   CreateMeetingNoteAllOf0Language = "pt"
-	CreateMeetingNoteAllOf0LanguageRu   CreateMeetingNoteAllOf0Language = "ru"
-	CreateMeetingNoteAllOf0LanguageTh   CreateMeetingNoteAllOf0Language = "th"
-	CreateMeetingNoteAllOf0LanguageVi   CreateMeetingNoteAllOf0Language = "vi"
-	CreateMeetingNoteAllOf0LanguageID   CreateMeetingNoteAllOf0Language = "id"
-	CreateMeetingNoteAllOf0LanguageDa   CreateMeetingNoteAllOf0Language = "da"
-	CreateMeetingNoteAllOf0LanguageFi   CreateMeetingNoteAllOf0Language = "fi"
-	CreateMeetingNoteAllOf0LanguageNo   CreateMeetingNoteAllOf0Language = "no"
-	CreateMeetingNoteAllOf0LanguageNl   CreateMeetingNoteAllOf0Language = "nl"
-	CreateMeetingNoteAllOf0LanguageIt   CreateMeetingNoteAllOf0Language = "it"
-	CreateMeetingNoteAllOf0LanguageSv   CreateMeetingNoteAllOf0Language = "sv"
-	CreateMeetingNoteAllOf0LanguageAr   CreateMeetingNoteAllOf0Language = "ar"
-	CreateMeetingNoteAllOf0LanguageHe   CreateMeetingNoteAllOf0Language = "he"
-	CreateMeetingNoteAllOf0LanguagePl   CreateMeetingNoteAllOf0Language = "pl"
-)
-
-// Valid indicates whether the value is a known member of the CreateMeetingNoteAllOf0Language enum.
-func (e CreateMeetingNoteAllOf0Language) Valid() bool {
-	switch e {
-	case CreateMeetingNoteAllOf0LanguageAuto, CreateMeetingNoteAllOf0LanguageEn, CreateMeetingNoteAllOf0LanguageZhCn, CreateMeetingNoteAllOf0LanguageZhTw, CreateMeetingNoteAllOf0LanguageEs, CreateMeetingNoteAllOf0LanguageFr, CreateMeetingNoteAllOf0LanguageDe, CreateMeetingNoteAllOf0LanguageJa, CreateMeetingNoteAllOf0LanguageKo, CreateMeetingNoteAllOf0LanguagePt, CreateMeetingNoteAllOf0LanguageRu, CreateMeetingNoteAllOf0LanguageTh, CreateMeetingNoteAllOf0LanguageVi, CreateMeetingNoteAllOf0LanguageID, CreateMeetingNoteAllOf0LanguageDa, CreateMeetingNoteAllOf0LanguageFi, CreateMeetingNoteAllOf0LanguageNo, CreateMeetingNoteAllOf0LanguageNl, CreateMeetingNoteAllOf0LanguageIt, CreateMeetingNoteAllOf0LanguageSv, CreateMeetingNoteAllOf0LanguageAr, CreateMeetingNoteAllOf0LanguageHe, CreateMeetingNoteAllOf0LanguagePl:
-		return true
-	default:
-		return false
-	}
-}
-
-// CreateMeetingNoteAllOf1 defines a model
-// CreateMeetingNoteAllOf1 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type CreateMeetingNoteAllOf1 struct {
-	CreateMeetingNoteAllOf1OneOf0 *CreateMeetingNoteAllOf1OneOf0
-	CreateMeetingNoteAllOf1Source *CreateMeetingNoteAllOf1Source
+// CreateMeetingNoteAllOf0 defines a model
+// CreateMeetingNoteAllOf0 is an untagged oneOf union: exactly one field is set after unmarshaling.
+type CreateMeetingNoteAllOf0 struct {
+	CreateMeetingNoteAllOf0OneOf0 *CreateMeetingNoteAllOf0OneOf0
+	CreateMeetingNoteAllOf0Source *CreateMeetingNoteAllOf0Source
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *CreateMeetingNoteAllOf1) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = CreateMeetingNoteAllOf1{}
+func (v *CreateMeetingNoteAllOf0) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = CreateMeetingNoteAllOf0{}
 
 	opts := jsonOptsOf(dec)
 	strict := jsonStrict(dec)
@@ -6458,18 +6425,18 @@ func (v *CreateMeetingNoteAllOf1) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv CreateMeetingNoteAllOf1OneOf0
+		var vv CreateMeetingNoteAllOf0OneOf0
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CreateMeetingNoteAllOf1OneOf0 = &vv
+			v.CreateMeetingNoteAllOf0OneOf0 = &vv
 			matched++
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv CreateMeetingNoteAllOf1Source
+		var vv CreateMeetingNoteAllOf0Source
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CreateMeetingNoteAllOf1Source = &vv
+			v.CreateMeetingNoteAllOf0Source = &vv
 			matched++
 		}
 	}
@@ -6482,27 +6449,27 @@ func (v *CreateMeetingNoteAllOf1) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *CreateMeetingNoteAllOf1) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *CreateMeetingNoteAllOf0) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.CreateMeetingNoteAllOf1OneOf0 != nil:
-		return json.MarshalEncode(enc, v.CreateMeetingNoteAllOf1OneOf0, jsonOpts)
-	case v.CreateMeetingNoteAllOf1Source != nil:
-		return json.MarshalEncode(enc, v.CreateMeetingNoteAllOf1Source, jsonOpts)
+	case v.CreateMeetingNoteAllOf0OneOf0 != nil:
+		return json.MarshalEncode(enc, v.CreateMeetingNoteAllOf0OneOf0, jsonOpts)
+	case v.CreateMeetingNoteAllOf0Source != nil:
+		return json.MarshalEncode(enc, v.CreateMeetingNoteAllOf0Source, jsonOpts)
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// CreateMeetingNoteAllOf1OneOf0 defines a model
-type CreateMeetingNoteAllOf1OneOf0 struct {
+// CreateMeetingNoteAllOf0OneOf0 defines a model
+type CreateMeetingNoteAllOf0OneOf0 struct {
 	// Audio or video source for the meeting note.
-	Source CreateMeetingNoteAllOf1OneOf0Source `json:"source"`
+	Source CreateMeetingNoteAllOf0OneOf0Source `json:"source"`
 	// Parent page for the new meeting note.
-	Parent CreateMeetingNoteAllOf1OneOf0Parent `json:"parent"`
+	Parent CreateMeetingNoteAllOf0OneOf0Parent `json:"parent"`
 }
 
 // Parent page for the new meeting note.
-type CreateMeetingNoteAllOf1OneOf0Parent struct {
+type CreateMeetingNoteAllOf0OneOf0Parent struct {
 	// Always "page_id".
 	Type string `json:"type"`
 	// Page ID where the meeting note should be created. Required for file_upload sources.
@@ -6510,27 +6477,66 @@ type CreateMeetingNoteAllOf1OneOf0Parent struct {
 }
 
 // Audio or video source for the meeting note.
-type CreateMeetingNoteAllOf1OneOf0Source struct {
+type CreateMeetingNoteAllOf0OneOf0Source struct {
 	// Always "file_upload".
 	Type string `json:"type"`
 	// ID of a completed public API file upload.
 	FileUploadID IDRequest `json:"file_upload_id"`
 }
 
-// CreateMeetingNoteAllOf1Source defines a model
-type CreateMeetingNoteAllOf1Source struct {
+// CreateMeetingNoteAllOf0Source defines a model
+type CreateMeetingNoteAllOf0Source struct {
 	// Audio or video source for the meeting note.
-	Source CreateMeetingNoteAllOf1SourceSource `json:"source"`
+	Source CreateMeetingNoteAllOf0SourceSource `json:"source"`
 	// Not accepted for block sources.
 	Parent any `json:"parent,omitzero"`
 }
 
 // Audio or video source for the meeting note.
-type CreateMeetingNoteAllOf1SourceSource struct {
+type CreateMeetingNoteAllOf0SourceSource struct {
 	// Always "block".
 	Type string `json:"type"`
 	// ID of an existing audio, video, or file block.
 	BlockID IDRequest `json:"block_id"`
+}
+
+// Language hint for transcription. Defaults to automatic detection.
+type CreateMeetingNoteLanguage string
+
+const (
+	CreateMeetingNoteLanguageAuto CreateMeetingNoteLanguage = "auto"
+	CreateMeetingNoteLanguageEn   CreateMeetingNoteLanguage = "en"
+	CreateMeetingNoteLanguageZhCn CreateMeetingNoteLanguage = "zh-CN"
+	CreateMeetingNoteLanguageZhTw CreateMeetingNoteLanguage = "zh-TW"
+	CreateMeetingNoteLanguageEs   CreateMeetingNoteLanguage = "es"
+	CreateMeetingNoteLanguageFr   CreateMeetingNoteLanguage = "fr"
+	CreateMeetingNoteLanguageDe   CreateMeetingNoteLanguage = "de"
+	CreateMeetingNoteLanguageJa   CreateMeetingNoteLanguage = "ja"
+	CreateMeetingNoteLanguageKo   CreateMeetingNoteLanguage = "ko"
+	CreateMeetingNoteLanguagePt   CreateMeetingNoteLanguage = "pt"
+	CreateMeetingNoteLanguageRu   CreateMeetingNoteLanguage = "ru"
+	CreateMeetingNoteLanguageTh   CreateMeetingNoteLanguage = "th"
+	CreateMeetingNoteLanguageVi   CreateMeetingNoteLanguage = "vi"
+	CreateMeetingNoteLanguageID   CreateMeetingNoteLanguage = "id"
+	CreateMeetingNoteLanguageDa   CreateMeetingNoteLanguage = "da"
+	CreateMeetingNoteLanguageFi   CreateMeetingNoteLanguage = "fi"
+	CreateMeetingNoteLanguageNo   CreateMeetingNoteLanguage = "no"
+	CreateMeetingNoteLanguageNl   CreateMeetingNoteLanguage = "nl"
+	CreateMeetingNoteLanguageIt   CreateMeetingNoteLanguage = "it"
+	CreateMeetingNoteLanguageSv   CreateMeetingNoteLanguage = "sv"
+	CreateMeetingNoteLanguageAr   CreateMeetingNoteLanguage = "ar"
+	CreateMeetingNoteLanguageHe   CreateMeetingNoteLanguage = "he"
+	CreateMeetingNoteLanguagePl   CreateMeetingNoteLanguage = "pl"
+)
+
+// Valid indicates whether the value is a known member of the CreateMeetingNoteLanguage enum.
+func (e CreateMeetingNoteLanguage) Valid() bool {
+	switch e {
+	case CreateMeetingNoteLanguageAuto, CreateMeetingNoteLanguageEn, CreateMeetingNoteLanguageZhCn, CreateMeetingNoteLanguageZhTw, CreateMeetingNoteLanguageEs, CreateMeetingNoteLanguageFr, CreateMeetingNoteLanguageDe, CreateMeetingNoteLanguageJa, CreateMeetingNoteLanguageKo, CreateMeetingNoteLanguagePt, CreateMeetingNoteLanguageRu, CreateMeetingNoteLanguageTh, CreateMeetingNoteLanguageVi, CreateMeetingNoteLanguageID, CreateMeetingNoteLanguageDa, CreateMeetingNoteLanguageFi, CreateMeetingNoteLanguageNo, CreateMeetingNoteLanguageNl, CreateMeetingNoteLanguageIt, CreateMeetingNoteLanguageSv, CreateMeetingNoteLanguageAr, CreateMeetingNoteLanguageHe, CreateMeetingNoteLanguagePl:
+		return true
+	default:
+		return false
+	}
 }
 
 // CreateMeetingNoteMeetingNotes defines a model
@@ -6675,12 +6681,6 @@ type CreatedTimePropertyConfiguration struct {
 	// Always `created_time`
 	Type        string      `json:"type,omitzero"`
 	CreatedTime EmptyObject `json:"created_time"`
-}
-
-// CustomCustom defines a model
-type CustomCustom struct {
-	// The custom display name to use
-	Name string `json:"name"`
 }
 
 // CustomEmojiList defines a model
@@ -7841,9 +7841,9 @@ type Error struct {
 	Object         string                                             `json:"object"`
 	Message        string                                             `json:"message"`
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
-	Code           ErrorCode                                          `json:"code"`
-	Status         int                                                `json:"status"`
 	ErrorAllOf
+	Code   ErrorCode `json:"code"`
+	Status int       `json:"status"`
 }
 
 // ErrorAllOf defines a model
@@ -20239,8 +20239,8 @@ type RollupPropertyConfiguration struct {
 // RollupPropertyConfigurationRollup defines a model
 type RollupPropertyConfigurationRollup struct {
 	// The function to use for the rollup, e.g. count, count_values, percent_not_empty, max.
-	Function                                RollupFunction                          `json:"function"`
-	RollupPropertyConfigurationRollupAllOf2 RollupPropertyConfigurationRollupAllOf2 `json:"-"`
+	Function                               RollupFunction                         `json:"function"`
+	RollupPropertyConfigurationRollupAllOf RollupPropertyConfigurationRollupAllOf `json:"-"`
 }
 
 // fieldsOfRollupPropertyConfigurationRollup is RollupPropertyConfigurationRollup without its methods, to encode the fields outside its union.
@@ -20273,7 +20273,7 @@ var variantsOfRollupPropertyConfigurationRollup = []jsonVariant{
 	},
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of RollupPropertyConfigurationRollupAllOf2 each
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of RollupPropertyConfigurationRollupAllOf each
 // decode the members they declare, and a member neither declares is an error.
 func (v *RollupPropertyConfigurationRollup) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
@@ -20312,35 +20312,35 @@ func (v *RollupPropertyConfigurationRollup) UnmarshalJSONFrom(dec *jsontext.Deco
 				return err
 			}
 
-			v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf = &vv
+			v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf = &vv
 		case 1:
 			var vv RollupPropertyConfigurationRollupAllOfOneOf2
 			if err := json.Unmarshal(variant, &vv, opts); err != nil {
 				return err
 			}
 
-			v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf2 = &vv
+			v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf2 = &vv
 		case 2:
 			var vv RollupPropertyConfigurationRollupAllOfOneOf3
 			if err := json.Unmarshal(variant, &vv, opts); err != nil {
 				return err
 			}
 
-			v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf3 = &vv
+			v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf3 = &vv
 		case 3:
 			var vv RollupPropertyConfigurationRollupAllOfOneOf4
 			if err := json.Unmarshal(variant, &vv, opts); err != nil {
 				return err
 			}
 
-			v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf4 = &vv
+			v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf4 = &vv
 		}
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of RollupPropertyConfigurationRollupAllOf2 that is set;
+// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of RollupPropertyConfigurationRollupAllOf that is set;
 // a member both write must have the same value in each.
 func (v *RollupPropertyConfigurationRollup) MarshalJSONTo(enc *jsontext.Encoder) error {
 	out, err := json.Marshal((*fieldsOfRollupPropertyConfigurationRollup)(v), jsonOpts)
@@ -20350,9 +20350,9 @@ func (v *RollupPropertyConfigurationRollup) MarshalJSONTo(enc *jsontext.Encoder)
 
 	var set int
 
-	if v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf != nil {
+	if v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf != nil {
 
-		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf, jsonOpts)
+		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf, jsonOpts)
 		if err != nil {
 			return err
 		}
@@ -20364,9 +20364,9 @@ func (v *RollupPropertyConfigurationRollup) MarshalJSONTo(enc *jsontext.Encoder)
 		set++
 	}
 
-	if v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf2 != nil {
+	if v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf2 != nil {
 
-		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf2, jsonOpts)
+		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf2, jsonOpts)
 		if err != nil {
 			return err
 		}
@@ -20378,9 +20378,9 @@ func (v *RollupPropertyConfigurationRollup) MarshalJSONTo(enc *jsontext.Encoder)
 		set++
 	}
 
-	if v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf3 != nil {
+	if v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf3 != nil {
 
-		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf3, jsonOpts)
+		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf3, jsonOpts)
 		if err != nil {
 			return err
 		}
@@ -20392,9 +20392,9 @@ func (v *RollupPropertyConfigurationRollup) MarshalJSONTo(enc *jsontext.Encoder)
 		set++
 	}
 
-	if v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf4 != nil {
+	if v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf4 != nil {
 
-		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf2.RollupPropertyConfigurationRollupAllOfOneOf4, jsonOpts)
+		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf4, jsonOpts)
 		if err != nil {
 			return err
 		}
@@ -20407,15 +20407,15 @@ func (v *RollupPropertyConfigurationRollup) MarshalJSONTo(enc *jsontext.Encoder)
 	}
 
 	if set != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of RollupPropertyConfigurationRollupAllOf2 set, got %d", set)}
+		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of RollupPropertyConfigurationRollupAllOf set, got %d", set)}
 	}
 
 	return enc.WriteValue(out)
 }
 
-// RollupPropertyConfigurationRollupAllOf2 defines a model
-// RollupPropertyConfigurationRollupAllOf2 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type RollupPropertyConfigurationRollupAllOf2 struct {
+// RollupPropertyConfigurationRollupAllOf defines a model
+// RollupPropertyConfigurationRollupAllOf is an untagged oneOf union: exactly one field is set after unmarshaling.
+type RollupPropertyConfigurationRollupAllOf struct {
 	RollupPropertyConfigurationRollupAllOfOneOf  *RollupPropertyConfigurationRollupAllOfOneOf
 	RollupPropertyConfigurationRollupAllOfOneOf2 *RollupPropertyConfigurationRollupAllOfOneOf2
 	RollupPropertyConfigurationRollupAllOfOneOf3 *RollupPropertyConfigurationRollupAllOfOneOf3
@@ -20423,8 +20423,8 @@ type RollupPropertyConfigurationRollupAllOf2 struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *RollupPropertyConfigurationRollupAllOf2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = RollupPropertyConfigurationRollupAllOf2{}
+func (v *RollupPropertyConfigurationRollupAllOf) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = RollupPropertyConfigurationRollupAllOf{}
 
 	opts := jsonOptsOf(dec)
 	strict := jsonStrict(dec)
@@ -20480,7 +20480,7 @@ func (v *RollupPropertyConfigurationRollupAllOf2) UnmarshalJSONFrom(dec *jsontex
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *RollupPropertyConfigurationRollupAllOf2) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *RollupPropertyConfigurationRollupAllOf) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.RollupPropertyConfigurationRollupAllOfOneOf != nil:
 		return json.MarshalEncode(enc, v.RollupPropertyConfigurationRollupAllOfOneOf, jsonOpts)
@@ -24351,8 +24351,11 @@ func (v *UpdateADataSourcePropertiesValueOneOf0) MarshalJSONTo(enc *jsontext.Enc
 
 // UpdateADataSourcePropertiesValueOneOfAllOfSelect defines a model
 type UpdateADataSourcePropertiesValueOneOfAllOfSelect struct {
-	Options []UpdateADataSourcePropertiesValueOneOfAllOfSelectItem `json:"options,omitzero"`
+	Options UpdateADataSourcePropertiesValueOneOfAllOfSelect2 `json:"options,omitzero"`
 }
+
+// UpdateADataSourcePropertiesValueOneOfAllOfSelect2 defines a model
+type UpdateADataSourcePropertiesValueOneOfAllOfSelect2 []UpdateADataSourcePropertiesValueOneOfAllOfSelectItem
 
 // UpdateADataSourcePropertiesValueOneOfAllOfSelectItem defines a model
 type UpdateADataSourcePropertiesValueOneOfAllOfSelectItem struct {
@@ -24583,13 +24586,13 @@ type UpdatePageMarkdown struct {
 	AllowAsync *bool                  `json:"allow_async,omitzero"`
 	Type       UpdatePageMarkdownType `json:"type"`
 	// Insert new content into the page.
-	InsertContent *UpdatePageMarkdownAllOf1InsertContentInsertContent `json:"insert_content,omitzero"`
+	InsertContent *UpdatePageMarkdownAllOf0InsertContentInsertContent `json:"insert_content,omitzero"`
 	// Replace a range of content in the page.
-	ReplaceContentRange *UpdatePageMarkdownAllOf1ReplaceContentRangeReplaceContentRange `json:"replace_content_range,omitzero"`
+	ReplaceContentRange *UpdatePageMarkdownAllOf0ReplaceContentRangeReplaceContentRange `json:"replace_content_range,omitzero"`
 	// Update specific content using search-and-replace operations.
-	UpdateContent *UpdatePageMarkdownAllOf1UpdateContentUpdateContent `json:"update_content,omitzero"`
+	UpdateContent *UpdatePageMarkdownAllOf0UpdateContentUpdateContent `json:"update_content,omitzero"`
 	// Replace the entire page content with new markdown.
-	ReplaceContent *UpdatePageMarkdownAllOf1ReplaceContentReplaceContent `json:"replace_content,omitzero"`
+	ReplaceContent *UpdatePageMarkdownAllOf0ReplaceContentReplaceContent `json:"replace_content,omitzero"`
 }
 
 // UpdatePageMarkdownType is a value of UpdatePageMarkdown's type, naming the members it holds.
@@ -24865,42 +24868,42 @@ func (e UpdatePageMarkdownAcceptedOperationOneOf1Surface) Valid() bool {
 }
 
 // Insert new content into the page.
-type UpdatePageMarkdownAllOf1InsertContentInsertContent struct {
+type UpdatePageMarkdownAllOf0InsertContentInsertContent struct {
 	// The enhanced markdown content to insert into the page.
 	Content string `json:"content"`
 	// Selection of existing content to insert after, using the ellipsis format ("start text...end text"). Omit to append at the end of the page.
 	After string `json:"after,omitzero"`
 	// Explicit position for inserted content. Use {"type":"start"} to prepend or {"type":"end"} to append. Cannot be combined with after.
-	Position UpdatePageMarkdownAllOf1InsertContentInsertContentPosition `json:"position,omitzero"`
+	Position UpdatePageMarkdownAllOf0InsertContentInsertContentPosition `json:"position,omitzero"`
 }
 
 // Explicit position for inserted content. Use {"type":"start"} to prepend or {"type":"end"} to append. Cannot be combined with after.
-type UpdatePageMarkdownAllOf1InsertContentInsertContentPosition struct {
-	Type UpdatePageMarkdownAllOf1InsertContentInsertContentPositionType `json:"type"`
+type UpdatePageMarkdownAllOf0InsertContentInsertContentPosition struct {
+	Type UpdatePageMarkdownAllOf0InsertContentInsertContentPositionType `json:"type"`
 }
 
-// UpdatePageMarkdownAllOf1InsertContentInsertContentPositionType is a value of UpdatePageMarkdownAllOf1InsertContentInsertContentPosition's type, naming the members it holds.
-type UpdatePageMarkdownAllOf1InsertContentInsertContentPositionType string
+// UpdatePageMarkdownAllOf0InsertContentInsertContentPositionType is a value of UpdatePageMarkdownAllOf0InsertContentInsertContentPosition's type, naming the members it holds.
+type UpdatePageMarkdownAllOf0InsertContentInsertContentPositionType string
 
 const (
-	UpdatePageMarkdownAllOf1InsertContentInsertContentPositionTypeStart UpdatePageMarkdownAllOf1InsertContentInsertContentPositionType = "start"
-	UpdatePageMarkdownAllOf1InsertContentInsertContentPositionTypeEnd   UpdatePageMarkdownAllOf1InsertContentInsertContentPositionType = "end"
+	UpdatePageMarkdownAllOf0InsertContentInsertContentPositionTypeStart UpdatePageMarkdownAllOf0InsertContentInsertContentPositionType = "start"
+	UpdatePageMarkdownAllOf0InsertContentInsertContentPositionTypeEnd   UpdatePageMarkdownAllOf0InsertContentInsertContentPositionType = "end"
 )
 
-// Valid indicates whether the value is a known member of the UpdatePageMarkdownAllOf1InsertContentInsertContentPositionType enum.
-func (e UpdatePageMarkdownAllOf1InsertContentInsertContentPositionType) Valid() bool {
-	_, ok := tagsOfUpdatePageMarkdownAllOf1InsertContentInsertContentPosition[string(e)]
+// Valid indicates whether the value is a known member of the UpdatePageMarkdownAllOf0InsertContentInsertContentPositionType enum.
+func (e UpdatePageMarkdownAllOf0InsertContentInsertContentPositionType) Valid() bool {
+	_, ok := tagsOfUpdatePageMarkdownAllOf0InsertContentInsertContentPosition[string(e)]
 	return ok
 }
 
-// tagsOfUpdatePageMarkdownAllOf1InsertContentInsertContentPosition holds, for each value of type, the members of its alternative's own, each with whether it is required.
-var tagsOfUpdatePageMarkdownAllOf1InsertContentInsertContentPosition = map[string]map[string]bool{
+// tagsOfUpdatePageMarkdownAllOf0InsertContentInsertContentPosition holds, for each value of type, the members of its alternative's own, each with whether it is required.
+var tagsOfUpdatePageMarkdownAllOf0InsertContentInsertContentPosition = map[string]map[string]bool{
 	"start": {},
 	"end":   {},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
-func (v *UpdatePageMarkdownAllOf1InsertContentInsertContentPosition) taggedMembers() []string {
+func (v *UpdatePageMarkdownAllOf0InsertContentInsertContentPosition) taggedMembers() []string {
 	var set []string
 
 	return set
@@ -24908,28 +24911,28 @@ func (v *UpdatePageMarkdownAllOf1InsertContentInsertContentPosition) taggedMembe
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
 // alternative's own, only those of the one type names are set.
-func (v *UpdatePageMarkdownAllOf1InsertContentInsertContentPosition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain UpdatePageMarkdownAllOf1InsertContentInsertContentPosition
+func (v *UpdatePageMarkdownAllOf0InsertContentInsertContentPosition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain UpdatePageMarkdownAllOf0InsertContentInsertContentPosition
 
-	*v = UpdatePageMarkdownAllOf1InsertContentInsertContentPosition{}
+	*v = UpdatePageMarkdownAllOf0InsertContentInsertContentPosition{}
 	if err := json.UnmarshalDecode(dec, (*plain)(v), jsonOptsOf(dec)); err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfUpdatePageMarkdownAllOf1InsertContentInsertContentPosition, v.taggedMembers(), jsonStrict(dec))
+	return jsonCheckTag("type", string(v.Type), tagsOfUpdatePageMarkdownAllOf0InsertContentInsertContentPosition, v.taggedMembers(), jsonStrict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
 // the value whose member is set.
-func (v *UpdatePageMarkdownAllOf1InsertContentInsertContentPosition) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain UpdatePageMarkdownAllOf1InsertContentInsertContentPosition
+func (v *UpdatePageMarkdownAllOf0InsertContentInsertContentPosition) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain UpdatePageMarkdownAllOf0InsertContentInsertContentPosition
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfUpdatePageMarkdownAllOf1InsertContentInsertContentPosition, set); ok && out.Type == "" {
-		out.Type = UpdatePageMarkdownAllOf1InsertContentInsertContentPositionType(tag)
+	if tag, ok := jsonInferTag(tagsOfUpdatePageMarkdownAllOf0InsertContentInsertContentPosition, set); ok && out.Type == "" {
+		out.Type = UpdatePageMarkdownAllOf0InsertContentInsertContentPositionType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfUpdatePageMarkdownAllOf1InsertContentInsertContentPosition, set, true); err != nil {
+	if err := jsonCheckTag("type", string(out.Type), tagsOfUpdatePageMarkdownAllOf0InsertContentInsertContentPosition, set, true); err != nil {
 		return err
 	}
 
@@ -24937,7 +24940,7 @@ func (v *UpdatePageMarkdownAllOf1InsertContentInsertContentPosition) MarshalJSON
 }
 
 // Replace a range of content in the page.
-type UpdatePageMarkdownAllOf1ReplaceContentRangeReplaceContentRange struct {
+type UpdatePageMarkdownAllOf0ReplaceContentRangeReplaceContentRange struct {
 	// The new enhanced markdown content to replace the matched range.
 	Content string `json:"content"`
 	// Selection of existing content to replace, using the ellipsis format ("start text...end text").
@@ -24947,7 +24950,7 @@ type UpdatePageMarkdownAllOf1ReplaceContentRangeReplaceContentRange struct {
 }
 
 // Replace the entire page content with new markdown.
-type UpdatePageMarkdownAllOf1ReplaceContentReplaceContent struct {
+type UpdatePageMarkdownAllOf0ReplaceContentReplaceContent struct {
 	// The new enhanced markdown content to replace the entire page content.
 	NewStr string `json:"new_str"`
 	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
@@ -24955,18 +24958,18 @@ type UpdatePageMarkdownAllOf1ReplaceContentReplaceContent struct {
 }
 
 // Update specific content using search-and-replace operations.
-type UpdatePageMarkdownAllOf1UpdateContentUpdateContent struct {
+type UpdatePageMarkdownAllOf0UpdateContentUpdateContent struct {
 	// An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content).
-	ContentUpdates UpdatePageMarkdownAllOf1UpdateContentUpdateContentContentUpdates `json:"content_updates"`
+	ContentUpdates UpdatePageMarkdownAllOf0UpdateContentUpdateContentContentUpdates `json:"content_updates"`
 	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
 	AllowDeletingContent *bool `json:"allow_deleting_content,omitzero"`
 }
 
 // An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content).
-type UpdatePageMarkdownAllOf1UpdateContentUpdateContentContentUpdates []UpdatePageMarkdownAllOf1UpdateContentUpdateContentContentUpdatesItem
+type UpdatePageMarkdownAllOf0UpdateContentUpdateContentContentUpdates []UpdatePageMarkdownAllOf0UpdateContentUpdateContentContentUpdatesItem
 
-// UpdatePageMarkdownAllOf1UpdateContentUpdateContentContentUpdatesItem defines a model
-type UpdatePageMarkdownAllOf1UpdateContentUpdateContentContentUpdatesItem struct {
+// UpdatePageMarkdownAllOf0UpdateContentUpdateContentContentUpdatesItem defines a model
+type UpdatePageMarkdownAllOf0UpdateContentUpdateContentContentUpdatesItem struct {
 	// The existing content string to find and replace. Must exactly match the page content.
 	OldStr string `json:"old_str"`
 	// The new content string to replace old_str with.
