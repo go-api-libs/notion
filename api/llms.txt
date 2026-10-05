@@ -20,6 +20,7 @@
 - [Use Notion Skills with MCP](https://developers.notion.com/guides/mcp/notion-skills.md): Learn how MCP clients create, find, and use reusable instructions stored as Notion pages.
 - [Security best practices](https://developers.notion.com/guides/mcp/mcp-security-best-practices.md): Learn how to keep your workspace secure when using Notion MCP.
 - [Build an MCP client for Notion](https://developers.notion.com/guides/mcp/build-mcp-client.md): Connect a custom MCP client to Notion MCP with OAuth 2.0 and PKCE.
+- [Enterprise-managed authorization](https://developers.notion.com/guides/mcp/enterprise-managed-authorization.md): Reference for getting Notion MCP access tokens with an identity provider's ID-JAG instead of the browser OAuth flow.
 - [Hosting Notion MCP locally](https://developers.notion.com/guides/mcp/hosting-open-source-mcp.md): Learn how and when to use the open-source Notion MCP server.
 - [Upgrade guide](https://developers.notion.com/guides/get-started/upgrade-guide-2026-03-11.md): Learn how to upgrade your connections to 2026-03-11.
 - [Upgrade guide](https://developers.notion.com/guides/get-started/upgrade-guide-2025-09-03.md): Learn how to upgrade your connections to 2025-09-03.

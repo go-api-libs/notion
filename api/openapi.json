@@ -3590,6 +3590,7 @@
             "$ref": "#/components/responses/ListSkillsPluginsTheServiceIsOverloaded"
           }
         },
+        "x-notion-sdk-method": "plugins.list",
         "x-codeSamples": [
           {
             "lang": "javascript",
@@ -3656,6 +3657,7 @@
             "$ref": "#/components/responses/GetPluginDirectoryTheServiceIsOverloaded"
           }
         },
+        "x-notion-sdk-method": "plugins.retrieve",
         "x-codeSamples": [
           {
             "lang": "javascript",
