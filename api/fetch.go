@@ -728,7 +728,7 @@ func fixOpenAPI() (*openapi.Document, error) {
 	}
 
 	// each block variant, so that they keep differing only in their type and its member
-	if err := addRequestID(doc, append([]string{"Page", "Database"}, blocks...)...); err != nil {
+	if err := addRequestID(doc, append([]string{"Page", "Database", "Error"}, blocks...)...); err != nil {
 		return nil, err
 	}
 

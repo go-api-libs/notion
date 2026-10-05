@@ -12822,8 +12822,8 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 // Revoke a token
 //
 //	POST /oauth/revoke
-func (c *Client) RevokeToken(ctx context.Context, body RevokeToken) (*ErrorAllOf, error) {
-	return c.RevokeTokenWithResult[ErrorAllOf](ctx, body)
+func (c *Client) RevokeToken(ctx context.Context, body RevokeToken) (*RevokeTokenOk, error) {
+	return c.RevokeTokenWithResult[RevokeTokenOk](ctx, body)
 }
 
 // Revoke a token

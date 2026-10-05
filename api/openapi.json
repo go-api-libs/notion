@@ -10640,12 +10640,14 @@
         "allOf": [
           {
             "$ref": "#/components/schemas/publicApiCommonErrorResponse"
-          },
-          {
-            "$ref": "#/components/schemas/ErrorAllOf"
           }
         ],
         "properties": {
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "9e1aef9a-66e7-461d-89d2-2072f799276a"
+          },
           "code": {
             "$ref": "#/components/schemas/ErrorCode"
           },
@@ -10671,16 +10673,6 @@
           "code",
           "status"
         ]
-      },
-      "ErrorAllOf": {
-        "type": "object",
-        "properties": {
-          "request_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "9e1aef9a-66e7-461d-89d2-2072f799276a"
-          }
-        }
       },
       "ErrorCode": {
         "type": "string",
@@ -17988,6 +17980,15 @@
         "required": [
           "token"
         ]
+      },
+      "RevokeTokenOk": {
+        "type": "object",
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
       },
       "RichText": {
         "allOf": [
@@ -40773,7 +40774,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/ErrorAllOf"
+              "$ref": "#/components/schemas/RevokeTokenOk"
             }
           }
         }

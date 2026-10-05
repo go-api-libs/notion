@@ -7841,14 +7841,9 @@ type Error struct {
 	Object         string                                             `json:"object"`
 	Message        string                                             `json:"message"`
 	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
-	ErrorAllOf
-	Code   ErrorCode `json:"code"`
-	Status int       `json:"status"`
-}
-
-// ErrorAllOf defines a model
-type ErrorAllOf struct {
-	RequestID uuid.UUID `json:"request_id,omitzero"`
+	RequestID      uuid.UUID                                          `json:"request_id,omitzero"`
+	Code           ErrorCode                                          `json:"code"`
+	Status         int                                                `json:"status"`
 }
 
 // ErrorCode defines a model
@@ -20001,6 +19996,11 @@ type RetrieveSessionRequiredActions []CancelSessionRequiredActionsItem
 // RevokeToken defines a model
 type RevokeToken struct {
 	Token string `json:"token"`
+}
+
+// RevokeTokenOk defines a model
+type RevokeTokenOk struct {
+	RequestID uuid.UUID `json:"request_id,omitzero"`
 }
 
 // RichText defines a model
