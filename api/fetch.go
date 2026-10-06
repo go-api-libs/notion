@@ -861,6 +861,32 @@ func unionForms(doc *openapi.Document, name string) (*openapi.SchemaList, error)
 	return nil, componentErr(name, errors.New("is no union"))
 }
 
+// matchAny makes unions whose value codegen would find in more than one form an anyOf, until it checks a form's const
+// and required members: a view's group_by, whose forms differ only in the value of type, and a bot user's bot, empty
+// or with the members its other form requires.
+func matchAny(doc *openapi.Document) error {
+	group, ok := doc.Components.Schemas["groupByConfigResponse"]
+	if !ok {
+		return componentErr("groupByConfigResponse", errors.New("not found"))
+	}
+
+	user, ok := doc.Components.Schemas["botUserObjectResponse"]
+	if !ok {
+		return componentErr("botUserObjectResponse", errors.New("not found"))
+	}
+
+	bot, ok := user.Properties["bot"]
+	if !ok {
+		return propertyErr("botUserObjectResponse", "bot", errors.New("not found"))
+	}
+
+	for _, u := range []*openapi.Schema{group, bot} {
+		u.AnyOf, u.OneOf = alternatives(u), nil
+	}
+
+	return nil
+}
+
 // extractArrayOf names every array of the component item, which the official spec spells out inline each time.
 func extractArrayOf(doc *openapi.Document, name, item string) error {
 	if err := edit.ExtractSchema(doc, name, func(s *openapi.Schema) bool {
@@ -1106,13 +1132,9 @@ func fixOpenAPI() (*openapi.Document, error) {
 		return nil, err
 	}
 
-	// its forms differ only in the value of type, which codegen does not check yet, so a group_by matched them all
-	g, ok := doc.Components.Schemas["groupByConfigResponse"]
-	if !ok {
-		return nil, componentErr("groupByConfigResponse", errors.New("not found"))
+	if err := matchAny(doc); err != nil {
+		return nil, err
 	}
-
-	g.AnyOf, g.OneOf = alternatives(g), nil
 
 	if err := applyPasses(doc); err != nil {
 		return nil, err

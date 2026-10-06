@@ -4569,7 +4569,7 @@ type BotInfoResponseWorkspaceLimits struct {
 }
 
 // Details about the bot, when the `type` of the user is `bot`.
-// BotUserObjectResponseBot is an untagged oneOf union: exactly one field is set after unmarshaling.
+// BotUserObjectResponseBot is an untagged anyOf union: at least one field is set after unmarshaling.
 type BotUserObjectResponseBot struct {
 	EmptyObject     *EmptyObject
 	BotInfoResponse *BotInfoResponse
@@ -4580,7 +4580,6 @@ func (v *BotUserObjectResponseBot) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 	*v = BotUserObjectResponseBot{}
 
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -4589,8 +4588,7 @@ func (v *BotUserObjectResponseBot) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 
 	var matched int
 
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
+	{
 		var vv EmptyObject
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
 			v.EmptyObject = &vv
@@ -4598,8 +4596,7 @@ func (v *BotUserObjectResponseBot) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 		}
 	}
 
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
+	{
 		var vv BotInfoResponse
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
 			v.BotInfoResponse = &vv
@@ -4607,8 +4604,8 @@ func (v *BotUserObjectResponseBot) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 		}
 	}
 
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
 	}
 
 	return nil

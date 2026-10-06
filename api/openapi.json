@@ -8821,7 +8821,7 @@
       },
       "BotUserObjectResponseBot": {
         "description": "Details about the bot, when the `type` of the user is `bot`.",
-        "oneOf": [
+        "anyOf": [
           {
             "$ref": "#/components/schemas/emptyObject"
           },
