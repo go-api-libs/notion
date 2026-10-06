@@ -11199,7 +11199,7 @@ func (v *MentionRichTextItemRequestMention) MarshalJSONTo(enc *jsontext.Encoder)
 type MentionRichTextItemResponseMention struct {
 	Type MentionRichTextItemResponseMentionType `json:"type"`
 	// Details of the user mention.
-	User *UserValueResponse `json:"user,omitzero"`
+	User *UserOrPartial `json:"user,omitzero"`
 	// Details of the date mention.
 	Date *DateResponse `json:"date,omitzero"`
 	// Details of the link preview mention.
@@ -12303,109 +12303,16 @@ type PageMovedWebhookPayloadData struct {
 	Parent WebhookParentBlock `json:"parent"`
 }
 
-// PageOrDataSourceList defines a model
-type PageOrDataSourceList struct {
-	Type             string                            `json:"type"`
-	PageOrDataSource EmptyObject                       `json:"page_or_data_source"`
-	Object           string                            `json:"object"`
-	NextCursor       string                            `json:"next_cursor"`
-	HasMore          bool                              `json:"has_more"`
-	Results          PageOrDataSourceListResults       `json:"results"`
-	RequestStatus    PageOrDataSourceListRequestStatus `json:"request_status,omitzero"`
-	RequestID        uuid.UUID                         `json:"request_id,omitzero"`
-}
-
-// PageOrDataSourceListRequestStatus defines a model
-type PageOrDataSourceListRequestStatus struct {
-	Type             StatusType                                        `json:"type"`
-	IncompleteReason PageOrDataSourceListRequestStatusIncompleteReason `json:"incomplete_reason,omitzero"`
-}
-
-// PageOrDataSourceListRequestStatusIncompleteReason defines a model
-type PageOrDataSourceListRequestStatusIncompleteReason string
-
-const (
-	PageOrDataSourceListRequestStatusIncompleteReasonQueryResultLimitReached PageOrDataSourceListRequestStatusIncompleteReason = "query_result_limit_reached"
-)
-
-// Valid indicates whether the value is a known member of the PageOrDataSourceListRequestStatusIncompleteReason enum.
-func (e PageOrDataSourceListRequestStatusIncompleteReason) Valid() bool {
-	switch e {
-	case PageOrDataSourceListRequestStatusIncompleteReasonQueryResultLimitReached:
-		return true
-	default:
-		return false
-	}
-}
-
-// PageOrDataSourceListResults defines a model
-// PageOrDataSourceListResults is an untagged oneOf union: exactly one field is set after unmarshaling.
-type PageOrDataSourceListResults struct {
-	PageOrDataSourceListResultsOneOf0Item []PageOrDataSourceListResultsOneOf0Item
-	PageOrDataSourceListResultsOneOf1     *PageOrDataSourceListResultsOneOf1
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *PageOrDataSourceListResults) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = PageOrDataSourceListResults{}
-
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv []PageOrDataSourceListResultsOneOf0Item
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PageOrDataSourceListResultsOneOf0Item = vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv PageOrDataSourceListResultsOneOf1
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PageOrDataSourceListResultsOneOf1 = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *PageOrDataSourceListResults) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.PageOrDataSourceListResultsOneOf0Item != nil:
-		return json.MarshalEncode(enc, v.PageOrDataSourceListResultsOneOf0Item, jsonOpts)
-	case v.PageOrDataSourceListResultsOneOf1 != nil:
-		return json.MarshalEncode(enc, v.PageOrDataSourceListResultsOneOf1, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// PageOrDataSourceListResultsOneOf0Item defines a model
-// PageOrDataSourceListResultsOneOf0Item is an untagged anyOf union: at least one field is set after unmarshaling.
-type PageOrDataSourceListResultsOneOf0Item struct {
+// PageOrDataSource defines a model
+// PageOrDataSource is an untagged anyOf union: at least one field is set after unmarshaling.
+type PageOrDataSource struct {
 	PageOrPartial       *PageOrPartial
 	DataSourceOrPartial *DataSourceOrPartial
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *PageOrDataSourceListResultsOneOf0Item) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = PageOrDataSourceListResultsOneOf0Item{}
+func (v *PageOrDataSource) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = PageOrDataSource{}
 
 	opts := jsonOptsOf(dec)
 
@@ -12440,7 +12347,7 @@ func (v *PageOrDataSourceListResultsOneOf0Item) UnmarshalJSONFrom(dec *jsontext.
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *PageOrDataSourceListResultsOneOf0Item) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *PageOrDataSource) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PageOrPartial != nil:
 		return json.MarshalEncode(enc, v.PageOrPartial, jsonOpts)
@@ -12451,455 +12358,39 @@ func (v *PageOrDataSourceListResultsOneOf0Item) MarshalJSONTo(enc *jsontext.Enco
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// PageOrDataSourceListResultsOneOf1 defines a model
-type PageOrDataSourceListResultsOneOf1 struct {
-	Item0 PageOrDataSourceListResultsOneOf1Item0
-	Item1 PageOrDataSourceListResultsOneOf1Item1
-	Item2 PageOrDataSourceListResultsOneOf1Item2
+// PageOrDataSourceList defines a model
+type PageOrDataSourceList struct {
+	Type             string                            `json:"type"`
+	PageOrDataSource EmptyObject                       `json:"page_or_data_source"`
+	Object           string                            `json:"object"`
+	NextCursor       string                            `json:"next_cursor"`
+	HasMore          bool                              `json:"has_more"`
+	Results          []PageOrDataSource                `json:"results"`
+	RequestStatus    PageOrDataSourceListRequestStatus `json:"request_status,omitzero"`
+	RequestID        uuid.UUID                         `json:"request_id,omitzero"`
 }
 
-func (a *PageOrDataSourceListResultsOneOf1) Items(yield func(int, any) bool) {
-	for i, v := range []any{&a.Item0, &a.Item1, &a.Item2} {
-		if !yield(i, v) {
-			return
-		}
+// PageOrDataSourceListRequestStatus defines a model
+type PageOrDataSourceListRequestStatus struct {
+	Type             StatusType                                        `json:"type"`
+	IncompleteReason PageOrDataSourceListRequestStatusIncompleteReason `json:"incomplete_reason,omitzero"`
+}
+
+// PageOrDataSourceListRequestStatusIncompleteReason defines a model
+type PageOrDataSourceListRequestStatusIncompleteReason string
+
+const (
+	PageOrDataSourceListRequestStatusIncompleteReasonQueryResultLimitReached PageOrDataSourceListRequestStatusIncompleteReason = "query_result_limit_reached"
+)
+
+// Valid indicates whether the value is a known member of the PageOrDataSourceListRequestStatusIncompleteReason enum.
+func (e PageOrDataSourceListRequestStatusIncompleteReason) Valid() bool {
+	switch e {
+	case PageOrDataSourceListRequestStatusIncompleteReasonQueryResultLimitReached:
+		return true
+	default:
+		return false
 	}
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (a *PageOrDataSourceListResultsOneOf1) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	if k := dec.PeekKind(); k != jsontext.KindBeginArray {
-		return &json.SemanticError{JSONKind: k}
-	}
-
-	if _, err := dec.ReadToken(); err != nil {
-		return err
-	}
-
-	for _, f := range a.Items {
-		if dec.PeekKind() == jsontext.KindEndArray {
-			return &json.SemanticError{Err: fmt.Errorf("array shorter than 3")}
-		}
-
-		if err := json.UnmarshalDecode(dec, f); err != nil {
-			return err
-		}
-	}
-
-	if k := dec.PeekKind(); k != jsontext.KindEndArray {
-		return &json.SemanticError{JSONKind: k, Err: fmt.Errorf("array longer than 3")}
-	}
-
-	_, err := dec.ReadToken()
-	return err
-}
-
-// MarshalJSONTo implements [json.MarshalerTo].
-func (a PageOrDataSourceListResultsOneOf1) MarshalJSONTo(enc *jsontext.Encoder) error {
-	if err := enc.WriteToken(jsontext.BeginArray); err != nil {
-		return err
-	}
-
-	for _, v := range a.Items {
-		if err := json.MarshalEncode(enc, v); err != nil {
-			return err
-		}
-	}
-
-	if err := enc.WriteToken(jsontext.EndArray); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// PageOrDataSourceListResultsOneOf1Item0 defines a model
-type PageOrDataSourceListResultsOneOf1Item0 struct {
-	Object         string                                           `json:"object"`
-	ID             uuid.UUID                                        `json:"id"`
-	CreatedTime    time.Time                                        `json:"created_time"`
-	LastEditedTime time.Time                                        `json:"last_edited_time"`
-	CreatedBy      PageOrDataSourceListResultsOneOfItemCreatedBy    `json:"created_by"`
-	LastEditedBy   PageOrDataSourceListResultsOneOfItemCreatedBy    `json:"last_edited_by"`
-	Cover          *struct{}                                        `json:"cover"`
-	Icon           PageOrDataSourceListResultsOneOfItemIcon         `json:"icon"`
-	Parent         PageOrDataSourceListResultsOneOfItemParent       `json:"parent"`
-	InTrash        bool                                             `json:"in_trash"`
-	IsArchived     bool                                             `json:"is_archived"`
-	IsLocked       bool                                             `json:"is_locked"`
-	Properties     PageOrDataSourceListResultsOneOf1Item0Properties `json:"properties"`
-	URL            url.URL                                          `json:"url"`
-	PublicURL      *struct{}                                        `json:"public_url"`
-}
-
-// PageOrDataSourceListResultsOneOf1Item0Properties defines a model
-type PageOrDataSourceListResultsOneOf1Item0Properties struct {
-	Duration             PageOrDataSourceListResultsOneOfItemPropertiesDuration        `json:"Duration"`
-	StartedHoursAgo      PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgo `json:"Started Hours Ago"`
-	StartFallback        PageOrDataSourceListResultsOneOfItemPropertiesEndFallback     `json:"Start Fallback"`
-	Status               PageOrDataSourceListResultsOneOfItemPropertiesStatus          `json:"Status"`
-	Start                PageOrDataSourceListResultsOneOfItemPropertiesEnd2            `json:"Start"`
-	Recurring            PageOrDataSourceListResultsOneOfItemPropertiesRecurring       `json:"Recurring"`
-	End                  PageOrDataSourceListResultsOneOf1Item0PropertiesEnd           `json:"End"`
-	Time                 PageOrDataSourceListResultsOneOfItemPropertiesTime            `json:"Time"`
-	EndFallback          PageOrDataSourceListResultsOneOfItemPropertiesEndFallback     `json:"End Fallback"`
-	HumanDuration        PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration   `json:"Human Duration"`
-	Priority             PageOrDataSourceListResultsOneOfItemPropertiesPriority        `json:"Priority"`
-	CreatedTime          PageOrDataSourceListResultsOneOfItemPropertiesCreatedTime     `json:"Created time"`
-	PriorityIfNotStarted PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration   `json:"Priority If Not Started"`
-	TimeWithoutDate      PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration   `json:"Time without Date"`
-	Name                 PageOrDataSourceListResultsOneOfItemPropertiesName            `json:"Name"`
-}
-
-// PageOrDataSourceListResultsOneOf1Item0PropertiesEnd defines a model
-type PageOrDataSourceListResultsOneOf1Item0PropertiesEnd struct {
-	ID   string    `json:"id"`
-	Type string    `json:"type"`
-	Date *struct{} `json:"date"`
-}
-
-// PageOrDataSourceListResultsOneOf1Item1 defines a model
-type PageOrDataSourceListResultsOneOf1Item1 struct {
-	Object         string                                               `json:"object"`
-	ID             uuid.UUID                                            `json:"id"`
-	Cover          PageOrDataSourceListResultsOneOf1Item1Cover          `json:"cover"`
-	Icon           PageOrDataSourceListResultsOneOfItemIcon             `json:"icon"`
-	CreatedTime    time.Time                                            `json:"created_time"`
-	CreatedBy      PageOrDataSourceListResultsOneOfItemCreatedBy        `json:"created_by"`
-	LastEditedBy   PageOrDataSourceListResultsOneOfItemCreatedBy        `json:"last_edited_by"`
-	LastEditedTime time.Time                                            `json:"last_edited_time"`
-	Title          PageOrDataSourceListResultsOneOfItemTitle            `json:"title"`
-	Description    PageOrDataSourceListResultsOneOfItemTitle            `json:"description"`
-	IsInline       bool                                                 `json:"is_inline"`
-	DatabaseType   *struct{}                                            `json:"database_type"`
-	Properties     PageOrDataSourceListResultsOneOf1Item1Properties     `json:"properties"`
-	Parent         PageOrDataSourceListResultsOneOf1Item1Parent         `json:"parent"`
-	DatabaseParent PageOrDataSourceListResultsOneOf1Item1DatabaseParent `json:"database_parent"`
-	URL            url.URL                                              `json:"url"`
-	PublicURL      *struct{}                                            `json:"public_url"`
-	InTrash        bool                                                 `json:"in_trash"`
-}
-
-// PageOrDataSourceListResultsOneOf1Item1Cover defines a model
-type PageOrDataSourceListResultsOneOf1Item1Cover struct {
-	Type     string                                              `json:"type"`
-	External PageOrDataSourceListResultsOneOf1Item1CoverExternal `json:"external"`
-}
-
-// PageOrDataSourceListResultsOneOf1Item1CoverExternal defines a model
-type PageOrDataSourceListResultsOneOf1Item1CoverExternal struct {
-	URL url.URL `json:"url"`
-}
-
-// PageOrDataSourceListResultsOneOf1Item1DatabaseParent defines a model
-type PageOrDataSourceListResultsOneOf1Item1DatabaseParent struct {
-	Type   string    `json:"type"`
-	PageID uuid.UUID `json:"page_id"`
-}
-
-// PageOrDataSourceListResultsOneOf1Item1Parent defines a model
-type PageOrDataSourceListResultsOneOf1Item1Parent struct {
-	Type       string    `json:"type"`
-	DatabaseID uuid.UUID `json:"database_id"`
-}
-
-// PageOrDataSourceListResultsOneOf1Item1Properties defines a model
-type PageOrDataSourceListResultsOneOf1Item1Properties struct {
-	Duration             PageOrDataSourceListResultsOneOfItemPropertiesTime2         `json:"Duration"`
-	StartedHoursAgo      PageOrDataSourceListResultsOneOfItemPropertiesTime2         `json:"Started Hours Ago"`
-	StartFallback        PageOrDataSourceListResultsOneOfItemPropertiesTime2         `json:"Start Fallback"`
-	Status               PageOrDataSourceListResultsOneOf1Item1PropertiesStatus      `json:"Status"`
-	Start                PageOrDataSourceListResultsOneOfItemPropertiesEnd           `json:"Start"`
-	End                  PageOrDataSourceListResultsOneOfItemPropertiesEnd           `json:"End"`
-	Time                 PageOrDataSourceListResultsOneOfItemPropertiesTime2         `json:"Time"`
-	EndFallback          PageOrDataSourceListResultsOneOfItemPropertiesTime2         `json:"End Fallback"`
-	HumanDuration        PageOrDataSourceListResultsOneOfItemPropertiesTime2         `json:"Human Duration"`
-	CreatedTime          PageOrDataSourceListResultsOneOf1Item1PropertiesCreatedTime `json:"Created time"`
-	PriorityIfNotStarted PageOrDataSourceListResultsOneOfItemPropertiesTime2         `json:"Priority If Not Started"`
-	TimeWithoutDate      PageOrDataSourceListResultsOneOfItemPropertiesTime2         `json:"Time without Date"`
-	Name                 PageOrDataSourceListResultsOneOf1Item1PropertiesName        `json:"Name"`
-}
-
-// PageOrDataSourceListResultsOneOf1Item1PropertiesCreatedTime defines a model
-type PageOrDataSourceListResultsOneOf1Item1PropertiesCreatedTime struct {
-	ID          string    `json:"id"`
-	Name        string    `json:"name"`
-	Description *struct{} `json:"description"`
-	Type        string    `json:"type"`
-	CreatedTime struct{}  `json:"created_time"`
-}
-
-// PageOrDataSourceListResultsOneOf1Item1PropertiesName defines a model
-type PageOrDataSourceListResultsOneOf1Item1PropertiesName struct {
-	ID          string    `json:"id"`
-	Name        string    `json:"name"`
-	Description *struct{} `json:"description"`
-	Type        string    `json:"type"`
-	Title       struct{}  `json:"title"`
-}
-
-// PageOrDataSourceListResultsOneOf1Item1PropertiesStatus defines a model
-type PageOrDataSourceListResultsOneOf1Item1PropertiesStatus struct {
-	ID          string                                                       `json:"id"`
-	Name        string                                                       `json:"name"`
-	Description *struct{}                                                    `json:"description"`
-	Type        string                                                       `json:"type"`
-	Select      PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelect `json:"select"`
-}
-
-// PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelect defines a model
-type PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelect struct {
-	Options PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelectOptions `json:"options"`
-}
-
-// PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelectOptions defines a model
-type PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelectOptions []PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelectOptionsItem
-
-// PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelectOptionsItem defines a model
-type PageOrDataSourceListResultsOneOf1Item1PropertiesStatusSelectOptionsItem struct {
-	ID          uuid.UUID `json:"id"`
-	Name        string    `json:"name"`
-	Color       string    `json:"color"`
-	Description *struct{} `json:"description"`
-}
-
-// PageOrDataSourceListResultsOneOf1Item2 defines a model
-type PageOrDataSourceListResultsOneOf1Item2 struct {
-	Object         string                                           `json:"object"`
-	ID             uuid.UUID                                        `json:"id"`
-	CreatedTime    time.Time                                        `json:"created_time"`
-	LastEditedTime time.Time                                        `json:"last_edited_time"`
-	CreatedBy      PageOrDataSourceListResultsOneOfItemCreatedBy    `json:"created_by"`
-	LastEditedBy   PageOrDataSourceListResultsOneOfItemCreatedBy    `json:"last_edited_by"`
-	Cover          *struct{}                                        `json:"cover"`
-	Icon           PageOrDataSourceListResultsOneOfItemIcon         `json:"icon"`
-	Parent         PageOrDataSourceListResultsOneOfItemParent       `json:"parent"`
-	InTrash        bool                                             `json:"in_trash"`
-	IsArchived     bool                                             `json:"is_archived"`
-	IsLocked       bool                                             `json:"is_locked"`
-	Properties     PageOrDataSourceListResultsOneOf1Item2Properties `json:"properties"`
-	URL            url.URL                                          `json:"url"`
-	PublicURL      *struct{}                                        `json:"public_url"`
-}
-
-// PageOrDataSourceListResultsOneOf1Item2Properties defines a model
-type PageOrDataSourceListResultsOneOf1Item2Properties struct {
-	Duration             PageOrDataSourceListResultsOneOfItemPropertiesDuration        `json:"Duration"`
-	StartedHoursAgo      PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgo `json:"Started Hours Ago"`
-	StartFallback        PageOrDataSourceListResultsOneOfItemPropertiesEndFallback     `json:"Start Fallback"`
-	Status               PageOrDataSourceListResultsOneOfItemPropertiesStatus          `json:"Status"`
-	Start                PageOrDataSourceListResultsOneOfItemPropertiesEnd2            `json:"Start"`
-	Recurring            PageOrDataSourceListResultsOneOfItemPropertiesRecurring       `json:"Recurring"`
-	End                  PageOrDataSourceListResultsOneOfItemPropertiesEnd2            `json:"End"`
-	Time                 PageOrDataSourceListResultsOneOfItemPropertiesTime            `json:"Time"`
-	EndFallback          PageOrDataSourceListResultsOneOfItemPropertiesEndFallback     `json:"End Fallback"`
-	HumanDuration        PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration   `json:"Human Duration"`
-	Priority             PageOrDataSourceListResultsOneOfItemPropertiesPriority        `json:"Priority"`
-	CreatedTime          PageOrDataSourceListResultsOneOfItemPropertiesCreatedTime     `json:"Created time"`
-	PriorityIfNotStarted PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration   `json:"Priority If Not Started"`
-	TimeWithoutDate      PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration   `json:"Time without Date"`
-	Name                 PageOrDataSourceListResultsOneOfItemPropertiesName            `json:"Name"`
-}
-
-// PageOrDataSourceListResultsOneOfItemCreatedBy defines a model
-type PageOrDataSourceListResultsOneOfItemCreatedBy struct {
-	Object string    `json:"object"`
-	ID     uuid.UUID `json:"id"`
-}
-
-// PageOrDataSourceListResultsOneOfItemIcon defines a model
-type PageOrDataSourceListResultsOneOfItemIcon struct {
-	Type  string `json:"type"`
-	Emoji string `json:"emoji"`
-}
-
-// PageOrDataSourceListResultsOneOfItemParent defines a model
-type PageOrDataSourceListResultsOneOfItemParent struct {
-	Type         string    `json:"type"`
-	DataSourceID uuid.UUID `json:"data_source_id"`
-	DatabaseID   uuid.UUID `json:"database_id"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesCreatedTime defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesCreatedTime struct {
-	ID          string    `json:"id"`
-	Type        string    `json:"type"`
-	CreatedTime time.Time `json:"created_time"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesDuration defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesDuration struct {
-	ID      string                                                        `json:"id"`
-	Type    string                                                        `json:"type"`
-	Formula PageOrDataSourceListResultsOneOfItemPropertiesDurationFormula `json:"formula"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesDurationFormula defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesDurationFormula struct {
-	Type   string `json:"type"`
-	Number int    `json:"number"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesEnd defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesEnd struct {
-	ID          string    `json:"id"`
-	Name        string    `json:"name"`
-	Description *struct{} `json:"description"`
-	Type        string    `json:"type"`
-	Date        struct{}  `json:"date"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesEnd2 defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesEnd2 struct {
-	ID   string                                                `json:"id"`
-	Type string                                                `json:"type"`
-	Date PageOrDataSourceListResultsOneOfItemPropertiesEndDate `json:"date"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesEndDate defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesEndDate struct {
-	Start    time.Time `json:"start"`
-	End      *struct{} `json:"end"`
-	TimeZone *struct{} `json:"time_zone"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesEndFallback defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesEndFallback struct {
-	ID      string                                                           `json:"id"`
-	Type    string                                                           `json:"type"`
-	Formula PageOrDataSourceListResultsOneOfItemPropertiesEndFallbackFormula `json:"formula"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesEndFallbackFormula defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesEndFallbackFormula struct {
-	Type string                                                `json:"type"`
-	Date PageOrDataSourceListResultsOneOfItemPropertiesEndDate `json:"date"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesHumanDuration struct {
-	ID      string                                                             `json:"id"`
-	Type    string                                                             `json:"type"`
-	Formula PageOrDataSourceListResultsOneOfItemPropertiesHumanDurationFormula `json:"formula"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesHumanDurationFormula defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesHumanDurationFormula struct {
-	Type   string `json:"type"`
-	String string `json:"string"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesName defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesName struct {
-	ID    string                                    `json:"id"`
-	Type  string                                    `json:"type"`
-	Title PageOrDataSourceListResultsOneOfItemTitle `json:"title"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesPriority defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesPriority struct {
-	ID     string                                                       `json:"id"`
-	Type   string                                                       `json:"type"`
-	Rollup PageOrDataSourceListResultsOneOfItemPropertiesPriorityRollup `json:"rollup"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesPriorityRollup defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesPriorityRollup struct {
-	Type     string `json:"type"`
-	Array    []any  `json:"array"`
-	Function string `json:"function"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesRecurring defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesRecurring struct {
-	ID       string `json:"id"`
-	Type     string `json:"type"`
-	Relation []any  `json:"relation"`
-	HasMore  bool   `json:"has_more"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgo defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgo struct {
-	ID      string                                                               `json:"id"`
-	Type    string                                                               `json:"type"`
-	Formula PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgoFormula `json:"formula"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgoFormula defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesStartedHoursAgoFormula struct {
-	Type   string  `json:"type"`
-	Number float64 `json:"number"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesStatus defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesStatus struct {
-	ID     string                                                     `json:"id"`
-	Type   string                                                     `json:"type"`
-	Select PageOrDataSourceListResultsOneOfItemPropertiesStatusSelect `json:"select"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesStatusSelect defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesStatusSelect struct {
-	ID    uuid.UUID `json:"id"`
-	Name  string    `json:"name"`
-	Color string    `json:"color"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesTime defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesTime struct {
-	ID      string                                                    `json:"id"`
-	Type    string                                                    `json:"type"`
-	Formula PageOrDataSourceListResultsOneOfItemPropertiesTimeFormula `json:"formula"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesTime2 defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesTime2 struct {
-	ID          string           `json:"id"`
-	Name        string           `json:"name"`
-	Description *struct{}        `json:"description"`
-	Type        string           `json:"type"`
-	Formula     ExpressionObject `json:"formula"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesTimeFormula defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesTimeFormula struct {
-	Type string                                                        `json:"type"`
-	Date PageOrDataSourceListResultsOneOfItemPropertiesTimeFormulaDate `json:"date"`
-}
-
-// PageOrDataSourceListResultsOneOfItemPropertiesTimeFormulaDate defines a model
-type PageOrDataSourceListResultsOneOfItemPropertiesTimeFormulaDate struct {
-	Start    time.Time `json:"start"`
-	End      time.Time `json:"end"`
-	TimeZone *struct{} `json:"time_zone"`
-}
-
-// PageOrDataSourceListResultsOneOfItemTitle defines a model
-type PageOrDataSourceListResultsOneOfItemTitle []PageOrDataSourceListResultsOneOfItemTitleItem
-
-// PageOrDataSourceListResultsOneOfItemTitleItem defines a model
-type PageOrDataSourceListResultsOneOfItemTitleItem struct {
-	Type        string                                                   `json:"type"`
-	Text        PageOrDataSourceListResultsOneOfItemTitleItemText        `json:"text"`
-	Annotations PageOrDataSourceListResultsOneOfItemTitleItemAnnotations `json:"annotations"`
-	PlainText   string                                                   `json:"plain_text"`
-	Href        *struct{}                                                `json:"href"`
-}
-
-// PageOrDataSourceListResultsOneOfItemTitleItemAnnotations defines a model
-type PageOrDataSourceListResultsOneOfItemTitleItemAnnotations struct {
-	Bold          bool   `json:"bold"`
-	Italic        bool   `json:"italic"`
-	Strikethrough bool   `json:"strikethrough"`
-	Underline     bool   `json:"underline"`
-	Code          bool   `json:"code"`
-	Color         string `json:"color"`
-}
-
-// PageOrDataSourceListResultsOneOfItemTitleItemText defines a model
-type PageOrDataSourceListResultsOneOfItemTitleItemText struct {
-	Content string    `json:"content"`
-	Link    *struct{} `json:"link"`
 }
 
 // PageOrPartial defines a model
@@ -14250,7 +13741,7 @@ func (v *PatchPageTemplate) MarshalJSONTo(enc *jsontext.Encoder) error {
 // PeopleArrayBasedPropertyValueResponsePeopleItem defines a model
 // PeopleArrayBasedPropertyValueResponsePeopleItem is an untagged oneOf union: exactly one field is set after unmarshaling.
 type PeopleArrayBasedPropertyValueResponsePeopleItem struct {
-	UserValueResponse   *UserValueResponse
+	UserOrPartial       *UserOrPartial
 	GroupObjectResponse *GroupObjectResponse
 }
 
@@ -14270,9 +13761,9 @@ func (v *PeopleArrayBasedPropertyValueResponsePeopleItem) UnmarshalJSONFrom(dec 
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv UserValueResponse
+		var vv UserOrPartial
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UserValueResponse = &vv
+			v.UserOrPartial = &vv
 			matched++
 		}
 	}
@@ -14296,8 +13787,8 @@ func (v *PeopleArrayBasedPropertyValueResponsePeopleItem) UnmarshalJSONFrom(dec 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *PeopleArrayBasedPropertyValueResponsePeopleItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.UserValueResponse != nil:
-		return json.MarshalEncode(enc, v.UserValueResponse, jsonOpts)
+	case v.UserOrPartial != nil:
+		return json.MarshalEncode(enc, v.UserOrPartial, jsonOpts)
 	case v.GroupObjectResponse != nil:
 		return json.MarshalEncode(enc, v.GroupObjectResponse, jsonOpts)
 	}
@@ -16098,9 +15589,9 @@ type PropertyValue struct {
 	PhoneNumber    *string                                           `json:"phone_number,omitzero"`
 	Checkbox       *bool                                             `json:"checkbox,omitzero"`
 	Files          []InternalOrExternalFileWithNameResponse          `json:"files,omitzero"`
-	CreatedBy      *UserValueResponse                                `json:"created_by,omitzero"`
+	CreatedBy      *UserOrPartial                                    `json:"created_by,omitzero"`
 	CreatedTime    *time.Time                                        `json:"created_time,omitzero"`
-	LastEditedBy   *UserValueResponse                                `json:"last_edited_by,omitzero"`
+	LastEditedBy   *UserOrPartial                                    `json:"last_edited_by,omitzero"`
 	LastEditedTime *time.Time                                        `json:"last_edited_time,omitzero"`
 	Formula        *FormulaPropertyValueResponse                     `json:"formula,omitzero"`
 	Button         *EmptyObject                                      `json:"button,omitzero"`
@@ -22606,9 +22097,9 @@ type SimpleOrArrayPropertyValueResponse struct {
 	PhoneNumber    *string                                           `json:"phone_number,omitzero"`
 	Checkbox       *bool                                             `json:"checkbox,omitzero"`
 	Files          []InternalOrExternalFileWithNameResponse          `json:"files,omitzero"`
-	CreatedBy      *UserValueResponse                                `json:"created_by,omitzero"`
+	CreatedBy      *UserOrPartial                                    `json:"created_by,omitzero"`
 	CreatedTime    *time.Time                                        `json:"created_time,omitzero"`
-	LastEditedBy   *UserValueResponse                                `json:"last_edited_by,omitzero"`
+	LastEditedBy   *UserOrPartial                                    `json:"last_edited_by,omitzero"`
 	LastEditedTime *time.Time                                        `json:"last_edited_time,omitzero"`
 	Formula        *FormulaPropertyValueResponse                     `json:"formula,omitzero"`
 	Button         *EmptyObject                                      `json:"button,omitzero"`
@@ -26428,64 +25919,6 @@ func (v *UserOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// UserValueResponse defines a model
-// UserValueResponse is an untagged oneOf union: exactly one field is set after unmarshaling.
-type UserValueResponse struct {
-	PartialUserObjectResponse *PartialUserObjectResponse
-	UserObjectResponse        *UserObjectResponse
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *UserValueResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = UserValueResponse{}
-
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv PartialUserObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialUserObjectResponse = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv UserObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UserObjectResponse = &vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *UserValueResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.PartialUserObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialUserObjectResponse, jsonOpts)
-	case v.UserObjectResponse != nil:
-		return json.MarshalEncode(enc, v.UserObjectResponse, jsonOpts)
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
 // VerificationPropertyDoesNotEqualFilter defines a model
 type VerificationPropertyDoesNotEqualFilter struct {
 	DoesNotEqual VerificationPropertyStatusFilterStatus `json:"does_not_equal"`
@@ -26520,7 +25953,7 @@ type VerificationPropertyResponse struct {
 	// One of: `verified`, `expired`
 	State      VerificationPropertyResponseState `json:"state"`
 	Date       DateResponse                      `json:"date"`
-	VerifiedBy *UserValueResponse                `json:"verified_by"`
+	VerifiedBy *UserOrPartial                    `json:"verified_by"`
 }
 
 // One of: `verified`, `expired`

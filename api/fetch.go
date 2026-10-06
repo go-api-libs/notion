@@ -268,34 +268,61 @@ func componentErr(name string, err error) error {
 }
 
 // namePartialUnions names each union of an object and its partial form, which responses spell out inline and flatten
-// would name after the operation, such as PageOrPartial for a page or the partial page Notion returns in its place.
-// It is an anyOf, since an object matches its partial form too.
+// would name after the operation, or which the official spec names after where it is used, such as PageOrPartial for
+// a page or the partial page Notion returns in its place. It is an anyOf, since an object matches its partial form too.
 func namePartialUnions(doc *openapi.Document) error {
+	var partials []string
+
 	for name := range doc.Components.Schemas.ByIndex() {
-		core, partial := strings.CutPrefix(name, "partial")
-		core, response := strings.CutSuffix(core, "ObjectResponse")
-		if !partial || !response {
-			continue
+		if strings.HasPrefix(name, "partial") && strings.HasSuffix(name, "ObjectResponse") {
+			partials = append(partials, name)
 		}
+	}
 
+	for _, name := range partials {
 		ref := schemaRefPrefix + name
+		union := strcase.ToGoPascal(strings.TrimSuffix(strings.TrimPrefix(name, "partial"), "ObjectResponse")) + "OrPartial"
 
-		union := strcase.ToGoPascal(core) + "OrPartial"
-
-		err := edit.ExtractSchema(doc, union, func(s *openapi.Schema) bool {
+		isUnion := func(s *openapi.Schema) bool {
 			alts := alternatives(s)
 
 			return len(alts) == 2 && alts[0].Ref != nil && alts[1].Ref != nil &&
 				(alts[0].Ref.Identifier == ref || alts[1].Ref.Identifier == ref)
-		})
-		if errors.Is(err, edit.ErrNoMatch) {
-			continue
-		} else if err != nil {
+		}
+
+		if err := edit.ExtractSchema(doc, union, isUnion); err != nil && !errors.Is(err, edit.ErrNoMatch) {
 			return fmt.Errorf("naming the union with %s: %w", name, err)
 		}
 
-		// some responses say oneOf, but an object matches its partial form too
-		u := doc.Components.Schemas[union]
+		// the official spec names some of them itself, such as userValueResponse
+		var named []string
+
+		for n, s := range doc.Components.Schemas.ByIndex() {
+			if n != union && isUnion(s) {
+				named = append(named, n)
+			}
+		}
+
+		if _, ok := doc.Components.Schemas[union]; !ok && len(named) > 0 {
+			if err := edit.RenameSchema(doc, named[0], union); err != nil {
+				return err
+			}
+
+			named = named[1:]
+		}
+
+		for _, n := range named {
+			if err := edit.RedirectSchema(doc, n, union, ""); err != nil {
+				return err
+			}
+		}
+
+		u, ok := doc.Components.Schemas[union]
+		if !ok {
+			continue
+		}
+
+		// some say oneOf, but an object matches its partial form too
 		u.AnyOf, u.OneOf = alternatives(u), nil
 	}
 
@@ -388,6 +415,34 @@ func nameObjects(doc *openapi.Document) {
 	for _, object := range slices.Sorted(maps.Keys(fullest)) {
 		moveToComponents(doc, fullest[object], strcase.ToGoPascal(object))
 	}
+}
+
+// setResults makes the results of a search or a query of a data source a list of PageOrDataSource. It is set again
+// after enrich, which makes them a tuple of the pages and data sources it was given, as their shapes differ.
+func setResults(doc *openapi.Document) error {
+	const list, item = "PageOrDataSourceList", "PageOrDataSource"
+
+	s, ok := doc.Components.Schemas[list]
+	if !ok {
+		return componentErr(list, errors.New("not found"))
+	}
+
+	results, ok := s.Properties["results"]
+	if !ok {
+		return propertyErr(list, "results", errors.New("not found"))
+	}
+
+	if _, ok := doc.Components.Schemas[item]; !ok {
+		if results.Items == nil {
+			return propertyErr(list, "results", errors.New("lists no items"))
+		}
+
+		moveToComponents(doc, results.Items, item)
+	}
+
+	results.Replace(&openapi.Schema{Type: openapi.TypeArray, Items: refTo(doc, item)})
+
+	return nil
 }
 
 // requestID is the schema of the request_id Notion sends with every response.
@@ -911,6 +966,11 @@ func fixOpenAPI() (*openapi.Document, error) {
 	}
 
 	nameLists(doc)
+
+	if err := setResults(doc); err != nil {
+		return nil, err
+	}
+
 	nameObjects(doc)
 	nameBranches(doc)
 
@@ -957,7 +1017,7 @@ func applyPasses(doc *openapi.Document) error {
 
 			setFilterForms(d)
 
-			return nil
+			return setResults(d)
 		}},
 		{"flatten", flattenDoc},
 		{"compress", func(d *openapi.Document) error { return compress.Document(d, compress.Config{}) }},
