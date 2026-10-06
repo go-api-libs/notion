@@ -10649,6 +10649,17 @@
           "github_prs"
         ]
       },
+      "DateEnd": {
+        "description": "The end date of the date object, if any.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/DateOrDateTime"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "DateFormulaPropertyDate": {
         "anyOf": [
           {
@@ -10677,6 +10688,19 @@
           "date",
           "created_time",
           "last_edited_time"
+        ]
+      },
+      "DateOrDateTime": {
+        "description": "An ISO 8601 date, with an optional time.",
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date"
+          },
+          {
+            "type": "string",
+            "format": "date-time"
+          }
         ]
       },
       "DatePropertyFilterAfter": {
@@ -10809,18 +10833,6 @@
         },
         "required": [
           "this_week"
-        ]
-      },
-      "DateRequestEnd": {
-        "description": "The end date of the date object, if any.",
-        "oneOf": [
-          {
-            "type": "string",
-            "format": "date"
-          },
-          {
-            "type": "null"
-          }
         ]
       },
       "DateTimeZone": {
@@ -25545,11 +25557,10 @@
         "properties": {
           "start": {
             "description": "The start date of the date object.",
-            "type": "string",
-            "format": "date"
+            "$ref": "#/components/schemas/DateOrDateTime"
           },
           "end": {
-            "$ref": "#/components/schemas/DateRequestEnd"
+            "$ref": "#/components/schemas/DateEnd"
           },
           "time_zone": {
             "description": "The time zone of the date object, if any. E.g. America/Los_Angeles, Europe/London, etc.",
@@ -25566,12 +25577,10 @@
         "properties": {
           "start": {
             "description": "The start date of the date object.",
-            "type": "string",
-            "example": "2026-10-03T17:11:00.000+00:00"
+            "$ref": "#/components/schemas/DateOrDateTime"
           },
           "end": {
-            "description": "The end date of the date object, if any.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/DateEnd"
           },
           "time_zone": {
             "description": "The time zone of the date object.",

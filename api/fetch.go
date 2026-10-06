@@ -681,32 +681,72 @@ func addRequestID(doc *openapi.Document, names ...string) error {
 	return nil
 }
 
-// allowDateTimes drops the date format from the properties of the schema name, which Notion declares as dates but
-// sends as a date or a date-time: "an ISO 8601 date, with optional time". It fails unless each of them is, or is one
-// of, a string with the date format, so a change upstream is noticed.
-func allowDateTimes(doc *openapi.Document, name string, props ...string) error {
-	s, ok := doc.Components.Schemas[name]
-	if !ok {
-		return componentErr(name, errors.New("not found"))
+// dateProps are the properties Notion declares as dates but takes and sends as a date or a date-time: "an ISO 8601
+// date, with optional time".
+var dateProps = []struct {
+	schema string
+	props  []string
+}{
+	{"dateRequest", []string{"start", "end"}},
+	{"dateResponse", []string{"start", "end"}},
+}
+
+// allowDateTimes drops the date format from the dateProps, for enrich, which takes a date-time it was given for no
+// date. It fails unless each of them is, or is one of, a string with the date format, so a change upstream is noticed.
+func allowDateTimes(doc *openapi.Document) error {
+	return eachDateString(doc, func(s *openapi.Schema) bool { return s.Format == openapi.FormatDate }, func(s *openapi.Schema) {
+		s.Format = ""
+	})
+}
+
+// setDateTimes lets the dateProps, after enrich, be a DateOrDateTime.
+func setDateTimes(doc *openapi.Document) error {
+	const name = "DateOrDateTime"
+
+	if _, ok := doc.Components.Schemas[name]; !ok {
+		doc.Components.Schemas.Set(name, &openapi.Schema{
+			Description: "An ISO 8601 date, with an optional time.",
+			AnyOf: openapi.SchemaList{
+				{Type: openapi.TypeString, Format: openapi.FormatDate},
+				{Type: openapi.TypeString, Format: openapi.FormatDateTime},
+			},
+		})
 	}
 
-	for _, prop := range props {
-		p, ok := s.Properties[prop]
+	return eachDateString(doc, func(s *openapi.Schema) bool { return s.Format == "" }, func(s *openapi.Schema) {
+		ref := refTo(doc, name)
+		ref.Description = s.Description
+		s.Replace(ref)
+	})
+}
+
+// eachDateString calls set on each string that match accepts in the dateProps, which are, or are one of, such strings.
+func eachDateString(doc *openapi.Document, match func(*openapi.Schema) bool, set func(*openapi.Schema)) error {
+	for _, d := range dateProps {
+		s, ok := doc.Components.Schemas[d.schema]
 		if !ok {
-			return propertyErr(name, prop, errors.New("not found"))
+			return componentErr(d.schema, errors.New("not found"))
 		}
 
-		dates := 0
-
-		for _, alt := range append(openapi.SchemaList{p}, p.OneOf...) {
-			if alt.Type == openapi.TypeString && alt.Format == openapi.FormatDate {
-				alt.Format = ""
-				dates++
+		for _, prop := range d.props {
+			p, ok := s.Properties[prop]
+			if !ok {
+				return propertyErr(d.schema, prop, errors.New("not found"))
 			}
-		}
 
-		if dates == 0 {
-			return propertyErr(name, prop, errors.New("is not a date"))
+			found := false
+
+			for _, alt := range append(openapi.SchemaList{p}, p.OneOf...) {
+				if alt.Type == openapi.TypeString && match(alt) {
+					set(alt)
+
+					found = true
+				}
+			}
+
+			if !found {
+				return propertyErr(d.schema, prop, errors.New("is not a date"))
+			}
 		}
 	}
 
@@ -974,7 +1014,7 @@ func fixOpenAPI() (*openapi.Document, error) {
 	nameObjects(doc)
 	nameBranches(doc)
 
-	if err := allowDateTimes(doc, "dateResponse", "start", "end"); err != nil {
+	if err := allowDateTimes(doc); err != nil {
 		return nil, err
 	}
 
@@ -1025,7 +1065,11 @@ func applyPasses(doc *openapi.Document) error {
 
 			setFilterForms(d)
 
-			return setResults(d)
+			if err := setResults(d); err != nil {
+				return err
+			}
+
+			return setDateTimes(d)
 		}},
 		{"flatten", flattenDoc},
 		{"compress", func(d *openapi.Document) error { return compress.Document(d, compress.Config{}) }},

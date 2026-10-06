@@ -29,6 +29,9 @@ Each can go once the library is fixed:
 - `setFilterForms` and `setResults` set `Filter` and `PageOrDataSourceList.Results` again after enrich. Enrich files a
   recorded value under a union's first form even when it lacks that form's required members, and types an array
   whose items differ in shape as a tuple.
+- `allowDateTimes` and `setDateTimes` make a date's `start` and `end` a plain string for enrich, and a
+  `DateOrDateTime` after it. Enrich infers no `date` format for a value such as `2026-10-05`, so it matches neither
+  form of an `anyOf` of a date and a date-time.
 - `groupByConfigResponse` is made an `anyOf`, as codegen does not check a form's const members, so a `group_by`
   matched all its forms.
 - Codegen does not check a form's required members either, which only `additionalProperties: false` makes up for when

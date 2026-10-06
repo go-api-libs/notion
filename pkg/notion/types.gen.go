@@ -7954,6 +7954,61 @@ func (e DateGroupByConfigType) Valid() bool {
 	}
 }
 
+// An ISO 8601 date, with an optional time.
+// DateOrDateTime is an untagged anyOf union: at least one field is set after unmarshaling.
+type DateOrDateTime struct {
+	Date *civil.Date
+	Time *time.Time
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *DateOrDateTime) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = DateOrDateTime{}
+
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv civil.Date
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.Date = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv time.Time
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.Time = &vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *DateOrDateTime) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.Date != nil:
+		return json.MarshalEncode(enc, v.Date, jsonOpts)
+	case v.Time != nil:
+		return json.MarshalEncode(enc, v.Time, jsonOpts)
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
 // DateOrRelativeDate defines a model
 // DateOrRelativeDate is an untagged anyOf union: at least one field is set after unmarshaling.
 type DateOrRelativeDate struct {
@@ -8282,9 +8337,9 @@ func (v *DatePropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decod
 // DateRequest defines a model
 type DateRequest struct {
 	// The start date of the date object.
-	Start civil.Date `json:"start"`
+	Start DateOrDateTime `json:"start"`
 	// The end date of the date object, if any.
-	End civil.Date `json:"end,omitzero"`
+	End *DateOrDateTime `json:"end,omitzero"`
 	// The time zone of the date object, if any. E.g. America/Los_Angeles, Europe/London, etc.
 	TimeZone TimeZoneRequest `json:"time_zone,omitzero"`
 }
@@ -8292,9 +8347,9 @@ type DateRequest struct {
 // DateResponse defines a model
 type DateResponse struct {
 	// The start date of the date object.
-	Start string `json:"start"`
+	Start DateOrDateTime `json:"start"`
 	// The end date of the date object, if any.
-	End string `json:"end"`
+	End *DateOrDateTime `json:"end"`
 	// The time zone of the date object.
 	TimeZone TimeZoneRequest `json:"time_zone"`
 }
