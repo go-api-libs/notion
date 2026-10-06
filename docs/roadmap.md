@@ -16,19 +16,24 @@ its subpages and databases. Recording these too needs them added there first:
 
 ## Recordings the generated types cannot decode
 
-Five of the recorded responses in `api/interactions.json` fail to decode into the generated types:
-
-- `POST /v1/search`: its results mix pages and a data source, which enrich types as a three-item tuple next to the
-  array, so `PageOrDataSourceList.Results` is a union instead of a slice.
-- `POST /v1/data_sources/d58cc2b8-…/query`: `PageOrDataSourceListResults` matches none of its alternatives.
-- `GET /v1/views/cb3265bc-…`: a board view matches no alternative of `DataSourceViewOrPartial`.
-- `GET /v1/pages/24806928-…/properties/%3DuTh`: a formula property item matches no alternative.
-- `GET /v1/blocks/7d4dc32d-…`: a paragraph that mentions a user matches no alternative of `BlockOrPartial`.
+One of the recorded responses in `api/interactions.json` fails to decode into the generated types:
+`GET /v1/pages/24806928-…/properties/%3DuTh`, a formula property item, matches no alternative of
+`RetrieveAPagePropertyOk`.
 
 A test that decodes every recorded response with the generated types would catch the next one.
 
-Enrich also still files a recorded `and` filter under the query filter's `or` branch, whose `or` it requires, and
-infers a new item schema for it (`GroupFilterOperatorArrayItemOrAnd…`).
+## Workarounds in `api/fetch.go` for the openapi-* libraries
+
+Each can go once the library is fixed:
+
+- `setFilterForms` and `setResults` set `Filter` and `PageOrDataSourceList.Results` again after enrich. Enrich files a
+  recorded value under a union's first form even when it lacks that form's required members, and types an array
+  whose items differ in shape as a tuple.
+- `groupByConfigResponse` is made an `anyOf`, as codegen does not check a form's const members, so a `group_by`
+  matched all its forms.
+- Codegen does not check a form's required members either, which only `additionalProperties: false` makes up for when
+  decoding strictly. Decoding into a caller's own type with `…WithResult` is lenient, so a `Filter` within one
+  decodes `{"and": […]}` as an empty `or`.
 
 ## Names in the specification
 
@@ -40,13 +45,6 @@ infers a new item schema for it (`GroupFilterOperatorArrayItemOrAnd…`).
   required member tells apart. Those need names picked by hand in `api/fetch.go`.
 - The `ObjectResponse` and `Response` suffixes could go, and the names compress leaves in lower case, such as
   `numberSimplePropertyValue`, could be in Go's PascalCase like the rest.
-
-## Library
-
-- Iterators over paginated results: `pkg/notion/iterators.go` holds a commented-out one for blocks to build them from.
-- The entries of a view, filtered and sorted as it shows them: read the view once, then query its data source with its
-  filter and sorts. A view nests filters deeper than a query may, so an `or` within an `or`, or an `and` within an
-  `and`, has to join the outer one. `testing/main.go` does this for its recording.
 
 ## Recordings
 

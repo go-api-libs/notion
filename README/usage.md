@@ -4,6 +4,7 @@ To install the library, use the following command:
 go get github.com/go-api-libs/notion/pkg/notion
 ```
 
+The client reads the integration's token from `NOTION_API_TOKEN`, or takes it with `notion.WithBearer`.
 
 ### Example 1: Retrieve a Page
 
@@ -12,9 +13,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-api-libs/notion/pkg/notion"
-	"github.com/google/uuid"
 )
 
 func main() {
@@ -23,27 +24,27 @@ func main() {
 		panic(err)
 	}
 
-	ctx := context.Background()
-	page, err := c.GetPage(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"))
+	page, err := c.RetrieveAPage(context.Background(), "96245c8f-1784-44a4-82ad-1941127c3ec3", nil)
 	if err != nil {
 		panic(err)
 	}
 
-	// Use page object
+	if page.Page != nil {
+		fmt.Println(page.Page.Title())
+	}
 }
-
 ```
 
-### Example 2: Retrieve block children
+### Example 2: Iterate over a Page's Blocks
 
 ```go
 package main
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-api-libs/notion/pkg/notion"
-	"github.com/google/uuid"
 )
 
 func main() {
@@ -52,16 +53,19 @@ func main() {
 		panic(err)
 	}
 
-	ctx := context.Background()
-	blocksList, err := c.GetBlocks(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &notion.GetBlocksParams{
-		PageSize:    100,
-		StartCursor: uuid.MustParse("d05aa478-397e-4954-b694-b7c1c6c78956"),
-	})
-	if err != nil {
-		panic(err)
+	for block, err := range c.GetBlockChildrenAll(context.Background(), "96245c8f-1784-44a4-82ad-1941127c3ec3") {
+		if err != nil {
+			panic(err)
+		}
+
+		if block.Block != nil {
+			fmt.Println(block.Block.Type)
+		}
 	}
-
-	// Use blocksList object
 }
-
 ```
+
+### Example 3: The Entries of a Database View
+
+[`examples/view-entries`](examples/view-entries/main.go) prints a database's entries filtered and sorted like one of
+its views: it reads the view once, then passes its filter and sorts to a query of the data source it shows.
