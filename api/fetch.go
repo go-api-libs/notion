@@ -418,8 +418,7 @@ func nameObjects(doc *openapi.Document) {
 	}
 }
 
-// setResults makes the results of a search or a query of a data source a list of PageOrDataSource. It is set again
-// after enrich, which makes them a tuple of the pages and data sources it was given, as their shapes differ.
+// setResults makes the results of a search or a query of a data source a list of PageOrDataSource.
 func setResults(doc *openapi.Document) error {
 	const list, item = "PageOrDataSourceList", "PageOrDataSource"
 
@@ -692,37 +691,19 @@ var dateProps = []struct {
 	{"dateResponse", []string{"start", "end"}},
 }
 
-// allowDateTimes drops the date format from the dateProps, for enrich, which takes a date-time it was given for no
-// date. It fails unless each of them is, or is one of, a string with the date format, so a change upstream is noticed.
+// allowDateTimes makes the dateProps a DateOrDateTime. It fails unless each of them is, or is one of, a string with
+// the date format, so a change upstream is noticed.
 func allowDateTimes(doc *openapi.Document) error {
-	return eachDateString(doc, func(s *openapi.Schema) bool { return s.Format == openapi.FormatDate }, func(s *openapi.Schema) {
-		s.Format = ""
-	})
-}
-
-// setDateTimes lets the dateProps, after enrich, be a DateOrDateTime.
-func setDateTimes(doc *openapi.Document) error {
 	const name = "DateOrDateTime"
 
-	if _, ok := doc.Components.Schemas[name]; !ok {
-		doc.Components.Schemas.Set(name, &openapi.Schema{
-			Description: "An ISO 8601 date, with an optional time.",
-			AnyOf: openapi.SchemaList{
-				{Type: openapi.TypeString, Format: openapi.FormatDate},
-				{Type: openapi.TypeString, Format: openapi.FormatDateTime},
-			},
-		})
-	}
-
-	return eachDateString(doc, func(s *openapi.Schema) bool { return s.Format == "" }, func(s *openapi.Schema) {
-		ref := refTo(doc, name)
-		ref.Description = s.Description
-		s.Replace(ref)
+	doc.Components.Schemas.Set(name, &openapi.Schema{
+		Description: "An ISO 8601 date, with an optional time.",
+		AnyOf: openapi.SchemaList{
+			{Type: openapi.TypeString, Format: openapi.FormatDate},
+			{Type: openapi.TypeString, Format: openapi.FormatDateTime},
+		},
 	})
-}
 
-// eachDateString calls set on each string that match accepts in the dateProps, which are, or are one of, such strings.
-func eachDateString(doc *openapi.Document, match func(*openapi.Schema) bool, set func(*openapi.Schema)) error {
 	for _, d := range dateProps {
 		s, ok := doc.Components.Schemas[d.schema]
 		if !ok {
@@ -738,8 +719,10 @@ func eachDateString(doc *openapi.Document, match func(*openapi.Schema) bool, set
 			found := false
 
 			for _, alt := range append(openapi.SchemaList{p}, p.OneOf...) {
-				if alt.Type == openapi.TypeString && match(alt) {
-					set(alt)
+				if alt.Type == openapi.TypeString && alt.Format == openapi.FormatDate {
+					ref := refTo(doc, name)
+					ref.Description = alt.Description
+					alt.Replace(ref)
 
 					found = true
 				}
@@ -1170,11 +1153,7 @@ func applyPasses(doc *openapi.Document) error {
 
 			setFilterForms(d)
 
-			if err := setResults(d); err != nil {
-				return err
-			}
-
-			return setDateTimes(d)
+			return nil
 		}},
 		{"flatten", flattenDoc},
 		{"compress", func(d *openapi.Document) error { return compress.Document(d, compress.Config{}) }},

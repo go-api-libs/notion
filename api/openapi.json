@@ -10697,11 +10697,13 @@
         "anyOf": [
           {
             "type": "string",
-            "format": "date"
+            "format": "date",
+            "example": "2022-07-14"
           },
           {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-03T17:11:00.000+00:00"
           }
         ]
       },
