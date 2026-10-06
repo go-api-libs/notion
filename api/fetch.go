@@ -978,6 +978,14 @@ func fixOpenAPI() (*openapi.Document, error) {
 		return nil, err
 	}
 
+	// its forms differ only in the value of type, which codegen does not check yet, so a group_by matched them all
+	g, ok := doc.Components.Schemas["groupByConfigResponse"]
+	if !ok {
+		return nil, componentErr("groupByConfigResponse", errors.New("not found"))
+	}
+
+	g.AnyOf, g.OneOf = alternatives(g), nil
+
 	if err := applyPasses(doc); err != nil {
 		return nil, err
 	}

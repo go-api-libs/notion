@@ -27221,7 +27221,7 @@
       },
       "groupByConfigResponse": {
         "description": "Group-by configuration based on property type.",
-        "oneOf": [
+        "anyOf": [
           {
             "$ref": "#/components/schemas/selectGroupByConfigResponse"
           },

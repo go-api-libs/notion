@@ -10001,7 +10001,7 @@ func (v *GroupByConfigRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 }
 
 // Group-by configuration based on property type.
-// GroupByConfigResponse is an untagged oneOf union: exactly one field is set after unmarshaling.
+// GroupByConfigResponse is an untagged anyOf union: at least one field is set after unmarshaling.
 type GroupByConfigResponse struct {
 	SelectGroupByConfigResponse   *SelectGroupByConfigResponse
 	StatusGroupByConfigResponse   *StatusGroupByConfigResponse
@@ -10019,7 +10019,6 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = GroupByConfigResponse{}
 
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -10028,8 +10027,7 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	var matched int
 
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
+	{
 		var vv SelectGroupByConfigResponse
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
 			v.SelectGroupByConfigResponse = &vv
@@ -10037,8 +10035,7 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		}
 	}
 
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
+	{
 		var vv StatusGroupByConfigResponse
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
 			v.StatusGroupByConfigResponse = &vv
@@ -10046,8 +10043,7 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		}
 	}
 
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
+	{
 		var vv PersonGroupByConfigResponse
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
 			v.PersonGroupByConfigResponse = &vv
@@ -10055,8 +10051,7 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		}
 	}
 
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
+	{
 		var vv RelationGroupByConfigResponse
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
 			v.RelationGroupByConfigResponse = &vv
@@ -10064,8 +10059,7 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		}
 	}
 
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
+	{
 		var vv DateGroupByConfigResponse
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
 			v.DateGroupByConfigResponse = &vv
@@ -10073,8 +10067,7 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		}
 	}
 
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
+	{
 		var vv TextGroupByConfigResponse
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
 			v.TextGroupByConfigResponse = &vv
@@ -10082,8 +10075,7 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		}
 	}
 
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
+	{
 		var vv NumberGroupByConfigResponse
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
 			v.NumberGroupByConfigResponse = &vv
@@ -10091,8 +10083,7 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		}
 	}
 
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
+	{
 		var vv CheckboxGroupByConfigResponse
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
 			v.CheckboxGroupByConfigResponse = &vv
@@ -10100,8 +10091,7 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		}
 	}
 
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
+	{
 		var vv FormulaGroupByConfigResponse
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
 			v.FormulaGroupByConfigResponse = &vv
@@ -10109,8 +10099,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		}
 	}
 
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
 	}
 
 	return nil
