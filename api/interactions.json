@@ -700,7 +700,7 @@
 						}
 					]
 				},
-				"request_id": "ca808736-4712-4edd-903a-29981166450c"
+				"request_id": "030fec8e-5ed9-4910-8422-724cbcbf6218"
 			}
 		}
 	},
@@ -815,7 +815,7 @@
 								"type": "formula",
 								"formula": {
 									"type": "number",
-									"number": 331
+									"number": 413
 								}
 							},
 							"Started Hours Ago": {
@@ -823,7 +823,7 @@
 								"type": "formula",
 								"formula": {
 									"type": "number",
-									"number": 5.516666666667
+									"number": 6.883333333333
 								}
 							},
 							"Start Fallback": {
@@ -874,7 +874,7 @@
 									"type": "date",
 									"date": {
 										"start": "2026-10-06T03:00:00.000+00:00",
-										"end": "2026-10-06T08:31:00.000+00:00",
+										"end": "2026-10-06T09:53:00.000+00:00",
 										"time_zone": null
 									}
 								}
@@ -885,7 +885,7 @@
 								"formula": {
 									"type": "date",
 									"date": {
-										"start": "2026-10-06T08:31:00.000+00:00",
+										"start": "2026-10-06T09:53:00.000+00:00",
 										"end": null,
 										"time_zone": null
 									}
@@ -896,7 +896,7 @@
 								"type": "formula",
 								"formula": {
 									"type": "string",
-									"string": "5h 31m"
+									"string": "6h 53m"
 								}
 							},
 							"Priority": {
@@ -958,21 +958,21 @@
 					},
 					{
 						"object": "page",
-						"id": "3f088fcd-daf4-8160-8a85-daa05dbea1be",
-						"created_time": "2026-10-05T03:01:00.000Z",
-						"last_edited_time": "2026-10-06T01:28:00.000Z",
+						"id": "39588fcd-daf4-81b5-9e98-dc425530a49e",
+						"created_time": "2026-07-06T04:00:00.000Z",
+						"last_edited_time": "2026-07-26T10:30:00.000Z",
 						"created_by": {
 							"object": "user",
 							"id": "00000000-0000-0000-0000-000000000003"
 						},
 						"last_edited_by": {
 							"object": "user",
-							"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+							"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
 						},
 						"cover": null,
 						"icon": {
 							"type": "emoji",
-							"emoji": "🤓"
+							"emoji": "🎯"
 						},
 						"parent": {
 							"type": "data_source_id",
@@ -988,7 +988,7 @@
 								"type": "formula",
 								"formula": {
 									"type": "number",
-									"number": 838
+									"number": 104808
 								}
 							},
 							"Started Hours Ago": {
@@ -996,7 +996,7 @@
 								"type": "formula",
 								"formula": {
 									"type": "number",
-									"number": 13.966666666667
+									"number": 1746.8
 								}
 							},
 							"Start Fallback": {
@@ -1005,7 +1005,7 @@
 								"formula": {
 									"type": "date",
 									"date": {
-										"start": "2026-10-05T18:33:00.000+00:00",
+										"start": "2026-07-25T15:05:00.000+00:00",
 										"end": null,
 										"time_zone": null
 									}
@@ -1015,16 +1015,16 @@
 								"id": "%40F%3CW",
 								"type": "select",
 								"select": {
-									"id": "7cc827cd-2b85-4f5d-abc6-a08930dc7653",
-									"name": "In Progress",
-									"color": "orange"
+									"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
+									"name": "Not Started",
+									"color": "gray"
 								}
 							},
 							"Start": {
 								"id": "Blch",
 								"type": "date",
 								"date": {
-									"start": "2026-10-05T20:33:00.000+02:00",
+									"start": "2026-07-25T17:05:00.000+02:00",
 									"end": null,
 									"time_zone": null
 								}
@@ -1046,8 +1046,8 @@
 								"formula": {
 									"type": "date",
 									"date": {
-										"start": "2026-10-05T18:33:00.000+00:00",
-										"end": "2026-10-06T08:31:00.000+00:00",
+										"start": "2026-07-25T15:05:00.000+00:00",
+										"end": "2026-10-06T09:53:00.000+00:00",
 										"time_zone": null
 									}
 								}
@@ -1058,7 +1058,7 @@
 								"formula": {
 									"type": "date",
 									"date": {
-										"start": "2026-10-06T08:31:00.000+00:00",
+										"start": "2026-10-06T09:53:00.000+00:00",
 										"end": null,
 										"time_zone": null
 									}
@@ -1069,7 +1069,7 @@
 								"type": "formula",
 								"formula": {
 									"type": "string",
-									"string": "13h 58m"
+									"string": "1746h 48m"
 								}
 							},
 							"Priority": {
@@ -1084,14 +1084,14 @@
 							"Created time": {
 								"id": "kF%40C",
 								"type": "created_time",
-								"created_time": "2026-10-05T03:01:00.000Z"
+								"created_time": "2026-07-06T04:00:00.000Z"
 							},
 							"Priority If Not Started": {
 								"id": "mFVH",
 								"type": "formula",
 								"formula": {
 									"type": "string",
-									"string": ""
+									"string": null
 								}
 							},
 							"Time without Date": {
@@ -1099,7 +1099,7 @@
 								"type": "formula",
 								"formula": {
 									"type": "string",
-									"string": "18:33"
+									"string": "15:05"
 								}
 							},
 							"Name": {
@@ -1109,7 +1109,7 @@
 									{
 										"type": "text",
 										"text": {
-											"content": "Daily Learning",
+											"content": "Weekly Review",
 											"link": null
 										},
 										"annotations": {
@@ -1120,20 +1120,20 @@
 											"code": false,
 											"color": "default"
 										},
-										"plain_text": "Daily Learning",
+										"plain_text": "Weekly Review",
 										"href": null
 									}
 								]
 							}
 						},
-						"url": "https://app.notion.com/p/Daily-Learning-3f088fcddaf481608a85daa05dbea1be",
+						"url": "https://app.notion.com/p/Weekly-Review-39588fcddaf481b59e98dc425530a49e",
 						"public_url": null
 					},
 					{
 						"object": "page",
-						"id": "3f088fcd-daf4-81cc-8694-e44cffec8135",
-						"created_time": "2026-10-05T03:01:00.000Z",
-						"last_edited_time": "2026-10-05T03:01:00.000Z",
+						"id": "39c88fcd-daf4-81c0-a70a-d6676648ec34",
+						"created_time": "2026-07-13T04:13:00.000Z",
+						"last_edited_time": "2026-07-13T04:13:00.000Z",
 						"created_by": {
 							"object": "user",
 							"id": "00000000-0000-0000-0000-000000000003"
@@ -1145,7 +1145,7 @@
 						"cover": null,
 						"icon": {
 							"type": "emoji",
-							"emoji": "😮‍💨"
+							"emoji": "🎯"
 						},
 						"parent": {
 							"type": "data_source_id",
@@ -1161,7 +1161,7 @@
 								"type": "formula",
 								"formula": {
 									"type": "number",
-									"number": 1771
+									"number": null
 								}
 							},
 							"Started Hours Ago": {
@@ -1169,7 +1169,7 @@
 								"type": "formula",
 								"formula": {
 									"type": "number",
-									"number": 29.516666666667
+									"number": null
 								}
 							},
 							"Start Fallback": {
@@ -1178,7 +1178,7 @@
 								"formula": {
 									"type": "date",
 									"date": {
-										"start": "2026-10-05T03:00:00.000+00:00",
+										"start": "2026-10-06T09:53:00.000+00:00",
 										"end": null,
 										"time_zone": null
 									}
@@ -1188,19 +1188,15 @@
 								"id": "%40F%3CW",
 								"type": "select",
 								"select": {
-									"id": "7cc827cd-2b85-4f5d-abc6-a08930dc7653",
-									"name": "In Progress",
-									"color": "orange"
+									"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
+									"name": "Not Started",
+									"color": "gray"
 								}
 							},
 							"Start": {
 								"id": "Blch",
 								"type": "date",
-								"date": {
-									"start": "2026-10-05T05:00:00.000+02:00",
-									"end": null,
-									"time_zone": null
-								}
+								"date": null
 							},
 							"Recurring": {
 								"id": "TIII",
@@ -1219,8 +1215,8 @@
 								"formula": {
 									"type": "date",
 									"date": {
-										"start": "2026-10-05T03:00:00.000+00:00",
-										"end": "2026-10-06T08:31:00.000+00:00",
+										"start": "2026-10-06T09:53:00.000+00:00",
+										"end": "2026-10-06T10:53:00.000+00:00",
 										"time_zone": null
 									}
 								}
@@ -1231,7 +1227,7 @@
 								"formula": {
 									"type": "date",
 									"date": {
-										"start": "2026-10-06T08:31:00.000+00:00",
+										"start": "2026-10-06T10:53:00.000+00:00",
 										"end": null,
 										"time_zone": null
 									}
@@ -1242,7 +1238,7 @@
 								"type": "formula",
 								"formula": {
 									"type": "string",
-									"string": "29h 31m"
+									"string": null
 								}
 							},
 							"Priority": {
@@ -1257,14 +1253,14 @@
 							"Created time": {
 								"id": "kF%40C",
 								"type": "created_time",
-								"created_time": "2026-10-05T03:01:00.000Z"
+								"created_time": "2026-07-13T04:13:00.000Z"
 							},
 							"Priority If Not Started": {
 								"id": "mFVH",
 								"type": "formula",
 								"formula": {
 									"type": "string",
-									"string": ""
+									"string": null
 								}
 							},
 							"Time without Date": {
@@ -1272,7 +1268,7 @@
 								"type": "formula",
 								"formula": {
 									"type": "string",
-									"string": "03:00"
+									"string": null
 								}
 							},
 							"Name": {
@@ -1282,7 +1278,7 @@
 									{
 										"type": "text",
 										"text": {
-											"content": "Stundenatmung",
+											"content": "Weekly Review",
 											"link": null
 										},
 										"annotations": {
@@ -1293,21 +1289,21 @@
 											"code": false,
 											"color": "default"
 										},
-										"plain_text": "Stundenatmung",
+										"plain_text": "Weekly Review",
 										"href": null
 									}
 								]
 							}
 						},
-						"url": "https://app.notion.com/p/Stundenatmung-3f088fcddaf481cc8694e44cffec8135",
+						"url": "https://app.notion.com/p/Weekly-Review-39c88fcddaf481c0a70ad6676648ec34",
 						"public_url": null
 					}
 				],
-				"next_cursor": "s:d6c251ef-9a6e-4797-81b4-8053a21658f2:39588fcd-daf4-81b5-9e98-dc425530a49e",
+				"next_cursor": "s:eacf2f7f-1426-4eb2-a5f1-d63a0bb76f59:3a388fcd-daf4-81f1-9d95-c45c25832f17",
 				"has_more": true,
 				"type": "page_or_data_source",
 				"page_or_data_source": {},
-				"request_id": "ae9c5a05-9b72-44e4-b3e3-0b087bd3b05c"
+				"request_id": "b2c57706-ce0c-4e22-af55-e69a8f8ca5ad"
 			}
 		}
 	},
@@ -1345,7 +1341,7 @@
 				"has_more": false,
 				"type": "view",
 				"view": {},
-				"request_id": "41ae407e-dd7d-45f0-a63c-5b0fc477a2b8"
+				"request_id": "d7399d28-607b-466f-b6c8-1229b2d2243d"
 			}
 		}
 	},
@@ -1432,7 +1428,7 @@
 				},
 				"url": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0",
 				"public_url": null,
-				"request_id": "08342c5a-91f5-4b82-8c7d-52e021387bc0"
+				"request_id": "6b19f5ad-8e9a-4db4-b1a2-2c7724b49eeb"
 			}
 		}
 	},
@@ -1654,7 +1650,44 @@
 				"url": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0",
 				"public_url": null,
 				"in_trash": false,
-				"request_id": "cced88d6-2936-419a-bb90-710ef9be6723"
+				"request_id": "965fe607-d7ec-44db-a8a5-2163d52a926b"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/data_sources/9201f6db-2895-4450-9435-041541a181dd/templates",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"templates": [
+					{
+						"id": "11888fcd-daf4-8009-a1f7-ec117eeadd8e",
+						"name": "German Coaching",
+						"is_default": false
+					},
+					{
+						"id": "35488fcd-daf4-8076-8809-cab67ad467e4",
+						"name": "Miracle Morning ✨",
+						"is_default": false
+					},
+					{
+						"id": "34f88fcd-daf4-80a3-a23f-e744143c3e9d",
+						"name": "Daily Learning",
+						"is_default": false
+					}
+				],
+				"has_more": false,
+				"next_cursor": null
 			}
 		}
 	},
@@ -1695,7 +1728,7 @@
 				"child_database": {
 					"title": "Intentions"
 				},
-				"request_id": "e6476a9e-57dc-4d94-bbdf-b2c1cc529c7e"
+				"request_id": "5c006015-9c07-43fa-9af9-5c1927091a8d"
 			}
 		}
 	},
@@ -1730,7 +1763,7 @@
 						"max_file_upload_size_in_bytes": 5368709120
 					}
 				},
-				"request_id": "e1a1d25b-1b5d-41df-9bed-ec1931aa30ad"
+				"request_id": "55f397dd-95bc-43bd-91b2-81ee5696d5de"
 			}
 		}
 	},
@@ -1793,7 +1826,7 @@
 				"has_more": false,
 				"type": "user",
 				"user": {},
-				"request_id": "786c90c4-7734-4918-baac-87eec0818464"
+				"request_id": "ec54f26e-9c42-4b5d-9439-5282caeb8bbc"
 			}
 		}
 	},
@@ -1822,14 +1855,14 @@
 						"object": "page",
 						"id": "96245c8f-1784-44a4-82ad-1941127c3ec3",
 						"created_time": "2022-07-14T05:31:00.000Z",
-						"last_edited_time": "2026-10-06T08:30:00.000Z",
+						"last_edited_time": "2026-10-06T09:50:00.000Z",
 						"created_by": {
 							"object": "user",
 							"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
 						},
 						"last_edited_by": {
 							"object": "user",
-							"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+							"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
 						},
 						"cover": {
 							"type": "external",
@@ -1878,23 +1911,24 @@
 					},
 					{
 						"object": "page",
-						"id": "3f188fcd-daf4-81fb-8780-f9b94d9fcaf4",
-						"created_time": "2026-10-06T08:30:00.000Z",
-						"last_edited_time": "2026-10-06T08:30:00.000Z",
+						"id": "3f188fcd-daf4-8089-bf73-d43c6c0d032c",
+						"created_time": "2026-10-06T09:44:00.000Z",
+						"last_edited_time": "2026-10-06T09:44:00.000Z",
 						"created_by": {
 							"object": "user",
-							"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+							"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
 						},
 						"last_edited_by": {
 							"object": "user",
-							"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+							"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
 						},
 						"cover": null,
 						"icon": {
-							"type": "icon",
-							"icon": {
-								"name": "pizza",
-								"color": "blue"
+							"type": "custom_emoji",
+							"custom_emoji": {
+								"id": "3f188fcd-daf4-81e2-8d16-007a68864067",
+								"name": "old-man-yells-at-notion",
+								"url": "https://s3-us-west-2.amazonaws.com/public.notion-static.com/2cf84a56-facc-40e2-b456-d00e487d679b/old-man-yells-at-notion.png"
 							}
 						},
 						"parent": {
@@ -1912,7 +1946,7 @@
 									{
 										"type": "text",
 										"text": {
-											"content": "Page with a Notion icon",
+											"content": "Page with custom emoji",
 											"link": null
 										},
 										"annotations": {
@@ -1923,92 +1957,163 @@
 											"code": false,
 											"color": "default"
 										},
-										"plain_text": "Page with a Notion icon",
+										"plain_text": "Page with custom emoji",
 										"href": null
 									}
 								]
 							}
 						},
-						"url": "https://app.notion.com/p/Page-with-a-Notion-icon-3f188fcddaf481fb8780f9b94d9fcaf4",
-						"public_url": "https://fae-tools.notion.site/Page-with-a-Notion-icon-3f188fcddaf481fb8780f9b94d9fcaf4"
+						"url": "https://app.notion.com/p/Page-with-custom-emoji-3f188fcddaf48089bf73d43c6c0d032c",
+						"public_url": "https://fae-tools.notion.site/Page-with-custom-emoji-3f188fcddaf48089bf73d43c6c0d032c"
 					},
 					{
 						"object": "page",
-						"id": "3f188fcd-daf4-8186-9616-e12b8edac605",
-						"created_time": "2026-10-06T08:30:00.000Z",
-						"last_edited_time": "2026-10-06T08:30:00.000Z",
+						"id": "3f088fcd-daf4-81cc-8694-e44cffec8135",
+						"created_time": "2026-10-05T03:01:00.000Z",
+						"last_edited_time": "2026-10-06T09:39:00.000Z",
 						"created_by": {
 							"object": "user",
-							"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+							"id": "00000000-0000-0000-0000-000000000003"
 						},
 						"last_edited_by": {
 							"object": "user",
-							"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+							"id": "00000000-0000-0000-0000-000000000003"
 						},
 						"cover": null,
-						"icon": null,
+						"icon": {
+							"type": "emoji",
+							"emoji": "😮‍💨"
+						},
 						"parent": {
 							"type": "data_source_id",
-							"data_source_id": "c1df42f3-5a67-4995-b51f-7f296e6ab0eb",
-							"database_id": "cbfdfb25-9bb5-499e-ad1d-64a11bfe95dd"
+							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
+							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
 						},
 						"in_trash": false,
 						"is_archived": false,
 						"is_locked": false,
 						"properties": {
-							"Related": {
-								"id": "%3Ewe%5B",
-								"type": "relation",
-								"relation": [
-									{
-										"id": "3f188fcd-daf4-818c-ac08-cd0a453149e3"
-									}
-								],
-								"has_more": false
-							},
-							"Latest related date": {
-								"id": "IEis",
-								"type": "rollup",
-								"rollup": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-06T09:30:00.000+02:00",
-										"end": null,
-										"time_zone": null
-									},
-									"function": "latest_date"
+							"Duration": {
+								"id": "%3ANHe",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": 1839
 								}
 							},
-							"When": {
-								"id": "T%7CMj",
+							"Started Hours Ago": {
+								"id": "%3Bpl%3A",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": 30.883333333333
+								}
+							},
+							"Start Fallback": {
+								"id": "%3FjhJ",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-05T03:00:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Status": {
+								"id": "%40F%3CW",
+								"type": "select",
+								"select": {
+									"id": "a41e503a-3739-419f-ac25-10ca4a1e9ced",
+									"name": "Done",
+									"color": "green"
+								}
+							},
+							"Start": {
+								"id": "Blch",
 								"type": "date",
 								"date": {
-									"start": "2026-10-07",
+									"start": "2026-10-05T05:00:00.000+02:00",
 									"end": null,
 									"time_zone": null
 								}
 							},
-							"Last visited": {
-								"id": "klZz",
-								"type": "last_visited_time",
-								"last_visited_time": null
+							"Recurring": {
+								"id": "TIII",
+								"type": "relation",
+								"relation": [],
+								"has_more": false
 							},
-							"Place": {
-								"id": "kuJP",
-								"type": "place",
-								"place": null
+							"End": {
+								"id": "_Y%3BI",
+								"type": "date",
+								"date": {
+									"start": "2026-10-06T11:39:00.000+02:00",
+									"end": null,
+									"time_zone": null
+								}
 							},
-							"Last edited": {
-								"id": "x%3D~k",
-								"type": "last_edited_time",
-								"last_edited_time": "2026-10-06T08:30:00.000Z"
+							"Time": {
+								"id": "%60G%7Bc",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-05T03:00:00.000+00:00",
+										"end": "2026-10-06T09:39:00.000+00:00",
+										"time_zone": null
+									}
+								}
 							},
-							"ID": {
-								"id": "%7B%7B%3D%3B",
-								"type": "unique_id",
-								"unique_id": {
-									"prefix": "COV",
-									"number": 2
+							"End Fallback": {
+								"id": "c%3A%5DA",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-06T09:39:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Human Duration": {
+								"id": "dAuV",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": "30h 39m"
+								}
+							},
+							"Priority": {
+								"id": "ePdI",
+								"type": "rollup",
+								"rollup": {
+									"type": "array",
+									"array": [],
+									"function": "show_original"
+								}
+							},
+							"Created time": {
+								"id": "kF%40C",
+								"type": "created_time",
+								"created_time": "2026-10-05T03:01:00.000Z"
+							},
+							"Priority If Not Started": {
+								"id": "mFVH",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": ""
+								}
+							},
+							"Time without Date": {
+								"id": "r%3A%3D%5E",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": "03:00-09:39"
 								}
 							},
 							"Name": {
@@ -2018,7 +2123,7 @@
 									{
 										"type": "text",
 										"text": {
-											"content": "With a date and a relation",
+											"content": "Stundenatmung",
 											"link": null
 										},
 										"annotations": {
@@ -2029,21 +2134,21 @@
 											"code": false,
 											"color": "default"
 										},
-										"plain_text": "With a date and a relation",
+										"plain_text": "Stundenatmung",
 										"href": null
 									}
 								]
 							}
 						},
-						"url": "https://app.notion.com/p/With-a-date-and-a-relation-3f188fcddaf481869616e12b8edac605",
-						"public_url": "https://fae-tools.notion.site/With-a-date-and-a-relation-3f188fcddaf481869616e12b8edac605"
+						"url": "https://app.notion.com/p/Stundenatmung-3f088fcddaf481cc8694e44cffec8135",
+						"public_url": null
 					}
 				],
-				"next_cursor": "3f188fcd-daf4-818c-ac08-cd0a453149e3",
+				"next_cursor": "3f188fcd-daf4-81fb-8780-f9b94d9fcaf4",
 				"has_more": true,
 				"type": "page_or_data_source",
 				"page_or_data_source": {},
-				"request_id": "4581a981-a24e-4883-858d-429099761271"
+				"request_id": "83cf200c-83a3-43ff-97f7-aeed99495975"
 			}
 		}
 	},
@@ -2069,7 +2174,7 @@
 				"additional_data": {
 					"integration_id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
 				},
-				"request_id": "7f905f0e-73fb-492a-a3fe-eda7abc603b4"
+				"request_id": "3ff794b6-f2fb-4892-84dd-f8e76085a4a9"
 			}
 		}
 	},
@@ -2143,7 +2248,7 @@
 								"formula": {
 									"type": "date",
 									"date": {
-										"start": "2026-10-06T08:31:00.000+00:00",
+										"start": "2026-10-06T09:53:00.000+00:00",
 										"end": null,
 										"time_zone": null
 									}
@@ -2180,8 +2285,8 @@
 								"formula": {
 									"type": "date",
 									"date": {
-										"start": "2026-10-06T08:31:00.000+00:00",
-										"end": "2026-10-06T09:31:00.000+00:00",
+										"start": "2026-10-06T09:53:00.000+00:00",
+										"end": "2026-10-06T10:53:00.000+00:00",
 										"time_zone": null
 									}
 								}
@@ -2192,7 +2297,7 @@
 								"formula": {
 									"type": "date",
 									"date": {
-										"start": "2026-10-06T09:31:00.000+00:00",
+										"start": "2026-10-06T10:53:00.000+00:00",
 										"end": null,
 										"time_zone": null
 									}
@@ -2312,7 +2417,7 @@
 								"formula": {
 									"type": "date",
 									"date": {
-										"start": "2026-10-06T08:31:00.000+00:00",
+										"start": "2026-10-06T09:53:00.000+00:00",
 										"end": null,
 										"time_zone": null
 									}
@@ -2349,8 +2454,8 @@
 								"formula": {
 									"type": "date",
 									"date": {
-										"start": "2026-10-06T08:31:00.000+00:00",
-										"end": "2026-10-06T09:31:00.000+00:00",
+										"start": "2026-10-06T09:53:00.000+00:00",
+										"end": "2026-10-06T10:53:00.000+00:00",
 										"time_zone": null
 									}
 								}
@@ -2361,7 +2466,7 @@
 								"formula": {
 									"type": "date",
 									"date": {
-										"start": "2026-10-06T09:31:00.000+00:00",
+										"start": "2026-10-06T10:53:00.000+00:00",
 										"end": null,
 										"time_zone": null
 									}
@@ -2481,7 +2586,7 @@
 								"formula": {
 									"type": "date",
 									"date": {
-										"start": "2026-10-06T08:31:00.000+00:00",
+										"start": "2026-10-06T09:53:00.000+00:00",
 										"end": null,
 										"time_zone": null
 									}
@@ -2518,8 +2623,8 @@
 								"formula": {
 									"type": "date",
 									"date": {
-										"start": "2026-10-06T08:31:00.000+00:00",
-										"end": "2026-10-06T09:31:00.000+00:00",
+										"start": "2026-10-06T09:53:00.000+00:00",
+										"end": "2026-10-06T10:53:00.000+00:00",
 										"time_zone": null
 									}
 								}
@@ -2530,7 +2635,7 @@
 								"formula": {
 									"type": "date",
 									"date": {
-										"start": "2026-10-06T09:31:00.000+00:00",
+										"start": "2026-10-06T10:53:00.000+00:00",
 										"end": null,
 										"time_zone": null
 									}
@@ -2602,11 +2707,11 @@
 						"public_url": null
 					}
 				],
-				"next_cursor": "s:9b8a4dbd-e800-4046-a192-11c8c1d0d036:3f188fcd-daf4-810d-9f51-d4d685d67e00",
+				"next_cursor": "s:87110979-4e3d-49b7-a320-66755c015af4:3f188fcd-daf4-810d-9f51-d4d685d67e00",
 				"has_more": true,
 				"type": "page_or_data_source",
 				"page_or_data_source": {},
-				"request_id": "5d4d636b-0057-4f3f-99d9-da7103f4facb"
+				"request_id": "309881c2-3465-45da-b998-8de0657965fc"
 			}
 		}
 	},
@@ -2673,7 +2778,7 @@
 						"formula": {
 							"type": "date",
 							"date": {
-								"start": "2026-10-06T08:31:00.000+00:00",
+								"start": "2026-10-06T09:53:00.000+00:00",
 								"end": null,
 								"time_zone": null
 							}
@@ -2710,8 +2815,8 @@
 						"formula": {
 							"type": "date",
 							"date": {
-								"start": "2026-10-06T08:31:00.000+00:00",
-								"end": "2026-10-06T09:31:00.000+00:00",
+								"start": "2026-10-06T09:53:00.000+00:00",
+								"end": "2026-10-06T10:53:00.000+00:00",
 								"time_zone": null
 							}
 						}
@@ -2722,7 +2827,7 @@
 						"formula": {
 							"type": "date",
 							"date": {
-								"start": "2026-10-06T09:31:00.000+00:00",
+								"start": "2026-10-06T10:53:00.000+00:00",
 								"end": null,
 								"time_zone": null
 							}
@@ -2792,7 +2897,7 @@
 				},
 				"url": "https://app.notion.com/p/Coding-3f188fcddaf481309c71f72c82d43983",
 				"public_url": null,
-				"request_id": "cb717f07-b197-4645-926c-d356290d07f9"
+				"request_id": "8de39295-4279-4747-b97f-661dc2c24a15"
 			}
 		}
 	},
@@ -2845,7 +2950,7 @@
 					"type": "title",
 					"title": {}
 				},
-				"request_id": "763b3b73-776d-484a-982f-70a189e0def2"
+				"request_id": "a122d117-8642-4f97-ad32-3a6af822d99d"
 			}
 		}
 	},
@@ -2870,7 +2975,7 @@
 				"has_more": false,
 				"type": "block",
 				"block": {},
-				"request_id": "d571eca8-a38e-4da5-8184-1a153c6ee5a5"
+				"request_id": "d5faf752-16c2-401b-8d2c-47268bbe42bf"
 			}
 		}
 	},
@@ -2884,16 +2989,18 @@
 			}
 		},
 		"response": {
-			"statusCode": 403,
+			"statusCode": 200,
 			"header": {
 				"Content-Type": "application/json; charset=utf-8"
 			},
 			"body": {
-				"object": "error",
-				"status": 403,
-				"code": "restricted_resource",
-				"message": "Insufficient permissions for this endpoint.",
-				"request_id": "4d157066-754a-4459-b900-4fd803d7760d"
+				"object": "list",
+				"results": [],
+				"next_cursor": null,
+				"has_more": false,
+				"type": "comment",
+				"comment": {},
+				"request_id": "dd0b011c-2bbe-4964-853e-df0f5d26f5c3"
 			}
 		}
 	},
@@ -2915,14 +3022,14 @@
 				"object": "page",
 				"id": "96245c8f-1784-44a4-82ad-1941127c3ec3",
 				"created_time": "2022-07-14T05:31:00.000Z",
-				"last_edited_time": "2026-10-06T08:30:00.000Z",
+				"last_edited_time": "2026-10-06T09:50:00.000Z",
 				"created_by": {
 					"object": "user",
 					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
 				},
 				"last_edited_by": {
 					"object": "user",
-					"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
 				},
 				"cover": {
 					"type": "external",
@@ -2968,7 +3075,7 @@
 				},
 				"url": "https://app.notion.com/p/Example-Page-96245c8f178444a482ad1941127c3ec3",
 				"public_url": "https://fae-tools.notion.site/Example-Page-96245c8f178444a482ad1941127c3ec3",
-				"request_id": "11be1b54-f5f4-4b21-a5d5-e37948442d5d"
+				"request_id": "4f2cc6bf-5361-46cc-a253-8d374a8f338c"
 			}
 		}
 	},
@@ -3021,7 +3128,7 @@
 					"type": "title",
 					"title": {}
 				},
-				"request_id": "31e58ce6-377c-424c-8e6c-3c1b6e493af7"
+				"request_id": "83b0af11-78f5-49b3-8f63-30bc46589525"
 			}
 		}
 	},
@@ -3161,7 +3268,73 @@
 				"has_more": true,
 				"type": "block",
 				"block": {},
-				"request_id": "9e18d335-8f6d-42f6-a19a-842362ac93d0"
+				"request_id": "95e5aa8b-b987-4c00-bd90-d6c2b9d253b1"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/comments?block_id=96245c8f-1784-44a4-82ad-1941127c3ec3",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [
+					{
+						"object": "comment",
+						"id": "3f188fcd-daf4-81a3-b7ff-001d100d358e",
+						"parent": {
+							"type": "page_id",
+							"page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
+						},
+						"discussion_id": "3f188fcd-daf4-81f7-9886-001c2004f7e4",
+						"created_time": "2026-10-06T09:51:00.000Z",
+						"last_edited_time": "2026-10-06T09:51:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+						},
+						"rich_text": [
+							{
+								"type": "text",
+								"text": {
+									"content": "A comment, for the API's coverage.",
+									"link": null
+								},
+								"annotations": {
+									"bold": false,
+									"italic": false,
+									"strikethrough": false,
+									"underline": false,
+									"code": false,
+									"color": "default"
+								},
+								"plain_text": "A comment, for the API's coverage.",
+								"href": null
+							}
+						],
+						"display_name": {
+							"type": "integration",
+							"resolved_name": "Fae"
+						},
+						"original_content_deleted": false,
+						"has_pending_attachments": false
+					}
+				],
+				"next_cursor": null,
+				"has_more": false,
+				"type": "comment",
+				"comment": {},
+				"request_id": "2a583778-b3c5-452a-8785-72b7f5ba63f9"
 			}
 		}
 	},
@@ -3204,7 +3377,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "dbde0fca-98a1-4bc2-9b7e-89ecfc090f1b"
+				"request_id": "7cf8c0d3-605d-4446-9661-47a60a8bf562"
 			}
 		}
 	},
@@ -3265,7 +3438,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "d02faaf4-8be6-47d9-b3b5-8ad2eb413fc0"
+				"request_id": "1e31e60b-39c6-4554-86d7-4a8229e9fa81"
 			}
 		}
 	},
@@ -3326,7 +3499,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "8a5623f5-0e15-4d87-b7ca-f5616acbd52a"
+				"request_id": "cdf4607e-8379-4175-b7a9-ae5b243ea598"
 			}
 		}
 	},
@@ -3421,7 +3594,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "de815a6e-76e2-4b01-934d-9f842a80913a"
+				"request_id": "c29e6ae6-2cab-48ec-811c-998b64edb04b"
 			}
 		}
 	},
@@ -3516,7 +3689,7 @@
 					"icon": null,
 					"color": "yellow"
 				},
-				"request_id": "ea23c1d5-7f00-4f77-9d65-63c3899be7be"
+				"request_id": "091b561f-616d-4bc1-8e0a-e1b0bfacc0e8"
 			}
 		}
 	},
@@ -3577,7 +3750,7 @@
 					"icon": null,
 					"color": "yellow_background"
 				},
-				"request_id": "540bc07d-cc05-40f2-abd6-9c0fe6b5c01c"
+				"request_id": "af87343b-84cb-42ce-883c-534e94259760"
 			}
 		}
 	},
@@ -3672,7 +3845,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "578bb326-0115-4c7a-b699-dac21315abd5"
+				"request_id": "f2d2657d-912c-432a-8a09-87380a8b5564"
 			}
 		}
 	},
@@ -3735,7 +3908,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "03a37649-aca5-4e76-a480-1b3a5f14f074"
+				"request_id": "9ebabf29-3d80-444a-8aa6-d3449b8dc39b"
 			}
 		}
 	},
@@ -3796,7 +3969,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "5a3461c5-a81f-4301-918f-4d027a41f206"
+				"request_id": "af3e8fa1-3a51-4516-8e0e-90dfbd78166a"
 			}
 		}
 	},
@@ -3891,7 +4064,7 @@
 					"is_toggleable": false,
 					"color": "default"
 				},
-				"request_id": "871ef71b-078f-4cbd-8ddb-3c32fbe11a1b"
+				"request_id": "6be91df4-940f-467c-9cd5-7130de3f0423"
 			}
 		}
 	},
@@ -3952,7 +4125,7 @@
 					"is_toggleable": true,
 					"color": "default"
 				},
-				"request_id": "9fcc179e-5c54-4968-a680-ecf9f5512ec9"
+				"request_id": "fbfc6384-3719-466a-bc86-bddb77a2a91c"
 			}
 		}
 	},
@@ -4013,7 +4186,7 @@
 					"is_toggleable": false,
 					"color": "default"
 				},
-				"request_id": "76b40de3-9270-4b4a-8ea9-3c5209972c4d"
+				"request_id": "e708f0fc-9082-4e99-a9f0-857c39016748"
 			}
 		}
 	},
@@ -4077,7 +4250,7 @@
 					},
 					"color": "gray_background"
 				},
-				"request_id": "1c115937-5b29-4923-9c95-2802a6c283fe"
+				"request_id": "c8cc2d53-6dec-49ad-8b1b-5f8ac857e583"
 			}
 		}
 	},
@@ -4143,7 +4316,7 @@
 					},
 					"color": "orange"
 				},
-				"request_id": "326abe1d-1a41-41f7-ba14-a6737d3535bf"
+				"request_id": "b27cc513-1bfa-4b1e-9543-4b0971414441"
 			}
 		}
 	},
@@ -4204,13 +4377,13 @@
 					"icon": {
 						"type": "file",
 						"file": {
-							"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/30d8226f-1494-40f3-898c-4683f6e14a38/sparkles_2728.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UDFTGSUY%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T083116Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECcaCXVzLXdlc3QtMiJHMEUCIQCHK98y6%2BnOeC3tiKUTCfeiv5cqQzQ7WIG%2BQl3fVJMsQgIgMLuvsnhP2EXr57Dc0RNY1bbASMCSVxxGegoFb%2FRJdHUqiAQI7%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDIEes2IWh2ZXnEBK8yrcA7m9sAf8OmFdkrBcLoC8zg95mhZSTqadqOrQIuQhHD6RUAMCY1f0X8tOwTaz8HVpHAsYyMEgpf2flKJzWB5Q%2BC4pvb7jRqU%2BFMJIU7OaW%2B22UOz8Sc5bDYBvAIC8P%2B2%2BevSDROqskwOitaJrH1m7TNmNHQDuW61A88QF2REBh0W8zllG%2F79X44xIMPKjJoDaiTeyNZewUBbwLWRkkBfuoCTblqx%2BDYi%2B%2FKwrq6qz6zTCueo0hAXTN4Kmzi%2FmQ%2BF90d2FF25dit%2FUeefCiyYmGbiJIiZdYJM7sNTfhXmfdp41wS0QRvLYAd7AC7vPmfE4BC7cWWTzxDw%2BAHY4xgELdp0On%2Ffu%2BsqYrFbeMnuS6MkdyekZws%2FA3JiJJ%2B%2FIfJV3TjthxySkcBWsqEpc9RwzofDp%2FvPval9BFpk17Y6Or3%2BeiMeUM0uPJulDO833sA9WpyV7XV3Jx6D5UxQw1GCjmKCNjDhnvdbRHg0uScl2YpFht8kWMcrDMKvRL13VSf1Jx5bnUJLph1Ob9JZHlnTkJub1EUgRCsMYLqI5zSM8EvSyctq%2B6eMbU%2FcisXFaJBtjyC3d9L%2FIemgRy204%2BH0fRgz%2BH5ugWF%2BU8cUHlkIz%2BoNHV0VUg%2F5NCtH4GlzAMN69ktYGOqUBNpxk9PQcghR%2Bg5UnWvQnq3Fzfyeh6iNQrYm6v%2FYkMWWl9VUYX4kMS4bK%2Fh6PWruAQQ3lqGXsUCHsAWprK5oCeN61QwMF%2Bys2Q6m77VVskUXBQACtPskrqGSYmdZRdb5vdnp8AKr7%2FEwuzzd32JlS2WCpzkb3w9DuE%2F9rUhh1UYg2l1KdDvoq6yoZ6aYRPqZlZvL4E2RsgT5viDyA1HT5UV5CzutB&X-Amz-Signature=a62393e5047ac12ad4186fca05707f67faa4a8ac7dde590f7c79c261aedb6d0a&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
-							"expiry_time": "2026-10-06T09:31:16.841Z"
+							"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/30d8226f-1494-40f3-898c-4683f6e14a38/sparkles_2728.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665ZLEVMQG%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T095351Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECkaCXVzLXdlc3QtMiJHMEUCIQDbpyCe0wa3EesY5yE6UgB4ZO6R6XwlZQeaoP%2BvRildiQIgLeS8O7JaikJH1nXWfKhYhDtaZLwCduLbzsA%2FqTsmfvAqiAQI8f%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDALvTYGxLorJTKZ4fircA%2FxI25W9F5mPvy9EAGLgBvxRbKEDwDuBjimmm28wqqJVN%2BD%2Fto9pzrBT%2Bn6HD7pUtSpzxZocsFWDWpkY8czRUgqPiFgG4w5sLdGvkRrgEIU3lWYVc2d5UrFeKo%2BP6vDPi%2BH8vbmqyTgt21NqDqDYTu0IteI9plmQyCNCc8ojNRF1%2BB1A%2F9r0%2FRIIfOgyYyu7L32HO4U7JDxsBRuWaPr7H5UfEGpvJlESuY6Ch%2Bdnnr3KeDjw5fOvQ3j7BWFr1eJ54TEuBR7I1WtilHtRTIa3CTwNuCKzVi%2FqmrRw8tpIfFvs9JRL%2F0JJ0vmM%2BmtWNxeKR4W2JQgZ9Z1nZXb7fyz%2F80OeZCpjzEZMLQhlVy23%2FF8W2mhvwJYGZvO6n52ZdykAkopzJAbu7OrhKWc0S%2F4tOv3h%2BSquHcvVaLTIiFkCFDk6ut%2FBV3yHNOZXLikWXKNca1H7jNFgcwKUzl5i4q7UhJ34Uab9YW9h0s1ahbDfnw5vOLiAPuYCm02M%2BxbTdStmxPg0BwyLyihpCX0xDDlEcfot8GtMn1y5p%2BwwZiSU0cSEEvDrUp25sxmuv6e1erGXoTxoJv2flWIUglztyjwUn%2BZ3O1zmP1l5kbAcoD0hV1pTM9cjaaxXLOo0W%2Fs%2BML%2FyktYGOqUByGFjwHvaaEd0II48CxjIcg3B%2B5an8osDYkvLH3ldZLRGx6tGvwlqpr14y21hQ5IaqHlMvRW%2FRRpx30dPescfWlAwPEVHMnId%2BlnX3zkiX6YZOOnGljDJtNdNtyB80LG7UxoMe19%2FVUomixlH2BTiWSYhVv0CEg4w8bpZ39Qqo1XNBFjgkmdUgWxJn64FzRZ06XU8y01WBQWCUAVO%2B1TftTAe3qdo&X-Amz-Signature=1a6706d1a1bbea93f7913940db1d3fc95f37eb196a0f230f9b766801a8210902&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+							"expiry_time": "2026-10-06T10:53:51.686Z"
 						}
 					},
 					"color": "gray_background"
 				},
-				"request_id": "e7c80f37-1a7f-40bb-89e7-1e8941dcf935"
+				"request_id": "88d3b4f7-4623-408c-8ae5-b0b8cc990f85"
 			}
 		}
 	},
@@ -4304,7 +4477,7 @@
 					],
 					"color": "green"
 				},
-				"request_id": "01f4e93b-8fc7-4fbb-8f86-ac353bd211d4"
+				"request_id": "8f3879c2-882e-4eca-a576-140b1c84c1f6"
 			}
 		}
 	},
@@ -4348,7 +4521,7 @@
 						"block_id": "0960b64c-81c9-4f19-a873-e8072b083a40"
 					}
 				},
-				"request_id": "c8ff9350-07b5-400b-8c19-bb7b2780f4ab"
+				"request_id": "29240ab7-a591-40a4-81a7-a19fc5a6e873"
 			}
 		}
 	},
@@ -4409,7 +4582,7 @@
 					"checked": true,
 					"color": "default"
 				},
-				"request_id": "5a5a3bd1-6b86-4364-a8bf-841b11edd84d"
+				"request_id": "059af09c-a47e-4d77-ac70-cc537ee9b1c6"
 			}
 		}
 	},
@@ -4469,7 +4642,7 @@
 					],
 					"color": "default"
 				},
-				"request_id": "0ac9a9ce-3e65-4615-a619-071fde5ab927"
+				"request_id": "951fecc2-8884-44f8-959f-b11daedf5cd0"
 			}
 		}
 	},
@@ -4529,7 +4702,7 @@
 					],
 					"color": "red_background"
 				},
-				"request_id": "3eea9d5a-a4ca-40ec-a9b5-6e6168112d69"
+				"request_id": "478b4df7-e811-4f78-af07-60b18e4926c3"
 			}
 		}
 	},
@@ -4589,7 +4762,7 @@
 					],
 					"color": "default"
 				},
-				"request_id": "08dfaf92-ed2f-45d4-8a0d-3fd78ffb4107"
+				"request_id": "b12e4834-2001-415d-b7fe-7fbcd64042a1"
 			}
 		}
 	},
@@ -4649,7 +4822,7 @@
 					],
 					"color": "default"
 				},
-				"request_id": "af965e00-f10c-4553-9203-015c15a3424e"
+				"request_id": "91d03c30-4be7-4d0a-b5e0-77a1d0b2507b"
 			}
 		}
 	},
@@ -4709,7 +4882,7 @@
 					],
 					"color": "default"
 				},
-				"request_id": "185a6e7a-c9db-4b4a-ba20-c7f60f5a41b4"
+				"request_id": "183a2e97-5a01-4eb1-9289-fba5760174e8"
 			}
 		}
 	},
@@ -4751,7 +4924,7 @@
 					"rich_text": [],
 					"color": "default"
 				},
-				"request_id": "b615263b-f6f6-4d83-86b6-b3b4add470bc"
+				"request_id": "dc39a194-3b2d-4811-8f84-b740feb40eed"
 			}
 		}
 	},
@@ -4812,7 +4985,7 @@
 					"checked": false,
 					"color": "default"
 				},
-				"request_id": "250d6f98-2341-41af-ab88-d3fb5b22497c"
+				"request_id": "8450cfc9-c7f2-48d3-be6f-6a7c77919053"
 			}
 		}
 	},
@@ -4872,7 +5045,7 @@
 					],
 					"color": "default"
 				},
-				"request_id": "b2543ae9-07b2-47bd-a688-0784e2b36284"
+				"request_id": "aa0180ff-4546-4db3-af5b-17140d25823a"
 			}
 		}
 	},
@@ -4932,7 +5105,7 @@
 					],
 					"color": "blue"
 				},
-				"request_id": "07620505-2ae6-4d23-941f-6d6391a64566"
+				"request_id": "3a2530d5-d819-4505-aaf1-2840cde0c9c5"
 			}
 		}
 	},
@@ -4993,7 +5166,7 @@
 					"icon": null,
 					"color": "yellow"
 				},
-				"request_id": "dd82aa86-5e12-4434-8ea0-640cbc120a01"
+				"request_id": "7df42e8b-7de6-4d7b-bcbb-7ed4f54c8728"
 			}
 		}
 	},
@@ -5108,7 +5281,7 @@
 					],
 					"language": "go"
 				},
-				"request_id": "bb80a8d9-79ac-4d63-b959-9bf2582352e5"
+				"request_id": "11e4987e-7d30-46b2-a172-403eac120110"
 			}
 		}
 	},
@@ -5149,7 +5322,7 @@
 				"child_page": {
 					"title": "My child page"
 				},
-				"request_id": "00784b24-52f2-477c-bcf1-6853592b4370"
+				"request_id": "056ec69b-4fcc-4c54-b4f9-9d858d798650"
 			}
 		}
 	},
@@ -5216,7 +5389,7 @@
 				},
 				"url": "https://app.notion.com/p/My-child-page-2633808e7e364f4e972accd2d3c49004",
 				"public_url": "https://fae-tools.notion.site/My-child-page-2633808e7e364f4e972accd2d3c49004",
-				"request_id": "cb9490ec-b019-4607-88b7-20724a3cfb41"
+				"request_id": "bd6b12e4-24c5-4e4b-ab12-111a83e952c3"
 			}
 		}
 	},
@@ -5257,7 +5430,7 @@
 				"child_database": {
 					"title": "My Child Database"
 				},
-				"request_id": "9dd94d46-2d20-42a1-ae38-729a17191d5d"
+				"request_id": "e71e958e-a8d5-47d3-95d5-fe3d4d8c8401"
 			}
 		}
 	},
@@ -5318,7 +5491,7 @@
 				"cover": null,
 				"url": "https://app.notion.com/p/7a3c647e4c1e4c27bf1dcfb0105e55ce",
 				"public_url": "https://fae-tools.notion.site/7a3c647e4c1e4c27bf1dcfb0105e55ce",
-				"request_id": "d21e013d-fc42-48af-b4f3-ece7dee08e92"
+				"request_id": "70f0115f-b378-4398-87e7-3f88e5a13ad9"
 			}
 		}
 	},
@@ -5360,7 +5533,7 @@
 					"caption": [],
 					"url": "https://twitter.com/elonmusk/status/1519480761749016577"
 				},
-				"request_id": "af237909-85d1-455c-a6e5-511d0d08221f"
+				"request_id": "1af2a67e-45f9-4457-a8ee-24eddb68bf58"
 			}
 		}
 	},
@@ -5457,7 +5630,7 @@
 						"url": "https://bitcoin.org/bitcoin.pdf"
 					}
 				},
-				"request_id": "391444b2-dd6f-434d-bdae-53c38010626a"
+				"request_id": "18430cfa-5526-469e-8d30-62627568ec37"
 			}
 		}
 	},
@@ -5551,11 +5724,11 @@
 					],
 					"type": "file",
 					"file": {
-						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/69893027-1bf7-4177-a7b8-06a53dc4d1a6/bitcoin.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UQBB66LC%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T083147Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECcaCXVzLXdlc3QtMiJGMEQCIFIHdql6dkYSsAhc0qo0qTLIJHbQQBTyCANyo3QD0pgRAiATEGvTfQ16W5idf7jW%2B5hiV2lG58oNWjaYTZqxen7RXCqIBAjw%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDYzNzQyMzE4MzgwNSIMFNsaHlsvuxrLNIIpKtwDUt2tnRFSuzFZKek9d47Exx6jL%2FcghVveDJoeZu%2FokCOw%2FOmQJILh%2BGOirdVR7CHZktxLVu4rt2XMdkfhepbq4CaoSgBBfF%2BHBPRvOSRAP0vSpm%2Fr00No1pV8PJIDvkl794e%2FReZmXeE90il1Mlggr0SabsfpACUU8Adp%2FIJBxnLH5xK%2BO7ZQVzFb4aCellnjhK2%2BL6jFsuKpJBJV9HA0Mx59NOC0cUfvjYyOHwmfdCx1CFzhxiusPjj%2BI9lLfD9TVKPIu0tOvug58sduO%2Bu0mOaeQIPRhivJW90VZI%2FbZopTXTOb10oZydEwpn9hfni5xku%2BpqQUp%2F2x1RFKIjSDRCpmfs7Y2J8%2FOEiO91l%2BX%2FlU35adDbmgXYxwmeBYatV%2BYy2OTZv39MFCzRiVud3APs1ANM80Qfdub3YxBcZ6ebQHDaWjecTpcOXXIQQqg1BnMdWfWQyt4KsJpJWsnu4rD4AtdUH7MO0tcevPImimLRfGZsNSc9TF%2BwWi8yJh22jrcFtSdRutbh16UglQ0kqpYE4kU%2FPcmV8Tgjbi3zp3nq%2B1J060hlKXNqqbd6jtUIiY5avXl%2FVQmuqqgKyxWnDMNwtX3UP76Z16BNFQ4pg6p9GkZ2abjGcwmQ%2BFzZswl72S1gY6pgFnNcahhGQx1EPffZgK8CTwffLF%2Bd5SVQkGytZ1FZDH44f1FZU6sulWQHFBOL2dXqg7paLjlhQDRXnObnxG4hM62MeYYBR5pOE3MG8z%2F2SLUMZhp7VmQS%2BeAsyPiZTiYpfnGoDH3IonQaSV%2FcDVsK9FYHv1rLjvalyIAZL89%2B6X6BWmKIpHItJOeOzj6dIE3LmmUVbGl5TUMXN733mTTaTozM4Stmvl&X-Amz-Signature=2389a683bda1a143e64db46020a1215d3337b49ddb17cb40e76da103b412ac39&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
-						"expiry_time": "2026-10-06T09:31:47.187Z"
+						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/69893027-1bf7-4177-a7b8-06a53dc4d1a6/bitcoin.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466Y6YCBYGF%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T095414Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECkaCXVzLXdlc3QtMiJIMEYCIQDMvVQkyjkdqzrP5dwKZpa5QwUeAH8dy7zp7uMde%2FofeQIhAOZW0x3XyFkN7HueSAS3MLcoL0J52GUlUaSkjp52wUwHKogECPL%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMNjM3NDIzMTgzODA1Igx12y0mIuC0DocBxhwq3AMhsoJkHiPwXtvIV5UT0Pfis5EQDBCW%2BJptTOhuWL3hIHYImXqoBi1AeRPcM5waQbdv3e2Tu5oUiFd7Uma4y94YZZsXEMTLUhMoWPJGZmr8FB1p%2BBDtafAOS4%2FOJMaVkys6y2IDVWrlwIoiOxMIXLFy9ZwJbYa2amGX6FWuNSBX5CdiHuEdHga7xkq3l7E3fkWhwCi8fITpvXykwNnDiOIIk1we0QrylBlkM2BuXxJzXbptdi%2FqFPXTSjftzY9xKP%2B1ReNSd7Cn1mzW6ZqrUADqqc5jdlb7v7rnDGGvhuOnLXemTNo6se2vE5DW5G6l6jLa3G844mTLhP%2Bd6Npwa43m51cIAZT%2BXTd84FKmgwsVU%2FEVoyNHAjqvIFMKWMSDylGcteYFbywjM9h5fE4gtRyQG4iMj%2BfgimZq772tgrBNeH2516zWTorr%2F55Tbgn%2F%2Bu8v7yOvGAY2uIAAehwGVQEM5fvtDmfKorRP1Y3FFHjhvfWUdpfnbr3dZzJWugKoyYVov3CnzR1ot2PRsGUMehctVCXgDcF6G%2FNZirzGlAfjTxS2HcwnzNikBTF%2BPL1WNjZl6TlqUefZVD%2BsIma22e%2BG1k%2B8NUc%2FSYljEOy7EJed4bp9H3kc1Tc3l8m8iDDG7ZLWBjqkAbYsaUIklL6ueM%2B35jYbyH71fuDlTAcRT4HW0hdpnxpQ0A36qRrvEgBmxTFS5Ujhd8TPqoLxfBDwDPrXpeUcYPKKSIvIvAVd0CbBaUwEnQSVCrBIzrebNtyR3dEOVmIA9G7ppdWCIJ2zEnGYw4d14vddGOW3HsmwR3GTfy05kKqAX%2F4Aj4lN4zrVcM3z0tPcc830XQGvTuUaopbZkApDhS8E%2FYWD&X-Amz-Signature=aa298d7bdcc114bee0f6265eced4a0f9bbdcfe5c945a97abe22a4b9d9816b87c&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+						"expiry_time": "2026-10-06T10:54:14.379Z"
 					}
 				},
-				"request_id": "01896976-98c7-4b84-9d29-fbb74e848859"
+				"request_id": "06eeb60c-d37d-4811-8f09-539f0ddcf460"
 			}
 		}
 	},
@@ -5594,7 +5767,7 @@
 				"in_trash": false,
 				"type": "column_list",
 				"column_list": {},
-				"request_id": "1e0d3b10-5480-4a5d-a65c-5fd520d6e370"
+				"request_id": "edd63b56-040e-4c02-9dad-e6f21c4412bc"
 			}
 		}
 	},
@@ -5635,7 +5808,7 @@
 				"column": {
 					"width_ratio": 0.5
 				},
-				"request_id": "a38b778b-d734-41b6-8f9a-5c85a4080c54"
+				"request_id": "817283f4-f441-43bb-8b83-e94467a187f1"
 			}
 		}
 	},
@@ -5698,7 +5871,7 @@
 						"url": "https://imgs.search.brave.com/RfiTLs3-DjJ2NVwmCNL1x6UaARTeuBz05wPYZUi5Zv8/rs:fit:1200:1200:1/g:ce/aHR0cHM6Ly9pbnNw/aXJhdGlvbnNlZWsu/Y29tL3dwLWNvbnRl/bnQvdXBsb2Fkcy8y/MDE2LzAyL0N1dGUt/RG9nLVBob3RvLmpw/Zw"
 					}
 				},
-				"request_id": "3bc3a000-916c-4343-be17-f1e2aad582bc"
+				"request_id": "cdb3c52e-4ca3-4160-bf26-7d9730e58609"
 			}
 		}
 	},
@@ -5759,7 +5932,7 @@
 					"icon": null,
 					"color": "orange"
 				},
-				"request_id": "e2f4e730-28ae-4576-b97e-57f169dbf40d"
+				"request_id": "d76a5fea-eb60-4e40-bdb5-f3b409665016"
 			}
 		}
 	},
@@ -5801,11 +5974,11 @@
 					"caption": [],
 					"type": "file",
 					"file": {
-						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/820b7b33-1a55-412a-b7be-8b67412d177f/hd-wallpaper-g6e0a7c1ce_1920.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466THHDYUHH%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T083149Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECcaCXVzLXdlc3QtMiJHMEUCIQCPsLNE99diorHni76XSKPAYomhWZCzb2RkY3mHCXqBbgIgFvEie1bkRTSJfLGYTCOvztfvikoZhLWzfvqNRaVIprgqiAQI7%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDEgeI3J95F2QUAkxtyrcA1uktAAPR6TOdVj7RUYKTBM7B%2FfORFhPDiDMsRZHFjfMbisZNGRayXd1MhwrBa0IQO2b0LKGBXzadp0Zwru%2BPC5nwgyeh9jq94KMfVWtR0DJDmyg9yq%2FIFTKOJvko1w9FzRlHCgcrAdDVKWfeSf%2Bs1YvDNvT%2B4TlGVAj%2BV3xY2COXu6wQiGP8ae9QJ5bbhT%2BXErCT%2BAakN8StDSxhaF58ySXN0OSqYG%2BIXIdvbIOp9fc5essX76a4iyGIAKCjrxz%2F%2FZ4eiT4T398vLiEyTdLHra3NHT%2BYAFisJTzTgh4tNDecHDTBqi74YAX07D1Ep2ZrO0s92MsXQGRpgsCWVl9AfqQSIxg62vtnjKfUOQS1tR7xGH3IKx635bFVLzi687MP1HK1yY8dWryZJnP2ZjBeK6t6Mi4EsPKjG4DY%2BGo%2BE53UewvxKTuGTLCk%2BtFwrRniNIrI4ra6x%2FigHz95DeqPk6mU8PqGFnUh%2BBVQUk%2B%2B12mxRsWLY3RVuIKpKsCdJTdUspM1aUCCoyE%2FAZ1QTVNCbmSNSytsH9WXoIV6jKBTFIrnKFjV8hY5FSM5OPW2xY0WckkfK64Kjx5%2BbI9fc7%2FVxA0KU5XvOY6QTVTEHtCb9b7RjjydlDHOvYz3ajYMIa9ktYGOqUBGusm66%2B6Izu9afqsQmZyRFVVRTP3BUKAJo6I3k0eRl1l5HuvlTNsQ5b93qRlbOh6kc3iqylkxQ9aV7EJp7igEKCYzoHkCEhwGXahAWnu3pH61A6oArg7chxpd%2FJFVHIyLqt%2B0WEYc%2BxwZlH2MFTjfGXHQTohrR4dty5I2RyHA%2B3mrUC%2F7OkM2oLv%2BN3LEOp1RXUvDnzKqYGOUpepsSEI6gqnXaci&X-Amz-Signature=89ec0ff08da605fa1390d78def61d00b1fbdce4cb41b79a9b6573d21fa7e3785&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
-						"expiry_time": "2026-10-06T09:31:49.861Z"
+						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/820b7b33-1a55-412a-b7be-8b67412d177f/hd-wallpaper-g6e0a7c1ce_1920.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UUB6PVME%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T095417Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECkaCXVzLXdlc3QtMiJHMEUCIQCXDRcmCcj2jSYJcdK8x54X3tYJAvbkjRamMwmP%2F504LAIgVwemKbOoiwm46wQoyc9WhJauWxX0kjkdB2smNmH6XO4qiAQI8v%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDH1W7Uajttji41jHVSrcA%2BV%2BDnXDdSPf%2Bx8x7TXDeO9hgmA%2B%2BAnlEmpQW%2BQG7B6AYKcsMl57Lhno6bXA%2F86IbkFv4L%2BkJ0hHyzIG71te4LYaUiDxBt76sCR0MZH6GDr2VwTUH7r3LFeaBKbhCihOlXx1VaP%2BgWX5iZS0Hd1fQPliZ7SX%2FDZBW2KmBZupB00oQm07ogYdHVA0yYq%2BROmfp2gvVFz%2F42qCxalxnx54O8cVNzzSp30PGZppQqyWETjJvo%2FMWwi9cf4Xz9JGj4mkzQOP5ITecpb0LMjfc96Xhx26G8ihNt3GqUj4AOcECofXaVrHhEVx9DpT%2BCPP%2FvHdapUMi2fRbqCGYZfBV5KeEL3cPFkMJlMxxU%2F51%2BpHOu53ieRETqbLTp1vroZrkdDKAZJfMK2yer2DnHb8l17q%2FQ%2FEDc0nsdReOwpVbFpjT7EGcEjJ8HSe%2BH%2BOTUm5vsidTUrgQHYTMu3HExIrAMmYKeKgxAFKBDkf4l8C6N8LhBpQd1O4Qvx1ikN02m4CBO4imOjyOypu7lp%2BAAo7H9xYm2YkrzsSt6mW%2BA%2F3vKjS2CZfhtSdl6SFrTObyrjfeyqGuTgYJADVAqTTqzhycXiKGcM2k%2F3mPO0RySYyXkP%2Bqi3zK5ekH11sSvjR1XY8MNT0ktYGOqUB%2FqDSaoW1FK99IGi1JhlqtCZZNVBMYUtiDcy3Koy%2BT3AaLsRJVPlIdNxVJDHeiqC2CFu5ggbt9AKI3ARn5BBRgzbU%2BZDxhkF423qsyB0DFEDk0OYuJyDMHiMxuZ7WsQq9fxC8OHe8Nj3g9bC9UnMyq7YTUZ1p91cfAGoZxXFXT062Hxo%2FlQGk%2BqGuyjVydAjP4K9ZTLcZ4DpBb8X0lFbgey%2Bz7McV&X-Amz-Signature=c64fade4d905e4138368f8ae2ea7984f4036a0694de7168b88555f852bd439af&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+						"expiry_time": "2026-10-06T10:54:17.040Z"
 					}
 				},
-				"request_id": "eb2b3057-9943-42bc-ae55-16f198d1be35"
+				"request_id": "6e1c9e73-d231-429f-8105-157b9fbf8a65"
 			}
 		}
 	},
@@ -5847,11 +6020,11 @@
 					"caption": [],
 					"type": "file",
 					"file": {
-						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/1162837c-64dd-401a-aa1d-91f795079052/small.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4662RUSRXO2%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T083150Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECcaCXVzLXdlc3QtMiJIMEYCIQCGMd5PTfIhbbBCN7LXOlKh59MOPiitDLs%2FRn38V7iFKgIhAPebrM%2BC2RgNdLQMvDQcN%2Fc1g3Gp%2BR24qJVxzUFQepzvKogECPD%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMNjM3NDIzMTgzODA1IgwjCk1QqGPjaQdZFL0q3ANiqbBu%2F18rjAC8XE6z9YORUQhTnGrTwxWXaXDSZx8t47ECjfRJ1hKHrXnxCVMoILsUj16iZfwCAA7t4iD4JVQqK%2BLNLQN0BfgWXeB7aDOEZ1jiAcAuSYDBa1QwHmVUfi9UEH2zJEVBAc96MDUat6BIOdGp%2FgSAza3J5QUFcmyFoosiiR6oZJ4dsx7ZPxvfJesplYuj42tgrjf7POADFOUJNVS6qCUb4Bb7Fdw%2B2HbsDiU9hmfGdpfBojsg2I0hillv91K%2Fu1WHqO3a9JjC9xRVXXodSdcOGqJaiBuRZVO1DI%2F4mUk%2FtEfsIVcHkmP%2FPz7Er4pc%2BygoppZlgfMhKoVLTH2nG9MsuDCGmms5uQPeanmilXS1cp3pSxjQx6lkfPLc81VN%2FZsFbUP66GaHJcxHHQFChHO1n87YSlZRvR%2BuZvLxr1bJ3egtf7y3bbQwqKIxwQDXg5kLa%2F%2B9%2Bx%2FWvSlSfMTnDiKmJV0e8eHYfVldXOvnQFmi0haZ1nBA3D7cmRn3ZOyWvQmCiHoAwDENwTmgVJD1CiLkLdxY4FYprCvCofupghTKDx4XUhup3yucuq8BlfCXcRuOsQUQJn4wzBHs9nbWyGGS9kXc8LH5hWBjWLQlOqivsOjhBnnzNDDfvpLWBjqkAbKWmhVNTxpzkeMFGEaqUJQl8yWbYwDJRwlpKQR2gkMAVaLDHqvFn0QtBOpuAnWy7H3KlPlXa3oq6A%2Fg2C5D6AgrmGNGjNyqvz1t%2FwRwHqj4UBE98csmf%2FnF4JuPyD3%2FNZJXWQHS8Q%2BdICliabgb9FjrYEGbqTU9v1Iv6vt6GciWbdFf0Vjtxv2IUBwuU9AbpWcF%2BnFM%2BTJSYN4qBaluLN8kndgr&X-Amz-Signature=009b750f1ae4cd34d57026195a7ffeef969830e2f2c17fa19d47e2f69794f970&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
-						"expiry_time": "2026-10-06T09:31:50.182Z"
+						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/1162837c-64dd-401a-aa1d-91f795079052/small.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466TEIVX66T%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T095417Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECkaCXVzLXdlc3QtMiJGMEQCIE1F6Ro9ZooW7qFmxTG1qhuCmkFvNHB5PftxrfVYGS1VAiB3nbdRkpcKCB2lnqDBfmrQ%2FQpQgFu70OyrICIwaALB1iqIBAjy%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDYzNzQyMzE4MzgwNSIMhKGNVbrzQG6SZ4ntKtwD%2FNZsm%2BdHMdzyQXZf44v%2BH8UVlO1e1qGmeTCuk%2BywuuquP8AblC6yKA4R0QY8jsS5RAjWqhIZpjs8et5uoS6OdYJof92bHo1Xsc4z7IqjCdr8VnrwtL0yEZ55XcwILncwnsGTs%2FBtZw6NDNgOJznGR%2Bqx4RhaEFabIWVBAbVap96QMOpwwrscoT5YeMVavXHar8Jo2jzY9FbkGO6Lzhm%2F3gRyaEZf%2B6Pdmhkm8pqItBQhZmEJ6ukm1aDR68%2FDZgLL4qyAzuUkTyZhJYq58T%2BL%2B3Wu%2FZsmM%2FjoIWBKCGAN9J3ry8Fkn410ix4XeCnhDG2Y50pwdDIu%2FUAonpxJVhwwKBDmEjJxARNHOq0Azb%2FreRynrnfgo2TRu%2FxdeNZV1A25u%2FErC9X78wknamaxlYTvDDdLZcaaMvVfQypfIuKc6fWojFLALvCpacpKVXF53DbQmM1umw9itHb2XzwI4%2B7PdNaDWLSy8xoKy171ij0EVBTmMeY2avXsr%2Ba64e1tfggAW4EpxWzlAdXvZYURhGS2NGTDpbmGzzFiMh5BBqwxZLAyKQVwRfW74rZoChnm%2FwoIm0Z%2FKQgmS9mRulbbAZZgjoz0Z%2BVemcoobc%2FTaq4dZi9e7izSy1J78LGD7dcw9u%2BS1gY6pgHKEFu3PoM2QUVsUTklXyHRW4BGhaPtUMsVw5qAO6ZBhtEhLzR%2FPdviBNEWuwgO2bE9dxBoGZ3vIjOJ0NJgHWa3weke95xezkWRvQnLGAsxxd4OJ8QGxC2n00OElZ7g8rSSDG3iNGKO0KOYZ0E47FpgvyqJpFz9DNoKiRMRm9vtAtgeaxiGeWiz7mFgXT%2BSKCJOkiu1K%2BhnwBwQSmDh4iTQnhxSyJcS&X-Amz-Signature=cc721ecd7f66474bc4e0020153ceaf601b33f609ab68433aec977ce03f80cdaa&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+						"expiry_time": "2026-10-06T10:54:17.404Z"
 					}
 				},
-				"request_id": "a1ccfe22-49f0-4d72-825d-0f820735acf4"
+				"request_id": "1436ce54-41ea-41f8-8ed5-0363243cb4c1"
 			}
 		}
 	},
@@ -5893,12 +6066,12 @@
 					"caption": [],
 					"type": "file",
 					"file": {
-						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/5960876f-0eff-473b-9e62-0714480008bd/hd-wallpaper-g6e0a7c1ce_1920.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB46666O4VK4G%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T083150Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECcaCXVzLXdlc3QtMiJGMEQCIC22HqXqncK6GiQ5CIOrQ0k2NmwT6AQyHx%2Fr%2BJ0oDSNkAiAsb2lKh08XXlMFFGb6EikqhJ0uDlFD74%2BrKpjML59d5iqIBAjv%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDYzNzQyMzE4MzgwNSIMFWxNu3m2uRCuSTPIKtwDhfvCk8QuDs5MC57Lzcz1rZFHrY9k38VGBCfiRf1%2F4IM8qsIQgXkflRA08H0ZA3MZIn4o62bu3EyCiMrfPvQvRLkVynIihI9lBSE4xQSZQGDSH26ncO66VUn%2Fym3%2BXMmHgktgo5q%2BEeJpeZ%2Bd%2F4yQMlFiuTCBxmTtuYHLcc%2Bn6304H1eSzUz9tS3W8M%2BuzOreKBBzUh76YfsOmJygNLXrZT%2FLGPutIRsHmNINTSBcacXkQZdV1pF1p0PPhumnmtdqD1oRXeoX5SVfZH%2BWTKtHjM8BdMvkMQUlB513zl8IcyURtU79RDsyqGsMvB9xzj3oKIL2c7fCX7PGLsgwKALH0DXlse1wupGgePHE6diCE8HVikNxk%2FQ2fhtX7wd25J49f5V3bEfj1VtAVYGoIzyoGFqnyAEUrHnezvkvF3XLCwQ4l93IpFl0fuL8EFXs8h9ftTACR4vPJNFuyq%2B3WDJhD8wnsY29bDe%2BO9KeQtU6GaSk3aqNIT77ghCryUiPOvTcmtqHs5Mu7oRKIUkIaES5dHQzTaX0s1WaAtwVmnNwjZvO9u1zcRRlPNCgPyPUFA7WWQN%2F0lJU9dAWV6NFCaYvzdYckzXMt1zx9lfAgR4MKrU4ofOp18aZe%2FZ41CMwi76S1gY6pgGtPZG1fZfE7pvUtTiQH%2BVFBU3iGIlY3CvyF1doYI0fVA1sHxSEGTGHENTD8RLTOqVPBgjw%2BcFqI7IGK9FqlCMS0ep0t3Bkkb%2Ff5Bhnkn2SeoS6Rxobyyyn3c74g3miEyT2bzgXhiZ5W%2FencSFic%2BVvbkp3NoDljsWIp%2FN%2BzmuNZShXlY7dWJfGG0PCA4YFXQzCL5PS0m%2BIHpkiHynrm9%2BnmU4VdzUt&X-Amz-Signature=83cf3c7451ffc54d1b0f861fd53826cabce1c64a5623c3c8fc13a68308ec6306&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
-						"expiry_time": "2026-10-06T09:31:50.545Z"
+						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/5960876f-0eff-473b-9e62-0714480008bd/hd-wallpaper-g6e0a7c1ce_1920.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466YMPXFJZO%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T095417Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECkaCXVzLXdlc3QtMiJGMEQCIB5RDWFwadZ%2BhOqlAEAdBQzOxKBfNJKhXr00iMAm%2F%2Bv4AiBgBT%2B5pdEx6krr6vkPaW5zDjiWgmX2P%2BjBUp%2Bgdg1IgCqIBAjx%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDYzNzQyMzE4MzgwNSIMrmCa6mOfOW6f3ycDKtwD83PrtIc62Hro98ZLStFj95zyQPwTFKQOTH820%2FvjmshulVrA6TpmEk53NJlPaxeXXOWmZaam5C2Ykks5WnP%2F72ngBWtLRPw4sRpnOwBNZuMwokmElcgjZoD2JYjqQfmD650ybJVMhRmzc%2BX1sdddG7dB8WWUrLqdbc7ah8QeGhheBnoUyTquEJzCIe4uqQcUF7SLTWOrannXWND4e9wmb5eyCdXqWo8i0oD5H94gBujC0FXEOpZjblESfgjuhe4%2FQ%2FzUpK7%2B12Vmz%2FANmFz%2FiO4T5EmBLazOAdn%2F0Mx0tdoLW7FYkr3duLODaJHcqZZFPrfthOxT85M9S2vLl5io7KpJ4PyWwC0rvvuA1lrzMGfc0gexDniE5WNOikxwX6YEACYgJPEExtGKVem4O%2FCD0yt3QvxdcoWMa6i9Yd%2BOsW9nhQUWnxfYitMWBWggoz1YlLWlJ72p%2FvlYJRXYXiECNEZ3sSoMACPxZvCaqIONNqJdEXz9FxYbhSpQP1HLPcEpR%2Bp7KVe07Fk%2BP8mnMMr23PxE5IdAYBfqq0eOs9BVJBJujd3X8oscH1fwuazNLpSqqdvnvFusFcOa66lCjg%2FgnQBXsY363H22aEU5O96iWAukwcK%2F1hpSCyryCYgwuO%2BS1gY6pgFsTKchWv7aj%2BTxmWt4gwkzD2tz3wHdMTaJvmn937Ogdlo1RsqNx9wLkHQdfwqcOX%2B1JpCbPARl4derTyU7YHqNPfaw0wSbVUAzpWTOZSk5TXnJxmrN0UPoqUzPMMdYvE%2BSOX6ZqN5AWRddkxeqBX%2BJovHGOsxnNWrz6H0Z5ntd4RbBaWDtfZhw%2Bn8C3ru%2B81J2IOHr5gZ1qKXjwTLZ8xmqZERHU2wd&X-Amz-Signature=d173d6d87bfcf797ad4d95f02fa30f37376e76daca3beceab4bd8e54baf98c32&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+						"expiry_time": "2026-10-06T10:54:17.720Z"
 					},
 					"name": "hd-wallpaper-g6e0a7c1ce_1920.jpeg"
 				},
-				"request_id": "cb73f747-920d-4735-928a-d24b12c41ae7"
+				"request_id": "3d8bbc49-bcfc-4de5-a246-5ba2b5de1c3c"
 			}
 		}
 	},
@@ -5958,7 +6131,7 @@
 					],
 					"url": "https://example.com/"
 				},
-				"request_id": "3ce2eb9e-b30f-4b07-bfd5-bafc2c3fbd0d"
+				"request_id": "8d7abf1d-07aa-4880-965b-66a8d33cc4bc"
 			}
 		}
 	},
@@ -6023,7 +6196,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "15cccbca-610b-41f4-b431-c6940e82be71"
+				"request_id": "80da4838-b1e9-484f-ba10-4b161fc3a440"
 			}
 		}
 	},
@@ -6117,7 +6290,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "72ee9589-b8c6-4114-803a-60cb1738170f"
+				"request_id": "63e7016a-6b2b-451f-b524-ab8f541391ed"
 			}
 		}
 	},
@@ -6158,7 +6331,7 @@
 				"equation": {
 					"expression": "e^{\\pi i}+1 = 0"
 				},
-				"request_id": "4a927a52-951c-4576-8f33-d0ffbd5a0cdb"
+				"request_id": "c51d1c77-02c6-4688-b962-5f44d9d19e3b"
 			}
 		}
 	},
@@ -6197,7 +6370,7 @@
 				"in_trash": false,
 				"type": "divider",
 				"divider": {},
-				"request_id": "44195ef8-df65-4b3b-88dd-a1f992bd17e3"
+				"request_id": "a95a2689-353d-478d-ad0f-41b86c78b338"
 			}
 		}
 	},
@@ -6238,7 +6411,7 @@
 				"table_of_contents": {
 					"color": "gray"
 				},
-				"request_id": "9bb0bf1c-18b4-4d72-b0db-be484340b823"
+				"request_id": "601b320d-59a7-47b0-b705-1c8ceaeb554f"
 			}
 		}
 	},
@@ -6279,7 +6452,7 @@
 				"table_of_contents": {
 					"color": "red"
 				},
-				"request_id": "5ed09a0e-447e-4ede-8b46-73904b4a18c4"
+				"request_id": "938c96e3-e26c-4e80-8129-a7775606df12"
 			}
 		}
 	},
@@ -6318,7 +6491,7 @@
 				"in_trash": false,
 				"type": "breadcrumb",
 				"breadcrumb": {},
-				"request_id": "e0510367-b0dc-4231-a643-8df86a6d03f4"
+				"request_id": "79f94581-e75b-4e44-9f54-1fa468dddd87"
 			}
 		}
 	},
@@ -6359,7 +6532,7 @@
 				"column": {
 					"width_ratio": 0.2
 				},
-				"request_id": "76a845f8-bad3-4a29-9b04-7e758390e0cd"
+				"request_id": "094b48b1-54d5-44b0-81d4-7a52b0683d54"
 			}
 		}
 	},
@@ -6423,7 +6596,7 @@
 					},
 					"color": "pink"
 				},
-				"request_id": "eeced936-2194-4707-b5e5-2dc471daeb3c"
+				"request_id": "8cd4c648-c529-4334-b00c-d3c1f2d5ca4b"
 			}
 		}
 	},
@@ -6449,7 +6622,7 @@
 					"page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
 				},
 				"created_time": "2025-02-02T19:53:00.000Z",
-				"last_edited_time": "2026-10-05T20:21:00.000Z",
+				"last_edited_time": "2026-10-06T09:43:00.000Z",
 				"created_by": {
 					"object": "user",
 					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
@@ -6464,7 +6637,7 @@
 				"link_preview": {
 					"url": "https://github.com/go-api-libs/notion"
 				},
-				"request_id": "054af4fc-e52d-464e-b24c-d95d20c586ee"
+				"request_id": "6d22c47b-f3f4-4e07-88a5-50a10410cf4e"
 			}
 		}
 	},
@@ -6505,7 +6678,7 @@
 				"unsupported": {
 					"block_type": "button"
 				},
-				"request_id": "4f81a5c7-b6b1-478f-a3ce-abfc7071c3ab"
+				"request_id": "73ec65cb-3789-464f-874c-db67b94e3a2d"
 			}
 		}
 	},
@@ -6547,7 +6720,7 @@
 					"type": "page_id",
 					"page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
 				},
-				"request_id": "ceb8e2a6-dc9e-474c-8c27-547af4444647"
+				"request_id": "f0ccd0a3-272a-40e8-815d-4b6072eb732b"
 			}
 		}
 	},
@@ -6627,7 +6800,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "55a00b05-a163-4f70-b1e2-335d8aceda00"
+				"request_id": "122b765f-c068-47ac-8519-a1b82d3de662"
 			}
 		}
 	},
@@ -6688,7 +6861,7 @@
 				"cover": null,
 				"url": "https://app.notion.com/p/d105edb4586a4dccaaa6ea944eb8d864",
 				"public_url": "https://fae-tools.notion.site/d105edb4586a4dccaaa6ea944eb8d864",
-				"request_id": "fc15105a-61d1-4610-9d83-9dd489db1e67"
+				"request_id": "d811bce2-4859-40c0-acac-3f4969a7d43d"
 			}
 		}
 	},
@@ -7126,7 +7299,7 @@
 				"url": "https://app.notion.com/p/7a3c647e4c1e4c27bf1dcfb0105e55ce",
 				"public_url": "https://fae-tools.notion.site/7a3c647e4c1e4c27bf1dcfb0105e55ce",
 				"in_trash": false,
-				"request_id": "075cd105-12c7-4fed-852e-bb0519b25a80"
+				"request_id": "8d9f7392-6d03-4c0d-a44e-fed448983813"
 			}
 		}
 	},
@@ -7953,11 +8126,11 @@
 						"public_url": "https://fae-tools.notion.site/ZZZ-cea419bbd94b498cbf52ad339b232003"
 					}
 				],
-				"next_cursor": "s:6d015b64-dd17-4e2e-b7c2-9c631c941395:ddac03cb-886e-46e2-b51e-9c36762b3137",
+				"next_cursor": "s:1e5848d6-7e8d-4699-8fd3-6c29e655e6e2:ddac03cb-886e-46e2-b51e-9c36762b3137",
 				"has_more": true,
 				"type": "page_or_data_source",
 				"page_or_data_source": {},
-				"request_id": "28d9f6ca-dfeb-4e35-8bf4-9af804ddcaa5"
+				"request_id": "1de1129f-9234-4b5b-acc8-746f4e9d65f2"
 			}
 		}
 	},
@@ -7980,7 +8153,7 @@
 				"type": "number",
 				"id": "CQUf",
 				"number": null,
-				"request_id": "af6e1f64-daf3-4d96-8670-21f6253d6d0d"
+				"request_id": "9c41796f-90a8-4133-8bd2-48a99bf3d370"
 			}
 		}
 	},
@@ -8010,7 +8183,7 @@
 					"type": "relation",
 					"relation": {}
 				},
-				"request_id": "49b97031-f3c2-41c6-bfa9-f0b3e87ea44f"
+				"request_id": "b2b9ffe2-d61a-4aa6-aea9-6865d69972c2"
 			}
 		}
 	},
@@ -8033,7 +8206,7 @@
 				"type": "number",
 				"id": "wtdu",
 				"number": null,
-				"request_id": "f1aa0d6a-5002-46e7-9ce7-dccf60a76589"
+				"request_id": "5a6450c0-c0b6-48bd-9499-5f1ee34467c9"
 			}
 		}
 	},
@@ -8056,7 +8229,7 @@
 				"type": "checkbox",
 				"id": "JuTz",
 				"checkbox": true,
-				"request_id": "ee75410b-e9be-4886-8195-6a4afb757c44"
+				"request_id": "ac8ba929-0cc5-47d2-a833-a51ba0084392"
 			}
 		}
 	},
@@ -8109,7 +8282,7 @@
 					"type": "title",
 					"title": {}
 				},
-				"request_id": "70c4cf72-27ff-40ff-8893-f0140810cd04"
+				"request_id": "be0d6f8d-6745-45ee-b35a-257bd3845e4d"
 			}
 		}
 	},
@@ -8132,7 +8305,7 @@
 				"type": "phone_number",
 				"id": "RYYU",
 				"phone_number": null,
-				"request_id": "6fd1c153-9d9a-4dc3-ac9a-a04c383a35c1"
+				"request_id": "910f0047-8546-4903-be20-96cafbd6840f"
 			}
 		}
 	},
@@ -8158,7 +8331,7 @@
 					"type": "boolean",
 					"boolean": true
 				},
-				"request_id": "659c3ac7-3126-4b53-9359-518d4c98d642"
+				"request_id": "2d0ce657-eb2f-4343-8fe9-83b55fe695b4"
 			}
 		}
 	},
@@ -8188,7 +8361,7 @@
 					"type": "relation",
 					"relation": {}
 				},
-				"request_id": "af002cfd-ca78-4322-8d87-72b5ec243b15"
+				"request_id": "e1052ef5-79ed-420f-921c-ca3ab721fc74"
 			}
 		}
 	},
@@ -8218,7 +8391,7 @@
 					"type": "rich_text",
 					"rich_text": {}
 				},
-				"request_id": "e7f1edaf-537e-4e8d-8632-cd42ff4aff86"
+				"request_id": "a83c3e7f-1bbc-47ad-9ba7-8a0bd1f0fcc6"
 			}
 		}
 	},
@@ -8245,7 +8418,7 @@
 					"name": "I've taken a look",
 					"color": "blue"
 				},
-				"request_id": "50b22a05-f86b-49b6-b941-584bd85f79e4"
+				"request_id": "e87b32be-8368-4545-9b25-46fbb9e47494"
 			}
 		}
 	},
@@ -8275,7 +8448,7 @@
 					"type": "relation",
 					"relation": {}
 				},
-				"request_id": "ecda7b24-5da7-4f07-b36d-00127f7beab4"
+				"request_id": "503b667a-2b5c-4fc6-947c-9373fe9aaac2"
 			}
 		}
 	},
@@ -8305,7 +8478,7 @@
 					"type": "relation",
 					"relation": {}
 				},
-				"request_id": "09c7878e-ad69-46a6-9605-eadadd6802b9"
+				"request_id": "de6b25f0-1e83-4d67-bb8b-1540650599f4"
 			}
 		}
 	},
@@ -8328,7 +8501,7 @@
 				"type": "email",
 				"id": "TWA%3B",
 				"email": null,
-				"request_id": "3e1590ea-ad74-4956-ae5b-cb90b854f2cd"
+				"request_id": "d3a7aa48-176e-4d30-9a75-fb9f9edaaa3f"
 			}
 		}
 	},
@@ -8362,7 +8535,7 @@
 						"function": "count"
 					}
 				},
-				"request_id": "f6666521-9075-40a7-ae99-b07e908223ee"
+				"request_id": "313e2d8a-ff21-42c4-b9e4-58213c33dcde"
 			}
 		}
 	},
@@ -8388,7 +8561,7 @@
 					"type": "date",
 					"date": null
 				},
-				"request_id": "af1ac88d-3692-41c5-a0a5-d73217c25b0c"
+				"request_id": "5eccaa26-575b-4273-84da-17b012b1484a"
 			}
 		}
 	},
@@ -8414,7 +8587,7 @@
 					"type": "number",
 					"number": 0
 				},
-				"request_id": "95d00a99-3791-48d5-9257-aec83ce7f4c1"
+				"request_id": "c625b903-671a-4d00-9b88-4be3f5e96f82"
 			}
 		}
 	},
@@ -8437,7 +8610,7 @@
 				"type": "files",
 				"id": "KXdF",
 				"files": [],
-				"request_id": "06c4f370-ed02-46ce-8a8b-77b8ef9c84bf"
+				"request_id": "87bab925-29e6-450c-a6c5-5290074809a6"
 			}
 		}
 	},
@@ -8463,7 +8636,7 @@
 					"type": "string",
 					"string": "no"
 				},
-				"request_id": "4ea59d3b-2ad4-4001-9893-d5e0bf00e4f0"
+				"request_id": "82fee070-af3f-4976-96a1-861af5e89985"
 			}
 		}
 	},
@@ -8489,7 +8662,7 @@
 					"type": "number",
 					"number": null
 				},
-				"request_id": "863e6d5c-ab8b-4c3a-85f0-d86eef13eb25"
+				"request_id": "a23925f4-3ff7-43de-a84d-34a04f867d8f"
 			}
 		}
 	},
@@ -8512,7 +8685,7 @@
 				"type": "url",
 				"id": "z%3BWh",
 				"url": null,
-				"request_id": "60348105-3f91-4722-9d36-6e81c1df9de9"
+				"request_id": "549c7911-b141-4bed-82c6-abdcb0866bc2"
 			}
 		}
 	},
@@ -8535,7 +8708,7 @@
 				"type": "number",
 				"id": "yUX%3B",
 				"number": null,
-				"request_id": "24b2b1b1-cdcd-495b-93fe-5cc012836c9a"
+				"request_id": "e70be5f5-9aab-4142-b930-2d205dea13f2"
 			}
 		}
 	},
@@ -8565,7 +8738,7 @@
 					"type": "people",
 					"people": {}
 				},
-				"request_id": "26565845-b10c-49bb-95e9-91e571bed757"
+				"request_id": "9bd321fd-7276-46d4-b324-b15ebbc10ff5"
 			}
 		}
 	},
@@ -8599,7 +8772,7 @@
 						"function": "show_unique"
 					}
 				},
-				"request_id": "42155f0e-9daf-4595-a7bb-809bbd139c93"
+				"request_id": "da3a82d5-e323-42fc-9b29-ec2d12951a66"
 			}
 		}
 	},
@@ -8633,7 +8806,7 @@
 						"function": "show_unique"
 					}
 				},
-				"request_id": "811a0014-1acf-4702-aa36-22dca76db1db"
+				"request_id": "b3ab6eb7-5109-408d-955f-4b6023bc0eb3"
 			}
 		}
 	},
@@ -8656,7 +8829,7 @@
 				"type": "select",
 				"id": "hiMX",
 				"select": null,
-				"request_id": "b2a0378f-2f5a-40e7-b9de-40556b301ce1"
+				"request_id": "8c9610aa-70e9-4061-a863-b13b4623ce59"
 			}
 		}
 	},
@@ -8679,7 +8852,7 @@
 				"type": "date",
 				"id": "uK%60G",
 				"date": null,
-				"request_id": "8f7883db-8882-4dba-b429-0133360fae4a"
+				"request_id": "7cf7bf55-0697-4838-883a-7f492e3b48c2"
 			}
 		}
 	},
@@ -8702,7 +8875,7 @@
 				"type": "multi_select",
 				"id": "UuqS",
 				"multi_select": [],
-				"request_id": "c718f184-8688-4f92-80aa-f7e14a241c65"
+				"request_id": "4db3b553-803f-4966-bb02-767d3f5ee846"
 			}
 		}
 	},
@@ -8732,7 +8905,7 @@
 					"type": "rich_text",
 					"rich_text": {}
 				},
-				"request_id": "e1de6b85-1f4c-4cbf-8ef8-22834dc8d813"
+				"request_id": "af7f3fc7-0458-4999-b1a6-0d7fb79998ab"
 			}
 		}
 	},
@@ -8755,7 +8928,7 @@
 				"type": "created_time",
 				"id": "NeE%60",
 				"created_time": "2022-07-31T10:19:00.000Z",
-				"request_id": "efa6f9e3-e123-4533-8ecb-d9e140493fda"
+				"request_id": "9cc81438-48ec-4e34-a5ae-406e8f9b5ae3"
 			}
 		}
 	},
@@ -8788,7 +8961,7 @@
 						"email_verified": true
 					}
 				},
-				"request_id": "f5e13deb-bb4d-47a9-b25a-1a7a4e062e9b"
+				"request_id": "5fc45978-216f-488d-bd4a-82995cc4a8f0"
 			}
 		}
 	},
@@ -8821,7 +8994,7 @@
 						"email_verified": true
 					}
 				},
-				"request_id": "ea46702c-bce3-4abf-9570-6d243afd55fc"
+				"request_id": "1d25df0e-54ac-4d9a-8ec0-70e53a3d166c"
 			}
 		}
 	},
@@ -8844,7 +9017,28 @@
 				"type": "checkbox",
 				"id": "pt%3F%5D",
 				"checkbox": false,
-				"request_id": "2b0de7c1-600e-4e4a-b3b2-cac1f5f3dda5"
+				"request_id": "12d8ef06-a46d-4c5c-8a67-4c5bf9eca217"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/data_sources/d58cc2b8-177b-4ab6-af2e-26cf1c5817b4/templates",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"templates": [],
+				"has_more": false,
+				"next_cursor": null
 			}
 		}
 	},
@@ -8885,7 +9079,7 @@
 				"synced_block": {
 					"synced_from": null
 				},
-				"request_id": "4d412a22-ad7e-47a9-a50e-cab49d60421a"
+				"request_id": "db195671-593c-4b3a-a449-58447b46b459"
 			}
 		}
 	},
@@ -8928,7 +9122,7 @@
 					"has_column_header": true,
 					"has_row_header": true
 				},
-				"request_id": "e4ca3df9-85e8-4ad8-b723-69d43c316bae"
+				"request_id": "edcc6223-ff9e-49fe-a934-2187df21421b"
 			}
 		}
 	},
@@ -9010,7 +9204,7 @@
 						]
 					]
 				},
-				"request_id": "e0b9b7d2-264d-4bc0-a5bc-267ec9648829"
+				"request_id": "f89b1975-1599-48c2-9230-19dd034b0a48"
 			}
 		}
 	},
@@ -9090,7 +9284,7 @@
 						]
 					]
 				},
-				"request_id": "6fdc000f-1cdd-4c36-9ed6-e2b9e9ababaf"
+				"request_id": "d640fc2f-9831-49fa-a016-9c32b9c5608a"
 			}
 		}
 	},
@@ -9133,7 +9327,7 @@
 					"has_column_header": false,
 					"has_row_header": false
 				},
-				"request_id": "a43e65bd-d3e8-4c14-a1ba-7d4e8c0c69ba"
+				"request_id": "65014513-9036-4910-a8a0-8af10526066f"
 			}
 		}
 	},
@@ -9232,7 +9426,7 @@
 						]
 					]
 				},
-				"request_id": "5b070c26-35f2-436d-8ca8-0ed8decce48b"
+				"request_id": "9e691e2c-e4bd-4595-a787-e3386f11f5df"
 			}
 		}
 	},
@@ -9331,7 +9525,7 @@
 						]
 					]
 				},
-				"request_id": "76f1f905-8ecf-4083-8829-8cf2a9c0243a"
+				"request_id": "924186a5-1356-43d8-810b-86f20fd79e1f"
 			}
 		}
 	},
@@ -9430,7 +9624,7 @@
 						]
 					]
 				},
-				"request_id": "d14d342a-a023-48c1-aae9-2f859e803da9"
+				"request_id": "5abfa002-d6b7-46cd-b10f-d96f289a6137"
 			}
 		}
 	},
@@ -9518,7 +9712,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "83b5908e-6154-4ce8-9d7c-a88effb6b093"
+				"request_id": "fca0b34c-fe60-4870-8f6b-f8d0fbfd7810"
 			}
 		}
 	},
@@ -9600,7 +9794,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "a37a87c4-1a64-484d-b007-36f93df317db"
+				"request_id": "ff2761a7-89c0-4d78-833c-a363b21b212e"
 			}
 		}
 	},
@@ -9699,7 +9893,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "4fd5a631-68c6-4d5a-a67b-ba77a3653017"
+				"request_id": "00b5ed80-e849-4e44-80fc-ca6f8a51f228"
 			}
 		}
 	},
@@ -9779,7 +9973,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "c531292a-2b14-4168-958e-99bf05d7b288"
+				"request_id": "f3b7da7b-2f41-401f-9426-d4676e394984"
 			}
 		}
 	},
@@ -9824,7 +10018,7 @@
 						"url": "https://upload.wikimedia.org/wikipedia/commons/f/f7/En-us-notion.ogg"
 					}
 				},
-				"request_id": "b1951351-e7b4-4870-8938-1a8b9db895f7"
+				"request_id": "d7c1b2cf-3d13-43e0-bc1a-bd10c38ca9f4"
 			}
 		}
 	},
@@ -9866,11 +10060,11 @@
 					"caption": [],
 					"type": "file",
 					"file": {
-						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/9caa2f78-8249-4bfc-97e5-b833a486f487/En-us-notion.ogg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466S7GUSOZP%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T083215Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECcaCXVzLXdlc3QtMiJHMEUCIQD7o%2FIpQy9kgfp3j%2F5w95CwEbomD6Uh0j0YagCNzWrQ5AIgOFN%2BYLF5nmDyAVrKW6jN72VA918FE6ehFA9P%2FHS9wCAqiAQI7%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDFQc%2FKR3dEtaRwJhiyrcA2Ym0gQ1Fc%2BS1ZLbqiwoSgBsAo0el1PPRc8G%2BkPeDf%2Bk6OYKsxuIK4aFjmQZZTreTqg5j4J9iV6XQJ8Rva9jv243jFIX9E8N28aIhoT4H7VHsm2vy2VWbcM4AyKET39MJfeICiYxYJGFOiaAURx%2BNHxstan35tWvNy5BtsNt21IhBBz7HwKsz4q3AStM0wVhquC9AOn%2F1EBRQ72LXy1vDaqppsDaiStmRymHqatqqPWTuVrOXcgGfPWwSasfKfg%2FdLJ4czvm%2BsaGK8HfyJ1eD4DsF35ZZyow6KiIHWkbGj2CqvUyPFLCGxLIj6kegsQTGyU4rTAJQ1kVLbvOeo8nB3K7IuOVy1pf4qCrg%2FqPiLriMJ8d%2BBDtwGGNS9c7mkutBobfrinOmxNcLJ7SUHsv%2Bo%2FJ3d20WPGUV74OmT%2FWJqTAobKPSsmTqBIvzQFkhnBhlV9qPU7ULNdG1N1i9Ph1wlWh%2BZDt7cUZAzrgaAzxFb%2BBvQuxUtKiNkRZm2BfQBleH6dJu5StisZkLR5RNdXIYLgGzZnKPFVokfDz03CGIVWgEOe0BPaLDWfobCb9g78vcNqOadnHf%2F06KQt6j7Z9K47n82HycE7k4aVkoKVH1Pu%2BgmsY5VcjdGnrHIB4MIy%2BktYGOqUBuhvIznRUKyB91LgLjrnrWZjKUwTY5CofpHKKC6pELEGk%2BUEiMstCDQMwLxYvMOfk6yYHAkMDSWAmoKzXHJs4JPfF0rnbPXIuhYcRqun4mk1efYkUAWVbpeqFcEij3Mx5Swn7rCSIwIJr1eRjzyTlqUX%2Be1Xm5AsZI%2Bs%2Bgu7Ml%2BWOUbDaRNhfWtz1kVwYvABpEHPhQRoWbktnAWvIFW7P1K%2F8k0RC&X-Amz-Signature=bc9dc26e991c6189c62c653eee8b885feddfe0e92224f9d49e05a83219bee587&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
-						"expiry_time": "2026-10-06T09:32:15.208Z"
+						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/9caa2f78-8249-4bfc-97e5-b833a486f487/En-us-notion.ogg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466YSLTR5JM%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T095448Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECkaCXVzLXdlc3QtMiJIMEYCIQCIINnTLY9W7snvXRoJvyNpGCA0N1huDmuuuxJj%2FUXXvgIhAJfNOcTvXXM6fCydJZ1wZqCdkF3zPovzfmGtVVL50IbhKogECPH%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMNjM3NDIzMTgzODA1Igz5NvPVJGUPPt7o2Xsq3APRX27syYUqA%2FpGM2AL%2Fl3oH84J%2BfOIgdL0v6JKKAskJUEhPgpsNOhLeaVXdihjwGV3pvGktYbhh6umi41njJSXmN%2B3gNaVh1SgmhHP%2Bstj1O%2BKAf1xOitEXd8VMisKTj0e8Y1ayHmsVGpq%2Fh4RAq88BVIUhrZ9J5Dwy8omr42NFwDKrY9ymF%2BaPxcD7D%2Fqw32CdiScQnwfbMq0jhFvcKJmM1esX%2FSQ8Onhq%2F4WTsu%2BL9qHlqtDJS5zbxtWKkGK22%2BA9D0tbEvxrUib%2BkKxI%2BUPACNqNBklXvVViv%2FIRctchTv8L%2F5utBRcwDSGOcR5tB9wB6cAvWBTLYNhx83MUGulmonkzJZGayJFl5Wy1xKLtDB22kEgFBsriginYMrPmQiOWTsek01ZMnMeJ7KeX76pht61JtCmRZM3cEgHPEEWinq2Du3fi%2Bm%2FdHZ7to%2FFs4koYwTb8fq2U5VpB1RjU8US124y21YjwAjfEn4LkoXhFRSnNRIrFut5j0UqmElltWzaFzQrjJs1lqZYCyTztJZN3kPOgVISl3BceYl3DgfZ3rTammRgjFicdyCb1JDd8d37oQzgj3vbPKWME6rZ8Ymohc07qtt%2BgaeRMDW9KNORMgX75G06C9RnCHL8oDCT7pLWBjqkATmrtIq%2B8drDsJd0ai5m%2B8THtD12lagqM2HBWAWUOpeoqdfnGy2WD9NkkswMlpPNNJIrFWn6MOZmQOqXnaykV0vvHJJflr9znqyZDDqWVecCZbPZ5Z04KTlfCNvSTHv6jVGPckx4bkS2u2qUlMg12fAUSi%2F9WMp%2FMpz7%2FRhpcELA1fCtM0%2FPNhsqnYsxJP3j2l1vXZv2hp3F5%2FMJ8gSq8%2BjWMjqe&X-Amz-Signature=55945f8c3c38cb82bd9fe6af33e1ed0a8aab6d6bbe7ade5c107cfaaea29a474b&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+						"expiry_time": "2026-10-06T10:54:48.728Z"
 					}
 				},
-				"request_id": "7acc9b20-373d-45da-ae4b-06580dbc85c2"
+				"request_id": "4f5528ab-f5d6-4620-9cdf-016af13810f4"
 			}
 		}
 	},
@@ -9931,7 +10125,7 @@
 					"checked": false,
 					"color": "red"
 				},
-				"request_id": "d3413fa0-dc89-4904-9569-42970227edb8"
+				"request_id": "3a40b733-b917-48f3-b65d-eebdc336a395"
 			}
 		}
 	},
@@ -9992,7 +10186,7 @@
 					"checked": true,
 					"color": "green"
 				},
-				"request_id": "486d6230-81fd-496c-81d5-2aa3fb6be5b2"
+				"request_id": "86b81969-bc30-484c-a214-28e8fc27419c"
 			}
 		}
 	},
@@ -10053,7 +10247,7 @@
 					"checked": false,
 					"color": "default"
 				},
-				"request_id": "3786f957-bf9b-4bf7-899b-5cd1878a61bf"
+				"request_id": "33fed898-9169-42b9-81b0-cd807f97995c"
 			}
 		}
 	},
@@ -10114,7 +10308,7 @@
 					"checked": false,
 					"color": "orange"
 				},
-				"request_id": "b8f51e49-9e9d-4d02-be1d-3486e668ba50"
+				"request_id": "a5786144-cca1-439d-b8c3-8bfc28156651"
 			}
 		}
 	},
@@ -10175,7 +10369,7 @@
 					"checked": false,
 					"color": "blue"
 				},
-				"request_id": "e40bf2b2-4048-43bc-b6fe-ed19181d6f24"
+				"request_id": "141105e4-01f8-407b-90fa-419a26a3d7e8"
 			}
 		}
 	},
@@ -10216,7 +10410,7 @@
 				"synced_block": {
 					"synced_from": null
 				},
-				"request_id": "4c4bda11-35cc-468e-87c6-911ea64bcf20"
+				"request_id": "c989e7e2-181d-4909-9830-c659a945711c"
 			}
 		}
 	},
@@ -10277,7 +10471,7 @@
 				"cover": null,
 				"url": "https://app.notion.com/p/395eb62b9b4e45a09931b0d27b2ca59b",
 				"public_url": "https://fae-tools.notion.site/395eb62b9b4e45a09931b0d27b2ca59b",
-				"request_id": "b08fe38c-8a51-44c7-bab0-c861c169f854"
+				"request_id": "ae1224f6-9dd1-4178-a0c7-33a3ea903890"
 			}
 		}
 	},
@@ -10368,7 +10562,7 @@
 				"url": "https://app.notion.com/p/395eb62b9b4e45a09931b0d27b2ca59b",
 				"public_url": "https://fae-tools.notion.site/395eb62b9b4e45a09931b0d27b2ca59b",
 				"in_trash": false,
-				"request_id": "5eaeb3d8-1790-4cbc-b1f0-b4a02f55245e"
+				"request_id": "aa73c068-b3da-4b0a-a8b9-44d3b63c9c8c"
 			}
 		}
 	},
@@ -10397,7 +10591,28 @@
 				"has_more": false,
 				"type": "page_or_data_source",
 				"page_or_data_source": {},
-				"request_id": "51d6ed5b-f7ac-46e7-abe5-aaef08b2bef6"
+				"request_id": "e4a851b6-6c45-4368-9278-c4ecdb272655"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/data_sources/32280d2e-f03f-4683-8338-5163d11cb847/templates",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"templates": [],
+				"has_more": false,
+				"next_cursor": null
 			}
 		}
 	},
@@ -10442,7 +10657,7 @@
 						"url": "https://www.youtube.com/watch?v=RKhhCYim48g"
 					}
 				},
-				"request_id": "cae2343c-1114-49a6-95b6-20ca388520b2"
+				"request_id": "96909688-2381-4b5f-b5b4-1acad94e7678"
 			}
 		}
 	},
@@ -10503,7 +10718,7 @@
 				"cover": null,
 				"url": "https://app.notion.com/p/caa8455ecb7e4351a6e221ecb937f3e9",
 				"public_url": "https://fae-tools.notion.site/caa8455ecb7e4351a6e221ecb937f3e9",
-				"request_id": "18fc4d70-448d-462b-8adb-9d91f7b3dd15"
+				"request_id": "10cc7e6c-faa7-4758-8c5c-bdecb8700f0b"
 			}
 		}
 	},
@@ -10600,7 +10815,7 @@
 				"url": "https://app.notion.com/p/caa8455ecb7e4351a6e221ecb937f3e9",
 				"public_url": "https://fae-tools.notion.site/caa8455ecb7e4351a6e221ecb937f3e9",
 				"in_trash": false,
-				"request_id": "b254c9d3-086a-4098-84f7-7781bb10ac7e"
+				"request_id": "547fa517-cf06-4275-8690-5605a20cb07f"
 			}
 		}
 	},
@@ -10815,7 +11030,7 @@
 				"has_more": false,
 				"type": "page_or_data_source",
 				"page_or_data_source": {},
-				"request_id": "2555c10f-30ea-4505-80e5-3e2da75ad4e6"
+				"request_id": "c0e617a4-1684-4e8f-86a1-9230bcc49650"
 			}
 		}
 	},
@@ -10868,7 +11083,7 @@
 					"type": "title",
 					"title": {}
 				},
-				"request_id": "c237a5d2-e9c2-4734-9601-88d7e03b9200"
+				"request_id": "ec8a512d-f4dd-44de-ad1f-822cf6593319"
 			}
 		}
 	},
@@ -10902,7 +11117,28 @@
 						"color": "pink"
 					}
 				],
-				"request_id": "12687631-28a0-4657-8b8b-047b4a69f303"
+				"request_id": "33a9cc4b-bd7f-4bd2-a24f-5032041b7513"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/data_sources/12786ec9-98aa-48d1-9597-ea91780085d3/templates",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"templates": [],
+				"has_more": false,
+				"next_cursor": null
 			}
 		}
 	},
@@ -10963,7 +11199,7 @@
 					"is_toggleable": false,
 					"color": "default"
 				},
-				"request_id": "96cc819c-1732-422d-add1-864ca735fee3"
+				"request_id": "529db5c0-1332-4cd5-ae8f-a608500ae93f"
 			}
 		}
 	},
@@ -11024,7 +11260,7 @@
 					"is_toggleable": false,
 					"color": "default"
 				},
-				"request_id": "eb796664-f8f4-47f6-a7b0-516d90d94caf"
+				"request_id": "a75c1afb-15da-4867-939b-3b92e00cc5f1"
 			}
 		}
 	},
@@ -11063,7 +11299,7 @@
 				"in_trash": false,
 				"type": "tab",
 				"tab": {},
-				"request_id": "35312905-3853-4ad3-9ad8-8813aa912049"
+				"request_id": "80776380-c302-47b1-924a-f26fa1225204"
 			}
 		}
 	},
@@ -11124,7 +11360,7 @@
 				"cover": null,
 				"url": "https://app.notion.com/p/cbfdfb259bb5499ead1d64a11bfe95dd",
 				"public_url": "https://fae-tools.notion.site/cbfdfb259bb5499ead1d64a11bfe95dd",
-				"request_id": "c0910a0f-12cf-4d2e-bc7f-9bed7fdd3fc1"
+				"request_id": "cbfa3db7-eab9-43fc-b651-0bc4aaa6cf1b"
 			}
 		}
 	},
@@ -11261,7 +11497,7 @@
 				"url": "https://app.notion.com/p/cbfdfb259bb5499ead1d64a11bfe95dd",
 				"public_url": "https://fae-tools.notion.site/cbfdfb259bb5499ead1d64a11bfe95dd",
 				"in_trash": false,
-				"request_id": "ae2ac143-e84e-4125-8483-450afb0981d5"
+				"request_id": "83208864-d071-49ee-96fc-1464c68401ab"
 			}
 		}
 	},
@@ -11502,7 +11738,7 @@
 				"has_more": false,
 				"type": "page_or_data_source",
 				"page_or_data_source": {},
-				"request_id": "0224458b-a693-4f0a-8fa8-96872d72584f"
+				"request_id": "43f207fb-5a9c-446f-b444-0aafc534c6e4"
 			}
 		}
 	},
@@ -11528,7 +11764,7 @@
 					"prefix": "COV",
 					"number": 2
 				},
-				"request_id": "8cebcddb-1bbc-4bff-bd89-2ff4ba2e755b"
+				"request_id": "4b747e00-ae08-4ddd-8e10-60f7680c416e"
 			}
 		}
 	},
@@ -11551,7 +11787,7 @@
 				"type": "last_edited_time",
 				"id": "x%3D~k",
 				"last_edited_time": "2026-10-06T08:30:00.000Z",
-				"request_id": "06a317c5-81d9-4b96-a268-4a3eb4c2c7ae"
+				"request_id": "0c113d5e-eecc-4f5a-b109-1fc8f9b9128b"
 			}
 		}
 	},
@@ -11574,7 +11810,7 @@
 				"type": "last_visited_time",
 				"id": "klZz",
 				"last_visited_time": null,
-				"request_id": "49fdce49-a44f-4d65-927b-4817221dce4c"
+				"request_id": "ac60eb83-db91-4e36-bceb-bd4b51fb6908"
 			}
 		}
 	},
@@ -11621,7 +11857,7 @@
 						"function": "latest_date"
 					}
 				},
-				"request_id": "cdc7e7dc-43ec-4205-aa37-9ca7a2b317c7"
+				"request_id": "70f6cce4-ca23-414c-8551-46cf27c1ef07"
 			}
 		}
 	},
@@ -11674,7 +11910,7 @@
 					"type": "title",
 					"title": {}
 				},
-				"request_id": "6f90843f-6120-4058-83cb-90c3f255f273"
+				"request_id": "539d9fc5-8644-4d1d-8a81-a99e58412999"
 			}
 		}
 	},
@@ -11697,7 +11933,7 @@
 				"type": "place",
 				"id": "kuJP",
 				"place": null,
-				"request_id": "68a5135d-9fb9-4651-8930-b5c2b61fff38"
+				"request_id": "ea86c0f6-9b98-45ff-8804-c470c0d3d557"
 			}
 		}
 	},
@@ -11736,7 +11972,7 @@
 					"type": "relation",
 					"relation": {}
 				},
-				"request_id": "abd1ccac-8eaa-45ff-b39b-e53d614ea85c"
+				"request_id": "6e60dac7-ca63-4ef4-a876-0f9b93b49a98"
 			}
 		}
 	},
@@ -11763,7 +11999,28 @@
 					"end": null,
 					"time_zone": null
 				},
-				"request_id": "86da0086-3239-4ac4-a807-b70542fee8da"
+				"request_id": "e8390ec5-57ca-4adc-a28b-423832f38dc8"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/data_sources/c1df42f3-5a67-4995-b51f-7f296e6ab0eb/templates",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"templates": [],
+				"has_more": false,
+				"next_cursor": null
 			}
 		}
 	},
@@ -11804,7 +12061,7 @@
 				"child_page": {
 					"title": "Page with a Notion icon"
 				},
-				"request_id": "88bc08a6-d0be-4cf3-b7bf-686d47cce3ec"
+				"request_id": "735730f7-ea33-4b5f-86e5-41973465a309"
 			}
 		}
 	},
@@ -11877,7 +12134,353 @@
 				},
 				"url": "https://app.notion.com/p/Page-with-a-Notion-icon-3f188fcddaf481fb8780f9b94d9fcaf4",
 				"public_url": "https://fae-tools.notion.site/Page-with-a-Notion-icon-3f188fcddaf481fb8780f9b94d9fcaf4",
-				"request_id": "e2023d7a-d307-4134-b38d-81c5091bb40c"
+				"request_id": "7e53f5e5-ba8a-42a4-96ce-e2e4b2d2064d"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/blocks/3f188fcd-daf4-80ca-bee7-f43abd257842",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "block",
+				"id": "3f188fcd-daf4-80ca-bee7-f43abd257842",
+				"parent": {
+					"type": "page_id",
+					"page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
+				},
+				"created_time": "2026-10-06T09:44:00.000Z",
+				"last_edited_time": "2026-10-06T09:44:00.000Z",
+				"created_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"last_edited_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"has_children": false,
+				"in_trash": false,
+				"type": "paragraph",
+				"paragraph": {
+					"rich_text": [
+						{
+							"type": "text",
+							"text": {
+								"content": "Custom emoji: ",
+								"link": null
+							},
+							"annotations": {
+								"bold": false,
+								"italic": false,
+								"strikethrough": false,
+								"underline": false,
+								"code": false,
+								"color": "default"
+							},
+							"plain_text": "Custom emoji: ",
+							"href": null
+						},
+						{
+							"type": "mention",
+							"mention": {
+								"type": "custom_emoji",
+								"custom_emoji": {
+									"id": "3f188fcd-daf4-81e2-8d16-007a68864067",
+									"name": "old-man-yells-at-notion",
+									"url": "https://s3-us-west-2.amazonaws.com/public.notion-static.com/2cf84a56-facc-40e2-b456-d00e487d679b/old-man-yells-at-notion.png"
+								}
+							},
+							"annotations": {
+								"bold": false,
+								"italic": false,
+								"strikethrough": false,
+								"underline": false,
+								"code": false,
+								"color": "default"
+							},
+							"plain_text": ":old-man-yells-at-notion:",
+							"href": null
+						}
+					],
+					"icon": null,
+					"color": "default"
+				},
+				"request_id": "91fb18d0-e0e7-41c6-88d7-8b30099efae8"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/pages/3f188fcd-daf4-8089-bf73-d43c6c0d032c",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "page",
+				"id": "3f188fcd-daf4-8089-bf73-d43c6c0d032c",
+				"created_time": "2026-10-06T09:44:00.000Z",
+				"last_edited_time": "2026-10-06T09:44:00.000Z",
+				"created_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"last_edited_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"cover": null,
+				"icon": {
+					"type": "custom_emoji",
+					"custom_emoji": {
+						"id": "3f188fcd-daf4-81e2-8d16-007a68864067",
+						"name": "old-man-yells-at-notion",
+						"url": "https://s3-us-west-2.amazonaws.com/public.notion-static.com/2cf84a56-facc-40e2-b456-d00e487d679b/old-man-yells-at-notion.png"
+					}
+				},
+				"parent": {
+					"type": "page_id",
+					"page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
+				},
+				"in_trash": false,
+				"is_archived": false,
+				"is_locked": false,
+				"properties": {
+					"title": {
+						"id": "title",
+						"type": "title",
+						"title": [
+							{
+								"type": "text",
+								"text": {
+									"content": "Page with custom emoji",
+									"link": null
+								},
+								"annotations": {
+									"bold": false,
+									"italic": false,
+									"strikethrough": false,
+									"underline": false,
+									"code": false,
+									"color": "default"
+								},
+								"plain_text": "Page with custom emoji",
+								"href": null
+							}
+						]
+					}
+				},
+				"url": "https://app.notion.com/p/Page-with-custom-emoji-3f188fcddaf48089bf73d43c6c0d032c",
+				"public_url": "https://fae-tools.notion.site/Page-with-custom-emoji-3f188fcddaf48089bf73d43c6c0d032c",
+				"request_id": "101ab87d-6bb0-4a7e-b2ec-09951d50f4e1"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/blocks/3f188fcd-daf4-8072-a745-d1e58421c788",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "block",
+				"id": "3f188fcd-daf4-8072-a745-d1e58421c788",
+				"parent": {
+					"type": "page_id",
+					"page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
+				},
+				"created_time": "2026-10-06T09:48:00.000Z",
+				"last_edited_time": "2026-10-06T09:48:00.000Z",
+				"created_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"last_edited_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"has_children": false,
+				"in_trash": false,
+				"type": "paragraph",
+				"paragraph": {
+					"rich_text": [
+						{
+							"type": "mention",
+							"mention": {
+								"type": "link_preview",
+								"link_preview": {
+									"url": "https://github.com/go-api-libs/notion/pull/4"
+								}
+							},
+							"annotations": {
+								"bold": false,
+								"italic": false,
+								"strikethrough": false,
+								"underline": false,
+								"code": false,
+								"color": "default"
+							},
+							"plain_text": "https://github.com/go-api-libs/notion/pull/4",
+							"href": "https://github.com/go-api-libs/notion/pull/4"
+						}
+					],
+					"icon": null,
+					"color": "default"
+				},
+				"request_id": "1997b5a0-ccf9-4029-bcae-03dceae5340e"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/blocks/3f188fcd-daf4-80d2-a980-f5cdc36e2c4a",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "block",
+				"id": "3f188fcd-daf4-80d2-a980-f5cdc36e2c4a",
+				"parent": {
+					"type": "page_id",
+					"page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
+				},
+				"created_time": "2026-10-06T09:49:00.000Z",
+				"last_edited_time": "2026-10-06T09:49:00.000Z",
+				"created_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"last_edited_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"has_children": true,
+				"in_trash": false,
+				"type": "meeting_notes",
+				"meeting_notes": {
+					"title": [
+						{
+							"type": "text",
+							"text": {
+								"content": "Meeting ",
+								"link": null
+							},
+							"annotations": {
+								"bold": false,
+								"italic": false,
+								"strikethrough": false,
+								"underline": false,
+								"code": false,
+								"color": "default"
+							},
+							"plain_text": "Meeting ",
+							"href": null
+						},
+						{
+							"type": "mention",
+							"mention": {
+								"type": "date",
+								"date": {
+									"start": "2026-10-06",
+									"end": null,
+									"time_zone": null
+								}
+							},
+							"annotations": {
+								"bold": false,
+								"italic": false,
+								"strikethrough": false,
+								"underline": false,
+								"code": false,
+								"color": "default"
+							},
+							"plain_text": "2026-10-06",
+							"href": null
+						}
+					],
+					"status": "transcription_not_started",
+					"children": {
+						"notes_block_id": "3f188fcd-daf4-80a9-bf66-ebb7455bc622"
+					}
+				},
+				"request_id": "fd20bf8f-ffc0-4f29-b86d-cc44d0b3a66e"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/blocks/3f188fcd-daf4-80a9-bf66-ebb7455bc622",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "block",
+				"id": "3f188fcd-daf4-80a9-bf66-ebb7455bc622",
+				"parent": {
+					"type": "block_id",
+					"block_id": "3f188fcd-daf4-80d2-a980-f5cdc36e2c4a"
+				},
+				"created_time": "2026-10-06T09:49:00.000Z",
+				"last_edited_time": "2026-10-06T09:49:00.000Z",
+				"created_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"last_edited_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"has_children": true,
+				"in_trash": false,
+				"type": "paragraph",
+				"paragraph": {
+					"rich_text": [],
+					"icon": null,
+					"color": "default"
+				},
+				"request_id": "15ebc968-46e3-4e30-af88-2a67a489d2e6"
 			}
 		}
 	}
