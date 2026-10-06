@@ -3,17 +3,12 @@
 ## Test coverage of the example page
 
 `testing/main.go` records the [example page](https://app.notion.com/p/fae-tools/Example-Page-96245c8f178444a482ad1941127c3ec3),
-its subpages and databases. What the API could create is there, made with this client: a heading 4, tabs, a date with
-a time, a page with one of Notion's icons, and the "API Coverage Database" with a last edited time, a last visited
-time, a place, a unique ID and a rollup whose result is a date. The rest can only be added in Notion itself:
+its subpages, databases, their templates and the page's comments. It holds every kind of block, icon, mention and
+property the API returns, but these:
 
 - Database properties: button and location, which the API accepts but drops, and verification, which only a wiki has.
-- A custom emoji, as a page icon and inline: the workspace has none, and the API cannot create one.
-- Inline mentions: a link pasted as a mention for a service such as GitHub (link preview), and a template mention
-  such as `@today`, which only a database template may hold.
-- AI meeting notes, which the API creates only from an uploaded recording, transcribing it.
-- Comments: the integration answers every comments request with 403. It needs the "Read comments" and "Insert
-  comments" capabilities.
+- A template mention such as `@today`, which only a database template may hold: none of the example page's databases
+  has a template.
 
 ## Recordings the generated types cannot decode
 
