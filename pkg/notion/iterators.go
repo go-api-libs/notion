@@ -1,63 +1,111 @@
 package notion
 
-// // BlocksIter is an iterator for blocks in a Notion page.
-// type BlocksIter struct {
-// 	// NOTE: this way, the struct fields are aligned
-// 	err  error     // Error encountered during iteration
-// 	c    *Client   // Client to interact with the Notion API
-// 	id   uuid.UUID // ID of the Notion page
-// 	next uuid.UUID // Cursor for the next page of results
-// }
+import (
+	"context"
+	"iter"
+	"uuid"
+)
 
-// // ListBlocks creates a new BlocksIter for the given page ID.
-// func (c *Client) ListBlocks(id uuid.UUID) BlocksIter {
-// 	return BlocksIter{c: c, id: id}
-// }
+// maxPageSize is the most items Notion returns in one page of a list.
+const maxPageSize = 100
 
-// const maxPageSizeInt = 100 // Maximum number of blocks per page
+// PostDatabaseQueryAll yields every entry of the data source the query selects, in its order, fetching them a page of
+// 100 at a time. It stops at the first error, which it yields.
+func (c *Client) PostDatabaseQueryAll(
+	ctx context.Context, dataSourceID IDRequest, params *PostDatabaseQueryParams, body PostDatabaseQuery,
+) iter.Seq2[PageOrDataSource, error] {
+	if body.PageSize == nil {
+		body.PageSize = new(float64(maxPageSize))
+	}
 
-// // All returns an iterator that yields all blocks in the Notion page.
-// func (it *BlocksIter) All(ctx context.Context) iter.Seq2[int, Block] {
-// 	it.err = nil // Reset the error
+	return all(func(cursor string) ([]PageOrDataSource, string, bool, error) {
+		body.StartCursor = cursor
 
-// 	i := 0
+		list, err := c.PostDatabaseQuery(ctx, dataSourceID, params, body)
+		if err != nil {
+			return nil, "", false, err
+		}
 
-// 	return func(yield func(int, Block) bool) {
-// 		// Reset the next cursor when the iterator is done
-// 		// so that the iterator can be reused
-// 		defer func() { it.next = uuid.Nil() }()
+		return list.Results, list.NextCursor, list.HasMore, nil
+	})
+}
 
-// 		for page := 0; ; page++ {
-// 			// Get a page of blocks from the Notion API
-// 			list, err := it.c.GetBlocks(ctx, it.id, &GetBlocksParams{
-// 				PageSize:    maxPageSizeInt,
-// 				StartCursor: it.next,
-// 			})
-// 			if err != nil {
-// 				it.err = fmt.Errorf("page %d of getting blocks for %s: %w", page, it.id, err)
-// 				return
-// 			}
+// PostSearchAll yields every page and data source the search finds, fetching them a page of 100 at a time. It stops
+// at the first error, which it yields.
+func (c *Client) PostSearchAll(ctx context.Context, body PostSearch) iter.Seq2[PageOrDataSource, error] {
+	if body.PageSize == nil {
+		body.PageSize = new(float64(maxPageSize))
+	}
 
-// 			// Yield each block to the caller
-// 			for _, block := range list.Results {
-// 				if !yield(i, block) {
-// 					return
-// 				}
+	return all(func(cursor string) ([]PageOrDataSource, string, bool, error) {
+		start, err := startCursor(cursor)
+		if err != nil {
+			return nil, "", false, err
+		}
 
-// 				i++
-// 			}
+		body.StartCursor = start
 
-// 			// If there are no more blocks, stop iterating
-// 			if !list.HasMore {
-// 				return
-// 			}
+		list, err := c.PostSearch(ctx, body)
+		if err != nil {
+			return nil, "", false, err
+		}
 
-// 			// Update the cursor for the next page of results
-// 			it.next = list.NextCursor
-// 		}
-// 	}
-// }
+		return list.Results, list.NextCursor, list.HasMore, nil
+	})
+}
 
-// // Err returns the error encountered during iteration, if any.
-// // It must be inspected after All returns.
-// func (it *BlocksIter) Err() error { return it.err }
+// GetBlockChildrenAll yields every block within the block or page, in its order, fetching them a page of 100 at a
+// time. It stops at the first error, which it yields.
+func (c *Client) GetBlockChildrenAll(ctx context.Context, blockID IDRequest) iter.Seq2[BlockOrPartial, error] {
+	return all(func(cursor string) ([]BlockOrPartial, string, bool, error) {
+		start, err := startCursor(cursor)
+		if err != nil {
+			return nil, "", false, err
+		}
+
+		list, err := c.GetBlockChildren(ctx, blockID, &GetBlockChildrenParams{StartCursor: start, PageSize: maxPageSize})
+		if err != nil {
+			return nil, "", false, err
+		}
+
+		return list.Results, list.NextCursor, list.HasMore, nil
+	})
+}
+
+// all yields the items of each page of a list, which page returns with the cursor of the next and whether there is
+// one, given the cursor of its own, empty for the first.
+func all[T any](page func(cursor string) (items []T, next string, more bool, err error)) iter.Seq2[T, error] {
+	return func(yield func(T, error) bool) {
+		for cursor := ""; ; {
+			items, next, more, err := page(cursor)
+			if err != nil {
+				var zero T
+
+				yield(zero, err)
+
+				return
+			}
+
+			for _, item := range items {
+				if !yield(item, nil) {
+					return
+				}
+			}
+
+			if !more {
+				return
+			}
+
+			cursor = next
+		}
+	}
+}
+
+// startCursor is cursor as the endpoints that take it as a UUID do, the nil UUID for the first page.
+func startCursor(cursor string) (uuid.UUID, error) {
+	if cursor == "" {
+		return uuid.Nil(), nil
+	}
+
+	return uuid.Parse(cursor)
+}
