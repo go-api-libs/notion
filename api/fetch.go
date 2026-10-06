@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/MarkRosemaker/errpath"
@@ -777,6 +778,106 @@ func (s *jsonSet) add(p *openapi.Schema) {
 	}
 }
 
+// addForm adds to the union a form for the kind, made from its form model for the kind like: the same members but
+// for the type, which is the kind, and like's member, which is member under the kind's name. It is named as model is,
+// after the kind.
+func addForm(doc *openapi.Document, union, model, like, kind string, member *openapi.Schema) error {
+	alts, err := unionForms(doc, union)
+	if err != nil {
+		return err
+	}
+
+	m, ok := doc.Components.Schemas[model]
+	if !ok {
+		return componentErr(model, errors.New("not found"))
+	}
+
+	if _, ok := m.Properties[like]; !ok {
+		return propertyErr(model, like, errors.New("not found"))
+	}
+
+	name := strings.Replace(model, strcase.ToCamel(like), strcase.ToCamel(kind), 1)
+	if _, ok := doc.Components.Schemas[name]; ok {
+		return componentErr(name, errors.New("already exists"))
+	}
+
+	props := openapi.Schemas{}
+
+	for prop, p := range m.Properties.ByIndex() {
+		switch prop {
+		case "type":
+			props.Set(prop, &openapi.Schema{Type: openapi.TypeString, Const: jsontext.Value(strconv.Quote(kind))})
+		case like:
+			props.Set(kind, member)
+		default:
+			props.Set(prop, p)
+		}
+	}
+
+	required := slices.Clone(m.Required)
+	if i := slices.Index(required, like); i >= 0 {
+		required[i] = kind
+	}
+
+	doc.Components.Schemas.Set(name, &openapi.Schema{
+		Title: strcase.ToCase(kind, strcase.TitleCase, ' '), Type: openapi.TypeObject,
+		Properties: props, Required: required, AdditionalProperties: m.AdditionalProperties,
+	})
+
+	*alts = append(*alts, refTo(doc, name))
+
+	return nil
+}
+
+// addPropertyKinds adds the kinds of property Notion has but the official spec does not list, made from those of
+// last_edited_time.
+func addPropertyKinds(doc *openapi.Document) error {
+	nullableDateTime := func() *openapi.Schema {
+		return &openapi.Schema{
+			OneOf: openapi.SchemaList{{Type: openapi.TypeString, Format: openapi.FormatDateTime}, {Type: openapi.TypeNull}},
+		}
+	}
+
+	for _, f := range []struct {
+		union, model, kind string
+		member             *openapi.Schema
+	}{
+		{"PropertyConfig", "lastEditedTimeDatabasePropertyConfigResponse", "place", refTo(doc, "emptyObject")},
+		{"PropertyConfig", "lastEditedTimeDatabasePropertyConfigResponse", "last_visited_time", refTo(doc, "emptyObject")},
+		{"simplePropertyValueResponse", "lastEditedTimeSimplePropertyValueResponse", "last_visited_time", nullableDateTime()},
+		{"propertyItemObjectResponse", "lastEditedTimePropertyItemObjectResponse", "last_visited_time", nullableDateTime()},
+	} {
+		if err := addForm(doc, f.union, f.model, "last_edited_time", f.kind, f.member); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// unionForms are the forms of the union name: its oneOf, or that of the part of its allOf that has one.
+func unionForms(doc *openapi.Document, name string) (*openapi.SchemaList, error) {
+	s, ok := doc.Components.Schemas[name]
+	if !ok {
+		return nil, componentErr(name, errors.New("not found"))
+	}
+
+	switch {
+	case len(s.OneOf) > 0:
+		return &s.OneOf, nil
+	case len(s.AnyOf) > 0:
+		return &s.AnyOf, nil
+	}
+
+	for _, part := range s.AllOf {
+		if len(part.OneOf) > 0 {
+			return &part.OneOf, nil
+		}
+	}
+
+	return nil, componentErr(name, errors.New("is no union"))
+}
+
 // extractArrayOf names every array of the component item, which the official spec spells out inline each time.
 func extractArrayOf(doc *openapi.Document, name, item string) error {
 	if err := edit.ExtractSchema(doc, name, func(s *openapi.Schema) bool {
@@ -977,6 +1078,10 @@ func fixOpenAPI() (*openapi.Document, error) {
 		"richTextItemResponse":            "RichText",
 	}); err != nil {
 		return nil, fmt.Errorf("renaming schemas: %w", err)
+	}
+
+	if err := addPropertyKinds(doc); err != nil {
+		return nil, err
 	}
 
 	if err := extractArrayOf(doc, "RichTexts", "RichText"); err != nil {

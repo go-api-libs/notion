@@ -10548,6 +10548,7 @@ type LastEditedTimePropertyItemObjectResponse struct {
 	LastEditedTime time.Time `json:"last_edited_time"`
 	Object         string    `json:"object"`
 	ID             string    `json:"id"`
+	RequestID      uuid.UUID `json:"request_id,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether LastEditedTimePropertyItemObjectResponse declares it.
@@ -10561,6 +10562,35 @@ func (v *LastEditedTimePropertyItemObjectResponse) unmarshalJSONMember(dec *json
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
 	case "id":
 		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// LastVisitedTimePropertyItemObjectResponse defines a model
+type LastVisitedTimePropertyItemObjectResponse struct {
+	Type            string    `json:"type"`
+	LastVisitedTime time.Time `json:"last_visited_time"`
+	Object          string    `json:"object"`
+	ID              string    `json:"id"`
+	RequestID       uuid.UUID `json:"request_id,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether LastVisitedTimePropertyItemObjectResponse declares it.
+func (v *LastVisitedTimePropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "last_visited_time":
+		return true, json.UnmarshalDecode(dec, &v.LastVisitedTime, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
 	}
 
 	return false, nil
@@ -14099,10 +14129,11 @@ type PlacePropertyConfiguration struct {
 
 // PlacePropertyItemObjectResponse defines a model
 type PlacePropertyItemObjectResponse struct {
-	Type   string                    `json:"type"`
-	Place  PagePropertiesValuePlace2 `json:"place"`
-	Object string                    `json:"object"`
-	ID     string                    `json:"id"`
+	Type      string                    `json:"type"`
+	Place     PagePropertiesValuePlace2 `json:"place"`
+	Object    string                    `json:"object"`
+	ID        string                    `json:"id"`
+	RequestID uuid.UUID                 `json:"request_id,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether PlacePropertyItemObjectResponse declares it.
@@ -14116,6 +14147,8 @@ func (v *PlacePropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Deco
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
 	case "id":
 		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
 	}
 
 	return false, nil
@@ -14563,56 +14596,60 @@ type PropertyConfig struct {
 	// The name of the property.
 	Name string `json:"name"`
 	// The description of the property.
-	Description    PropertyDescriptionRequest                      `json:"description"`
-	Type           PropertyConfigType                              `json:"type"`
-	Number         *NumberDatabasePropertyConfigResponseNumber     `json:"number,omitzero"`
-	Formula        *ContentWithExpression                          `json:"formula,omitzero"`
-	Select         *SelectDatabasePropertyConfigSelect             `json:"select,omitzero"`
-	MultiSelect    *SelectDatabasePropertyConfigSelect             `json:"multi_select,omitzero"`
-	Status         *StatusDatabasePropertyConfigResponseStatus     `json:"status,omitzero"`
-	Relation       *DatabasePropertyRelationConfigResponse         `json:"relation,omitzero"`
-	Rollup         *RollupDatabasePropertyConfigResponseRollup     `json:"rollup,omitzero"`
-	UniqueID       *UniqueIDDatabasePropertyConfigResponseUniqueID `json:"unique_id,omitzero"`
-	Title          *EmptyObject                                    `json:"title,omitzero"`
-	RichText       *EmptyObject                                    `json:"rich_text,omitzero"`
-	URL            *EmptyObject                                    `json:"url,omitzero"`
-	People         *EmptyObject                                    `json:"people,omitzero"`
-	Files          *EmptyObject                                    `json:"files,omitzero"`
-	Email          *EmptyObject                                    `json:"email,omitzero"`
-	PhoneNumber    *EmptyObject                                    `json:"phone_number,omitzero"`
-	Date           *EmptyObject                                    `json:"date,omitzero"`
-	Checkbox       *EmptyObject                                    `json:"checkbox,omitzero"`
-	CreatedBy      *EmptyObject                                    `json:"created_by,omitzero"`
-	CreatedTime    *EmptyObject                                    `json:"created_time,omitzero"`
-	LastEditedBy   *EmptyObject                                    `json:"last_edited_by,omitzero"`
-	LastEditedTime *EmptyObject                                    `json:"last_edited_time,omitzero"`
+	Description     PropertyDescriptionRequest                      `json:"description"`
+	Type            PropertyConfigType                              `json:"type"`
+	Number          *NumberDatabasePropertyConfigResponseNumber     `json:"number,omitzero"`
+	Formula         *ContentWithExpression                          `json:"formula,omitzero"`
+	Select          *SelectDatabasePropertyConfigSelect             `json:"select,omitzero"`
+	MultiSelect     *SelectDatabasePropertyConfigSelect             `json:"multi_select,omitzero"`
+	Status          *StatusDatabasePropertyConfigResponseStatus     `json:"status,omitzero"`
+	Relation        *DatabasePropertyRelationConfigResponse         `json:"relation,omitzero"`
+	Rollup          *RollupDatabasePropertyConfigResponseRollup     `json:"rollup,omitzero"`
+	UniqueID        *UniqueIDDatabasePropertyConfigResponseUniqueID `json:"unique_id,omitzero"`
+	Title           *EmptyObject                                    `json:"title,omitzero"`
+	RichText        *EmptyObject                                    `json:"rich_text,omitzero"`
+	URL             *EmptyObject                                    `json:"url,omitzero"`
+	People          *EmptyObject                                    `json:"people,omitzero"`
+	Files           *EmptyObject                                    `json:"files,omitzero"`
+	Email           *EmptyObject                                    `json:"email,omitzero"`
+	PhoneNumber     *EmptyObject                                    `json:"phone_number,omitzero"`
+	Date            *EmptyObject                                    `json:"date,omitzero"`
+	Checkbox        *EmptyObject                                    `json:"checkbox,omitzero"`
+	CreatedBy       *EmptyObject                                    `json:"created_by,omitzero"`
+	CreatedTime     *EmptyObject                                    `json:"created_time,omitzero"`
+	LastEditedBy    *EmptyObject                                    `json:"last_edited_by,omitzero"`
+	LastEditedTime  *EmptyObject                                    `json:"last_edited_time,omitzero"`
+	Place           *EmptyObject                                    `json:"place,omitzero"`
+	LastVisitedTime *EmptyObject                                    `json:"last_visited_time,omitzero"`
 }
 
 // PropertyConfigType is a value of PropertyConfig's type, naming the members it holds.
 type PropertyConfigType string
 
 const (
-	PropertyConfigTypeNumber         PropertyConfigType = "number"
-	PropertyConfigTypeFormula        PropertyConfigType = "formula"
-	PropertyConfigTypeSelect         PropertyConfigType = "select"
-	PropertyConfigTypeMultiSelect    PropertyConfigType = "multi_select"
-	PropertyConfigTypeStatus         PropertyConfigType = "status"
-	PropertyConfigTypeRelation       PropertyConfigType = "relation"
-	PropertyConfigTypeRollup         PropertyConfigType = "rollup"
-	PropertyConfigTypeUniqueID       PropertyConfigType = "unique_id"
-	PropertyConfigTypeTitle          PropertyConfigType = "title"
-	PropertyConfigTypeRichText       PropertyConfigType = "rich_text"
-	PropertyConfigTypeURL            PropertyConfigType = "url"
-	PropertyConfigTypePeople         PropertyConfigType = "people"
-	PropertyConfigTypeFiles          PropertyConfigType = "files"
-	PropertyConfigTypeEmail          PropertyConfigType = "email"
-	PropertyConfigTypePhoneNumber    PropertyConfigType = "phone_number"
-	PropertyConfigTypeDate           PropertyConfigType = "date"
-	PropertyConfigTypeCheckbox       PropertyConfigType = "checkbox"
-	PropertyConfigTypeCreatedBy      PropertyConfigType = "created_by"
-	PropertyConfigTypeCreatedTime    PropertyConfigType = "created_time"
-	PropertyConfigTypeLastEditedBy   PropertyConfigType = "last_edited_by"
-	PropertyConfigTypeLastEditedTime PropertyConfigType = "last_edited_time"
+	PropertyConfigTypeNumber          PropertyConfigType = "number"
+	PropertyConfigTypeFormula         PropertyConfigType = "formula"
+	PropertyConfigTypeSelect          PropertyConfigType = "select"
+	PropertyConfigTypeMultiSelect     PropertyConfigType = "multi_select"
+	PropertyConfigTypeStatus          PropertyConfigType = "status"
+	PropertyConfigTypeRelation        PropertyConfigType = "relation"
+	PropertyConfigTypeRollup          PropertyConfigType = "rollup"
+	PropertyConfigTypeUniqueID        PropertyConfigType = "unique_id"
+	PropertyConfigTypeTitle           PropertyConfigType = "title"
+	PropertyConfigTypeRichText        PropertyConfigType = "rich_text"
+	PropertyConfigTypeURL             PropertyConfigType = "url"
+	PropertyConfigTypePeople          PropertyConfigType = "people"
+	PropertyConfigTypeFiles           PropertyConfigType = "files"
+	PropertyConfigTypeEmail           PropertyConfigType = "email"
+	PropertyConfigTypePhoneNumber     PropertyConfigType = "phone_number"
+	PropertyConfigTypeDate            PropertyConfigType = "date"
+	PropertyConfigTypeCheckbox        PropertyConfigType = "checkbox"
+	PropertyConfigTypeCreatedBy       PropertyConfigType = "created_by"
+	PropertyConfigTypeCreatedTime     PropertyConfigType = "created_time"
+	PropertyConfigTypeLastEditedBy    PropertyConfigType = "last_edited_by"
+	PropertyConfigTypeLastEditedTime  PropertyConfigType = "last_edited_time"
+	PropertyConfigTypePlace           PropertyConfigType = "place"
+	PropertyConfigTypeLastVisitedTime PropertyConfigType = "last_visited_time"
 )
 
 // Valid indicates whether the value is a known member of the PropertyConfigType enum.
@@ -14623,27 +14660,29 @@ func (e PropertyConfigType) Valid() bool {
 
 // tagsOfPropertyConfig holds, for each value of type, the members of its alternative's own, each with whether it is required.
 var tagsOfPropertyConfig = map[string]map[string]bool{
-	"number":           {"number": true},
-	"formula":          {"formula": true},
-	"select":           {"select": true},
-	"multi_select":     {"multi_select": true},
-	"status":           {"status": true},
-	"relation":         {"relation": true},
-	"rollup":           {"rollup": true},
-	"unique_id":        {"unique_id": true},
-	"title":            {"title": true},
-	"rich_text":        {"rich_text": true},
-	"url":              {"url": true},
-	"people":           {"people": true},
-	"files":            {"files": true},
-	"email":            {"email": true},
-	"phone_number":     {"phone_number": true},
-	"date":             {"date": true},
-	"checkbox":         {"checkbox": true},
-	"created_by":       {"created_by": true},
-	"created_time":     {"created_time": true},
-	"last_edited_by":   {"last_edited_by": true},
-	"last_edited_time": {"last_edited_time": true},
+	"number":            {"number": true},
+	"formula":           {"formula": true},
+	"select":            {"select": true},
+	"multi_select":      {"multi_select": true},
+	"status":            {"status": true},
+	"relation":          {"relation": true},
+	"rollup":            {"rollup": true},
+	"unique_id":         {"unique_id": true},
+	"title":             {"title": true},
+	"rich_text":         {"rich_text": true},
+	"url":               {"url": true},
+	"people":            {"people": true},
+	"files":             {"files": true},
+	"email":             {"email": true},
+	"phone_number":      {"phone_number": true},
+	"date":              {"date": true},
+	"checkbox":          {"checkbox": true},
+	"created_by":        {"created_by": true},
+	"created_time":      {"created_time": true},
+	"last_edited_by":    {"last_edited_by": true},
+	"last_edited_time":  {"last_edited_time": true},
+	"place":             {"place": true},
+	"last_visited_time": {"last_visited_time": true},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -14711,6 +14750,12 @@ func (v *PropertyConfig) taggedMembers() []string {
 	}
 	if v.LastEditedTime != nil {
 		set = append(set, "last_edited_time")
+	}
+	if v.Place != nil {
+		set = append(set, "place")
+	}
+	if v.LastVisitedTime != nil {
+		set = append(set, "last_visited_time")
 	}
 
 	return set
@@ -15224,30 +15269,31 @@ func (v *PropertyFilterVerificationVerification) MarshalJSONTo(enc *jsontext.Enc
 // PropertyItemObjectResponse defines a model
 // PropertyItemObjectResponse is an untagged anyOf union: at least one field is set after unmarshaling.
 type PropertyItemObjectResponse struct {
-	NumberPropertyItemObjectResponse         *NumberPropertyItemObjectResponse
-	URLPropertyItemObjectResponse            *URLPropertyItemObjectResponse
-	SelectPropertyItemObjectResponse         *SelectPropertyItemObjectResponse
-	MultiSelectPropertyItemObjectResponse    *MultiSelectPropertyItemObjectResponse
-	StatusPropertyItemObjectResponse         *StatusPropertyItemObjectResponse
-	DatePropertyItemObjectResponse           *DatePropertyItemObjectResponse
-	EmailPropertyItemObjectResponse          *EmailPropertyItemObjectResponse
-	PhoneNumberPropertyItemObjectResponse    *PhoneNumberPropertyItemObjectResponse
-	CheckboxPropertyItemObjectResponse       *CheckboxPropertyItemObjectResponse
-	FilesPropertyItemObjectResponse          *FilesPropertyItemObjectResponse
-	CreatedByPropertyItemObjectResponse      *CreatedByPropertyItemObjectResponse
-	CreatedTimePropertyItemObjectResponse    *CreatedTimePropertyItemObjectResponse
-	LastEditedByPropertyItemObjectResponse   *LastEditedByPropertyItemObjectResponse
-	LastEditedTimePropertyItemObjectResponse *LastEditedTimePropertyItemObjectResponse
-	FormulaPropertyItemObjectResponse        *FormulaPropertyItemObjectResponse
-	ButtonPropertyItemObjectResponse         *ButtonPropertyItemObjectResponse
-	UniqueIDPropertyItemObjectResponse       *UniqueIDPropertyItemObjectResponse
-	VerificationPropertyItemObjectResponse   *VerificationPropertyItemObjectResponse
-	PlacePropertyItemObjectResponse          *PlacePropertyItemObjectResponse
-	TitlePropertyItemObjectResponse          *TitlePropertyItemObjectResponse
-	RichTextPropertyItemObjectResponse       *RichTextPropertyItemObjectResponse
-	PeoplePropertyItemObjectResponse         *PeoplePropertyItemObjectResponse
-	RelationPropertyItemObjectResponse       *RelationPropertyItemObjectResponse
-	RollupPropertyItemObjectResponse         *RollupPropertyItemObjectResponse
+	NumberPropertyItemObjectResponse          *NumberPropertyItemObjectResponse
+	URLPropertyItemObjectResponse             *URLPropertyItemObjectResponse
+	SelectPropertyItemObjectResponse          *SelectPropertyItemObjectResponse
+	MultiSelectPropertyItemObjectResponse     *MultiSelectPropertyItemObjectResponse
+	StatusPropertyItemObjectResponse          *StatusPropertyItemObjectResponse
+	DatePropertyItemObjectResponse            *DatePropertyItemObjectResponse
+	EmailPropertyItemObjectResponse           *EmailPropertyItemObjectResponse
+	PhoneNumberPropertyItemObjectResponse     *PhoneNumberPropertyItemObjectResponse
+	CheckboxPropertyItemObjectResponse        *CheckboxPropertyItemObjectResponse
+	FilesPropertyItemObjectResponse           *FilesPropertyItemObjectResponse
+	CreatedByPropertyItemObjectResponse       *CreatedByPropertyItemObjectResponse
+	CreatedTimePropertyItemObjectResponse     *CreatedTimePropertyItemObjectResponse
+	LastEditedByPropertyItemObjectResponse    *LastEditedByPropertyItemObjectResponse
+	LastEditedTimePropertyItemObjectResponse  *LastEditedTimePropertyItemObjectResponse
+	FormulaPropertyItemObjectResponse         *FormulaPropertyItemObjectResponse
+	ButtonPropertyItemObjectResponse          *ButtonPropertyItemObjectResponse
+	UniqueIDPropertyItemObjectResponse        *UniqueIDPropertyItemObjectResponse
+	VerificationPropertyItemObjectResponse    *VerificationPropertyItemObjectResponse
+	PlacePropertyItemObjectResponse           *PlacePropertyItemObjectResponse
+	TitlePropertyItemObjectResponse           *TitlePropertyItemObjectResponse
+	RichTextPropertyItemObjectResponse        *RichTextPropertyItemObjectResponse
+	PeoplePropertyItemObjectResponse          *PeoplePropertyItemObjectResponse
+	RelationPropertyItemObjectResponse        *RelationPropertyItemObjectResponse
+	RollupPropertyItemObjectResponse          *RollupPropertyItemObjectResponse
+	LastVisitedTimePropertyItemObjectResponse *LastVisitedTimePropertyItemObjectResponse
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
@@ -15429,6 +15475,13 @@ func (v *PropertyItemObjectResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) er
 		}
 
 		v.RollupPropertyItemObjectResponse = &vv
+	case "last_visited_time":
+		var vv LastVisitedTimePropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.LastVisitedTimePropertyItemObjectResponse = &vv
 	default:
 		return jsonUnknownValue("type", tag)
 	}
@@ -15492,6 +15545,8 @@ func (v *PropertyItemObjectResponse) MarshalJSONTo(enc *jsontext.Encoder) error 
 		variant, tag = v.RelationPropertyItemObjectResponse, "relation"
 	case v.RollupPropertyItemObjectResponse != nil:
 		variant, tag = v.RollupPropertyItemObjectResponse, "rollup"
+	case v.LastVisitedTimePropertyItemObjectResponse != nil:
+		variant, tag = v.LastVisitedTimePropertyItemObjectResponse, "last_visited_time"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -15623,62 +15678,64 @@ type PropertySorts []PropertySort
 // PropertyValue defines a model
 type PropertyValue struct {
 	IDObject
-	Type           PropertyValueType                                 `json:"type"`
-	Number         *float64                                          `json:"number,omitzero"`
-	URL            *string                                           `json:"url,omitzero"`
-	Select         *PartialSelectPropertyValueResponse               `json:"select,omitzero"`
-	MultiSelect    []PartialSelectPropertyValueResponse              `json:"multi_select,omitzero"`
-	Status         *PartialSelectPropertyValueResponse               `json:"status,omitzero"`
-	Date           *DateResponse                                     `json:"date,omitzero"`
-	Email          *string                                           `json:"email,omitzero"`
-	PhoneNumber    *string                                           `json:"phone_number,omitzero"`
-	Checkbox       *bool                                             `json:"checkbox,omitzero"`
-	Files          []InternalOrExternalFileWithNameResponse          `json:"files,omitzero"`
-	CreatedBy      *UserOrPartial                                    `json:"created_by,omitzero"`
-	CreatedTime    *time.Time                                        `json:"created_time,omitzero"`
-	LastEditedBy   *UserOrPartial                                    `json:"last_edited_by,omitzero"`
-	LastEditedTime *time.Time                                        `json:"last_edited_time,omitzero"`
-	Formula        *FormulaPropertyValueResponse                     `json:"formula,omitzero"`
-	Button         *EmptyObject                                      `json:"button,omitzero"`
-	UniqueID       *UniqueIDPropertyValueResponse                    `json:"unique_id,omitzero"`
-	Verification   *VerificationPropertyValueResponse                `json:"verification,omitzero"`
-	Place          *PlacePropertyValueResponse                       `json:"place,omitzero"`
-	Title          RichTexts                                         `json:"title,omitzero"`
-	RichText       RichTexts                                         `json:"rich_text,omitzero"`
-	People         []PeopleArrayBasedPropertyValueResponsePeopleItem `json:"people,omitzero"`
-	Relation       []RelationItemPropertyValue                       `json:"relation,omitzero"`
-	HasMore        *bool                                             `json:"has_more,omitzero"`
-	Rollup         *PartialRollupValueResponse                       `json:"rollup,omitzero"`
+	Type            PropertyValueType                                 `json:"type"`
+	Number          *float64                                          `json:"number,omitzero"`
+	URL             *string                                           `json:"url,omitzero"`
+	Select          *PartialSelectPropertyValueResponse               `json:"select,omitzero"`
+	MultiSelect     []PartialSelectPropertyValueResponse              `json:"multi_select,omitzero"`
+	Status          *PartialSelectPropertyValueResponse               `json:"status,omitzero"`
+	Date            *DateResponse                                     `json:"date,omitzero"`
+	Email           *string                                           `json:"email,omitzero"`
+	PhoneNumber     *string                                           `json:"phone_number,omitzero"`
+	Checkbox        *bool                                             `json:"checkbox,omitzero"`
+	Files           []InternalOrExternalFileWithNameResponse          `json:"files,omitzero"`
+	CreatedBy       *UserOrPartial                                    `json:"created_by,omitzero"`
+	CreatedTime     *time.Time                                        `json:"created_time,omitzero"`
+	LastEditedBy    *UserOrPartial                                    `json:"last_edited_by,omitzero"`
+	LastEditedTime  *time.Time                                        `json:"last_edited_time,omitzero"`
+	Formula         *FormulaPropertyValueResponse                     `json:"formula,omitzero"`
+	Button          *EmptyObject                                      `json:"button,omitzero"`
+	UniqueID        *UniqueIDPropertyValueResponse                    `json:"unique_id,omitzero"`
+	Verification    *VerificationPropertyValueResponse                `json:"verification,omitzero"`
+	Place           *PlacePropertyValueResponse                       `json:"place,omitzero"`
+	LastVisitedTime *time.Time                                        `json:"last_visited_time,omitzero"`
+	Title           RichTexts                                         `json:"title,omitzero"`
+	RichText        RichTexts                                         `json:"rich_text,omitzero"`
+	People          []PeopleArrayBasedPropertyValueResponsePeopleItem `json:"people,omitzero"`
+	Relation        []RelationItemPropertyValue                       `json:"relation,omitzero"`
+	HasMore         *bool                                             `json:"has_more,omitzero"`
+	Rollup          *PartialRollupValueResponse                       `json:"rollup,omitzero"`
 }
 
 // PropertyValueType is a value of PropertyValue's type, naming the members it holds.
 type PropertyValueType string
 
 const (
-	PropertyValueTypeNumber         PropertyValueType = "number"
-	PropertyValueTypeURL            PropertyValueType = "url"
-	PropertyValueTypeSelect         PropertyValueType = "select"
-	PropertyValueTypeMultiSelect    PropertyValueType = "multi_select"
-	PropertyValueTypeStatus         PropertyValueType = "status"
-	PropertyValueTypeDate           PropertyValueType = "date"
-	PropertyValueTypeEmail          PropertyValueType = "email"
-	PropertyValueTypePhoneNumber    PropertyValueType = "phone_number"
-	PropertyValueTypeCheckbox       PropertyValueType = "checkbox"
-	PropertyValueTypeFiles          PropertyValueType = "files"
-	PropertyValueTypeCreatedBy      PropertyValueType = "created_by"
-	PropertyValueTypeCreatedTime    PropertyValueType = "created_time"
-	PropertyValueTypeLastEditedBy   PropertyValueType = "last_edited_by"
-	PropertyValueTypeLastEditedTime PropertyValueType = "last_edited_time"
-	PropertyValueTypeFormula        PropertyValueType = "formula"
-	PropertyValueTypeButton         PropertyValueType = "button"
-	PropertyValueTypeUniqueID       PropertyValueType = "unique_id"
-	PropertyValueTypeVerification   PropertyValueType = "verification"
-	PropertyValueTypePlace          PropertyValueType = "place"
-	PropertyValueTypeTitle          PropertyValueType = "title"
-	PropertyValueTypeRichText       PropertyValueType = "rich_text"
-	PropertyValueTypePeople         PropertyValueType = "people"
-	PropertyValueTypeRelation       PropertyValueType = "relation"
-	PropertyValueTypeRollup         PropertyValueType = "rollup"
+	PropertyValueTypeNumber          PropertyValueType = "number"
+	PropertyValueTypeURL             PropertyValueType = "url"
+	PropertyValueTypeSelect          PropertyValueType = "select"
+	PropertyValueTypeMultiSelect     PropertyValueType = "multi_select"
+	PropertyValueTypeStatus          PropertyValueType = "status"
+	PropertyValueTypeDate            PropertyValueType = "date"
+	PropertyValueTypeEmail           PropertyValueType = "email"
+	PropertyValueTypePhoneNumber     PropertyValueType = "phone_number"
+	PropertyValueTypeCheckbox        PropertyValueType = "checkbox"
+	PropertyValueTypeFiles           PropertyValueType = "files"
+	PropertyValueTypeCreatedBy       PropertyValueType = "created_by"
+	PropertyValueTypeCreatedTime     PropertyValueType = "created_time"
+	PropertyValueTypeLastEditedBy    PropertyValueType = "last_edited_by"
+	PropertyValueTypeLastEditedTime  PropertyValueType = "last_edited_time"
+	PropertyValueTypeFormula         PropertyValueType = "formula"
+	PropertyValueTypeButton          PropertyValueType = "button"
+	PropertyValueTypeUniqueID        PropertyValueType = "unique_id"
+	PropertyValueTypeVerification    PropertyValueType = "verification"
+	PropertyValueTypePlace           PropertyValueType = "place"
+	PropertyValueTypeLastVisitedTime PropertyValueType = "last_visited_time"
+	PropertyValueTypeTitle           PropertyValueType = "title"
+	PropertyValueTypeRichText        PropertyValueType = "rich_text"
+	PropertyValueTypePeople          PropertyValueType = "people"
+	PropertyValueTypeRelation        PropertyValueType = "relation"
+	PropertyValueTypeRollup          PropertyValueType = "rollup"
 )
 
 // Valid indicates whether the value is a known member of the PropertyValueType enum.
@@ -15689,30 +15746,31 @@ func (e PropertyValueType) Valid() bool {
 
 // tagsOfPropertyValue holds, for each value of type, the members of its alternative's own, each with whether it is required.
 var tagsOfPropertyValue = map[string]map[string]bool{
-	"number":           {"number": false},
-	"url":              {"url": false},
-	"select":           {"select": false},
-	"multi_select":     {"multi_select": true},
-	"status":           {"status": false},
-	"date":             {"date": false},
-	"email":            {"email": false},
-	"phone_number":     {"phone_number": false},
-	"checkbox":         {"checkbox": true},
-	"files":            {"files": true},
-	"created_by":       {"created_by": true},
-	"created_time":     {"created_time": true},
-	"last_edited_by":   {"last_edited_by": true},
-	"last_edited_time": {"last_edited_time": true},
-	"formula":          {"formula": true},
-	"button":           {"button": true},
-	"unique_id":        {"unique_id": true},
-	"verification":     {"verification": false},
-	"place":            {"place": false},
-	"title":            {"title": true},
-	"rich_text":        {"rich_text": true},
-	"people":           {"people": true},
-	"relation":         {"has_more": false, "relation": true},
-	"rollup":           {"rollup": true},
+	"number":            {"number": false},
+	"url":               {"url": false},
+	"select":            {"select": false},
+	"multi_select":      {"multi_select": true},
+	"status":            {"status": false},
+	"date":              {"date": false},
+	"email":             {"email": false},
+	"phone_number":      {"phone_number": false},
+	"checkbox":          {"checkbox": true},
+	"files":             {"files": true},
+	"created_by":        {"created_by": true},
+	"created_time":      {"created_time": true},
+	"last_edited_by":    {"last_edited_by": true},
+	"last_edited_time":  {"last_edited_time": true},
+	"formula":           {"formula": true},
+	"button":            {"button": true},
+	"unique_id":         {"unique_id": true},
+	"verification":      {"verification": false},
+	"place":             {"place": false},
+	"last_visited_time": {"last_visited_time": false},
+	"title":             {"title": true},
+	"rich_text":         {"rich_text": true},
+	"people":            {"people": true},
+	"relation":          {"has_more": false, "relation": true},
+	"rollup":            {"rollup": true},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -15774,6 +15832,9 @@ func (v *PropertyValue) taggedMembers() []string {
 	}
 	if v.Place != nil {
 		set = append(set, "place")
+	}
+	if v.LastVisitedTime != nil {
+		set = append(set, "last_visited_time")
 	}
 	if v.Title != nil {
 		set = append(set, "title")
@@ -22131,60 +22192,62 @@ func (e SessionStatus) Valid() bool {
 
 // SimpleOrArrayPropertyValueResponse defines a model
 type SimpleOrArrayPropertyValueResponse struct {
-	Type           SimpleOrArrayPropertyValueResponseType            `json:"type"`
-	Number         *float64                                          `json:"number,omitzero"`
-	URL            *string                                           `json:"url,omitzero"`
-	Select         *PartialSelectPropertyValueResponse               `json:"select,omitzero"`
-	MultiSelect    []PartialSelectPropertyValueResponse              `json:"multi_select,omitzero"`
-	Status         *PartialSelectPropertyValueResponse               `json:"status,omitzero"`
-	Date           *DateResponse                                     `json:"date,omitzero"`
-	Email          *string                                           `json:"email,omitzero"`
-	PhoneNumber    *string                                           `json:"phone_number,omitzero"`
-	Checkbox       *bool                                             `json:"checkbox,omitzero"`
-	Files          []InternalOrExternalFileWithNameResponse          `json:"files,omitzero"`
-	CreatedBy      *UserOrPartial                                    `json:"created_by,omitzero"`
-	CreatedTime    *time.Time                                        `json:"created_time,omitzero"`
-	LastEditedBy   *UserOrPartial                                    `json:"last_edited_by,omitzero"`
-	LastEditedTime *time.Time                                        `json:"last_edited_time,omitzero"`
-	Formula        *FormulaPropertyValueResponse                     `json:"formula,omitzero"`
-	Button         *EmptyObject                                      `json:"button,omitzero"`
-	UniqueID       *UniqueIDPropertyValueResponse                    `json:"unique_id,omitzero"`
-	Verification   *VerificationPropertyValueResponse                `json:"verification,omitzero"`
-	Place          *PlacePropertyValueResponse                       `json:"place,omitzero"`
-	Title          RichTexts                                         `json:"title,omitzero"`
-	RichText       RichTexts                                         `json:"rich_text,omitzero"`
-	People         []PeopleArrayBasedPropertyValueResponsePeopleItem `json:"people,omitzero"`
-	Relation       []RelationItemPropertyValue                       `json:"relation,omitzero"`
-	HasMore        *bool                                             `json:"has_more,omitzero"`
+	Type            SimpleOrArrayPropertyValueResponseType            `json:"type"`
+	Number          *float64                                          `json:"number,omitzero"`
+	URL             *string                                           `json:"url,omitzero"`
+	Select          *PartialSelectPropertyValueResponse               `json:"select,omitzero"`
+	MultiSelect     []PartialSelectPropertyValueResponse              `json:"multi_select,omitzero"`
+	Status          *PartialSelectPropertyValueResponse               `json:"status,omitzero"`
+	Date            *DateResponse                                     `json:"date,omitzero"`
+	Email           *string                                           `json:"email,omitzero"`
+	PhoneNumber     *string                                           `json:"phone_number,omitzero"`
+	Checkbox        *bool                                             `json:"checkbox,omitzero"`
+	Files           []InternalOrExternalFileWithNameResponse          `json:"files,omitzero"`
+	CreatedBy       *UserOrPartial                                    `json:"created_by,omitzero"`
+	CreatedTime     *time.Time                                        `json:"created_time,omitzero"`
+	LastEditedBy    *UserOrPartial                                    `json:"last_edited_by,omitzero"`
+	LastEditedTime  *time.Time                                        `json:"last_edited_time,omitzero"`
+	Formula         *FormulaPropertyValueResponse                     `json:"formula,omitzero"`
+	Button          *EmptyObject                                      `json:"button,omitzero"`
+	UniqueID        *UniqueIDPropertyValueResponse                    `json:"unique_id,omitzero"`
+	Verification    *VerificationPropertyValueResponse                `json:"verification,omitzero"`
+	Place           *PlacePropertyValueResponse                       `json:"place,omitzero"`
+	LastVisitedTime *time.Time                                        `json:"last_visited_time,omitzero"`
+	Title           RichTexts                                         `json:"title,omitzero"`
+	RichText        RichTexts                                         `json:"rich_text,omitzero"`
+	People          []PeopleArrayBasedPropertyValueResponsePeopleItem `json:"people,omitzero"`
+	Relation        []RelationItemPropertyValue                       `json:"relation,omitzero"`
+	HasMore         *bool                                             `json:"has_more,omitzero"`
 }
 
 // SimpleOrArrayPropertyValueResponseType is a value of SimpleOrArrayPropertyValueResponse's type, naming the members it holds.
 type SimpleOrArrayPropertyValueResponseType string
 
 const (
-	SimpleOrArrayPropertyValueResponseTypeNumber         SimpleOrArrayPropertyValueResponseType = "number"
-	SimpleOrArrayPropertyValueResponseTypeURL            SimpleOrArrayPropertyValueResponseType = "url"
-	SimpleOrArrayPropertyValueResponseTypeSelect         SimpleOrArrayPropertyValueResponseType = "select"
-	SimpleOrArrayPropertyValueResponseTypeMultiSelect    SimpleOrArrayPropertyValueResponseType = "multi_select"
-	SimpleOrArrayPropertyValueResponseTypeStatus         SimpleOrArrayPropertyValueResponseType = "status"
-	SimpleOrArrayPropertyValueResponseTypeDate           SimpleOrArrayPropertyValueResponseType = "date"
-	SimpleOrArrayPropertyValueResponseTypeEmail          SimpleOrArrayPropertyValueResponseType = "email"
-	SimpleOrArrayPropertyValueResponseTypePhoneNumber    SimpleOrArrayPropertyValueResponseType = "phone_number"
-	SimpleOrArrayPropertyValueResponseTypeCheckbox       SimpleOrArrayPropertyValueResponseType = "checkbox"
-	SimpleOrArrayPropertyValueResponseTypeFiles          SimpleOrArrayPropertyValueResponseType = "files"
-	SimpleOrArrayPropertyValueResponseTypeCreatedBy      SimpleOrArrayPropertyValueResponseType = "created_by"
-	SimpleOrArrayPropertyValueResponseTypeCreatedTime    SimpleOrArrayPropertyValueResponseType = "created_time"
-	SimpleOrArrayPropertyValueResponseTypeLastEditedBy   SimpleOrArrayPropertyValueResponseType = "last_edited_by"
-	SimpleOrArrayPropertyValueResponseTypeLastEditedTime SimpleOrArrayPropertyValueResponseType = "last_edited_time"
-	SimpleOrArrayPropertyValueResponseTypeFormula        SimpleOrArrayPropertyValueResponseType = "formula"
-	SimpleOrArrayPropertyValueResponseTypeButton         SimpleOrArrayPropertyValueResponseType = "button"
-	SimpleOrArrayPropertyValueResponseTypeUniqueID       SimpleOrArrayPropertyValueResponseType = "unique_id"
-	SimpleOrArrayPropertyValueResponseTypeVerification   SimpleOrArrayPropertyValueResponseType = "verification"
-	SimpleOrArrayPropertyValueResponseTypePlace          SimpleOrArrayPropertyValueResponseType = "place"
-	SimpleOrArrayPropertyValueResponseTypeTitle          SimpleOrArrayPropertyValueResponseType = "title"
-	SimpleOrArrayPropertyValueResponseTypeRichText       SimpleOrArrayPropertyValueResponseType = "rich_text"
-	SimpleOrArrayPropertyValueResponseTypePeople         SimpleOrArrayPropertyValueResponseType = "people"
-	SimpleOrArrayPropertyValueResponseTypeRelation       SimpleOrArrayPropertyValueResponseType = "relation"
+	SimpleOrArrayPropertyValueResponseTypeNumber          SimpleOrArrayPropertyValueResponseType = "number"
+	SimpleOrArrayPropertyValueResponseTypeURL             SimpleOrArrayPropertyValueResponseType = "url"
+	SimpleOrArrayPropertyValueResponseTypeSelect          SimpleOrArrayPropertyValueResponseType = "select"
+	SimpleOrArrayPropertyValueResponseTypeMultiSelect     SimpleOrArrayPropertyValueResponseType = "multi_select"
+	SimpleOrArrayPropertyValueResponseTypeStatus          SimpleOrArrayPropertyValueResponseType = "status"
+	SimpleOrArrayPropertyValueResponseTypeDate            SimpleOrArrayPropertyValueResponseType = "date"
+	SimpleOrArrayPropertyValueResponseTypeEmail           SimpleOrArrayPropertyValueResponseType = "email"
+	SimpleOrArrayPropertyValueResponseTypePhoneNumber     SimpleOrArrayPropertyValueResponseType = "phone_number"
+	SimpleOrArrayPropertyValueResponseTypeCheckbox        SimpleOrArrayPropertyValueResponseType = "checkbox"
+	SimpleOrArrayPropertyValueResponseTypeFiles           SimpleOrArrayPropertyValueResponseType = "files"
+	SimpleOrArrayPropertyValueResponseTypeCreatedBy       SimpleOrArrayPropertyValueResponseType = "created_by"
+	SimpleOrArrayPropertyValueResponseTypeCreatedTime     SimpleOrArrayPropertyValueResponseType = "created_time"
+	SimpleOrArrayPropertyValueResponseTypeLastEditedBy    SimpleOrArrayPropertyValueResponseType = "last_edited_by"
+	SimpleOrArrayPropertyValueResponseTypeLastEditedTime  SimpleOrArrayPropertyValueResponseType = "last_edited_time"
+	SimpleOrArrayPropertyValueResponseTypeFormula         SimpleOrArrayPropertyValueResponseType = "formula"
+	SimpleOrArrayPropertyValueResponseTypeButton          SimpleOrArrayPropertyValueResponseType = "button"
+	SimpleOrArrayPropertyValueResponseTypeUniqueID        SimpleOrArrayPropertyValueResponseType = "unique_id"
+	SimpleOrArrayPropertyValueResponseTypeVerification    SimpleOrArrayPropertyValueResponseType = "verification"
+	SimpleOrArrayPropertyValueResponseTypePlace           SimpleOrArrayPropertyValueResponseType = "place"
+	SimpleOrArrayPropertyValueResponseTypeLastVisitedTime SimpleOrArrayPropertyValueResponseType = "last_visited_time"
+	SimpleOrArrayPropertyValueResponseTypeTitle           SimpleOrArrayPropertyValueResponseType = "title"
+	SimpleOrArrayPropertyValueResponseTypeRichText        SimpleOrArrayPropertyValueResponseType = "rich_text"
+	SimpleOrArrayPropertyValueResponseTypePeople          SimpleOrArrayPropertyValueResponseType = "people"
+	SimpleOrArrayPropertyValueResponseTypeRelation        SimpleOrArrayPropertyValueResponseType = "relation"
 )
 
 // Valid indicates whether the value is a known member of the SimpleOrArrayPropertyValueResponseType enum.
@@ -22195,29 +22258,30 @@ func (e SimpleOrArrayPropertyValueResponseType) Valid() bool {
 
 // tagsOfSimpleOrArrayPropertyValueResponse holds, for each value of type, the members of its alternative's own, each with whether it is required.
 var tagsOfSimpleOrArrayPropertyValueResponse = map[string]map[string]bool{
-	"number":           {"number": false},
-	"url":              {"url": false},
-	"select":           {"select": false},
-	"multi_select":     {"multi_select": true},
-	"status":           {"status": false},
-	"date":             {"date": false},
-	"email":            {"email": false},
-	"phone_number":     {"phone_number": false},
-	"checkbox":         {"checkbox": true},
-	"files":            {"files": true},
-	"created_by":       {"created_by": true},
-	"created_time":     {"created_time": true},
-	"last_edited_by":   {"last_edited_by": true},
-	"last_edited_time": {"last_edited_time": true},
-	"formula":          {"formula": true},
-	"button":           {"button": true},
-	"unique_id":        {"unique_id": true},
-	"verification":     {"verification": false},
-	"place":            {"place": false},
-	"title":            {"title": true},
-	"rich_text":        {"rich_text": true},
-	"people":           {"people": true},
-	"relation":         {"has_more": false, "relation": true},
+	"number":            {"number": false},
+	"url":               {"url": false},
+	"select":            {"select": false},
+	"multi_select":      {"multi_select": true},
+	"status":            {"status": false},
+	"date":              {"date": false},
+	"email":             {"email": false},
+	"phone_number":      {"phone_number": false},
+	"checkbox":          {"checkbox": true},
+	"files":             {"files": true},
+	"created_by":        {"created_by": true},
+	"created_time":      {"created_time": true},
+	"last_edited_by":    {"last_edited_by": true},
+	"last_edited_time":  {"last_edited_time": true},
+	"formula":           {"formula": true},
+	"button":            {"button": true},
+	"unique_id":         {"unique_id": true},
+	"verification":      {"verification": false},
+	"place":             {"place": false},
+	"last_visited_time": {"last_visited_time": false},
+	"title":             {"title": true},
+	"rich_text":         {"rich_text": true},
+	"people":            {"people": true},
+	"relation":          {"has_more": false, "relation": true},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -22279,6 +22343,9 @@ func (v *SimpleOrArrayPropertyValueResponse) taggedMembers() []string {
 	}
 	if v.Place != nil {
 		set = append(set, "place")
+	}
+	if v.LastVisitedTime != nil {
+		set = append(set, "last_visited_time")
 	}
 	if v.Title != nil {
 		set = append(set, "title")
@@ -23882,10 +23949,11 @@ type UniqueIDPropertyConfigurationUniqueID struct {
 
 // UniqueIDPropertyItemObjectResponse defines a model
 type UniqueIDPropertyItemObjectResponse struct {
-	Type     string                                     `json:"type"`
-	UniqueID UniqueIDPropertyItemObjectResponseUniqueID `json:"unique_id"`
-	Object   string                                     `json:"object"`
-	ID       string                                     `json:"id"`
+	Type      string                                     `json:"type"`
+	UniqueID  UniqueIDPropertyItemObjectResponseUniqueID `json:"unique_id"`
+	Object    string                                     `json:"object"`
+	ID        string                                     `json:"id"`
+	RequestID uuid.UUID                                  `json:"request_id,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether UniqueIDPropertyItemObjectResponse declares it.
@@ -23899,6 +23967,8 @@ func (v *UniqueIDPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.D
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
 	case "id":
 		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
 	}
 
 	return false, nil

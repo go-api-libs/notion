@@ -289,2382 +289,6 @@
 	{
 		"request": {
 			"method": "GET",
-			"url": "https://api.notion.com/v1/views/cb3265bc-5d5e-488f-bd8a-69221c107915",
-			"header": {
-				"Authorization": "Bearer **************************************************",
-				"Notion-Version": "2026-03-11"
-			}
-		},
-		"response": {
-			"statusCode": 200,
-			"header": {
-				"Content-Type": "application/json; charset=utf-8"
-			},
-			"body": {
-				"object": "view",
-				"id": "cb3265bc-5d5e-488f-bd8a-69221c107915",
-				"parent": {
-					"type": "database_id",
-					"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
-				},
-				"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
-				"name": "Board",
-				"type": "board",
-				"created_time": "2026-09-25T10:10:19.197+00:00",
-				"created_by": {
-					"object": "user",
-					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-				},
-				"last_edited_time": "2026-10-05T18:33:33.129+00:00",
-				"last_edited_by": {
-					"object": "user",
-					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-				},
-				"url": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0?v=cb3265bc5d5e488fbd8a69221c107915",
-				"filter": {
-					"or": [
-						{
-							"or": [
-								{
-									"property": "Blch",
-									"date": {
-										"equals": "today"
-									}
-								},
-								{
-									"and": [
-										{
-											"property": "Blch",
-											"date": {
-												"equals": "yesterday"
-											}
-										},
-										{
-											"property": ";pl:",
-											"formula": {
-												"number": {
-													"less_than": 24
-												}
-											}
-										}
-									]
-								}
-							]
-						},
-						{
-							"and": [
-								{
-									"property": "@F<W",
-									"select": {
-										"does_not_equal": "Done"
-									}
-								},
-								{
-									"property": "kF@C",
-									"created_time": {
-										"on_or_after": "2024-04-13"
-									}
-								}
-							]
-						}
-					]
-				},
-				"sorts": [
-					{
-						"property": "mFVH",
-						"direction": "ascending"
-					},
-					{
-						"property": "Blch",
-						"direction": "descending"
-					},
-					{
-						"property": "kF@C",
-						"direction": "ascending"
-					}
-				],
-				"quick_filters": null,
-				"configuration": {
-					"type": "board",
-					"group_by": {
-						"type": "select",
-						"property_id": "@F<W",
-						"sort": {
-							"type": "manual"
-						},
-						"property_name": "Status",
-						"hide_empty_groups": false
-					},
-					"properties": [
-						{
-							"property_id": "title",
-							"property_name": "Name",
-							"visible": true
-						},
-						{
-							"property_id": "mFVH",
-							"property_name": "Priority If Not Started",
-							"visible": true
-						},
-						{
-							"property_id": "r:=^",
-							"property_name": "Time without Date",
-							"visible": true
-						}
-					]
-				},
-				"request_id": "53397722-9d4c-47ad-9e1a-381a3a02ebe4"
-			}
-		}
-	},
-	{
-		"request": {
-			"method": "POST",
-			"url": "https://api.notion.com/v1/data_sources/9201f6db-2895-4450-9435-041541a181dd/query",
-			"header": {
-				"Authorization": "Bearer **************************************************",
-				"Content-Type": "application/json",
-				"Notion-Version": "2026-03-11"
-			},
-			"body": {
-				"filter": {
-					"or": [
-						{
-							"date": {
-								"equals": "today"
-							},
-							"property": "Blch"
-						},
-						{
-							"and": [
-								{
-									"date": {
-										"equals": "yesterday"
-									},
-									"property": "Blch"
-								},
-								{
-									"formula": {
-										"number": {
-											"less_than": 24
-										}
-									},
-									"property": ";pl:"
-								}
-							]
-						},
-						{
-							"and": [
-								{
-									"property": "@F<W",
-									"select": {
-										"does_not_equal": "Done"
-									}
-								},
-								{
-									"created_time": {
-										"on_or_after": "2024-04-13"
-									},
-									"property": "kF@C"
-								}
-							]
-						}
-					]
-				},
-				"sorts": [
-					{
-						"property": "mFVH",
-						"direction": "ascending"
-					},
-					{
-						"property": "Blch",
-						"direction": "descending"
-					},
-					{
-						"property": "kF@C",
-						"direction": "ascending"
-					}
-				],
-				"page_size": 3
-			}
-		},
-		"response": {
-			"statusCode": 200,
-			"header": {
-				"Content-Type": "application/json; charset=utf-8"
-			},
-			"body": {
-				"object": "list",
-				"results": [
-					{
-						"object": "page",
-						"id": "3f088fcd-daf4-8160-8a85-daa05dbea1be",
-						"created_time": "2026-10-05T03:01:00.000Z",
-						"last_edited_time": "2026-10-05T18:33:00.000Z",
-						"created_by": {
-							"object": "user",
-							"id": "00000000-0000-0000-0000-000000000003"
-						},
-						"last_edited_by": {
-							"object": "user",
-							"id": "00000000-0000-0000-0000-000000000003"
-						},
-						"cover": null,
-						"icon": {
-							"type": "emoji",
-							"emoji": "🤓"
-						},
-						"parent": {
-							"type": "data_source_id",
-							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
-							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
-						},
-						"in_trash": false,
-						"is_archived": false,
-						"is_locked": false,
-						"properties": {
-							"Duration": {
-								"id": "%3ANHe",
-								"type": "formula",
-								"formula": {
-									"type": "number",
-									"number": 124
-								}
-							},
-							"Started Hours Ago": {
-								"id": "%3Bpl%3A",
-								"type": "formula",
-								"formula": {
-									"type": "number",
-									"number": 2.066666666667
-								}
-							},
-							"Start Fallback": {
-								"id": "%3FjhJ",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T18:33:00.000+00:00",
-										"end": null,
-										"time_zone": null
-									}
-								}
-							},
-							"Status": {
-								"id": "%40F%3CW",
-								"type": "select",
-								"select": {
-									"id": "7cc827cd-2b85-4f5d-abc6-a08930dc7653",
-									"name": "In Progress",
-									"color": "orange"
-								}
-							},
-							"Start": {
-								"id": "Blch",
-								"type": "date",
-								"date": {
-									"start": "2026-10-05T20:33:00.000+02:00",
-									"end": null,
-									"time_zone": null
-								}
-							},
-							"Recurring": {
-								"id": "TIII",
-								"type": "relation",
-								"relation": [],
-								"has_more": false
-							},
-							"End": {
-								"id": "_Y%3BI",
-								"type": "date",
-								"date": null
-							},
-							"Time": {
-								"id": "%60G%7Bc",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T18:33:00.000+00:00",
-										"end": "2026-10-05T20:37:00.000+00:00",
-										"time_zone": null
-									}
-								}
-							},
-							"End Fallback": {
-								"id": "c%3A%5DA",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T20:37:00.000+00:00",
-										"end": null,
-										"time_zone": null
-									}
-								}
-							},
-							"Human Duration": {
-								"id": "dAuV",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": "2h 4m"
-								}
-							},
-							"Priority": {
-								"id": "ePdI",
-								"type": "rollup",
-								"rollup": {
-									"type": "array",
-									"array": [],
-									"function": "show_original"
-								}
-							},
-							"Created time": {
-								"id": "kF%40C",
-								"type": "created_time",
-								"created_time": "2026-10-05T03:01:00.000Z"
-							},
-							"Priority If Not Started": {
-								"id": "mFVH",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": ""
-								}
-							},
-							"Time without Date": {
-								"id": "r%3A%3D%5E",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": "18:33"
-								}
-							},
-							"Name": {
-								"id": "title",
-								"type": "title",
-								"title": [
-									{
-										"type": "text",
-										"text": {
-											"content": "Daily Learning",
-											"link": null
-										},
-										"annotations": {
-											"bold": false,
-											"italic": false,
-											"strikethrough": false,
-											"underline": false,
-											"code": false,
-											"color": "default"
-										},
-										"plain_text": "Daily Learning",
-										"href": null
-									}
-								]
-							}
-						},
-						"url": "https://app.notion.com/p/Daily-Learning-3f088fcddaf481608a85daa05dbea1be",
-						"public_url": null
-					},
-					{
-						"object": "page",
-						"id": "3f088fcd-daf4-81cc-8694-e44cffec8135",
-						"created_time": "2026-10-05T03:01:00.000Z",
-						"last_edited_time": "2026-10-05T03:01:00.000Z",
-						"created_by": {
-							"object": "user",
-							"id": "00000000-0000-0000-0000-000000000003"
-						},
-						"last_edited_by": {
-							"object": "user",
-							"id": "00000000-0000-0000-0000-000000000003"
-						},
-						"cover": null,
-						"icon": {
-							"type": "emoji",
-							"emoji": "😮‍💨"
-						},
-						"parent": {
-							"type": "data_source_id",
-							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
-							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
-						},
-						"in_trash": false,
-						"is_archived": false,
-						"is_locked": false,
-						"properties": {
-							"Duration": {
-								"id": "%3ANHe",
-								"type": "formula",
-								"formula": {
-									"type": "number",
-									"number": 1057
-								}
-							},
-							"Started Hours Ago": {
-								"id": "%3Bpl%3A",
-								"type": "formula",
-								"formula": {
-									"type": "number",
-									"number": 17.616666666667
-								}
-							},
-							"Start Fallback": {
-								"id": "%3FjhJ",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T03:00:00.000+00:00",
-										"end": null,
-										"time_zone": null
-									}
-								}
-							},
-							"Status": {
-								"id": "%40F%3CW",
-								"type": "select",
-								"select": {
-									"id": "7cc827cd-2b85-4f5d-abc6-a08930dc7653",
-									"name": "In Progress",
-									"color": "orange"
-								}
-							},
-							"Start": {
-								"id": "Blch",
-								"type": "date",
-								"date": {
-									"start": "2026-10-05T05:00:00.000+02:00",
-									"end": null,
-									"time_zone": null
-								}
-							},
-							"Recurring": {
-								"id": "TIII",
-								"type": "relation",
-								"relation": [],
-								"has_more": false
-							},
-							"End": {
-								"id": "_Y%3BI",
-								"type": "date",
-								"date": null
-							},
-							"Time": {
-								"id": "%60G%7Bc",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T03:00:00.000+00:00",
-										"end": "2026-10-05T20:37:00.000+00:00",
-										"time_zone": null
-									}
-								}
-							},
-							"End Fallback": {
-								"id": "c%3A%5DA",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T20:37:00.000+00:00",
-										"end": null,
-										"time_zone": null
-									}
-								}
-							},
-							"Human Duration": {
-								"id": "dAuV",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": "17h 37m"
-								}
-							},
-							"Priority": {
-								"id": "ePdI",
-								"type": "rollup",
-								"rollup": {
-									"type": "array",
-									"array": [],
-									"function": "show_original"
-								}
-							},
-							"Created time": {
-								"id": "kF%40C",
-								"type": "created_time",
-								"created_time": "2026-10-05T03:01:00.000Z"
-							},
-							"Priority If Not Started": {
-								"id": "mFVH",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": ""
-								}
-							},
-							"Time without Date": {
-								"id": "r%3A%3D%5E",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": "03:00"
-								}
-							},
-							"Name": {
-								"id": "title",
-								"type": "title",
-								"title": [
-									{
-										"type": "text",
-										"text": {
-											"content": "Stundenatmung",
-											"link": null
-										},
-										"annotations": {
-											"bold": false,
-											"italic": false,
-											"strikethrough": false,
-											"underline": false,
-											"code": false,
-											"color": "default"
-										},
-										"plain_text": "Stundenatmung",
-										"href": null
-									}
-								]
-							}
-						},
-						"url": "https://app.notion.com/p/Stundenatmung-3f088fcddaf481cc8694e44cffec8135",
-						"public_url": null
-					},
-					{
-						"object": "page",
-						"id": "3ef88fcd-daf4-8150-8b87-d294754ff58c",
-						"created_time": "2026-10-04T16:15:00.000Z",
-						"last_edited_time": "2026-10-05T18:18:00.000Z",
-						"created_by": {
-							"object": "user",
-							"id": "00000000-0000-0000-0000-000000000003"
-						},
-						"last_edited_by": {
-							"object": "user",
-							"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-						},
-						"cover": null,
-						"icon": {
-							"type": "emoji",
-							"emoji": "🧽"
-						},
-						"parent": {
-							"type": "data_source_id",
-							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
-							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
-						},
-						"in_trash": false,
-						"is_archived": false,
-						"is_locked": false,
-						"properties": {
-							"Duration": {
-								"id": "%3ANHe",
-								"type": "formula",
-								"formula": {
-									"type": "number",
-									"number": 54
-								}
-							},
-							"Started Hours Ago": {
-								"id": "%3Bpl%3A",
-								"type": "formula",
-								"formula": {
-									"type": "number",
-									"number": 21.016666666667
-								}
-							},
-							"Start Fallback": {
-								"id": "%3FjhJ",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-04T23:36:00.000+00:00",
-										"end": null,
-										"time_zone": null
-									}
-								}
-							},
-							"Status": {
-								"id": "%40F%3CW",
-								"type": "select",
-								"select": {
-									"id": "a41e503a-3739-419f-ac25-10ca4a1e9ced",
-									"name": "Done",
-									"color": "green"
-								}
-							},
-							"Start": {
-								"id": "Blch",
-								"type": "date",
-								"date": {
-									"start": "2026-10-05T01:36:00.000+02:00",
-									"end": null,
-									"time_zone": null
-								}
-							},
-							"Recurring": {
-								"id": "TIII",
-								"type": "relation",
-								"relation": [],
-								"has_more": false
-							},
-							"End": {
-								"id": "_Y%3BI",
-								"type": "date",
-								"date": {
-									"start": "2026-10-05T02:30:00.000+02:00",
-									"end": null,
-									"time_zone": null
-								}
-							},
-							"Time": {
-								"id": "%60G%7Bc",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-04T23:36:00.000+00:00",
-										"end": "2026-10-05T00:30:00.000+00:00",
-										"time_zone": null
-									}
-								}
-							},
-							"End Fallback": {
-								"id": "c%3A%5DA",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T00:30:00.000+00:00",
-										"end": null,
-										"time_zone": null
-									}
-								}
-							},
-							"Human Duration": {
-								"id": "dAuV",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": "54m"
-								}
-							},
-							"Priority": {
-								"id": "ePdI",
-								"type": "rollup",
-								"rollup": {
-									"type": "array",
-									"array": [],
-									"function": "show_original"
-								}
-							},
-							"Created time": {
-								"id": "kF%40C",
-								"type": "created_time",
-								"created_time": "2026-10-04T16:15:00.000Z"
-							},
-							"Priority If Not Started": {
-								"id": "mFVH",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": ""
-								}
-							},
-							"Time without Date": {
-								"id": "r%3A%3D%5E",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": "23:36-00:30"
-								}
-							},
-							"Name": {
-								"id": "title",
-								"type": "title",
-								"title": [
-									{
-										"type": "text",
-										"text": {
-											"content": "Clean Up",
-											"link": null
-										},
-										"annotations": {
-											"bold": false,
-											"italic": false,
-											"strikethrough": false,
-											"underline": false,
-											"code": false,
-											"color": "default"
-										},
-										"plain_text": "Clean Up",
-										"href": null
-									}
-								]
-							}
-						},
-						"url": "https://app.notion.com/p/Clean-Up-3ef88fcddaf481508b87d294754ff58c",
-						"public_url": null
-					}
-				],
-				"next_cursor": "s:ff0daf10-69a9-4caf-ba61-961a24f9a9aa:39588fcd-daf4-81b5-9e98-dc425530a49e",
-				"has_more": true,
-				"type": "page_or_data_source",
-				"page_or_data_source": {},
-				"request_id": "e198e7c3-dec6-47a4-b613-1bad528e92f5"
-			}
-		}
-	},
-	{
-		"request": {
-			"method": "GET",
-			"url": "https://api.notion.com/v1/views?database_id=457d00dc-fc3a-4ddb-a42f-fe376530bee0",
-			"header": {
-				"Authorization": "Bearer **************************************************",
-				"Notion-Version": "2026-03-11"
-			}
-		},
-		"response": {
-			"statusCode": 200,
-			"header": {
-				"Content-Type": "application/json; charset=utf-8"
-			},
-			"body": {
-				"object": "list",
-				"results": [
-					{
-						"object": "view",
-						"id": "cb3265bc-5d5e-488f-bd8a-69221c107915"
-					},
-					{
-						"object": "view",
-						"id": "2b688fcd-daf4-8083-8796-000c5e457268"
-					},
-					{
-						"object": "view",
-						"id": "f946222a-31f9-4f6b-b4bb-0dd774bbb495"
-					}
-				],
-				"next_cursor": null,
-				"has_more": false,
-				"type": "view",
-				"view": {},
-				"request_id": "e73a456f-a8bd-4505-81aa-cd2b79b1fa8a"
-			}
-		}
-	},
-	{
-		"request": {
-			"method": "GET",
-			"url": "https://api.notion.com/v1/databases/457d00dc-fc3a-4ddb-a42f-fe376530bee0",
-			"header": {
-				"Authorization": "Bearer **************************************************",
-				"Notion-Version": "2026-03-11"
-			}
-		},
-		"response": {
-			"statusCode": 200,
-			"header": {
-				"Content-Type": "application/json; charset=utf-8"
-			},
-			"body": {
-				"object": "database",
-				"id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0",
-				"title": [
-					{
-						"type": "text",
-						"text": {
-							"content": "Intentions",
-							"link": null
-						},
-						"annotations": {
-							"bold": false,
-							"italic": false,
-							"strikethrough": false,
-							"underline": false,
-							"code": false,
-							"color": "default"
-						},
-						"plain_text": "Intentions",
-						"href": null
-					}
-				],
-				"description": [
-					{
-						"type": "text",
-						"text": {
-							"content": "TODO: connect to Habitica, Toggl, Google Calendar, replace with Living Your Best Year Ever - and then this could be the master board",
-							"link": null
-						},
-						"annotations": {
-							"bold": false,
-							"italic": false,
-							"strikethrough": false,
-							"underline": false,
-							"code": false,
-							"color": "default"
-						},
-						"plain_text": "TODO: connect to Habitica, Toggl, Google Calendar, replace with Living Your Best Year Ever - and then this could be the master board",
-						"href": null
-					}
-				],
-				"parent": {
-					"type": "page_id",
-					"page_id": "11788fcd-daf4-80e7-a530-c2e25a86328e"
-				},
-				"is_inline": false,
-				"database_type": null,
-				"in_trash": false,
-				"is_locked": false,
-				"created_time": "2024-03-19T08:28:01.083+00:00",
-				"last_edited_time": "2026-10-05T18:33:33.129+00:00",
-				"data_sources": [
-					{
-						"id": "9201f6db-2895-4450-9435-041541a181dd",
-						"name": "Intentions"
-					}
-				],
-				"icon": {
-					"type": "emoji",
-					"emoji": "🤹"
-				},
-				"cover": {
-					"type": "external",
-					"external": {
-						"url": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb"
-					}
-				},
-				"url": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0",
-				"public_url": null,
-				"request_id": "05032afd-5f3c-481a-b58e-6489cd56eec1"
-			}
-		}
-	},
-	{
-		"request": {
-			"method": "GET",
-			"url": "https://api.notion.com/v1/data_sources/9201f6db-2895-4450-9435-041541a181dd",
-			"header": {
-				"Authorization": "Bearer **************************************************",
-				"Notion-Version": "2026-03-11"
-			}
-		},
-		"response": {
-			"statusCode": 200,
-			"header": {
-				"Content-Type": "application/json; charset=utf-8"
-			},
-			"body": {
-				"object": "data_source",
-				"id": "9201f6db-2895-4450-9435-041541a181dd",
-				"cover": {
-					"type": "external",
-					"external": {
-						"url": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb"
-					}
-				},
-				"icon": {
-					"type": "emoji",
-					"emoji": "🤹"
-				},
-				"created_time": "2024-03-19T08:28:00.000Z",
-				"created_by": {
-					"object": "user",
-					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-				},
-				"last_edited_by": {
-					"object": "user",
-					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-				},
-				"last_edited_time": "2026-10-05T18:33:00.000Z",
-				"title": [
-					{
-						"type": "text",
-						"text": {
-							"content": "Intentions",
-							"link": null
-						},
-						"annotations": {
-							"bold": false,
-							"italic": false,
-							"strikethrough": false,
-							"underline": false,
-							"code": false,
-							"color": "default"
-						},
-						"plain_text": "Intentions",
-						"href": null
-					}
-				],
-				"description": [
-					{
-						"type": "text",
-						"text": {
-							"content": "TODO: connect to Habitica, Toggl, Google Calendar, replace with Living Your Best Year Ever - and then this could be the master board",
-							"link": null
-						},
-						"annotations": {
-							"bold": false,
-							"italic": false,
-							"strikethrough": false,
-							"underline": false,
-							"code": false,
-							"color": "default"
-						},
-						"plain_text": "TODO: connect to Habitica, Toggl, Google Calendar, replace with Living Your Best Year Ever - and then this could be the master board",
-						"href": null
-					}
-				],
-				"is_inline": false,
-				"database_type": null,
-				"properties": {
-					"Duration": {
-						"id": "%3ANHe",
-						"name": "Duration",
-						"description": null,
-						"type": "formula",
-						"formula": {
-							"expression": "dateBetween(prop(\"End Fallback\"),prop(\"Start\"),\"minutes\")"
-						}
-					},
-					"Started Hours Ago": {
-						"id": "%3Bpl%3A",
-						"name": "Started Hours Ago",
-						"description": null,
-						"type": "formula",
-						"formula": {
-							"expression": "dateBetween(now(),prop(\"Start\"), \"minutes\")/60"
-						}
-					},
-					"Start Fallback": {
-						"id": "%3FjhJ",
-						"name": "Start Fallback",
-						"description": null,
-						"type": "formula",
-						"formula": {
-							"expression": "parseDate(if(prop(\"Start\").empty(),now(),prop(\"Start\")).formatDate(\"YYYY-MM-DD HH:mm\"))"
-						}
-					},
-					"Status": {
-						"id": "%40F%3CW",
-						"name": "Status",
-						"description": null,
-						"type": "select",
-						"select": {
-							"options": [
-								{
-									"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
-									"name": "Not Started",
-									"color": "gray",
-									"description": null
-								},
-								{
-									"id": "7cc827cd-2b85-4f5d-abc6-a08930dc7653",
-									"name": "In Progress",
-									"color": "orange",
-									"description": null
-								},
-								{
-									"id": "a41e503a-3739-419f-ac25-10ca4a1e9ced",
-									"name": "Done",
-									"color": "green",
-									"description": null
-								}
-							]
-						}
-					},
-					"Start": {
-						"id": "Blch",
-						"name": "Start",
-						"description": null,
-						"type": "date",
-						"date": {}
-					},
-					"End": {
-						"id": "_Y%3BI",
-						"name": "End",
-						"description": null,
-						"type": "date",
-						"date": {}
-					},
-					"Time": {
-						"id": "%60G%7Bc",
-						"name": "Time",
-						"description": null,
-						"type": "formula",
-						"formula": {
-							"expression": "dateRange(prop(\"Start Fallback\"),prop(\"End Fallback\"))"
-						}
-					},
-					"End Fallback": {
-						"id": "c%3A%5DA",
-						"name": "End Fallback",
-						"description": null,
-						"type": "formula",
-						"formula": {
-							"expression": "parseDate(if(prop(\"End\").empty(),if(dateBetween(now(),prop(\"Start Fallback\"),\"minutes\")>0,now(),prop(\"Start Fallback\").dateAdd(1, \"hours\")),prop(\"End\")).formatDate(\"YYYY-MM-DD HH:mm\"))"
-						}
-					},
-					"Human Duration": {
-						"id": "dAuV",
-						"name": "Human Duration",
-						"description": null,
-						"type": "formula",
-						"formula": {
-							"expression": "if(prop(\"Duration\")>=60,floor(prop(\"Duration\")/60)+\"h \",\"\")+prop(\"Duration\")%60+\"m\""
-						}
-					},
-					"Created time": {
-						"id": "kF%40C",
-						"name": "Created time",
-						"description": null,
-						"type": "created_time",
-						"created_time": {}
-					},
-					"Priority If Not Started": {
-						"id": "mFVH",
-						"name": "Priority If Not Started",
-						"description": null,
-						"type": "formula",
-						"formula": {
-							"expression": "if(prop(\"Status\")==\"Not Started\",prop(\"Priority\"),\"\")"
-						}
-					},
-					"Time without Date": {
-						"id": "r%3A%3D%5E",
-						"name": "Time without Date",
-						"description": null,
-						"type": "formula",
-						"formula": {
-							"expression": "formatDate(prop(\"Start\"),\"HH:mm\")+if(prop(\"End\").empty(),\"\",\"-\"+formatDate(prop(\"End\"),\"HH:mm\"))"
-						}
-					},
-					"Name": {
-						"id": "title",
-						"name": "Name",
-						"description": null,
-						"type": "title",
-						"title": {}
-					}
-				},
-				"parent": {
-					"type": "database_id",
-					"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
-				},
-				"database_parent": {
-					"type": "page_id",
-					"page_id": "11788fcd-daf4-80e7-a530-c2e25a86328e"
-				},
-				"url": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0",
-				"public_url": null,
-				"in_trash": false,
-				"request_id": "e2cfdc69-9ce8-4add-93cb-21f61e6dc7d0"
-			}
-		}
-	},
-	{
-		"request": {
-			"method": "GET",
-			"url": "https://api.notion.com/v1/blocks/457d00dc-fc3a-4ddb-a42f-fe376530bee0",
-			"header": {
-				"Authorization": "Bearer **************************************************",
-				"Notion-Version": "2026-03-11"
-			}
-		},
-		"response": {
-			"statusCode": 200,
-			"header": {
-				"Content-Type": "application/json; charset=utf-8"
-			},
-			"body": {
-				"object": "block",
-				"id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0",
-				"parent": {
-					"type": "page_id",
-					"page_id": "11788fcd-daf4-80e7-a530-c2e25a86328e"
-				},
-				"created_time": "2024-03-19T08:28:00.000Z",
-				"last_edited_time": "2026-10-05T18:33:00.000Z",
-				"created_by": {
-					"object": "user",
-					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-				},
-				"last_edited_by": {
-					"object": "user",
-					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-				},
-				"has_children": false,
-				"in_trash": false,
-				"type": "child_database",
-				"child_database": {
-					"title": "Intentions"
-				},
-				"request_id": "4ceabbf0-0119-4d36-be45-a78c3245fce5"
-			}
-		}
-	},
-	{
-		"request": {
-			"method": "GET",
-			"url": "https://api.notion.com/v1/users/me",
-			"header": {
-				"Authorization": "Bearer **************************************************",
-				"Notion-Version": "2026-03-11"
-			}
-		},
-		"response": {
-			"statusCode": 200,
-			"header": {
-				"Content-Type": "application/json; charset=utf-8"
-			},
-			"body": {
-				"object": "user",
-				"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff",
-				"name": "Fae",
-				"avatar_url": null,
-				"type": "bot",
-				"bot": {
-					"owner": {
-						"type": "workspace",
-						"workspace": true
-					},
-					"workspace_name": "Mark Rösler's Notion",
-					"workspace_id": "0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a",
-					"workspace_limits": {
-						"max_file_upload_size_in_bytes": 5368709120
-					}
-				},
-				"request_id": "1057a65b-d6f0-47de-87b6-19c8de6573a3"
-			}
-		}
-	},
-	{
-		"request": {
-			"method": "GET",
-			"url": "https://api.notion.com/v1/users?page_size=3",
-			"header": {
-				"Authorization": "Bearer **************************************************",
-				"Notion-Version": "2026-03-11"
-			}
-		},
-		"response": {
-			"statusCode": 200,
-			"header": {
-				"Content-Type": "application/json; charset=utf-8"
-			},
-			"body": {
-				"object": "list",
-				"results": [
-					{
-						"object": "user",
-						"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45",
-						"name": "Fae Tools",
-						"avatar_url": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100",
-						"type": "person",
-						"person": {
-							"email": "john.doe@example.com",
-							"email_verified": true
-						}
-					},
-					{
-						"object": "user",
-						"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff",
-						"name": "Fae",
-						"avatar_url": null,
-						"type": "bot",
-						"bot": {
-							"owner": {
-								"type": "workspace",
-								"workspace": true
-							},
-							"workspace_name": "Mark Rösler's Notion",
-							"workspace_id": "0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a",
-							"workspace_limits": {
-								"max_file_upload_size_in_bytes": 5368709120
-							}
-						}
-					},
-					{
-						"object": "user",
-						"id": "3ee88fcd-daf4-812b-bb1f-00278da6c840",
-						"name": "Notion MCP",
-						"avatar_url": "https://s3-us-west-2.amazonaws.com/public.notion-static.com/71948896-b1ca-44ee-91c4-152f541964ab/notion-logo-block-main.svg",
-						"type": "bot",
-						"bot": {}
-					}
-				],
-				"next_cursor": null,
-				"has_more": false,
-				"type": "user",
-				"user": {},
-				"request_id": "c5e205ab-aaea-4346-9880-bf961d9fcbb2"
-			}
-		}
-	},
-	{
-		"request": {
-			"method": "POST",
-			"url": "https://api.notion.com/v1/search",
-			"header": {
-				"Authorization": "Bearer **************************************************",
-				"Content-Type": "application/json",
-				"Notion-Version": "2026-03-11"
-			},
-			"body": {
-				"page_size": 3
-			}
-		},
-		"response": {
-			"statusCode": 200,
-			"header": {
-				"Content-Type": "application/json; charset=utf-8"
-			},
-			"body": {
-				"object": "list",
-				"results": [
-					{
-						"object": "page",
-						"id": "3f088fcd-daf4-8160-8a85-daa05dbea1be",
-						"created_time": "2026-10-05T03:01:00.000Z",
-						"last_edited_time": "2026-10-05T18:33:00.000Z",
-						"created_by": {
-							"object": "user",
-							"id": "00000000-0000-0000-0000-000000000003"
-						},
-						"last_edited_by": {
-							"object": "user",
-							"id": "00000000-0000-0000-0000-000000000003"
-						},
-						"cover": null,
-						"icon": {
-							"type": "emoji",
-							"emoji": "🤓"
-						},
-						"parent": {
-							"type": "data_source_id",
-							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
-							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
-						},
-						"in_trash": false,
-						"is_archived": false,
-						"is_locked": false,
-						"properties": {
-							"Duration": {
-								"id": "%3ANHe",
-								"type": "formula",
-								"formula": {
-									"type": "number",
-									"number": 124
-								}
-							},
-							"Started Hours Ago": {
-								"id": "%3Bpl%3A",
-								"type": "formula",
-								"formula": {
-									"type": "number",
-									"number": 2.066666666667
-								}
-							},
-							"Start Fallback": {
-								"id": "%3FjhJ",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T18:33:00.000+00:00",
-										"end": null,
-										"time_zone": null
-									}
-								}
-							},
-							"Status": {
-								"id": "%40F%3CW",
-								"type": "select",
-								"select": {
-									"id": "7cc827cd-2b85-4f5d-abc6-a08930dc7653",
-									"name": "In Progress",
-									"color": "orange"
-								}
-							},
-							"Start": {
-								"id": "Blch",
-								"type": "date",
-								"date": {
-									"start": "2026-10-05T20:33:00.000+02:00",
-									"end": null,
-									"time_zone": null
-								}
-							},
-							"Recurring": {
-								"id": "TIII",
-								"type": "relation",
-								"relation": [],
-								"has_more": false
-							},
-							"End": {
-								"id": "_Y%3BI",
-								"type": "date",
-								"date": null
-							},
-							"Time": {
-								"id": "%60G%7Bc",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T18:33:00.000+00:00",
-										"end": "2026-10-05T20:37:00.000+00:00",
-										"time_zone": null
-									}
-								}
-							},
-							"End Fallback": {
-								"id": "c%3A%5DA",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T20:37:00.000+00:00",
-										"end": null,
-										"time_zone": null
-									}
-								}
-							},
-							"Human Duration": {
-								"id": "dAuV",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": "2h 4m"
-								}
-							},
-							"Priority": {
-								"id": "ePdI",
-								"type": "rollup",
-								"rollup": {
-									"type": "array",
-									"array": [],
-									"function": "show_original"
-								}
-							},
-							"Created time": {
-								"id": "kF%40C",
-								"type": "created_time",
-								"created_time": "2026-10-05T03:01:00.000Z"
-							},
-							"Priority If Not Started": {
-								"id": "mFVH",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": ""
-								}
-							},
-							"Time without Date": {
-								"id": "r%3A%3D%5E",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": "18:33"
-								}
-							},
-							"Name": {
-								"id": "title",
-								"type": "title",
-								"title": [
-									{
-										"type": "text",
-										"text": {
-											"content": "Daily Learning",
-											"link": null
-										},
-										"annotations": {
-											"bold": false,
-											"italic": false,
-											"strikethrough": false,
-											"underline": false,
-											"code": false,
-											"color": "default"
-										},
-										"plain_text": "Daily Learning",
-										"href": null
-									}
-								]
-							}
-						},
-						"url": "https://app.notion.com/p/Daily-Learning-3f088fcddaf481608a85daa05dbea1be",
-						"public_url": null
-					},
-					{
-						"object": "data_source",
-						"id": "9201f6db-2895-4450-9435-041541a181dd",
-						"cover": {
-							"type": "external",
-							"external": {
-								"url": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb"
-							}
-						},
-						"icon": {
-							"type": "emoji",
-							"emoji": "🤹"
-						},
-						"created_time": "2024-03-19T08:28:00.000Z",
-						"created_by": {
-							"object": "user",
-							"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-						},
-						"last_edited_by": {
-							"object": "user",
-							"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-						},
-						"last_edited_time": "2026-10-05T18:33:00.000Z",
-						"title": [
-							{
-								"type": "text",
-								"text": {
-									"content": "Intentions",
-									"link": null
-								},
-								"annotations": {
-									"bold": false,
-									"italic": false,
-									"strikethrough": false,
-									"underline": false,
-									"code": false,
-									"color": "default"
-								},
-								"plain_text": "Intentions",
-								"href": null
-							}
-						],
-						"description": [
-							{
-								"type": "text",
-								"text": {
-									"content": "TODO: connect to Habitica, Toggl, Google Calendar, replace with Living Your Best Year Ever - and then this could be the master board",
-									"link": null
-								},
-								"annotations": {
-									"bold": false,
-									"italic": false,
-									"strikethrough": false,
-									"underline": false,
-									"code": false,
-									"color": "default"
-								},
-								"plain_text": "TODO: connect to Habitica, Toggl, Google Calendar, replace with Living Your Best Year Ever - and then this could be the master board",
-								"href": null
-							}
-						],
-						"is_inline": false,
-						"database_type": null,
-						"properties": {
-							"Duration": {
-								"id": "%3ANHe",
-								"name": "Duration",
-								"description": null,
-								"type": "formula",
-								"formula": {
-									"expression": "dateBetween(prop(\"End Fallback\"),prop(\"Start\"),\"minutes\")"
-								}
-							},
-							"Started Hours Ago": {
-								"id": "%3Bpl%3A",
-								"name": "Started Hours Ago",
-								"description": null,
-								"type": "formula",
-								"formula": {
-									"expression": "dateBetween(now(),prop(\"Start\"), \"minutes\")/60"
-								}
-							},
-							"Start Fallback": {
-								"id": "%3FjhJ",
-								"name": "Start Fallback",
-								"description": null,
-								"type": "formula",
-								"formula": {
-									"expression": "parseDate(if(prop(\"Start\").empty(),now(),prop(\"Start\")).formatDate(\"YYYY-MM-DD HH:mm\"))"
-								}
-							},
-							"Status": {
-								"id": "%40F%3CW",
-								"name": "Status",
-								"description": null,
-								"type": "select",
-								"select": {
-									"options": [
-										{
-											"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
-											"name": "Not Started",
-											"color": "gray",
-											"description": null
-										},
-										{
-											"id": "7cc827cd-2b85-4f5d-abc6-a08930dc7653",
-											"name": "In Progress",
-											"color": "orange",
-											"description": null
-										},
-										{
-											"id": "a41e503a-3739-419f-ac25-10ca4a1e9ced",
-											"name": "Done",
-											"color": "green",
-											"description": null
-										}
-									]
-								}
-							},
-							"Start": {
-								"id": "Blch",
-								"name": "Start",
-								"description": null,
-								"type": "date",
-								"date": {}
-							},
-							"End": {
-								"id": "_Y%3BI",
-								"name": "End",
-								"description": null,
-								"type": "date",
-								"date": {}
-							},
-							"Time": {
-								"id": "%60G%7Bc",
-								"name": "Time",
-								"description": null,
-								"type": "formula",
-								"formula": {
-									"expression": "dateRange(prop(\"Start Fallback\"),prop(\"End Fallback\"))"
-								}
-							},
-							"End Fallback": {
-								"id": "c%3A%5DA",
-								"name": "End Fallback",
-								"description": null,
-								"type": "formula",
-								"formula": {
-									"expression": "parseDate(if(prop(\"End\").empty(),if(dateBetween(now(),prop(\"Start Fallback\"),\"minutes\")>0,now(),prop(\"Start Fallback\").dateAdd(1, \"hours\")),prop(\"End\")).formatDate(\"YYYY-MM-DD HH:mm\"))"
-								}
-							},
-							"Human Duration": {
-								"id": "dAuV",
-								"name": "Human Duration",
-								"description": null,
-								"type": "formula",
-								"formula": {
-									"expression": "if(prop(\"Duration\")>=60,floor(prop(\"Duration\")/60)+\"h \",\"\")+prop(\"Duration\")%60+\"m\""
-								}
-							},
-							"Created time": {
-								"id": "kF%40C",
-								"name": "Created time",
-								"description": null,
-								"type": "created_time",
-								"created_time": {}
-							},
-							"Priority If Not Started": {
-								"id": "mFVH",
-								"name": "Priority If Not Started",
-								"description": null,
-								"type": "formula",
-								"formula": {
-									"expression": "if(prop(\"Status\")==\"Not Started\",prop(\"Priority\"),\"\")"
-								}
-							},
-							"Time without Date": {
-								"id": "r%3A%3D%5E",
-								"name": "Time without Date",
-								"description": null,
-								"type": "formula",
-								"formula": {
-									"expression": "formatDate(prop(\"Start\"),\"HH:mm\")+if(prop(\"End\").empty(),\"\",\"-\"+formatDate(prop(\"End\"),\"HH:mm\"))"
-								}
-							},
-							"Name": {
-								"id": "title",
-								"name": "Name",
-								"description": null,
-								"type": "title",
-								"title": {}
-							}
-						},
-						"parent": {
-							"type": "database_id",
-							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
-						},
-						"database_parent": {
-							"type": "page_id",
-							"page_id": "11788fcd-daf4-80e7-a530-c2e25a86328e"
-						},
-						"url": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0",
-						"public_url": null,
-						"in_trash": false
-					},
-					{
-						"object": "page",
-						"id": "3ef88fcd-daf4-8150-8b87-d294754ff58c",
-						"created_time": "2026-10-04T16:15:00.000Z",
-						"last_edited_time": "2026-10-05T18:18:00.000Z",
-						"created_by": {
-							"object": "user",
-							"id": "00000000-0000-0000-0000-000000000003"
-						},
-						"last_edited_by": {
-							"object": "user",
-							"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
-						},
-						"cover": null,
-						"icon": {
-							"type": "emoji",
-							"emoji": "🧽"
-						},
-						"parent": {
-							"type": "data_source_id",
-							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
-							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
-						},
-						"in_trash": false,
-						"is_archived": false,
-						"is_locked": false,
-						"properties": {
-							"Duration": {
-								"id": "%3ANHe",
-								"type": "formula",
-								"formula": {
-									"type": "number",
-									"number": 54
-								}
-							},
-							"Started Hours Ago": {
-								"id": "%3Bpl%3A",
-								"type": "formula",
-								"formula": {
-									"type": "number",
-									"number": 21.016666666667
-								}
-							},
-							"Start Fallback": {
-								"id": "%3FjhJ",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-04T23:36:00.000+00:00",
-										"end": null,
-										"time_zone": null
-									}
-								}
-							},
-							"Status": {
-								"id": "%40F%3CW",
-								"type": "select",
-								"select": {
-									"id": "a41e503a-3739-419f-ac25-10ca4a1e9ced",
-									"name": "Done",
-									"color": "green"
-								}
-							},
-							"Start": {
-								"id": "Blch",
-								"type": "date",
-								"date": {
-									"start": "2026-10-05T01:36:00.000+02:00",
-									"end": null,
-									"time_zone": null
-								}
-							},
-							"Recurring": {
-								"id": "TIII",
-								"type": "relation",
-								"relation": [],
-								"has_more": false
-							},
-							"End": {
-								"id": "_Y%3BI",
-								"type": "date",
-								"date": {
-									"start": "2026-10-05T02:30:00.000+02:00",
-									"end": null,
-									"time_zone": null
-								}
-							},
-							"Time": {
-								"id": "%60G%7Bc",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-04T23:36:00.000+00:00",
-										"end": "2026-10-05T00:30:00.000+00:00",
-										"time_zone": null
-									}
-								}
-							},
-							"End Fallback": {
-								"id": "c%3A%5DA",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T00:30:00.000+00:00",
-										"end": null,
-										"time_zone": null
-									}
-								}
-							},
-							"Human Duration": {
-								"id": "dAuV",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": "54m"
-								}
-							},
-							"Priority": {
-								"id": "ePdI",
-								"type": "rollup",
-								"rollup": {
-									"type": "array",
-									"array": [],
-									"function": "show_original"
-								}
-							},
-							"Created time": {
-								"id": "kF%40C",
-								"type": "created_time",
-								"created_time": "2026-10-04T16:15:00.000Z"
-							},
-							"Priority If Not Started": {
-								"id": "mFVH",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": ""
-								}
-							},
-							"Time without Date": {
-								"id": "r%3A%3D%5E",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": "23:36-00:30"
-								}
-							},
-							"Name": {
-								"id": "title",
-								"type": "title",
-								"title": [
-									{
-										"type": "text",
-										"text": {
-											"content": "Clean Up",
-											"link": null
-										},
-										"annotations": {
-											"bold": false,
-											"italic": false,
-											"strikethrough": false,
-											"underline": false,
-											"code": false,
-											"color": "default"
-										},
-										"plain_text": "Clean Up",
-										"href": null
-									}
-								]
-							}
-						},
-						"url": "https://app.notion.com/p/Clean-Up-3ef88fcddaf481508b87d294754ff58c",
-						"public_url": null
-					}
-				],
-				"next_cursor": "3ef88fcd-daf4-816c-a965-cda9c4d5ef0a",
-				"has_more": true,
-				"type": "page_or_data_source",
-				"page_or_data_source": {},
-				"request_id": "241aa012-ad34-437d-8ebd-439540353cf9"
-			}
-		}
-	},
-	{
-		"request": {
-			"method": "GET",
-			"url": "https://api.notion.com/v1/pages/00000000-0000-0000-0000-000000000000",
-			"header": {
-				"Authorization": "Bearer **************************************************",
-				"Notion-Version": "2026-03-11"
-			}
-		},
-		"response": {
-			"statusCode": 404,
-			"header": {
-				"Content-Type": "application/json; charset=utf-8"
-			},
-			"body": {
-				"object": "error",
-				"status": 404,
-				"code": "object_not_found",
-				"message": "Could not find page with ID: 00000000-0000-0000-0000-000000000000. Make sure the relevant pages and databases are shared with your integration \"Fae\".",
-				"additional_data": {
-					"integration_id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
-				},
-				"request_id": "298f3996-f392-4a88-911e-319c9d7a95de"
-			}
-		}
-	},
-	{
-		"request": {
-			"method": "POST",
-			"url": "https://api.notion.com/v1/data_sources/9201f6db-2895-4450-9435-041541a181dd/query",
-			"header": {
-				"Authorization": "Bearer **************************************************",
-				"Content-Type": "application/json",
-				"Notion-Version": "2026-03-11"
-			},
-			"body": {
-				"page_size": 3
-			}
-		},
-		"response": {
-			"statusCode": 200,
-			"header": {
-				"Content-Type": "application/json; charset=utf-8"
-			},
-			"body": {
-				"object": "list",
-				"results": [
-					{
-						"object": "page",
-						"id": "3f088fcd-daf4-81f6-a4a8-d17c715bd706",
-						"created_time": "2026-10-05T16:15:00.000Z",
-						"last_edited_time": "2026-10-05T16:15:00.000Z",
-						"created_by": {
-							"object": "user",
-							"id": "00000000-0000-0000-0000-000000000003"
-						},
-						"last_edited_by": {
-							"object": "user",
-							"id": "00000000-0000-0000-0000-000000000003"
-						},
-						"cover": null,
-						"icon": {
-							"type": "emoji",
-							"emoji": "🧽"
-						},
-						"parent": {
-							"type": "data_source_id",
-							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
-							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
-						},
-						"in_trash": false,
-						"is_archived": false,
-						"is_locked": false,
-						"properties": {
-							"Duration": {
-								"id": "%3ANHe",
-								"type": "formula",
-								"formula": {
-									"type": "number",
-									"number": null
-								}
-							},
-							"Started Hours Ago": {
-								"id": "%3Bpl%3A",
-								"type": "formula",
-								"formula": {
-									"type": "number",
-									"number": null
-								}
-							},
-							"Start Fallback": {
-								"id": "%3FjhJ",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T20:37:00.000+00:00",
-										"end": null,
-										"time_zone": null
-									}
-								}
-							},
-							"Status": {
-								"id": "%40F%3CW",
-								"type": "select",
-								"select": {
-									"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
-									"name": "Not Started",
-									"color": "gray"
-								}
-							},
-							"Start": {
-								"id": "Blch",
-								"type": "date",
-								"date": null
-							},
-							"Recurring": {
-								"id": "TIII",
-								"type": "relation",
-								"relation": [],
-								"has_more": false
-							},
-							"End": {
-								"id": "_Y%3BI",
-								"type": "date",
-								"date": null
-							},
-							"Time": {
-								"id": "%60G%7Bc",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T20:37:00.000+00:00",
-										"end": "2026-10-05T21:37:00.000+00:00",
-										"time_zone": null
-									}
-								}
-							},
-							"End Fallback": {
-								"id": "c%3A%5DA",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T21:37:00.000+00:00",
-										"end": null,
-										"time_zone": null
-									}
-								}
-							},
-							"Human Duration": {
-								"id": "dAuV",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": null
-								}
-							},
-							"Priority": {
-								"id": "ePdI",
-								"type": "rollup",
-								"rollup": {
-									"type": "array",
-									"array": [],
-									"function": "show_original"
-								}
-							},
-							"Created time": {
-								"id": "kF%40C",
-								"type": "created_time",
-								"created_time": "2026-10-05T16:15:00.000Z"
-							},
-							"Priority If Not Started": {
-								"id": "mFVH",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": null
-								}
-							},
-							"Time without Date": {
-								"id": "r%3A%3D%5E",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": null
-								}
-							},
-							"Name": {
-								"id": "title",
-								"type": "title",
-								"title": [
-									{
-										"type": "text",
-										"text": {
-											"content": "Clean Up",
-											"link": null
-										},
-										"annotations": {
-											"bold": false,
-											"italic": false,
-											"strikethrough": false,
-											"underline": false,
-											"code": false,
-											"color": "default"
-										},
-										"plain_text": "Clean Up",
-										"href": null
-									}
-								]
-							}
-						},
-						"url": "https://app.notion.com/p/Clean-Up-3f088fcddaf481f6a4a8d17c715bd706",
-						"public_url": null
-					},
-					{
-						"object": "page",
-						"id": "3f088fcd-daf4-8186-b90d-d1dd72889364",
-						"created_time": "2026-10-05T16:01:00.000Z",
-						"last_edited_time": "2026-10-05T16:01:00.000Z",
-						"created_by": {
-							"object": "user",
-							"id": "00000000-0000-0000-0000-000000000003"
-						},
-						"last_edited_by": {
-							"object": "user",
-							"id": "00000000-0000-0000-0000-000000000003"
-						},
-						"cover": null,
-						"icon": {
-							"type": "emoji",
-							"emoji": "🍲"
-						},
-						"parent": {
-							"type": "data_source_id",
-							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
-							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
-						},
-						"in_trash": false,
-						"is_archived": false,
-						"is_locked": false,
-						"properties": {
-							"Duration": {
-								"id": "%3ANHe",
-								"type": "formula",
-								"formula": {
-									"type": "number",
-									"number": null
-								}
-							},
-							"Started Hours Ago": {
-								"id": "%3Bpl%3A",
-								"type": "formula",
-								"formula": {
-									"type": "number",
-									"number": null
-								}
-							},
-							"Start Fallback": {
-								"id": "%3FjhJ",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T20:37:00.000+00:00",
-										"end": null,
-										"time_zone": null
-									}
-								}
-							},
-							"Status": {
-								"id": "%40F%3CW",
-								"type": "select",
-								"select": {
-									"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
-									"name": "Not Started",
-									"color": "gray"
-								}
-							},
-							"Start": {
-								"id": "Blch",
-								"type": "date",
-								"date": null
-							},
-							"Recurring": {
-								"id": "TIII",
-								"type": "relation",
-								"relation": [],
-								"has_more": false
-							},
-							"End": {
-								"id": "_Y%3BI",
-								"type": "date",
-								"date": null
-							},
-							"Time": {
-								"id": "%60G%7Bc",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T20:37:00.000+00:00",
-										"end": "2026-10-05T21:37:00.000+00:00",
-										"time_zone": null
-									}
-								}
-							},
-							"End Fallback": {
-								"id": "c%3A%5DA",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T21:37:00.000+00:00",
-										"end": null,
-										"time_zone": null
-									}
-								}
-							},
-							"Human Duration": {
-								"id": "dAuV",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": null
-								}
-							},
-							"Priority": {
-								"id": "ePdI",
-								"type": "rollup",
-								"rollup": {
-									"type": "array",
-									"array": [],
-									"function": "show_original"
-								}
-							},
-							"Created time": {
-								"id": "kF%40C",
-								"type": "created_time",
-								"created_time": "2026-10-05T16:01:00.000Z"
-							},
-							"Priority If Not Started": {
-								"id": "mFVH",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": null
-								}
-							},
-							"Time without Date": {
-								"id": "r%3A%3D%5E",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": null
-								}
-							},
-							"Name": {
-								"id": "title",
-								"type": "title",
-								"title": [
-									{
-										"type": "text",
-										"text": {
-											"content": "Dinner",
-											"link": null
-										},
-										"annotations": {
-											"bold": false,
-											"italic": false,
-											"strikethrough": false,
-											"underline": false,
-											"code": false,
-											"color": "default"
-										},
-										"plain_text": "Dinner",
-										"href": null
-									}
-								]
-							}
-						},
-						"url": "https://app.notion.com/p/Dinner-3f088fcddaf48186b90dd1dd72889364",
-						"public_url": null
-					},
-					{
-						"object": "page",
-						"id": "3f088fcd-daf4-81a4-9b2f-c5547b7a5c3e",
-						"created_time": "2026-10-05T06:00:00.000Z",
-						"last_edited_time": "2026-10-05T06:00:00.000Z",
-						"created_by": {
-							"object": "user",
-							"id": "00000000-0000-0000-0000-000000000003"
-						},
-						"last_edited_by": {
-							"object": "user",
-							"id": "00000000-0000-0000-0000-000000000003"
-						},
-						"cover": null,
-						"icon": {
-							"type": "emoji",
-							"emoji": "👨‍💻"
-						},
-						"parent": {
-							"type": "data_source_id",
-							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
-							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
-						},
-						"in_trash": false,
-						"is_archived": false,
-						"is_locked": false,
-						"properties": {
-							"Duration": {
-								"id": "%3ANHe",
-								"type": "formula",
-								"formula": {
-									"type": "number",
-									"number": null
-								}
-							},
-							"Started Hours Ago": {
-								"id": "%3Bpl%3A",
-								"type": "formula",
-								"formula": {
-									"type": "number",
-									"number": null
-								}
-							},
-							"Start Fallback": {
-								"id": "%3FjhJ",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T20:37:00.000+00:00",
-										"end": null,
-										"time_zone": null
-									}
-								}
-							},
-							"Status": {
-								"id": "%40F%3CW",
-								"type": "select",
-								"select": {
-									"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
-									"name": "Not Started",
-									"color": "gray"
-								}
-							},
-							"Start": {
-								"id": "Blch",
-								"type": "date",
-								"date": null
-							},
-							"Recurring": {
-								"id": "TIII",
-								"type": "relation",
-								"relation": [],
-								"has_more": false
-							},
-							"End": {
-								"id": "_Y%3BI",
-								"type": "date",
-								"date": null
-							},
-							"Time": {
-								"id": "%60G%7Bc",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T20:37:00.000+00:00",
-										"end": "2026-10-05T21:37:00.000+00:00",
-										"time_zone": null
-									}
-								}
-							},
-							"End Fallback": {
-								"id": "c%3A%5DA",
-								"type": "formula",
-								"formula": {
-									"type": "date",
-									"date": {
-										"start": "2026-10-05T21:37:00.000+00:00",
-										"end": null,
-										"time_zone": null
-									}
-								}
-							},
-							"Human Duration": {
-								"id": "dAuV",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": null
-								}
-							},
-							"Priority": {
-								"id": "ePdI",
-								"type": "rollup",
-								"rollup": {
-									"type": "array",
-									"array": [],
-									"function": "show_original"
-								}
-							},
-							"Created time": {
-								"id": "kF%40C",
-								"type": "created_time",
-								"created_time": "2026-10-05T06:00:00.000Z"
-							},
-							"Priority If Not Started": {
-								"id": "mFVH",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": null
-								}
-							},
-							"Time without Date": {
-								"id": "r%3A%3D%5E",
-								"type": "formula",
-								"formula": {
-									"type": "string",
-									"string": null
-								}
-							},
-							"Name": {
-								"id": "title",
-								"type": "title",
-								"title": [
-									{
-										"type": "text",
-										"text": {
-											"content": "Coding",
-											"link": null
-										},
-										"annotations": {
-											"bold": false,
-											"italic": false,
-											"strikethrough": false,
-											"underline": false,
-											"code": false,
-											"color": "default"
-										},
-										"plain_text": "Coding",
-										"href": null
-									}
-								]
-							}
-						},
-						"url": "https://app.notion.com/p/Coding-3f088fcddaf481a49b2fc5547b7a5c3e",
-						"public_url": null
-					}
-				],
-				"next_cursor": "s:4ca04db3-131e-4f4d-bcae-d70658f10480:3f088fcd-daf4-8128-a20d-d9a8c80abfd9",
-				"has_more": true,
-				"type": "page_or_data_source",
-				"page_or_data_source": {},
-				"request_id": "68b144be-bde2-4d9f-83a4-674ddd42a1f9"
-			}
-		}
-	},
-	{
-		"request": {
-			"method": "GET",
 			"url": "https://api.notion.com/v1/pages/3f088fcd-daf4-81f6-a4a8-d17c715bd706",
 			"header": {
 				"Authorization": "Bearer **************************************************",
@@ -2952,6 +576,2330 @@
 	{
 		"request": {
 			"method": "GET",
+			"url": "https://api.notion.com/v1/views/cb3265bc-5d5e-488f-bd8a-69221c107915",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "view",
+				"id": "cb3265bc-5d5e-488f-bd8a-69221c107915",
+				"parent": {
+					"type": "database_id",
+					"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+				},
+				"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
+				"name": "Board",
+				"type": "board",
+				"created_time": "2026-09-25T10:10:19.197+00:00",
+				"created_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"last_edited_time": "2026-10-05T18:33:33.129+00:00",
+				"last_edited_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"url": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0?v=cb3265bc5d5e488fbd8a69221c107915",
+				"filter": {
+					"or": [
+						{
+							"or": [
+								{
+									"property": "Blch",
+									"date": {
+										"equals": "today"
+									}
+								},
+								{
+									"and": [
+										{
+											"property": "Blch",
+											"date": {
+												"equals": "yesterday"
+											}
+										},
+										{
+											"property": ";pl:",
+											"formula": {
+												"number": {
+													"less_than": 24
+												}
+											}
+										}
+									]
+								}
+							]
+						},
+						{
+							"and": [
+								{
+									"property": "@F<W",
+									"select": {
+										"does_not_equal": "Done"
+									}
+								},
+								{
+									"property": "kF@C",
+									"created_time": {
+										"on_or_after": "2024-04-13"
+									}
+								}
+							]
+						}
+					]
+				},
+				"sorts": [
+					{
+						"property": "mFVH",
+						"direction": "ascending"
+					},
+					{
+						"property": "Blch",
+						"direction": "descending"
+					},
+					{
+						"property": "kF@C",
+						"direction": "ascending"
+					}
+				],
+				"quick_filters": null,
+				"configuration": {
+					"type": "board",
+					"group_by": {
+						"type": "select",
+						"property_id": "@F<W",
+						"sort": {
+							"type": "manual"
+						},
+						"property_name": "Status",
+						"hide_empty_groups": false
+					},
+					"properties": [
+						{
+							"property_id": "title",
+							"property_name": "Name",
+							"visible": true
+						},
+						{
+							"property_id": "mFVH",
+							"property_name": "Priority If Not Started",
+							"visible": true
+						},
+						{
+							"property_id": "r:=^",
+							"property_name": "Time without Date",
+							"visible": true
+						}
+					]
+				},
+				"request_id": "ca808736-4712-4edd-903a-29981166450c"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "https://api.notion.com/v1/data_sources/9201f6db-2895-4450-9435-041541a181dd/query",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Content-Type": "application/json",
+				"Notion-Version": "2026-03-11"
+			},
+			"body": {
+				"filter": {
+					"or": [
+						{
+							"date": {
+								"equals": "today"
+							},
+							"property": "Blch"
+						},
+						{
+							"and": [
+								{
+									"date": {
+										"equals": "yesterday"
+									},
+									"property": "Blch"
+								},
+								{
+									"formula": {
+										"number": {
+											"less_than": 24
+										}
+									},
+									"property": ";pl:"
+								}
+							]
+						},
+						{
+							"and": [
+								{
+									"property": "@F<W",
+									"select": {
+										"does_not_equal": "Done"
+									}
+								},
+								{
+									"created_time": {
+										"on_or_after": "2024-04-13"
+									},
+									"property": "kF@C"
+								}
+							]
+						}
+					]
+				},
+				"sorts": [
+					{
+						"property": "mFVH",
+						"direction": "ascending"
+					},
+					{
+						"property": "Blch",
+						"direction": "descending"
+					},
+					{
+						"property": "kF@C",
+						"direction": "ascending"
+					}
+				],
+				"page_size": 3
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [
+					{
+						"object": "page",
+						"id": "3f188fcd-daf4-814d-bb91-d3e4057dcc93",
+						"created_time": "2026-10-06T03:00:00.000Z",
+						"last_edited_time": "2026-10-06T03:00:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"last_edited_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"cover": null,
+						"icon": {
+							"type": "emoji",
+							"emoji": "😮‍💨"
+						},
+						"parent": {
+							"type": "data_source_id",
+							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
+							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+						},
+						"in_trash": false,
+						"is_archived": false,
+						"is_locked": false,
+						"properties": {
+							"Duration": {
+								"id": "%3ANHe",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": 331
+								}
+							},
+							"Started Hours Ago": {
+								"id": "%3Bpl%3A",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": 5.516666666667
+								}
+							},
+							"Start Fallback": {
+								"id": "%3FjhJ",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-06T03:00:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Status": {
+								"id": "%40F%3CW",
+								"type": "select",
+								"select": {
+									"id": "7cc827cd-2b85-4f5d-abc6-a08930dc7653",
+									"name": "In Progress",
+									"color": "orange"
+								}
+							},
+							"Start": {
+								"id": "Blch",
+								"type": "date",
+								"date": {
+									"start": "2026-10-06T05:00:00.000+02:00",
+									"end": null,
+									"time_zone": null
+								}
+							},
+							"Recurring": {
+								"id": "TIII",
+								"type": "relation",
+								"relation": [],
+								"has_more": false
+							},
+							"End": {
+								"id": "_Y%3BI",
+								"type": "date",
+								"date": null
+							},
+							"Time": {
+								"id": "%60G%7Bc",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-06T03:00:00.000+00:00",
+										"end": "2026-10-06T08:31:00.000+00:00",
+										"time_zone": null
+									}
+								}
+							},
+							"End Fallback": {
+								"id": "c%3A%5DA",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-06T08:31:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Human Duration": {
+								"id": "dAuV",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": "5h 31m"
+								}
+							},
+							"Priority": {
+								"id": "ePdI",
+								"type": "rollup",
+								"rollup": {
+									"type": "array",
+									"array": [],
+									"function": "show_original"
+								}
+							},
+							"Created time": {
+								"id": "kF%40C",
+								"type": "created_time",
+								"created_time": "2026-10-06T03:00:00.000Z"
+							},
+							"Priority If Not Started": {
+								"id": "mFVH",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": ""
+								}
+							},
+							"Time without Date": {
+								"id": "r%3A%3D%5E",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": "03:00"
+								}
+							},
+							"Name": {
+								"id": "title",
+								"type": "title",
+								"title": [
+									{
+										"type": "text",
+										"text": {
+											"content": "Stundenatmung",
+											"link": null
+										},
+										"annotations": {
+											"bold": false,
+											"italic": false,
+											"strikethrough": false,
+											"underline": false,
+											"code": false,
+											"color": "default"
+										},
+										"plain_text": "Stundenatmung",
+										"href": null
+									}
+								]
+							}
+						},
+						"url": "https://app.notion.com/p/Stundenatmung-3f188fcddaf4814dbb91d3e4057dcc93",
+						"public_url": null
+					},
+					{
+						"object": "page",
+						"id": "3f088fcd-daf4-8160-8a85-daa05dbea1be",
+						"created_time": "2026-10-05T03:01:00.000Z",
+						"last_edited_time": "2026-10-06T01:28:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"last_edited_by": {
+							"object": "user",
+							"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+						},
+						"cover": null,
+						"icon": {
+							"type": "emoji",
+							"emoji": "🤓"
+						},
+						"parent": {
+							"type": "data_source_id",
+							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
+							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+						},
+						"in_trash": false,
+						"is_archived": false,
+						"is_locked": false,
+						"properties": {
+							"Duration": {
+								"id": "%3ANHe",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": 838
+								}
+							},
+							"Started Hours Ago": {
+								"id": "%3Bpl%3A",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": 13.966666666667
+								}
+							},
+							"Start Fallback": {
+								"id": "%3FjhJ",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-05T18:33:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Status": {
+								"id": "%40F%3CW",
+								"type": "select",
+								"select": {
+									"id": "7cc827cd-2b85-4f5d-abc6-a08930dc7653",
+									"name": "In Progress",
+									"color": "orange"
+								}
+							},
+							"Start": {
+								"id": "Blch",
+								"type": "date",
+								"date": {
+									"start": "2026-10-05T20:33:00.000+02:00",
+									"end": null,
+									"time_zone": null
+								}
+							},
+							"Recurring": {
+								"id": "TIII",
+								"type": "relation",
+								"relation": [],
+								"has_more": false
+							},
+							"End": {
+								"id": "_Y%3BI",
+								"type": "date",
+								"date": null
+							},
+							"Time": {
+								"id": "%60G%7Bc",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-05T18:33:00.000+00:00",
+										"end": "2026-10-06T08:31:00.000+00:00",
+										"time_zone": null
+									}
+								}
+							},
+							"End Fallback": {
+								"id": "c%3A%5DA",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-06T08:31:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Human Duration": {
+								"id": "dAuV",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": "13h 58m"
+								}
+							},
+							"Priority": {
+								"id": "ePdI",
+								"type": "rollup",
+								"rollup": {
+									"type": "array",
+									"array": [],
+									"function": "show_original"
+								}
+							},
+							"Created time": {
+								"id": "kF%40C",
+								"type": "created_time",
+								"created_time": "2026-10-05T03:01:00.000Z"
+							},
+							"Priority If Not Started": {
+								"id": "mFVH",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": ""
+								}
+							},
+							"Time without Date": {
+								"id": "r%3A%3D%5E",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": "18:33"
+								}
+							},
+							"Name": {
+								"id": "title",
+								"type": "title",
+								"title": [
+									{
+										"type": "text",
+										"text": {
+											"content": "Daily Learning",
+											"link": null
+										},
+										"annotations": {
+											"bold": false,
+											"italic": false,
+											"strikethrough": false,
+											"underline": false,
+											"code": false,
+											"color": "default"
+										},
+										"plain_text": "Daily Learning",
+										"href": null
+									}
+								]
+							}
+						},
+						"url": "https://app.notion.com/p/Daily-Learning-3f088fcddaf481608a85daa05dbea1be",
+						"public_url": null
+					},
+					{
+						"object": "page",
+						"id": "3f088fcd-daf4-81cc-8694-e44cffec8135",
+						"created_time": "2026-10-05T03:01:00.000Z",
+						"last_edited_time": "2026-10-05T03:01:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"last_edited_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"cover": null,
+						"icon": {
+							"type": "emoji",
+							"emoji": "😮‍💨"
+						},
+						"parent": {
+							"type": "data_source_id",
+							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
+							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+						},
+						"in_trash": false,
+						"is_archived": false,
+						"is_locked": false,
+						"properties": {
+							"Duration": {
+								"id": "%3ANHe",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": 1771
+								}
+							},
+							"Started Hours Ago": {
+								"id": "%3Bpl%3A",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": 29.516666666667
+								}
+							},
+							"Start Fallback": {
+								"id": "%3FjhJ",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-05T03:00:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Status": {
+								"id": "%40F%3CW",
+								"type": "select",
+								"select": {
+									"id": "7cc827cd-2b85-4f5d-abc6-a08930dc7653",
+									"name": "In Progress",
+									"color": "orange"
+								}
+							},
+							"Start": {
+								"id": "Blch",
+								"type": "date",
+								"date": {
+									"start": "2026-10-05T05:00:00.000+02:00",
+									"end": null,
+									"time_zone": null
+								}
+							},
+							"Recurring": {
+								"id": "TIII",
+								"type": "relation",
+								"relation": [],
+								"has_more": false
+							},
+							"End": {
+								"id": "_Y%3BI",
+								"type": "date",
+								"date": null
+							},
+							"Time": {
+								"id": "%60G%7Bc",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-05T03:00:00.000+00:00",
+										"end": "2026-10-06T08:31:00.000+00:00",
+										"time_zone": null
+									}
+								}
+							},
+							"End Fallback": {
+								"id": "c%3A%5DA",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-06T08:31:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Human Duration": {
+								"id": "dAuV",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": "29h 31m"
+								}
+							},
+							"Priority": {
+								"id": "ePdI",
+								"type": "rollup",
+								"rollup": {
+									"type": "array",
+									"array": [],
+									"function": "show_original"
+								}
+							},
+							"Created time": {
+								"id": "kF%40C",
+								"type": "created_time",
+								"created_time": "2026-10-05T03:01:00.000Z"
+							},
+							"Priority If Not Started": {
+								"id": "mFVH",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": ""
+								}
+							},
+							"Time without Date": {
+								"id": "r%3A%3D%5E",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": "03:00"
+								}
+							},
+							"Name": {
+								"id": "title",
+								"type": "title",
+								"title": [
+									{
+										"type": "text",
+										"text": {
+											"content": "Stundenatmung",
+											"link": null
+										},
+										"annotations": {
+											"bold": false,
+											"italic": false,
+											"strikethrough": false,
+											"underline": false,
+											"code": false,
+											"color": "default"
+										},
+										"plain_text": "Stundenatmung",
+										"href": null
+									}
+								]
+							}
+						},
+						"url": "https://app.notion.com/p/Stundenatmung-3f088fcddaf481cc8694e44cffec8135",
+						"public_url": null
+					}
+				],
+				"next_cursor": "s:d6c251ef-9a6e-4797-81b4-8053a21658f2:39588fcd-daf4-81b5-9e98-dc425530a49e",
+				"has_more": true,
+				"type": "page_or_data_source",
+				"page_or_data_source": {},
+				"request_id": "ae9c5a05-9b72-44e4-b3e3-0b087bd3b05c"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/views?database_id=457d00dc-fc3a-4ddb-a42f-fe376530bee0",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [
+					{
+						"object": "view",
+						"id": "cb3265bc-5d5e-488f-bd8a-69221c107915"
+					},
+					{
+						"object": "view",
+						"id": "2b688fcd-daf4-8083-8796-000c5e457268"
+					},
+					{
+						"object": "view",
+						"id": "f946222a-31f9-4f6b-b4bb-0dd774bbb495"
+					}
+				],
+				"next_cursor": null,
+				"has_more": false,
+				"type": "view",
+				"view": {},
+				"request_id": "41ae407e-dd7d-45f0-a63c-5b0fc477a2b8"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/databases/457d00dc-fc3a-4ddb-a42f-fe376530bee0",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "database",
+				"id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0",
+				"title": [
+					{
+						"type": "text",
+						"text": {
+							"content": "Intentions",
+							"link": null
+						},
+						"annotations": {
+							"bold": false,
+							"italic": false,
+							"strikethrough": false,
+							"underline": false,
+							"code": false,
+							"color": "default"
+						},
+						"plain_text": "Intentions",
+						"href": null
+					}
+				],
+				"description": [
+					{
+						"type": "text",
+						"text": {
+							"content": "TODO: connect to Habitica, Toggl, Google Calendar, replace with Living Your Best Year Ever - and then this could be the master board",
+							"link": null
+						},
+						"annotations": {
+							"bold": false,
+							"italic": false,
+							"strikethrough": false,
+							"underline": false,
+							"code": false,
+							"color": "default"
+						},
+						"plain_text": "TODO: connect to Habitica, Toggl, Google Calendar, replace with Living Your Best Year Ever - and then this could be the master board",
+						"href": null
+					}
+				],
+				"parent": {
+					"type": "page_id",
+					"page_id": "11788fcd-daf4-80e7-a530-c2e25a86328e"
+				},
+				"is_inline": false,
+				"database_type": null,
+				"in_trash": false,
+				"is_locked": false,
+				"created_time": "2024-03-19T08:28:01.083+00:00",
+				"last_edited_time": "2026-10-05T18:33:33.129+00:00",
+				"data_sources": [
+					{
+						"id": "9201f6db-2895-4450-9435-041541a181dd",
+						"name": "Intentions"
+					}
+				],
+				"icon": {
+					"type": "emoji",
+					"emoji": "🤹"
+				},
+				"cover": {
+					"type": "external",
+					"external": {
+						"url": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb"
+					}
+				},
+				"url": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0",
+				"public_url": null,
+				"request_id": "08342c5a-91f5-4b82-8c7d-52e021387bc0"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/data_sources/9201f6db-2895-4450-9435-041541a181dd",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "data_source",
+				"id": "9201f6db-2895-4450-9435-041541a181dd",
+				"cover": {
+					"type": "external",
+					"external": {
+						"url": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb"
+					}
+				},
+				"icon": {
+					"type": "emoji",
+					"emoji": "🤹"
+				},
+				"created_time": "2024-03-19T08:28:00.000Z",
+				"created_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"last_edited_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"last_edited_time": "2026-10-05T18:33:00.000Z",
+				"title": [
+					{
+						"type": "text",
+						"text": {
+							"content": "Intentions",
+							"link": null
+						},
+						"annotations": {
+							"bold": false,
+							"italic": false,
+							"strikethrough": false,
+							"underline": false,
+							"code": false,
+							"color": "default"
+						},
+						"plain_text": "Intentions",
+						"href": null
+					}
+				],
+				"description": [
+					{
+						"type": "text",
+						"text": {
+							"content": "TODO: connect to Habitica, Toggl, Google Calendar, replace with Living Your Best Year Ever - and then this could be the master board",
+							"link": null
+						},
+						"annotations": {
+							"bold": false,
+							"italic": false,
+							"strikethrough": false,
+							"underline": false,
+							"code": false,
+							"color": "default"
+						},
+						"plain_text": "TODO: connect to Habitica, Toggl, Google Calendar, replace with Living Your Best Year Ever - and then this could be the master board",
+						"href": null
+					}
+				],
+				"is_inline": false,
+				"database_type": null,
+				"properties": {
+					"Duration": {
+						"id": "%3ANHe",
+						"name": "Duration",
+						"description": null,
+						"type": "formula",
+						"formula": {
+							"expression": "dateBetween(prop(\"End Fallback\"),prop(\"Start\"),\"minutes\")"
+						}
+					},
+					"Started Hours Ago": {
+						"id": "%3Bpl%3A",
+						"name": "Started Hours Ago",
+						"description": null,
+						"type": "formula",
+						"formula": {
+							"expression": "dateBetween(now(),prop(\"Start\"), \"minutes\")/60"
+						}
+					},
+					"Start Fallback": {
+						"id": "%3FjhJ",
+						"name": "Start Fallback",
+						"description": null,
+						"type": "formula",
+						"formula": {
+							"expression": "parseDate(if(prop(\"Start\").empty(),now(),prop(\"Start\")).formatDate(\"YYYY-MM-DD HH:mm\"))"
+						}
+					},
+					"Status": {
+						"id": "%40F%3CW",
+						"name": "Status",
+						"description": null,
+						"type": "select",
+						"select": {
+							"options": [
+								{
+									"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
+									"name": "Not Started",
+									"color": "gray",
+									"description": null
+								},
+								{
+									"id": "7cc827cd-2b85-4f5d-abc6-a08930dc7653",
+									"name": "In Progress",
+									"color": "orange",
+									"description": null
+								},
+								{
+									"id": "a41e503a-3739-419f-ac25-10ca4a1e9ced",
+									"name": "Done",
+									"color": "green",
+									"description": null
+								}
+							]
+						}
+					},
+					"Start": {
+						"id": "Blch",
+						"name": "Start",
+						"description": null,
+						"type": "date",
+						"date": {}
+					},
+					"End": {
+						"id": "_Y%3BI",
+						"name": "End",
+						"description": null,
+						"type": "date",
+						"date": {}
+					},
+					"Time": {
+						"id": "%60G%7Bc",
+						"name": "Time",
+						"description": null,
+						"type": "formula",
+						"formula": {
+							"expression": "dateRange(prop(\"Start Fallback\"),prop(\"End Fallback\"))"
+						}
+					},
+					"End Fallback": {
+						"id": "c%3A%5DA",
+						"name": "End Fallback",
+						"description": null,
+						"type": "formula",
+						"formula": {
+							"expression": "parseDate(if(prop(\"End\").empty(),if(dateBetween(now(),prop(\"Start Fallback\"),\"minutes\")>0,now(),prop(\"Start Fallback\").dateAdd(1, \"hours\")),prop(\"End\")).formatDate(\"YYYY-MM-DD HH:mm\"))"
+						}
+					},
+					"Human Duration": {
+						"id": "dAuV",
+						"name": "Human Duration",
+						"description": null,
+						"type": "formula",
+						"formula": {
+							"expression": "if(prop(\"Duration\")>=60,floor(prop(\"Duration\")/60)+\"h \",\"\")+prop(\"Duration\")%60+\"m\""
+						}
+					},
+					"Created time": {
+						"id": "kF%40C",
+						"name": "Created time",
+						"description": null,
+						"type": "created_time",
+						"created_time": {}
+					},
+					"Priority If Not Started": {
+						"id": "mFVH",
+						"name": "Priority If Not Started",
+						"description": null,
+						"type": "formula",
+						"formula": {
+							"expression": "if(prop(\"Status\")==\"Not Started\",prop(\"Priority\"),\"\")"
+						}
+					},
+					"Time without Date": {
+						"id": "r%3A%3D%5E",
+						"name": "Time without Date",
+						"description": null,
+						"type": "formula",
+						"formula": {
+							"expression": "formatDate(prop(\"Start\"),\"HH:mm\")+if(prop(\"End\").empty(),\"\",\"-\"+formatDate(prop(\"End\"),\"HH:mm\"))"
+						}
+					},
+					"Name": {
+						"id": "title",
+						"name": "Name",
+						"description": null,
+						"type": "title",
+						"title": {}
+					}
+				},
+				"parent": {
+					"type": "database_id",
+					"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+				},
+				"database_parent": {
+					"type": "page_id",
+					"page_id": "11788fcd-daf4-80e7-a530-c2e25a86328e"
+				},
+				"url": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0",
+				"public_url": null,
+				"in_trash": false,
+				"request_id": "cced88d6-2936-419a-bb90-710ef9be6723"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/blocks/457d00dc-fc3a-4ddb-a42f-fe376530bee0",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "block",
+				"id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0",
+				"parent": {
+					"type": "page_id",
+					"page_id": "11788fcd-daf4-80e7-a530-c2e25a86328e"
+				},
+				"created_time": "2024-03-19T08:28:00.000Z",
+				"last_edited_time": "2026-10-05T18:33:00.000Z",
+				"created_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"last_edited_by": {
+					"object": "user",
+					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+				},
+				"has_children": false,
+				"in_trash": false,
+				"type": "child_database",
+				"child_database": {
+					"title": "Intentions"
+				},
+				"request_id": "e6476a9e-57dc-4d94-bbdf-b2c1cc529c7e"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/users/me",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "user",
+				"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff",
+				"name": "Fae",
+				"avatar_url": null,
+				"type": "bot",
+				"bot": {
+					"owner": {
+						"type": "workspace",
+						"workspace": true
+					},
+					"workspace_name": "Mark Rösler's Notion",
+					"workspace_id": "0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a",
+					"workspace_limits": {
+						"max_file_upload_size_in_bytes": 5368709120
+					}
+				},
+				"request_id": "e1a1d25b-1b5d-41df-9bed-ec1931aa30ad"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/users?page_size=3",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [
+					{
+						"object": "user",
+						"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45",
+						"name": "Fae Tools",
+						"avatar_url": "https://lh3.googleusercontent.com/a-/AOh14Gi54BUKkLrZ2IX8ORURI__6avK9zjCYXdhbmthj=s100",
+						"type": "person",
+						"person": {
+							"email": "john.doe@example.com",
+							"email_verified": true
+						}
+					},
+					{
+						"object": "user",
+						"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff",
+						"name": "Fae",
+						"avatar_url": null,
+						"type": "bot",
+						"bot": {
+							"owner": {
+								"type": "workspace",
+								"workspace": true
+							},
+							"workspace_name": "Mark Rösler's Notion",
+							"workspace_id": "0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a",
+							"workspace_limits": {
+								"max_file_upload_size_in_bytes": 5368709120
+							}
+						}
+					},
+					{
+						"object": "user",
+						"id": "3ee88fcd-daf4-812b-bb1f-00278da6c840",
+						"name": "Notion MCP",
+						"avatar_url": "https://s3-us-west-2.amazonaws.com/public.notion-static.com/71948896-b1ca-44ee-91c4-152f541964ab/notion-logo-block-main.svg",
+						"type": "bot",
+						"bot": {}
+					}
+				],
+				"next_cursor": null,
+				"has_more": false,
+				"type": "user",
+				"user": {},
+				"request_id": "786c90c4-7734-4918-baac-87eec0818464"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "https://api.notion.com/v1/search",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Content-Type": "application/json",
+				"Notion-Version": "2026-03-11"
+			},
+			"body": {
+				"page_size": 3
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [
+					{
+						"object": "page",
+						"id": "96245c8f-1784-44a4-82ad-1941127c3ec3",
+						"created_time": "2022-07-14T05:31:00.000Z",
+						"last_edited_time": "2026-10-06T08:30:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+						},
+						"last_edited_by": {
+							"object": "user",
+							"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+						},
+						"cover": {
+							"type": "external",
+							"external": {
+								"url": "https://app.notion.com/images/page-cover/nasa_space_shuttle_columbia_and_sunrise.jpg"
+							}
+						},
+						"icon": {
+							"type": "emoji",
+							"emoji": "🌄"
+						},
+						"parent": {
+							"type": "page_id",
+							"page_id": "11f88fcd-daf4-802e-b645-eb2d041a759b"
+						},
+						"in_trash": false,
+						"is_archived": false,
+						"is_locked": false,
+						"properties": {
+							"title": {
+								"id": "title",
+								"type": "title",
+								"title": [
+									{
+										"type": "text",
+										"text": {
+											"content": "Example Page",
+											"link": null
+										},
+										"annotations": {
+											"bold": false,
+											"italic": false,
+											"strikethrough": false,
+											"underline": false,
+											"code": false,
+											"color": "default"
+										},
+										"plain_text": "Example Page",
+										"href": null
+									}
+								]
+							}
+						},
+						"url": "https://app.notion.com/p/Example-Page-96245c8f178444a482ad1941127c3ec3",
+						"public_url": "https://fae-tools.notion.site/Example-Page-96245c8f178444a482ad1941127c3ec3"
+					},
+					{
+						"object": "page",
+						"id": "3f188fcd-daf4-81fb-8780-f9b94d9fcaf4",
+						"created_time": "2026-10-06T08:30:00.000Z",
+						"last_edited_time": "2026-10-06T08:30:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+						},
+						"last_edited_by": {
+							"object": "user",
+							"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+						},
+						"cover": null,
+						"icon": {
+							"type": "icon",
+							"icon": {
+								"name": "pizza",
+								"color": "blue"
+							}
+						},
+						"parent": {
+							"type": "page_id",
+							"page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
+						},
+						"in_trash": false,
+						"is_archived": false,
+						"is_locked": false,
+						"properties": {
+							"title": {
+								"id": "title",
+								"type": "title",
+								"title": [
+									{
+										"type": "text",
+										"text": {
+											"content": "Page with a Notion icon",
+											"link": null
+										},
+										"annotations": {
+											"bold": false,
+											"italic": false,
+											"strikethrough": false,
+											"underline": false,
+											"code": false,
+											"color": "default"
+										},
+										"plain_text": "Page with a Notion icon",
+										"href": null
+									}
+								]
+							}
+						},
+						"url": "https://app.notion.com/p/Page-with-a-Notion-icon-3f188fcddaf481fb8780f9b94d9fcaf4",
+						"public_url": "https://fae-tools.notion.site/Page-with-a-Notion-icon-3f188fcddaf481fb8780f9b94d9fcaf4"
+					},
+					{
+						"object": "page",
+						"id": "3f188fcd-daf4-8186-9616-e12b8edac605",
+						"created_time": "2026-10-06T08:30:00.000Z",
+						"last_edited_time": "2026-10-06T08:30:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+						},
+						"last_edited_by": {
+							"object": "user",
+							"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+						},
+						"cover": null,
+						"icon": null,
+						"parent": {
+							"type": "data_source_id",
+							"data_source_id": "c1df42f3-5a67-4995-b51f-7f296e6ab0eb",
+							"database_id": "cbfdfb25-9bb5-499e-ad1d-64a11bfe95dd"
+						},
+						"in_trash": false,
+						"is_archived": false,
+						"is_locked": false,
+						"properties": {
+							"Related": {
+								"id": "%3Ewe%5B",
+								"type": "relation",
+								"relation": [
+									{
+										"id": "3f188fcd-daf4-818c-ac08-cd0a453149e3"
+									}
+								],
+								"has_more": false
+							},
+							"Latest related date": {
+								"id": "IEis",
+								"type": "rollup",
+								"rollup": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-06T09:30:00.000+02:00",
+										"end": null,
+										"time_zone": null
+									},
+									"function": "latest_date"
+								}
+							},
+							"When": {
+								"id": "T%7CMj",
+								"type": "date",
+								"date": {
+									"start": "2026-10-07",
+									"end": null,
+									"time_zone": null
+								}
+							},
+							"Last visited": {
+								"id": "klZz",
+								"type": "last_visited_time",
+								"last_visited_time": null
+							},
+							"Place": {
+								"id": "kuJP",
+								"type": "place",
+								"place": null
+							},
+							"Last edited": {
+								"id": "x%3D~k",
+								"type": "last_edited_time",
+								"last_edited_time": "2026-10-06T08:30:00.000Z"
+							},
+							"ID": {
+								"id": "%7B%7B%3D%3B",
+								"type": "unique_id",
+								"unique_id": {
+									"prefix": "COV",
+									"number": 2
+								}
+							},
+							"Name": {
+								"id": "title",
+								"type": "title",
+								"title": [
+									{
+										"type": "text",
+										"text": {
+											"content": "With a date and a relation",
+											"link": null
+										},
+										"annotations": {
+											"bold": false,
+											"italic": false,
+											"strikethrough": false,
+											"underline": false,
+											"code": false,
+											"color": "default"
+										},
+										"plain_text": "With a date and a relation",
+										"href": null
+									}
+								]
+							}
+						},
+						"url": "https://app.notion.com/p/With-a-date-and-a-relation-3f188fcddaf481869616e12b8edac605",
+						"public_url": "https://fae-tools.notion.site/With-a-date-and-a-relation-3f188fcddaf481869616e12b8edac605"
+					}
+				],
+				"next_cursor": "3f188fcd-daf4-818c-ac08-cd0a453149e3",
+				"has_more": true,
+				"type": "page_or_data_source",
+				"page_or_data_source": {},
+				"request_id": "4581a981-a24e-4883-858d-429099761271"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/pages/00000000-0000-0000-0000-000000000000",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 404,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "error",
+				"status": 404,
+				"code": "object_not_found",
+				"message": "Could not find page with ID: 00000000-0000-0000-0000-000000000000. Make sure the relevant pages and databases are shared with your integration \"Fae\".",
+				"additional_data": {
+					"integration_id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+				},
+				"request_id": "7f905f0e-73fb-492a-a3fe-eda7abc603b4"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "https://api.notion.com/v1/data_sources/9201f6db-2895-4450-9435-041541a181dd/query",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Content-Type": "application/json",
+				"Notion-Version": "2026-03-11"
+			},
+			"body": {
+				"page_size": 3
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [
+					{
+						"object": "page",
+						"id": "3f188fcd-daf4-8130-9c71-f72c82d43983",
+						"created_time": "2026-10-06T06:00:00.000Z",
+						"last_edited_time": "2026-10-06T06:00:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"last_edited_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"cover": null,
+						"icon": {
+							"type": "emoji",
+							"emoji": "👨‍💻"
+						},
+						"parent": {
+							"type": "data_source_id",
+							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
+							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+						},
+						"in_trash": false,
+						"is_archived": false,
+						"is_locked": false,
+						"properties": {
+							"Duration": {
+								"id": "%3ANHe",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": null
+								}
+							},
+							"Started Hours Ago": {
+								"id": "%3Bpl%3A",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": null
+								}
+							},
+							"Start Fallback": {
+								"id": "%3FjhJ",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-06T08:31:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Status": {
+								"id": "%40F%3CW",
+								"type": "select",
+								"select": {
+									"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
+									"name": "Not Started",
+									"color": "gray"
+								}
+							},
+							"Start": {
+								"id": "Blch",
+								"type": "date",
+								"date": null
+							},
+							"Recurring": {
+								"id": "TIII",
+								"type": "relation",
+								"relation": [],
+								"has_more": false
+							},
+							"End": {
+								"id": "_Y%3BI",
+								"type": "date",
+								"date": null
+							},
+							"Time": {
+								"id": "%60G%7Bc",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-06T08:31:00.000+00:00",
+										"end": "2026-10-06T09:31:00.000+00:00",
+										"time_zone": null
+									}
+								}
+							},
+							"End Fallback": {
+								"id": "c%3A%5DA",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-06T09:31:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Human Duration": {
+								"id": "dAuV",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Priority": {
+								"id": "ePdI",
+								"type": "rollup",
+								"rollup": {
+									"type": "array",
+									"array": [],
+									"function": "show_original"
+								}
+							},
+							"Created time": {
+								"id": "kF%40C",
+								"type": "created_time",
+								"created_time": "2026-10-06T06:00:00.000Z"
+							},
+							"Priority If Not Started": {
+								"id": "mFVH",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Time without Date": {
+								"id": "r%3A%3D%5E",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Name": {
+								"id": "title",
+								"type": "title",
+								"title": [
+									{
+										"type": "text",
+										"text": {
+											"content": "Coding",
+											"link": null
+										},
+										"annotations": {
+											"bold": false,
+											"italic": false,
+											"strikethrough": false,
+											"underline": false,
+											"code": false,
+											"color": "default"
+										},
+										"plain_text": "Coding",
+										"href": null
+									}
+								]
+							}
+						},
+						"url": "https://app.notion.com/p/Coding-3f188fcddaf481309c71f72c82d43983",
+						"public_url": null
+					},
+					{
+						"object": "page",
+						"id": "3f188fcd-daf4-812b-a9ae-cccaab1d1d7e",
+						"created_time": "2026-10-06T05:00:00.000Z",
+						"last_edited_time": "2026-10-06T05:00:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"last_edited_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"cover": null,
+						"icon": {
+							"type": "emoji",
+							"emoji": "🤔"
+						},
+						"parent": {
+							"type": "data_source_id",
+							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
+							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+						},
+						"in_trash": false,
+						"is_archived": false,
+						"is_locked": false,
+						"properties": {
+							"Duration": {
+								"id": "%3ANHe",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": null
+								}
+							},
+							"Started Hours Ago": {
+								"id": "%3Bpl%3A",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": null
+								}
+							},
+							"Start Fallback": {
+								"id": "%3FjhJ",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-06T08:31:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Status": {
+								"id": "%40F%3CW",
+								"type": "select",
+								"select": {
+									"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
+									"name": "Not Started",
+									"color": "gray"
+								}
+							},
+							"Start": {
+								"id": "Blch",
+								"type": "date",
+								"date": null
+							},
+							"Recurring": {
+								"id": "TIII",
+								"type": "relation",
+								"relation": [],
+								"has_more": false
+							},
+							"End": {
+								"id": "_Y%3BI",
+								"type": "date",
+								"date": null
+							},
+							"Time": {
+								"id": "%60G%7Bc",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-06T08:31:00.000+00:00",
+										"end": "2026-10-06T09:31:00.000+00:00",
+										"time_zone": null
+									}
+								}
+							},
+							"End Fallback": {
+								"id": "c%3A%5DA",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-06T09:31:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Human Duration": {
+								"id": "dAuV",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Priority": {
+								"id": "ePdI",
+								"type": "rollup",
+								"rollup": {
+									"type": "array",
+									"array": [],
+									"function": "show_original"
+								}
+							},
+							"Created time": {
+								"id": "kF%40C",
+								"type": "created_time",
+								"created_time": "2026-10-06T05:00:00.000Z"
+							},
+							"Priority If Not Started": {
+								"id": "mFVH",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Time without Date": {
+								"id": "r%3A%3D%5E",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Name": {
+								"id": "title",
+								"type": "title",
+								"title": [
+									{
+										"type": "text",
+										"text": {
+											"content": "Reflection",
+											"link": null
+										},
+										"annotations": {
+											"bold": false,
+											"italic": false,
+											"strikethrough": false,
+											"underline": false,
+											"code": false,
+											"color": "default"
+										},
+										"plain_text": "Reflection",
+										"href": null
+									}
+								]
+							}
+						},
+						"url": "https://app.notion.com/p/Reflection-3f188fcddaf4812ba9aecccaab1d1d7e",
+						"public_url": null
+					},
+					{
+						"object": "page",
+						"id": "3f188fcd-daf4-8104-83c8-f9213eb9cf1a",
+						"created_time": "2026-10-06T05:00:00.000Z",
+						"last_edited_time": "2026-10-06T05:00:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"last_edited_by": {
+							"object": "user",
+							"id": "00000000-0000-0000-0000-000000000003"
+						},
+						"cover": null,
+						"icon": {
+							"type": "emoji",
+							"emoji": "📥"
+						},
+						"parent": {
+							"type": "data_source_id",
+							"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
+							"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+						},
+						"in_trash": false,
+						"is_archived": false,
+						"is_locked": false,
+						"properties": {
+							"Duration": {
+								"id": "%3ANHe",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": null
+								}
+							},
+							"Started Hours Ago": {
+								"id": "%3Bpl%3A",
+								"type": "formula",
+								"formula": {
+									"type": "number",
+									"number": null
+								}
+							},
+							"Start Fallback": {
+								"id": "%3FjhJ",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-06T08:31:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Status": {
+								"id": "%40F%3CW",
+								"type": "select",
+								"select": {
+									"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
+									"name": "Not Started",
+									"color": "gray"
+								}
+							},
+							"Start": {
+								"id": "Blch",
+								"type": "date",
+								"date": null
+							},
+							"Recurring": {
+								"id": "TIII",
+								"type": "relation",
+								"relation": [],
+								"has_more": false
+							},
+							"End": {
+								"id": "_Y%3BI",
+								"type": "date",
+								"date": null
+							},
+							"Time": {
+								"id": "%60G%7Bc",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-06T08:31:00.000+00:00",
+										"end": "2026-10-06T09:31:00.000+00:00",
+										"time_zone": null
+									}
+								}
+							},
+							"End Fallback": {
+								"id": "c%3A%5DA",
+								"type": "formula",
+								"formula": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-06T09:31:00.000+00:00",
+										"end": null,
+										"time_zone": null
+									}
+								}
+							},
+							"Human Duration": {
+								"id": "dAuV",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Priority": {
+								"id": "ePdI",
+								"type": "rollup",
+								"rollup": {
+									"type": "array",
+									"array": [],
+									"function": "show_original"
+								}
+							},
+							"Created time": {
+								"id": "kF%40C",
+								"type": "created_time",
+								"created_time": "2026-10-06T05:00:00.000Z"
+							},
+							"Priority If Not Started": {
+								"id": "mFVH",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Time without Date": {
+								"id": "r%3A%3D%5E",
+								"type": "formula",
+								"formula": {
+									"type": "string",
+									"string": null
+								}
+							},
+							"Name": {
+								"id": "title",
+								"type": "title",
+								"title": [
+									{
+										"type": "text",
+										"text": {
+											"content": "Inbox Zero",
+											"link": null
+										},
+										"annotations": {
+											"bold": false,
+											"italic": false,
+											"strikethrough": false,
+											"underline": false,
+											"code": false,
+											"color": "default"
+										},
+										"plain_text": "Inbox Zero",
+										"href": null
+									}
+								]
+							}
+						},
+						"url": "https://app.notion.com/p/Inbox-Zero-3f188fcddaf4810483c8f9213eb9cf1a",
+						"public_url": null
+					}
+				],
+				"next_cursor": "s:9b8a4dbd-e800-4046-a192-11c8c1d0d036:3f188fcd-daf4-810d-9f51-d4d685d67e00",
+				"has_more": true,
+				"type": "page_or_data_source",
+				"page_or_data_source": {},
+				"request_id": "5d4d636b-0057-4f3f-99d9-da7103f4facb"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/pages/3f188fcd-daf4-8130-9c71-f72c82d43983",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "page",
+				"id": "3f188fcd-daf4-8130-9c71-f72c82d43983",
+				"created_time": "2026-10-06T06:00:00.000Z",
+				"last_edited_time": "2026-10-06T06:00:00.000Z",
+				"created_by": {
+					"object": "user",
+					"id": "00000000-0000-0000-0000-000000000003"
+				},
+				"last_edited_by": {
+					"object": "user",
+					"id": "00000000-0000-0000-0000-000000000003"
+				},
+				"cover": null,
+				"icon": {
+					"type": "emoji",
+					"emoji": "👨‍💻"
+				},
+				"parent": {
+					"type": "data_source_id",
+					"data_source_id": "9201f6db-2895-4450-9435-041541a181dd",
+					"database_id": "457d00dc-fc3a-4ddb-a42f-fe376530bee0"
+				},
+				"in_trash": false,
+				"is_archived": false,
+				"is_locked": false,
+				"properties": {
+					"Duration": {
+						"id": "%3ANHe",
+						"type": "formula",
+						"formula": {
+							"type": "number",
+							"number": null
+						}
+					},
+					"Started Hours Ago": {
+						"id": "%3Bpl%3A",
+						"type": "formula",
+						"formula": {
+							"type": "number",
+							"number": null
+						}
+					},
+					"Start Fallback": {
+						"id": "%3FjhJ",
+						"type": "formula",
+						"formula": {
+							"type": "date",
+							"date": {
+								"start": "2026-10-06T08:31:00.000+00:00",
+								"end": null,
+								"time_zone": null
+							}
+						}
+					},
+					"Status": {
+						"id": "%40F%3CW",
+						"type": "select",
+						"select": {
+							"id": "78673949-50fe-41c5-8cdb-ce44acb4b59f",
+							"name": "Not Started",
+							"color": "gray"
+						}
+					},
+					"Start": {
+						"id": "Blch",
+						"type": "date",
+						"date": null
+					},
+					"Recurring": {
+						"id": "TIII",
+						"type": "relation",
+						"relation": [],
+						"has_more": false
+					},
+					"End": {
+						"id": "_Y%3BI",
+						"type": "date",
+						"date": null
+					},
+					"Time": {
+						"id": "%60G%7Bc",
+						"type": "formula",
+						"formula": {
+							"type": "date",
+							"date": {
+								"start": "2026-10-06T08:31:00.000+00:00",
+								"end": "2026-10-06T09:31:00.000+00:00",
+								"time_zone": null
+							}
+						}
+					},
+					"End Fallback": {
+						"id": "c%3A%5DA",
+						"type": "formula",
+						"formula": {
+							"type": "date",
+							"date": {
+								"start": "2026-10-06T09:31:00.000+00:00",
+								"end": null,
+								"time_zone": null
+							}
+						}
+					},
+					"Human Duration": {
+						"id": "dAuV",
+						"type": "formula",
+						"formula": {
+							"type": "string",
+							"string": null
+						}
+					},
+					"Priority": {
+						"id": "ePdI",
+						"type": "rollup",
+						"rollup": {
+							"type": "array",
+							"array": [],
+							"function": "show_original"
+						}
+					},
+					"Created time": {
+						"id": "kF%40C",
+						"type": "created_time",
+						"created_time": "2026-10-06T06:00:00.000Z"
+					},
+					"Priority If Not Started": {
+						"id": "mFVH",
+						"type": "formula",
+						"formula": {
+							"type": "string",
+							"string": null
+						}
+					},
+					"Time without Date": {
+						"id": "r%3A%3D%5E",
+						"type": "formula",
+						"formula": {
+							"type": "string",
+							"string": null
+						}
+					},
+					"Name": {
+						"id": "title",
+						"type": "title",
+						"title": [
+							{
+								"type": "text",
+								"text": {
+									"content": "Coding",
+									"link": null
+								},
+								"annotations": {
+									"bold": false,
+									"italic": false,
+									"strikethrough": false,
+									"underline": false,
+									"code": false,
+									"color": "default"
+								},
+								"plain_text": "Coding",
+								"href": null
+							}
+						]
+					}
+				},
+				"url": "https://app.notion.com/p/Coding-3f188fcddaf481309c71f72c82d43983",
+				"public_url": null,
+				"request_id": "cb717f07-b197-4645-926c-d356290d07f9"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/pages/3f188fcd-daf4-8130-9c71-f72c82d43983/properties/title",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [
+					{
+						"object": "property_item",
+						"type": "title",
+						"id": "title",
+						"title": {
+							"type": "text",
+							"text": {
+								"content": "Coding",
+								"link": null
+							},
+							"annotations": {
+								"bold": false,
+								"italic": false,
+								"strikethrough": false,
+								"underline": false,
+								"code": false,
+								"color": "default"
+							},
+							"plain_text": "Coding",
+							"href": null
+						}
+					}
+				],
+				"next_cursor": null,
+				"has_more": false,
+				"type": "property_item",
+				"property_item": {
+					"id": "title",
+					"next_url": null,
+					"type": "title",
+					"title": {}
+				},
+				"request_id": "763b3b73-776d-484a-982f-70a189e0def2"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/blocks/3f188fcd-daf4-8130-9c71-f72c82d43983/children?page_size=3",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [],
+				"next_cursor": null,
+				"has_more": false,
+				"type": "block",
+				"block": {},
+				"request_id": "d571eca8-a38e-4da5-8184-1a153c6ee5a5"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/comments?block_id=3f188fcd-daf4-8130-9c71-f72c82d43983",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 403,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "error",
+				"status": 403,
+				"code": "restricted_resource",
+				"message": "Insufficient permissions for this endpoint.",
+				"request_id": "4d157066-754a-4459-b900-4fd803d7760d"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
 			"url": "https://api.notion.com/v1/pages/96245c8f-1784-44a4-82ad-1941127c3ec3",
 			"header": {
 				"Authorization": "Bearer **************************************************",
@@ -2967,14 +2915,14 @@
 				"object": "page",
 				"id": "96245c8f-1784-44a4-82ad-1941127c3ec3",
 				"created_time": "2022-07-14T05:31:00.000Z",
-				"last_edited_time": "2025-02-02T19:54:00.000Z",
+				"last_edited_time": "2026-10-06T08:30:00.000Z",
 				"created_by": {
 					"object": "user",
 					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
 				},
 				"last_edited_by": {
 					"object": "user",
-					"id": "af171d5d-c36f-45bc-a0a3-6086c0dafa45"
+					"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
 				},
 				"cover": {
 					"type": "external",
@@ -3020,7 +2968,7 @@
 				},
 				"url": "https://app.notion.com/p/Example-Page-96245c8f178444a482ad1941127c3ec3",
 				"public_url": "https://fae-tools.notion.site/Example-Page-96245c8f178444a482ad1941127c3ec3",
-				"request_id": "4d9658e1-7f0a-4b49-8291-94e83e493c86"
+				"request_id": "11be1b54-f5f4-4b21-a5d5-e37948442d5d"
 			}
 		}
 	},
@@ -3073,7 +3021,7 @@
 					"type": "title",
 					"title": {}
 				},
-				"request_id": "76920978-5dc4-45f0-bcb8-71a0ecef9eea"
+				"request_id": "31e58ce6-377c-424c-8e6c-3c1b6e493af7"
 			}
 		}
 	},
@@ -3213,7 +3161,7 @@
 				"has_more": true,
 				"type": "block",
 				"block": {},
-				"request_id": "5781b027-af60-4946-8853-cee0119b44e9"
+				"request_id": "9e18d335-8f6d-42f6-a19a-842362ac93d0"
 			}
 		}
 	},
@@ -3256,7 +3204,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "9569454a-ca00-4f51-8b3e-5f104eb8bc51"
+				"request_id": "dbde0fca-98a1-4bc2-9b7e-89ecfc090f1b"
 			}
 		}
 	},
@@ -3317,7 +3265,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "cb474012-5a8d-408c-8bee-e67cbbdef463"
+				"request_id": "d02faaf4-8be6-47d9-b3b5-8ad2eb413fc0"
 			}
 		}
 	},
@@ -3378,7 +3326,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "1c2123cf-4a54-4f5c-9caf-47bc3d2a0517"
+				"request_id": "8a5623f5-0e15-4d87-b7ca-f5616acbd52a"
 			}
 		}
 	},
@@ -3473,7 +3421,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "52c86c7d-f040-4475-a139-b392556ae481"
+				"request_id": "de815a6e-76e2-4b01-934d-9f842a80913a"
 			}
 		}
 	},
@@ -3568,7 +3516,7 @@
 					"icon": null,
 					"color": "yellow"
 				},
-				"request_id": "e54a251a-1080-45ba-b489-a80b6c4121e3"
+				"request_id": "ea23c1d5-7f00-4f77-9d65-63c3899be7be"
 			}
 		}
 	},
@@ -3629,7 +3577,7 @@
 					"icon": null,
 					"color": "yellow_background"
 				},
-				"request_id": "a141b492-580d-48b1-9d1f-d5e38f2d7679"
+				"request_id": "540bc07d-cc05-40f2-abd6-9c0fe6b5c01c"
 			}
 		}
 	},
@@ -3724,7 +3672,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "a59f25a1-f2c6-492a-b5ba-082bd4aea06f"
+				"request_id": "578bb326-0115-4c7a-b699-dac21315abd5"
 			}
 		}
 	},
@@ -3787,7 +3735,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "92045367-4554-4b01-8383-e5956975be4a"
+				"request_id": "03a37649-aca5-4e76-a480-1b3a5f14f074"
 			}
 		}
 	},
@@ -3848,7 +3796,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "9a57f16b-b2e3-45ef-a224-93cf8bff217c"
+				"request_id": "5a3461c5-a81f-4301-918f-4d027a41f206"
 			}
 		}
 	},
@@ -3943,7 +3891,7 @@
 					"is_toggleable": false,
 					"color": "default"
 				},
-				"request_id": "8800a02d-adea-4d1e-8ee9-b61c4a4261c8"
+				"request_id": "871ef71b-078f-4cbd-8ddb-3c32fbe11a1b"
 			}
 		}
 	},
@@ -4004,7 +3952,7 @@
 					"is_toggleable": true,
 					"color": "default"
 				},
-				"request_id": "dc13fd60-5990-47a7-a4b5-31591ec8b861"
+				"request_id": "9fcc179e-5c54-4968-a680-ecf9f5512ec9"
 			}
 		}
 	},
@@ -4065,7 +4013,7 @@
 					"is_toggleable": false,
 					"color": "default"
 				},
-				"request_id": "0af8cb34-99e9-45cb-91f9-625d22a8d46d"
+				"request_id": "76b40de3-9270-4b4a-8ea9-3c5209972c4d"
 			}
 		}
 	},
@@ -4129,7 +4077,7 @@
 					},
 					"color": "gray_background"
 				},
-				"request_id": "1c8f53d3-686c-40ac-afe4-6a31a943709d"
+				"request_id": "1c115937-5b29-4923-9c95-2802a6c283fe"
 			}
 		}
 	},
@@ -4195,7 +4143,7 @@
 					},
 					"color": "orange"
 				},
-				"request_id": "78dcd906-9d23-4eba-9889-9d5cc9ce6cc0"
+				"request_id": "326abe1d-1a41-41f7-ba14-a6737d3535bf"
 			}
 		}
 	},
@@ -4256,13 +4204,13 @@
 					"icon": {
 						"type": "file",
 						"file": {
-							"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/30d8226f-1494-40f3-898c-4683f6e14a38/sparkles_2728.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466Z7BP7XHS%2F20261005%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261005T203800Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEBoaCXVzLXdlc3QtMiJHMEUCIHF9UO9BzsHuDDv4mEzRgrSKr0%2BjFZFP2q98Giw0HHqiAiEArfljUyzvdXG5w9nNsHPzgKNvwzWfBUNvnxchYZ26PAkqiAQI4v%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDEHY%2F3NuEcVJd7UUHCrcA66LJFjo%2FXsWZiDNm4rdCmfC03AJvcyDCUYTKWJmf45iBd36lnSEXMZPeve7fvaxPbwXGzZRz%2Ftanu61SSDEvs7F25g3J0uFPrPmmDDUuU%2Fo8dMMpLMTplYLXlQ%2BWVqlHqCo1FjHxH9i8FbvtV1VZLpJOCQB3N0H%2FfkvWAjDPyXmuJCpk6pF71PWrAyK0%2FuzCGSyAdW807mjXU7569P%2F%2FzCBkmWr9uvO6jTN5HB0AkEIb69Vq1GrK1Rk%2BaGs6uZ6QZiWLpggAKVkYtybPuBI87RUeAw1HltJaM59PRtzV2uqCnXVzHVWyh4hkf0kbNcRR4SJwbIpmPQr9kqfr%2FIvdeCVtWWa0xfFzH%2BxG%2FZAKRtv288C%2BQ01sJADPlK%2FXJZeHuW0nylPuKq1xWmOvx17AKA4uchTzwTQmkp4dkzr0dMuVGgc00V7LoCyAsF6z12I1Lop3Za0Co9dVarSN0VjbtcWJau4xWFwcvv80JaVOJvbRBO6zE9iSXNZs5lOmiXgqhXZqPy1%2BCxNE%2B8wdbGfOml1iRRMRUrPy1JhbI0Y7sSjXg2uYp7gdXNiH%2FdMXmH%2Bnct%2BwWBI7Foz4qlwNjL0SFBP6zadpZM5MzJWvIco6JGvfAYY%2FreJstre%2BGCGMMDCj9YGOqUBN4TPWz%2FQRRTQo01Q02m3w8Ild3V0lhYOXf2UyPL5JJsk%2BVUvsnVpAeHvoZw%2BRhF87RueBzmHxCgVn66bICf9oNJ9ImPXVUDQNp7z8cOwODKlPfP9%2BuZUvten%2Bld0145Rkxeow5s9y79VwOwCl%2FwAq%2Fd62pDS3i2y78N3QydQUfHP3kdF%2BBk7JafwY93u2c7i8LoXSvk1379vumE%2FCTjbO4Jojy3J&X-Amz-Signature=6342a97156efbd3ffc1f59076443ce2bef9e68640dffae1c7ee3060904e37d99&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
-							"expiry_time": "2026-10-05T21:38:00.707Z"
+							"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/30d8226f-1494-40f3-898c-4683f6e14a38/sparkles_2728.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UDFTGSUY%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T083116Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECcaCXVzLXdlc3QtMiJHMEUCIQCHK98y6%2BnOeC3tiKUTCfeiv5cqQzQ7WIG%2BQl3fVJMsQgIgMLuvsnhP2EXr57Dc0RNY1bbASMCSVxxGegoFb%2FRJdHUqiAQI7%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDIEes2IWh2ZXnEBK8yrcA7m9sAf8OmFdkrBcLoC8zg95mhZSTqadqOrQIuQhHD6RUAMCY1f0X8tOwTaz8HVpHAsYyMEgpf2flKJzWB5Q%2BC4pvb7jRqU%2BFMJIU7OaW%2B22UOz8Sc5bDYBvAIC8P%2B2%2BevSDROqskwOitaJrH1m7TNmNHQDuW61A88QF2REBh0W8zllG%2F79X44xIMPKjJoDaiTeyNZewUBbwLWRkkBfuoCTblqx%2BDYi%2B%2FKwrq6qz6zTCueo0hAXTN4Kmzi%2FmQ%2BF90d2FF25dit%2FUeefCiyYmGbiJIiZdYJM7sNTfhXmfdp41wS0QRvLYAd7AC7vPmfE4BC7cWWTzxDw%2BAHY4xgELdp0On%2Ffu%2BsqYrFbeMnuS6MkdyekZws%2FA3JiJJ%2B%2FIfJV3TjthxySkcBWsqEpc9RwzofDp%2FvPval9BFpk17Y6Or3%2BeiMeUM0uPJulDO833sA9WpyV7XV3Jx6D5UxQw1GCjmKCNjDhnvdbRHg0uScl2YpFht8kWMcrDMKvRL13VSf1Jx5bnUJLph1Ob9JZHlnTkJub1EUgRCsMYLqI5zSM8EvSyctq%2B6eMbU%2FcisXFaJBtjyC3d9L%2FIemgRy204%2BH0fRgz%2BH5ugWF%2BU8cUHlkIz%2BoNHV0VUg%2F5NCtH4GlzAMN69ktYGOqUBNpxk9PQcghR%2Bg5UnWvQnq3Fzfyeh6iNQrYm6v%2FYkMWWl9VUYX4kMS4bK%2Fh6PWruAQQ3lqGXsUCHsAWprK5oCeN61QwMF%2Bys2Q6m77VVskUXBQACtPskrqGSYmdZRdb5vdnp8AKr7%2FEwuzzd32JlS2WCpzkb3w9DuE%2F9rUhh1UYg2l1KdDvoq6yoZ6aYRPqZlZvL4E2RsgT5viDyA1HT5UV5CzutB&X-Amz-Signature=a62393e5047ac12ad4186fca05707f67faa4a8ac7dde590f7c79c261aedb6d0a&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+							"expiry_time": "2026-10-06T09:31:16.841Z"
 						}
 					},
 					"color": "gray_background"
 				},
-				"request_id": "96786afc-5f52-49c8-b2c6-acab34dd931c"
+				"request_id": "e7c80f37-1a7f-40bb-89e7-1e8941dcf935"
 			}
 		}
 	},
@@ -4356,7 +4304,7 @@
 					],
 					"color": "green"
 				},
-				"request_id": "f79cc160-4a36-4c3f-9ba9-c8cc84ec3a17"
+				"request_id": "01f4e93b-8fc7-4fbb-8f86-ac353bd211d4"
 			}
 		}
 	},
@@ -4400,7 +4348,7 @@
 						"block_id": "0960b64c-81c9-4f19-a873-e8072b083a40"
 					}
 				},
-				"request_id": "424d2451-987a-4df4-bb29-883f44aaad96"
+				"request_id": "c8ff9350-07b5-400b-8c19-bb7b2780f4ab"
 			}
 		}
 	},
@@ -4461,7 +4409,7 @@
 					"checked": true,
 					"color": "default"
 				},
-				"request_id": "794950cb-4451-4459-b46d-6ab740ab6810"
+				"request_id": "5a5a3bd1-6b86-4364-a8bf-841b11edd84d"
 			}
 		}
 	},
@@ -4521,7 +4469,7 @@
 					],
 					"color": "default"
 				},
-				"request_id": "ee7b5dff-6f2e-491f-9534-95702e73c7a3"
+				"request_id": "0ac9a9ce-3e65-4615-a619-071fde5ab927"
 			}
 		}
 	},
@@ -4581,7 +4529,7 @@
 					],
 					"color": "red_background"
 				},
-				"request_id": "f4635a00-7dcd-48e8-9f5f-5612886ae372"
+				"request_id": "3eea9d5a-a4ca-40ec-a9b5-6e6168112d69"
 			}
 		}
 	},
@@ -4641,7 +4589,7 @@
 					],
 					"color": "default"
 				},
-				"request_id": "815be90c-b534-4a1b-82a6-3e8b3319f7c1"
+				"request_id": "08dfaf92-ed2f-45d4-8a0d-3fd78ffb4107"
 			}
 		}
 	},
@@ -4701,7 +4649,7 @@
 					],
 					"color": "default"
 				},
-				"request_id": "7e3b84b3-a820-416f-a46e-163e40554973"
+				"request_id": "af965e00-f10c-4553-9203-015c15a3424e"
 			}
 		}
 	},
@@ -4761,7 +4709,7 @@
 					],
 					"color": "default"
 				},
-				"request_id": "48a90f43-6ff5-488b-a331-4af6b9fcafdc"
+				"request_id": "185a6e7a-c9db-4b4a-ba20-c7f60f5a41b4"
 			}
 		}
 	},
@@ -4803,7 +4751,7 @@
 					"rich_text": [],
 					"color": "default"
 				},
-				"request_id": "c17de124-7141-4d86-a8f6-d99010ca6e04"
+				"request_id": "b615263b-f6f6-4d83-86b6-b3b4add470bc"
 			}
 		}
 	},
@@ -4864,7 +4812,7 @@
 					"checked": false,
 					"color": "default"
 				},
-				"request_id": "5533279d-aca7-401e-b1cf-3ee109c4f63e"
+				"request_id": "250d6f98-2341-41af-ab88-d3fb5b22497c"
 			}
 		}
 	},
@@ -4924,7 +4872,7 @@
 					],
 					"color": "default"
 				},
-				"request_id": "46fbfa98-a49b-4744-b1a0-f1010aa8df57"
+				"request_id": "b2543ae9-07b2-47bd-a688-0784e2b36284"
 			}
 		}
 	},
@@ -4984,7 +4932,7 @@
 					],
 					"color": "blue"
 				},
-				"request_id": "d6060228-209e-4726-95e5-754abbf73291"
+				"request_id": "07620505-2ae6-4d23-941f-6d6391a64566"
 			}
 		}
 	},
@@ -5045,7 +4993,7 @@
 					"icon": null,
 					"color": "yellow"
 				},
-				"request_id": "47581bf8-7abc-4f1e-a523-4920cb1a4e95"
+				"request_id": "dd82aa86-5e12-4434-8ea0-640cbc120a01"
 			}
 		}
 	},
@@ -5160,7 +5108,7 @@
 					],
 					"language": "go"
 				},
-				"request_id": "70321354-c5e6-4115-9d1b-676e1e764bb2"
+				"request_id": "bb80a8d9-79ac-4d63-b959-9bf2582352e5"
 			}
 		}
 	},
@@ -5201,7 +5149,7 @@
 				"child_page": {
 					"title": "My child page"
 				},
-				"request_id": "39bb7017-09e9-42b1-874a-be9fc8aec90b"
+				"request_id": "00784b24-52f2-477c-bcf1-6853592b4370"
 			}
 		}
 	},
@@ -5268,7 +5216,7 @@
 				},
 				"url": "https://app.notion.com/p/My-child-page-2633808e7e364f4e972accd2d3c49004",
 				"public_url": "https://fae-tools.notion.site/My-child-page-2633808e7e364f4e972accd2d3c49004",
-				"request_id": "e4a899f9-0847-4574-b463-70efeabe1da7"
+				"request_id": "cb9490ec-b019-4607-88b7-20724a3cfb41"
 			}
 		}
 	},
@@ -5309,7 +5257,7 @@
 				"child_database": {
 					"title": "My Child Database"
 				},
-				"request_id": "62a3459e-2e71-441f-8ab7-79f224ff3ed5"
+				"request_id": "9dd94d46-2d20-42a1-ae38-729a17191d5d"
 			}
 		}
 	},
@@ -5370,7 +5318,7 @@
 				"cover": null,
 				"url": "https://app.notion.com/p/7a3c647e4c1e4c27bf1dcfb0105e55ce",
 				"public_url": "https://fae-tools.notion.site/7a3c647e4c1e4c27bf1dcfb0105e55ce",
-				"request_id": "11ceab36-9f56-47ff-9d74-40c1a924a6c4"
+				"request_id": "d21e013d-fc42-48af-b4f3-ece7dee08e92"
 			}
 		}
 	},
@@ -5412,7 +5360,7 @@
 					"caption": [],
 					"url": "https://twitter.com/elonmusk/status/1519480761749016577"
 				},
-				"request_id": "e7b32f92-6c1a-4ffe-83cb-72393ac8af98"
+				"request_id": "af237909-85d1-455c-a6e5-511d0d08221f"
 			}
 		}
 	},
@@ -5509,7 +5457,7 @@
 						"url": "https://bitcoin.org/bitcoin.pdf"
 					}
 				},
-				"request_id": "b04099dc-d536-4098-b44b-13190adfae31"
+				"request_id": "391444b2-dd6f-434d-bdae-53c38010626a"
 			}
 		}
 	},
@@ -5603,11 +5551,11 @@
 					],
 					"type": "file",
 					"file": {
-						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/69893027-1bf7-4177-a7b8-06a53dc4d1a6/bitcoin.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466SPDKECAR%2F20261005%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261005T203833Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEBoaCXVzLXdlc3QtMiJIMEYCIQD%2FBto412yllqP9h46dAJN5p8Dv2CxBgbcvDFMEOtLEdgIhAKpuyw3adj6jOn2gsUYuNni42Ise1aQE28%2Ffb3MCQPcDKogECOL%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMNjM3NDIzMTgzODA1IgwbaEJ6bQvsD7Ca7I0q3APpOTcmljI0oxYpCqQb3Ik81MzaXekkolFGO9TVO%2BK7tQaAuVtvuJZKOMEURB5UoeRkwRoAfWtsLF55MTAZNdovMHNlpXiS9QS2b4M%2BE7s143jDWGgBznmN%2FcaWjBQvTWZe6SExnj0X4XZlZWFwKO4EFBsBo6%2FoScas3sZA5YpjzasR%2FhoBuv2Owf2fuKurqC%2BcFU4%2BK5%2F5mhVoeiSkC81KPunQSmUX9VFsebrwigq5oX32AfQHKqIVLCi8Q4pjwS%2BnAk11nyKx5B8fGcqMdXdtBpr0bkRV56V7cpUN3uQHMOIl2S%2FdjpOwzcS0Q1KZtYOHdeO1cXEI4RDXOjxCRWisueo%2BOFUckpbURgdigIUNdy0GRhQf0bosnPWdr8iNSdhqBS%2BbymUsp3B%2Fc5UmOJ81bMNINjq9KIsYoOsUqvzq8kpOGRQzL4OMiCXu4%2BD%2F3hfWCawPr0pCqjU3zJq84xe%2FB7FHF8Di52qMmAt4dSC9%2BNcaxNAy%2B7R8yAnOUCEltPyofQIMgWo2yabn5APPUKpBhxOCy1pBqNkee66JXXLl0Eoa5adtCFrknsYyYMXXpVhlZLU8z0F6hf9AiI3%2FSe42fO3fs6e5CCb381VyQ4OieJo%2BKF8XV5VulHTu9jC1wI%2FWBjqkAaerjV5tdFYk%2FQ%2BZS8LfrBCyq0A6cQBjyoZtP7FFiRwJhwp%2BzsoHSk489Okyi5RJa9teqzU0WcJ19bWyQ%2FzYNbEqSFoyryIXDEbb97JBIQ0IEXe%2FblZJCMb1yRfy2mkSDgG8ee7sIvzIKna7Qq4ENBgZm2k8z1ggy2LfIMVvVrO7wbLSAnZnFa%2FB7k1Al3%2F%2F2Cpfwz2DTsnMwLPdbYZL4OpROwXk&X-Amz-Signature=6b4a92fe76b0b921b7f8c9eb4f6be088ce4ef0517337adffa41262b847570160&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
-						"expiry_time": "2026-10-05T21:38:33.718Z"
+						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/69893027-1bf7-4177-a7b8-06a53dc4d1a6/bitcoin.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UQBB66LC%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T083147Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECcaCXVzLXdlc3QtMiJGMEQCIFIHdql6dkYSsAhc0qo0qTLIJHbQQBTyCANyo3QD0pgRAiATEGvTfQ16W5idf7jW%2B5hiV2lG58oNWjaYTZqxen7RXCqIBAjw%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDYzNzQyMzE4MzgwNSIMFNsaHlsvuxrLNIIpKtwDUt2tnRFSuzFZKek9d47Exx6jL%2FcghVveDJoeZu%2FokCOw%2FOmQJILh%2BGOirdVR7CHZktxLVu4rt2XMdkfhepbq4CaoSgBBfF%2BHBPRvOSRAP0vSpm%2Fr00No1pV8PJIDvkl794e%2FReZmXeE90il1Mlggr0SabsfpACUU8Adp%2FIJBxnLH5xK%2BO7ZQVzFb4aCellnjhK2%2BL6jFsuKpJBJV9HA0Mx59NOC0cUfvjYyOHwmfdCx1CFzhxiusPjj%2BI9lLfD9TVKPIu0tOvug58sduO%2Bu0mOaeQIPRhivJW90VZI%2FbZopTXTOb10oZydEwpn9hfni5xku%2BpqQUp%2F2x1RFKIjSDRCpmfs7Y2J8%2FOEiO91l%2BX%2FlU35adDbmgXYxwmeBYatV%2BYy2OTZv39MFCzRiVud3APs1ANM80Qfdub3YxBcZ6ebQHDaWjecTpcOXXIQQqg1BnMdWfWQyt4KsJpJWsnu4rD4AtdUH7MO0tcevPImimLRfGZsNSc9TF%2BwWi8yJh22jrcFtSdRutbh16UglQ0kqpYE4kU%2FPcmV8Tgjbi3zp3nq%2B1J060hlKXNqqbd6jtUIiY5avXl%2FVQmuqqgKyxWnDMNwtX3UP76Z16BNFQ4pg6p9GkZ2abjGcwmQ%2BFzZswl72S1gY6pgFnNcahhGQx1EPffZgK8CTwffLF%2Bd5SVQkGytZ1FZDH44f1FZU6sulWQHFBOL2dXqg7paLjlhQDRXnObnxG4hM62MeYYBR5pOE3MG8z%2F2SLUMZhp7VmQS%2BeAsyPiZTiYpfnGoDH3IonQaSV%2FcDVsK9FYHv1rLjvalyIAZL89%2B6X6BWmKIpHItJOeOzj6dIE3LmmUVbGl5TUMXN733mTTaTozM4Stmvl&X-Amz-Signature=2389a683bda1a143e64db46020a1215d3337b49ddb17cb40e76da103b412ac39&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+						"expiry_time": "2026-10-06T09:31:47.187Z"
 					}
 				},
-				"request_id": "e25ff1ff-fea1-4d33-a2fb-1b96fa4add36"
+				"request_id": "01896976-98c7-4b84-9d29-fbb74e848859"
 			}
 		}
 	},
@@ -5646,7 +5594,7 @@
 				"in_trash": false,
 				"type": "column_list",
 				"column_list": {},
-				"request_id": "8d2ff643-ecc4-4427-a797-f1065413e5b4"
+				"request_id": "1e0d3b10-5480-4a5d-a65c-5fd520d6e370"
 			}
 		}
 	},
@@ -5687,7 +5635,7 @@
 				"column": {
 					"width_ratio": 0.5
 				},
-				"request_id": "01d55938-92f2-490d-8411-e8d7ece99f7c"
+				"request_id": "a38b778b-d734-41b6-8f9a-5c85a4080c54"
 			}
 		}
 	},
@@ -5750,7 +5698,7 @@
 						"url": "https://imgs.search.brave.com/RfiTLs3-DjJ2NVwmCNL1x6UaARTeuBz05wPYZUi5Zv8/rs:fit:1200:1200:1/g:ce/aHR0cHM6Ly9pbnNw/aXJhdGlvbnNlZWsu/Y29tL3dwLWNvbnRl/bnQvdXBsb2Fkcy8y/MDE2LzAyL0N1dGUt/RG9nLVBob3RvLmpw/Zw"
 					}
 				},
-				"request_id": "60fed403-8a7e-4e93-a7a9-ec96f1034d61"
+				"request_id": "3bc3a000-916c-4343-be17-f1e2aad582bc"
 			}
 		}
 	},
@@ -5811,7 +5759,7 @@
 					"icon": null,
 					"color": "orange"
 				},
-				"request_id": "d9f5b7f0-a377-4fb0-9c9e-eb13b728fdb8"
+				"request_id": "e2f4e730-28ae-4576-b97e-57f169dbf40d"
 			}
 		}
 	},
@@ -5853,11 +5801,11 @@
 					"caption": [],
 					"type": "file",
 					"file": {
-						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/820b7b33-1a55-412a-b7be-8b67412d177f/hd-wallpaper-g6e0a7c1ce_1920.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466RNDTEUAB%2F20261005%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261005T203836Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEBoaCXVzLXdlc3QtMiJGMEQCIAYmUN1JKgHAj9RZETJ3QUKTirGI1mKt8QvMR3CuwbN9AiBaFaBV6DwPGfl0gpTKalNGCjAHt0HZI2QM2gg1bkNUmiqIBAji%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDYzNzQyMzE4MzgwNSIMr7%2BFPelITRrOCP7PKtwDYnnFwG5F3d%2BebVhfDIClRgwtBw0nkMPyf7vSOmbcBhHhgjhpWE3NZpaG2YxK1VdnOgws4U%2BLofLBfczd2XGdv%2FQHDVh0MDKNcWfg9Bb3ce6iM6Ufkh3SAboLffFf3D3d3GALCQhDCj7iE2rzl6tJxKp1ppErGxGyNGo%2F6Hni2q3NspNj%2FCK1f9c3a%2F20C9IXfuhuc4tn4BuZCyb4SyTTlpJQRsWFBEbk%2BoVtx27l2GsjMr9qPIOi47yk7vvu2kWSmLZ65yJKVWCvIrbl9G7uNGlnUzi04S411QO00tP1i%2FJkTVYsRV5JjTCaaV7XdAkR4ST7278XgOUlafzCNa2XL78ObsEABPa4kS0PhhpZn%2FSmi6Y5Q%2B3okFoDFJpMByIxYUaum%2BFj1gGpi4jICsREbUtDZYSDBfDA9YDtllAiaxPyXA6YOCIYjLfQlKnLdIu65iRTCJMK4AR9ltWVQus2vT3iR82%2B0InhQCSHWZ9tSHJ2TSH0WnnNJzRhwNVYGsHNGdNW911ysQlhaY93J0b%2BlksuEN%2BgRiiovn6sl8gLCWg3Osln22KeqSqvROF4aJaKgjW4WUE9eF4FWZk%2BJwBFSK4rDdUEww2WqLpqlklghrwtmU1nQmsdRPR7KyYwqMKP1gY6pgF48gZRF0%2Bt28i22pTj0j%2Bp5WU9oPXmrUDEHGLlkppExYmHEBrpYNiBkdv8IB0S756Sqz2Ct6Bsdky054mlOj%2Bt%2FHdJkogt0xD95pjDh6Gai%2BzDaZynNvL%2FCLntmXvPwwj%2FkxMkfkK6UTWB2h%2Felp8nk044LUWUtQ58Gg9%2BxoLYG4Gkr6ikmJEpmuXcXAkLxcGb55I52kc3LHR9SN%2ByJmlDkJwxc8jN&X-Amz-Signature=1769ef612a50836e95a3fb1d1b8061526855994bba4e6d13f2c942392469ddee&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
-						"expiry_time": "2026-10-05T21:38:36.380Z"
+						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/820b7b33-1a55-412a-b7be-8b67412d177f/hd-wallpaper-g6e0a7c1ce_1920.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466THHDYUHH%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T083149Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECcaCXVzLXdlc3QtMiJHMEUCIQCPsLNE99diorHni76XSKPAYomhWZCzb2RkY3mHCXqBbgIgFvEie1bkRTSJfLGYTCOvztfvikoZhLWzfvqNRaVIprgqiAQI7%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDEgeI3J95F2QUAkxtyrcA1uktAAPR6TOdVj7RUYKTBM7B%2FfORFhPDiDMsRZHFjfMbisZNGRayXd1MhwrBa0IQO2b0LKGBXzadp0Zwru%2BPC5nwgyeh9jq94KMfVWtR0DJDmyg9yq%2FIFTKOJvko1w9FzRlHCgcrAdDVKWfeSf%2Bs1YvDNvT%2B4TlGVAj%2BV3xY2COXu6wQiGP8ae9QJ5bbhT%2BXErCT%2BAakN8StDSxhaF58ySXN0OSqYG%2BIXIdvbIOp9fc5essX76a4iyGIAKCjrxz%2F%2FZ4eiT4T398vLiEyTdLHra3NHT%2BYAFisJTzTgh4tNDecHDTBqi74YAX07D1Ep2ZrO0s92MsXQGRpgsCWVl9AfqQSIxg62vtnjKfUOQS1tR7xGH3IKx635bFVLzi687MP1HK1yY8dWryZJnP2ZjBeK6t6Mi4EsPKjG4DY%2BGo%2BE53UewvxKTuGTLCk%2BtFwrRniNIrI4ra6x%2FigHz95DeqPk6mU8PqGFnUh%2BBVQUk%2B%2B12mxRsWLY3RVuIKpKsCdJTdUspM1aUCCoyE%2FAZ1QTVNCbmSNSytsH9WXoIV6jKBTFIrnKFjV8hY5FSM5OPW2xY0WckkfK64Kjx5%2BbI9fc7%2FVxA0KU5XvOY6QTVTEHtCb9b7RjjydlDHOvYz3ajYMIa9ktYGOqUBGusm66%2B6Izu9afqsQmZyRFVVRTP3BUKAJo6I3k0eRl1l5HuvlTNsQ5b93qRlbOh6kc3iqylkxQ9aV7EJp7igEKCYzoHkCEhwGXahAWnu3pH61A6oArg7chxpd%2FJFVHIyLqt%2B0WEYc%2BxwZlH2MFTjfGXHQTohrR4dty5I2RyHA%2B3mrUC%2F7OkM2oLv%2BN3LEOp1RXUvDnzKqYGOUpepsSEI6gqnXaci&X-Amz-Signature=89ec0ff08da605fa1390d78def61d00b1fbdce4cb41b79a9b6573d21fa7e3785&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+						"expiry_time": "2026-10-06T09:31:49.861Z"
 					}
 				},
-				"request_id": "f19adaef-a779-4b54-898e-85c2c3e1ff77"
+				"request_id": "eb2b3057-9943-42bc-ae55-16f198d1be35"
 			}
 		}
 	},
@@ -5899,11 +5847,11 @@
 					"caption": [],
 					"type": "file",
 					"file": {
-						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/1162837c-64dd-401a-aa1d-91f795079052/small.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466U6ORZQQI%2F20261005%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261005T203836Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEBoaCXVzLXdlc3QtMiJIMEYCIQCkJMS%2BJhXiZVI%2BwPiD%2BtrH9Yxc91BHgaQ8fJCCSS09FwIhAPYqF6jLyH3AWqqmGZ4VFzQITb6DhvrOU6Id%2B6j%2BEUKeKogECOP%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMNjM3NDIzMTgzODA1IgwzZ7%2BtW3nVuWIjMrkq3ANRrOmlZDIrJt7qVakrwOU1CjHWuE1s%2FZhux3DaddWAzzRPOlLM1LWc%2BPDUGlDxlA5QhberO1qSRDZXFezH3v%2Bcb2Ir2a08IzyAiZ4RzuzHKVJQNPbKIZN8QPkuRu441MJ9qgl4mzObVwxEJGGsrtDKUUHIJCe92CnE98xwyMiNyrrEM1FxbKoqDVj1mTNwBJNTNDvLfIFdEvFbThvg2vRKi89dAUuMR5bfVZt0kA%2B9nSS6U5ieEVVkMG9AfpBjnDNMe%2BKlONI64bXrMLDFLqrSFvM107Zqyj3NWLq1QVIj2tse2%2BBo7fFrHESuASs2wao9GB41SUSS4KzPOnMR%2FclcX4Unwp7nt9HEVrSiSWuPG39JBdT1olyrNuxfmuG6eXwK3Pt9t0bcDljf4kuSiQl4k7BmSpVxq5Z6W%2B%2FAf57KN3B0XwNMDDs0EBTS%2ByD0AtFzR06ciDfOojr8VE9QJ3uqrThx4OlWAsAjEtRC3P34p%2FoW%2BlCJT9SNyrH5mAKKwU9oOxSm6qO7sZ6JhJG%2BfI2UnHSsFDgFv06CGHFuxsdY4f2QiytxNcmY7ahTZyYwkXasoDvmneuLPfmLkgdNV5lNMlp7cRThM6Xhkk1uIb4Nqaq2p%2FRerWN6GEcKkjDjwo%2FWBjqkAV%2F7mUjADJdHjb0oarwtw5MMZtrWuvaDa7nViqmv74UFVkJTB5Loc9V4TYw5kn2PpCJE4ktu5wb4Oxl95SxtJkFhISoTzciuLECp0crn5Qh2ij6K2Mbi02YqQRJB7i0eyh43a0TKkx6SM%2Fe5C%2F0iW%2BdtLJ%2Bb4VrvUznSrTl1DPSYxoztvbajS%2FBUr%2BLRjq2Xl8q6%2Boa90JielLF1jicWeJ%2F7cSEB&X-Amz-Signature=fee53536e7090a8dc36ed8dfe5f371a74d6b6d8a12e68cb507e7b64a68843f41&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
-						"expiry_time": "2026-10-05T21:38:36.811Z"
+						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/1162837c-64dd-401a-aa1d-91f795079052/small.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4662RUSRXO2%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T083150Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECcaCXVzLXdlc3QtMiJIMEYCIQCGMd5PTfIhbbBCN7LXOlKh59MOPiitDLs%2FRn38V7iFKgIhAPebrM%2BC2RgNdLQMvDQcN%2Fc1g3Gp%2BR24qJVxzUFQepzvKogECPD%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMNjM3NDIzMTgzODA1IgwjCk1QqGPjaQdZFL0q3ANiqbBu%2F18rjAC8XE6z9YORUQhTnGrTwxWXaXDSZx8t47ECjfRJ1hKHrXnxCVMoILsUj16iZfwCAA7t4iD4JVQqK%2BLNLQN0BfgWXeB7aDOEZ1jiAcAuSYDBa1QwHmVUfi9UEH2zJEVBAc96MDUat6BIOdGp%2FgSAza3J5QUFcmyFoosiiR6oZJ4dsx7ZPxvfJesplYuj42tgrjf7POADFOUJNVS6qCUb4Bb7Fdw%2B2HbsDiU9hmfGdpfBojsg2I0hillv91K%2Fu1WHqO3a9JjC9xRVXXodSdcOGqJaiBuRZVO1DI%2F4mUk%2FtEfsIVcHkmP%2FPz7Er4pc%2BygoppZlgfMhKoVLTH2nG9MsuDCGmms5uQPeanmilXS1cp3pSxjQx6lkfPLc81VN%2FZsFbUP66GaHJcxHHQFChHO1n87YSlZRvR%2BuZvLxr1bJ3egtf7y3bbQwqKIxwQDXg5kLa%2F%2B9%2Bx%2FWvSlSfMTnDiKmJV0e8eHYfVldXOvnQFmi0haZ1nBA3D7cmRn3ZOyWvQmCiHoAwDENwTmgVJD1CiLkLdxY4FYprCvCofupghTKDx4XUhup3yucuq8BlfCXcRuOsQUQJn4wzBHs9nbWyGGS9kXc8LH5hWBjWLQlOqivsOjhBnnzNDDfvpLWBjqkAbKWmhVNTxpzkeMFGEaqUJQl8yWbYwDJRwlpKQR2gkMAVaLDHqvFn0QtBOpuAnWy7H3KlPlXa3oq6A%2Fg2C5D6AgrmGNGjNyqvz1t%2FwRwHqj4UBE98csmf%2FnF4JuPyD3%2FNZJXWQHS8Q%2BdICliabgb9FjrYEGbqTU9v1Iv6vt6GciWbdFf0Vjtxv2IUBwuU9AbpWcF%2BnFM%2BTJSYN4qBaluLN8kndgr&X-Amz-Signature=009b750f1ae4cd34d57026195a7ffeef969830e2f2c17fa19d47e2f69794f970&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+						"expiry_time": "2026-10-06T09:31:50.182Z"
 					}
 				},
-				"request_id": "7fc4dd69-4c4a-4a6b-8e9f-342b12793ecc"
+				"request_id": "a1ccfe22-49f0-4d72-825d-0f820735acf4"
 			}
 		}
 	},
@@ -5945,12 +5893,12 @@
 					"caption": [],
 					"type": "file",
 					"file": {
-						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/5960876f-0eff-473b-9e62-0714480008bd/hd-wallpaper-g6e0a7c1ce_1920.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4667CP35LZL%2F20261005%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261005T203837Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEBoaCXVzLXdlc3QtMiJHMEUCIF6QHRC4vl8H3Os6u4%2FeTA8VkRahpQ19IS54VnQ8Yxq7AiEAyMb8YQKQkes4STZrxh12ninafW6Bi30XdPSoZ4i1m%2BcqiAQI4%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDNGBmA9nGox4lAO%2BPircA5BauOq7Iib3CgWCmMftpWygI6B3%2B122VM2qI9VifU32fOsa1Uc6FkXc3GluN3ZbWsDsBDnSZ1532UpSnMc0bEVFyDTWmUFRWFJFoL1sUlXX4q29boD0AoZNrP3LiVLDIhJUmDUNVKWYYGtavioolAEVe3fAE2LeCnky3%2FalIS2w7JH%2Br1WWxLv800rmdbGoR04o3BGf3ehJSb7NWvwqDGfl8CcTFez0aeWtNBjcuMq%2Bn4V6qp4R%2B1ese6OY6P2FczcRRwm%2BRfczfC1kz1Bg9rPqid6EjUG45H5XtVffNBq2PqWmf56t9LmZ3MRfqYnfdziCYQM9ZHIOGzsH2Lbk5%2Bq0UMFxrbsUpMFTf0CmrvkoMXRINFIGD7yYvpl%2BaEJT2JkcYgLcu8C153494nkaUGqPJcT5CtmxxRaE5X5Mwfte8pQEbvMQ%2FUdBAb340SEuki69YCTt7NKvVqu5bJ72c%2F9gr56gytTJ7KSh%2FfAh3IG5COOzjg4KJ6GhcvsQW9flFkRRfAXTrT2a%2F%2F7e0T8qABcbDI1YWhOdnn0WtUgjUFbb%2F94bHleQCfBmT9ibBJAensS4TVIePbkAJnWK5cKDFP94PXlKw071ZebB6xfCPHnLZpoTl201lOr46bKnMPTCj9YGOqUB35KJ4sAJzJrA8l5j4cuAX9s6nsaigrpu7mntPMfbtbVXmpY%2BJVKGv4oL9qzD6nRBiibgu%2Fn48QW8utcKcekqnYH%2BBqej0oVp7GqAJ6vuaF0%2F31zWsBbk34dF04CzZI4fUPtDJ6MKByNDnTdVnvUNRwlIQBp7S1Rw%2FfD%2BHmRcAQjLILck4EfroqHCauVknTPwrbLuxT1T2glPtKmax%2Fx4i%2B6g3ygs&X-Amz-Signature=c774d19df9f0f7ff2fc2eddf6795a9fe5d3629ca92a78ca81f04b10eaf07cd30&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
-						"expiry_time": "2026-10-05T21:38:37.044Z"
+						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/5960876f-0eff-473b-9e62-0714480008bd/hd-wallpaper-g6e0a7c1ce_1920.jpeg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB46666O4VK4G%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T083150Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECcaCXVzLXdlc3QtMiJGMEQCIC22HqXqncK6GiQ5CIOrQ0k2NmwT6AQyHx%2Fr%2BJ0oDSNkAiAsb2lKh08XXlMFFGb6EikqhJ0uDlFD74%2BrKpjML59d5iqIBAjv%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAAaDDYzNzQyMzE4MzgwNSIMFWxNu3m2uRCuSTPIKtwDhfvCk8QuDs5MC57Lzcz1rZFHrY9k38VGBCfiRf1%2F4IM8qsIQgXkflRA08H0ZA3MZIn4o62bu3EyCiMrfPvQvRLkVynIihI9lBSE4xQSZQGDSH26ncO66VUn%2Fym3%2BXMmHgktgo5q%2BEeJpeZ%2Bd%2F4yQMlFiuTCBxmTtuYHLcc%2Bn6304H1eSzUz9tS3W8M%2BuzOreKBBzUh76YfsOmJygNLXrZT%2FLGPutIRsHmNINTSBcacXkQZdV1pF1p0PPhumnmtdqD1oRXeoX5SVfZH%2BWTKtHjM8BdMvkMQUlB513zl8IcyURtU79RDsyqGsMvB9xzj3oKIL2c7fCX7PGLsgwKALH0DXlse1wupGgePHE6diCE8HVikNxk%2FQ2fhtX7wd25J49f5V3bEfj1VtAVYGoIzyoGFqnyAEUrHnezvkvF3XLCwQ4l93IpFl0fuL8EFXs8h9ftTACR4vPJNFuyq%2B3WDJhD8wnsY29bDe%2BO9KeQtU6GaSk3aqNIT77ghCryUiPOvTcmtqHs5Mu7oRKIUkIaES5dHQzTaX0s1WaAtwVmnNwjZvO9u1zcRRlPNCgPyPUFA7WWQN%2F0lJU9dAWV6NFCaYvzdYckzXMt1zx9lfAgR4MKrU4ofOp18aZe%2FZ41CMwi76S1gY6pgGtPZG1fZfE7pvUtTiQH%2BVFBU3iGIlY3CvyF1doYI0fVA1sHxSEGTGHENTD8RLTOqVPBgjw%2BcFqI7IGK9FqlCMS0ep0t3Bkkb%2Ff5Bhnkn2SeoS6Rxobyyyn3c74g3miEyT2bzgXhiZ5W%2FencSFic%2BVvbkp3NoDljsWIp%2FN%2BzmuNZShXlY7dWJfGG0PCA4YFXQzCL5PS0m%2BIHpkiHynrm9%2BnmU4VdzUt&X-Amz-Signature=83cf3c7451ffc54d1b0f861fd53826cabce1c64a5623c3c8fc13a68308ec6306&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+						"expiry_time": "2026-10-06T09:31:50.545Z"
 					},
 					"name": "hd-wallpaper-g6e0a7c1ce_1920.jpeg"
 				},
-				"request_id": "103b2180-064e-4a54-ae05-8b320bef0a28"
+				"request_id": "cb73f747-920d-4735-928a-d24b12c41ae7"
 			}
 		}
 	},
@@ -6010,7 +5958,7 @@
 					],
 					"url": "https://example.com/"
 				},
-				"request_id": "29710632-6752-4eb5-9df0-4698b61c58ab"
+				"request_id": "3ce2eb9e-b30f-4b07-bfd5-bafc2c3fbd0d"
 			}
 		}
 	},
@@ -6075,7 +6023,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "a7ea52af-ad23-4c81-96b9-26e694e1cd44"
+				"request_id": "15cccbca-610b-41f4-b431-c6940e82be71"
 			}
 		}
 	},
@@ -6169,7 +6117,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "bf8cc208-55f7-4d54-acdb-6d4e0be2c7c0"
+				"request_id": "72ee9589-b8c6-4114-803a-60cb1738170f"
 			}
 		}
 	},
@@ -6210,7 +6158,7 @@
 				"equation": {
 					"expression": "e^{\\pi i}+1 = 0"
 				},
-				"request_id": "32dd990f-5240-4709-bc4e-e91823142cbb"
+				"request_id": "4a927a52-951c-4576-8f33-d0ffbd5a0cdb"
 			}
 		}
 	},
@@ -6249,7 +6197,7 @@
 				"in_trash": false,
 				"type": "divider",
 				"divider": {},
-				"request_id": "f0731845-a942-4a8d-94a5-27e079f29477"
+				"request_id": "44195ef8-df65-4b3b-88dd-a1f992bd17e3"
 			}
 		}
 	},
@@ -6290,7 +6238,7 @@
 				"table_of_contents": {
 					"color": "gray"
 				},
-				"request_id": "4c61be2e-4830-44a5-9dd9-eff006a5082e"
+				"request_id": "9bb0bf1c-18b4-4d72-b0db-be484340b823"
 			}
 		}
 	},
@@ -6331,7 +6279,7 @@
 				"table_of_contents": {
 					"color": "red"
 				},
-				"request_id": "f99e7c7a-b3b5-406f-8500-05c655c001ad"
+				"request_id": "5ed09a0e-447e-4ede-8b46-73904b4a18c4"
 			}
 		}
 	},
@@ -6370,7 +6318,7 @@
 				"in_trash": false,
 				"type": "breadcrumb",
 				"breadcrumb": {},
-				"request_id": "a6c01538-fb27-427f-8ee7-2ad03fe7bab2"
+				"request_id": "e0510367-b0dc-4231-a643-8df86a6d03f4"
 			}
 		}
 	},
@@ -6411,7 +6359,7 @@
 				"column": {
 					"width_ratio": 0.2
 				},
-				"request_id": "a7d30582-18b7-4c22-afed-154a22ad74e4"
+				"request_id": "76a845f8-bad3-4a29-9b04-7e758390e0cd"
 			}
 		}
 	},
@@ -6475,7 +6423,7 @@
 					},
 					"color": "pink"
 				},
-				"request_id": "a2fe8073-3854-4e30-824b-d9834f7c0dfa"
+				"request_id": "eeced936-2194-4707-b5e5-2dc471daeb3c"
 			}
 		}
 	},
@@ -6516,7 +6464,7 @@
 				"link_preview": {
 					"url": "https://github.com/go-api-libs/notion"
 				},
-				"request_id": "a599d51c-2082-48a5-8f2c-876cc64a0a43"
+				"request_id": "054af4fc-e52d-464e-b24c-d95d20c586ee"
 			}
 		}
 	},
@@ -6557,7 +6505,7 @@
 				"unsupported": {
 					"block_type": "button"
 				},
-				"request_id": "e4738252-668d-4ad4-9da0-ef25e3d57059"
+				"request_id": "4f81a5c7-b6b1-478f-a3ce-abfc7071c3ab"
 			}
 		}
 	},
@@ -6599,7 +6547,7 @@
 					"type": "page_id",
 					"page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
 				},
-				"request_id": "181cdfb2-9480-444f-b31f-64005445f6a0"
+				"request_id": "ceb8e2a6-dc9e-474c-8c27-547af4444647"
 			}
 		}
 	},
@@ -6679,7 +6627,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "01db8865-9e02-4bdc-9a59-901c0058e7d8"
+				"request_id": "55a00b05-a163-4f70-b1e2-335d8aceda00"
 			}
 		}
 	},
@@ -6740,7 +6688,7 @@
 				"cover": null,
 				"url": "https://app.notion.com/p/d105edb4586a4dccaaa6ea944eb8d864",
 				"public_url": "https://fae-tools.notion.site/d105edb4586a4dccaaa6ea944eb8d864",
-				"request_id": "dc229977-e5f5-4450-b1ba-77d02c0e7666"
+				"request_id": "fc15105a-61d1-4610-9d83-9dd489db1e67"
 			}
 		}
 	},
@@ -7178,7 +7126,7 @@
 				"url": "https://app.notion.com/p/7a3c647e4c1e4c27bf1dcfb0105e55ce",
 				"public_url": "https://fae-tools.notion.site/7a3c647e4c1e4c27bf1dcfb0105e55ce",
 				"in_trash": false,
-				"request_id": "3bc5b458-bc57-4d85-b6c6-033f55a2f0af"
+				"request_id": "075cd105-12c7-4fed-852e-bb0519b25a80"
 			}
 		}
 	},
@@ -8005,11 +7953,11 @@
 						"public_url": "https://fae-tools.notion.site/ZZZ-cea419bbd94b498cbf52ad339b232003"
 					}
 				],
-				"next_cursor": "s:d4ed3297-afe3-4831-8964-949af4a1c341:ddac03cb-886e-46e2-b51e-9c36762b3137",
+				"next_cursor": "s:6d015b64-dd17-4e2e-b7c2-9c631c941395:ddac03cb-886e-46e2-b51e-9c36762b3137",
 				"has_more": true,
 				"type": "page_or_data_source",
 				"page_or_data_source": {},
-				"request_id": "36bf4894-65d7-4dc1-adf0-8b0b9eee0aeb"
+				"request_id": "28d9f6ca-dfeb-4e35-8bf4-9af804ddcaa5"
 			}
 		}
 	},
@@ -8032,7 +7980,7 @@
 				"type": "number",
 				"id": "CQUf",
 				"number": null,
-				"request_id": "b9f7409a-3631-4e51-923d-65d2d61da267"
+				"request_id": "af6e1f64-daf3-4d96-8670-21f6253d6d0d"
 			}
 		}
 	},
@@ -8062,7 +8010,7 @@
 					"type": "relation",
 					"relation": {}
 				},
-				"request_id": "d17afdde-a9e6-4ee3-8be3-2388ef80216a"
+				"request_id": "49b97031-f3c2-41c6-bfa9-f0b3e87ea44f"
 			}
 		}
 	},
@@ -8085,7 +8033,7 @@
 				"type": "number",
 				"id": "wtdu",
 				"number": null,
-				"request_id": "592e5cbf-0d58-4e1f-a3d2-5b6f12bf78c5"
+				"request_id": "f1aa0d6a-5002-46e7-9ce7-dccf60a76589"
 			}
 		}
 	},
@@ -8108,7 +8056,7 @@
 				"type": "checkbox",
 				"id": "JuTz",
 				"checkbox": true,
-				"request_id": "450f64a0-18ab-47a7-9077-3572091079b8"
+				"request_id": "ee75410b-e9be-4886-8195-6a4afb757c44"
 			}
 		}
 	},
@@ -8161,7 +8109,7 @@
 					"type": "title",
 					"title": {}
 				},
-				"request_id": "5f62c5dc-0515-4d92-9eb9-ad0f7b7ccbfc"
+				"request_id": "70c4cf72-27ff-40ff-8893-f0140810cd04"
 			}
 		}
 	},
@@ -8184,7 +8132,7 @@
 				"type": "phone_number",
 				"id": "RYYU",
 				"phone_number": null,
-				"request_id": "b14e6997-faac-419f-a650-c21a22917028"
+				"request_id": "6fd1c153-9d9a-4dc3-ac9a-a04c383a35c1"
 			}
 		}
 	},
@@ -8210,7 +8158,7 @@
 					"type": "boolean",
 					"boolean": true
 				},
-				"request_id": "ee24be35-48ea-4ab0-a234-fa0f661080eb"
+				"request_id": "659c3ac7-3126-4b53-9359-518d4c98d642"
 			}
 		}
 	},
@@ -8240,7 +8188,7 @@
 					"type": "relation",
 					"relation": {}
 				},
-				"request_id": "19ba740e-4c85-4c63-9e38-9317479f30d6"
+				"request_id": "af002cfd-ca78-4322-8d87-72b5ec243b15"
 			}
 		}
 	},
@@ -8270,7 +8218,7 @@
 					"type": "rich_text",
 					"rich_text": {}
 				},
-				"request_id": "eb293ca7-31ce-4773-a091-b5ff952d6702"
+				"request_id": "e7f1edaf-537e-4e8d-8632-cd42ff4aff86"
 			}
 		}
 	},
@@ -8297,7 +8245,7 @@
 					"name": "I've taken a look",
 					"color": "blue"
 				},
-				"request_id": "7d925202-3e62-479d-b84d-97e53ef7f2a2"
+				"request_id": "50b22a05-f86b-49b6-b941-584bd85f79e4"
 			}
 		}
 	},
@@ -8327,7 +8275,7 @@
 					"type": "relation",
 					"relation": {}
 				},
-				"request_id": "084bc812-a4aa-4459-a670-dee2d15f9e3b"
+				"request_id": "ecda7b24-5da7-4f07-b36d-00127f7beab4"
 			}
 		}
 	},
@@ -8357,7 +8305,7 @@
 					"type": "relation",
 					"relation": {}
 				},
-				"request_id": "74968f7e-5654-4bfa-b411-725531425e14"
+				"request_id": "09c7878e-ad69-46a6-9605-eadadd6802b9"
 			}
 		}
 	},
@@ -8380,7 +8328,7 @@
 				"type": "email",
 				"id": "TWA%3B",
 				"email": null,
-				"request_id": "b8a82d45-d9ce-46dd-aab7-eae1ead1cff9"
+				"request_id": "3e1590ea-ad74-4956-ae5b-cb90b854f2cd"
 			}
 		}
 	},
@@ -8414,7 +8362,7 @@
 						"function": "count"
 					}
 				},
-				"request_id": "2f498def-26a8-4acd-be73-5826b7535612"
+				"request_id": "f6666521-9075-40a7-ae99-b07e908223ee"
 			}
 		}
 	},
@@ -8440,7 +8388,7 @@
 					"type": "date",
 					"date": null
 				},
-				"request_id": "ee14f5e0-65db-4332-b9ee-b67097d1ee76"
+				"request_id": "af1ac88d-3692-41c5-a0a5-d73217c25b0c"
 			}
 		}
 	},
@@ -8466,7 +8414,7 @@
 					"type": "number",
 					"number": 0
 				},
-				"request_id": "0a53471f-e51a-49d9-a4b7-f240cb96dd30"
+				"request_id": "95d00a99-3791-48d5-9257-aec83ce7f4c1"
 			}
 		}
 	},
@@ -8489,7 +8437,7 @@
 				"type": "files",
 				"id": "KXdF",
 				"files": [],
-				"request_id": "1bf0b6c2-b453-44d1-9c52-28b5e8d5a8da"
+				"request_id": "06c4f370-ed02-46ce-8a8b-77b8ef9c84bf"
 			}
 		}
 	},
@@ -8515,7 +8463,7 @@
 					"type": "string",
 					"string": "no"
 				},
-				"request_id": "2624f11e-357b-49ab-a896-6347bcc695b9"
+				"request_id": "4ea59d3b-2ad4-4001-9893-d5e0bf00e4f0"
 			}
 		}
 	},
@@ -8541,7 +8489,7 @@
 					"type": "number",
 					"number": null
 				},
-				"request_id": "5018d0f7-f1a6-470e-835c-0cea7100a4c9"
+				"request_id": "863e6d5c-ab8b-4c3a-85f0-d86eef13eb25"
 			}
 		}
 	},
@@ -8564,7 +8512,7 @@
 				"type": "url",
 				"id": "z%3BWh",
 				"url": null,
-				"request_id": "beace63d-9712-4057-8e95-1e8dc5c9c557"
+				"request_id": "60348105-3f91-4722-9d36-6e81c1df9de9"
 			}
 		}
 	},
@@ -8587,7 +8535,7 @@
 				"type": "number",
 				"id": "yUX%3B",
 				"number": null,
-				"request_id": "7564707b-8ff4-4872-ac3e-17374e5c8319"
+				"request_id": "24b2b1b1-cdcd-495b-93fe-5cc012836c9a"
 			}
 		}
 	},
@@ -8617,7 +8565,7 @@
 					"type": "people",
 					"people": {}
 				},
-				"request_id": "a6d37434-4706-4331-8261-f08d8bea0a93"
+				"request_id": "26565845-b10c-49bb-95e9-91e571bed757"
 			}
 		}
 	},
@@ -8651,7 +8599,7 @@
 						"function": "show_unique"
 					}
 				},
-				"request_id": "55347cd7-2260-4082-b5b1-ff56a397f15f"
+				"request_id": "42155f0e-9daf-4595-a7bb-809bbd139c93"
 			}
 		}
 	},
@@ -8685,7 +8633,7 @@
 						"function": "show_unique"
 					}
 				},
-				"request_id": "b48ec217-2f1d-4db4-8015-4579082cad40"
+				"request_id": "811a0014-1acf-4702-aa36-22dca76db1db"
 			}
 		}
 	},
@@ -8708,7 +8656,7 @@
 				"type": "select",
 				"id": "hiMX",
 				"select": null,
-				"request_id": "6bb8bf25-c1d2-47a7-873e-c4a6026f38d1"
+				"request_id": "b2a0378f-2f5a-40e7-b9de-40556b301ce1"
 			}
 		}
 	},
@@ -8731,7 +8679,7 @@
 				"type": "date",
 				"id": "uK%60G",
 				"date": null,
-				"request_id": "9b5572cc-3b29-46dd-ad45-b89eaf912c59"
+				"request_id": "8f7883db-8882-4dba-b429-0133360fae4a"
 			}
 		}
 	},
@@ -8754,7 +8702,7 @@
 				"type": "multi_select",
 				"id": "UuqS",
 				"multi_select": [],
-				"request_id": "52fcd3d4-8c56-48c5-86d9-e73825751714"
+				"request_id": "c718f184-8688-4f92-80aa-f7e14a241c65"
 			}
 		}
 	},
@@ -8784,7 +8732,7 @@
 					"type": "rich_text",
 					"rich_text": {}
 				},
-				"request_id": "fe0d0da0-53ae-4753-8f5e-35b0ca19d49b"
+				"request_id": "e1de6b85-1f4c-4cbf-8ef8-22834dc8d813"
 			}
 		}
 	},
@@ -8807,7 +8755,7 @@
 				"type": "created_time",
 				"id": "NeE%60",
 				"created_time": "2022-07-31T10:19:00.000Z",
-				"request_id": "31e3660a-cd9d-4ec5-b3bf-cc85a379c46c"
+				"request_id": "efa6f9e3-e123-4533-8ecb-d9e140493fda"
 			}
 		}
 	},
@@ -8840,7 +8788,7 @@
 						"email_verified": true
 					}
 				},
-				"request_id": "16a9d0dc-8a50-453d-bd4f-8f6141108cfb"
+				"request_id": "f5e13deb-bb4d-47a9-b25a-1a7a4e062e9b"
 			}
 		}
 	},
@@ -8873,7 +8821,7 @@
 						"email_verified": true
 					}
 				},
-				"request_id": "d45d80e4-d4f5-4682-8121-b483e77c4dc2"
+				"request_id": "ea46702c-bce3-4abf-9570-6d243afd55fc"
 			}
 		}
 	},
@@ -8896,7 +8844,7 @@
 				"type": "checkbox",
 				"id": "pt%3F%5D",
 				"checkbox": false,
-				"request_id": "025e35ef-3cbe-418a-bfcf-3a92350e1dcf"
+				"request_id": "2b0de7c1-600e-4e4a-b3b2-cac1f5f3dda5"
 			}
 		}
 	},
@@ -8937,7 +8885,7 @@
 				"synced_block": {
 					"synced_from": null
 				},
-				"request_id": "8fbb9815-9d68-436e-a7b3-c087d57e28ba"
+				"request_id": "4d412a22-ad7e-47a9-a50e-cab49d60421a"
 			}
 		}
 	},
@@ -8980,7 +8928,7 @@
 					"has_column_header": true,
 					"has_row_header": true
 				},
-				"request_id": "6e1d1b9a-8f98-40c7-a513-32d252dbac15"
+				"request_id": "e4ca3df9-85e8-4ad8-b723-69d43c316bae"
 			}
 		}
 	},
@@ -9062,7 +9010,7 @@
 						]
 					]
 				},
-				"request_id": "8e3f4ce5-8fe2-4557-ae98-05bd34c00a0f"
+				"request_id": "e0b9b7d2-264d-4bc0-a5bc-267ec9648829"
 			}
 		}
 	},
@@ -9142,7 +9090,7 @@
 						]
 					]
 				},
-				"request_id": "ea38a12e-bc79-4a87-8ece-bd4f75a0cace"
+				"request_id": "6fdc000f-1cdd-4c36-9ed6-e2b9e9ababaf"
 			}
 		}
 	},
@@ -9185,7 +9133,7 @@
 					"has_column_header": false,
 					"has_row_header": false
 				},
-				"request_id": "0e2b3a73-1586-4f57-ad34-8db830ff3b82"
+				"request_id": "a43e65bd-d3e8-4c14-a1ba-7d4e8c0c69ba"
 			}
 		}
 	},
@@ -9284,7 +9232,7 @@
 						]
 					]
 				},
-				"request_id": "24d577a1-3ed4-41ea-9a14-731c02051591"
+				"request_id": "5b070c26-35f2-436d-8ca8-0ed8decce48b"
 			}
 		}
 	},
@@ -9383,7 +9331,7 @@
 						]
 					]
 				},
-				"request_id": "959ad1bb-53aa-4397-a307-04076a747dea"
+				"request_id": "76f1f905-8ecf-4083-8829-8cf2a9c0243a"
 			}
 		}
 	},
@@ -9482,7 +9430,7 @@
 						]
 					]
 				},
-				"request_id": "1009503c-934e-4391-a780-aa6a25441850"
+				"request_id": "d14d342a-a023-48c1-aae9-2f859e803da9"
 			}
 		}
 	},
@@ -9570,7 +9518,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "6ed7f87d-05d1-4df2-b12b-130ba2d76e55"
+				"request_id": "83b5908e-6154-4ce8-9d7c-a88effb6b093"
 			}
 		}
 	},
@@ -9652,7 +9600,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "1632ba67-9159-4efc-9693-ccdbdd6560e2"
+				"request_id": "a37a87c4-1a64-484d-b007-36f93df317db"
 			}
 		}
 	},
@@ -9751,7 +9699,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "543c416f-d4ec-4033-99de-6e2d91663483"
+				"request_id": "4fd5a631-68c6-4d5a-a67b-ba77a3653017"
 			}
 		}
 	},
@@ -9831,7 +9779,7 @@
 					"icon": null,
 					"color": "default"
 				},
-				"request_id": "f560fdc6-c9b5-4688-901d-bac20c5702da"
+				"request_id": "c531292a-2b14-4168-958e-99bf05d7b288"
 			}
 		}
 	},
@@ -9876,7 +9824,7 @@
 						"url": "https://upload.wikimedia.org/wikipedia/commons/f/f7/En-us-notion.ogg"
 					}
 				},
-				"request_id": "84559901-5eb1-43c2-9713-72083fbcd407"
+				"request_id": "b1951351-e7b4-4870-8938-1a8b9db895f7"
 			}
 		}
 	},
@@ -9918,11 +9866,11 @@
 					"caption": [],
 					"type": "file",
 					"file": {
-						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/9caa2f78-8249-4bfc-97e5-b833a486f487/En-us-notion.ogg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466QBC55LUK%2F20261005%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261005T203903Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEBoaCXVzLXdlc3QtMiJIMEYCIQDJmz7gCyesx2Siaef606LRDlDO44bntQ6LfQX0%2B3ofGwIhAKgmZ8gnkCYMvDDZqAaglkmxXe6WFhJ%2Fb4Sle4u3iKkVKogECOL%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQABoMNjM3NDIzMTgzODA1Igxw%2BF4nlF8ACCmZ1rEq3APPOwkteeX2MTBS9RlBmlPxDF9a%2BjLr7lTb9R7S0%2BA7KpZGl4O4ylojnrMIH0d8kaGTXAn2xlQ2fAuBpqrUyBZIpAf0gDZf32IMLhdDSgO4iFgLcbqpvMUGdDAUrTBHWPb8AAq%2FkAMS1U7%2FS%2FnNyKbA9Kx9REx2KKKqlwK81b71mvbeXoXhPxmiImMTDyCH14OG98DUJzaVoxsaEnWvsewtS1OExPY3XhtcayW2jFxX9%2B5FHBi%2Bfvk5zAJTDKxdztX0cw1za4R0p6YC8%2FJvitVEE2wyvLnUT17HqVdANcl%2BT5JlBU%2FiVQnN74KepLyYx5Xvl4NtBVOM7lFZv582pmnznNgsRJLiGmQGk8vE81YooGoEFEIZpNY1gijoT%2BTIiTUDo11gKZztkaOrd%2BF7YV5t2Q%2Fu3V%2Bl%2FGVjzF0BiJ%2BwNeDl0lY6MsrppBaguKsOhlc3TOc%2Bmfb75VBgsBhcYcprZwEKfv8NlBq7C37vSTrJWvNAubkftzCOuQiBDzSi2jA7yhGRU8Wm009b7eyNPBMqI7Oi7Bj9tjJJwfiD1ZAhrfzhKOShtC77ZEVawy36TQdNL8EaGmGL9Lh2dqE%2BHSAZaQQnEALzY3iy4%2FH9X4kZuIwduSfI6cqT1oH2SDCnwI%2FWBjqkAbDz33hoBkc2v6uIm2wNvsAkpFnmoZ2y78JcmCKvhMYHhBqD1MC1UF0gAc86prHn9s1ox2bPbeFm0BuYA%2B%2B%2Flpe4uS9T6PGo87UadYxXEPo5%2FKgQE1mTFvZCokYcAJYJIefYaL05XwWBYf8JeakapUNKbcZ95D02qa%2F2%2B14t%2Fm%2FnQ6z3CUamhOmU1d%2BKXxGMmjrZFyi5fUIqc3rzOYlPo4XNDNu0&X-Amz-Signature=d149051fbe0845d9b1e11a972177e09a6b3cd708bd308ff3159a71bf8db3a320&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
-						"expiry_time": "2026-10-05T21:39:03.519Z"
+						"url": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/9caa2f78-8249-4bfc-97e5-b833a486f487/En-us-notion.ogg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466S7GUSOZP%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T083215Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECcaCXVzLXdlc3QtMiJHMEUCIQD7o%2FIpQy9kgfp3j%2F5w95CwEbomD6Uh0j0YagCNzWrQ5AIgOFN%2BYLF5nmDyAVrKW6jN72VA918FE6ehFA9P%2FHS9wCAqiAQI7%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDFQc%2FKR3dEtaRwJhiyrcA2Ym0gQ1Fc%2BS1ZLbqiwoSgBsAo0el1PPRc8G%2BkPeDf%2Bk6OYKsxuIK4aFjmQZZTreTqg5j4J9iV6XQJ8Rva9jv243jFIX9E8N28aIhoT4H7VHsm2vy2VWbcM4AyKET39MJfeICiYxYJGFOiaAURx%2BNHxstan35tWvNy5BtsNt21IhBBz7HwKsz4q3AStM0wVhquC9AOn%2F1EBRQ72LXy1vDaqppsDaiStmRymHqatqqPWTuVrOXcgGfPWwSasfKfg%2FdLJ4czvm%2BsaGK8HfyJ1eD4DsF35ZZyow6KiIHWkbGj2CqvUyPFLCGxLIj6kegsQTGyU4rTAJQ1kVLbvOeo8nB3K7IuOVy1pf4qCrg%2FqPiLriMJ8d%2BBDtwGGNS9c7mkutBobfrinOmxNcLJ7SUHsv%2Bo%2FJ3d20WPGUV74OmT%2FWJqTAobKPSsmTqBIvzQFkhnBhlV9qPU7ULNdG1N1i9Ph1wlWh%2BZDt7cUZAzrgaAzxFb%2BBvQuxUtKiNkRZm2BfQBleH6dJu5StisZkLR5RNdXIYLgGzZnKPFVokfDz03CGIVWgEOe0BPaLDWfobCb9g78vcNqOadnHf%2F06KQt6j7Z9K47n82HycE7k4aVkoKVH1Pu%2BgmsY5VcjdGnrHIB4MIy%2BktYGOqUBuhvIznRUKyB91LgLjrnrWZjKUwTY5CofpHKKC6pELEGk%2BUEiMstCDQMwLxYvMOfk6yYHAkMDSWAmoKzXHJs4JPfF0rnbPXIuhYcRqun4mk1efYkUAWVbpeqFcEij3Mx5Swn7rCSIwIJr1eRjzyTlqUX%2Be1Xm5AsZI%2Bs%2Bgu7Ml%2BWOUbDaRNhfWtz1kVwYvABpEHPhQRoWbktnAWvIFW7P1K%2F8k0RC&X-Amz-Signature=bc9dc26e991c6189c62c653eee8b885feddfe0e92224f9d49e05a83219bee587&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+						"expiry_time": "2026-10-06T09:32:15.208Z"
 					}
 				},
-				"request_id": "36e76f43-58f6-49ce-91fb-21f492229590"
+				"request_id": "7acc9b20-373d-45da-ae4b-06580dbc85c2"
 			}
 		}
 	},
@@ -9983,7 +9931,7 @@
 					"checked": false,
 					"color": "red"
 				},
-				"request_id": "f9b478bf-582f-45bd-8264-e56e4ae8c070"
+				"request_id": "d3413fa0-dc89-4904-9569-42970227edb8"
 			}
 		}
 	},
@@ -10044,7 +9992,7 @@
 					"checked": true,
 					"color": "green"
 				},
-				"request_id": "002fc4c1-a549-4da9-bb80-a5138fbfee48"
+				"request_id": "486d6230-81fd-496c-81d5-2aa3fb6be5b2"
 			}
 		}
 	},
@@ -10105,7 +10053,7 @@
 					"checked": false,
 					"color": "default"
 				},
-				"request_id": "e15a1d90-003c-4224-9e88-17a0c1cc0fff"
+				"request_id": "3786f957-bf9b-4bf7-899b-5cd1878a61bf"
 			}
 		}
 	},
@@ -10166,7 +10114,7 @@
 					"checked": false,
 					"color": "orange"
 				},
-				"request_id": "698ba17c-6aa6-44f9-8daa-21737b49c3c2"
+				"request_id": "b8f51e49-9e9d-4d02-be1d-3486e668ba50"
 			}
 		}
 	},
@@ -10227,7 +10175,7 @@
 					"checked": false,
 					"color": "blue"
 				},
-				"request_id": "5c3e55aa-44bb-48ad-8fc3-3fcf6459576e"
+				"request_id": "e40bf2b2-4048-43bc-b6fe-ed19181d6f24"
 			}
 		}
 	},
@@ -10268,7 +10216,7 @@
 				"synced_block": {
 					"synced_from": null
 				},
-				"request_id": "4303bf7e-91d6-4ac8-af03-f20540395827"
+				"request_id": "4c4bda11-35cc-468e-87c6-911ea64bcf20"
 			}
 		}
 	},
@@ -10329,7 +10277,7 @@
 				"cover": null,
 				"url": "https://app.notion.com/p/395eb62b9b4e45a09931b0d27b2ca59b",
 				"public_url": "https://fae-tools.notion.site/395eb62b9b4e45a09931b0d27b2ca59b",
-				"request_id": "762d236c-8fed-4b80-9e5b-87a5088c698f"
+				"request_id": "b08fe38c-8a51-44c7-bab0-c861c169f854"
 			}
 		}
 	},
@@ -10420,7 +10368,7 @@
 				"url": "https://app.notion.com/p/395eb62b9b4e45a09931b0d27b2ca59b",
 				"public_url": "https://fae-tools.notion.site/395eb62b9b4e45a09931b0d27b2ca59b",
 				"in_trash": false,
-				"request_id": "4ffc58af-86d9-41fc-a5e0-aafaa71c2948"
+				"request_id": "5eaeb3d8-1790-4cbc-b1f0-b4a02f55245e"
 			}
 		}
 	},
@@ -10449,7 +10397,7 @@
 				"has_more": false,
 				"type": "page_or_data_source",
 				"page_or_data_source": {},
-				"request_id": "991101eb-4288-4677-bc42-f97c57d5d92f"
+				"request_id": "51d6ed5b-f7ac-46e7-abe5-aaef08b2bef6"
 			}
 		}
 	},
@@ -10494,7 +10442,7 @@
 						"url": "https://www.youtube.com/watch?v=RKhhCYim48g"
 					}
 				},
-				"request_id": "46f7bc7f-c375-42e2-a681-00c5e9bb948e"
+				"request_id": "cae2343c-1114-49a6-95b6-20ca388520b2"
 			}
 		}
 	},
@@ -10555,7 +10503,7 @@
 				"cover": null,
 				"url": "https://app.notion.com/p/caa8455ecb7e4351a6e221ecb937f3e9",
 				"public_url": "https://fae-tools.notion.site/caa8455ecb7e4351a6e221ecb937f3e9",
-				"request_id": "7ca4adbe-5dde-4d6e-a26e-b9fda34155f2"
+				"request_id": "18fc4d70-448d-462b-8adb-9d91f7b3dd15"
 			}
 		}
 	},
@@ -10652,7 +10600,7 @@
 				"url": "https://app.notion.com/p/caa8455ecb7e4351a6e221ecb937f3e9",
 				"public_url": "https://fae-tools.notion.site/caa8455ecb7e4351a6e221ecb937f3e9",
 				"in_trash": false,
-				"request_id": "60fd1b58-1cfe-43bc-9ffa-677830a99cc5"
+				"request_id": "b254c9d3-086a-4098-84f7-7781bb10ac7e"
 			}
 		}
 	},
@@ -10867,7 +10815,7 @@
 				"has_more": false,
 				"type": "page_or_data_source",
 				"page_or_data_source": {},
-				"request_id": "555ca22f-cb8f-419b-97ba-6af911fc3172"
+				"request_id": "2555c10f-30ea-4505-80e5-3e2da75ad4e6"
 			}
 		}
 	},
@@ -10920,7 +10868,7 @@
 					"type": "title",
 					"title": {}
 				},
-				"request_id": "f7bc16c3-aa69-4dcb-b07e-1227a743d0ae"
+				"request_id": "c237a5d2-e9c2-4734-9601-88d7e03b9200"
 			}
 		}
 	},
@@ -10954,7 +10902,982 @@
 						"color": "pink"
 					}
 				],
-				"request_id": "41598844-88a6-4714-9ce2-a4fcd38d3d54"
+				"request_id": "12687631-28a0-4657-8b8b-047b4a69f303"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/blocks/3f188fcd-daf4-81e9-ac8e-c038e7e492b8",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "block",
+				"id": "3f188fcd-daf4-81e9-ac8e-c038e7e492b8",
+				"parent": {
+					"type": "page_id",
+					"page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
+				},
+				"created_time": "2026-10-06T08:28:00.000Z",
+				"last_edited_time": "2026-10-06T08:28:00.000Z",
+				"created_by": {
+					"object": "user",
+					"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+				},
+				"last_edited_by": {
+					"object": "user",
+					"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+				},
+				"has_children": false,
+				"in_trash": false,
+				"type": "heading_2",
+				"heading_2": {
+					"rich_text": [
+						{
+							"type": "text",
+							"text": {
+								"content": "Added for API coverage",
+								"link": null
+							},
+							"annotations": {
+								"bold": false,
+								"italic": false,
+								"strikethrough": false,
+								"underline": false,
+								"code": false,
+								"color": "default"
+							},
+							"plain_text": "Added for API coverage",
+							"href": null
+						}
+					],
+					"is_toggleable": false,
+					"color": "default"
+				},
+				"request_id": "96cc819c-1732-422d-add1-864ca735fee3"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/blocks/3f188fcd-daf4-812d-a699-f75e71ae3e07",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "block",
+				"id": "3f188fcd-daf4-812d-a699-f75e71ae3e07",
+				"parent": {
+					"type": "page_id",
+					"page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
+				},
+				"created_time": "2026-10-06T08:28:00.000Z",
+				"last_edited_time": "2026-10-06T08:28:00.000Z",
+				"created_by": {
+					"object": "user",
+					"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+				},
+				"last_edited_by": {
+					"object": "user",
+					"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+				},
+				"has_children": false,
+				"in_trash": false,
+				"type": "heading_4",
+				"heading_4": {
+					"rich_text": [
+						{
+							"type": "text",
+							"text": {
+								"content": "Heading 4",
+								"link": null
+							},
+							"annotations": {
+								"bold": false,
+								"italic": false,
+								"strikethrough": false,
+								"underline": false,
+								"code": false,
+								"color": "default"
+							},
+							"plain_text": "Heading 4",
+							"href": null
+						}
+					],
+					"is_toggleable": false,
+					"color": "default"
+				},
+				"request_id": "eb796664-f8f4-47f6-a7b0-516d90d94caf"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/blocks/3f188fcd-daf4-81b1-8fae-e1cba685a9f3",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "block",
+				"id": "3f188fcd-daf4-81b1-8fae-e1cba685a9f3",
+				"parent": {
+					"type": "page_id",
+					"page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
+				},
+				"created_time": "2026-10-06T08:28:00.000Z",
+				"last_edited_time": "2026-10-06T08:28:00.000Z",
+				"created_by": {
+					"object": "user",
+					"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+				},
+				"last_edited_by": {
+					"object": "user",
+					"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+				},
+				"has_children": true,
+				"in_trash": false,
+				"type": "tab",
+				"tab": {},
+				"request_id": "35312905-3853-4ad3-9ad8-8813aa912049"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/databases/cbfdfb25-9bb5-499e-ad1d-64a11bfe95dd",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "database",
+				"id": "cbfdfb25-9bb5-499e-ad1d-64a11bfe95dd",
+				"title": [
+					{
+						"type": "text",
+						"text": {
+							"content": "API Coverage Database",
+							"link": null
+						},
+						"annotations": {
+							"bold": false,
+							"italic": false,
+							"strikethrough": false,
+							"underline": false,
+							"code": false,
+							"color": "default"
+						},
+						"plain_text": "API Coverage Database",
+						"href": null
+					}
+				],
+				"description": [],
+				"parent": {
+					"type": "page_id",
+					"page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
+				},
+				"is_inline": true,
+				"database_type": null,
+				"in_trash": false,
+				"is_locked": false,
+				"created_time": "2026-10-06T08:29:30.330+00:00",
+				"last_edited_time": "2026-10-06T08:30:19.358+00:00",
+				"data_sources": [
+					{
+						"id": "c1df42f3-5a67-4995-b51f-7f296e6ab0eb",
+						"name": "API Coverage Database"
+					}
+				],
+				"icon": null,
+				"cover": null,
+				"url": "https://app.notion.com/p/cbfdfb259bb5499ead1d64a11bfe95dd",
+				"public_url": "https://fae-tools.notion.site/cbfdfb259bb5499ead1d64a11bfe95dd",
+				"request_id": "c0910a0f-12cf-4d2e-bc7f-9bed7fdd3fc1"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/data_sources/c1df42f3-5a67-4995-b51f-7f296e6ab0eb",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "data_source",
+				"id": "c1df42f3-5a67-4995-b51f-7f296e6ab0eb",
+				"cover": null,
+				"icon": null,
+				"created_time": "2026-10-06T08:29:00.000Z",
+				"created_by": {
+					"object": "user",
+					"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+				},
+				"last_edited_by": {
+					"object": "user",
+					"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+				},
+				"last_edited_time": "2026-10-06T08:30:00.000Z",
+				"title": [
+					{
+						"type": "text",
+						"text": {
+							"content": "API Coverage Database",
+							"link": null
+						},
+						"annotations": {
+							"bold": false,
+							"italic": false,
+							"strikethrough": false,
+							"underline": false,
+							"code": false,
+							"color": "default"
+						},
+						"plain_text": "API Coverage Database",
+						"href": null
+					}
+				],
+				"description": [],
+				"is_inline": true,
+				"database_type": null,
+				"properties": {
+					"Related": {
+						"id": "%3Ewe%5B",
+						"name": "Related",
+						"description": null,
+						"type": "relation",
+						"relation": {
+							"database_id": "cbfdfb25-9bb5-499e-ad1d-64a11bfe95dd",
+							"data_source_id": "c1df42f3-5a67-4995-b51f-7f296e6ab0eb",
+							"type": "single_property",
+							"single_property": {}
+						}
+					},
+					"Latest related date": {
+						"id": "IEis",
+						"name": "Latest related date",
+						"description": null,
+						"type": "rollup",
+						"rollup": {
+							"rollup_property_name": "When",
+							"relation_property_name": "Related",
+							"rollup_property_id": "T|Mj",
+							"relation_property_id": ">we[",
+							"function": "latest_date"
+						}
+					},
+					"When": {
+						"id": "T%7CMj",
+						"name": "When",
+						"description": null,
+						"type": "date",
+						"date": {}
+					},
+					"Last visited": {
+						"id": "klZz",
+						"name": "Last visited",
+						"description": null,
+						"type": "last_visited_time",
+						"last_visited_time": {}
+					},
+					"Place": {
+						"id": "kuJP",
+						"name": "Place",
+						"description": null,
+						"type": "place",
+						"place": {}
+					},
+					"Last edited": {
+						"id": "x%3D~k",
+						"name": "Last edited",
+						"description": null,
+						"type": "last_edited_time",
+						"last_edited_time": {}
+					},
+					"ID": {
+						"id": "%7B%7B%3D%3B",
+						"name": "ID",
+						"description": null,
+						"type": "unique_id",
+						"unique_id": {
+							"prefix": "COV"
+						}
+					},
+					"Name": {
+						"id": "title",
+						"name": "Name",
+						"description": null,
+						"type": "title",
+						"title": {}
+					}
+				},
+				"parent": {
+					"type": "database_id",
+					"database_id": "cbfdfb25-9bb5-499e-ad1d-64a11bfe95dd"
+				},
+				"database_parent": {
+					"type": "page_id",
+					"page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
+				},
+				"url": "https://app.notion.com/p/cbfdfb259bb5499ead1d64a11bfe95dd",
+				"public_url": "https://fae-tools.notion.site/cbfdfb259bb5499ead1d64a11bfe95dd",
+				"in_trash": false,
+				"request_id": "ae2ac143-e84e-4125-8483-450afb0981d5"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "POST",
+			"url": "https://api.notion.com/v1/data_sources/c1df42f3-5a67-4995-b51f-7f296e6ab0eb/query",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Content-Type": "application/json",
+				"Notion-Version": "2026-03-11"
+			},
+			"body": {
+				"page_size": 3
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [
+					{
+						"object": "page",
+						"id": "3f188fcd-daf4-8186-9616-e12b8edac605",
+						"created_time": "2026-10-06T08:30:00.000Z",
+						"last_edited_time": "2026-10-06T08:30:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+						},
+						"last_edited_by": {
+							"object": "user",
+							"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+						},
+						"cover": null,
+						"icon": null,
+						"parent": {
+							"type": "data_source_id",
+							"data_source_id": "c1df42f3-5a67-4995-b51f-7f296e6ab0eb",
+							"database_id": "cbfdfb25-9bb5-499e-ad1d-64a11bfe95dd"
+						},
+						"in_trash": false,
+						"is_archived": false,
+						"is_locked": false,
+						"properties": {
+							"Related": {
+								"id": "%3Ewe%5B",
+								"type": "relation",
+								"relation": [
+									{
+										"id": "3f188fcd-daf4-818c-ac08-cd0a453149e3"
+									}
+								],
+								"has_more": false
+							},
+							"Latest related date": {
+								"id": "IEis",
+								"type": "rollup",
+								"rollup": {
+									"type": "date",
+									"date": {
+										"start": "2026-10-06T09:30:00.000+02:00",
+										"end": null,
+										"time_zone": null
+									},
+									"function": "latest_date"
+								}
+							},
+							"When": {
+								"id": "T%7CMj",
+								"type": "date",
+								"date": {
+									"start": "2026-10-07",
+									"end": null,
+									"time_zone": null
+								}
+							},
+							"Last visited": {
+								"id": "klZz",
+								"type": "last_visited_time",
+								"last_visited_time": null
+							},
+							"Place": {
+								"id": "kuJP",
+								"type": "place",
+								"place": null
+							},
+							"Last edited": {
+								"id": "x%3D~k",
+								"type": "last_edited_time",
+								"last_edited_time": "2026-10-06T08:30:00.000Z"
+							},
+							"ID": {
+								"id": "%7B%7B%3D%3B",
+								"type": "unique_id",
+								"unique_id": {
+									"prefix": "COV",
+									"number": 2
+								}
+							},
+							"Name": {
+								"id": "title",
+								"type": "title",
+								"title": [
+									{
+										"type": "text",
+										"text": {
+											"content": "With a date and a relation",
+											"link": null
+										},
+										"annotations": {
+											"bold": false,
+											"italic": false,
+											"strikethrough": false,
+											"underline": false,
+											"code": false,
+											"color": "default"
+										},
+										"plain_text": "With a date and a relation",
+										"href": null
+									}
+								]
+							}
+						},
+						"url": "https://app.notion.com/p/With-a-date-and-a-relation-3f188fcddaf481869616e12b8edac605",
+						"public_url": "https://fae-tools.notion.site/With-a-date-and-a-relation-3f188fcddaf481869616e12b8edac605"
+					},
+					{
+						"object": "page",
+						"id": "3f188fcd-daf4-818c-ac08-cd0a453149e3",
+						"created_time": "2026-10-06T08:30:00.000Z",
+						"last_edited_time": "2026-10-06T08:30:00.000Z",
+						"created_by": {
+							"object": "user",
+							"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+						},
+						"last_edited_by": {
+							"object": "user",
+							"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+						},
+						"cover": null,
+						"icon": null,
+						"parent": {
+							"type": "data_source_id",
+							"data_source_id": "c1df42f3-5a67-4995-b51f-7f296e6ab0eb",
+							"database_id": "cbfdfb25-9bb5-499e-ad1d-64a11bfe95dd"
+						},
+						"in_trash": false,
+						"is_archived": false,
+						"is_locked": false,
+						"properties": {
+							"Related": {
+								"id": "%3Ewe%5B",
+								"type": "relation",
+								"relation": [],
+								"has_more": false
+							},
+							"Latest related date": {
+								"id": "IEis",
+								"type": "rollup",
+								"rollup": {
+									"type": "date",
+									"date": null,
+									"function": "latest_date"
+								}
+							},
+							"When": {
+								"id": "T%7CMj",
+								"type": "date",
+								"date": {
+									"start": "2026-10-06T09:30:00.000+02:00",
+									"end": null,
+									"time_zone": null
+								}
+							},
+							"Last visited": {
+								"id": "klZz",
+								"type": "last_visited_time",
+								"last_visited_time": null
+							},
+							"Place": {
+								"id": "kuJP",
+								"type": "place",
+								"place": {
+									"lat": 52.52,
+									"lon": 13.405,
+									"name": "Berlin",
+									"address": null,
+									"aws_place_id": null,
+									"google_place_id": null
+								}
+							},
+							"Last edited": {
+								"id": "x%3D~k",
+								"type": "last_edited_time",
+								"last_edited_time": "2026-10-06T08:30:00.000Z"
+							},
+							"ID": {
+								"id": "%7B%7B%3D%3B",
+								"type": "unique_id",
+								"unique_id": {
+									"prefix": "COV",
+									"number": 1
+								}
+							},
+							"Name": {
+								"id": "title",
+								"type": "title",
+								"title": [
+									{
+										"type": "text",
+										"text": {
+											"content": "With a time and a place",
+											"link": null
+										},
+										"annotations": {
+											"bold": false,
+											"italic": false,
+											"strikethrough": false,
+											"underline": false,
+											"code": false,
+											"color": "default"
+										},
+										"plain_text": "With a time and a place",
+										"href": null
+									}
+								]
+							}
+						},
+						"url": "https://app.notion.com/p/With-a-time-and-a-place-3f188fcddaf4818cac08cd0a453149e3",
+						"public_url": "https://fae-tools.notion.site/With-a-time-and-a-place-3f188fcddaf4818cac08cd0a453149e3"
+					}
+				],
+				"next_cursor": null,
+				"has_more": false,
+				"type": "page_or_data_source",
+				"page_or_data_source": {},
+				"request_id": "0224458b-a693-4f0a-8fa8-96872d72584f"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/pages/3f188fcd-daf4-8186-9616-e12b8edac605/properties/%7B%7B%3D%3B",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "property_item",
+				"type": "unique_id",
+				"id": "%7B%7B%3D%3B",
+				"unique_id": {
+					"prefix": "COV",
+					"number": 2
+				},
+				"request_id": "8cebcddb-1bbc-4bff-bd89-2ff4ba2e755b"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/pages/3f188fcd-daf4-8186-9616-e12b8edac605/properties/x%3D~k",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "property_item",
+				"type": "last_edited_time",
+				"id": "x%3D~k",
+				"last_edited_time": "2026-10-06T08:30:00.000Z",
+				"request_id": "06a317c5-81d9-4b96-a268-4a3eb4c2c7ae"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/pages/3f188fcd-daf4-8186-9616-e12b8edac605/properties/klZz",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "property_item",
+				"type": "last_visited_time",
+				"id": "klZz",
+				"last_visited_time": null,
+				"request_id": "49fdce49-a44f-4d65-927b-4817221dce4c"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/pages/3f188fcd-daf4-8186-9616-e12b8edac605/properties/IEis",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [
+					{
+						"object": "property_item",
+						"type": "relation",
+						"id": "%3Ewe%5B",
+						"relation": {
+							"id": "3f188fcd-daf4-818c-ac08-cd0a453149e3"
+						}
+					}
+				],
+				"next_cursor": null,
+				"has_more": false,
+				"type": "property_item",
+				"property_item": {
+					"id": "IEis",
+					"next_url": null,
+					"type": "rollup",
+					"rollup": {
+						"type": "date",
+						"date": {
+							"start": "2026-10-06T09:30:00.000+02:00",
+							"end": null,
+							"time_zone": null
+						},
+						"function": "latest_date"
+					}
+				},
+				"request_id": "cdc7e7dc-43ec-4205-aa37-9ca7a2b317c7"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/pages/3f188fcd-daf4-8186-9616-e12b8edac605/properties/title",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [
+					{
+						"object": "property_item",
+						"type": "title",
+						"id": "title",
+						"title": {
+							"type": "text",
+							"text": {
+								"content": "With a date and a relation",
+								"link": null
+							},
+							"annotations": {
+								"bold": false,
+								"italic": false,
+								"strikethrough": false,
+								"underline": false,
+								"code": false,
+								"color": "default"
+							},
+							"plain_text": "With a date and a relation",
+							"href": null
+						}
+					}
+				],
+				"next_cursor": null,
+				"has_more": false,
+				"type": "property_item",
+				"property_item": {
+					"id": "title",
+					"next_url": null,
+					"type": "title",
+					"title": {}
+				},
+				"request_id": "6f90843f-6120-4058-83cb-90c3f255f273"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/pages/3f188fcd-daf4-8186-9616-e12b8edac605/properties/kuJP",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "property_item",
+				"type": "place",
+				"id": "kuJP",
+				"place": null,
+				"request_id": "68a5135d-9fb9-4651-8930-b5c2b61fff38"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/pages/3f188fcd-daf4-8186-9616-e12b8edac605/properties/%3Ewe%5B",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "list",
+				"results": [
+					{
+						"object": "property_item",
+						"type": "relation",
+						"id": "%3Ewe%5B",
+						"relation": {
+							"id": "3f188fcd-daf4-818c-ac08-cd0a453149e3"
+						}
+					}
+				],
+				"next_cursor": null,
+				"has_more": false,
+				"type": "property_item",
+				"property_item": {
+					"id": "%3Ewe%5B",
+					"next_url": null,
+					"type": "relation",
+					"relation": {}
+				},
+				"request_id": "abd1ccac-8eaa-45ff-b39b-e53d614ea85c"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/pages/3f188fcd-daf4-8186-9616-e12b8edac605/properties/T%7CMj",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "property_item",
+				"type": "date",
+				"id": "T%7CMj",
+				"date": {
+					"start": "2026-10-07",
+					"end": null,
+					"time_zone": null
+				},
+				"request_id": "86da0086-3239-4ac4-a807-b70542fee8da"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/blocks/3f188fcd-daf4-81fb-8780-f9b94d9fcaf4",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "block",
+				"id": "3f188fcd-daf4-81fb-8780-f9b94d9fcaf4",
+				"parent": {
+					"type": "page_id",
+					"page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
+				},
+				"created_time": "2026-10-06T08:30:00.000Z",
+				"last_edited_time": "2026-10-06T08:30:00.000Z",
+				"created_by": {
+					"object": "user",
+					"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+				},
+				"last_edited_by": {
+					"object": "user",
+					"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+				},
+				"has_children": false,
+				"in_trash": false,
+				"type": "child_page",
+				"child_page": {
+					"title": "Page with a Notion icon"
+				},
+				"request_id": "88bc08a6-d0be-4cf3-b7bf-686d47cce3ec"
+			}
+		}
+	},
+	{
+		"request": {
+			"method": "GET",
+			"url": "https://api.notion.com/v1/pages/3f188fcd-daf4-81fb-8780-f9b94d9fcaf4",
+			"header": {
+				"Authorization": "Bearer **************************************************",
+				"Notion-Version": "2026-03-11"
+			}
+		},
+		"response": {
+			"statusCode": 200,
+			"header": {
+				"Content-Type": "application/json; charset=utf-8"
+			},
+			"body": {
+				"object": "page",
+				"id": "3f188fcd-daf4-81fb-8780-f9b94d9fcaf4",
+				"created_time": "2026-10-06T08:30:00.000Z",
+				"last_edited_time": "2026-10-06T08:30:00.000Z",
+				"created_by": {
+					"object": "user",
+					"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+				},
+				"last_edited_by": {
+					"object": "user",
+					"id": "fe1a1a0d-19f1-4393-b89f-e7ee39d666ff"
+				},
+				"cover": null,
+				"icon": {
+					"type": "icon",
+					"icon": {
+						"name": "pizza",
+						"color": "blue"
+					}
+				},
+				"parent": {
+					"type": "page_id",
+					"page_id": "96245c8f-1784-44a4-82ad-1941127c3ec3"
+				},
+				"in_trash": false,
+				"is_archived": false,
+				"is_locked": false,
+				"properties": {
+					"title": {
+						"id": "title",
+						"type": "title",
+						"title": [
+							{
+								"type": "text",
+								"text": {
+									"content": "Page with a Notion icon",
+									"link": null
+								},
+								"annotations": {
+									"bold": false,
+									"italic": false,
+									"strikethrough": false,
+									"underline": false,
+									"code": false,
+									"color": "default"
+								},
+								"plain_text": "Page with a Notion icon",
+								"href": null
+							}
+						]
+					}
+				},
+				"url": "https://app.notion.com/p/Page-with-a-Notion-icon-3f188fcddaf481fb8780f9b94d9fcaf4",
+				"public_url": "https://fae-tools.notion.site/Page-with-a-Notion-icon-3f188fcddaf481fb8780f9b94d9fcaf4",
+				"request_id": "e2023d7a-d307-4134-b38d-81c5091bb40c"
 			}
 		}
 	}

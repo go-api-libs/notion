@@ -10528,7 +10528,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "05032afd-5f3c-481a-b58e-6489cd56eec1"
+            "example": "08342c5a-91f5-4b82-8c7d-52e021387bc0"
           }
         },
         "required": [
@@ -11058,6 +11058,17 @@
         ],
         "additionalProperties": false
       },
+      "FileUploadObjectExpiryTime": {
+        "oneOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "FileUploadObjectFileImportResultAllOfError": {
         "type": "object",
         "properties": {
@@ -11123,17 +11134,6 @@
           "person",
           "bot",
           "agent"
-        ]
-      },
-      "FileUploadObjectResponseExpiryTime": {
-        "oneOf": [
-          {
-            "type": "string",
-            "format": "date-time"
-          },
-          {
-            "type": "null"
-          }
         ]
       },
       "FileUploadObjectResponseFileImportResult": {
@@ -12513,7 +12513,7 @@
               "string",
               "null"
             ],
-            "example": "s:ff0daf10-69a9-4caf-ba61-961a24f9a9aa:39588fcd-daf4-81b5-9e98-dc425530a49e"
+            "example": "s:d6c251ef-9a6e-4797-81b4-8053a21658f2:39588fcd-daf4-81b5-9e98-dc425530a49e"
           },
           "has_more": {
             "type": "boolean"
@@ -12530,7 +12530,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "e198e7c3-dec6-47a4-b613-1bad528e92f5"
+            "example": "ae9c5a05-9b72-44e4-b3e3-0b087bd3b05c"
           }
         },
         "required": [
@@ -13838,6 +13838,12 @@
           },
           {
             "$ref": "#/components/schemas/lastEditedTimeDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/placeDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/lastVisitedTimeDatabasePropertyConfigResponse"
           }
         ]
       },
@@ -16668,7 +16674,8 @@
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "3f188fcd-daf4-818c-ac08-cd0a453149e3"
           }
         },
         "required": [
@@ -18333,7 +18340,7 @@
         "oneOf": [
           {
             "type": "number",
-            "example": 0
+            "example": 2
           },
           {
             "type": "null"
@@ -19611,13 +19618,15 @@
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "example": "COV"
           },
           "number": {
             "type": [
               "number",
               "null"
-            ]
+            ],
+            "example": 2
           }
         },
         "required": [
@@ -21486,7 +21495,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "c5e205ab-aaea-4346-9880-bf961d9fcbb2"
+            "example": "786c90c4-7734-4918-baac-87eec0818464"
           }
         },
         "required": [
@@ -21617,7 +21626,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "e73a456f-a8bd-4505-81aa-cd2b79b1fa8a"
+            "example": "41ae407e-dd7d-45f0-a63c-5b0fc477a2b8"
           }
         },
         "required": [
@@ -22028,7 +22037,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "84559901-5eb1-43c2-9713-72083fbcd407"
+            "example": "b1951351-e7b4-4870-8938-1a8b9db895f7"
           }
         },
         "required": [
@@ -22535,7 +22544,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "29710632-6752-4eb5-9df0-4698b61c58ab"
+            "example": "3ce2eb9e-b30f-4b07-bfd5-bafc2c3fbd0d"
           }
         },
         "required": [
@@ -22632,7 +22641,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "1057a65b-d6f0-47de-87b6-19c8de6573a3"
+            "example": "e1a1d25b-1b5d-41df-9bed-ec1931aa30ad"
           }
         },
         "required": [
@@ -22688,7 +22697,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "a6c01538-fb27-427f-8ee7-2ad03fe7bab2"
+            "example": "e0510367-b0dc-4231-a643-8df86a6d03f4"
           }
         },
         "required": [
@@ -22753,7 +22762,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "815be90c-b534-4a1b-82a6-3e8b3319f7c1"
+            "example": "08dfaf92-ed2f-45d4-8a0d-3fd78ffb4107"
           }
         },
         "required": [
@@ -22948,7 +22957,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "1c8f53d3-686c-40ac-afe4-6a31a943709d"
+            "example": "1c115937-5b29-4923-9c95-2802a6c283fe"
           }
         },
         "required": [
@@ -23411,7 +23420,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "450f64a0-18ab-47a7-9077-3572091079b8"
+            "example": "ee75410b-e9be-4886-8195-6a4afb757c44"
           }
         },
         "required": [
@@ -23488,7 +23497,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "4ceabbf0-0119-4d36-be45-a78c3245fce5"
+            "example": "e6476a9e-57dc-4d94-bbdf-b2c1cc529c7e"
           }
         },
         "required": [
@@ -23553,7 +23562,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "39bb7017-09e9-42b1-874a-be9fc8aec90b"
+            "example": "00784b24-52f2-477c-bcf1-6853592b4370"
           }
         },
         "required": [
@@ -23618,7 +23627,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "70321354-c5e6-4115-9d1b-676e1e764bb2"
+            "example": "bb80a8d9-79ac-4d63-b959-9bf2582352e5"
           }
         },
         "required": [
@@ -23683,7 +23692,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "01d55938-92f2-490d-8411-e8d7ece99f7c"
+            "example": "a38b778b-d734-41b6-8f9a-5c85a4080c54"
           }
         },
         "required": [
@@ -23748,7 +23757,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "8d2ff643-ecc4-4427-a797-f1065413e5b4"
+            "example": "1e0d3b10-5480-4a5d-a65c-5fd520d6e370"
           }
         },
         "required": [
@@ -24397,7 +24406,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "16a9d0dc-8a50-453d-bd4f-8f6141108cfb"
+            "example": "f5e13deb-bb4d-47a9-b25a-1a7a4e062e9b"
           }
         },
         "required": [
@@ -24485,7 +24494,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "31e3660a-cd9d-4ec5-b3bf-cc85a379c46c"
+            "example": "efa6f9e3-e123-4533-8ecb-d9e140493fda"
           }
         },
         "required": [
@@ -24846,7 +24855,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "e2cfdc69-9ce8-4add-93cb-21f61e6dc7d0"
+            "example": "cced88d6-2936-419a-bb90-710ef9be6723"
           }
         },
         "required": [
@@ -25042,7 +25051,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "53397722-9d4c-47ad-9e1a-381a3a02ebe4"
+            "example": "ca808736-4712-4edd-903a-29981166450c"
           }
         },
         "required": [
@@ -25542,7 +25551,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "9b5572cc-3b29-46dd-ad45-b89eaf912c59"
+            "example": "8f7883db-8882-4dba-b429-0133360fae4a"
           }
         },
         "required": [
@@ -25685,7 +25694,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "f0731845-a942-4a8d-94a5-27e079f29477"
+            "example": "44195ef8-df65-4b3b-88dd-a1f992bd17e3"
           }
         },
         "required": [
@@ -25779,7 +25788,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "b8a82d45-d9ce-46dd-aab7-eae1ead1cff9"
+            "example": "3e1590ea-ad74-4956-ae5b-cb90b854f2cd"
           }
         },
         "required": [
@@ -25856,7 +25865,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "e7b32f92-6c1a-4ffe-83cb-72393ac8af98"
+            "example": "af237909-85d1-455c-a6e5-511d0d08221f"
           }
         },
         "required": [
@@ -26007,7 +26016,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "32dd990f-5240-4709-bc4e-e91823142cbb"
+            "example": "4a927a52-951c-4576-8f33-d0ffbd5a0cdb"
           }
         },
         "required": [
@@ -26248,7 +26257,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "103b2180-064e-4a54-ae05-8b320bef0a28"
+            "example": "cb73f747-920d-4735-928a-d24b12c41ae7"
           }
         },
         "required": [
@@ -26458,7 +26467,7 @@
             "type": "boolean"
           },
           "expiry_time": {
-            "$ref": "#/components/schemas/FileUploadObjectResponseExpiryTime"
+            "$ref": "#/components/schemas/FileUploadObjectExpiryTime"
           },
           "status": {
             "description": "One of: `pending`, `uploaded`, `expired`, `failed`",
@@ -26625,7 +26634,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "1bf0b6c2-b453-44d1-9c52-28b5e8d5a8da"
+            "example": "06c4f370-ed02-46ce-8a8b-77b8ef9c84bf"
           }
         },
         "required": [
@@ -27000,7 +27009,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "ee24be35-48ea-4ab0-a234-fa0f661080eb"
+            "example": "659c3ac7-3126-4b53-9359-518d4c98d642"
           }
         },
         "required": [
@@ -27447,7 +27456,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "8800a02d-adea-4d1e-8ee9-b61c4a4261c8"
+            "example": "871ef71b-078f-4cbd-8ddb-3c32fbe11a1b"
           }
         },
         "required": [
@@ -27512,7 +27521,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "dc13fd60-5990-47a7-a4b5-31591ec8b861"
+            "example": "9fcc179e-5c54-4968-a680-ecf9f5512ec9"
           }
         },
         "required": [
@@ -27577,7 +27586,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "0af8cb34-99e9-45cb-91f9-625d22a8d46d"
+            "example": "76b40de3-9270-4b4a-8ea9-3c5209972c4d"
           }
         },
         "required": [
@@ -27614,18 +27623,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "3f188fcd-daf4-812d-a699-f75e71ae3e07"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-06T08:28:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-06T08:28:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -27638,7 +27650,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "eb796664-f8f4-47f6-a7b0-516d90d94caf"
           }
         },
         "required": [
@@ -27761,7 +27774,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "60fed403-8a7e-4e93-a7a9-ec96f1034d61"
+            "example": "3bc3a000-916c-4343-be17-f1e2aad582bc"
           }
         },
         "required": [
@@ -27812,13 +27825,13 @@
           "url": {
             "description": "The URL of the file.",
             "type": "string",
-            "example": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/30d8226f-1494-40f3-898c-4683f6e14a38/sparkles_2728.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466Z7BP7XHS%2F20261005%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261005T203800Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEBoaCXVzLXdlc3QtMiJHMEUCIHF9UO9BzsHuDDv4mEzRgrSKr0%2BjFZFP2q98Giw0HHqiAiEArfljUyzvdXG5w9nNsHPzgKNvwzWfBUNvnxchYZ26PAkqiAQI4v%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDEHY%2F3NuEcVJd7UUHCrcA66LJFjo%2FXsWZiDNm4rdCmfC03AJvcyDCUYTKWJmf45iBd36lnSEXMZPeve7fvaxPbwXGzZRz%2Ftanu61SSDEvs7F25g3J0uFPrPmmDDUuU%2Fo8dMMpLMTplYLXlQ%2BWVqlHqCo1FjHxH9i8FbvtV1VZLpJOCQB3N0H%2FfkvWAjDPyXmuJCpk6pF71PWrAyK0%2FuzCGSyAdW807mjXU7569P%2F%2FzCBkmWr9uvO6jTN5HB0AkEIb69Vq1GrK1Rk%2BaGs6uZ6QZiWLpggAKVkYtybPuBI87RUeAw1HltJaM59PRtzV2uqCnXVzHVWyh4hkf0kbNcRR4SJwbIpmPQr9kqfr%2FIvdeCVtWWa0xfFzH%2BxG%2FZAKRtv288C%2BQ01sJADPlK%2FXJZeHuW0nylPuKq1xWmOvx17AKA4uchTzwTQmkp4dkzr0dMuVGgc00V7LoCyAsF6z12I1Lop3Za0Co9dVarSN0VjbtcWJau4xWFwcvv80JaVOJvbRBO6zE9iSXNZs5lOmiXgqhXZqPy1%2BCxNE%2B8wdbGfOml1iRRMRUrPy1JhbI0Y7sSjXg2uYp7gdXNiH%2FdMXmH%2Bnct%2BwWBI7Foz4qlwNjL0SFBP6zadpZM5MzJWvIco6JGvfAYY%2FreJstre%2BGCGMMDCj9YGOqUBN4TPWz%2FQRRTQo01Q02m3w8Ild3V0lhYOXf2UyPL5JJsk%2BVUvsnVpAeHvoZw%2BRhF87RueBzmHxCgVn66bICf9oNJ9ImPXVUDQNp7z8cOwODKlPfP9%2BuZUvten%2Bld0145Rkxeow5s9y79VwOwCl%2FwAq%2Fd62pDS3i2y78N3QydQUfHP3kdF%2BBk7JafwY93u2c7i8LoXSvk1379vumE%2FCTjbO4Jojy3J&X-Amz-Signature=6342a97156efbd3ffc1f59076443ce2bef9e68640dffae1c7ee3060904e37d99&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+            "example": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/30d8226f-1494-40f3-898c-4683f6e14a38/sparkles_2728.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466UDFTGSUY%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T083116Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECcaCXVzLXdlc3QtMiJHMEUCIQCHK98y6%2BnOeC3tiKUTCfeiv5cqQzQ7WIG%2BQl3fVJMsQgIgMLuvsnhP2EXr57Dc0RNY1bbASMCSVxxGegoFb%2FRJdHUqiAQI7%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDIEes2IWh2ZXnEBK8yrcA7m9sAf8OmFdkrBcLoC8zg95mhZSTqadqOrQIuQhHD6RUAMCY1f0X8tOwTaz8HVpHAsYyMEgpf2flKJzWB5Q%2BC4pvb7jRqU%2BFMJIU7OaW%2B22UOz8Sc5bDYBvAIC8P%2B2%2BevSDROqskwOitaJrH1m7TNmNHQDuW61A88QF2REBh0W8zllG%2F79X44xIMPKjJoDaiTeyNZewUBbwLWRkkBfuoCTblqx%2BDYi%2B%2FKwrq6qz6zTCueo0hAXTN4Kmzi%2FmQ%2BF90d2FF25dit%2FUeefCiyYmGbiJIiZdYJM7sNTfhXmfdp41wS0QRvLYAd7AC7vPmfE4BC7cWWTzxDw%2BAHY4xgELdp0On%2Ffu%2BsqYrFbeMnuS6MkdyekZws%2FA3JiJJ%2B%2FIfJV3TjthxySkcBWsqEpc9RwzofDp%2FvPval9BFpk17Y6Or3%2BeiMeUM0uPJulDO833sA9WpyV7XV3Jx6D5UxQw1GCjmKCNjDhnvdbRHg0uScl2YpFht8kWMcrDMKvRL13VSf1Jx5bnUJLph1Ob9JZHlnTkJub1EUgRCsMYLqI5zSM8EvSyctq%2B6eMbU%2FcisXFaJBtjyC3d9L%2FIemgRy204%2BH0fRgz%2BH5ugWF%2BU8cUHlkIz%2BoNHV0VUg%2F5NCtH4GlzAMN69ktYGOqUBNpxk9PQcghR%2Bg5UnWvQnq3Fzfyeh6iNQrYm6v%2FYkMWWl9VUYX4kMS4bK%2Fh6PWruAQQ3lqGXsUCHsAWprK5oCeN61QwMF%2Bys2Q6m77VVskUXBQACtPskrqGSYmdZRdb5vdnp8AKr7%2FEwuzzd32JlS2WCpzkb3w9DuE%2F9rUhh1UYg2l1KdDvoq6yoZ6aYRPqZlZvL4E2RsgT5viDyA1HT5UV5CzutB&X-Amz-Signature=a62393e5047ac12ad4186fca05707f67faa4a8ac7dde590f7c79c261aedb6d0a&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
           },
           "expiry_time": {
             "description": "The time when the URL will expire.",
             "type": "string",
             "format": "date-time",
-            "example": "2026-10-05T21:38:00.707Z"
+            "example": "2026-10-06T09:31:16.841Z"
           }
         },
         "required": [
@@ -28023,7 +28036,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "d45d80e4-d4f5-4682-8121-b483e77c4dc2"
+            "example": "ea46702c-bce3-4abf-9570-6d243afd55fc"
           }
         },
         "required": [
@@ -28097,14 +28110,21 @@
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-06T08:30:00.000Z"
           },
           "object": {
             "type": "string",
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "x%3D~k"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "06a317c5-81d9-4b96-a268-4a3eb4c2c7ae"
           }
         },
         "required": [
@@ -28125,7 +28145,8 @@
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-06T08:30:00.000Z"
           }
         },
         "required": [
@@ -28133,6 +28154,23 @@
           "last_edited_time"
         ],
         "additionalProperties": false
+      },
+      "lastVisitedTimeDatabasePropertyConfigResponse": {
+        "title": "Last Visited Time",
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "last_visited_time"
+          },
+          "last_visited_time": {
+            "$ref": "#/components/schemas/emptyObject"
+          }
+        },
+        "required": [
+          "type",
+          "last_visited_time"
+        ]
       },
       "lastVisitedTimePropertyConfigurationRequest": {
         "title": "Last Visited Time",
@@ -28150,6 +28188,56 @@
         "required": [
           "last_visited_time"
         ]
+      },
+      "lastVisitedTimePropertyItemObjectResponse": {
+        "title": "Last Visited Time",
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "last_visited_time"
+          },
+          "last_visited_time": {
+            "$ref": "#/components/schemas/FileUploadObjectExpiryTime"
+          },
+          "object": {
+            "type": "string",
+            "const": "property_item"
+          },
+          "id": {
+            "type": "string",
+            "example": "x%3D~k"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "49fdce49-a44f-4d65-927b-4817221dce4c"
+          }
+        },
+        "required": [
+          "type",
+          "last_visited_time",
+          "object",
+          "id"
+        ]
+      },
+      "lastVisitedTimeSimplePropertyValueResponse": {
+        "title": "Last Visited Time",
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "last_visited_time"
+          },
+          "last_visited_time": {
+            "$ref": "#/components/schemas/FileUploadObjectExpiryTime"
+          }
+        },
+        "required": [
+          "type",
+          "last_visited_time"
+        ],
+        "additionalProperties": false
       },
       "linkMentionResponse": {
         "type": "object",
@@ -28255,7 +28343,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "a599d51c-2082-48a5-8f2c-876cc64a0a43"
+            "example": "054af4fc-e52d-464e-b24c-d95d20c586ee"
           }
         },
         "required": [
@@ -28334,7 +28422,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "181cdfb2-9480-444f-b31f-64005445f6a0"
+            "example": "ceb8e2a6-dc9e-474c-8c27-547af4444647"
           }
         },
         "required": [
@@ -28721,7 +28809,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "52fcd3d4-8c56-48c5-86d9-e73825751714"
+            "example": "c718f184-8688-4f92-80aa-f7e14a241c65"
           }
         },
         "required": [
@@ -28774,7 +28862,8 @@
           "purple",
           "pink",
           "red"
-        ]
+        ],
+        "example": "blue"
       },
       "noticonIconResponse": {
         "type": "object",
@@ -28796,6 +28885,7 @@
       },
       "noticonName": {
         "type": "string",
+        "example": "pizza",
         "examples": [
           "pizza",
           "meeting",
@@ -29017,7 +29107,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "b9f7409a-3631-4e51-923d-65d2d61da267"
+            "example": "af6e1f64-daf3-4d96-8670-21f6253d6d0d"
           }
         },
         "required": [
@@ -29102,7 +29192,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "ee7b5dff-6f2e-491f-9534-95702e73c7a3"
+            "example": "0ac9a9ce-3e65-4615-a619-071fde5ab927"
           }
         },
         "required": [
@@ -29556,7 +29646,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "9569454a-ca00-4f51-8b3e-5f104eb8bc51"
+            "example": "dbde0fca-98a1-4bc2-9b7e-89ecfc090f1b"
           }
         },
         "required": [
@@ -29998,7 +30088,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "b04099dc-d536-4098-b44b-13190adfae31"
+            "example": "391444b2-dd6f-434d-bdae-53c38010626a"
           }
         },
         "required": [
@@ -30257,7 +30347,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "b14e6997-faac-419f-a650-c21a22917028"
+            "example": "6fd1c153-9d9a-4dc3-ac9a-a04c383a35c1"
           }
         },
         "required": [
@@ -30285,6 +30375,23 @@
           "phone_number"
         ],
         "additionalProperties": false
+      },
+      "placeDatabasePropertyConfigResponse": {
+        "title": "Place",
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "place"
+          },
+          "place": {
+            "$ref": "#/components/schemas/emptyObject"
+          }
+        },
+        "required": [
+          "type",
+          "place"
+        ]
       },
       "placePropertyConfiguration": {
         "title": "Place",
@@ -30319,7 +30426,13 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "kuJP"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "68a5135d-9fb9-4651-8930-b5c2b61fff38"
           }
         },
         "required": [
@@ -30333,10 +30446,14 @@
         "type": "object",
         "properties": {
           "lat": {
-            "type": "number"
+            "type": "number",
+            "format": "double",
+            "example": 52.52
           },
           "lon": {
-            "type": "number"
+            "type": "number",
+            "format": "double",
+            "example": 13.405
           },
           "name": {
             "$ref": "#/components/schemas/PagePublicURL"
@@ -30627,6 +30744,9 @@
           },
           {
             "$ref": "#/components/schemas/rollupPropertyItemObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/lastVisitedTimePropertyItemObjectResponse"
           }
         ]
       },
@@ -30777,7 +30897,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "f79cc160-4a36-4c3f-9ba9-c8cc84ec3a17"
+            "example": "01f4e93b-8fc7-4fbb-8f86-ac353bd211d4"
           }
         },
         "required": [
@@ -30805,7 +30925,6 @@
           },
           "relation": {
             "type": "array",
-            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/relationItemPropertyValue"
             }
@@ -30954,7 +31073,8 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "%3Ewe%5B"
           }
         },
         "required": [
@@ -31443,7 +31563,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "6bb8bf25-c1d2-47a7-873e-c4a6026f38d1"
+            "example": "b2a0378f-2f5a-40e7-b9de-40556b301ce1"
           }
         },
         "required": [
@@ -31540,6 +31660,9 @@
           },
           {
             "$ref": "#/components/schemas/placeSimplePropertyValueResponse"
+          },
+          {
+            "$ref": "#/components/schemas/lastVisitedTimeSimplePropertyValueResponse"
           }
         ]
       },
@@ -31788,7 +31911,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "7d925202-3e62-479d-b84d-97e53ef7f2a2"
+            "example": "50b22a05-f86b-49b6-b941-584bd85f79e4"
           }
         },
         "required": [
@@ -31962,7 +32085,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "424d2451-987a-4df4-bb29-883f44aaad96"
+            "example": "c8ff9350-07b5-400b-8c19-bb7b2780f4ab"
           }
         },
         "required": [
@@ -31999,18 +32122,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "3f188fcd-daf4-81b1-8fae-e1cba685a9f3"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-06T08:28:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-06T08:28:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -32023,7 +32149,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "35312905-3853-4ad3-9ad8-8813aa912049"
           }
         },
         "required": [
@@ -32164,7 +32291,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "6e1d1b9a-8f98-40c7-a513-32d252dbac15"
+            "example": "e4ca3df9-85e8-4ad8-b723-69d43c316bae"
           }
         },
         "required": [
@@ -32229,7 +32356,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "4c61be2e-4830-44a5-9dd9-eff006a5082e"
+            "example": "9bb0bf1c-18b4-4d72-b0db-be484340b823"
           }
         },
         "required": [
@@ -32343,7 +32470,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "8e3f4ce5-8fe2-4557-ae98-05bd34c00a0f"
+            "example": "e0b9b7d2-264d-4bc0-a5bc-267ec9648829"
           }
         },
         "required": [
@@ -33094,7 +33221,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "794950cb-4451-4459-b46d-6ab740ab6810"
+            "example": "5a5a3bd1-6b86-4364-a8bf-841b11edd84d"
           }
         },
         "required": [
@@ -33159,7 +33286,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "46fbfa98-a49b-4744-b1a0-f1010aa8df57"
+            "example": "b2543ae9-07b2-47bd-a688-0784e2b36284"
           }
         },
         "required": [
@@ -33298,7 +33425,13 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "%7B%7B%3D%3B"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "8cebcddb-1bbc-4bff-bd89-2ff4ba2e755b"
           }
         },
         "required": [
@@ -33391,7 +33524,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "e4738252-668d-4ad4-9da0-ef25e3d57059"
+            "example": "4f81a5c7-b6b1-478f-a3ce-abfc7071c3ab"
           }
         },
         "required": [
@@ -33603,7 +33736,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "beace63d-9712-4057-8e95-1e8dc5c9c557"
+            "example": "60348105-3f91-4722-9d36-6e81c1df9de9"
           }
         },
         "required": [
@@ -33869,7 +34002,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "7fc4dd69-4c4a-4a6b-8e9f-342b12793ecc"
+            "example": "a1ccfe22-49f0-4d72-825d-0f820735acf4"
           }
         },
         "required": [
