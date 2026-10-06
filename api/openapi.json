@@ -10413,17 +10413,6 @@
           }
         ]
       },
-      "DataSourceViewObjectResponseFilter": {
-        "description": "The filter applied to this view (same shape as data source query filter).",
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/viewFilterResponse"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
       "DataSourceViewObjectResponseQuickFilters": {
         "description": "Quick filters pinned to the view's filter bar. Keys are property IDs. Values are filter conditions (same shape as a property filter without the property field). Null when no quick filters are set.",
         "oneOf": [
@@ -10431,7 +10420,7 @@
             "type": "object",
             "additionalProperties": {
               "description": "A property filter condition. Same shape as a property filter but without the \"property\" field. For example: { \"select\": { \"equals\": \"High\" } }. An empty object means the quick filter has no criteria yet.",
-              "$ref": "#/components/schemas/viewFilter"
+              "$ref": "#/components/schemas/quickFilterCondition"
             }
           },
           {
@@ -10443,10 +10432,7 @@
         "description": "The sorts applied to this view (same shape as data source query sorts).",
         "oneOf": [
           {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/viewSortResponse"
-            }
+            "$ref": "#/components/schemas/Sorts"
           },
           {
             "type": "null"
@@ -11300,6 +11286,57 @@
         ],
         "additionalProperties": false
       },
+      "Filter": {
+        "description": "A filter of a data source's entries: by a property or a timestamp, or by any or all of other filters.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/FilterOr"
+          },
+          {
+            "$ref": "#/components/schemas/FilterAnd"
+          },
+          {
+            "$ref": "#/components/schemas/propertyFilter"
+          },
+          {
+            "$ref": "#/components/schemas/timestampFilter"
+          }
+        ]
+      },
+      "FilterAnd": {
+        "type": "object",
+        "properties": {
+          "and": {
+            "description": "The entries all of the filters allow.",
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/Filter"
+            }
+          }
+        },
+        "required": [
+          "and"
+        ],
+        "additionalProperties": false
+      },
+      "FilterOr": {
+        "type": "object",
+        "properties": {
+          "or": {
+            "description": "The entries any of the filters allow.",
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/Filter"
+            }
+          }
+        },
+        "required": [
+          "or"
+        ],
+        "additionalProperties": false
+      },
       "FormViewConfigRequestSubmissionPermissions": {
         "description": "Permission level granted to the submitter on the created page after form submission. Pass null to clear.",
         "oneOf": [
@@ -11419,104 +11456,6 @@
           "url"
         ],
         "additionalProperties": false
-      },
-      "GroupFilterOperatorArrayItemAnd": {
-        "type": "object",
-        "properties": {
-          "and": {
-            "$ref": "#/components/schemas/propertyOrTimestampFilterArray"
-          }
-        },
-        "required": [
-          "and"
-        ]
-      },
-      "GroupFilterOperatorArrayItemOr": {
-        "type": "object",
-        "properties": {
-          "or": {
-            "$ref": "#/components/schemas/propertyOrTimestampFilterArray"
-          },
-          "date": {
-            "$ref": "#/components/schemas/TextPropertyFilterEquals"
-          },
-          "property": {
-            "type": "string",
-            "example": "Blch"
-          },
-          "and": {
-            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemOrAnd"
-          }
-        },
-        "required": [
-          "or"
-        ]
-      },
-      "GroupFilterOperatorArrayItemOrAnd": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/GroupFilterOperatorArrayItemOrAndItem"
-        }
-      },
-      "GroupFilterOperatorArrayItemOrAndItem": {
-        "type": "object",
-        "properties": {
-          "date": {
-            "$ref": "#/components/schemas/TextPropertyFilterEquals"
-          },
-          "property": {
-            "type": "string",
-            "example": "Blch"
-          },
-          "formula": {
-            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemOrAndItemFormula"
-          },
-          "select": {
-            "$ref": "#/components/schemas/TextPropertyFilterDoesNotEqual"
-          },
-          "created_time": {
-            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemOrAndItemCreatedTime"
-          }
-        },
-        "required": [
-          "date",
-          "property"
-        ]
-      },
-      "GroupFilterOperatorArrayItemOrAndItemCreatedTime": {
-        "type": "object",
-        "properties": {
-          "on_or_after": {
-            "type": "string",
-            "example": "2024-04-13"
-          }
-        },
-        "required": [
-          "on_or_after"
-        ]
-      },
-      "GroupFilterOperatorArrayItemOrAndItemFormula": {
-        "type": "object",
-        "properties": {
-          "number": {
-            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemOrAndItemFormulaNumber"
-          }
-        },
-        "required": [
-          "number"
-        ]
-      },
-      "GroupFilterOperatorArrayItemOrAndItemFormulaNumber": {
-        "type": "object",
-        "properties": {
-          "less_than": {
-            "type": "integer",
-            "example": 24
-          }
-        },
-        "required": [
-          "less_than"
-        ]
       },
       "GroupSortType": {
         "description": "Sort direction for groups.",
@@ -14835,13 +14774,7 @@
         "type": "object",
         "properties": {
           "sorts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PostDatabaseQuerySortsItem"
-            }
-          },
-          "filter": {
-            "$ref": "#/components/schemas/PostDatabaseQueryFilter"
+            "$ref": "#/components/schemas/Sorts"
           },
           "start_cursor": {
             "type": "string"
@@ -14857,72 +14790,12 @@
           "result_type": {
             "description": "Optionally filter the results to only include pages or data sources. Regular, non-wiki databases only support page children. The default behavior is no result type filtering, in other words, returning both pages and data sources for wikis.",
             "$ref": "#/components/schemas/DatabaseQueryResultType"
+          },
+          "filter": {
+            "$ref": "#/components/schemas/Filter"
           }
         },
         "additionalProperties": false
-      },
-      "PostDatabaseQueryFilter": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/PostDatabaseQueryFilterOr"
-          },
-          {
-            "$ref": "#/components/schemas/PostDatabaseQueryFilterAnd"
-          },
-          {
-            "$ref": "#/components/schemas/propertyFilter"
-          },
-          {
-            "$ref": "#/components/schemas/timestampFilter"
-          }
-        ]
-      },
-      "PostDatabaseQueryFilterAnd": {
-        "type": "object",
-        "properties": {
-          "and": {
-            "$ref": "#/components/schemas/groupFilterOperatorArray"
-          }
-        },
-        "required": [
-          "and"
-        ]
-      },
-      "PostDatabaseQueryFilterOr": {
-        "type": "object",
-        "properties": {
-          "or": {
-            "$ref": "#/components/schemas/groupFilterOperatorArray"
-          }
-        },
-        "required": [
-          "or"
-        ]
-      },
-      "PostDatabaseQuerySortsItem": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/viewPropertySort"
-          },
-          {
-            "$ref": "#/components/schemas/PostDatabaseQuerySortsItemAnyOf1"
-          }
-        ]
-      },
-      "PostDatabaseQuerySortsItemAnyOf1": {
-        "type": "object",
-        "properties": {
-          "timestamp": {
-            "$ref": "#/components/schemas/TimestampSortTimestamp"
-          },
-          "direction": {
-            "$ref": "#/components/schemas/sortDirection"
-          }
-        },
-        "required": [
-          "timestamp",
-          "direction"
-        ]
       },
       "PostPage": {
         "type": "object",
@@ -15892,6 +15765,32 @@
           "next_url",
           "id"
         ]
+      },
+      "PropertySort": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "description": "The name or ID of the property to sort by.",
+            "type": "string",
+            "example": "mFVH"
+          },
+          "direction": {
+            "description": "Sort direction.",
+            "$ref": "#/components/schemas/sortDirection"
+          }
+        },
+        "required": [
+          "property",
+          "direction"
+        ],
+        "additionalProperties": false
+      },
+      "PropertySorts": {
+        "type": "array",
+        "maxItems": 100,
+        "items": {
+          "$ref": "#/components/schemas/PropertySort"
+        }
       },
       "PropertyValue": {
         "allOf": [
@@ -20481,6 +20380,23 @@
           }
         ]
       },
+      "Sort": {
+        "description": "A sort of a data source's entries, by a property or a timestamp.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/PropertySort"
+          },
+          {
+            "$ref": "#/components/schemas/TimestampSort"
+          }
+        ]
+      },
+      "Sorts": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Sort"
+        }
+      },
       "Status": {
         "type": "string",
         "enum": [
@@ -20730,8 +20646,7 @@
         "type": "object",
         "properties": {
           "does_not_equal": {
-            "type": "string",
-            "example": "Done"
+            "type": "string"
           }
         },
         "required": [
@@ -20753,8 +20668,7 @@
         "type": "object",
         "properties": {
           "equals": {
-            "type": "string",
-            "example": "today"
+            "type": "string"
           }
         },
         "required": [
@@ -20903,7 +20817,25 @@
           }
         ]
       },
+      "TimestampSort": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "$ref": "#/components/schemas/TimestampSortTimestamp"
+          },
+          "direction": {
+            "description": "Sort direction.",
+            "$ref": "#/components/schemas/sortDirection"
+          }
+        },
+        "required": [
+          "timestamp",
+          "direction"
+        ],
+        "additionalProperties": false
+      },
       "TimestampSortTimestamp": {
+        "description": "The timestamp to sort by.",
         "type": "string",
         "enum": [
           "created_time",
@@ -22740,8 +22672,7 @@
       "UpdateViewFilter": {
         "oneOf": [
           {
-            "description": "Filter for the view. Uses the same format as the data source query filter (property filters, timestamp filters, or compound and/or filters). Simple property filters appear in the view's filter bar in the Notion UI. Select, status, and multi_select filter operators accept a single string or an array of strings to filter by multiple values (e.g. { \"does_not_equal\": [\"Done\", \"Archive\"] }).",
-            "$ref": "#/components/schemas/viewFilter"
+            "$ref": "#/components/schemas/Filter"
           },
           {
             "type": "null"
@@ -22754,8 +22685,19 @@
           {
             "type": "object",
             "additionalProperties": {
-              "$ref": "#/components/schemas/UpdateViewFilter"
+              "$ref": "#/components/schemas/UpdateViewRequestQuickFiltersOneOf0Value"
             }
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "UpdateViewRequestQuickFiltersOneOf0Value": {
+        "oneOf": [
+          {
+            "description": "A property filter condition. Same shape as a property filter but without the \"property\" field (the hashmap key identifies the property). For example: { \"select\": { \"equals\": \"High\" } }. Pass an empty object to add the property to the filter bar without criteria.",
+            "$ref": "#/components/schemas/quickFilterCondition"
           },
           {
             "type": "null"
@@ -22766,7 +22708,7 @@
         "description": "Property sorts to apply to the view. Only property-based sorts are supported. Pass null to clear the sorts.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/viewPropertySortsRequest"
+            "$ref": "#/components/schemas/PropertySorts"
           },
           {
             "type": "null"
@@ -22918,191 +22860,6 @@
           "view_type"
         ],
         "additionalProperties": false
-      },
-      "ViewFilterOneOfOrItem": {
-        "description": "A filter that can be a property filter, timestamp filter, or nested compound filter.",
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/ViewFilterOneOfOrItemProperty"
-          },
-          {
-            "$ref": "#/components/schemas/ViewFilterTimestamp"
-          },
-          {
-            "$ref": "#/components/schemas/ViewFilterOneOfOrItemOneOf"
-          }
-        ]
-      },
-      "ViewFilterOneOfOrItemOneOf": {
-        "description": "A compound filter at the deepest nesting level. Can only contain property or timestamp filters (no further nesting).",
-        "type": "object",
-        "properties": {
-          "or": {
-            "description": "Filters combined with OR logic.",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ViewFilterOneOfOrItemOneOfOrItem"
-            }
-          },
-          "and": {
-            "description": "Filters combined with AND logic.",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ViewFilterOneOfOrItemOneOfOrItem"
-            }
-          }
-        }
-      },
-      "ViewFilterOneOfOrItemOneOfOrItem": {
-        "description": "A property filter or timestamp filter.",
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/ViewFilterOneOfOrItemProperty"
-          },
-          {
-            "$ref": "#/components/schemas/ViewFilterTimestamp"
-          }
-        ]
-      },
-      "ViewFilterOneOfOrItemProperty": {
-        "description": "A filter condition on a specific property. The property field specifies which property to filter, and an additional field specifies the filter type and condition (e.g., title, rich_text, number, checkbox, select, multi_select, date, people, files, relation, formula, rollup, etc.).",
-        "type": "object",
-        "properties": {
-          "property": {
-            "description": "The name or ID of the property to filter on.",
-            "type": "string"
-          }
-        },
-        "required": [
-          "property"
-        ],
-        "additionalProperties": true
-      },
-      "ViewFilterResponseProperty": {
-        "description": "A filter condition on a specific property. The property field specifies which property to filter, and an additional field specifies the filter type and condition (e.g., title, rich_text, number, checkbox, select, multi_select, date, people, files, relation, formula, rollup, etc.).",
-        "type": "object",
-        "properties": {
-          "property": {
-            "description": "The name or ID of the property to filter on.",
-            "type": "string"
-          },
-          "or": {
-            "$ref": "#/components/schemas/ViewFilterResponsePropertyOr"
-          }
-        },
-        "required": [
-          "property"
-        ],
-        "additionalProperties": true
-      },
-      "ViewFilterResponsePropertyOr": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/ViewFilterResponsePropertyOrItem"
-        }
-      },
-      "ViewFilterResponsePropertyOrItem": {
-        "type": "object",
-        "properties": {
-          "or": {
-            "$ref": "#/components/schemas/ViewFilterResponsePropertyOrItemOr"
-          },
-          "and": {
-            "$ref": "#/components/schemas/ViewFilterResponsePropertyOrItemAnd"
-          }
-        },
-        "required": [
-          "or"
-        ]
-      },
-      "ViewFilterResponsePropertyOrItemAnd": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/ViewFilterResponsePropertyOrItemAndItem"
-        }
-      },
-      "ViewFilterResponsePropertyOrItemAndItem": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "type": "string",
-            "example": "@F<W"
-          },
-          "select": {
-            "$ref": "#/components/schemas/TextPropertyFilterDoesNotEqual"
-          },
-          "created_time": {
-            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemOrAndItemCreatedTime"
-          }
-        },
-        "required": [
-          "property",
-          "select"
-        ]
-      },
-      "ViewFilterResponsePropertyOrItemOr": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/ViewFilterResponsePropertyOrItemOrItem"
-        }
-      },
-      "ViewFilterResponsePropertyOrItemOrItem": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "type": "string",
-            "example": "Blch"
-          },
-          "date": {
-            "$ref": "#/components/schemas/TextPropertyFilterEquals"
-          },
-          "and": {
-            "$ref": "#/components/schemas/ViewFilterResponsePropertyOrItemOrItemAnd"
-          }
-        },
-        "required": [
-          "property",
-          "date"
-        ]
-      },
-      "ViewFilterResponsePropertyOrItemOrItemAnd": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/ViewFilterResponsePropertyOrItemOrItemAndItem"
-        }
-      },
-      "ViewFilterResponsePropertyOrItemOrItemAndItem": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "type": "string",
-            "example": "Blch"
-          },
-          "date": {
-            "$ref": "#/components/schemas/TextPropertyFilterEquals"
-          },
-          "formula": {
-            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemOrAndItemFormula"
-          }
-        },
-        "required": [
-          "property",
-          "date"
-        ]
-      },
-      "ViewFilterTimestamp": {
-        "description": "A filter condition on a timestamp (created_time or last_edited_time). The timestamp field specifies which timestamp, and a matching field contains the date filter condition.",
-        "type": "object",
-        "properties": {
-          "timestamp": {
-            "description": "The timestamp to filter on.",
-            "$ref": "#/components/schemas/TimestampSortTimestamp"
-          }
-        },
-        "required": [
-          "timestamp"
-        ],
-        "additionalProperties": true
       },
       "ViewList": {
         "type": "object",
@@ -25824,18 +25581,18 @@
           },
           "filter": {
             "description": "Filter to apply to the view. Uses the same format as the data source query filter.",
-            "$ref": "#/components/schemas/viewFilter"
+            "$ref": "#/components/schemas/Filter"
           },
           "sorts": {
             "description": "Sorts to apply to the view. Uses the same format as the data source query sorts.",
-            "$ref": "#/components/schemas/viewSortsRequest"
+            "$ref": "#/components/schemas/Sorts"
           },
           "quick_filters": {
             "description": "Quick filters to pin in the view's filter bar. Keys are property names or IDs. Values are filter conditions (same shape as a property filter but without the property field). Each quick filter appears as a clickable pill above the view, independent of the advanced filter.",
             "type": "object",
             "additionalProperties": {
               "description": "A property filter condition. Same shape as a property filter but without the \"property\" field (the hashmap key identifies the property). For example: { \"select\": { \"equals\": \"High\" } }. Pass an empty object to add the property to the filter bar without criteria.",
-              "$ref": "#/components/schemas/viewFilter"
+              "$ref": "#/components/schemas/quickFilterCondition"
             }
           },
           "create_database": {
@@ -26544,7 +26301,8 @@
             "$ref": "#/components/schemas/DataSourceViewObjectCreatedBy"
           },
           "filter": {
-            "$ref": "#/components/schemas/DataSourceViewObjectResponseFilter"
+            "description": "The filter applied to this view (same shape as data source query filter).",
+            "$ref": "#/components/schemas/UpdateViewFilter"
           },
           "sorts": {
             "$ref": "#/components/schemas/DataSourceViewObjectResponseSorts"
@@ -28780,25 +28538,6 @@
           },
           {
             "$ref": "#/components/schemas/formulaGroupByConfigResponse"
-          }
-        ]
-      },
-      "groupFilterOperatorArray": {
-        "type": "array",
-        "items": {
-          "$ref": "#/components/schemas/groupFilterOperatorArrayItem"
-        }
-      },
-      "groupFilterOperatorArrayItem": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/propertyOrTimestampFilter"
-          },
-          {
-            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemOr"
-          },
-          {
-            "$ref": "#/components/schemas/GroupFilterOperatorArrayItemAnd"
           }
         ]
       },
@@ -32217,42 +31956,6 @@
           "results"
         ]
       },
-      "propertyOrTimestampFilter": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/propertyFilter"
-          },
-          {
-            "$ref": "#/components/schemas/timestampFilter"
-          }
-        ]
-      },
-      "propertyOrTimestampFilterArray": {
-        "type": "array",
-        "maxItems": 100,
-        "items": {
-          "$ref": "#/components/schemas/propertyOrTimestampFilter"
-        }
-      },
-      "propertySortResponse": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "description": "The name or ID of the property to sort by.",
-            "type": "string",
-            "example": "mFVH"
-          },
-          "direction": {
-            "description": "Sort direction.",
-            "$ref": "#/components/schemas/sortDirection"
-          }
-        },
-        "required": [
-          "property",
-          "direction"
-        ],
-        "additionalProperties": false
-      },
       "publicApiAsyncTaskStatusResultJsonValue": {
         "oneOf": [
           {
@@ -32303,6 +32006,9 @@
           "object",
           "message"
         ]
+      },
+      "quickFilterCondition": {
+        "type": "object"
       },
       "quoteBlockObjectResponse": {
         "title": "Quote",
@@ -34528,24 +34234,6 @@
         ],
         "additionalProperties": false
       },
-      "timestampSortResponse": {
-        "type": "object",
-        "properties": {
-          "timestamp": {
-            "description": "The timestamp to sort by.",
-            "$ref": "#/components/schemas/TimestampSortTimestamp"
-          },
-          "direction": {
-            "description": "Sort direction.",
-            "$ref": "#/components/schemas/sortDirection"
-          }
-        },
-        "required": [
-          "timestamp",
-          "direction"
-        ],
-        "additionalProperties": false
-      },
       "titleArrayBasedPropertyValueResponse": {
         "title": "Title",
         "type": "object",
@@ -35610,43 +35298,6 @@
           "data"
         ]
       },
-      "viewFilter": {
-        "type": "object"
-      },
-      "viewFilterResponse": {
-        "description": "Filter for the view. Can be a property filter (filter by property value), timestamp filter (filter by created_time or last_edited_time), or compound filter (combine filters with and/or logic). Compound filters support up to 2 levels of nesting.",
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/ViewFilterResponseProperty"
-          },
-          {
-            "$ref": "#/components/schemas/ViewFilterTimestamp"
-          },
-          {
-            "$ref": "#/components/schemas/viewFilterResponseOneOf2"
-          }
-        ]
-      },
-      "viewFilterResponseOneOf2": {
-        "description": "A compound filter that combines multiple filters with AND or OR logic. Supports up to 2 levels of nesting.",
-        "type": "object",
-        "properties": {
-          "or": {
-            "description": "Filters combined with OR logic.",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ViewFilterOneOfOrItem"
-            }
-          },
-          "and": {
-            "description": "Filters combined with AND logic.",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ViewFilterOneOfOrItem"
-            }
-          }
-        }
-      },
       "viewPositionRequest": {
         "description": "Position of the new view in the database's view tab bar.",
         "oneOf": [
@@ -35748,31 +35399,6 @@
         ],
         "additionalProperties": false
       },
-      "viewPropertySort": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "description": "Property name or ID to sort by.",
-            "type": "string",
-            "example": "mFVH"
-          },
-          "direction": {
-            "description": "Sort direction.",
-            "$ref": "#/components/schemas/sortDirection"
-          }
-        },
-        "required": [
-          "property",
-          "direction"
-        ]
-      },
-      "viewPropertySortsRequest": {
-        "type": "array",
-        "maxItems": 100,
-        "items": {
-          "$ref": "#/components/schemas/viewPropertySort"
-        }
-      },
       "viewQueryResponse": {
         "type": "object",
         "properties": {
@@ -35830,25 +35456,6 @@
           "has_more"
         ],
         "additionalProperties": false
-      },
-      "viewSortResponse": {
-        "description": "Sort for the view. Can sort by property or timestamp.",
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/propertySortResponse"
-          },
-          {
-            "$ref": "#/components/schemas/timestampSortResponse"
-          }
-        ]
-      },
-      "viewSortsRequest": {
-        "type": "array",
-        "maxItems": 100,
-        "items": {
-          "description": "Sort for the view. Can be a property sort (with property and direction) or timestamp sort (with timestamp and direction).",
-          "$ref": "#/components/schemas/viewFilter"
-        }
       },
       "viewType": {
         "type": "string",

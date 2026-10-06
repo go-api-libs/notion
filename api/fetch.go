@@ -682,6 +682,144 @@ func (s *jsonSet) add(p *openapi.Schema) {
 	}
 }
 
+// extractArrayOf names every array of the component item, which the official spec spells out inline each time.
+func extractArrayOf(doc *openapi.Document, name, item string) error {
+	if err := edit.ExtractSchema(doc, name, func(s *openapi.Schema) bool {
+		return s.Type == openapi.TypeArray && s.Items != nil && s.Items.Ref != nil &&
+			s.Items.Ref.Identifier == schemaRefPrefix+item
+	}); err != nil {
+		return fmt.Errorf("naming the arrays of %s: %w", item, err)
+	}
+
+	return nil
+}
+
+// nameSorts makes the sorts of a data source's entries one Sort, whether a view's, read or written, or a query's.
+func nameSorts(doc *openapi.Document) error {
+	if err := edit.RenameSchemas(doc, map[string]string{
+		"viewSortResponse":         "Sort",
+		"propertySortResponse":     "PropertySort",
+		"timestampSortResponse":    "TimestampSort",
+		"viewPropertySortsRequest": "PropertySorts",
+	}); err != nil {
+		return fmt.Errorf("renaming sorts: %w", err)
+	}
+
+	// a view's sorts are written as they are read: its update allows property sorts only
+	if err := edit.RedirectSchemas(doc, map[string]string{
+		"viewSortRequest":         "Sort",
+		"viewPropertySortRequest": "PropertySort",
+	}); err != nil {
+		return fmt.Errorf("redirecting sorts: %w", err)
+	}
+
+	doc.Components.Schemas["Sort"].Description = "A sort of a data source's entries, by a property or a timestamp."
+
+	query, err := queryBody(doc)
+	if err != nil {
+		return err
+	}
+
+	sorts, ok := query.Properties["sorts"]
+	if !ok || sorts.Items == nil {
+		return errors.New("the query of a data source has no sorts")
+	}
+
+	sorts.Items = refTo(doc, "Sort")
+
+	if err := extractArrayOf(doc, "Sorts", "Sort"); err != nil {
+		return err
+	}
+
+	return edit.RedirectSchemas(doc, map[string]string{"viewSortsRequest": "Sorts"})
+}
+
+// nameFilter makes the filters of a data source's entries one Filter, whether a view's, read or written, or a query's.
+// It is recursive: a view's filter may nest deeper than the two levels the official spec spells out for a query's.
+func nameFilter(doc *openapi.Document) error {
+	if _, ok := doc.Components.Schemas["Filter"]; ok {
+		return componentErr("Filter", errors.New("already exists"))
+	}
+
+	doc.Components.Schemas.Set("Filter", &openapi.Schema{
+		Description: "A filter of a data source's entries: by a property or a timestamp, or by any or all of other filters.",
+	})
+	setFilterForms(doc)
+
+	query, err := queryBody(doc)
+	if err != nil {
+		return err
+	}
+
+	if _, ok := query.Properties["filter"]; !ok {
+		return errors.New("the query of a data source has no filter")
+	}
+
+	query.Properties.Set("filter", refTo(doc, "Filter"))
+
+	if err := edit.RedirectSchemas(doc, map[string]string{
+		"viewFilterRequest":  "Filter",
+		"viewFilterResponse": "Filter",
+	}); err != nil {
+		return fmt.Errorf("redirecting filters: %w", err)
+	}
+
+	edit.RemoveUnreferenced(doc, "groupFilterOperatorArray", "propertyOrTimestampFilterArray", "propertyOrTimestampFilter")
+
+	return nil
+}
+
+// setFilterForms sets what Filter may be: any or all of other filters, a property filter, or a timestamp filter.
+// It is set again after enrich, which files filters it was given under a form they lack the required members of.
+func setFilterForms(doc *openapi.Document) {
+	for _, c := range []struct{ name, op, description string }{
+		{"FilterOr", "or", "The entries any of the filters allow."},
+		{"FilterAnd", "and", "The entries all of the filters allow."},
+	} {
+		props := openapi.Schemas{}
+		props.Set(c.op, &openapi.Schema{
+			Description: c.description, Type: openapi.TypeArray, MaxItems: new(uint(100)), Items: refTo(doc, "Filter"),
+		})
+
+		form := &openapi.Schema{
+			Type: openapi.TypeObject, Properties: props, Required: []string{c.op},
+			AdditionalProperties: &openapi.AdditionalProperties{},
+		}
+
+		if s, ok := doc.Components.Schemas[c.name]; ok {
+			s.Replace(form) // in place, so that what refers to it still does
+		} else {
+			doc.Components.Schemas.Set(c.name, form)
+		}
+	}
+
+	doc.Components.Schemas["Filter"].OneOf = openapi.SchemaList{
+		refTo(doc, "FilterOr"), refTo(doc, "FilterAnd"), refTo(doc, "propertyFilter"), refTo(doc, "timestampFilter"),
+	}
+}
+
+// queryBody is the schema of the body of a data source's query.
+func queryBody(doc *openapi.Document) (*openapi.Schema, error) {
+	const path = "/v1/data_sources/{data_source_id}/query"
+
+	item, ok := doc.Paths[path]
+	if !ok || item.Post == nil || item.Post.RequestBody == nil || item.Post.RequestBody.Value == nil {
+		return nil, fmt.Errorf("POST %s has no request body", path)
+	}
+
+	mt, ok := item.Post.RequestBody.Value.Content["application/json"]
+	if !ok || mt.Schema == nil {
+		return nil, fmt.Errorf("POST %s has no JSON request body", path)
+	}
+
+	return mt.Schema, nil
+}
+
+// refTo is a reference to the component schema name.
+func refTo(doc *openapi.Document, name string) *openapi.Schema {
+	return &openapi.Schema{Ref: &openapi.SchemaRef{Identifier: schemaRefPrefix + name, Value: doc.Components.Schemas[name]}}
+}
+
 func fixOpenAPI() (*openapi.Document, error) {
 	doc, err := openapi.LoadFromFile(pathOpenAPI)
 	if err != nil {
@@ -746,12 +884,16 @@ func fixOpenAPI() (*openapi.Document, error) {
 		return nil, fmt.Errorf("renaming schemas: %w", err)
 	}
 
-	// the official spec spells out every array of RichText inline
-	if err := edit.ExtractSchema(doc, "RichTexts", func(s *openapi.Schema) bool {
-		return s.Type == openapi.TypeArray && s.Items != nil && s.Items.Ref != nil &&
-			s.Items.Ref.Identifier == schemaRefPrefix+"RichText"
-	}); err != nil {
-		return nil, fmt.Errorf("naming the arrays of RichText: %w", err)
+	if err := extractArrayOf(doc, "RichTexts", "RichText"); err != nil {
+		return nil, err
+	}
+
+	if err := nameSorts(doc); err != nil {
+		return nil, err
+	}
+
+	if err := nameFilter(doc); err != nil {
+		return nil, err
 	}
 
 	blocks, err := variants(doc, "Block")
@@ -808,7 +950,15 @@ func applyPasses(doc *openapi.Document) error {
 		name string
 		run  func(*openapi.Document) error
 	}{
-		{"enrich", func(d *openapi.Document) error { return enrich.Enrich(d, ias) }},
+		{"enrich", func(d *openapi.Document) error {
+			if err := enrich.Enrich(d, ias); err != nil {
+				return err
+			}
+
+			setFilterForms(d)
+
+			return nil
+		}},
 		{"flatten", flattenDoc},
 		{"compress", func(d *openapi.Document) error { return compress.Document(d, compress.Config{}) }},
 		{"flatten again", flattenDoc},
