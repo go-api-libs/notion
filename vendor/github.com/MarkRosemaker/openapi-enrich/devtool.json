@@ -12,7 +12,7 @@
 		"schema-inference",
 		"swagger"
 	],
-	"coverage": 74.9,
-	"devtoolVersion": "v0.0.0-20261006162939-166075e1a612",
+	"coverage": 77.5,
+	"devtoolVersion": "v0.0.0-20261008184910-372315f7c41f",
 	"kind": "cli"
 }
