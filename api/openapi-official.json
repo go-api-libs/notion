@@ -1241,12 +1241,20 @@
                     }
                   },
                   "markdown": {
-                    "description": "Page content as Notion-flavored Markdown. Mutually exclusive with content/children.",
+                    "description": "Page content as Markdown, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`). Mutually exclusive with content/children.",
                     "type": "string"
                   },
                   "allow_async": {
                     "description": "Set to true to receive an async_task response for markdown page creation. Only supported when markdown is provided.",
                     "type": "boolean"
+                  },
+                  "markdown_version": {
+                    "description": "The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.",
+                    "type": "string",
+                    "enum": [
+                      "v1",
+                      "v2"
+                    ]
                   },
                   "template": {
                     "anyOf": [
@@ -1300,6 +1308,9 @@
                   },
                   "position": {
                     "$ref": "#/components/schemas/pagePositionSchema"
+                  },
+                  "notifications": {
+                    "$ref": "#/components/schemas/pageWriteNotificationsSchema"
                   }
                 },
                 "additionalProperties": false
@@ -2401,6 +2412,9 @@
                     "description": "Whether to erase all existing content from the page. When used with a template, the template content replaces the existing content. When used without a template, simply clears the page content.",
                     "type": "boolean"
                   },
+                  "notifications": {
+                    "$ref": "#/components/schemas/pageWriteNotificationsSchema"
+                  },
                   "in_trash": {
                     "type": "boolean"
                   },
@@ -2984,6 +2998,18 @@
             }
           },
           {
+            "name": "markdown_version",
+            "in": "query",
+            "schema": {
+              "description": "The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.",
+              "type": "string",
+              "enum": [
+                "v1",
+                "v2"
+              ]
+            }
+          },
+          {
             "$ref": "#/components/parameters/notionVersion"
           }
         ],
@@ -3153,6 +3179,14 @@
                       "allow_async": {
                         "description": "Set to true to opt into receiving an async_task result when this update operation is accepted for background execution. If omitted or false, the endpoint keeps the existing synchronous response shape.",
                         "type": "boolean"
+                      },
+                      "markdown_version": {
+                        "description": "The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.",
+                        "type": "string",
+                        "enum": [
+                          "v1",
+                          "v2"
+                        ]
                       }
                     }
                   },
@@ -3172,7 +3206,7 @@
                             "type": "object",
                             "properties": {
                               "content": {
-                                "description": "The enhanced markdown content to insert into the page.",
+                                "description": "The Markdown content to insert into the page, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).",
                                 "type": "string",
                                 "examples": [
                                   "## New Section\n\nInserted content here."
@@ -3239,7 +3273,7 @@
                             "type": "object",
                             "properties": {
                               "content": {
-                                "description": "The new enhanced markdown content to replace the matched range.",
+                                "description": "The new Markdown content to replace the matched range, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).",
                                 "type": "string",
                                 "examples": [
                                   "## Updated Section\n\nNew content replaces the old."
@@ -3335,7 +3369,7 @@
                             "type": "object",
                             "properties": {
                               "new_str": {
-                                "description": "The new enhanced markdown content to replace the entire page content.",
+                                "description": "The new Markdown content to replace the entire page content, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).",
                                 "type": "string",
                                 "examples": [
                                   "# Updated Page\n\nCompletely new page content."
@@ -6471,6 +6505,9 @@
                   },
                   "position": {
                     "$ref": "#/components/schemas/contentPositionSchema"
+                  },
+                  "notifications": {
+                    "$ref": "#/components/schemas/pageWriteNotificationsSchema"
                   }
                 },
                 "required": [
@@ -9881,6 +9918,14 @@
                             ]
                           }
                         ]
+                      },
+                      "markdown_version": {
+                        "description": "The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.",
+                        "type": "string",
+                        "enum": [
+                          "v1",
+                          "v2"
+                        ]
                       }
                     }
                   },
@@ -10527,33 +10572,50 @@
           "content": {
             "application/json": {
               "schema": {
-                "oneOf": [
+                "allOf": [
                   {
                     "type": "object",
                     "properties": {
-                      "rich_text": {
-                        "description": "An array of rich text objects that represent the updated content of the comment.",
-                        "type": "array",
-                        "maxItems": 100,
-                        "items": {
-                          "$ref": "#/components/schemas/richTextItemRequest"
-                        }
+                      "markdown_version": {
+                        "description": "The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.",
+                        "type": "string",
+                        "enum": [
+                          "v1",
+                          "v2"
+                        ]
                       }
-                    },
-                    "required": [
-                      "rich_text"
-                    ]
+                    }
                   },
                   {
-                    "type": "object",
-                    "properties": {
-                      "markdown": {
-                        "description": "The updated content of the comment as a Markdown string. Comment Markdown supports inline formatting only (bold, italic, strikethrough, code, links), inline equations ($expression$), and mentions. Block-level Markdown such as fenced code blocks, headings, lists, tables, and blockquotes does not render as structured blocks in comments.",
-                        "type": "string"
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "rich_text": {
+                            "description": "An array of rich text objects that represent the updated content of the comment.",
+                            "type": "array",
+                            "maxItems": 100,
+                            "items": {
+                              "$ref": "#/components/schemas/richTextItemRequest"
+                            }
+                          }
+                        },
+                        "required": [
+                          "rich_text"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "markdown": {
+                            "description": "The updated content of the comment as a Markdown string. Comment Markdown supports inline formatting only (bold, italic, strikethrough, code, links), inline equations ($expression$), and mentions. Block-level Markdown such as fenced code blocks, headings, lists, tables, and blockquotes does not render as structured blocks in comments.",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "markdown"
+                        ]
                       }
-                    },
-                    "required": [
-                      "markdown"
                     ]
                   }
                 ]
@@ -44371,7 +44433,7 @@
             "$ref": "#/components/schemas/idResponse"
           },
           "markdown": {
-            "description": "The page content rendered as enhanced Markdown.",
+            "description": "The page content as Markdown, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).",
             "type": "string"
           },
           "truncated": {
@@ -44384,6 +44446,29 @@
             "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/idResponse"
+            }
+          },
+          "warnings": {
+            "description": "Markdown parser warnings for the request's content. Returned only by the update endpoint with `markdown_version: \"v2\"`, and only when there is at least one warning.",
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "description": "The warning category, for example `unsupported_tag`.",
+                  "type": "string"
+                },
+                "message": {
+                  "description": "What the parser changed or ignored.",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "code",
+                "message"
+              ],
+              "additionalProperties": false
             }
           }
         },
@@ -44811,6 +44896,22 @@
               "data"
             ]
           }
+        ]
+      },
+      "pageWriteNotificationsSchema": {
+        "description": "Controls the notifications Notion sends people about this change. Set mode to \"silent\" to skip page update notifications and @mention notifications, or \"default\" to use the standard behavior. Database automations, reminders, and connection webhooks still work as usual. Page history, page activity, and workspace audit logs still record the change.",
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "default",
+              "silent"
+            ]
+          }
+        },
+        "required": [
+          "mode"
         ]
       },
       "paragraphBlockObjectResponse": {
@@ -48388,6 +48489,48 @@
         ],
         "additionalProperties": false
       },
+      "statusGroupFilter": {
+        "description": "Matches status groups instead of options. Requires the `Notion-Beta: status-group-filters-2026-10-06` header.",
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "equals": {
+                "$ref": "#/components/schemas/statusGroupNames"
+              }
+            },
+            "required": [
+              "equals"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "does_not_equal": {
+                "$ref": "#/components/schemas/statusGroupNames"
+              }
+            },
+            "required": [
+              "does_not_equal"
+            ]
+          }
+        ]
+      },
+      "statusGroupNames": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/stringRequest"
+          },
+          {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/stringRequest"
+            }
+          }
+        ]
+      },
       "statusOptionGroup": {
         "description": "One of: `To-do`, `In progress`, `Complete`",
         "type": "string",
@@ -48557,6 +48700,17 @@
                 },
                 "required": [
                   "does_not_equal"
+                ]
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "group": {
+                    "$ref": "#/components/schemas/statusGroupFilter"
+                  }
+                },
+                "required": [
+                  "group"
                 ]
               }
             ]
