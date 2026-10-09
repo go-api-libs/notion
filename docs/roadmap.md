@@ -12,18 +12,9 @@ property the API returns, but these:
 
 ## Workarounds in `api/fetch.go` for the openapi-* libraries
 
-Each can go once the library is fixed:
-
-- `setFilterForms` sets `Filter` again after enrich, which takes an optional const member that is absent for one of
-  another value: a recorded property filter, which has no `type`, lands under `FilterOr`.
-- `dropBooleanConst` drops the `const: true` of a workspace bot owner's `workspace`, as enrich matches no form of a
-  union whose boolean member has a const or a one-valued enum.
-- `matchAny` makes a view's `group_by` an `anyOf`, as codegen checks a form's const members but not its enum members:
-  a `group_by` of `"type": "select"` matches the select and the person form, both of which allow several types.
-
-Codegen also takes the tag of a tagged union for a required member of it, though none of its forms requires it:
-`Filter` requires `type` of a `PropertyFilter`, which Notion never sends, so no filter of Notion's decodes and
-`TestRecordedResponses` fails for the board view.
+- `setFilterForms` sets `Filter` again after enrich, which does not look into a form that is itself a union, such as
+  `PropertyFilter`: a recorded property filter lands under `FilterOr`, the first form. Enrich also drops the
+  `maxItems` of an array it was given a value of. It can go once enrich matches a value to a form within such a form.
 
 ## Names in the specification
 
