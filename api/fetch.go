@@ -949,7 +949,6 @@ func nameFilter(doc *openapi.Document) error {
 }
 
 // setFilterForms sets what Filter may be: any or all of other filters, a property filter, or a timestamp filter.
-// It is set again after enrich, which files filters it was given under a form they lack the required members of.
 func setFilterForms(doc *openapi.Document) {
 	for _, c := range []struct{ name, op, description string }{
 		{"FilterOr", "or", "The entries any of the filters allow."},
@@ -960,16 +959,10 @@ func setFilterForms(doc *openapi.Document) {
 			Description: c.description, Type: openapi.TypeArray, MaxItems: new(uint(100)), Items: refTo(doc, "Filter"),
 		})
 
-		form := &openapi.Schema{
+		doc.Components.Schemas.Set(c.name, &openapi.Schema{
 			Type: openapi.TypeObject, Properties: props, Required: []string{c.op},
 			AdditionalProperties: &openapi.AdditionalProperties{},
-		}
-
-		if s, ok := doc.Components.Schemas[c.name]; ok {
-			s.Replace(form) // in place, so that what refers to it still does
-		} else {
-			doc.Components.Schemas.Set(c.name, form)
-		}
+		})
 	}
 
 	doc.Components.Schemas["Filter"].OneOf = openapi.SchemaList{
@@ -1138,15 +1131,7 @@ func applyPasses(doc *openapi.Document) error {
 		name string
 		run  func(*openapi.Document) error
 	}{
-		{"enrich", func(d *openapi.Document) error {
-			if err := enrich.Enrich(d, ias); err != nil {
-				return err
-			}
-
-			setFilterForms(d)
-
-			return nil
-		}},
+		{"enrich", func(d *openapi.Document) error { return enrich.Enrich(d, ias) }},
 		{"flatten", flattenDoc},
 		{"compress", func(d *openapi.Document) error { return compress.Document(d, compress.Config{}) }},
 		{"flatten again", flattenDoc},

@@ -10,12 +10,6 @@ property the API returns, but these:
 - A template mention such as `@today`, which only a database template may hold: none of the example page's databases
   has a template.
 
-## Workarounds in `api/fetch.go` for the openapi-* libraries
-
-- `setFilterForms` sets `Filter` again after enrich, which does not look into a form that is itself a union, such as
-  `PropertyFilter`: a recorded property filter lands under `FilterOr`, the first form. Enrich also drops the
-  `maxItems` of an array it was given a value of. It can go once enrich matches a value to a form within such a form.
-
 ## Names in the specification
 
 - 40 names end in a number to resolve a clash, such as `PageIcon2` or `QueryAgentsFilterStatus2`. Compress appends
