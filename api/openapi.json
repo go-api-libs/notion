@@ -10513,6 +10513,7 @@
           "data_sources": {
             "description": "The data sources of the database.",
             "type": "array",
+            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/dataSourceReferenceResponse"
             }
@@ -11614,6 +11615,7 @@
       "ListDataSourceTemplatesOkTemplates": {
         "description": "Array of templates available in this data source.",
         "type": "array",
+        "maxItems": 100,
         "items": {
           "$ref": "#/components/schemas/ListDataSourceTemplatesOkTemplatesItem"
         }
@@ -12214,7 +12216,8 @@
         "type": "object",
         "properties": {
           "less_than": {
-            "type": "number"
+            "type": "number",
+            "example": 24
           }
         },
         "required": [
@@ -13944,7 +13947,8 @@
             "$ref": "#/components/schemas/datePropertyFilter"
           },
           "property": {
-            "type": "string"
+            "type": "string",
+            "example": "kF@C"
           },
           "type": {
             "type": "string",
@@ -13965,7 +13969,8 @@
             "$ref": "#/components/schemas/datePropertyFilter"
           },
           "property": {
-            "type": "string"
+            "type": "string",
+            "example": "Blch"
           },
           "type": {
             "type": "string",
@@ -14028,7 +14033,8 @@
             "$ref": "#/components/schemas/formulaPropertyFilter"
           },
           "property": {
-            "type": "string"
+            "type": "string",
+            "example": ";pl:"
           },
           "type": {
             "type": "string",
@@ -14238,7 +14244,8 @@
             "$ref": "#/components/schemas/selectPropertyFilter"
           },
           "property": {
-            "type": "string"
+            "type": "string",
+            "example": "@F<W"
           },
           "type": {
             "type": "string",
@@ -17741,6 +17748,7 @@
       },
       "RichTexts": {
         "type": "array",
+        "maxItems": 100,
         "items": {
           "$ref": "#/components/schemas/RichText"
         }
@@ -18140,6 +18148,7 @@
         "properties": {
           "options": {
             "type": "array",
+            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/selectProperty"
             }
@@ -19136,6 +19145,7 @@
       },
       "Sorts": {
         "type": "array",
+        "maxItems": 100,
         "items": {
           "$ref": "#/components/schemas/Sort"
         }
@@ -19155,6 +19165,7 @@
           "options": {
             "description": "The options for the status property.",
             "type": "array",
+            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/selectProperty"
             }
@@ -19172,6 +19183,7 @@
       "StatusDatabasePropertyConfigResponseStatusGroups": {
         "description": "The groups for the status property.",
         "type": "array",
+        "maxItems": 100,
         "items": {
           "$ref": "#/components/schemas/StatusDatabasePropertyConfigResponseStatusGroupsItem"
         }
@@ -19196,6 +19208,7 @@
           "option_ids": {
             "description": "The IDs of the status options in this group.",
             "type": "array",
+            "maxItems": 100,
             "items": {
               "type": "string",
               "example": "t|{j"
@@ -22544,6 +22557,7 @@
           "properties": {
             "description": "Properties to display on each card.",
             "type": "array",
+            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/viewPropertyConfigResponse"
             }
@@ -24299,6 +24313,7 @@
         "properties": {
           "cells": {
             "type": "array",
+            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/RichTexts"
             }
@@ -25524,7 +25539,8 @@
         "anyOf": [
           {
             "type": "string",
-            "format": "date"
+            "format": "date",
+            "example": "2024-04-13"
           },
           {
             "$ref": "#/components/schemas/relativeDateValue"
@@ -28861,6 +28877,7 @@
           },
           "multi_select": {
             "type": "array",
+            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/partialSelectResponse"
             }
@@ -28897,6 +28914,7 @@
           },
           "multi_select": {
             "type": "array",
+            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/partialSelectPropertyValueResponse"
             }
@@ -31007,6 +31025,7 @@
           },
           "relation": {
             "type": "array",
+            "maxItems": 100,
             "items": {
               "$ref": "#/components/schemas/relationItemPropertyValue"
             }
@@ -31176,7 +31195,8 @@
           "one_week_from_now",
           "one_month_ago",
           "one_month_from_now"
-        ]
+        ],
+        "example": "today"
       },
       "requestStatusResponse": {
         "type": "object",
@@ -32107,7 +32127,8 @@
       "stringOrStringArray": {
         "anyOf": [
           {
-            "type": "string"
+            "type": "string",
+            "example": "Done"
           },
           {
             "type": "array",
