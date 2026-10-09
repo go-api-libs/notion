@@ -4494,7 +4494,7 @@ type BotInfoResponseOwner struct {
 	Type BotInfoResponseOwnerType `json:"type"`
 	// Details about the owner of the bot, when the `type` of the owner is `user`. This means the bot is for a integration.
 	User *BotInfoResponseOwnerUserUser `json:"user,omitzero"`
-	// Details about the owner of the bot, when the `type` of the owner is `workspace`. This means the bot is for an internal integration.
+	// Always true for workspace parent.
 	Workspace *bool `json:"workspace,omitzero"`
 }
 
@@ -10578,7 +10578,7 @@ func (v *GroupByConfigRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 }
 
 // Group-by configuration based on property type.
-// GroupByConfigResponse is an untagged anyOf union: at least one field is set after unmarshaling.
+// GroupByConfigResponse is an untagged oneOf union: exactly one field is set after unmarshaling.
 type GroupByConfigResponse struct {
 	SelectGroupByConfigResponse   *SelectGroupByConfigResponse
 	StatusGroupByConfigResponse   *StatusGroupByConfigResponse
@@ -10608,7 +10608,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	// a member outside its enum rules an alternative out; leniently, only while another fits
 	for _, enums := range jsonEnumPasses(strict) {
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property_id", "sort", "type"}, map[string]string{}
 			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"select\"", "\"multi_select\""}})) {
@@ -10620,7 +10621,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			}
 		}
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]string{"type": "\"status\""}
 			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"group_by": {"\"group\"", "\"option\""}})) {
@@ -10632,7 +10634,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			}
 		}
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property_id", "sort", "type"}, map[string]string{}
 			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"person\"", "\"created_by\"", "\"last_edited_by\""}})) {
@@ -10644,7 +10647,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			}
 		}
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property_id", "sort", "type"}, map[string]string{"type": "\"relation\""}
 			if jsonFits(raw, required, pinned) {
@@ -10656,7 +10660,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			}
 		}
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]string{}
 			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"date\"", "\"created_time\"", "\"last_edited_time\""}, "group_by": {"\"relative\"", "\"day\"", "\"week\"", "\"month\"", "\"year\""}, "start_day_of_week": {"0", "1"}})) {
@@ -10668,7 +10673,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			}
 		}
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]string{}
 			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"text\"", "\"title\"", "\"url\"", "\"email\"", "\"phone_number\""}, "group_by": {"\"exact\"", "\"alphabet_prefix\""}})) {
@@ -10680,7 +10686,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			}
 		}
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property_id", "sort", "type"}, map[string]string{"type": "\"number\""}
 			if jsonFits(raw, required, pinned) {
@@ -10692,7 +10699,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			}
 		}
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property_id", "sort", "type"}, map[string]string{"type": "\"checkbox\""}
 			if jsonFits(raw, required, pinned) {
@@ -10704,7 +10712,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			}
 		}
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"group_by", "property_id", "type"}, map[string]string{"type": "\"formula\""}
 			if jsonFits(raw, required, pinned) {
@@ -10721,8 +10730,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		}
 	}
 
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
 	}
 
 	return nil
@@ -29279,8 +29288,8 @@ func (v *WidgetPlacementRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// WorkspaceParentForBlockBasedObjectResponse defines a model
-type WorkspaceParentForBlockBasedObjectResponse struct {
+// WorkspaceParentForBlockBasedObject defines a model
+type WorkspaceParentForBlockBasedObject struct {
 	// The parent type.
 	Type string `json:"type"`
 	// Always true for workspace parent.

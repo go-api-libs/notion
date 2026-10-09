@@ -861,37 +861,6 @@ func unionForms(doc *openapi.Document, name string) (*openapi.SchemaList, error)
 	return nil, componentErr(name, errors.New("is no union"))
 }
 
-// dropBooleanConst drops the const true from a workspace bot owner's workspace, as enrich matches no form of a union
-// whose boolean member has a const, until it does.
-func dropBooleanConst(doc *openapi.Document) error {
-	info, ok := doc.Components.Schemas["botInfoResponse"]
-	if !ok {
-		return componentErr("botInfoResponse", errors.New("not found"))
-	}
-
-	for _, alt := range alternatives(info.Properties["owner"]) {
-		if w, ok := deref(alt).Properties["workspace"]; ok && w.Type == openapi.TypeBoolean && len(w.Const) > 0 {
-			w.Const = nil
-			return nil
-		}
-	}
-
-	return propertyErr("botInfoResponse", "owner", errors.New("has no workspace form with a const"))
-}
-
-// matchAny makes a view's group_by an anyOf, as codegen would find a group_by of "type": "select" in more than one
-// form until it checks a form's enum members: two forms allow several values for type.
-func matchAny(doc *openapi.Document) error {
-	group, ok := doc.Components.Schemas["groupByConfigResponse"]
-	if !ok {
-		return componentErr("groupByConfigResponse", errors.New("not found"))
-	}
-
-	group.AnyOf, group.OneOf = alternatives(group), nil
-
-	return nil
-}
-
 // extractArrayOf names every array of the component item, which the official spec spells out inline each time.
 func extractArrayOf(doc *openapi.Document, name, item string) error {
 	if err := edit.ExtractSchema(doc, name, func(s *openapi.Schema) bool {
@@ -1134,14 +1103,6 @@ func fixOpenAPI() (*openapi.Document, error) {
 	nameBranches(doc)
 
 	if err := allowDateTimes(doc); err != nil {
-		return nil, err
-	}
-
-	if err := matchAny(doc); err != nil {
-		return nil, err
-	}
-
-	if err := dropBooleanConst(doc); err != nil {
 		return nil, err
 	}
 

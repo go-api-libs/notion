@@ -8733,7 +8733,7 @@
             "$ref": "#/components/schemas/BotInfoResponseOwnerUser"
           },
           {
-            "$ref": "#/components/schemas/BotInfoResponseOwnerWorkspace"
+            "$ref": "#/components/schemas/workspaceParentForBlockBasedObject"
           }
         ]
       },
@@ -8804,26 +8804,6 @@
           "avatar_url",
           "type",
           "person"
-        ],
-        "additionalProperties": false
-      },
-      "BotInfoResponseOwnerWorkspace": {
-        "title": "Workspace",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `workspace`",
-            "type": "string",
-            "const": "workspace"
-          },
-          "workspace": {
-            "description": "Details about the owner of the bot, when the `type` of the owner is `workspace`. This means the bot is for an internal integration.",
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "workspace"
         ],
         "additionalProperties": false
       },
@@ -27322,7 +27302,7 @@
       },
       "groupByConfigResponse": {
         "description": "Group-by configuration based on property type.",
-        "anyOf": [
+        "oneOf": [
           {
             "$ref": "#/components/schemas/selectGroupByConfigResponse"
           },
@@ -29812,7 +29792,7 @@
             "$ref": "#/components/schemas/agentIdParentForBlockBasedObjectResponse"
           },
           {
-            "$ref": "#/components/schemas/workspaceParentForBlockBasedObjectResponse"
+            "$ref": "#/components/schemas/workspaceParentForBlockBasedObject"
           }
         ]
       },
@@ -29851,7 +29831,7 @@
             "$ref": "#/components/schemas/pageIdParentForBlockBasedObject"
           },
           {
-            "$ref": "#/components/schemas/workspaceParentForBlockBasedObjectResponse"
+            "$ref": "#/components/schemas/workspaceParentForBlockBasedObject"
           },
           {
             "$ref": "#/components/schemas/databaseParentResponse"
@@ -34629,7 +34609,7 @@
           }
         ]
       },
-      "workspaceParentForBlockBasedObjectResponse": {
+      "workspaceParentForBlockBasedObject": {
         "type": "object",
         "properties": {
           "type": {
