@@ -18211,28 +18211,6 @@
           "name"
         ]
       },
-      "SelectPropertyFilterDoesNotEqual": {
-        "type": "object",
-        "properties": {
-          "does_not_equal": {
-            "$ref": "#/components/schemas/stringOrStringArray"
-          }
-        },
-        "required": [
-          "does_not_equal"
-        ]
-      },
-      "SelectPropertyFilterEquals": {
-        "type": "object",
-        "properties": {
-          "equals": {
-            "$ref": "#/components/schemas/stringOrStringArray"
-          }
-        },
-        "required": [
-          "equals"
-        ]
-      },
       "SelectPropertyItemObjectSelect": {
         "anyOf": [
           {
@@ -19260,28 +19238,6 @@
           "option"
         ]
       },
-      "StatusGroupFilterDoesNotEqual": {
-        "type": "object",
-        "properties": {
-          "does_not_equal": {
-            "$ref": "#/components/schemas/statusGroupNames"
-          }
-        },
-        "required": [
-          "does_not_equal"
-        ]
-      },
-      "StatusGroupFilterEquals": {
-        "type": "object",
-        "properties": {
-          "equals": {
-            "$ref": "#/components/schemas/statusGroupNames"
-          }
-        },
-        "required": [
-          "equals"
-        ]
-      },
       "StatusOptionUpdateAllOfID": {
         "type": "object",
         "properties": {
@@ -19310,22 +19266,55 @@
           "name"
         ]
       },
-      "StatusPropertyFilterGroup": {
-        "type": "object",
-        "properties": {
-          "group": {
-            "$ref": "#/components/schemas/statusGroupFilter"
-          }
-        },
-        "required": [
-          "group"
-        ]
-      },
       "StatusType": {
         "type": "string",
         "enum": [
           "complete",
           "incomplete"
+        ]
+      },
+      "StatusValueFilterDoesNotEqual": {
+        "type": "object",
+        "properties": {
+          "does_not_equal": {
+            "$ref": "#/components/schemas/stringOrStringArray"
+          }
+        },
+        "required": [
+          "does_not_equal"
+        ]
+      },
+      "StatusValueFilterEquals": {
+        "type": "object",
+        "properties": {
+          "equals": {
+            "$ref": "#/components/schemas/stringOrStringArray"
+          }
+        },
+        "required": [
+          "equals"
+        ]
+      },
+      "StatusValueFilterGroupDoesNotEqual": {
+        "type": "object",
+        "properties": {
+          "group_does_not_equal": {
+            "$ref": "#/components/schemas/statusGroupNames"
+          }
+        },
+        "required": [
+          "group_does_not_equal"
+        ]
+      },
+      "StatusValueFilterGroupEquals": {
+        "type": "object",
+        "properties": {
+          "group_equals": {
+            "$ref": "#/components/schemas/statusGroupNames"
+          }
+        },
+        "required": [
+          "group_equals"
         ]
       },
       "SubtaskConfigDisplayMode": {
@@ -29700,7 +29689,7 @@
         ]
       },
       "pageWriteNotificationsSchema": {
-        "description": "Controls the notifications Notion sends people about this change. Set mode to \"silent\" to skip page update notifications and @mention notifications, or \"default\" to use the standard behavior. Database automations, reminders, and connection webhooks still work as usual. Page history, page activity, and workspace audit logs still record the change.",
+        "description": "Controls the notifications Notion sends people about this change. Set mode to \"silent\" to skip page update notifications, @mention notifications, and notifications to people added to a Person property, or \"default\" to use the standard behavior. Database automations, reminders, and connection webhooks still work as usual. Page history, page activity, and workspace audit logs still record the change.",
         "type": "object",
         "properties": {
           "mode": {
@@ -31644,10 +31633,10 @@
       "selectPropertyFilter": {
         "anyOf": [
           {
-            "$ref": "#/components/schemas/SelectPropertyFilterEquals"
+            "$ref": "#/components/schemas/StatusValueFilterEquals"
           },
           {
-            "$ref": "#/components/schemas/SelectPropertyFilterDoesNotEqual"
+            "$ref": "#/components/schemas/StatusValueFilterDoesNotEqual"
           },
           {
             "$ref": "#/components/schemas/existencePropertyFilter"
@@ -31890,17 +31879,6 @@
         ],
         "additionalProperties": false
       },
-      "statusGroupFilter": {
-        "description": "Matches status groups instead of options. Requires the `Notion-Beta: status-group-filters-2026-10-06` header.",
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/StatusGroupFilterEquals"
-          },
-          {
-            "$ref": "#/components/schemas/StatusGroupFilterDoesNotEqual"
-          }
-        ]
-      },
       "statusGroupNames": {
         "anyOf": [
           {
@@ -32031,13 +32009,7 @@
       "statusPropertyFilter": {
         "anyOf": [
           {
-            "$ref": "#/components/schemas/SelectPropertyFilterEquals"
-          },
-          {
-            "$ref": "#/components/schemas/SelectPropertyFilterDoesNotEqual"
-          },
-          {
-            "$ref": "#/components/schemas/StatusPropertyFilterGroup"
+            "$ref": "#/components/schemas/statusValueFilter"
           },
           {
             "$ref": "#/components/schemas/existencePropertyFilter"
@@ -32094,6 +32066,23 @@
           "status"
         ],
         "additionalProperties": false
+      },
+      "statusValueFilter": {
+        "description": "The group operators match status groups instead of options. They require the `Notion-Beta: status-group-filters-2026-10-06` header.",
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/StatusValueFilterEquals"
+          },
+          {
+            "$ref": "#/components/schemas/StatusValueFilterDoesNotEqual"
+          },
+          {
+            "$ref": "#/components/schemas/StatusValueFilterGroupEquals"
+          },
+          {
+            "$ref": "#/components/schemas/StatusValueFilterGroupDoesNotEqual"
+          }
+        ]
       },
       "stringFormulaPropertyResponse": {
         "title": "String",
