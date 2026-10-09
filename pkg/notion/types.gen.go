@@ -66,6 +66,7 @@ type RetrieveAPagePropertyParams struct {
 // RetrievePageMarkdownParams holds the query parameters for RetrievePageMarkdown.
 type RetrievePageMarkdownParams struct {
 	IncludeTranscript bool
+	MarkdownVersion   MarkdownVersion
 }
 
 // GetBlockChildrenParams holds the query parameters for GetBlockChildren.
@@ -364,7 +365,7 @@ func (v *AgentBatchOperationsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -471,55 +472,79 @@ func (v *AgentConnectionsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv AgentConnectionsItemNotion
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemNotion = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"account", "name", "permissions", "type"}, map[string]string{"type": "\"notion\""}
+		if jsonFits(raw, required, pinned) {
+			var vv AgentConnectionsItemNotion
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.AgentConnectionsItemNotion = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv AgentConnectionsItemSlack
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemSlack = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"account", "name", "permissions", "type"}, map[string]string{"type": "\"slack\""}
+		if jsonFits(raw, required, pinned) {
+			var vv AgentConnectionsItemSlack
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.AgentConnectionsItemSlack = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv AgentConnectionsItemDiscord
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemDiscord = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"account", "name", "permissions", "type"}, map[string]string{"type": "\"discord\""}
+		if jsonFits(raw, required, pinned) {
+			var vv AgentConnectionsItemDiscord
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.AgentConnectionsItemDiscord = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv AgentConnectionsItemMcpServer
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemMcpServer = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"account", "enabled_tools", "name", "run_tools_automatically", "type"}, map[string]string{"type": "\"mcp_server\""}
+		if jsonFits(raw, required, pinned) {
+			var vv AgentConnectionsItemMcpServer
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.AgentConnectionsItemMcpServer = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv AgentConnectionsItemCustomMcpServer
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemCustomMcpServer = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"account", "enabled_tools", "name", "run_tools_automatically", "type"}, map[string]string{"type": "\"custom_mcp_server\""}
+		if jsonFits(raw, required, pinned) {
+			var vv AgentConnectionsItemCustomMcpServer
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.AgentConnectionsItemCustomMcpServer = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv AgentConnectionsItemOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemOneOf = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"account", "name", "permissions", "type"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv AgentConnectionsItemOneOf
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.AgentConnectionsItemOneOf = &vv
+				matched++
+			}
 		}
 	}
 
@@ -534,17 +559,17 @@ func (v *AgentConnectionsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *AgentConnectionsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.AgentConnectionsItemNotion != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemNotion, jsonOpts)
+		return json.MarshalEncode(enc, v.AgentConnectionsItemNotion, jsonOptsTo(enc))
 	case v.AgentConnectionsItemSlack != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemSlack, jsonOpts)
+		return json.MarshalEncode(enc, v.AgentConnectionsItemSlack, jsonOptsTo(enc))
 	case v.AgentConnectionsItemDiscord != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemDiscord, jsonOpts)
+		return json.MarshalEncode(enc, v.AgentConnectionsItemDiscord, jsonOptsTo(enc))
 	case v.AgentConnectionsItemMcpServer != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemMcpServer, jsonOpts)
+		return json.MarshalEncode(enc, v.AgentConnectionsItemMcpServer, jsonOptsTo(enc))
 	case v.AgentConnectionsItemCustomMcpServer != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemCustomMcpServer, jsonOpts)
+		return json.MarshalEncode(enc, v.AgentConnectionsItemCustomMcpServer, jsonOptsTo(enc))
 	case v.AgentConnectionsItemOneOf != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemOneOf, jsonOpts)
+		return json.MarshalEncode(enc, v.AgentConnectionsItemOneOf, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -596,10 +621,14 @@ func (v *AgentConnectionsItemDiscordAccount) UnmarshalJSONFrom(dec *jsontext.Dec
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv AgentConnectionsItemDiscordAccountDiscordServer
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemDiscordAccountDiscordServer = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"id", "type"}, map[string]string{"type": "\"discord_server\""}
+		if jsonFits(raw, required, pinned) {
+			var vv AgentConnectionsItemDiscordAccountDiscordServer
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.AgentConnectionsItemDiscordAccountDiscordServer = &vv
+				matched++
+			}
 		}
 	}
 
@@ -623,9 +652,9 @@ func (v *AgentConnectionsItemDiscordAccount) UnmarshalJSONFrom(dec *jsontext.Dec
 func (v *AgentConnectionsItemDiscordAccount) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.AgentConnectionsItemDiscordAccountDiscordServer != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemDiscordAccountDiscordServer, jsonOpts)
+		return json.MarshalEncode(enc, v.AgentConnectionsItemDiscordAccountDiscordServer, jsonOptsTo(enc))
 	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -703,7 +732,7 @@ func (v *AgentConnectionsItemDiscordPermissionsItemTarget) MarshalJSONTo(enc *js
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -786,10 +815,14 @@ func (v *AgentConnectionsItemMcpServerAccount) UnmarshalJSONFrom(dec *jsontext.D
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv AgentConnectionsItemMcpServerAccountMcpServer
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemMcpServerAccountMcpServer = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"server_host", "type"}, map[string]string{"type": "\"mcp_server\""}
+		if jsonFits(raw, required, pinned) {
+			var vv AgentConnectionsItemMcpServerAccountMcpServer
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.AgentConnectionsItemMcpServerAccountMcpServer = &vv
+				matched++
+			}
 		}
 	}
 
@@ -813,9 +846,9 @@ func (v *AgentConnectionsItemMcpServerAccount) UnmarshalJSONFrom(dec *jsontext.D
 func (v *AgentConnectionsItemMcpServerAccount) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.AgentConnectionsItemMcpServerAccountMcpServer != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemMcpServerAccountMcpServer, jsonOpts)
+		return json.MarshalEncode(enc, v.AgentConnectionsItemMcpServerAccountMcpServer, jsonOptsTo(enc))
 	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -879,9 +912,9 @@ func (v *AgentConnectionsItemMcpServerEnabledTools) UnmarshalJSONFrom(dec *jsont
 func (v *AgentConnectionsItemMcpServerEnabledTools) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.AgentConnectionsItemMcpServerEnabledToolsOneOf != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemMcpServerEnabledToolsOneOf, jsonOpts)
+		return json.MarshalEncode(enc, v.AgentConnectionsItemMcpServerEnabledToolsOneOf, jsonOptsTo(enc))
 	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -1028,7 +1061,7 @@ func (v *AgentConnectionsItemNotionPermissionsItemTarget) MarshalJSONTo(enc *jso
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -1281,10 +1314,14 @@ func (v *AgentConnectionsItemSlackAccount) UnmarshalJSONFrom(dec *jsontext.Decod
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv AgentConnectionsItemSlackAccountSlackWorkspace
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentConnectionsItemSlackAccountSlackWorkspace = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"team_id", "type"}, map[string]string{"type": "\"slack_workspace\""}
+		if jsonFits(raw, required, pinned) {
+			var vv AgentConnectionsItemSlackAccountSlackWorkspace
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.AgentConnectionsItemSlackAccountSlackWorkspace = &vv
+				matched++
+			}
 		}
 	}
 
@@ -1308,9 +1345,9 @@ func (v *AgentConnectionsItemSlackAccount) UnmarshalJSONFrom(dec *jsontext.Decod
 func (v *AgentConnectionsItemSlackAccount) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.AgentConnectionsItemSlackAccountSlackWorkspace != nil:
-		return json.MarshalEncode(enc, v.AgentConnectionsItemSlackAccountSlackWorkspace, jsonOpts)
+		return json.MarshalEncode(enc, v.AgentConnectionsItemSlackAccountSlackWorkspace, jsonOptsTo(enc))
 	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -1398,7 +1435,7 @@ func (v *AgentConnectionsItemSlackPermissionsItemTarget) MarshalJSONTo(enc *json
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -1521,9 +1558,9 @@ func (v *AgentCreditLimit) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *AgentCreditLimit) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.Int != nil:
-		return json.MarshalEncode(enc, v.Int, jsonOpts)
+		return json.MarshalEncode(enc, v.Int, jsonOptsTo(enc))
 	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -1579,9 +1616,9 @@ func (v *AgentHasUnpublishedChanges) UnmarshalJSONFrom(dec *jsontext.Decoder) er
 func (v *AgentHasUnpublishedChanges) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.Bool != nil:
-		return json.MarshalEncode(enc, v.Bool, jsonOpts)
+		return json.MarshalEncode(enc, v.Bool, jsonOptsTo(enc))
 	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -1637,9 +1674,9 @@ func (v *AgentID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *AgentID) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.IDRequest != "":
-		return json.MarshalEncode(enc, v.IDRequest, jsonOpts)
+		return json.MarshalEncode(enc, v.IDRequest, jsonOptsTo(enc))
 	case v.AgentIDOneOf != "":
-		return json.MarshalEncode(enc, v.AgentIDOneOf, jsonOpts)
+		return json.MarshalEncode(enc, v.AgentIDOneOf, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -1692,9 +1729,9 @@ func (v *AgentID6) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *AgentID6) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.IDResponse != nil:
-		return json.MarshalEncode(enc, v.IDResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.IDResponse, jsonOptsTo(enc))
 	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -1741,19 +1778,27 @@ func (v *AgentIcon) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv PageIconResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PageIconResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"type"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv PageIconResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PageIconResponse = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv AgentIconCustomAgentAvatar
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentIconCustomAgentAvatar = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"custom_agent_avatar", "type"}, map[string]string{"type": "\"custom_agent_avatar\""}
+		if jsonFits(raw, required, pinned) {
+			var vv AgentIconCustomAgentAvatar
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.AgentIconCustomAgentAvatar = &vv
+				matched++
+			}
 		}
 	}
 
@@ -1768,9 +1813,9 @@ func (v *AgentIcon) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *AgentIcon) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PageIconResponse != nil:
-		return json.MarshalEncode(enc, v.PageIconResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.PageIconResponse, jsonOptsTo(enc))
 	case v.AgentIconCustomAgentAvatar != nil:
-		return json.MarshalEncode(enc, v.AgentIconCustomAgentAvatar, jsonOpts)
+		return json.MarshalEncode(enc, v.AgentIconCustomAgentAvatar, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -1881,9 +1926,9 @@ func (v *AgentInsightsCreditLimit) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 func (v *AgentInsightsCreditLimit) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.Float64 != nil:
-		return json.MarshalEncode(enc, v.Float64, jsonOpts)
+		return json.MarshalEncode(enc, v.Float64, jsonOptsTo(enc))
 	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -1939,9 +1984,9 @@ func (v *AgentInsightsID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *AgentInsightsID) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.IDResponse != nil:
-		return json.MarshalEncode(enc, v.IDResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.IDResponse, jsonOptsTo(enc))
 	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -1997,9 +2042,9 @@ func (v *AgentLastRunAt) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *AgentLastRunAt) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.Time != nil:
-		return json.MarshalEncode(enc, v.Time, jsonOpts)
+		return json.MarshalEncode(enc, v.Time, jsonOptsTo(enc))
 	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -2040,19 +2085,27 @@ func (v *AgentListResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv AgentListResultsItemOneOf0
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentListResultsItemOneOf0 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"agent_type", "agent_version", "connections", "created_by", "created_time", "credit_limit", "description", "icon", "id", "instructions_page_id", "last_edited_time", "last_run_at", "model", "name", "object", "pause_reason", "status", "triggers"}, map[string]string{"object": "\"agent\""}
+		if jsonFits(raw, required, pinned) {
+			var vv AgentListResultsItemOneOf0
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.AgentListResultsItemOneOf0 = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv AgentListResultsItemNotionAi
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentListResultsItemNotionAi = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"agent_type", "agent_version", "connections", "created_by", "created_time", "credit_limit", "description", "icon", "id", "instructions_page_id", "last_edited_time", "last_run_at", "model", "name", "object", "pause_reason", "status", "triggers"}, map[string]string{"object": "\"agent\"", "id": "\"notion_ai\"", "agent_type": "\"notion_ai\"", "status": "\"active\""}
+		if jsonFits(raw, required, pinned) {
+			var vv AgentListResultsItemNotionAi
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.AgentListResultsItemNotionAi = &vv
+				matched++
+			}
 		}
 	}
 
@@ -2067,9 +2120,9 @@ func (v *AgentListResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *AgentListResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.AgentListResultsItemOneOf0 != nil:
-		return json.MarshalEncode(enc, v.AgentListResultsItemOneOf0, jsonOpts)
+		return json.MarshalEncode(enc, v.AgentListResultsItemOneOf0, jsonOptsTo(enc))
 	case v.AgentListResultsItemNotionAi != nil:
-		return json.MarshalEncode(enc, v.AgentListResultsItemNotionAi, jsonOpts)
+		return json.MarshalEncode(enc, v.AgentListResultsItemNotionAi, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -2210,7 +2263,7 @@ func (v *AgentListResultsItemNotionAiIcon) MarshalJSONTo(enc *jsontext.Encoder) 
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // AgentListResultsItemOneOf0 defines a model
@@ -2329,7 +2382,7 @@ func (v *AgentModel) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -2522,7 +2575,7 @@ func (v *AgentTriggersItemScheduleEnd) MarshalJSONTo(enc *jsontext.Encoder) erro
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -2695,7 +2748,7 @@ func (v *AsyncTaskOperation) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -2877,7 +2930,7 @@ func (v *BaseWebhookPayloadAuthorsItem) MarshalJSONTo(enc *jsontext.Encoder) err
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // Block defines a model
@@ -3173,7 +3226,7 @@ func (v *Block) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // BlockIDParentForBlockBasedObject defines a model
@@ -3281,18 +3334,26 @@ func (v *BlockObjectEmbed2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv MediaContentWithURLAndCaptionRequest
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.MediaContentWithURLAndCaptionRequest = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"url"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv MediaContentWithURLAndCaptionRequest
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.MediaContentWithURLAndCaptionRequest = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv EmbedFileUpload
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.EmbedFileUpload = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"file_upload"}, map[string]string{"type": "\"file_upload\""}
+		if jsonFits(raw, required, pinned) {
+			var vv EmbedFileUpload
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.EmbedFileUpload = &vv
+				matched++
+			}
 		}
 	}
 
@@ -3307,9 +3368,9 @@ func (v *BlockObjectEmbed2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *BlockObjectEmbed2) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.MediaContentWithURLAndCaptionRequest != nil:
-		return json.MarshalEncode(enc, v.MediaContentWithURLAndCaptionRequest, jsonOpts)
+		return json.MarshalEncode(enc, v.MediaContentWithURLAndCaptionRequest, jsonOptsTo(enc))
 	case v.EmbedFileUpload != nil:
-		return json.MarshalEncode(enc, v.EmbedFileUpload, jsonOpts)
+		return json.MarshalEncode(enc, v.EmbedFileUpload, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -3626,7 +3687,7 @@ func (v *BlockObjectRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // BlockObjectRequestSyncedBlockSyncedBlock defines a model
@@ -3891,7 +3952,7 @@ func (v *BlockObjectRequestWithoutChildren) MarshalJSONTo(enc *jsontext.Encoder)
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // BlockObjectRequestWithoutChildrenToDoToDo defines a model
@@ -4170,7 +4231,7 @@ func (v *BlockObjectWithSingleLevelOfChildrenRequest) MarshalJSONTo(enc *jsontex
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // BlockObjectWithSingleLevelOfChildrenRequestSyncedBlockSyncedBlock defines a model
@@ -4215,18 +4276,26 @@ func (v *BlockOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv PartialBlockObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialBlockObjectResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"id", "object"}, map[string]string{"object": "\"block\""}
+		if jsonFits(raw, required, pinned) {
+			var vv PartialBlockObjectResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PartialBlockObjectResponse = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv Block
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.Block = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"created_by", "created_time", "has_children", "id", "in_trash", "last_edited_by", "last_edited_time", "object", "parent", "type"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv Block
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.Block = &vv
+				matched++
+			}
 		}
 	}
 
@@ -4241,9 +4310,9 @@ func (v *BlockOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *BlockOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PartialBlockObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialBlockObjectResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.PartialBlockObjectResponse, jsonOptsTo(enc))
 	case v.Block != nil:
-		return json.MarshalEncode(enc, v.Block, jsonOpts)
+		return json.MarshalEncode(enc, v.Block, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -4485,7 +4554,7 @@ func (v *BotInfoResponseOwner) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // Details about the owner of the bot, when the `type` of the owner is `user`. This means the bot is for a integration.
@@ -4511,19 +4580,27 @@ func (v *BotInfoResponseOwnerUserUser) UnmarshalJSONFrom(dec *jsontext.Decoder) 
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv BotInfoResponseOwnerUserUserPerson
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.BotInfoResponseOwnerUserUserPerson = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"avatar_url", "id", "name", "object", "person", "type"}, map[string]string{"object": "\"user\"", "type": "\"person\""}
+		if jsonFits(raw, required, pinned) {
+			var vv BotInfoResponseOwnerUserUserPerson
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.BotInfoResponseOwnerUserUserPerson = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv PartialUserObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialUserObjectResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"id", "object"}, map[string]string{"object": "\"user\""}
+		if jsonFits(raw, required, pinned) {
+			var vv PartialUserObjectResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PartialUserObjectResponse = &vv
+				matched++
+			}
 		}
 	}
 
@@ -4538,9 +4615,9 @@ func (v *BotInfoResponseOwnerUserUser) UnmarshalJSONFrom(dec *jsontext.Decoder) 
 func (v *BotInfoResponseOwnerUserUser) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.BotInfoResponseOwnerUserUserPerson != nil:
-		return json.MarshalEncode(enc, v.BotInfoResponseOwnerUserUserPerson, jsonOpts)
+		return json.MarshalEncode(enc, v.BotInfoResponseOwnerUserUserPerson, jsonOptsTo(enc))
 	case v.PartialUserObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialUserObjectResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.PartialUserObjectResponse, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -4600,10 +4677,14 @@ func (v *BotUserObjectResponseBot) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv BotInfoResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.BotInfoResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"owner", "workspace_id", "workspace_limits", "workspace_name"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv BotInfoResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.BotInfoResponse = &vv
+				matched++
+			}
 		}
 	}
 
@@ -4618,9 +4699,9 @@ func (v *BotUserObjectResponseBot) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 func (v *BotUserObjectResponseBot) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.EmptyObject != nil:
-		return json.MarshalEncode(enc, v.EmptyObject, jsonOpts)
+		return json.MarshalEncode(enc, v.EmptyObject, jsonOptsTo(enc))
 	case v.BotInfoResponse != nil:
-		return json.MarshalEncode(enc, v.BotInfoResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.BotInfoResponse, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -5319,18 +5400,26 @@ func (v *CheckboxPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 	var matched int
 
 	{
-		var vv CheckboxPropertyFilterEquals
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CheckboxPropertyFilterEquals = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"equals"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv CheckboxPropertyFilterEquals
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.CheckboxPropertyFilterEquals = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv CheckboxPropertyFilterDoesNotEqual
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CheckboxPropertyFilterDoesNotEqual = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"does_not_equal"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv CheckboxPropertyFilterDoesNotEqual
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.CheckboxPropertyFilterDoesNotEqual = &vv
+				matched++
+			}
 		}
 	}
 
@@ -5345,9 +5434,9 @@ func (v *CheckboxPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 func (v *CheckboxPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.CheckboxPropertyFilterEquals != nil:
-		return json.MarshalEncode(enc, v.CheckboxPropertyFilterEquals, jsonOpts)
+		return json.MarshalEncode(enc, v.CheckboxPropertyFilterEquals, jsonOptsTo(enc))
 	case v.CheckboxPropertyFilterDoesNotEqual != nil:
-		return json.MarshalEncode(enc, v.CheckboxPropertyFilterDoesNotEqual, jsonOpts)
+		return json.MarshalEncode(enc, v.CheckboxPropertyFilterDoesNotEqual, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -5567,18 +5656,26 @@ func (v *CommentOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv PartialCommentObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialCommentObjectResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"id", "object"}, map[string]string{"object": "\"comment\""}
+		if jsonFits(raw, required, pinned) {
+			var vv PartialCommentObjectResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PartialCommentObjectResponse = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv CommentObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CommentObjectResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"created_by", "created_time", "discussion_id", "display_name", "has_pending_attachments", "id", "last_edited_time", "object", "original_content_deleted", "parent", "rich_text"}, map[string]string{"object": "\"comment\""}
+		if jsonFits(raw, required, pinned) {
+			var vv CommentObjectResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.CommentObjectResponse = &vv
+				matched++
+			}
 		}
 	}
 
@@ -5593,9 +5690,9 @@ func (v *CommentOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *CommentOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PartialCommentObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialCommentObjectResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.PartialCommentObjectResponse, jsonOptsTo(enc))
 	case v.CommentObjectResponse != nil:
-		return json.MarshalEncode(enc, v.CommentObjectResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.CommentObjectResponse, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -5682,7 +5779,7 @@ func (v *CommentParentResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // CommentUpdatedWebhookPayload defines a model
@@ -5773,7 +5870,7 @@ func (v *ContentPositionSchema) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // ContentWithExpression defines a model
@@ -5918,15 +6015,17 @@ type CreateAComment struct {
 	// An array of files to attach to the comment. Maximum of 3 allowed.
 	Attachments CreateACommentAttachments `json:"attachments,omitzero"`
 	// Display name for the comment.
-	DisplayName          CreateACommentDisplayName `json:"display_name,omitzero"`
-	CreateACommentAllOf0 CreateACommentAllOf0      `json:"-"`
+	DisplayName CreateACommentDisplayName `json:"display_name,omitzero"`
+	// The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.
+	MarkdownVersion      MarkdownVersion      `json:"markdown_version,omitzero"`
+	CreateACommentAllOf0 CreateACommentAllOf0 `json:"-"`
 }
 
 // fieldsOfCreateAComment is CreateAComment without its methods, to encode the fields outside its union.
 type fieldsOfCreateAComment CreateAComment
 
 // membersOfCreateAComment are the members CreateAComment declares outside its union.
-var membersOfCreateAComment = map[string]bool{"attachments": true, "display_name": true}
+var membersOfCreateAComment = map[string]bool{"attachments": true, "display_name": true, "markdown_version": true}
 
 // variantsOfCreateAComment are the alternatives its union is decoded as, in order.
 var variantsOfCreateAComment = []jsonVariant{
@@ -5934,21 +6033,25 @@ var variantsOfCreateAComment = []jsonVariant{
 		value:    "",
 		members:  map[string]bool{"parent": true, "rich_text": true},
 		required: []string{"parent", "rich_text"},
+		pinned:   map[string]string{},
 	},
 	{
 		value:    "",
 		members:  map[string]bool{"markdown": true, "parent": true},
 		required: []string{"markdown", "parent"},
+		pinned:   map[string]string{},
 	},
 	{
 		value:    "",
 		members:  map[string]bool{"discussion_id": true, "rich_text": true},
 		required: []string{"discussion_id", "rich_text"},
+		pinned:   map[string]string{},
 	},
 	{
 		value:    "",
 		members:  map[string]bool{"discussion_id": true, "markdown": true},
 		required: []string{"discussion_id", "markdown"},
+		pinned:   map[string]string{},
 	},
 }
 
@@ -6022,7 +6125,7 @@ func (v *CreateAComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of CreateACommentAllOf0 that is set;
 // a member both write must have the same value in each.
 func (v *CreateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
-	out, err := json.Marshal((*fieldsOfCreateAComment)(v), jsonOpts)
+	out, err := json.Marshal((*fieldsOfCreateAComment)(v), jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -6031,7 +6134,7 @@ func (v *CreateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 	if v.CreateACommentAllOf0.CreateACommentAllOf0OneOf0 != nil {
 
-		variant, err := json.Marshal(v.CreateACommentAllOf0.CreateACommentAllOf0OneOf0, jsonOpts)
+		variant, err := json.Marshal(v.CreateACommentAllOf0.CreateACommentAllOf0OneOf0, jsonOptsTo(enc))
 		if err != nil {
 			return err
 		}
@@ -6045,7 +6148,7 @@ func (v *CreateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 	if v.CreateACommentAllOf0.CreateACommentAllOf0OneOf1 != nil {
 
-		variant, err := json.Marshal(v.CreateACommentAllOf0.CreateACommentAllOf0OneOf1, jsonOpts)
+		variant, err := json.Marshal(v.CreateACommentAllOf0.CreateACommentAllOf0OneOf1, jsonOptsTo(enc))
 		if err != nil {
 			return err
 		}
@@ -6059,7 +6162,7 @@ func (v *CreateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 	if v.CreateACommentAllOf0.CreateACommentAllOf0OneOf2 != nil {
 
-		variant, err := json.Marshal(v.CreateACommentAllOf0.CreateACommentAllOf0OneOf2, jsonOpts)
+		variant, err := json.Marshal(v.CreateACommentAllOf0.CreateACommentAllOf0OneOf2, jsonOptsTo(enc))
 		if err != nil {
 			return err
 		}
@@ -6073,7 +6176,7 @@ func (v *CreateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 	if v.CreateACommentAllOf0.CreateACommentAllOf0OneOf3 != nil {
 
-		variant, err := json.Marshal(v.CreateACommentAllOf0.CreateACommentAllOf0OneOf3, jsonOpts)
+		variant, err := json.Marshal(v.CreateACommentAllOf0.CreateACommentAllOf0OneOf3, jsonOptsTo(enc))
 		if err != nil {
 			return err
 		}
@@ -6117,37 +6220,53 @@ func (v *CreateACommentAllOf0) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv CreateACommentAllOf0OneOf0
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CreateACommentAllOf0OneOf0 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"parent", "rich_text"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv CreateACommentAllOf0OneOf0
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.CreateACommentAllOf0OneOf0 = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv CreateACommentAllOf0OneOf1
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CreateACommentAllOf0OneOf1 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"markdown", "parent"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv CreateACommentAllOf0OneOf1
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.CreateACommentAllOf0OneOf1 = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv CreateACommentAllOf0OneOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CreateACommentAllOf0OneOf2 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"discussion_id", "rich_text"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv CreateACommentAllOf0OneOf2
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.CreateACommentAllOf0OneOf2 = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv CreateACommentAllOf0OneOf3
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CreateACommentAllOf0OneOf3 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"discussion_id", "markdown"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv CreateACommentAllOf0OneOf3
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.CreateACommentAllOf0OneOf3 = &vv
+				matched++
+			}
 		}
 	}
 
@@ -6162,13 +6281,13 @@ func (v *CreateACommentAllOf0) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *CreateACommentAllOf0) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.CreateACommentAllOf0OneOf0 != nil:
-		return json.MarshalEncode(enc, v.CreateACommentAllOf0OneOf0, jsonOpts)
+		return json.MarshalEncode(enc, v.CreateACommentAllOf0OneOf0, jsonOptsTo(enc))
 	case v.CreateACommentAllOf0OneOf1 != nil:
-		return json.MarshalEncode(enc, v.CreateACommentAllOf0OneOf1, jsonOpts)
+		return json.MarshalEncode(enc, v.CreateACommentAllOf0OneOf1, jsonOptsTo(enc))
 	case v.CreateACommentAllOf0OneOf2 != nil:
-		return json.MarshalEncode(enc, v.CreateACommentAllOf0OneOf2, jsonOpts)
+		return json.MarshalEncode(enc, v.CreateACommentAllOf0OneOf2, jsonOptsTo(enc))
 	case v.CreateACommentAllOf0OneOf3 != nil:
-		return json.MarshalEncode(enc, v.CreateACommentAllOf0OneOf3, jsonOpts)
+		return json.MarshalEncode(enc, v.CreateACommentAllOf0OneOf3, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -6292,7 +6411,7 @@ func (v *CreateACommentAllOfOneOfParent) MarshalJSONTo(enc *jsontext.Encoder) er
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // An array of files to attach to the comment. Maximum of 3 allowed.
@@ -6383,7 +6502,7 @@ func (v *CreateACommentDisplayName) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // CreateACommentDisplayNameCustomCustom defines a model
@@ -6459,7 +6578,7 @@ func (v *CreateAToken) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -6594,7 +6713,7 @@ func (v *CreateATokenOkOwner) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // CreateATokenOkOwnerUserUser defines a model
@@ -6618,18 +6737,26 @@ func (v *CreateATokenOkOwnerUserUser) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 	var matched int
 
 	{
-		var vv CreateATokenOkOwnerUserUserPerson
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CreateATokenOkOwnerUserUserPerson = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"avatar_url", "id", "name", "object", "person", "type"}, map[string]string{"type": "\"person\"", "object": "\"user\""}
+		if jsonFits(raw, required, pinned) {
+			var vv CreateATokenOkOwnerUserUserPerson
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.CreateATokenOkOwnerUserUserPerson = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv PartialUserObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialUserObjectResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"id", "object"}, map[string]string{"object": "\"user\""}
+		if jsonFits(raw, required, pinned) {
+			var vv PartialUserObjectResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PartialUserObjectResponse = &vv
+				matched++
+			}
 		}
 	}
 
@@ -6644,9 +6771,9 @@ func (v *CreateATokenOkOwnerUserUser) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 func (v *CreateATokenOkOwnerUserUser) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.CreateATokenOkOwnerUserUserPerson != nil:
-		return json.MarshalEncode(enc, v.CreateATokenOkOwnerUserUserPerson, jsonOpts)
+		return json.MarshalEncode(enc, v.CreateATokenOkOwnerUserUserPerson, jsonOptsTo(enc))
 	case v.PartialUserObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialUserObjectResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.PartialUserObjectResponse, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -6813,7 +6940,7 @@ func (v *CreateDatabaseParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // CreateDatabaseParentAllOfPageID defines a model
@@ -6897,11 +7024,13 @@ var variantsOfCreateMeetingNote = []jsonVariant{
 		value:    "",
 		members:  map[string]bool{"parent": true, "source": true},
 		required: []string{"parent", "source"},
+		pinned:   map[string]string{},
 	},
 	{
 		value:    "",
 		members:  map[string]bool{"parent": true, "source": true},
 		required: []string{"source"},
+		pinned:   map[string]string{},
 	},
 }
 
@@ -6961,7 +7090,7 @@ func (v *CreateMeetingNote) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of CreateMeetingNoteAllOf0 that is set;
 // a member both write must have the same value in each.
 func (v *CreateMeetingNote) MarshalJSONTo(enc *jsontext.Encoder) error {
-	out, err := json.Marshal((*fieldsOfCreateMeetingNote)(v), jsonOpts)
+	out, err := json.Marshal((*fieldsOfCreateMeetingNote)(v), jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -6970,7 +7099,7 @@ func (v *CreateMeetingNote) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 	if v.CreateMeetingNoteAllOf0.CreateMeetingNoteAllOf0OneOf0 != nil {
 
-		variant, err := json.Marshal(v.CreateMeetingNoteAllOf0.CreateMeetingNoteAllOf0OneOf0, jsonOpts)
+		variant, err := json.Marshal(v.CreateMeetingNoteAllOf0.CreateMeetingNoteAllOf0OneOf0, jsonOptsTo(enc))
 		if err != nil {
 			return err
 		}
@@ -6984,7 +7113,7 @@ func (v *CreateMeetingNote) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 	if v.CreateMeetingNoteAllOf0.CreateMeetingNoteAllOf0Source != nil {
 
-		variant, err := json.Marshal(v.CreateMeetingNoteAllOf0.CreateMeetingNoteAllOf0Source, jsonOpts)
+		variant, err := json.Marshal(v.CreateMeetingNoteAllOf0.CreateMeetingNoteAllOf0Source, jsonOptsTo(enc))
 		if err != nil {
 			return err
 		}
@@ -7026,19 +7155,27 @@ func (v *CreateMeetingNoteAllOf0) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv CreateMeetingNoteAllOf0OneOf0
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CreateMeetingNoteAllOf0OneOf0 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"parent", "source"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv CreateMeetingNoteAllOf0OneOf0
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.CreateMeetingNoteAllOf0OneOf0 = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv CreateMeetingNoteAllOf0Source
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CreateMeetingNoteAllOf0Source = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"source"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv CreateMeetingNoteAllOf0Source
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.CreateMeetingNoteAllOf0Source = &vv
+				matched++
+			}
 		}
 	}
 
@@ -7053,9 +7190,9 @@ func (v *CreateMeetingNoteAllOf0) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 func (v *CreateMeetingNoteAllOf0) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.CreateMeetingNoteAllOf0OneOf0 != nil:
-		return json.MarshalEncode(enc, v.CreateMeetingNoteAllOf0OneOf0, jsonOpts)
+		return json.MarshalEncode(enc, v.CreateMeetingNoteAllOf0OneOf0, jsonOptsTo(enc))
 	case v.CreateMeetingNoteAllOf0Source != nil:
-		return json.MarshalEncode(enc, v.CreateMeetingNoteAllOf0Source, jsonOpts)
+		return json.MarshalEncode(enc, v.CreateMeetingNoteAllOf0Source, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -7187,19 +7324,27 @@ func (v *CreateMeetingNoteOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv CreateMeetingNoteOkOneOf0
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CreateMeetingNoteOkOneOf0 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"id", "object"}, map[string]string{"object": "\"block\""}
+		if jsonFits(raw, required, pinned) {
+			var vv CreateMeetingNoteOkOneOf0
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.CreateMeetingNoteOkOneOf0 = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv CreateMeetingNoteMeetingNotes
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CreateMeetingNoteMeetingNotes = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"created_by", "created_time", "has_children", "id", "in_trash", "last_edited_by", "last_edited_time", "meeting_notes", "object", "type"}, map[string]string{"object": "\"block\"", "type": "\"meeting_notes\""}
+		if jsonFits(raw, required, pinned) {
+			var vv CreateMeetingNoteMeetingNotes
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.CreateMeetingNoteMeetingNotes = &vv
+				matched++
+			}
 		}
 	}
 
@@ -7214,9 +7359,9 @@ func (v *CreateMeetingNoteOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *CreateMeetingNoteOk) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.CreateMeetingNoteOkOneOf0 != nil:
-		return json.MarshalEncode(enc, v.CreateMeetingNoteOkOneOf0, jsonOpts)
+		return json.MarshalEncode(enc, v.CreateMeetingNoteOkOneOf0, jsonOptsTo(enc))
 	case v.CreateMeetingNoteMeetingNotes != nil:
-		return json.MarshalEncode(enc, v.CreateMeetingNoteMeetingNotes, jsonOpts)
+		return json.MarshalEncode(enc, v.CreateMeetingNoteMeetingNotes, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -7536,18 +7681,26 @@ func (v *DataSourceOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv PartialDataSourceObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialDataSourceObjectResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"id", "object", "properties"}, map[string]string{"object": "\"data_source\""}
+		if jsonFits(raw, required, pinned) {
+			var vv PartialDataSourceObjectResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PartialDataSourceObjectResponse = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv DataSourceObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DataSourceObjectResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"cover", "created_by", "created_time", "database_parent", "database_type", "description", "icon", "id", "in_trash", "is_inline", "last_edited_by", "last_edited_time", "object", "parent", "properties", "public_url", "title", "url"}, map[string]string{"object": "\"data_source\""}
+		if jsonFits(raw, required, pinned) {
+			var vv DataSourceObjectResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.DataSourceObjectResponse = &vv
+				matched++
+			}
 		}
 	}
 
@@ -7562,9 +7715,9 @@ func (v *DataSourceOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *DataSourceOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PartialDataSourceObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialDataSourceObjectResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.PartialDataSourceObjectResponse, jsonOptsTo(enc))
 	case v.DataSourceObjectResponse != nil:
-		return json.MarshalEncode(enc, v.DataSourceObjectResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.DataSourceObjectResponse, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -7668,18 +7821,26 @@ func (v *DataSourceViewOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	var matched int
 
 	{
-		var vv PartialDataSourceViewObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialDataSourceViewObjectResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"id", "object", "parent", "type"}, map[string]string{"object": "\"view\""}
+		if jsonFits(raw, required, pinned) {
+			var vv PartialDataSourceViewObjectResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PartialDataSourceViewObjectResponse = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv DataSourceViewObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DataSourceViewObjectResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"created_time", "id", "last_edited_time", "name", "object", "parent", "type", "url"}, map[string]string{"object": "\"view\""}
+		if jsonFits(raw, required, pinned) {
+			var vv DataSourceViewObjectResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.DataSourceViewObjectResponse = &vv
+				matched++
+			}
 		}
 	}
 
@@ -7694,9 +7855,9 @@ func (v *DataSourceViewOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 func (v *DataSourceViewOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PartialDataSourceViewObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialDataSourceViewObjectResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.PartialDataSourceViewObjectResponse, jsonOptsTo(enc))
 	case v.DataSourceViewObjectResponse != nil:
-		return json.MarshalEncode(enc, v.DataSourceViewObjectResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.DataSourceViewObjectResponse, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -7812,18 +7973,26 @@ func (v *DatabaseOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv PartialDatabaseObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialDatabaseObjectResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"id", "object"}, map[string]string{"object": "\"database\""}
+		if jsonFits(raw, required, pinned) {
+			var vv PartialDatabaseObjectResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PartialDatabaseObjectResponse = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv Database
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.Database = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"cover", "created_time", "data_sources", "database_type", "description", "icon", "id", "in_trash", "is_inline", "is_locked", "last_edited_time", "object", "parent", "public_url", "title", "url"}, map[string]string{"object": "\"database\""}
+		if jsonFits(raw, required, pinned) {
+			var vv Database
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.Database = &vv
+				matched++
+			}
 		}
 	}
 
@@ -7838,9 +8007,9 @@ func (v *DatabaseOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *DatabaseOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PartialDatabaseObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialDatabaseObjectResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.PartialDatabaseObjectResponse, jsonOptsTo(enc))
 	case v.Database != nil:
-		return json.MarshalEncode(enc, v.Database, jsonOpts)
+		return json.MarshalEncode(enc, v.Database, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -7940,7 +8109,7 @@ func (v *DatabasePropertyRelationConfigResponse) MarshalJSONTo(enc *jsontext.Enc
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // DatabaseQueryResultType defines a model
@@ -8169,9 +8338,9 @@ func (v *DateOrRelativeDate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *DateOrRelativeDate) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.Date != nil:
-		return json.MarshalEncode(enc, v.Date, jsonOpts)
+		return json.MarshalEncode(enc, v.Date, jsonOptsTo(enc))
 	case v.RelativeDateValue != "":
-		return json.MarshalEncode(enc, v.RelativeDateValue, jsonOpts)
+		return json.MarshalEncode(enc, v.RelativeDateValue, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -8216,98 +8385,146 @@ func (v *DatePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv DatePropertyFilterEquals
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterEquals = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"equals"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv DatePropertyFilterEquals
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.DatePropertyFilterEquals = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv DatePropertyFilterBefore
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterBefore = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"before"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv DatePropertyFilterBefore
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.DatePropertyFilterBefore = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv DatePropertyFilterAfter
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterAfter = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"after"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv DatePropertyFilterAfter
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.DatePropertyFilterAfter = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv DatePropertyFilterOnOrBefore
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterOnOrBefore = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"on_or_before"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv DatePropertyFilterOnOrBefore
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.DatePropertyFilterOnOrBefore = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv DatePropertyFilterOnOrAfter
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterOnOrAfter = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"on_or_after"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv DatePropertyFilterOnOrAfter
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.DatePropertyFilterOnOrAfter = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv DatePropertyFilterThisWeek
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterThisWeek = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"this_week"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv DatePropertyFilterThisWeek
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.DatePropertyFilterThisWeek = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv DatePropertyFilterPastWeek
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterPastWeek = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"past_week"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv DatePropertyFilterPastWeek
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.DatePropertyFilterPastWeek = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv DatePropertyFilterPastMonth
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterPastMonth = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"past_month"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv DatePropertyFilterPastMonth
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.DatePropertyFilterPastMonth = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv DatePropertyFilterPastYear
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterPastYear = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"past_year"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv DatePropertyFilterPastYear
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.DatePropertyFilterPastYear = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv DatePropertyFilterNextWeek
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterNextWeek = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"next_week"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv DatePropertyFilterNextWeek
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.DatePropertyFilterNextWeek = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv DatePropertyFilterNextMonth
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterNextMonth = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"next_month"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv DatePropertyFilterNextMonth
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.DatePropertyFilterNextMonth = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv DatePropertyFilterNextYear
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DatePropertyFilterNextYear = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"next_year"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv DatePropertyFilterNextYear
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.DatePropertyFilterNextYear = &vv
+				matched++
+			}
 		}
 	}
 
@@ -8330,31 +8547,31 @@ func (v *DatePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *DatePropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.DatePropertyFilterEquals != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterEquals, jsonOpts)
+		return json.MarshalEncode(enc, v.DatePropertyFilterEquals, jsonOptsTo(enc))
 	case v.DatePropertyFilterBefore != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterBefore, jsonOpts)
+		return json.MarshalEncode(enc, v.DatePropertyFilterBefore, jsonOptsTo(enc))
 	case v.DatePropertyFilterAfter != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterAfter, jsonOpts)
+		return json.MarshalEncode(enc, v.DatePropertyFilterAfter, jsonOptsTo(enc))
 	case v.DatePropertyFilterOnOrBefore != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterOnOrBefore, jsonOpts)
+		return json.MarshalEncode(enc, v.DatePropertyFilterOnOrBefore, jsonOptsTo(enc))
 	case v.DatePropertyFilterOnOrAfter != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterOnOrAfter, jsonOpts)
+		return json.MarshalEncode(enc, v.DatePropertyFilterOnOrAfter, jsonOptsTo(enc))
 	case v.DatePropertyFilterThisWeek != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterThisWeek, jsonOpts)
+		return json.MarshalEncode(enc, v.DatePropertyFilterThisWeek, jsonOptsTo(enc))
 	case v.DatePropertyFilterPastWeek != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterPastWeek, jsonOpts)
+		return json.MarshalEncode(enc, v.DatePropertyFilterPastWeek, jsonOptsTo(enc))
 	case v.DatePropertyFilterPastMonth != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterPastMonth, jsonOpts)
+		return json.MarshalEncode(enc, v.DatePropertyFilterPastMonth, jsonOptsTo(enc))
 	case v.DatePropertyFilterPastYear != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterPastYear, jsonOpts)
+		return json.MarshalEncode(enc, v.DatePropertyFilterPastYear, jsonOptsTo(enc))
 	case v.DatePropertyFilterNextWeek != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterNextWeek, jsonOpts)
+		return json.MarshalEncode(enc, v.DatePropertyFilterNextWeek, jsonOptsTo(enc))
 	case v.DatePropertyFilterNextMonth != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterNextMonth, jsonOpts)
+		return json.MarshalEncode(enc, v.DatePropertyFilterNextMonth, jsonOptsTo(enc))
 	case v.DatePropertyFilterNextYear != nil:
-		return json.MarshalEncode(enc, v.DatePropertyFilterNextYear, jsonOpts)
+		return json.MarshalEncode(enc, v.DatePropertyFilterNextYear, jsonOptsTo(enc))
 	case v.ExistencePropertyFilter != nil:
-		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOpts)
+		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -8544,23 +8761,7 @@ type EmbedFileUpload struct {
 type EmojiRequest string
 
 // EmptyObject defines a model
-type EmptyObject struct {
-	Owner           EmptyObjectOwner           `json:"owner,omitzero"`
-	WorkspaceName   string                     `json:"workspace_name,omitzero"`
-	WorkspaceID     uuid.UUID                  `json:"workspace_id,omitzero"`
-	WorkspaceLimits EmptyObjectWorkspaceLimits `json:"workspace_limits,omitzero"`
-}
-
-// EmptyObjectOwner defines a model
-type EmptyObjectOwner struct {
-	Type      string `json:"type"`
-	Workspace bool   `json:"workspace"`
-}
-
-// EmptyObjectWorkspaceLimits defines a model
-type EmptyObjectWorkspaceLimits struct {
-	MaxFileUploadSizeInBytes int `json:"max_file_upload_size_in_bytes"`
-}
+type EmptyObject struct{}
 
 // Error defines a model
 type Error struct {
@@ -8638,18 +8839,26 @@ func (v *ExistencePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	var matched int
 
 	{
-		var vv ExistencePropertyFilterIsEmpty
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ExistencePropertyFilterIsEmpty = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"is_empty"}, map[string]string{"is_empty": "true"}
+		if jsonFits(raw, required, pinned) {
+			var vv ExistencePropertyFilterIsEmpty
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.ExistencePropertyFilterIsEmpty = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv ExistencePropertyFilterIsNotEmpty
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ExistencePropertyFilterIsNotEmpty = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"is_not_empty"}, map[string]string{"is_not_empty": "true"}
+		if jsonFits(raw, required, pinned) {
+			var vv ExistencePropertyFilterIsNotEmpty
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.ExistencePropertyFilterIsNotEmpty = &vv
+				matched++
+			}
 		}
 	}
 
@@ -8664,9 +8873,9 @@ func (v *ExistencePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 func (v *ExistencePropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.ExistencePropertyFilterIsEmpty != nil:
-		return json.MarshalEncode(enc, v.ExistencePropertyFilterIsEmpty, jsonOpts)
+		return json.MarshalEncode(enc, v.ExistencePropertyFilterIsEmpty, jsonOptsTo(enc))
 	case v.ExistencePropertyFilterIsNotEmpty != nil:
-		return json.MarshalEncode(enc, v.ExistencePropertyFilterIsNotEmpty, jsonOpts)
+		return json.MarshalEncode(enc, v.ExistencePropertyFilterIsNotEmpty, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -8925,7 +9134,7 @@ func (v *FileUploadObjectResponseFileImportResult) MarshalJSONTo(enc *jsontext.E
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // FileUploadObjectResponseNumberOfParts defines a model
@@ -9041,7 +9250,7 @@ func (v *FileUploadUploadFailedWebhookPayloadDataFileImportResult) MarshalJSONTo
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // FilesPropertyConfiguration defines a model
@@ -9103,28 +9312,40 @@ func (v *Filter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv FilterOr
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.FilterOr = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"or"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv FilterOr
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.FilterOr = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv FilterAnd
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.FilterAnd = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"and"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv FilterAnd
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.FilterAnd = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv PropertyFilter
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PropertyFilter = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "type"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv PropertyFilter
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PropertyFilter = &vv
+				matched++
+			}
 		}
 	}
 
@@ -9148,13 +9369,13 @@ func (v *Filter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *Filter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.FilterOr != nil:
-		return json.MarshalEncode(enc, v.FilterOr, jsonOpts)
+		return json.MarshalEncode(enc, v.FilterOr, jsonOptsTo(enc))
 	case v.FilterAnd != nil:
-		return json.MarshalEncode(enc, v.FilterAnd, jsonOpts)
+		return json.MarshalEncode(enc, v.FilterAnd, jsonOptsTo(enc))
 	case v.PropertyFilter != nil:
-		return json.MarshalEncode(enc, v.PropertyFilter, jsonOpts)
+		return json.MarshalEncode(enc, v.PropertyFilter, jsonOptsTo(enc))
 	case v.TimestampFilter != nil:
-		return json.MarshalEncode(enc, v.TimestampFilter, jsonOpts)
+		return json.MarshalEncode(enc, v.TimestampFilter, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -9432,7 +9653,7 @@ func (v *FormulaGroupByConfigRequestGroupBy) MarshalJSONTo(enc *jsontext.Encoder
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -9557,34 +9778,50 @@ func (v *FormulaPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv FormulaPropertyFilterString
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.FormulaPropertyFilterString = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"string"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv FormulaPropertyFilterString
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.FormulaPropertyFilterString = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv FormulaPropertyFilterCheckbox
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.FormulaPropertyFilterCheckbox = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"checkbox"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv FormulaPropertyFilterCheckbox
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.FormulaPropertyFilterCheckbox = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv RollupPropertyFilterNumber
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterNumber = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"number"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupPropertyFilterNumber
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupPropertyFilterNumber = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv RollupPropertyFilterDate
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterDate = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"date"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupPropertyFilterDate
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupPropertyFilterDate = &vv
+				matched++
+			}
 		}
 	}
 
@@ -9599,13 +9836,13 @@ func (v *FormulaPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *FormulaPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.FormulaPropertyFilterString != nil:
-		return json.MarshalEncode(enc, v.FormulaPropertyFilterString, jsonOpts)
+		return json.MarshalEncode(enc, v.FormulaPropertyFilterString, jsonOptsTo(enc))
 	case v.FormulaPropertyFilterCheckbox != nil:
-		return json.MarshalEncode(enc, v.FormulaPropertyFilterCheckbox, jsonOpts)
+		return json.MarshalEncode(enc, v.FormulaPropertyFilterCheckbox, jsonOptsTo(enc))
 	case v.RollupPropertyFilterNumber != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterNumber, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupPropertyFilterNumber, jsonOptsTo(enc))
 	case v.RollupPropertyFilterDate != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterDate, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupPropertyFilterDate, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -9745,7 +9982,7 @@ func (v *FormulaPropertyResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // FormulaPropertyValueResponse defines a model
@@ -9845,7 +10082,7 @@ func (v *FormulaPropertyValueResponse) MarshalJSONTo(enc *jsontext.Encoder) erro
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // Sub-group-by configuration for formula properties based on result type.
@@ -9923,7 +10160,7 @@ func (v *FormulaSubGroupByResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -10104,82 +10341,118 @@ func (v *GroupByConfigRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv SelectGroupByConfigRequest
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.SelectGroupByConfigRequest = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property_id", "sort", "type"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv SelectGroupByConfigRequest
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.SelectGroupByConfigRequest = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv StatusGroupByConfigRequest
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.StatusGroupByConfigRequest = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]string{"type": "\"status\""}
+		if jsonFits(raw, required, pinned) {
+			var vv StatusGroupByConfigRequest
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.StatusGroupByConfigRequest = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv PersonGroupByConfigRequest
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PersonGroupByConfigRequest = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property_id", "sort", "type"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv PersonGroupByConfigRequest
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PersonGroupByConfigRequest = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv RelationGroupByConfigRequest
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RelationGroupByConfigRequest = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property_id", "sort", "type"}, map[string]string{"type": "\"relation\""}
+		if jsonFits(raw, required, pinned) {
+			var vv RelationGroupByConfigRequest
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RelationGroupByConfigRequest = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv DateGroupByConfigRequest
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DateGroupByConfigRequest = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv DateGroupByConfigRequest
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.DateGroupByConfigRequest = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv TextGroupByConfigRequest
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TextGroupByConfigRequest = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv TextGroupByConfigRequest
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.TextGroupByConfigRequest = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv NumberGroupByConfigRequest
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.NumberGroupByConfigRequest = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property_id", "sort", "type"}, map[string]string{"type": "\"number\""}
+		if jsonFits(raw, required, pinned) {
+			var vv NumberGroupByConfigRequest
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.NumberGroupByConfigRequest = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv CheckboxGroupByConfigRequest
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CheckboxGroupByConfigRequest = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property_id", "sort", "type"}, map[string]string{"type": "\"checkbox\""}
+		if jsonFits(raw, required, pinned) {
+			var vv CheckboxGroupByConfigRequest
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.CheckboxGroupByConfigRequest = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv FormulaGroupByConfigRequest
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.FormulaGroupByConfigRequest = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"group_by", "property_id", "type"}, map[string]string{"type": "\"formula\""}
+		if jsonFits(raw, required, pinned) {
+			var vv FormulaGroupByConfigRequest
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.FormulaGroupByConfigRequest = &vv
+				matched++
+			}
 		}
 	}
 
@@ -10194,23 +10467,23 @@ func (v *GroupByConfigRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *GroupByConfigRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.SelectGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.SelectGroupByConfigRequest, jsonOpts)
+		return json.MarshalEncode(enc, v.SelectGroupByConfigRequest, jsonOptsTo(enc))
 	case v.StatusGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.StatusGroupByConfigRequest, jsonOpts)
+		return json.MarshalEncode(enc, v.StatusGroupByConfigRequest, jsonOptsTo(enc))
 	case v.PersonGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.PersonGroupByConfigRequest, jsonOpts)
+		return json.MarshalEncode(enc, v.PersonGroupByConfigRequest, jsonOptsTo(enc))
 	case v.RelationGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.RelationGroupByConfigRequest, jsonOpts)
+		return json.MarshalEncode(enc, v.RelationGroupByConfigRequest, jsonOptsTo(enc))
 	case v.DateGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.DateGroupByConfigRequest, jsonOpts)
+		return json.MarshalEncode(enc, v.DateGroupByConfigRequest, jsonOptsTo(enc))
 	case v.TextGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.TextGroupByConfigRequest, jsonOpts)
+		return json.MarshalEncode(enc, v.TextGroupByConfigRequest, jsonOptsTo(enc))
 	case v.NumberGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.NumberGroupByConfigRequest, jsonOpts)
+		return json.MarshalEncode(enc, v.NumberGroupByConfigRequest, jsonOptsTo(enc))
 	case v.CheckboxGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.CheckboxGroupByConfigRequest, jsonOpts)
+		return json.MarshalEncode(enc, v.CheckboxGroupByConfigRequest, jsonOptsTo(enc))
 	case v.FormulaGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.FormulaGroupByConfigRequest, jsonOpts)
+		return json.MarshalEncode(enc, v.FormulaGroupByConfigRequest, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -10244,74 +10517,110 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv SelectGroupByConfigResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.SelectGroupByConfigResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property_id", "sort", "type"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv SelectGroupByConfigResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.SelectGroupByConfigResponse = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv StatusGroupByConfigResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.StatusGroupByConfigResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]string{"type": "\"status\""}
+		if jsonFits(raw, required, pinned) {
+			var vv StatusGroupByConfigResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.StatusGroupByConfigResponse = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv PersonGroupByConfigResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PersonGroupByConfigResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property_id", "sort", "type"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv PersonGroupByConfigResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PersonGroupByConfigResponse = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv RelationGroupByConfigResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RelationGroupByConfigResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property_id", "sort", "type"}, map[string]string{"type": "\"relation\""}
+		if jsonFits(raw, required, pinned) {
+			var vv RelationGroupByConfigResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RelationGroupByConfigResponse = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv DateGroupByConfigResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.DateGroupByConfigResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv DateGroupByConfigResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.DateGroupByConfigResponse = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv TextGroupByConfigResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TextGroupByConfigResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv TextGroupByConfigResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.TextGroupByConfigResponse = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv NumberGroupByConfigResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.NumberGroupByConfigResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property_id", "sort", "type"}, map[string]string{"type": "\"number\""}
+		if jsonFits(raw, required, pinned) {
+			var vv NumberGroupByConfigResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.NumberGroupByConfigResponse = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv CheckboxGroupByConfigResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.CheckboxGroupByConfigResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property_id", "sort", "type"}, map[string]string{"type": "\"checkbox\""}
+		if jsonFits(raw, required, pinned) {
+			var vv CheckboxGroupByConfigResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.CheckboxGroupByConfigResponse = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv FormulaGroupByConfigResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.FormulaGroupByConfigResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"group_by", "property_id", "type"}, map[string]string{"type": "\"formula\""}
+		if jsonFits(raw, required, pinned) {
+			var vv FormulaGroupByConfigResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.FormulaGroupByConfigResponse = &vv
+				matched++
+			}
 		}
 	}
 
@@ -10326,23 +10635,23 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *GroupByConfigResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.SelectGroupByConfigResponse != nil:
-		return json.MarshalEncode(enc, v.SelectGroupByConfigResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.SelectGroupByConfigResponse, jsonOptsTo(enc))
 	case v.StatusGroupByConfigResponse != nil:
-		return json.MarshalEncode(enc, v.StatusGroupByConfigResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.StatusGroupByConfigResponse, jsonOptsTo(enc))
 	case v.PersonGroupByConfigResponse != nil:
-		return json.MarshalEncode(enc, v.PersonGroupByConfigResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.PersonGroupByConfigResponse, jsonOptsTo(enc))
 	case v.RelationGroupByConfigResponse != nil:
-		return json.MarshalEncode(enc, v.RelationGroupByConfigResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.RelationGroupByConfigResponse, jsonOptsTo(enc))
 	case v.DateGroupByConfigResponse != nil:
-		return json.MarshalEncode(enc, v.DateGroupByConfigResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.DateGroupByConfigResponse, jsonOptsTo(enc))
 	case v.TextGroupByConfigResponse != nil:
-		return json.MarshalEncode(enc, v.TextGroupByConfigResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.TextGroupByConfigResponse, jsonOptsTo(enc))
 	case v.NumberGroupByConfigResponse != nil:
-		return json.MarshalEncode(enc, v.NumberGroupByConfigResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.NumberGroupByConfigResponse, jsonOptsTo(enc))
 	case v.CheckboxGroupByConfigResponse != nil:
-		return json.MarshalEncode(enc, v.CheckboxGroupByConfigResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.CheckboxGroupByConfigResponse, jsonOptsTo(enc))
 	case v.FormulaGroupByConfigResponse != nil:
-		return json.MarshalEncode(enc, v.FormulaGroupByConfigResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.FormulaGroupByConfigResponse, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -10557,7 +10866,7 @@ func (v *InternalOrExternalFileWithNameResponse) MarshalJSONTo(enc *jsontext.Enc
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // IntrospectTokenOk defines a model
@@ -10856,7 +11165,7 @@ func (v *LinkToPageBlockObjectResponseLinkToPage) MarshalJSONTo(enc *jsontext.En
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // ListDataSourceTemplatesOk defines a model
@@ -11002,6 +11311,24 @@ func (v *MapViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name 
 	return false, nil
 }
 
+// The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.
+type MarkdownVersion string
+
+const (
+	MarkdownVersionV1 MarkdownVersion = "v1"
+	MarkdownVersionV2 MarkdownVersion = "v2"
+)
+
+// Valid indicates whether the value is a known member of the MarkdownVersion enum.
+func (e MarkdownVersion) Valid() bool {
+	switch e {
+	case MarkdownVersionV1, MarkdownVersionV2:
+		return true
+	default:
+		return false
+	}
+}
+
 // MediaContentWithFileAndCaptionRequest defines a model
 type MediaContentWithFileAndCaptionRequest struct {
 	Caption    []RichTextItemRequest                     `json:"caption,omitzero"`
@@ -11087,7 +11414,7 @@ func (v *MediaContentWithFileAndCaptionRequest) MarshalJSONTo(enc *jsontext.Enco
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // MediaContentWithFileAndCaptionResponse defines a model
@@ -11170,7 +11497,7 @@ func (v *MediaContentWithFileAndCaptionResponse) MarshalJSONTo(enc *jsontext.Enc
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // MediaContentWithFileNameAndCaptionRequest defines a model
@@ -11259,7 +11586,7 @@ func (v *MediaContentWithFileNameAndCaptionRequest) MarshalJSONTo(enc *jsontext.
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // MediaContentWithFileNameAndCaptionResponse defines a model
@@ -11343,7 +11670,7 @@ func (v *MediaContentWithFileNameAndCaptionResponse) MarshalJSONTo(enc *jsontext
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // MediaContentWithURL defines a model
@@ -11482,7 +11809,7 @@ func (v *MentionRichTextItemRequestMention) MarshalJSONTo(enc *jsontext.Encoder)
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.
@@ -11608,7 +11935,7 @@ func (v *MentionRichTextItemResponseMention) MarshalJSONTo(enc *jsontext.Encoder
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // MovePage defines a model
@@ -11703,7 +12030,7 @@ func (v *MovePageParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // MovePageParentPageID defines a model
@@ -11736,18 +12063,26 @@ func (v *MultiSelectPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 	var matched int
 
 	{
-		var vv MultiSelectPropertyFilterContains
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.MultiSelectPropertyFilterContains = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"contains"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv MultiSelectPropertyFilterContains
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.MultiSelectPropertyFilterContains = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv MultiSelectPropertyFilterDoesNotContain
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.MultiSelectPropertyFilterDoesNotContain = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"does_not_contain"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv MultiSelectPropertyFilterDoesNotContain
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.MultiSelectPropertyFilterDoesNotContain = &vv
+				matched++
+			}
 		}
 	}
 
@@ -11770,11 +12105,11 @@ func (v *MultiSelectPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 func (v *MultiSelectPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.MultiSelectPropertyFilterContains != nil:
-		return json.MarshalEncode(enc, v.MultiSelectPropertyFilterContains, jsonOpts)
+		return json.MarshalEncode(enc, v.MultiSelectPropertyFilterContains, jsonOptsTo(enc))
 	case v.MultiSelectPropertyFilterDoesNotContain != nil:
-		return json.MarshalEncode(enc, v.MultiSelectPropertyFilterDoesNotContain, jsonOpts)
+		return json.MarshalEncode(enc, v.MultiSelectPropertyFilterDoesNotContain, jsonOptsTo(enc))
 	case v.ExistencePropertyFilter != nil:
-		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOpts)
+		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -11975,50 +12310,74 @@ func (v *NumberPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv NumberPropertyFilterEquals
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.NumberPropertyFilterEquals = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"equals"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv NumberPropertyFilterEquals
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.NumberPropertyFilterEquals = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv NumberPropertyFilterDoesNotEqual
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.NumberPropertyFilterDoesNotEqual = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"does_not_equal"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv NumberPropertyFilterDoesNotEqual
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.NumberPropertyFilterDoesNotEqual = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv NumberPropertyFilterGreaterThan
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.NumberPropertyFilterGreaterThan = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"greater_than"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv NumberPropertyFilterGreaterThan
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.NumberPropertyFilterGreaterThan = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv NumberPropertyFilterLessThan
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.NumberPropertyFilterLessThan = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"less_than"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv NumberPropertyFilterLessThan
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.NumberPropertyFilterLessThan = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv NumberPropertyFilterGreaterThanOrEqualTo
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.NumberPropertyFilterGreaterThanOrEqualTo = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"greater_than_or_equal_to"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv NumberPropertyFilterGreaterThanOrEqualTo
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.NumberPropertyFilterGreaterThanOrEqualTo = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv NumberPropertyFilterLessThanOrEqualTo
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.NumberPropertyFilterLessThanOrEqualTo = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"less_than_or_equal_to"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv NumberPropertyFilterLessThanOrEqualTo
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.NumberPropertyFilterLessThanOrEqualTo = &vv
+				matched++
+			}
 		}
 	}
 
@@ -12041,19 +12400,19 @@ func (v *NumberPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *NumberPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.NumberPropertyFilterEquals != nil:
-		return json.MarshalEncode(enc, v.NumberPropertyFilterEquals, jsonOpts)
+		return json.MarshalEncode(enc, v.NumberPropertyFilterEquals, jsonOptsTo(enc))
 	case v.NumberPropertyFilterDoesNotEqual != nil:
-		return json.MarshalEncode(enc, v.NumberPropertyFilterDoesNotEqual, jsonOpts)
+		return json.MarshalEncode(enc, v.NumberPropertyFilterDoesNotEqual, jsonOptsTo(enc))
 	case v.NumberPropertyFilterGreaterThan != nil:
-		return json.MarshalEncode(enc, v.NumberPropertyFilterGreaterThan, jsonOpts)
+		return json.MarshalEncode(enc, v.NumberPropertyFilterGreaterThan, jsonOptsTo(enc))
 	case v.NumberPropertyFilterLessThan != nil:
-		return json.MarshalEncode(enc, v.NumberPropertyFilterLessThan, jsonOpts)
+		return json.MarshalEncode(enc, v.NumberPropertyFilterLessThan, jsonOptsTo(enc))
 	case v.NumberPropertyFilterGreaterThanOrEqualTo != nil:
-		return json.MarshalEncode(enc, v.NumberPropertyFilterGreaterThanOrEqualTo, jsonOpts)
+		return json.MarshalEncode(enc, v.NumberPropertyFilterGreaterThanOrEqualTo, jsonOptsTo(enc))
 	case v.NumberPropertyFilterLessThanOrEqualTo != nil:
-		return json.MarshalEncode(enc, v.NumberPropertyFilterLessThanOrEqualTo, jsonOpts)
+		return json.MarshalEncode(enc, v.NumberPropertyFilterLessThanOrEqualTo, jsonOptsTo(enc))
 	case v.ExistencePropertyFilter != nil:
-		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOpts)
+		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -12280,7 +12639,7 @@ func (v *PageCoverRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // PageCoverResponse defines a model
@@ -12364,7 +12723,7 @@ func (v *PageCoverResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // PageCreatedWebhookPayload defines a model
@@ -12501,7 +12860,7 @@ func (v *PageIconRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // PageIconResponse defines a model
@@ -12606,7 +12965,7 @@ func (v *PageIconResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // PageList defines a model
@@ -12640,12 +12999,25 @@ type PageMarkdownResponse struct {
 	Object string `json:"object"`
 	// The ID of the page or block.
 	ID IDResponse `json:"id"`
-	// The page content rendered as enhanced Markdown.
+	// The page content as Markdown, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).
 	Markdown string `json:"markdown"`
 	// Whether the content was truncated due to exceeding the record count limit.
 	Truncated bool `json:"truncated"`
 	// Block IDs that could not be loaded (appeared as <unknown> tags in the markdown). Pass these IDs back to this endpoint to fetch their content separately.
 	UnknownBlockIds []IDResponse `json:"unknown_block_ids"`
+	// Markdown parser warnings for the request's content. Returned only by the update endpoint with `markdown_version: "v2"`, and only when there is at least one warning.
+	Warnings PageMarkdownResponseWarnings `json:"warnings,omitzero"`
+}
+
+// Markdown parser warnings for the request's content. Returned only by the update endpoint with `markdown_version: "v2"`, and only when there is at least one warning.
+type PageMarkdownResponseWarnings []PageMarkdownResponseWarningsItem
+
+// PageMarkdownResponseWarningsItem defines a model
+type PageMarkdownResponseWarningsItem struct {
+	// The warning category, for example `unsupported_tag`.
+	Code string `json:"code"`
+	// What the parser changed or ignored.
+	Message string `json:"message"`
 }
 
 // PageMovedWebhookPayload defines a model
@@ -12712,9 +13084,9 @@ func (v *PageOrDataSource) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *PageOrDataSource) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PageOrPartial != nil:
-		return json.MarshalEncode(enc, v.PageOrPartial, jsonOpts)
+		return json.MarshalEncode(enc, v.PageOrPartial, jsonOptsTo(enc))
 	case v.DataSourceOrPartial != nil:
-		return json.MarshalEncode(enc, v.DataSourceOrPartial, jsonOpts)
+		return json.MarshalEncode(enc, v.DataSourceOrPartial, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -12776,18 +13148,26 @@ func (v *PageOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv Page
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.Page = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"cover", "created_by", "created_time", "icon", "id", "in_trash", "is_archived", "is_locked", "last_edited_by", "last_edited_time", "object", "parent", "properties", "public_url", "url"}, map[string]string{"object": "\"page\""}
+		if jsonFits(raw, required, pinned) {
+			var vv Page
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.Page = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv PartialPageObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialPageObjectResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"id", "object"}, map[string]string{"object": "\"page\""}
+		if jsonFits(raw, required, pinned) {
+			var vv PartialPageObjectResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PartialPageObjectResponse = &vv
+				matched++
+			}
 		}
 	}
 
@@ -12802,9 +13182,9 @@ func (v *PageOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *PageOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.Page != nil:
-		return json.MarshalEncode(enc, v.Page, jsonOpts)
+		return json.MarshalEncode(enc, v.Page, jsonOptsTo(enc))
 	case v.PartialPageObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialPageObjectResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.PartialPageObjectResponse, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -12899,7 +13279,7 @@ func (v *PagePositionSchema) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // PagePositionSchemaAfterBlock defines a model
@@ -13095,7 +13475,7 @@ func (v *PagePropertiesValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // PagePropertiesValueFilesItem defines a model
@@ -13189,7 +13569,7 @@ func (v *PagePropertiesValueFilesItem) MarshalJSONTo(enc *jsontext.Encoder) erro
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // PagePropertiesValueMultiSelectMultiSelectItem defines a model
@@ -13213,18 +13593,26 @@ func (v *PagePropertiesValueMultiSelectMultiSelectItem) UnmarshalJSONFrom(dec *j
 	var matched int
 
 	{
-		var vv PagePropertiesValueSelectID
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PagePropertiesValueSelectID = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"id"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv PagePropertiesValueSelectID
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PagePropertiesValueSelectID = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv PagePropertiesValueSelectName
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PagePropertiesValueSelectName = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"name"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv PagePropertiesValueSelectName
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PagePropertiesValueSelectName = &vv
+				matched++
+			}
 		}
 	}
 
@@ -13239,9 +13627,9 @@ func (v *PagePropertiesValueMultiSelectMultiSelectItem) UnmarshalJSONFrom(dec *j
 func (v *PagePropertiesValueMultiSelectMultiSelectItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PagePropertiesValueSelectID != nil:
-		return json.MarshalEncode(enc, v.PagePropertiesValueSelectID, jsonOpts)
+		return json.MarshalEncode(enc, v.PagePropertiesValueSelectID, jsonOptsTo(enc))
 	case v.PagePropertiesValueSelectName != nil:
-		return json.MarshalEncode(enc, v.PagePropertiesValueSelectName, jsonOpts)
+		return json.MarshalEncode(enc, v.PagePropertiesValueSelectName, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -13302,7 +13690,7 @@ func (v *PagePropertiesValuePeopleItem) MarshalJSONTo(enc *jsontext.Encoder) err
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -13345,18 +13733,26 @@ func (v *PagePropertiesValueSelect2) UnmarshalJSONFrom(dec *jsontext.Decoder) er
 	var matched int
 
 	{
-		var vv PagePropertiesValueSelectID
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PagePropertiesValueSelectID = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"id"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv PagePropertiesValueSelectID
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PagePropertiesValueSelectID = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv PagePropertiesValueSelectName
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PagePropertiesValueSelectName = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"name"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv PagePropertiesValueSelectName
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PagePropertiesValueSelectName = &vv
+				matched++
+			}
 		}
 	}
 
@@ -13371,9 +13767,9 @@ func (v *PagePropertiesValueSelect2) UnmarshalJSONFrom(dec *jsontext.Decoder) er
 func (v *PagePropertiesValueSelect2) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PagePropertiesValueSelectID != nil:
-		return json.MarshalEncode(enc, v.PagePropertiesValueSelectID, jsonOpts)
+		return json.MarshalEncode(enc, v.PagePropertiesValueSelectID, jsonOptsTo(enc))
 	case v.PagePropertiesValueSelectName != nil:
-		return json.MarshalEncode(enc, v.PagePropertiesValueSelectName, jsonOpts)
+		return json.MarshalEncode(enc, v.PagePropertiesValueSelectName, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -13452,7 +13848,7 @@ func (v *PagePropertiesValueVerification2) MarshalJSONTo(enc *jsontext.Encoder) 
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -13587,6 +13983,29 @@ type PageUnlockedWebhookPayload struct {
 	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
+// Controls the notifications Notion sends people about this change. Set mode to "silent" to skip page update notifications, @mention notifications, and notifications to people added to a Person property, or "default" to use the standard behavior. Database automations, reminders, and connection webhooks still work as usual. Page history, page activity, and workspace audit logs still record the change.
+type PageWriteNotificationsSchema struct {
+	Mode PageWriteNotificationsSchemaMode `json:"mode"`
+}
+
+// PageWriteNotificationsSchemaMode defines a model
+type PageWriteNotificationsSchemaMode string
+
+const (
+	PageWriteNotificationsSchemaModeDefault PageWriteNotificationsSchemaMode = "default"
+	PageWriteNotificationsSchemaModeSilent  PageWriteNotificationsSchemaMode = "silent"
+)
+
+// Valid indicates whether the value is a known member of the PageWriteNotificationsSchemaMode enum.
+func (e PageWriteNotificationsSchemaMode) Valid() bool {
+	switch e {
+	case PageWriteNotificationsSchemaModeDefault, PageWriteNotificationsSchemaModeSilent:
+		return true
+	default:
+		return false
+	}
+}
+
 // ParagraphWithSingleLevelOfChildren defines a model
 type ParagraphWithSingleLevelOfChildren struct {
 	RichText []RichTextItemRequest `json:"rich_text"`
@@ -13705,7 +14124,7 @@ func (v *ParentForBlockBasedObjectResponse) MarshalJSONTo(enc *jsontext.Encoder)
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // ParentOfDataSourceRequest defines a model
@@ -13794,7 +14213,7 @@ func (v *ParentOfDataSourceResponse) MarshalJSONTo(enc *jsontext.Encoder) error 
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // ParentOfDatabaseResponse defines a model
@@ -13892,7 +14311,7 @@ func (v *ParentOfDatabaseResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // PartialBlockObjectResponse defines a model
@@ -14040,7 +14459,7 @@ func (v *PartialRollupValueResponse) MarshalJSONTo(enc *jsontext.Encoder) error 
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // PartialSelectPropertyValueResponse defines a model
@@ -14100,6 +14519,8 @@ type PartialUserObjectResponsePerson struct {
 type PatchBlockChildren struct {
 	Children []BlockObjectRequest  `json:"children"`
 	Position ContentPositionSchema `json:"position,omitzero"`
+	// Controls the notifications Notion sends people about this change. Set mode to "silent" to skip page update notifications, @mention notifications, and notifications to people added to a Person property, or "default" to use the standard behavior. Database automations, reminders, and connection webhooks still work as usual. Page history, page activity, and workspace audit logs still record the change.
+	Notifications PageWriteNotificationsSchema `json:"notifications,omitzero"`
 }
 
 // PatchPage defines a model
@@ -14112,8 +14533,10 @@ type PatchPage struct {
 	Template PatchPageTemplate `json:"template,omitzero"`
 	// Whether to erase all existing content from the page. When used with a template, the template content replaces the existing content. When used without a template, simply clears the page content.
 	EraseContent *bool `json:"erase_content,omitzero"`
-	InTrash      *bool `json:"in_trash,omitzero"`
-	IsArchived   *bool `json:"is_archived,omitzero"`
+	// Controls the notifications Notion sends people about this change. Set mode to "silent" to skip page update notifications, @mention notifications, and notifications to people added to a Person property, or "default" to use the standard behavior. Database automations, reminders, and connection webhooks still work as usual. Page history, page activity, and workspace audit logs still record the change.
+	Notifications PageWriteNotificationsSchema `json:"notifications,omitzero"`
+	InTrash       *bool                        `json:"in_trash,omitzero"`
+	IsArchived    *bool                        `json:"is_archived,omitzero"`
 }
 
 // PatchPageTemplate defines a model
@@ -14193,7 +14616,7 @@ func (v *PatchPageTemplate) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // PeopleArrayBasedPropertyValueResponsePeopleItem defines a model
@@ -14228,10 +14651,14 @@ func (v *PeopleArrayBasedPropertyValueResponsePeopleItem) UnmarshalJSONFrom(dec 
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv GroupObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.GroupObjectResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"id", "name", "object"}, map[string]string{"object": "\"group\""}
+		if jsonFits(raw, required, pinned) {
+			var vv GroupObjectResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.GroupObjectResponse = &vv
+				matched++
+			}
 		}
 	}
 
@@ -14246,9 +14673,9 @@ func (v *PeopleArrayBasedPropertyValueResponsePeopleItem) UnmarshalJSONFrom(dec 
 func (v *PeopleArrayBasedPropertyValueResponsePeopleItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.UserOrPartial != nil:
-		return json.MarshalEncode(enc, v.UserOrPartial, jsonOpts)
+		return json.MarshalEncode(enc, v.UserOrPartial, jsonOptsTo(enc))
 	case v.GroupObjectResponse != nil:
-		return json.MarshalEncode(enc, v.GroupObjectResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.GroupObjectResponse, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -14283,18 +14710,26 @@ func (v *PeoplePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv PeoplePropertyFilterContains
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PeoplePropertyFilterContains = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"contains"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv PeoplePropertyFilterContains
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PeoplePropertyFilterContains = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv PeoplePropertyFilterDoesNotContain
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PeoplePropertyFilterDoesNotContain = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"does_not_contain"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv PeoplePropertyFilterDoesNotContain
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PeoplePropertyFilterDoesNotContain = &vv
+				matched++
+			}
 		}
 	}
 
@@ -14317,11 +14752,11 @@ func (v *PeoplePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *PeoplePropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PeoplePropertyFilterContains != nil:
-		return json.MarshalEncode(enc, v.PeoplePropertyFilterContains, jsonOpts)
+		return json.MarshalEncode(enc, v.PeoplePropertyFilterContains, jsonOptsTo(enc))
 	case v.PeoplePropertyFilterDoesNotContain != nil:
-		return json.MarshalEncode(enc, v.PeoplePropertyFilterDoesNotContain, jsonOpts)
+		return json.MarshalEncode(enc, v.PeoplePropertyFilterDoesNotContain, jsonOptsTo(enc))
 	case v.ExistencePropertyFilter != nil:
-		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOpts)
+		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -14453,9 +14888,9 @@ func (v *PersonIDOrMe) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *PersonIDOrMe) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.IDRequest != "":
-		return json.MarshalEncode(enc, v.IDRequest, jsonOpts)
+		return json.MarshalEncode(enc, v.IDRequest, jsonOptsTo(enc))
 	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -14589,12 +15024,16 @@ type PostPage struct {
 	Cover      *PageCoverRequest              `json:"cover,omitzero"`
 	Content    []BlockObjectRequest           `json:"content,omitzero"`
 	Children   []BlockObjectRequest           `json:"children,omitzero"`
-	// Page content as Notion-flavored Markdown. Mutually exclusive with content/children.
+	// Page content as Markdown, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`). Mutually exclusive with content/children.
 	Markdown string `json:"markdown,omitzero"`
 	// Set to true to receive an async_task response for markdown page creation. Only supported when markdown is provided.
-	AllowAsync *bool              `json:"allow_async,omitzero"`
-	Template   PostPageTemplate   `json:"template,omitzero"`
-	Position   PagePositionSchema `json:"position,omitzero"`
+	AllowAsync *bool `json:"allow_async,omitzero"`
+	// The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.
+	MarkdownVersion MarkdownVersion    `json:"markdown_version,omitzero"`
+	Template        PostPageTemplate   `json:"template,omitzero"`
+	Position        PagePositionSchema `json:"position,omitzero"`
+	// Controls the notifications Notion sends people about this change. Set mode to "silent" to skip page update notifications, @mention notifications, and notifications to people added to a Person property, or "default" to use the standard behavior. Database automations, reminders, and connection webhooks still work as usual. Page history, page activity, and workspace audit logs still record the change.
+	Notifications PageWriteNotificationsSchema `json:"notifications,omitzero"`
 }
 
 // PostPageParent defines a model
@@ -14693,7 +15132,7 @@ func (v *PostPageParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // PostPageTemplate defines a model
@@ -14761,7 +15200,7 @@ func (v *PostPageTemplate) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -14818,18 +15257,26 @@ func (v *PostSearchFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv PostSearchFilterObject
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PostSearchFilterObject = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "value"}, map[string]string{"property": "\"object\""}
+		if jsonFits(raw, required, pinned) {
+			var vv PostSearchFilterObject
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PostSearchFilterObject = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv PostSearchFilterInTrash
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PostSearchFilterInTrash = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"in_trash"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv PostSearchFilterInTrash
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PostSearchFilterInTrash = &vv
+				matched++
+			}
 		}
 	}
 
@@ -14844,9 +15291,9 @@ func (v *PostSearchFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *PostSearchFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PostSearchFilterObject != nil:
-		return json.MarshalEncode(enc, v.PostSearchFilterObject, jsonOpts)
+		return json.MarshalEncode(enc, v.PostSearchFilterObject, jsonOptsTo(enc))
 	case v.PostSearchFilterInTrash != nil:
-		return json.MarshalEncode(enc, v.PostSearchFilterInTrash, jsonOpts)
+		return json.MarshalEncode(enc, v.PostSearchFilterInTrash, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -14902,18 +15349,26 @@ func (v *PostSearchSort) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv PostSearchSortLastEditedTime
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PostSearchSortLastEditedTime = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"direction", "timestamp"}, map[string]string{"timestamp": "\"last_edited_time\""}
+		if jsonFits(raw, required, pinned) {
+			var vv PostSearchSortLastEditedTime
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PostSearchSortLastEditedTime = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv PostSearchSortRelevance
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PostSearchSortRelevance = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property"}, map[string]string{"property": "\"relevance\""}
+		if jsonFits(raw, required, pinned) {
+			var vv PostSearchSortRelevance
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PostSearchSortRelevance = &vv
+				matched++
+			}
 		}
 	}
 
@@ -14928,9 +15383,9 @@ func (v *PostSearchSort) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *PostSearchSort) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PostSearchSortLastEditedTime != nil:
-		return json.MarshalEncode(enc, v.PostSearchSortLastEditedTime, jsonOpts)
+		return json.MarshalEncode(enc, v.PostSearchSortLastEditedTime, jsonOptsTo(enc))
 	case v.PostSearchSortRelevance != nil:
-		return json.MarshalEncode(enc, v.PostSearchSortRelevance, jsonOpts)
+		return json.MarshalEncode(enc, v.PostSearchSortRelevance, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -15180,7 +15635,7 @@ func (v *PropertyConfig) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // PropertyConfigurationRequest defines a model
@@ -15413,7 +15868,7 @@ func (v *PropertyConfigurationRequest) MarshalJSONTo(enc *jsontext.Encoder) erro
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // PropertyDescriptionRequest defines a model
@@ -15429,7 +15884,7 @@ type PropertyFilter struct {
 	Checkbox       *CheckboxPropertyFilter                 `json:"checkbox,omitzero"`
 	Select         *SelectPropertyFilter                   `json:"select,omitzero"`
 	MultiSelect    *MultiSelectPropertyFilter              `json:"multi_select,omitzero"`
-	Status         *SelectPropertyFilter                   `json:"status,omitzero"`
+	Status         *StatusPropertyFilter                   `json:"status,omitzero"`
 	Date           *DatePropertyFilter                     `json:"date,omitzero"`
 	People         *PeoplePropertyFilter                   `json:"people,omitzero"`
 	Files          *ExistencePropertyFilter                `json:"files,omitzero"`
@@ -15624,7 +16079,7 @@ func (v *PropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // PropertyFilterVerificationVerification defines a model
@@ -15648,18 +16103,26 @@ func (v *PropertyFilterVerificationVerification) UnmarshalJSONFrom(dec *jsontext
 	var matched int
 
 	{
-		var vv VerificationPropertyStatusFilter
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.VerificationPropertyStatusFilter = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"status"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv VerificationPropertyStatusFilter
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.VerificationPropertyStatusFilter = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv VerificationPropertyDoesNotEqualFilter
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.VerificationPropertyDoesNotEqualFilter = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"does_not_equal"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv VerificationPropertyDoesNotEqualFilter
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.VerificationPropertyDoesNotEqualFilter = &vv
+				matched++
+			}
 		}
 	}
 
@@ -15674,9 +16137,9 @@ func (v *PropertyFilterVerificationVerification) UnmarshalJSONFrom(dec *jsontext
 func (v *PropertyFilterVerificationVerification) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.VerificationPropertyStatusFilter != nil:
-		return json.MarshalEncode(enc, v.VerificationPropertyStatusFilter, jsonOpts)
+		return json.MarshalEncode(enc, v.VerificationPropertyStatusFilter, jsonOptsTo(enc))
 	case v.VerificationPropertyDoesNotEqualFilter != nil:
-		return json.MarshalEncode(enc, v.VerificationPropertyDoesNotEqualFilter, jsonOpts)
+		return json.MarshalEncode(enc, v.VerificationPropertyDoesNotEqualFilter, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -15957,7 +16420,7 @@ func (v *PropertyItemObjectResponse) MarshalJSONTo(enc *jsontext.Encoder) error 
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -16079,7 +16542,7 @@ func (v *PropertyItemPropertyItemListResponsePropertyItem) MarshalJSONTo(enc *js
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // PropertySort defines a model
@@ -16309,7 +16772,7 @@ func (v *PropertyValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // PublicAPIAsyncTaskStatusResultJSONValue defines a model
@@ -16392,15 +16855,15 @@ func (v *PublicAPIAsyncTaskStatusResultJSONValue) UnmarshalJSONFrom(dec *jsontex
 func (v *PublicAPIAsyncTaskStatusResultJSONValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	case v.Float64 != nil:
-		return json.MarshalEncode(enc, v.Float64, jsonOpts)
+		return json.MarshalEncode(enc, v.Float64, jsonOptsTo(enc))
 	case v.Bool != nil:
-		return json.MarshalEncode(enc, v.Bool, jsonOpts)
+		return json.MarshalEncode(enc, v.Bool, jsonOptsTo(enc))
 	case v.PublicAPIAsyncTaskStatusResultJSONValue != nil:
-		return json.MarshalEncode(enc, v.PublicAPIAsyncTaskStatusResultJSONValue, jsonOpts)
+		return json.MarshalEncode(enc, v.PublicAPIAsyncTaskStatusResultJSONValue, jsonOptsTo(enc))
 	case v.MapOfPublicAPIAsyncTaskStatusResultJSONValue != nil:
-		return json.MarshalEncode(enc, v.MapOfPublicAPIAsyncTaskStatusResultJSONValue, jsonOpts)
+		return json.MarshalEncode(enc, v.MapOfPublicAPIAsyncTaskStatusResultJSONValue, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -16456,9 +16919,9 @@ func (v *PublicAPICommonErrorAdditionalDataValue) UnmarshalJSONFrom(dec *jsontex
 func (v *PublicAPICommonErrorAdditionalDataValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	case v.String2 != nil:
-		return json.MarshalEncode(enc, v.String2, jsonOpts)
+		return json.MarshalEncode(enc, v.String2, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -16515,109 +16978,157 @@ func (v *QueryAgentsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterID
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterID = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"id", "property"}, map[string]string{"property": "\"id\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterID
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterID = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterAgentType
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterAgentType = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "string"}, map[string]string{"property": "\"agent_type\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterAgentType
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterAgentType = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterCreatedBy
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterCreatedBy = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"people", "property"}, map[string]string{"property": "\"created_by\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterCreatedBy
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterCreatedBy = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterCreatedTime
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterCreatedTime = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"date", "property"}, map[string]string{"property": "\"created_time\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterCreatedTime
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterCreatedTime = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterFavorited
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterFavorited = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"checkbox", "property"}, map[string]string{"property": "\"favorited\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterFavorited
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterFavorited = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterConnections
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterConnections = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"mcp_server", "property"}, map[string]string{"property": "\"connections\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterConnections
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterConnections = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterStatus
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterStatus = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "status"}, map[string]string{"property": "\"status\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterStatus
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterStatus = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterModelMode
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterModelMode = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "select"}, map[string]string{"property": "\"model_mode\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterModelMode
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterModelMode = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterAgentVersion
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterAgentVersion = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"number", "property"}, map[string]string{"property": "\"agent_version\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterAgentVersion
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterAgentVersion = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterLastRunAt
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterLastRunAt = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"date", "property"}, map[string]string{"property": "\"last_run_at\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterLastRunAt
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterLastRunAt = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterAnd
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterAnd = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"and"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterAnd
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterAnd = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterOr
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterOr = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"or"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterOr
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterOr = &vv
+				matched++
+			}
 		}
 	}
 
@@ -16632,29 +17143,29 @@ func (v *QueryAgentsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *QueryAgentsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.QueryAgentsFilterID != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterID, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterID, jsonOptsTo(enc))
 	case v.QueryAgentsFilterAgentType != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterAgentType, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterAgentType, jsonOptsTo(enc))
 	case v.QueryAgentsFilterCreatedBy != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterCreatedBy, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterCreatedBy, jsonOptsTo(enc))
 	case v.QueryAgentsFilterCreatedTime != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterCreatedTime, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterCreatedTime, jsonOptsTo(enc))
 	case v.QueryAgentsFilterFavorited != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterFavorited, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterFavorited, jsonOptsTo(enc))
 	case v.QueryAgentsFilterConnections != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterConnections, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterConnections, jsonOptsTo(enc))
 	case v.QueryAgentsFilterStatus != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterStatus, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterStatus, jsonOptsTo(enc))
 	case v.QueryAgentsFilterModelMode != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterModelMode, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterModelMode, jsonOptsTo(enc))
 	case v.QueryAgentsFilterAgentVersion != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterAgentVersion, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterAgentVersion, jsonOptsTo(enc))
 	case v.QueryAgentsFilterLastRunAt != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterLastRunAt, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterLastRunAt, jsonOptsTo(enc))
 	case v.QueryAgentsFilterAnd != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterAnd, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterAnd, jsonOptsTo(enc))
 	case v.QueryAgentsFilterOr != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterOr, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterOr, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -16919,109 +17430,157 @@ func (v *QueryAgentsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterID
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterID = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"id", "property"}, map[string]string{"property": "\"id\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterID
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterID = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterAgentType
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterAgentType = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "string"}, map[string]string{"property": "\"agent_type\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterAgentType
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterAgentType = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterCreatedBy
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterCreatedBy = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"people", "property"}, map[string]string{"property": "\"created_by\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterCreatedBy
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterCreatedBy = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterCreatedTime
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterCreatedTime = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"date", "property"}, map[string]string{"property": "\"created_time\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterCreatedTime
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterCreatedTime = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterFavorited
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterFavorited = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"checkbox", "property"}, map[string]string{"property": "\"favorited\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterFavorited
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterFavorited = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterConnections
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterConnections = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"mcp_server", "property"}, map[string]string{"property": "\"connections\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterConnections
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterConnections = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterStatus
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterStatus = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "status"}, map[string]string{"property": "\"status\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterStatus
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterStatus = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterModelMode
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterModelMode = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "select"}, map[string]string{"property": "\"model_mode\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterModelMode
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterModelMode = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterAgentVersion
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterAgentVersion = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"number", "property"}, map[string]string{"property": "\"agent_version\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterAgentVersion
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterAgentVersion = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterLastRunAt
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterLastRunAt = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"date", "property"}, map[string]string{"property": "\"last_run_at\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterLastRunAt
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterLastRunAt = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterOrItemAnd
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterOrItemAnd = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"and"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterOrItemAnd
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterOrItemAnd = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryAgentsFilterOrItemOr
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryAgentsFilterOrItemOr = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"or"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryAgentsFilterOrItemOr
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryAgentsFilterOrItemOr = &vv
+				matched++
+			}
 		}
 	}
 
@@ -17036,29 +17595,29 @@ func (v *QueryAgentsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 func (v *QueryAgentsFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.QueryAgentsFilterID != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterID, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterID, jsonOptsTo(enc))
 	case v.QueryAgentsFilterAgentType != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterAgentType, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterAgentType, jsonOptsTo(enc))
 	case v.QueryAgentsFilterCreatedBy != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterCreatedBy, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterCreatedBy, jsonOptsTo(enc))
 	case v.QueryAgentsFilterCreatedTime != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterCreatedTime, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterCreatedTime, jsonOptsTo(enc))
 	case v.QueryAgentsFilterFavorited != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterFavorited, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterFavorited, jsonOptsTo(enc))
 	case v.QueryAgentsFilterConnections != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterConnections, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterConnections, jsonOptsTo(enc))
 	case v.QueryAgentsFilterStatus != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterStatus, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterStatus, jsonOptsTo(enc))
 	case v.QueryAgentsFilterModelMode != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterModelMode, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterModelMode, jsonOptsTo(enc))
 	case v.QueryAgentsFilterAgentVersion != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterAgentVersion, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterAgentVersion, jsonOptsTo(enc))
 	case v.QueryAgentsFilterLastRunAt != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterLastRunAt, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterLastRunAt, jsonOptsTo(enc))
 	case v.QueryAgentsFilterOrItemAnd != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterOrItemAnd, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterOrItemAnd, jsonOptsTo(enc))
 	case v.QueryAgentsFilterOrItemOr != nil:
-		return json.MarshalEncode(enc, v.QueryAgentsFilterOrItemOr, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryAgentsFilterOrItemOr, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -17209,7 +17768,7 @@ func (v *QueryAgentsFilterOrItemOrItem) MarshalJSONTo(enc *jsontext.Encoder) err
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -17317,19 +17876,27 @@ func (v *QueryMeetingNotesFilterFiltersItem) UnmarshalJSONFrom(dec *jsontext.Dec
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryMeetingNotesFilterFiltersItemOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryMeetingNotesFilterFiltersItemOneOf = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"filter", "property"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryMeetingNotesFilterFiltersItemOneOf
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryMeetingNotesFilterFiltersItemOneOf = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryMeetingNotesFilterFiltersItemOneOf1
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryMeetingNotesFilterFiltersItemOneOf1 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"filters", "operator"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryMeetingNotesFilterFiltersItemOneOf1
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryMeetingNotesFilterFiltersItemOneOf1 = &vv
+				matched++
+			}
 		}
 	}
 
@@ -17344,9 +17911,9 @@ func (v *QueryMeetingNotesFilterFiltersItem) UnmarshalJSONFrom(dec *jsontext.Dec
 func (v *QueryMeetingNotesFilterFiltersItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.QueryMeetingNotesFilterFiltersItemOneOf != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOf, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOf, jsonOptsTo(enc))
 	case v.QueryMeetingNotesFilterFiltersItemOneOf1 != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOf1, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOf1, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -17397,46 +17964,66 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilter) UnmarshalJSONFrom(dec *j
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"operator", "value"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"operator", "value"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2 = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"operator", "value"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3 = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"operator", "value"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4 = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOperator
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOperator = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"operator"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOperator
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryMeetingNotesFilterFiltersItemOneOfFilterOperator = &vv
+				matched++
+			}
 		}
 	}
 
@@ -17451,15 +18038,15 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilter) UnmarshalJSONFrom(dec *j
 func (v *QueryMeetingNotesFilterFiltersItemOneOfFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf, jsonOptsTo(enc))
 	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2 != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2, jsonOptsTo(enc))
 	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3 != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3, jsonOptsTo(enc))
 	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4 != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4, jsonOptsTo(enc))
 	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOperator != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOperator, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOperator, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -17643,7 +18230,7 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue2) MarshalJSONTo
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -17680,37 +18267,53 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue3) UnmarshalJSON
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"count", "direction", "type", "unit", "value"}, map[string]string{"type": "\"relative\"", "value": "\"custom\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"type", "unit", "value"}, map[string]string{"type": "\"relative\"", "value": "\"surrounding\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"type", "value"}, map[string]string{"type": "\"relative\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"type", "value"}, map[string]string{"type": "\"exact\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2 = &vv
+				matched++
+			}
 		}
 	}
 
@@ -17725,13 +18328,13 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue3) UnmarshalJSON
 func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue3) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom, jsonOptsTo(enc))
 	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding, jsonOptsTo(enc))
 	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf, jsonOptsTo(enc))
 	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2 != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2, jsonOpts)
+		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -17872,7 +18475,7 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue) Mars
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -17997,7 +18600,7 @@ func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItem) MarshalJSO
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -18308,55 +18911,79 @@ func (v *QuerySessionEventsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterID
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterID = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "string"}, map[string]string{"property": "\"id\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterID
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterID = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterType
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterType = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"event_type", "property"}, map[string]string{"property": "\"type\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionEventsFilterType
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionEventsFilterType = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterSequence
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterSequence = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"number", "property"}, map[string]string{"property": "\"sequence\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionEventsFilterSequence
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionEventsFilterSequence = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterCreatedAt
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterCreatedAt = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "timestamp"}, map[string]string{"property": "\"created_at\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionEventsFilterCreatedAt
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionEventsFilterCreatedAt = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterAnd
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterAnd = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"and"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionEventsFilterAnd
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionEventsFilterAnd = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOr
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOr = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"or"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionEventsFilterOr
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionEventsFilterOr = &vv
+				matched++
+			}
 		}
 	}
 
@@ -18371,17 +18998,17 @@ func (v *QuerySessionEventsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 func (v *QuerySessionEventsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.QuerySessionsFilterID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterType != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterType, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterType, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterSequence != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterSequence, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterSequence, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterCreatedAt != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterCreatedAt, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterCreatedAt, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterAnd != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterAnd, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterAnd, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterOr != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOr, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOr, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -18468,55 +19095,79 @@ func (v *QuerySessionEventsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterID
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterID = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "string"}, map[string]string{"property": "\"id\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterID
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterID = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterType
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterType = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"event_type", "property"}, map[string]string{"property": "\"type\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionEventsFilterType
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionEventsFilterType = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterSequence
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterSequence = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"number", "property"}, map[string]string{"property": "\"sequence\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionEventsFilterSequence
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionEventsFilterSequence = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterCreatedAt
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterCreatedAt = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "timestamp"}, map[string]string{"property": "\"created_at\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionEventsFilterCreatedAt
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionEventsFilterCreatedAt = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOrItemAnd
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOrItemAnd = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"and"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionEventsFilterOrItemAnd
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionEventsFilterOrItemAnd = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOrItemOr
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOrItemOr = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"or"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionEventsFilterOrItemOr
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionEventsFilterOrItemOr = &vv
+				matched++
+			}
 		}
 	}
 
@@ -18531,17 +19182,17 @@ func (v *QuerySessionEventsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder
 func (v *QuerySessionEventsFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.QuerySessionsFilterID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterType != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterType, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterType, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterSequence != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterSequence, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterSequence, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterCreatedAt != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterCreatedAt, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterCreatedAt, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterOrItemAnd != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOrItemAnd, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOrItemAnd, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterOrItemOr != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOrItemOr, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOrItemOr, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -18584,55 +19235,79 @@ func (v *QuerySessionEventsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.D
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterID
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterID = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "string"}, map[string]string{"property": "\"id\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterID
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterID = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterType
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterType = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"event_type", "property"}, map[string]string{"property": "\"type\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionEventsFilterType
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionEventsFilterType = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterSequence
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterSequence = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"number", "property"}, map[string]string{"property": "\"sequence\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionEventsFilterSequence
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionEventsFilterSequence = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterCreatedAt
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterCreatedAt = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "timestamp"}, map[string]string{"property": "\"created_at\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionEventsFilterCreatedAt
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionEventsFilterCreatedAt = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOrItemOrItemAnd
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOrItemOrItemAnd = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"and"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionEventsFilterOrItemOrItemAnd
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionEventsFilterOrItemOrItemAnd = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionEventsFilterOrItemOrItemOr
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionEventsFilterOrItemOrItemOr = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"or"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionEventsFilterOrItemOrItemOr
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionEventsFilterOrItemOrItemOr = &vv
+				matched++
+			}
 		}
 	}
 
@@ -18647,17 +19322,17 @@ func (v *QuerySessionEventsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.D
 func (v *QuerySessionEventsFilterOrItemOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.QuerySessionsFilterID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterType != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterType, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterType, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterSequence != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterSequence, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterSequence, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterCreatedAt != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterCreatedAt, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterCreatedAt, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterOrItemOrItemAnd != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOrItemOrItemAnd, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOrItemOrItemAnd, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterOrItemOrItemOr != nil:
-		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOrItemOrItemOr, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOrItemOrItemOr, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -18748,7 +19423,7 @@ func (v *QuerySessionEventsFilterOrItemOrItemOrItem) MarshalJSONTo(enc *jsontext
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -18939,55 +19614,79 @@ func (v *QuerySessionsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterID
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterID = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "string"}, map[string]string{"property": "\"id\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterID
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterID = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterAgentID
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterAgentID = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "string"}, map[string]string{"property": "\"agent_id\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterAgentID
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterAgentID = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterStatus
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterStatus = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "status"}, map[string]string{"property": "\"status\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterStatus
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterStatus = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOf = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "timestamp"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterOneOf
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterOneOf = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterAnd
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterAnd = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"and"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterAnd
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterAnd = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterOr
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOr = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"or"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterOr
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterOr = &vv
+				matched++
+			}
 		}
 	}
 
@@ -19002,17 +19701,17 @@ func (v *QuerySessionsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *QuerySessionsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.QuerySessionsFilterID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOptsTo(enc))
 	case v.QuerySessionsFilterAgentID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterAgentID, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterAgentID, jsonOptsTo(enc))
 	case v.QuerySessionsFilterStatus != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterStatus, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterStatus, jsonOptsTo(enc))
 	case v.QuerySessionsFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOptsTo(enc))
 	case v.QuerySessionsFilterAnd != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterAnd, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterAnd, jsonOptsTo(enc))
 	case v.QuerySessionsFilterOr != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOr, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOr, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -19139,55 +19838,79 @@ func (v *QuerySessionsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterID
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterID = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "string"}, map[string]string{"property": "\"id\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterID
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterID = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterAgentID
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterAgentID = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "string"}, map[string]string{"property": "\"agent_id\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterAgentID
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterAgentID = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterStatus
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterStatus = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "status"}, map[string]string{"property": "\"status\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterStatus
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterStatus = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOf = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "timestamp"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterOneOf
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterOneOf = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterOrItemAnd
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOrItemAnd = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"and"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterOrItemAnd
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterOrItemAnd = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterOrItemOr
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOrItemOr = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"or"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterOrItemOr
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterOrItemOr = &vv
+				matched++
+			}
 		}
 	}
 
@@ -19202,17 +19925,17 @@ func (v *QuerySessionsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 func (v *QuerySessionsFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.QuerySessionsFilterID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOptsTo(enc))
 	case v.QuerySessionsFilterAgentID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterAgentID, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterAgentID, jsonOptsTo(enc))
 	case v.QuerySessionsFilterStatus != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterStatus, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterStatus, jsonOptsTo(enc))
 	case v.QuerySessionsFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOptsTo(enc))
 	case v.QuerySessionsFilterOrItemAnd != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOrItemAnd, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOrItemAnd, jsonOptsTo(enc))
 	case v.QuerySessionsFilterOrItemOr != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOrItemOr, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOrItemOr, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -19255,37 +19978,53 @@ func (v *QuerySessionsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.Decode
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterID
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterID = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "string"}, map[string]string{"property": "\"id\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterID
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterID = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterAgentID
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterAgentID = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "string"}, map[string]string{"property": "\"agent_id\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterAgentID
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterAgentID = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterStatus
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterStatus = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "status"}, map[string]string{"property": "\"status\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterStatus
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterStatus = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv QuerySessionsFilterOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.QuerySessionsFilterOneOf = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"property", "timestamp"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv QuerySessionsFilterOneOf
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuerySessionsFilterOneOf = &vv
+				matched++
+			}
 		}
 	}
 
@@ -19300,13 +20039,13 @@ func (v *QuerySessionsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.Decode
 func (v *QuerySessionsFilterOrItemOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.QuerySessionsFilterID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOptsTo(enc))
 	case v.QuerySessionsFilterAgentID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterAgentID, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterAgentID, jsonOptsTo(enc))
 	case v.QuerySessionsFilterStatus != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterStatus, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterStatus, jsonOptsTo(enc))
 	case v.QuerySessionsFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOpts)
+		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -19503,7 +20242,7 @@ func (v *RelationPropertyConfigurationRelation) MarshalJSONTo(enc *jsontext.Enco
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // RelationPropertyConfigurationRelationAllOfDualPropertyDualProperty defines a model
@@ -19534,18 +20273,26 @@ func (v *RelationPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 	var matched int
 
 	{
-		var vv RelationPropertyFilterContains
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RelationPropertyFilterContains = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"contains"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RelationPropertyFilterContains
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RelationPropertyFilterContains = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv RelationPropertyFilterDoesNotContain
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RelationPropertyFilterDoesNotContain = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"does_not_contain"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RelationPropertyFilterDoesNotContain
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RelationPropertyFilterDoesNotContain = &vv
+				matched++
+			}
 		}
 	}
 
@@ -19568,11 +20315,11 @@ func (v *RelationPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 func (v *RelationPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.RelationPropertyFilterContains != nil:
-		return json.MarshalEncode(enc, v.RelationPropertyFilterContains, jsonOpts)
+		return json.MarshalEncode(enc, v.RelationPropertyFilterContains, jsonOptsTo(enc))
 	case v.RelationPropertyFilterDoesNotContain != nil:
-		return json.MarshalEncode(enc, v.RelationPropertyFilterDoesNotContain, jsonOpts)
+		return json.MarshalEncode(enc, v.RelationPropertyFilterDoesNotContain, jsonOptsTo(enc))
 	case v.ExistencePropertyFilter != nil:
-		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOpts)
+		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -19695,9 +20442,9 @@ func (v *RetrieveAPagePropertyOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 func (v *RetrieveAPagePropertyOk) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PropertyItemObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PropertyItemObjectResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.PropertyItemObjectResponse, jsonOptsTo(enc))
 	case v.PropertyItemPropertyItemListResponse != nil:
-		return json.MarshalEncode(enc, v.PropertyItemPropertyItemListResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.PropertyItemPropertyItemListResponse, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -19727,28 +20474,40 @@ func (v *RetrieveAsyncTaskOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv AgentBatch2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentBatch2 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"created_time", "id", "object", "operation", "poll_after_seconds", "status", "status_url"}, map[string]string{"object": "\"async_task\""}
+		if jsonFits(raw, required, pinned) {
+			var vv AgentBatch2
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.AgentBatch2 = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv RetrieveAsyncTaskOkSucceeded
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RetrieveAsyncTaskOkSucceeded = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"created_time", "id", "object", "operation", "result", "status", "status_url"}, map[string]string{"object": "\"async_task\"", "status": "\"succeeded\""}
+		if jsonFits(raw, required, pinned) {
+			var vv RetrieveAsyncTaskOkSucceeded
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RetrieveAsyncTaskOkSucceeded = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv RetrieveAsyncTaskOkFailed
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RetrieveAsyncTaskOkFailed = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"created_time", "error", "id", "object", "operation", "status", "status_url"}, map[string]string{"object": "\"async_task\"", "status": "\"failed\""}
+		if jsonFits(raw, required, pinned) {
+			var vv RetrieveAsyncTaskOkFailed
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RetrieveAsyncTaskOkFailed = &vv
+				matched++
+			}
 		}
 	}
 
@@ -19763,11 +20522,11 @@ func (v *RetrieveAsyncTaskOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *RetrieveAsyncTaskOk) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.AgentBatch2 != nil:
-		return json.MarshalEncode(enc, v.AgentBatch2, jsonOpts)
+		return json.MarshalEncode(enc, v.AgentBatch2, jsonOptsTo(enc))
 	case v.RetrieveAsyncTaskOkSucceeded != nil:
-		return json.MarshalEncode(enc, v.RetrieveAsyncTaskOkSucceeded, jsonOpts)
+		return json.MarshalEncode(enc, v.RetrieveAsyncTaskOkSucceeded, jsonOptsTo(enc))
 	case v.RetrieveAsyncTaskOkFailed != nil:
-		return json.MarshalEncode(enc, v.RetrieveAsyncTaskOkFailed, jsonOpts)
+		return json.MarshalEncode(enc, v.RetrieveAsyncTaskOkFailed, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -20049,7 +20808,7 @@ func (v *RetrieveAsyncTaskOkFailedError) MarshalJSONTo(enc *jsontext.Encoder) er
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -20797,7 +21556,7 @@ func (v *RichText) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // RichTextItemRequest defines a model
@@ -20895,7 +21654,7 @@ func (v *RichTextItemRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // RichTextPropertyConfiguration defines a model
@@ -21008,21 +21767,25 @@ var variantsOfRollupPropertyConfigurationRollup = []jsonVariant{
 		value:    "",
 		members:  map[string]bool{"relation_property_name": true, "rollup_property_name": true},
 		required: []string{"relation_property_name", "rollup_property_name"},
+		pinned:   map[string]string{},
 	},
 	{
 		value:    "",
 		members:  map[string]bool{"relation_property_id": true, "rollup_property_name": true},
 		required: []string{"relation_property_id", "rollup_property_name"},
+		pinned:   map[string]string{},
 	},
 	{
 		value:    "",
 		members:  map[string]bool{"relation_property_name": true, "rollup_property_id": true},
 		required: []string{"relation_property_name", "rollup_property_id"},
+		pinned:   map[string]string{},
 	},
 	{
 		value:    "",
 		members:  map[string]bool{"relation_property_id": true, "rollup_property_id": true},
 		required: []string{"relation_property_id", "rollup_property_id"},
+		pinned:   map[string]string{},
 	},
 }
 
@@ -21096,7 +21859,7 @@ func (v *RollupPropertyConfigurationRollup) UnmarshalJSONFrom(dec *jsontext.Deco
 // MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of RollupPropertyConfigurationRollupAllOf that is set;
 // a member both write must have the same value in each.
 func (v *RollupPropertyConfigurationRollup) MarshalJSONTo(enc *jsontext.Encoder) error {
-	out, err := json.Marshal((*fieldsOfRollupPropertyConfigurationRollup)(v), jsonOpts)
+	out, err := json.Marshal((*fieldsOfRollupPropertyConfigurationRollup)(v), jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -21105,7 +21868,7 @@ func (v *RollupPropertyConfigurationRollup) MarshalJSONTo(enc *jsontext.Encoder)
 
 	if v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf != nil {
 
-		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf, jsonOpts)
+		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf, jsonOptsTo(enc))
 		if err != nil {
 			return err
 		}
@@ -21119,7 +21882,7 @@ func (v *RollupPropertyConfigurationRollup) MarshalJSONTo(enc *jsontext.Encoder)
 
 	if v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf2 != nil {
 
-		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf2, jsonOpts)
+		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf2, jsonOptsTo(enc))
 		if err != nil {
 			return err
 		}
@@ -21133,7 +21896,7 @@ func (v *RollupPropertyConfigurationRollup) MarshalJSONTo(enc *jsontext.Encoder)
 
 	if v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf3 != nil {
 
-		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf3, jsonOpts)
+		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf3, jsonOptsTo(enc))
 		if err != nil {
 			return err
 		}
@@ -21147,7 +21910,7 @@ func (v *RollupPropertyConfigurationRollup) MarshalJSONTo(enc *jsontext.Encoder)
 
 	if v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf4 != nil {
 
-		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf4, jsonOpts)
+		variant, err := json.Marshal(v.RollupPropertyConfigurationRollupAllOf.RollupPropertyConfigurationRollupAllOfOneOf4, jsonOptsTo(enc))
 		if err != nil {
 			return err
 		}
@@ -21191,37 +21954,53 @@ func (v *RollupPropertyConfigurationRollupAllOf) UnmarshalJSONFrom(dec *jsontext
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv RollupPropertyConfigurationRollupAllOfOneOf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyConfigurationRollupAllOfOneOf = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"relation_property_name", "rollup_property_name"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupPropertyConfigurationRollupAllOfOneOf
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupPropertyConfigurationRollupAllOfOneOf = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv RollupPropertyConfigurationRollupAllOfOneOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyConfigurationRollupAllOfOneOf2 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"relation_property_id", "rollup_property_name"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupPropertyConfigurationRollupAllOfOneOf2
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupPropertyConfigurationRollupAllOfOneOf2 = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv RollupPropertyConfigurationRollupAllOfOneOf3
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyConfigurationRollupAllOfOneOf3 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"relation_property_name", "rollup_property_id"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupPropertyConfigurationRollupAllOfOneOf3
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupPropertyConfigurationRollupAllOfOneOf3 = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv RollupPropertyConfigurationRollupAllOfOneOf4
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyConfigurationRollupAllOfOneOf4 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"relation_property_id", "rollup_property_id"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupPropertyConfigurationRollupAllOfOneOf4
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupPropertyConfigurationRollupAllOfOneOf4 = &vv
+				matched++
+			}
 		}
 	}
 
@@ -21236,13 +22015,13 @@ func (v *RollupPropertyConfigurationRollupAllOf) UnmarshalJSONFrom(dec *jsontext
 func (v *RollupPropertyConfigurationRollupAllOf) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.RollupPropertyConfigurationRollupAllOfOneOf != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyConfigurationRollupAllOfOneOf, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupPropertyConfigurationRollupAllOfOneOf, jsonOptsTo(enc))
 	case v.RollupPropertyConfigurationRollupAllOfOneOf2 != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyConfigurationRollupAllOfOneOf2, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupPropertyConfigurationRollupAllOfOneOf2, jsonOptsTo(enc))
 	case v.RollupPropertyConfigurationRollupAllOfOneOf3 != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyConfigurationRollupAllOfOneOf3, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupPropertyConfigurationRollupAllOfOneOf3, jsonOptsTo(enc))
 	case v.RollupPropertyConfigurationRollupAllOfOneOf4 != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyConfigurationRollupAllOfOneOf4, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupPropertyConfigurationRollupAllOfOneOf4, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -21296,42 +22075,62 @@ func (v *RollupPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv RollupPropertyFilterAny
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterAny = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"any"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupPropertyFilterAny
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupPropertyFilterAny = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv RollupPropertyFilterNone
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterNone = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"none"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupPropertyFilterNone
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupPropertyFilterNone = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv RollupPropertyFilterEvery
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterEvery = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"every"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupPropertyFilterEvery
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupPropertyFilterEvery = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv RollupPropertyFilterDate
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterDate = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"date"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupPropertyFilterDate
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupPropertyFilterDate = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv RollupPropertyFilterNumber
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterNumber = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"number"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupPropertyFilterNumber
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupPropertyFilterNumber = &vv
+				matched++
+			}
 		}
 	}
 
@@ -21346,15 +22145,15 @@ func (v *RollupPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *RollupPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.RollupPropertyFilterAny != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterAny, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupPropertyFilterAny, jsonOptsTo(enc))
 	case v.RollupPropertyFilterNone != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterNone, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupPropertyFilterNone, jsonOptsTo(enc))
 	case v.RollupPropertyFilterEvery != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterEvery, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupPropertyFilterEvery, jsonOptsTo(enc))
 	case v.RollupPropertyFilterDate != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterDate, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupPropertyFilterDate, jsonOptsTo(enc))
 	case v.RollupPropertyFilterNumber != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterNumber, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupPropertyFilterNumber, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -21507,7 +22306,7 @@ func (v *RollupPropertyItemObjectRollup) MarshalJSONTo(enc *jsontext.Encoder) er
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // RollupSubfilterPropertyFilter defines a model
@@ -21539,82 +22338,122 @@ func (v *RollupSubfilterPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder)
 	var matched int
 
 	{
-		var vv RollupSubfilterPropertyFilterRichText
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupSubfilterPropertyFilterRichText = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"rich_text"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupSubfilterPropertyFilterRichText
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupSubfilterPropertyFilterRichText = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv RollupPropertyFilterNumber
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterNumber = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"number"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupPropertyFilterNumber
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupPropertyFilterNumber = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv FormulaPropertyFilterCheckbox
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.FormulaPropertyFilterCheckbox = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"checkbox"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv FormulaPropertyFilterCheckbox
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.FormulaPropertyFilterCheckbox = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv RollupSubfilterPropertyFilterSelect
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupSubfilterPropertyFilterSelect = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"select"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupSubfilterPropertyFilterSelect
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupSubfilterPropertyFilterSelect = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv RollupSubfilterPropertyFilterMultiSelect
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupSubfilterPropertyFilterMultiSelect = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"multi_select"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupSubfilterPropertyFilterMultiSelect
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupSubfilterPropertyFilterMultiSelect = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv RollupSubfilterPropertyFilterRelation
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupSubfilterPropertyFilterRelation = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"relation"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupSubfilterPropertyFilterRelation
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupSubfilterPropertyFilterRelation = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv RollupPropertyFilterDate
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupPropertyFilterDate = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"date"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupPropertyFilterDate
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupPropertyFilterDate = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv RollupSubfilterPropertyFilterPeople
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupSubfilterPropertyFilterPeople = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"people"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupSubfilterPropertyFilterPeople
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupSubfilterPropertyFilterPeople = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv RollupSubfilterPropertyFilterFiles
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupSubfilterPropertyFilterFiles = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"files"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupSubfilterPropertyFilterFiles
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupSubfilterPropertyFilterFiles = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv RollupSubfilterPropertyFilterStatus
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.RollupSubfilterPropertyFilterStatus = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"status"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv RollupSubfilterPropertyFilterStatus
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.RollupSubfilterPropertyFilterStatus = &vv
+				matched++
+			}
 		}
 	}
 
@@ -21629,25 +22468,25 @@ func (v *RollupSubfilterPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder)
 func (v *RollupSubfilterPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.RollupSubfilterPropertyFilterRichText != nil:
-		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterRichText, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterRichText, jsonOptsTo(enc))
 	case v.RollupPropertyFilterNumber != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterNumber, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupPropertyFilterNumber, jsonOptsTo(enc))
 	case v.FormulaPropertyFilterCheckbox != nil:
-		return json.MarshalEncode(enc, v.FormulaPropertyFilterCheckbox, jsonOpts)
+		return json.MarshalEncode(enc, v.FormulaPropertyFilterCheckbox, jsonOptsTo(enc))
 	case v.RollupSubfilterPropertyFilterSelect != nil:
-		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterSelect, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterSelect, jsonOptsTo(enc))
 	case v.RollupSubfilterPropertyFilterMultiSelect != nil:
-		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterMultiSelect, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterMultiSelect, jsonOptsTo(enc))
 	case v.RollupSubfilterPropertyFilterRelation != nil:
-		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterRelation, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterRelation, jsonOptsTo(enc))
 	case v.RollupPropertyFilterDate != nil:
-		return json.MarshalEncode(enc, v.RollupPropertyFilterDate, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupPropertyFilterDate, jsonOptsTo(enc))
 	case v.RollupSubfilterPropertyFilterPeople != nil:
-		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterPeople, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterPeople, jsonOptsTo(enc))
 	case v.RollupSubfilterPropertyFilterFiles != nil:
-		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterFiles, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterFiles, jsonOptsTo(enc))
 	case v.RollupSubfilterPropertyFilterStatus != nil:
-		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterStatus, jsonOpts)
+		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterStatus, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -21685,7 +22524,7 @@ type RollupSubfilterPropertyFilterSelect struct {
 
 // RollupSubfilterPropertyFilterStatus defines a model
 type RollupSubfilterPropertyFilterStatus struct {
-	Status SelectPropertyFilter `json:"status"`
+	Status StatusPropertyFilter `json:"status"`
 }
 
 // One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
@@ -21774,14 +22613,14 @@ type SelectProperty struct {
 
 // SelectPropertyConfigurationSelect defines a model
 type SelectPropertyConfigurationSelect struct {
-	Options SelectPropertyConfigurationSelect2 `json:"options,omitzero"`
+	Options SelectPropertyConfigurationSelectOptions `json:"options,omitzero"`
 }
 
-// SelectPropertyConfigurationSelect2 defines a model
-type SelectPropertyConfigurationSelect2 []SelectPropertyConfigurationSelectItem
+// SelectPropertyConfigurationSelectOptions defines a model
+type SelectPropertyConfigurationSelectOptions []SelectPropertyConfigurationSelectOptionsItem
 
-// SelectPropertyConfigurationSelectItem defines a model
-type SelectPropertyConfigurationSelectItem struct {
+// SelectPropertyConfigurationSelectOptionsItem defines a model
+type SelectPropertyConfigurationSelectOptionsItem struct {
 	Name string `json:"name"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
 	Color       SelectColor `json:"color,omitzero"`
@@ -21791,9 +22630,9 @@ type SelectPropertyConfigurationSelectItem struct {
 // SelectPropertyFilter defines a model
 // SelectPropertyFilter is an untagged anyOf union: at least one field is set after unmarshaling.
 type SelectPropertyFilter struct {
-	SelectPropertyFilterEquals       *SelectPropertyFilterEquals
-	SelectPropertyFilterDoesNotEqual *SelectPropertyFilterDoesNotEqual
-	ExistencePropertyFilter          *ExistencePropertyFilter
+	StatusValueFilterEquals       *StatusValueFilterEquals
+	StatusValueFilterDoesNotEqual *StatusValueFilterDoesNotEqual
+	ExistencePropertyFilter       *ExistencePropertyFilter
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -21810,18 +22649,26 @@ func (v *SelectPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv SelectPropertyFilterEquals
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.SelectPropertyFilterEquals = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"equals"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv StatusValueFilterEquals
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.StatusValueFilterEquals = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv SelectPropertyFilterDoesNotEqual
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.SelectPropertyFilterDoesNotEqual = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"does_not_equal"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv StatusValueFilterDoesNotEqual
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.StatusValueFilterDoesNotEqual = &vv
+				matched++
+			}
 		}
 	}
 
@@ -21843,25 +22690,15 @@ func (v *SelectPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *SelectPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.SelectPropertyFilterEquals != nil:
-		return json.MarshalEncode(enc, v.SelectPropertyFilterEquals, jsonOpts)
-	case v.SelectPropertyFilterDoesNotEqual != nil:
-		return json.MarshalEncode(enc, v.SelectPropertyFilterDoesNotEqual, jsonOpts)
+	case v.StatusValueFilterEquals != nil:
+		return json.MarshalEncode(enc, v.StatusValueFilterEquals, jsonOptsTo(enc))
+	case v.StatusValueFilterDoesNotEqual != nil:
+		return json.MarshalEncode(enc, v.StatusValueFilterDoesNotEqual, jsonOptsTo(enc))
 	case v.ExistencePropertyFilter != nil:
-		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOpts)
+		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// SelectPropertyFilterDoesNotEqual defines a model
-type SelectPropertyFilterDoesNotEqual struct {
-	DoesNotEqual StringOrStringArray `json:"does_not_equal"`
-}
-
-// SelectPropertyFilterEquals defines a model
-type SelectPropertyFilterEquals struct {
-	Equals StringOrStringArray `json:"equals"`
 }
 
 // SelectPropertyItemObjectResponse defines a model
@@ -22064,7 +22901,7 @@ func (v *SessionEventListResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -22395,7 +23232,7 @@ func (v *SessionEventListResultsItemUserMessageContentItem) MarshalJSONTo(enc *j
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -22554,7 +23391,7 @@ func (v *SessionModels) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -22606,33 +23443,33 @@ type SessionRequiredActions []SessionRequiredActionsItem
 
 // SessionRequiredActionsItem defines a model
 type SessionRequiredActionsItem struct {
-	ActionID string                      `json:"action_id"`
-	Title    string                      `json:"title"`
-	Options  SessionRequiredActionsItem2 `json:"options"`
+	ActionID string                            `json:"action_id"`
+	Title    string                            `json:"title"`
+	Options  SessionRequiredActionsItemOptions `json:"options"`
 }
 
-// SessionRequiredActionsItem2 defines a model
-type SessionRequiredActionsItem2 []SessionRequiredActionsItem3
+// SessionRequiredActionsItemOptions defines a model
+type SessionRequiredActionsItemOptions []SessionRequiredActionsItemOptionsItem
 
-// SessionRequiredActionsItem3 defines a model
-type SessionRequiredActionsItem3 struct {
+// SessionRequiredActionsItemOptionsItem defines a model
+type SessionRequiredActionsItemOptionsItem struct {
 	// One of: `approve`, `reject`
-	ID    SessionRequiredActionsItemID `json:"id"`
-	Label string                       `json:"label"`
+	ID    SessionRequiredActionsItemOptionsItemID `json:"id"`
+	Label string                                  `json:"label"`
 }
 
 // One of: `approve`, `reject`
-type SessionRequiredActionsItemID string
+type SessionRequiredActionsItemOptionsItemID string
 
 const (
-	SessionRequiredActionsItemIDApprove SessionRequiredActionsItemID = "approve"
-	SessionRequiredActionsItemIDReject  SessionRequiredActionsItemID = "reject"
+	SessionRequiredActionsItemOptionsItemIDApprove SessionRequiredActionsItemOptionsItemID = "approve"
+	SessionRequiredActionsItemOptionsItemIDReject  SessionRequiredActionsItemOptionsItemID = "reject"
 )
 
-// Valid indicates whether the value is a known member of the SessionRequiredActionsItemID enum.
-func (e SessionRequiredActionsItemID) Valid() bool {
+// Valid indicates whether the value is a known member of the SessionRequiredActionsItemOptionsItemID enum.
+func (e SessionRequiredActionsItemOptionsItemID) Valid() bool {
 	switch e {
-	case SessionRequiredActionsItemIDApprove, SessionRequiredActionsItemIDReject:
+	case SessionRequiredActionsItemOptionsItemIDApprove, SessionRequiredActionsItemOptionsItemIDReject:
 		return true
 	default:
 		return false
@@ -22871,7 +23708,7 @@ func (v *SimpleOrArrayPropertyValueResponse) MarshalJSONTo(enc *jsontext.Encoder
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // A sort of a data source's entries, by a property or a timestamp.
@@ -22897,19 +23734,27 @@ func (v *Sort) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv PropertySort
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PropertySort = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"direction", "property"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv PropertySort
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PropertySort = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv TimestampSort
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TimestampSort = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"direction", "timestamp"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv TimestampSort
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.TimestampSort = &vv
+				matched++
+			}
 		}
 	}
 
@@ -22924,9 +23769,9 @@ func (v *Sort) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *Sort) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PropertySort != nil:
-		return json.MarshalEncode(enc, v.PropertySort, jsonOpts)
+		return json.MarshalEncode(enc, v.PropertySort, jsonOptsTo(enc))
 	case v.TimestampSort != nil:
-		return json.MarshalEncode(enc, v.TimestampSort, jsonOpts)
+		return json.MarshalEncode(enc, v.TimestampSort, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -23044,6 +23889,61 @@ type StatusGroupByConfigResponse struct {
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 }
 
+// StatusGroupNames defines a model
+// StatusGroupNames is an untagged anyOf union: at least one field is set after unmarshaling.
+type StatusGroupNames struct {
+	StringRequest  StringRequest
+	StringRequest2 []StringRequest
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *StatusGroupNames) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = StatusGroupNames{}
+
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv StringRequest
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.StringRequest = vv
+			matched++
+		}
+	}
+
+	{
+		var vv []StringRequest
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.StringRequest2 = vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *StatusGroupNames) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.StringRequest != "":
+		return json.MarshalEncode(enc, v.StringRequest, jsonOptsTo(enc))
+	case v.StringRequest2 != nil:
+		return json.MarshalEncode(enc, v.StringRequest2, jsonOptsTo(enc))
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
 // One of: `To-do`, `In progress`, `Complete`
 type StatusOptionGroup string
 
@@ -23099,19 +23999,27 @@ func (v *StatusOptionUpdateAllOf) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv StatusOptionUpdateAllOfName
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.StatusOptionUpdateAllOfName = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"name"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv StatusOptionUpdateAllOfName
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.StatusOptionUpdateAllOfName = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv StatusOptionUpdateAllOfID
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.StatusOptionUpdateAllOfID = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"id"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv StatusOptionUpdateAllOfID
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.StatusOptionUpdateAllOfID = &vv
+				matched++
+			}
 		}
 	}
 
@@ -23126,9 +24034,9 @@ func (v *StatusOptionUpdateAllOf) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 func (v *StatusOptionUpdateAllOf) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.StatusOptionUpdateAllOfName != nil:
-		return json.MarshalEncode(enc, v.StatusOptionUpdateAllOfName, jsonOpts)
+		return json.MarshalEncode(enc, v.StatusOptionUpdateAllOfName, jsonOptsTo(enc))
 	case v.StatusOptionUpdateAllOfID != nil:
-		return json.MarshalEncode(enc, v.StatusOptionUpdateAllOfID, jsonOpts)
+		return json.MarshalEncode(enc, v.StatusOptionUpdateAllOfID, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -23168,11 +24076,13 @@ var variantsOfStatusOptionUpdateRequest = []jsonVariant{
 		value:    "",
 		members:  map[string]bool{"id": true, "name": true},
 		required: []string{"name"},
+		pinned:   map[string]string{},
 	},
 	{
 		value:    "",
 		members:  map[string]bool{"id": true, "name": true},
 		required: []string{"id"},
+		pinned:   map[string]string{},
 	},
 }
 
@@ -23232,7 +24142,7 @@ func (v *StatusOptionUpdateRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 // MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of StatusOptionUpdateAllOf that is set;
 // a member both write must have the same value in each.
 func (v *StatusOptionUpdateRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
-	out, err := json.Marshal((*fieldsOfStatusOptionUpdateRequest)(v), jsonOpts)
+	out, err := json.Marshal((*fieldsOfStatusOptionUpdateRequest)(v), jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -23241,7 +24151,7 @@ func (v *StatusOptionUpdateRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 	if v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName != nil {
 
-		variant, err := json.Marshal(v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName, jsonOpts)
+		variant, err := json.Marshal(v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName, jsonOptsTo(enc))
 		if err != nil {
 			return err
 		}
@@ -23255,7 +24165,7 @@ func (v *StatusOptionUpdateRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 	if v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID != nil {
 
-		variant, err := json.Marshal(v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID, jsonOpts)
+		variant, err := json.Marshal(v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID, jsonOptsTo(enc))
 		if err != nil {
 			return err
 		}
@@ -23287,6 +24197,61 @@ type StatusPropertyConfigRequest struct {
 type StatusPropertyConfigUpdateRequest struct {
 	// Status options to add or update. Use group to assign an option to To-do, In progress, or Complete. Existing options keep their current group when group is omitted; new options use To-do when present, or the first existing group otherwise.
 	Options StatusOptionUpdateRequestArray `json:"options,omitzero"`
+}
+
+// StatusPropertyFilter defines a model
+// StatusPropertyFilter is an untagged anyOf union: at least one field is set after unmarshaling.
+type StatusPropertyFilter struct {
+	StatusValueFilter       *StatusValueFilter
+	ExistencePropertyFilter *ExistencePropertyFilter
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *StatusPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = StatusPropertyFilter{}
+
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv StatusValueFilter
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.StatusValueFilter = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv ExistencePropertyFilter
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.ExistencePropertyFilter = &vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *StatusPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.StatusValueFilter != nil:
+		return json.MarshalEncode(enc, v.StatusValueFilter, jsonOptsTo(enc))
+	case v.ExistencePropertyFilter != nil:
+		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOptsTo(enc))
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
 // StatusPropertyItemObjectResponse defines a model
@@ -23332,6 +24297,119 @@ func (e StatusType) Valid() bool {
 	default:
 		return false
 	}
+}
+
+// The group operators match status groups instead of options. They require the `Notion-Beta: status-group-filters-2026-10-06` header.
+// StatusValueFilter is an untagged anyOf union: at least one field is set after unmarshaling.
+type StatusValueFilter struct {
+	StatusValueFilterEquals            *StatusValueFilterEquals
+	StatusValueFilterDoesNotEqual      *StatusValueFilterDoesNotEqual
+	StatusValueFilterGroupEquals       *StatusValueFilterGroupEquals
+	StatusValueFilterGroupDoesNotEqual *StatusValueFilterGroupDoesNotEqual
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *StatusValueFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = StatusValueFilter{}
+
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"equals"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv StatusValueFilterEquals
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.StatusValueFilterEquals = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"does_not_equal"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv StatusValueFilterDoesNotEqual
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.StatusValueFilterDoesNotEqual = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"group_equals"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv StatusValueFilterGroupEquals
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.StatusValueFilterGroupEquals = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"group_does_not_equal"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv StatusValueFilterGroupDoesNotEqual
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.StatusValueFilterGroupDoesNotEqual = &vv
+				matched++
+			}
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *StatusValueFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.StatusValueFilterEquals != nil:
+		return json.MarshalEncode(enc, v.StatusValueFilterEquals, jsonOptsTo(enc))
+	case v.StatusValueFilterDoesNotEqual != nil:
+		return json.MarshalEncode(enc, v.StatusValueFilterDoesNotEqual, jsonOptsTo(enc))
+	case v.StatusValueFilterGroupEquals != nil:
+		return json.MarshalEncode(enc, v.StatusValueFilterGroupEquals, jsonOptsTo(enc))
+	case v.StatusValueFilterGroupDoesNotEqual != nil:
+		return json.MarshalEncode(enc, v.StatusValueFilterGroupDoesNotEqual, jsonOptsTo(enc))
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// StatusValueFilterDoesNotEqual defines a model
+type StatusValueFilterDoesNotEqual struct {
+	DoesNotEqual StringOrStringArray `json:"does_not_equal"`
+}
+
+// StatusValueFilterEquals defines a model
+type StatusValueFilterEquals struct {
+	Equals StringOrStringArray `json:"equals"`
+}
+
+// StatusValueFilterGroupDoesNotEqual defines a model
+type StatusValueFilterGroupDoesNotEqual struct {
+	GroupDoesNotEqual StatusGroupNames `json:"group_does_not_equal"`
+}
+
+// StatusValueFilterGroupEquals defines a model
+type StatusValueFilterGroupEquals struct {
+	GroupEquals StatusGroupNames `json:"group_equals"`
 }
 
 // StringOrStringArray defines a model
@@ -23381,9 +24459,9 @@ func (v *StringOrStringArray) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *StringOrStringArray) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOpts)
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	case v.String2 != nil:
-		return json.MarshalEncode(enc, v.String2, jsonOpts)
+		return json.MarshalEncode(enc, v.String2, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -23700,7 +24778,7 @@ func (v *TemplateMentionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // TemplateMentionResponse defines a model
@@ -23784,7 +24862,7 @@ func (v *TemplateMentionResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // IANA timezone to use when resolving template variables like @now and @today (e.g. 'America/New_York'). Defaults to the authorizing user's timezone for public integrations, or UTC for internal integrations.
@@ -23885,50 +24963,74 @@ func (v *TextPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv TextPropertyFilterEquals
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TextPropertyFilterEquals = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"equals"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv TextPropertyFilterEquals
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.TextPropertyFilterEquals = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv TextPropertyFilterDoesNotEqual
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TextPropertyFilterDoesNotEqual = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"does_not_equal"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv TextPropertyFilterDoesNotEqual
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.TextPropertyFilterDoesNotEqual = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv TextPropertyFilterContains
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TextPropertyFilterContains = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"contains"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv TextPropertyFilterContains
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.TextPropertyFilterContains = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv TextPropertyFilterDoesNotContain
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TextPropertyFilterDoesNotContain = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"does_not_contain"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv TextPropertyFilterDoesNotContain
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.TextPropertyFilterDoesNotContain = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv TextPropertyFilterStartsWith
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TextPropertyFilterStartsWith = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"starts_with"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv TextPropertyFilterStartsWith
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.TextPropertyFilterStartsWith = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv TextPropertyFilterEndsWith
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.TextPropertyFilterEndsWith = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"ends_with"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv TextPropertyFilterEndsWith
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.TextPropertyFilterEndsWith = &vv
+				matched++
+			}
 		}
 	}
 
@@ -23951,19 +25053,19 @@ func (v *TextPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *TextPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.TextPropertyFilterEquals != nil:
-		return json.MarshalEncode(enc, v.TextPropertyFilterEquals, jsonOpts)
+		return json.MarshalEncode(enc, v.TextPropertyFilterEquals, jsonOptsTo(enc))
 	case v.TextPropertyFilterDoesNotEqual != nil:
-		return json.MarshalEncode(enc, v.TextPropertyFilterDoesNotEqual, jsonOpts)
+		return json.MarshalEncode(enc, v.TextPropertyFilterDoesNotEqual, jsonOptsTo(enc))
 	case v.TextPropertyFilterContains != nil:
-		return json.MarshalEncode(enc, v.TextPropertyFilterContains, jsonOpts)
+		return json.MarshalEncode(enc, v.TextPropertyFilterContains, jsonOptsTo(enc))
 	case v.TextPropertyFilterDoesNotContain != nil:
-		return json.MarshalEncode(enc, v.TextPropertyFilterDoesNotContain, jsonOpts)
+		return json.MarshalEncode(enc, v.TextPropertyFilterDoesNotContain, jsonOptsTo(enc))
 	case v.TextPropertyFilterStartsWith != nil:
-		return json.MarshalEncode(enc, v.TextPropertyFilterStartsWith, jsonOpts)
+		return json.MarshalEncode(enc, v.TextPropertyFilterStartsWith, jsonOptsTo(enc))
 	case v.TextPropertyFilterEndsWith != nil:
-		return json.MarshalEncode(enc, v.TextPropertyFilterEndsWith, jsonOpts)
+		return json.MarshalEncode(enc, v.TextPropertyFilterEndsWith, jsonOptsTo(enc))
 	case v.ExistencePropertyFilter != nil:
-		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOpts)
+		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -24265,7 +25367,7 @@ func (v *TimestampFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -24547,242 +25649,362 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv UpdateABlockEmbed
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockEmbed = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"embed"}, map[string]string{"type": "\"embed\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockEmbed
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockEmbed = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockBookmark
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockBookmark = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"bookmark"}, map[string]string{"type": "\"bookmark\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockBookmark
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockBookmark = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockImage
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockImage = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"image"}, map[string]string{"type": "\"image\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockImage
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockImage = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockVideo
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockVideo = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"video"}, map[string]string{"type": "\"video\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockVideo
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockVideo = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockPdf
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockPdf = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"pdf"}, map[string]string{"type": "\"pdf\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockPdf
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockPdf = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockFile
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockFile = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"file"}, map[string]string{"type": "\"file\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockFile
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockFile = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockAudio
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockAudio = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"audio"}, map[string]string{"type": "\"audio\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockAudio
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockAudio = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockCode
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockCode = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"code"}, map[string]string{"type": "\"code\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockCode
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockCode = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockEquation
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockEquation = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"equation"}, map[string]string{"type": "\"equation\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockEquation
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockEquation = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockDivider
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockDivider = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"divider"}, map[string]string{"type": "\"divider\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockDivider
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockDivider = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockBreadcrumb
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockBreadcrumb = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"breadcrumb"}, map[string]string{"type": "\"breadcrumb\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockBreadcrumb
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockBreadcrumb = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockTab
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockTab = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"tab"}, map[string]string{"type": "\"tab\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockTab
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockTab = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockTableOfContents
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockTableOfContents = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"table_of_contents"}, map[string]string{"type": "\"table_of_contents\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockTableOfContents
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockTableOfContents = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockLinkToPage
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockLinkToPage = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"link_to_page"}, map[string]string{"type": "\"link_to_page\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockLinkToPage
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockLinkToPage = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockTableRow
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockTableRow = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"table_row"}, map[string]string{"type": "\"table_row\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockTableRow
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockTableRow = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockHeading1
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockHeading1 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"heading_1"}, map[string]string{"type": "\"heading_1\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockHeading1
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockHeading1 = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockHeading2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockHeading2 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"heading_2"}, map[string]string{"type": "\"heading_2\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockHeading2
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockHeading2 = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockHeading3
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockHeading3 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"heading_3"}, map[string]string{"type": "\"heading_3\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockHeading3
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockHeading3 = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockHeading4
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockHeading4 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"heading_4"}, map[string]string{"type": "\"heading_4\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockHeading4
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockHeading4 = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockParagraph
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockParagraph = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"paragraph"}, map[string]string{"type": "\"paragraph\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockParagraph
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockParagraph = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockBulletedListItem
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockBulletedListItem = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"bulleted_list_item"}, map[string]string{"type": "\"bulleted_list_item\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockBulletedListItem
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockBulletedListItem = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockNumberedListItem
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockNumberedListItem = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"numbered_list_item"}, map[string]string{"type": "\"numbered_list_item\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockNumberedListItem
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockNumberedListItem = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockQuote
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockQuote = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"quote"}, map[string]string{"type": "\"quote\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockQuote
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockQuote = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockToDo
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockToDo = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"to_do"}, map[string]string{"type": "\"to_do\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockToDo
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockToDo = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockToggle
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockToggle = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"toggle"}, map[string]string{"type": "\"toggle\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockToggle
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockToggle = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockTemplate
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockTemplate = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"template"}, map[string]string{"type": "\"template\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockTemplate
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockTemplate = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockCallout
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockCallout = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"callout"}, map[string]string{"type": "\"callout\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockCallout
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockCallout = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockSyncedBlock
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockSyncedBlock = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"synced_block"}, map[string]string{"type": "\"synced_block\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockSyncedBlock
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockSyncedBlock = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockTable
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockTable = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"table"}, map[string]string{"type": "\"table\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockTable
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockTable = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UpdateABlockColumn
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateABlockColumn = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"column"}, map[string]string{"type": "\"column\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateABlockColumn
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateABlockColumn = &vv
+				matched++
+			}
 		}
 	}
 
@@ -24805,67 +26027,67 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *UpdateABlock) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.UpdateABlockEmbed != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockEmbed, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockEmbed, jsonOptsTo(enc))
 	case v.UpdateABlockBookmark != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockBookmark, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockBookmark, jsonOptsTo(enc))
 	case v.UpdateABlockImage != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockImage, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockImage, jsonOptsTo(enc))
 	case v.UpdateABlockVideo != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockVideo, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockVideo, jsonOptsTo(enc))
 	case v.UpdateABlockPdf != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockPdf, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockPdf, jsonOptsTo(enc))
 	case v.UpdateABlockFile != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockFile, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockFile, jsonOptsTo(enc))
 	case v.UpdateABlockAudio != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockAudio, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockAudio, jsonOptsTo(enc))
 	case v.UpdateABlockCode != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockCode, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockCode, jsonOptsTo(enc))
 	case v.UpdateABlockEquation != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockEquation, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockEquation, jsonOptsTo(enc))
 	case v.UpdateABlockDivider != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockDivider, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockDivider, jsonOptsTo(enc))
 	case v.UpdateABlockBreadcrumb != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockBreadcrumb, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockBreadcrumb, jsonOptsTo(enc))
 	case v.UpdateABlockTab != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockTab, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockTab, jsonOptsTo(enc))
 	case v.UpdateABlockTableOfContents != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockTableOfContents, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockTableOfContents, jsonOptsTo(enc))
 	case v.UpdateABlockLinkToPage != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockLinkToPage, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockLinkToPage, jsonOptsTo(enc))
 	case v.UpdateABlockTableRow != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockTableRow, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockTableRow, jsonOptsTo(enc))
 	case v.UpdateABlockHeading1 != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockHeading1, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockHeading1, jsonOptsTo(enc))
 	case v.UpdateABlockHeading2 != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockHeading2, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockHeading2, jsonOptsTo(enc))
 	case v.UpdateABlockHeading3 != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockHeading3, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockHeading3, jsonOptsTo(enc))
 	case v.UpdateABlockHeading4 != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockHeading4, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockHeading4, jsonOptsTo(enc))
 	case v.UpdateABlockParagraph != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockParagraph, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockParagraph, jsonOptsTo(enc))
 	case v.UpdateABlockBulletedListItem != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockBulletedListItem, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockBulletedListItem, jsonOptsTo(enc))
 	case v.UpdateABlockNumberedListItem != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockNumberedListItem, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockNumberedListItem, jsonOptsTo(enc))
 	case v.UpdateABlockQuote != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockQuote, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockQuote, jsonOptsTo(enc))
 	case v.UpdateABlockToDo != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockToDo, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockToDo, jsonOptsTo(enc))
 	case v.UpdateABlockToggle != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockToggle, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockToggle, jsonOptsTo(enc))
 	case v.UpdateABlockTemplate != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockTemplate, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockTemplate, jsonOptsTo(enc))
 	case v.UpdateABlockCallout != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockCallout, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockCallout, jsonOptsTo(enc))
 	case v.UpdateABlockSyncedBlock != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockSyncedBlock, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockSyncedBlock, jsonOptsTo(enc))
 	case v.UpdateABlockTable != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockTable, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockTable, jsonOptsTo(enc))
 	case v.UpdateABlockColumn != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockColumn, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockColumn, jsonOptsTo(enc))
 	case v.UpdateABlockAnyOf30 != nil:
-		return json.MarshalEncode(enc, v.UpdateABlockAnyOf30, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateABlockAnyOf30, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -24981,10 +26203,14 @@ func (v *UpdateABlockEmbedEmbed) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 	}
 
 	{
-		var vv UpdateEmbedFileUploadRequest
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateEmbedFileUploadRequest = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"file_upload"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateEmbedFileUploadRequest
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateEmbedFileUploadRequest = &vv
+				matched++
+			}
 		}
 	}
 
@@ -24999,9 +26225,9 @@ func (v *UpdateABlockEmbedEmbed) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 func (v *UpdateABlockEmbedEmbed) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.UpdateMediaContentWithURLAndCaptionRequest != nil:
-		return json.MarshalEncode(enc, v.UpdateMediaContentWithURLAndCaptionRequest, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateMediaContentWithURLAndCaptionRequest, jsonOptsTo(enc))
 	case v.UpdateEmbedFileUploadRequest != nil:
-		return json.MarshalEncode(enc, v.UpdateEmbedFileUploadRequest, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateEmbedFileUploadRequest, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -25153,7 +26379,7 @@ func (v *UpdateABlockLinkToPageLinkToPage) MarshalJSONTo(enc *jsontext.Encoder) 
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // UpdateABlockNumberedListItem defines a model
@@ -25279,15 +26505,142 @@ type UpdateABlockVideo struct {
 }
 
 // UpdateAComment defines a model
-// UpdateAComment is an untagged oneOf union: exactly one field is set after unmarshaling.
 type UpdateAComment struct {
-	UpdateACommentRichText *UpdateACommentRichText
-	UpdateACommentMarkdown *UpdateACommentMarkdown
+	// The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.
+	MarkdownVersion      MarkdownVersion      `json:"markdown_version,omitzero"`
+	UpdateACommentAllOf0 UpdateACommentAllOf0 `json:"-"`
+}
+
+// fieldsOfUpdateAComment is UpdateAComment without its methods, to encode the fields outside its union.
+type fieldsOfUpdateAComment UpdateAComment
+
+// membersOfUpdateAComment are the members UpdateAComment declares outside its union.
+var membersOfUpdateAComment = map[string]bool{"markdown_version": true}
+
+// variantsOfUpdateAComment are the alternatives its union is decoded as, in order.
+var variantsOfUpdateAComment = []jsonVariant{
+	{
+		value:    "",
+		members:  map[string]bool{"rich_text": true},
+		required: []string{"rich_text"},
+		pinned:   map[string]string{},
+	},
+	{
+		value:    "",
+		members:  map[string]bool{"markdown": true},
+		required: []string{"markdown"},
+		pinned:   map[string]string{},
+	},
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of UpdateACommentAllOf0 each
+// decode the members they declare, and a member neither declares is an error.
+func (v *UpdateAComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
+
+	*v = UpdateAComment{}
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	chosen, err := jsonChooseVariants(raw, "", variantsOfUpdateAComment, membersOfUpdateAComment, true, strict)
+	if err != nil {
+		return err
+	}
+
+	fields, err := jsonSelect(raw, membersOfUpdateAComment)
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(fields, (*fieldsOfUpdateAComment)(v), opts); err != nil {
+		return err
+	}
+
+	for _, i := range chosen {
+		variant, err := jsonSelect(raw, variantsOfUpdateAComment[i].members)
+		if err != nil {
+			return err
+		}
+
+		switch i {
+		case 0:
+			var vv UpdateACommentAllOf0RichText
+			if err := json.Unmarshal(variant, &vv, opts); err != nil {
+				return err
+			}
+
+			v.UpdateACommentAllOf0.UpdateACommentAllOf0RichText = &vv
+		case 1:
+			var vv UpdateACommentAllOf0Markdown
+			if err := json.Unmarshal(variant, &vv, opts); err != nil {
+				return err
+			}
+
+			v.UpdateACommentAllOf0.UpdateACommentAllOf0Markdown = &vv
+		}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of UpdateACommentAllOf0 that is set;
+// a member both write must have the same value in each.
+func (v *UpdateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
+	out, err := json.Marshal((*fieldsOfUpdateAComment)(v), jsonOptsTo(enc))
+	if err != nil {
+		return err
+	}
+
+	var set int
+
+	if v.UpdateACommentAllOf0.UpdateACommentAllOf0RichText != nil {
+
+		variant, err := json.Marshal(v.UpdateACommentAllOf0.UpdateACommentAllOf0RichText, jsonOptsTo(enc))
+		if err != nil {
+			return err
+		}
+
+		if out, err = jsonMerge(out, variant); err != nil {
+			return err
+		}
+
+		set++
+	}
+
+	if v.UpdateACommentAllOf0.UpdateACommentAllOf0Markdown != nil {
+
+		variant, err := json.Marshal(v.UpdateACommentAllOf0.UpdateACommentAllOf0Markdown, jsonOptsTo(enc))
+		if err != nil {
+			return err
+		}
+
+		if out, err = jsonMerge(out, variant); err != nil {
+			return err
+		}
+
+		set++
+	}
+
+	if set != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of UpdateACommentAllOf0 set, got %d", set)}
+	}
+
+	return enc.WriteValue(out)
+}
+
+// UpdateACommentAllOf0 defines a model
+// UpdateACommentAllOf0 is an untagged oneOf union: exactly one field is set after unmarshaling.
+type UpdateACommentAllOf0 struct {
+	UpdateACommentAllOf0RichText *UpdateACommentAllOf0RichText
+	UpdateACommentAllOf0Markdown *UpdateACommentAllOf0Markdown
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *UpdateAComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = UpdateAComment{}
+func (v *UpdateACommentAllOf0) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = UpdateACommentAllOf0{}
 
 	opts := jsonOptsOf(dec)
 	strict := jsonStrict(dec)
@@ -25301,19 +26654,27 @@ func (v *UpdateAComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv UpdateACommentRichText
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateACommentRichText = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"rich_text"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateACommentAllOf0RichText
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateACommentAllOf0RichText = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv UpdateACommentMarkdown
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateACommentMarkdown = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"markdown"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateACommentAllOf0Markdown
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateACommentAllOf0Markdown = &vv
+				matched++
+			}
 		}
 	}
 
@@ -25325,25 +26686,25 @@ func (v *UpdateAComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *UpdateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *UpdateACommentAllOf0) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.UpdateACommentRichText != nil:
-		return json.MarshalEncode(enc, v.UpdateACommentRichText, jsonOpts)
-	case v.UpdateACommentMarkdown != nil:
-		return json.MarshalEncode(enc, v.UpdateACommentMarkdown, jsonOpts)
+	case v.UpdateACommentAllOf0RichText != nil:
+		return json.MarshalEncode(enc, v.UpdateACommentAllOf0RichText, jsonOptsTo(enc))
+	case v.UpdateACommentAllOf0Markdown != nil:
+		return json.MarshalEncode(enc, v.UpdateACommentAllOf0Markdown, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// UpdateACommentMarkdown defines a model
-type UpdateACommentMarkdown struct {
+// UpdateACommentAllOf0Markdown defines a model
+type UpdateACommentAllOf0Markdown struct {
 	// The updated content of the comment as a Markdown string. Comment Markdown supports inline formatting only (bold, italic, strikethrough, code, links), inline equations ($expression$), and mentions. Block-level Markdown such as fenced code blocks, headings, lists, tables, and blockquotes does not render as structured blocks in comments.
 	Markdown string `json:"markdown"`
 }
 
-// UpdateACommentRichText defines a model
-type UpdateACommentRichText struct {
+// UpdateACommentAllOf0RichText defines a model
+type UpdateACommentAllOf0RichText struct {
 	// An array of rich text objects that represent the updated content of the comment.
 	RichText []RichTextItemRequest `json:"rich_text"`
 }
@@ -25385,19 +26746,27 @@ func (v *UpdateADataSourcePropertiesValue) UnmarshalJSONFrom(dec *jsontext.Decod
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv UpdateADataSourcePropertiesValueOneOf0
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateADataSourcePropertiesValueOneOf0 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"type"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateADataSourcePropertiesValueOneOf0
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateADataSourcePropertiesValueOneOf0 = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv UpdateADataSourcePropertiesValueName
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateADataSourcePropertiesValueName = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"name"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateADataSourcePropertiesValueName
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateADataSourcePropertiesValueName = &vv
+				matched++
+			}
 		}
 	}
 
@@ -25412,9 +26781,9 @@ func (v *UpdateADataSourcePropertiesValue) UnmarshalJSONFrom(dec *jsontext.Decod
 func (v *UpdateADataSourcePropertiesValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.UpdateADataSourcePropertiesValueOneOf0 != nil:
-		return json.MarshalEncode(enc, v.UpdateADataSourcePropertiesValueOneOf0, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateADataSourcePropertiesValueOneOf0, jsonOptsTo(enc))
 	case v.UpdateADataSourcePropertiesValueName != nil:
-		return json.MarshalEncode(enc, v.UpdateADataSourcePropertiesValueName, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateADataSourcePropertiesValueName, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -25634,73 +27003,75 @@ func (v *UpdateADataSourcePropertiesValueOneOf0) MarshalJSONTo(enc *jsontext.Enc
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // UpdateADataSourcePropertiesValueOneOfAllOfSelect defines a model
 type UpdateADataSourcePropertiesValueOneOfAllOfSelect struct {
-	Options UpdateADataSourcePropertiesValueOneOfAllOfSelect2 `json:"options,omitzero"`
+	Options UpdateADataSourcePropertiesValueOneOfAllOfSelectOptions `json:"options,omitzero"`
 }
 
-// UpdateADataSourcePropertiesValueOneOfAllOfSelect2 defines a model
-type UpdateADataSourcePropertiesValueOneOfAllOfSelect2 []UpdateADataSourcePropertiesValueOneOfAllOfSelectItem
+// UpdateADataSourcePropertiesValueOneOfAllOfSelectOptions defines a model
+type UpdateADataSourcePropertiesValueOneOfAllOfSelectOptions []UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem
 
-// UpdateADataSourcePropertiesValueOneOfAllOfSelectItem defines a model
-type UpdateADataSourcePropertiesValueOneOfAllOfSelectItem struct {
+// UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem defines a model
+type UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem struct {
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
 	Color                   SelectColor             `json:"color,omitzero"`
 	Description             string                  `json:"description,omitzero"`
 	StatusOptionUpdateAllOf StatusOptionUpdateAllOf `json:"-"`
 }
 
-// fieldsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem is UpdateADataSourcePropertiesValueOneOfAllOfSelectItem without its methods, to encode the fields outside its union.
-type fieldsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem UpdateADataSourcePropertiesValueOneOfAllOfSelectItem
+// fieldsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem is UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem without its methods, to encode the fields outside its union.
+type fieldsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem
 
-// membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem are the members UpdateADataSourcePropertiesValueOneOfAllOfSelectItem declares outside its union.
-var membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem = map[string]bool{"color": true, "description": true}
+// membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem are the members UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem declares outside its union.
+var membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem = map[string]bool{"color": true, "description": true}
 
-// variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem are the alternatives its union is decoded as, in order.
-var variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem = []jsonVariant{
+// variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem are the alternatives its union is decoded as, in order.
+var variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem = []jsonVariant{
 	{
 		value:    "",
 		members:  map[string]bool{"id": true, "name": true},
 		required: []string{"name"},
+		pinned:   map[string]string{},
 	},
 	{
 		value:    "",
 		members:  map[string]bool{"id": true, "name": true},
 		required: []string{"id"},
+		pinned:   map[string]string{},
 	},
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of StatusOptionUpdateAllOf each
 // decode the members they declare, and a member neither declares is an error.
-func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
 
-	*v = UpdateADataSourcePropertiesValueOneOfAllOfSelectItem{}
+	*v = UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem{}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
 		return err
 	}
 
-	chosen, err := jsonChooseVariants(raw, "", variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem, membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem, true, strict)
+	chosen, err := jsonChooseVariants(raw, "", variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem, membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem, true, strict)
 	if err != nil {
 		return err
 	}
 
-	fields, err := jsonSelect(raw, membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem)
+	fields, err := jsonSelect(raw, membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem)
 	if err != nil {
 		return err
 	}
 
-	if err := json.Unmarshal(fields, (*fieldsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem)(v), opts); err != nil {
+	if err := json.Unmarshal(fields, (*fieldsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem)(v), opts); err != nil {
 		return err
 	}
 
 	for _, i := range chosen {
-		variant, err := jsonSelect(raw, variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem[i].members)
+		variant, err := jsonSelect(raw, variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem[i].members)
 		if err != nil {
 			return err
 		}
@@ -25728,8 +27099,8 @@ func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectItem) UnmarshalJSONFrom
 
 // MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of StatusOptionUpdateAllOf that is set;
 // a member both write must have the same value in each.
-func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	out, err := json.Marshal((*fieldsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectItem)(v), jsonOpts)
+func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	out, err := json.Marshal((*fieldsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem)(v), jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -25738,7 +27109,7 @@ func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectItem) MarshalJSONTo(enc
 
 	if v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName != nil {
 
-		variant, err := json.Marshal(v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName, jsonOpts)
+		variant, err := json.Marshal(v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName, jsonOptsTo(enc))
 		if err != nil {
 			return err
 		}
@@ -25752,7 +27123,7 @@ func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectItem) MarshalJSONTo(enc
 
 	if v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID != nil {
 
-		variant, err := json.Marshal(v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID, jsonOpts)
+		variant, err := json.Marshal(v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID, jsonOptsTo(enc))
 		if err != nil {
 			return err
 		}
@@ -25871,8 +27242,10 @@ type UpdateMediaContentWithURLAndCaptionRequest struct {
 // UpdatePageMarkdown defines a model
 type UpdatePageMarkdown struct {
 	// Set to true to opt into receiving an async_task result when this update operation is accepted for background execution. If omitted or false, the endpoint keeps the existing synchronous response shape.
-	AllowAsync *bool                  `json:"allow_async,omitzero"`
-	Type       UpdatePageMarkdownType `json:"type"`
+	AllowAsync *bool `json:"allow_async,omitzero"`
+	// The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.
+	MarkdownVersion MarkdownVersion        `json:"markdown_version,omitzero"`
+	Type            UpdatePageMarkdownType `json:"type"`
 	// Insert new content into the page.
 	InsertContent *UpdatePageMarkdownAllOf0InsertContentInsertContent `json:"insert_content,omitzero"`
 	// Replace a range of content in the page.
@@ -25965,7 +27338,7 @@ func (v *UpdatePageMarkdown) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // UpdatePageMarkdownAccepted defines a model
@@ -26051,7 +27424,7 @@ func (v *UpdatePageMarkdownAcceptedOperation) MarshalJSONTo(enc *jsontext.Encode
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -26169,7 +27542,7 @@ func (e UpdatePageMarkdownAcceptedOperationRestSurface) Valid() bool {
 
 // Insert new content into the page.
 type UpdatePageMarkdownAllOf0InsertContentInsertContent struct {
-	// The enhanced markdown content to insert into the page.
+	// The Markdown content to insert into the page, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).
 	Content string `json:"content"`
 	// Selection of existing content to insert after, using the ellipsis format ("start text...end text"). Omit to append at the end of the page.
 	After string `json:"after,omitzero"`
@@ -26248,12 +27621,12 @@ func (v *UpdatePageMarkdownAllOf0InsertContentInsertContentPosition) MarshalJSON
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // Replace a range of content in the page.
 type UpdatePageMarkdownAllOf0ReplaceContentRangeReplaceContentRange struct {
-	// The new enhanced markdown content to replace the matched range.
+	// The new Markdown content to replace the matched range, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).
 	Content string `json:"content"`
 	// Selection of existing content to replace, using the ellipsis format ("start text...end text").
 	ContentRange string `json:"content_range"`
@@ -26263,7 +27636,7 @@ type UpdatePageMarkdownAllOf0ReplaceContentRangeReplaceContentRange struct {
 
 // Replace the entire page content with new markdown.
 type UpdatePageMarkdownAllOf0ReplaceContentReplaceContent struct {
-	// The new enhanced markdown content to replace the entire page content.
+	// The new Markdown content to replace the entire page content, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).
 	NewStr string `json:"new_str"`
 	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
 	AllowDeletingContent *bool `json:"allow_deleting_content,omitzero"`
@@ -26314,28 +27687,40 @@ func (v *UpdateSessionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv UpdateSessionRequestMessage
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateSessionRequestMessage = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"message"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateSessionRequestMessage
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateSessionRequestMessage = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv UpdateSessionRequestOneOf1
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateSessionRequestOneOf1 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"actions", "session_id"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateSessionRequestOneOf1
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateSessionRequestOneOf1 = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv UpdateSessionRequestOneOf2
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateSessionRequestOneOf2 = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"continue_from", "session_id"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv UpdateSessionRequestOneOf2
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateSessionRequestOneOf2 = &vv
+				matched++
+			}
 		}
 	}
 
@@ -26350,11 +27735,11 @@ func (v *UpdateSessionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *UpdateSessionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.UpdateSessionRequestMessage != nil:
-		return json.MarshalEncode(enc, v.UpdateSessionRequestMessage, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateSessionRequestMessage, jsonOptsTo(enc))
 	case v.UpdateSessionRequestOneOf1 != nil:
-		return json.MarshalEncode(enc, v.UpdateSessionRequestOneOf1, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateSessionRequestOneOf1, jsonOptsTo(enc))
 	case v.UpdateSessionRequestOneOf2 != nil:
-		return json.MarshalEncode(enc, v.UpdateSessionRequestOneOf2, jsonOpts)
+		return json.MarshalEncode(enc, v.UpdateSessionRequestOneOf2, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -26400,7 +27785,7 @@ type UpdateSessionRequestOneOf1Actions []UpdateSessionRequestOneOf1ActionsItem
 type UpdateSessionRequestOneOf1ActionsItem struct {
 	ActionID IDRequest `json:"action_id"`
 	// One of: `approve`, `reject`
-	OptionID SessionRequiredActionsItemID `json:"option_id"`
+	OptionID SessionRequiredActionsItemOptionsItemID `json:"option_id"`
 }
 
 // UpdateSessionRequestOneOf2 defines a model
@@ -26535,7 +27920,7 @@ func (v *UserObjectResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // UserOrPartial defines a model
@@ -26559,18 +27944,26 @@ func (v *UserOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv PartialUserObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PartialUserObjectResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"id", "object"}, map[string]string{"object": "\"user\""}
+		if jsonFits(raw, required, pinned) {
+			var vv PartialUserObjectResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.PartialUserObjectResponse = &vv
+				matched++
+			}
 		}
 	}
 
 	{
-		var vv UserObjectResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UserObjectResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"avatar_url", "id", "name", "object", "type"}, map[string]string{"object": "\"user\""}
+		if jsonFits(raw, required, pinned) {
+			var vv UserObjectResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UserObjectResponse = &vv
+				matched++
+			}
 		}
 	}
 
@@ -26585,9 +27978,9 @@ func (v *UserOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 func (v *UserOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PartialUserObjectResponse != nil:
-		return json.MarshalEncode(enc, v.PartialUserObjectResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.PartialUserObjectResponse, jsonOptsTo(enc))
 	case v.UserObjectResponse != nil:
-		return json.MarshalEncode(enc, v.UserObjectResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.UserObjectResponse, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -26703,19 +28096,27 @@ func (v *VerificationPropertyValueResponse) UnmarshalJSONFrom(dec *jsontext.Deco
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv VerificationPropertyUnverifiedResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.VerificationPropertyUnverifiedResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"date", "state", "verified_by"}, map[string]string{"state": "\"unverified\""}
+		if jsonFits(raw, required, pinned) {
+			var vv VerificationPropertyUnverifiedResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.VerificationPropertyUnverifiedResponse = &vv
+				matched++
+			}
 		}
 	}
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv VerificationPropertyResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.VerificationPropertyResponse = &vv
-			matched++
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"date", "state", "verified_by"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv VerificationPropertyResponse
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.VerificationPropertyResponse = &vv
+				matched++
+			}
 		}
 	}
 
@@ -26730,9 +28131,9 @@ func (v *VerificationPropertyValueResponse) UnmarshalJSONFrom(dec *jsontext.Deco
 func (v *VerificationPropertyValueResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.VerificationPropertyUnverifiedResponse != nil:
-		return json.MarshalEncode(enc, v.VerificationPropertyUnverifiedResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.VerificationPropertyUnverifiedResponse, jsonOptsTo(enc))
 	case v.VerificationPropertyResponse != nil:
-		return json.MarshalEncode(enc, v.VerificationPropertyResponse, jsonOpts)
+		return json.MarshalEncode(enc, v.VerificationPropertyResponse, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -26863,7 +28264,7 @@ func (v *ViewConfigRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -27010,7 +28411,7 @@ func (v *ViewConfigResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -27147,7 +28548,7 @@ func (v *ViewPositionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
 
-	out, err := json.Marshal(variant, jsonOpts)
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
 	if err != nil {
 		return err
 	}
@@ -27595,7 +28996,7 @@ func (v *WidgetPlacementRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOpts)
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
 // WorkspaceParentForBlockBasedObject defines a model
@@ -27619,6 +29020,12 @@ func jsonOptsOf(dec *jsontext.Decoder) json.Options {
 	}
 
 	return jsonOptsLenient
+}
+
+// jsonOptsTo is jsonOpts with the options enc was given beside them, such as the marshalers that leave out what a
+// request or a response does not carry, so that what a type encodes itself passes them on.
+func jsonOptsTo(enc *jsontext.Encoder) json.Options {
+	return json.JoinOptions(jsonOpts, enc.Options())
 }
 
 // jsonUnknownName reports a member no part of the type declares, as encoding/json reports one of a struct.
@@ -28088,6 +29495,58 @@ type jsonVariant struct {
 	value    string
 	members  map[string]bool
 	required []string
+	// pinned are the members it allows one value for, written as compact JSON
+	pinned map[string]string
+}
+
+// jsonFits reports whether the JSON value raw has the members required, and those of pinned it has with the value
+// each pins, written as compact JSON. Any value fits where nothing is required or pinned.
+func jsonFits(raw jsontext.Value, required []string, pinned map[string]string) bool {
+	if len(required) == 0 && len(pinned) == 0 {
+		return true
+	}
+
+	if raw.Kind() != jsontext.KindBeginObject {
+		return false
+	}
+
+	dec := jsontext.NewDecoder(bytes.NewReader(raw))
+	if _, err := dec.ReadToken(); err != nil {
+		return false
+	}
+
+	present := map[string]bool{}
+
+	for dec.PeekKind() != jsontext.KindEndObject {
+		tok, err := dec.ReadToken()
+		if err != nil {
+			return false
+		}
+
+		name := tok.String()
+
+		val, err := dec.ReadValue()
+		if err != nil {
+			return false
+		}
+
+		present[name] = true
+
+		if want, ok := pinned[name]; ok {
+			got := val.Clone()
+			if err := got.Compact(); err != nil || string(got) != want {
+				return false
+			}
+		}
+	}
+
+	for _, r := range required {
+		if !present[r] {
+			return false
+		}
+	}
+
+	return true
 }
 
 // jsonChooseVariants returns the alternatives the JSON object raw is: the one its discriminator names, if there is
@@ -28130,10 +29589,8 @@ func jsonChooseVariants(raw jsontext.Value, discriminator string, variants []jso
 	} else {
 	variants:
 		for i, v := range variants {
-			for _, r := range v.required {
-				if !present[r] {
-					continue variants
-				}
+			if !jsonFits(raw, v.required, v.pinned) {
+				continue variants
 			}
 
 			for _, n := range names {

@@ -34,7 +34,8 @@
 - [Working with views](https://developers.notion.com/guides/data-apis/working-with-views.md): Learn how to set up and manage database views using the Notion API.
 - [Working with comments](https://developers.notion.com/guides/data-apis/working-with-comments.md): Learn how to add and retrieve comments with the Notion API.
 - [Working with markdown content](https://developers.notion.com/guides/data-apis/working-with-markdown-content.md): Learn how to create, read, and update Notion page content using enhanced markdown instead of the block API.
-- [Enhanced markdown format](https://developers.notion.com/guides/data-apis/enhanced-markdown.md): Reference for the Notion-flavored Markdown format used by the markdown content endpoints.
+- [Enhanced markdown format](https://developers.notion.com/guides/data-apis/enhanced-markdown.md): Reference for the enhanced markdown format used by the markdown content endpoints.
+- [Notion-flavored Markdown format](https://developers.notion.com/guides/data-apis/notion-flavored-markdown.md): Reference for Notion-flavored Markdown, the syntax used by markdown_version v2.
 - [Working with files and media](https://developers.notion.com/guides/data-apis/working-with-files-and-media.md): Learn how to add and retrieve files and media on pages with the Notion API.
 - [Uploading small files](https://developers.notion.com/guides/data-apis/uploading-small-files.md): Learn how to send and attach files up to 20 MB using the Notion API.
 - [Retrieving existing files](https://developers.notion.com/guides/data-apis/retrieving-files.md): Learn how to get a download link for files in the Notion API.
@@ -94,8 +95,8 @@
 - [Move a page](https://developers.notion.com/reference/move-page.md): Use this API to move an existing Notion page to a new parent.
 - [Update page](https://developers.notion.com/reference/patch-page.md): Use this API to modify attributes of a Notion page, such as its properties, icon, or cover.
 - [Trash a page](https://developers.notion.com/reference/trash-page.md)
-- [Retrieve a page as markdown](https://developers.notion.com/reference/retrieve-page-markdown.md): Retrieve the content of a page rendered as enhanced markdown.
-- [Update a page's content as markdown](https://developers.notion.com/reference/update-page-markdown.md): Insert or replace content in a page using enhanced markdown.
+- [Retrieve a page as markdown](https://developers.notion.com/reference/retrieve-page-markdown.md): Retrieve the content of a page rendered as markdown.
+- [Update a page's content as markdown](https://developers.notion.com/reference/update-page-markdown.md): Insert or replace content in a page using markdown.
 - [Create a database](https://developers.notion.com/reference/create-database.md): Create a database and its initial data source.
 - [Update a database](https://developers.notion.com/reference/update-database.md): Updates the attributes — the title, description, icon, or cover, etc. — of a specified database.
 - [Retrieve a database](https://developers.notion.com/reference/retrieve-database.md)
