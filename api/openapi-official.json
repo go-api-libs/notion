@@ -44899,7 +44899,7 @@
         ]
       },
       "pageWriteNotificationsSchema": {
-        "description": "Controls the notifications Notion sends people about this change. Set mode to \"silent\" to skip page update notifications and @mention notifications, or \"default\" to use the standard behavior. Database automations, reminders, and connection webhooks still work as usual. Page history, page activity, and workspace audit logs still record the change.",
+        "description": "Controls the notifications Notion sends people about this change. Set mode to \"silent\" to skip page update notifications, @mention notifications, and notifications to people added to a Person property, or \"default\" to use the standard behavior. Database automations, reminders, and connection webhooks still work as usual. Page history, page activity, and workspace audit logs still record the change.",
         "type": "object",
         "properties": {
           "mode": {
@@ -48489,33 +48489,6 @@
         ],
         "additionalProperties": false
       },
-      "statusGroupFilter": {
-        "description": "Matches status groups instead of options. Requires the `Notion-Beta: status-group-filters-2026-10-06` header.",
-        "anyOf": [
-          {
-            "type": "object",
-            "properties": {
-              "equals": {
-                "$ref": "#/components/schemas/statusGroupNames"
-              }
-            },
-            "required": [
-              "equals"
-            ]
-          },
-          {
-            "type": "object",
-            "properties": {
-              "does_not_equal": {
-                "$ref": "#/components/schemas/statusGroupNames"
-              }
-            },
-            "required": [
-              "does_not_equal"
-            ]
-          }
-        ]
-      },
       "statusGroupNames": {
         "anyOf": [
           {
@@ -48679,41 +48652,7 @@
       "statusPropertyFilter": {
         "anyOf": [
           {
-            "anyOf": [
-              {
-                "type": "object",
-                "properties": {
-                  "equals": {
-                    "$ref": "#/components/schemas/stringOrStringArray"
-                  }
-                },
-                "required": [
-                  "equals"
-                ]
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "does_not_equal": {
-                    "$ref": "#/components/schemas/stringOrStringArray"
-                  }
-                },
-                "required": [
-                  "does_not_equal"
-                ]
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "group": {
-                    "$ref": "#/components/schemas/statusGroupFilter"
-                  }
-                },
-                "required": [
-                  "group"
-                ]
-              }
-            ]
+            "$ref": "#/components/schemas/statusValueFilter"
           },
           {
             "$ref": "#/components/schemas/existencePropertyFilter"
@@ -48813,6 +48752,55 @@
           "status"
         ],
         "additionalProperties": false
+      },
+      "statusValueFilter": {
+        "description": "The group operators match status groups instead of options. They require the `Notion-Beta: status-group-filters-2026-10-06` header.",
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "equals": {
+                "$ref": "#/components/schemas/stringOrStringArray"
+              }
+            },
+            "required": [
+              "equals"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "does_not_equal": {
+                "$ref": "#/components/schemas/stringOrStringArray"
+              }
+            },
+            "required": [
+              "does_not_equal"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "group_equals": {
+                "$ref": "#/components/schemas/statusGroupNames"
+              }
+            },
+            "required": [
+              "group_equals"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "group_does_not_equal": {
+                "$ref": "#/components/schemas/statusGroupNames"
+              }
+            },
+            "required": [
+              "group_does_not_equal"
+            ]
+          }
+        ]
       },
       "stringFormulaPropertyResponse": {
         "title": "String",
