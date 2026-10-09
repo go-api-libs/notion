@@ -1866,10 +1866,14 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 
 	u := c.baseURL.JoinPath("pages", string(pageID), "markdown")
 	if params != nil {
-		q := make(url.Values, 1)
+		q := make(url.Values, 2)
 
 		if params.IncludeTranscript {
 			q["include_transcript"] = []string{strconv.FormatBool(params.IncludeTranscript)}
+		}
+
+		if params.MarkdownVersion != "" {
+			q["markdown_version"] = []string{string(params.MarkdownVersion)}
 		}
 
 		u.RawQuery = q.Encode()

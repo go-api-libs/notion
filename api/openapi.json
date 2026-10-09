@@ -582,6 +582,9 @@
           },
           {
             "$ref": "#/components/parameters/include_transcript"
+          },
+          {
+            "$ref": "#/components/parameters/markdown_version"
           }
         ],
         "responses": {
@@ -8730,7 +8733,7 @@
             "$ref": "#/components/schemas/BotInfoResponseOwnerUser"
           },
           {
-            "$ref": "#/components/schemas/workspaceParentForBlockBasedObject"
+            "$ref": "#/components/schemas/BotInfoResponseOwnerWorkspace"
           }
         ]
       },
@@ -8804,6 +8807,26 @@
         ],
         "additionalProperties": false
       },
+      "BotInfoResponseOwnerWorkspace": {
+        "title": "Workspace",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `workspace`",
+            "type": "string",
+            "const": "workspace"
+          },
+          "workspace": {
+            "description": "Details about the owner of the bot, when the `type` of the owner is `workspace`. This means the bot is for an internal integration.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "type",
+          "workspace"
+        ],
+        "additionalProperties": false
+      },
       "BotInfoResponseWorkspaceLimits": {
         "description": "Limits and restrictions that apply to the bot's workspace",
         "type": "object",
@@ -8811,7 +8834,8 @@
           "max_file_upload_size_in_bytes": {
             "description": "The maximum allowable size of a file upload, in bytes",
             "type": "integer",
-            "minimum": 0
+            "minimum": 0,
+            "example": 5368709120
           }
         },
         "required": [
@@ -8821,7 +8845,7 @@
       },
       "BotUserObjectResponseBot": {
         "description": "Details about the bot, when the `type` of the user is `bot`.",
-        "anyOf": [
+        "oneOf": [
           {
             "$ref": "#/components/schemas/emptyObject"
           },
@@ -9407,6 +9431,9 @@
           },
           "display_name": {
             "$ref": "#/components/schemas/CreateACommentDisplayName"
+          },
+          "markdown_version": {
+            "$ref": "#/components/schemas/MarkdownVersion"
           }
         }
       },
@@ -10890,34 +10917,6 @@
         ],
         "additionalProperties": false
       },
-      "EmptyObjectOwner": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "workspace"
-          },
-          "workspace": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "type",
-          "workspace"
-        ]
-      },
-      "EmptyObjectWorkspaceLimits": {
-        "type": "object",
-        "properties": {
-          "max_file_upload_size_in_bytes": {
-            "type": "integer",
-            "example": 5368709120
-          }
-        },
-        "required": [
-          "max_file_upload_size_in_bytes"
-        ]
-      },
       "Error": {
         "type": "object",
         "allOf": [
@@ -11697,6 +11696,14 @@
           }
         ]
       },
+      "MarkdownVersion": {
+        "description": "The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.",
+        "type": "string",
+        "enum": [
+          "v1",
+          "v2"
+        ]
+      },
       "MediaContentWithFileAndCaptionRequestExternal": {
         "title": "External",
         "type": "object",
@@ -12472,6 +12479,32 @@
             "type": "null"
           }
         ]
+      },
+      "PageMarkdownResponseWarnings": {
+        "description": "Markdown parser warnings for the request's content. Returned only by the update endpoint with `markdown_version: \"v2\"`, and only when there is at least one warning.",
+        "type": "array",
+        "maxItems": 100,
+        "items": {
+          "$ref": "#/components/schemas/PageMarkdownResponseWarningsItem"
+        }
+      },
+      "PageMarkdownResponseWarningsItem": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "description": "The warning category, for example `unsupported_tag`.",
+            "type": "string"
+          },
+          "message": {
+            "description": "What the parser changed or ignored.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
       },
       "PageMovedWebhookPayloadData": {
         "description": "Additional event-specific data.",
@@ -13281,6 +13314,13 @@
           "transcript_id"
         ]
       },
+      "PageWriteNotificationsSchemaMode": {
+        "type": "string",
+        "enum": [
+          "default",
+          "silent"
+        ]
+      },
       "PartialUserObjectResponsePerson": {
         "type": "object",
         "properties": {
@@ -13309,6 +13349,9 @@
           },
           "position": {
             "$ref": "#/components/schemas/contentPositionSchema"
+          },
+          "notifications": {
+            "$ref": "#/components/schemas/pageWriteNotificationsSchema"
           }
         },
         "required": [
@@ -13341,6 +13384,9 @@
           "erase_content": {
             "description": "Whether to erase all existing content from the page. When used with a template, the template content replaces the existing content. When used without a template, simply clears the page content.",
             "type": "boolean"
+          },
+          "notifications": {
+            "$ref": "#/components/schemas/pageWriteNotificationsSchema"
           },
           "in_trash": {
             "type": "boolean"
@@ -13556,18 +13602,24 @@
             }
           },
           "markdown": {
-            "description": "Page content as Notion-flavored Markdown. Mutually exclusive with content/children.",
+            "description": "Page content as Markdown, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`). Mutually exclusive with content/children.",
             "type": "string"
           },
           "allow_async": {
             "description": "Set to true to receive an async_task response for markdown page creation. Only supported when markdown is provided.",
             "type": "boolean"
           },
+          "markdown_version": {
+            "$ref": "#/components/schemas/MarkdownVersion"
+          },
           "template": {
             "$ref": "#/components/schemas/PostPageTemplate"
           },
           "position": {
             "$ref": "#/components/schemas/pagePositionSchema"
+          },
+          "notifications": {
+            "$ref": "#/components/schemas/pageWriteNotificationsSchema"
           }
         },
         "additionalProperties": false
@@ -14224,7 +14276,7 @@
         "type": "object",
         "properties": {
           "status": {
-            "$ref": "#/components/schemas/selectPropertyFilter"
+            "$ref": "#/components/schemas/statusPropertyFilter"
           },
           "property": {
             "type": "string"
@@ -18096,7 +18148,7 @@
         "type": "object",
         "properties": {
           "status": {
-            "$ref": "#/components/schemas/selectPropertyFilter"
+            "$ref": "#/components/schemas/statusPropertyFilter"
           }
         },
         "required": [
@@ -18131,18 +18183,18 @@
         "type": "object",
         "properties": {
           "options": {
-            "$ref": "#/components/schemas/SelectPropertyConfigurationSelect2"
+            "$ref": "#/components/schemas/SelectPropertyConfigurationSelectOptions"
           }
         }
       },
-      "SelectPropertyConfigurationSelect2": {
+      "SelectPropertyConfigurationSelectOptions": {
         "type": "array",
         "maxItems": 100,
         "items": {
-          "$ref": "#/components/schemas/SelectPropertyConfigurationSelectItem"
+          "$ref": "#/components/schemas/SelectPropertyConfigurationSelectOptionsItem"
         }
       },
-      "SelectPropertyConfigurationSelectItem": {
+      "SelectPropertyConfigurationSelectOptionsItem": {
         "type": "object",
         "properties": {
           "name": {
@@ -19047,7 +19099,7 @@
             "type": "string"
           },
           "options": {
-            "$ref": "#/components/schemas/SessionRequiredActionsItem2"
+            "$ref": "#/components/schemas/SessionRequiredActionsItemOptions"
           }
         },
         "required": [
@@ -19057,18 +19109,18 @@
         ],
         "additionalProperties": false
       },
-      "SessionRequiredActionsItem2": {
+      "SessionRequiredActionsItemOptions": {
         "type": "array",
         "maxItems": 100,
         "items": {
-          "$ref": "#/components/schemas/SessionRequiredActionsItem3"
+          "$ref": "#/components/schemas/SessionRequiredActionsItemOptionsItem"
         }
       },
-      "SessionRequiredActionsItem3": {
+      "SessionRequiredActionsItemOptionsItem": {
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/SessionRequiredActionsItemID"
+            "$ref": "#/components/schemas/SessionRequiredActionsItemOptionsItemID"
           },
           "label": {
             "type": "string"
@@ -19080,7 +19132,7 @@
         ],
         "additionalProperties": false
       },
-      "SessionRequiredActionsItemID": {
+      "SessionRequiredActionsItemOptionsItemID": {
         "description": "One of: `approve`, `reject`",
         "type": "string",
         "enum": [
@@ -19208,6 +19260,28 @@
           "option"
         ]
       },
+      "StatusGroupFilterDoesNotEqual": {
+        "type": "object",
+        "properties": {
+          "does_not_equal": {
+            "$ref": "#/components/schemas/statusGroupNames"
+          }
+        },
+        "required": [
+          "does_not_equal"
+        ]
+      },
+      "StatusGroupFilterEquals": {
+        "type": "object",
+        "properties": {
+          "equals": {
+            "$ref": "#/components/schemas/statusGroupNames"
+          }
+        },
+        "required": [
+          "equals"
+        ]
+      },
       "StatusOptionUpdateAllOfID": {
         "type": "object",
         "properties": {
@@ -19234,6 +19308,17 @@
         },
         "required": [
           "name"
+        ]
+      },
+      "StatusPropertyFilterGroup": {
+        "type": "object",
+        "properties": {
+          "group": {
+            "$ref": "#/components/schemas/statusGroupFilter"
+          }
+        },
+        "required": [
+          "group"
         ]
       },
       "StatusType": {
@@ -20507,16 +20592,29 @@
         "additionalProperties": false
       },
       "UpdateAComment": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/UpdateACommentAllOf0"
+          }
+        ],
+        "properties": {
+          "markdown_version": {
+            "$ref": "#/components/schemas/MarkdownVersion"
+          }
+        }
+      },
+      "UpdateACommentAllOf0": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/UpdateACommentRichText"
+            "$ref": "#/components/schemas/UpdateACommentAllOf0RichText"
           },
           {
-            "$ref": "#/components/schemas/UpdateACommentMarkdown"
+            "$ref": "#/components/schemas/UpdateACommentAllOf0Markdown"
           }
         ]
       },
-      "UpdateACommentMarkdown": {
+      "UpdateACommentAllOf0Markdown": {
         "type": "object",
         "properties": {
           "markdown": {
@@ -20528,7 +20626,7 @@
           "markdown"
         ]
       },
-      "UpdateACommentRichText": {
+      "UpdateACommentAllOf0RichText": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -20743,18 +20841,18 @@
         "type": "object",
         "properties": {
           "options": {
-            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelect2"
+            "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectOptions"
           }
         }
       },
-      "UpdateADataSourcePropertiesValueOneOfAllOfSelect2": {
+      "UpdateADataSourcePropertiesValueOneOfAllOfSelectOptions": {
         "type": "array",
         "maxItems": 100,
         "items": {
-          "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectItem"
+          "$ref": "#/components/schemas/UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem"
         }
       },
-      "UpdateADataSourcePropertiesValueOneOfAllOfSelectItem": {
+      "UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem": {
         "type": "object",
         "allOf": [
           {
@@ -20918,6 +21016,9 @@
           "allow_async": {
             "description": "Set to true to opt into receiving an async_task result when this update operation is accepted for background execution. If omitted or false, the endpoint keeps the existing synchronous response shape.",
             "type": "boolean"
+          },
+          "markdown_version": {
+            "$ref": "#/components/schemas/MarkdownVersion"
           }
         }
       },
@@ -21073,7 +21174,7 @@
         "type": "object",
         "properties": {
           "content": {
-            "description": "The enhanced markdown content to insert into the page.",
+            "description": "The Markdown content to insert into the page, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).",
             "type": "string",
             "examples": [
               "## New Section\n\nInserted content here."
@@ -21144,7 +21245,7 @@
         "type": "object",
         "properties": {
           "content": {
-            "description": "The new enhanced markdown content to replace the matched range.",
+            "description": "The new Markdown content to replace the matched range, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).",
             "type": "string",
             "examples": [
               "## Updated Section\n\nNew content replaces the old."
@@ -21169,7 +21270,7 @@
         "type": "object",
         "properties": {
           "new_str": {
-            "description": "The new enhanced markdown content to replace the entire page content.",
+            "description": "The new Markdown content to replace the entire page content, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).",
             "type": "string",
             "examples": [
               "# Updated Page\n\nCompletely new page content."
@@ -21378,7 +21479,7 @@
             "$ref": "#/components/schemas/idRequest"
           },
           "option_id": {
-            "$ref": "#/components/schemas/SessionRequiredActionsItemID"
+            "$ref": "#/components/schemas/SessionRequiredActionsItemOptionsItemID"
           }
         },
         "required": [
@@ -22613,7 +22714,8 @@
           },
           "workspace_id": {
             "description": "The ID of the bot's workspace.",
-            "type": "string"
+            "type": "string",
+            "example": "0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a"
           },
           "workspace_limits": {
             "$ref": "#/components/schemas/BotInfoResponseWorkspaceLimits"
@@ -25958,23 +26060,6 @@
       },
       "emptyObject": {
         "type": "object",
-        "properties": {
-          "owner": {
-            "$ref": "#/components/schemas/EmptyObjectOwner"
-          },
-          "workspace_name": {
-            "type": "string",
-            "example": "Mark Rösler's Notion"
-          },
-          "workspace_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a"
-          },
-          "workspace_limits": {
-            "$ref": "#/components/schemas/EmptyObjectWorkspaceLimits"
-          }
-        },
         "additionalProperties": false
       },
       "equationBlockObjectResponse": {
@@ -29420,7 +29505,7 @@
             "$ref": "#/components/schemas/idResponse"
           },
           "markdown": {
-            "description": "The page content rendered as enhanced Markdown.",
+            "description": "The page content as Markdown, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).",
             "type": "string"
           },
           "truncated": {
@@ -29434,6 +29519,9 @@
             "items": {
               "$ref": "#/components/schemas/idResponse"
             }
+          },
+          "warnings": {
+            "$ref": "#/components/schemas/PageMarkdownResponseWarnings"
           }
         },
         "required": [
@@ -29611,6 +29699,18 @@
           "data"
         ]
       },
+      "pageWriteNotificationsSchema": {
+        "description": "Controls the notifications Notion sends people about this change. Set mode to \"silent\" to skip page update notifications and @mention notifications, or \"default\" to use the standard behavior. Database automations, reminders, and connection webhooks still work as usual. Page history, page activity, and workspace audit logs still record the change.",
+        "type": "object",
+        "properties": {
+          "mode": {
+            "$ref": "#/components/schemas/PageWriteNotificationsSchemaMode"
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
       "paragraphBlockObjectResponse": {
         "title": "Paragraph",
         "type": "object",
@@ -29723,7 +29823,7 @@
             "$ref": "#/components/schemas/agentIdParentForBlockBasedObjectResponse"
           },
           {
-            "$ref": "#/components/schemas/workspaceParentForBlockBasedObject"
+            "$ref": "#/components/schemas/workspaceParentForBlockBasedObjectResponse"
           }
         ]
       },
@@ -29762,7 +29862,7 @@
             "$ref": "#/components/schemas/pageIdParentForBlockBasedObject"
           },
           {
-            "$ref": "#/components/schemas/workspaceParentForBlockBasedObject"
+            "$ref": "#/components/schemas/workspaceParentForBlockBasedObjectResponse"
           },
           {
             "$ref": "#/components/schemas/databaseParentResponse"
@@ -31790,6 +31890,32 @@
         ],
         "additionalProperties": false
       },
+      "statusGroupFilter": {
+        "description": "Matches status groups instead of options. Requires the `Notion-Beta: status-group-filters-2026-10-06` header.",
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/StatusGroupFilterEquals"
+          },
+          {
+            "$ref": "#/components/schemas/StatusGroupFilterDoesNotEqual"
+          }
+        ]
+      },
+      "statusGroupNames": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/stringRequest"
+          },
+          {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/stringRequest"
+            }
+          }
+        ]
+      },
       "statusOptionGroup": {
         "description": "One of: `To-do`, `In progress`, `Complete`",
         "type": "string",
@@ -31900,6 +32026,22 @@
         },
         "required": [
           "status"
+        ]
+      },
+      "statusPropertyFilter": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/SelectPropertyFilterEquals"
+          },
+          {
+            "$ref": "#/components/schemas/SelectPropertyFilterDoesNotEqual"
+          },
+          {
+            "$ref": "#/components/schemas/StatusPropertyFilterGroup"
+          },
+          {
+            "$ref": "#/components/schemas/existencePropertyFilter"
+          }
         ]
       },
       "statusPropertyItemObjectResponse": {
@@ -34498,7 +34640,7 @@
           }
         ]
       },
-      "workspaceParentForBlockBasedObject": {
+      "workspaceParentForBlockBasedObjectResponse": {
         "type": "object",
         "properties": {
           "type": {
@@ -42198,6 +42340,13 @@
         "schema": {
           "description": "Whether to include meeting note transcripts. Defaults to false. When true, full transcripts are included; when false, a placeholder with the meeting note URL is shown instead.",
           "type": "boolean"
+        }
+      },
+      "markdown_version": {
+        "name": "markdown_version",
+        "in": "query",
+        "schema": {
+          "$ref": "#/components/schemas/MarkdownVersion"
         }
       },
       "name": {

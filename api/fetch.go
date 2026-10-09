@@ -861,28 +861,33 @@ func unionForms(doc *openapi.Document, name string) (*openapi.SchemaList, error)
 	return nil, componentErr(name, errors.New("is no union"))
 }
 
-// matchAny makes unions whose value codegen would find in more than one form an anyOf, until it checks a form's const
-// and required members: a view's group_by, whose forms differ only in the value of type, and a bot user's bot, empty
-// or with the members its other form requires.
+// dropBooleanConst drops the const true from a workspace bot owner's workspace, as enrich matches no form of a union
+// whose boolean member has a const, until it does.
+func dropBooleanConst(doc *openapi.Document) error {
+	info, ok := doc.Components.Schemas["botInfoResponse"]
+	if !ok {
+		return componentErr("botInfoResponse", errors.New("not found"))
+	}
+
+	for _, alt := range alternatives(info.Properties["owner"]) {
+		if w, ok := deref(alt).Properties["workspace"]; ok && w.Type == openapi.TypeBoolean && len(w.Const) > 0 {
+			w.Const = nil
+			return nil
+		}
+	}
+
+	return propertyErr("botInfoResponse", "owner", errors.New("has no workspace form with a const"))
+}
+
+// matchAny makes a view's group_by an anyOf, as codegen would find a group_by of "type": "select" in more than one
+// form until it checks a form's enum members: two forms allow several values for type.
 func matchAny(doc *openapi.Document) error {
 	group, ok := doc.Components.Schemas["groupByConfigResponse"]
 	if !ok {
 		return componentErr("groupByConfigResponse", errors.New("not found"))
 	}
 
-	user, ok := doc.Components.Schemas["botUserObjectResponse"]
-	if !ok {
-		return componentErr("botUserObjectResponse", errors.New("not found"))
-	}
-
-	bot, ok := user.Properties["bot"]
-	if !ok {
-		return propertyErr("botUserObjectResponse", "bot", errors.New("not found"))
-	}
-
-	for _, u := range []*openapi.Schema{group, bot} {
-		u.AnyOf, u.OneOf = alternatives(u), nil
-	}
+	group.AnyOf, group.OneOf = alternatives(group), nil
 
 	return nil
 }
@@ -1133,6 +1138,10 @@ func fixOpenAPI() (*openapi.Document, error) {
 	}
 
 	if err := matchAny(doc); err != nil {
+		return nil, err
+	}
+
+	if err := dropBooleanConst(doc); err != nil {
 		return nil, err
 	}
 

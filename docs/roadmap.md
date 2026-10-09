@@ -14,13 +14,16 @@ property the API returns, but these:
 
 Each can go once the library is fixed:
 
-- `setFilterForms` sets `Filter` again after enrich, which files a recorded value under a union's first form even when
-  it lacks that form's required members: a recorded `and` lands under `FilterOr`.
-- `matchAny` makes a view's `group_by` and a bot user's `bot` an `anyOf`. Codegen checks neither a form's const members,
-  so a `group_by` of `"type": "select"` matches all its forms, nor its required members, so an empty `bot` matches both.
-- The same missing check of required members leaves only `additionalProperties: false` to tell `Filter`'s forms apart,
-  which decoding into a caller's own type with `…WithResult` does not apply, being lenient: a `Filter` there decodes
-  `{"and": […]}` as an empty `or`.
+- `setFilterForms` sets `Filter` again after enrich, which takes an optional const member that is absent for one of
+  another value: a recorded property filter, which has no `type`, lands under `FilterOr`.
+- `dropBooleanConst` drops the `const: true` of a workspace bot owner's `workspace`, as enrich matches no form of a
+  union whose boolean member has a const or a one-valued enum.
+- `matchAny` makes a view's `group_by` an `anyOf`, as codegen checks a form's const members but not its enum members:
+  a `group_by` of `"type": "select"` matches the select and the person form, both of which allow several types.
+
+Codegen also takes the tag of a tagged union for a required member of it, though none of its forms requires it:
+`Filter` requires `type` of a `PropertyFilter`, which Notion never sends, so no filter of Notion's decodes and
+`TestRecordedResponses` fails for the board view.
 
 ## Names in the specification
 
