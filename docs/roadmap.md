@@ -3,37 +3,12 @@
 ## Test coverage of the example page
 
 `testing/main.go` records the [example page](https://app.notion.com/p/fae-tools/Example-Page-96245c8f178444a482ad1941127c3ec3),
-its subpages and databases. Recording these too needs them added there first:
+its subpages, databases, their templates and the page's comments. It holds every kind of block, icon, mention and
+property the API returns, but these:
 
-- Blocks: heading 4, tabs, AI meeting notes. The template block is deprecated and can no longer be created.
-- Database properties: last edited time, ID (unique ID), button, place, and verification, which only a wiki has.
-- Page icons: a custom emoji, and one of Notion's own icons.
-- Inline mentions: a link pasted as a mention for a service such as GitHub or Figma (link preview), a custom emoji,
-  and a template mention such as `@today` in a database template.
-- Rollups: one whose result is a date.
-- Comments: the integration answers every comments request with 403. It needs the "Read comments" capability, and
-  the page a comment.
-
-## Recordings the generated types cannot decode
-
-One of the recorded responses in `api/interactions.json` fails to decode into the generated types:
-`GET /v1/pages/24806928-…/properties/%3DuTh`, a formula property item, matches no alternative of
-`RetrieveAPagePropertyOk`.
-
-A test that decodes every recorded response with the generated types would catch the next one.
-
-## Workarounds in `api/fetch.go` for the openapi-* libraries
-
-Each can go once the library is fixed:
-
-- `setFilterForms` and `setResults` set `Filter` and `PageOrDataSourceList.Results` again after enrich. Enrich files a
-  recorded value under a union's first form even when it lacks that form's required members, and types an array
-  whose items differ in shape as a tuple.
-- `groupByConfigResponse` is made an `anyOf`, as codegen does not check a form's const members, so a `group_by`
-  matched all its forms.
-- Codegen does not check a form's required members either, which only `additionalProperties: false` makes up for when
-  decoding strictly. Decoding into a caller's own type with `…WithResult` is lenient, so a `Filter` within one
-  decodes `{"and": […]}` as an empty `or`.
+- Database properties: button and location, which the API accepts but drops, and verification, which only a wiki has.
+- A template mention such as `@today`, which only a database template may hold: none of the example page's databases
+  has a template.
 
 ## Names in the specification
 

@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"slices"
+	"strconv"
 	"strings"
 
 	"github.com/MarkRosemaker/errpath"
@@ -417,8 +418,7 @@ func nameObjects(doc *openapi.Document) {
 	}
 }
 
-// setResults makes the results of a search or a query of a data source a list of PageOrDataSource. It is set again
-// after enrich, which makes them a tuple of the pages and data sources it was given, as their shapes differ.
+// setResults makes the results of a search or a query of a data source a list of PageOrDataSource.
 func setResults(doc *openapi.Document) error {
 	const list, item = "PageOrDataSourceList", "PageOrDataSource"
 
@@ -681,32 +681,56 @@ func addRequestID(doc *openapi.Document, names ...string) error {
 	return nil
 }
 
-// allowDateTimes drops the date format from the properties of the schema name, which Notion declares as dates but
-// sends as a date or a date-time: "an ISO 8601 date, with optional time". It fails unless each of them is, or is one
-// of, a string with the date format, so a change upstream is noticed.
-func allowDateTimes(doc *openapi.Document, name string, props ...string) error {
-	s, ok := doc.Components.Schemas[name]
-	if !ok {
-		return componentErr(name, errors.New("not found"))
-	}
+// dateProps are the properties Notion declares as dates but takes and sends as a date or a date-time: "an ISO 8601
+// date, with optional time".
+var dateProps = []struct {
+	schema string
+	props  []string
+}{
+	{"dateRequest", []string{"start", "end"}},
+	{"dateResponse", []string{"start", "end"}},
+}
 
-	for _, prop := range props {
-		p, ok := s.Properties[prop]
+// allowDateTimes makes the dateProps a DateOrDateTime. It fails unless each of them is, or is one of, a string with
+// the date format, so a change upstream is noticed.
+func allowDateTimes(doc *openapi.Document) error {
+	const name = "DateOrDateTime"
+
+	doc.Components.Schemas.Set(name, &openapi.Schema{
+		Description: "An ISO 8601 date, with an optional time.",
+		AnyOf: openapi.SchemaList{
+			{Type: openapi.TypeString, Format: openapi.FormatDate},
+			{Type: openapi.TypeString, Format: openapi.FormatDateTime},
+		},
+	})
+
+	for _, d := range dateProps {
+		s, ok := doc.Components.Schemas[d.schema]
 		if !ok {
-			return propertyErr(name, prop, errors.New("not found"))
+			return componentErr(d.schema, errors.New("not found"))
 		}
 
-		dates := 0
-
-		for _, alt := range append(openapi.SchemaList{p}, p.OneOf...) {
-			if alt.Type == openapi.TypeString && alt.Format == openapi.FormatDate {
-				alt.Format = ""
-				dates++
+		for _, prop := range d.props {
+			p, ok := s.Properties[prop]
+			if !ok {
+				return propertyErr(d.schema, prop, errors.New("not found"))
 			}
-		}
 
-		if dates == 0 {
-			return propertyErr(name, prop, errors.New("is not a date"))
+			found := false
+
+			for _, alt := range append(openapi.SchemaList{p}, p.OneOf...) {
+				if alt.Type == openapi.TypeString && alt.Format == openapi.FormatDate {
+					ref := refTo(doc, name)
+					ref.Description = alt.Description
+					alt.Replace(ref)
+
+					found = true
+				}
+			}
+
+			if !found {
+				return propertyErr(d.schema, prop, errors.New("is not a date"))
+			}
 		}
 	}
 
@@ -735,6 +759,106 @@ func (s *jsonSet) add(p *openapi.Schema) {
 			s.values = append(s.values, v)
 		}
 	}
+}
+
+// addForm adds to the union a form for the kind, made from its form model for the kind like: the same members but
+// for the type, which is the kind, and like's member, which is member under the kind's name. It is named as model is,
+// after the kind.
+func addForm(doc *openapi.Document, union, model, like, kind string, member *openapi.Schema) error {
+	alts, err := unionForms(doc, union)
+	if err != nil {
+		return err
+	}
+
+	m, ok := doc.Components.Schemas[model]
+	if !ok {
+		return componentErr(model, errors.New("not found"))
+	}
+
+	if _, ok := m.Properties[like]; !ok {
+		return propertyErr(model, like, errors.New("not found"))
+	}
+
+	name := strings.Replace(model, strcase.ToCamel(like), strcase.ToCamel(kind), 1)
+	if _, ok := doc.Components.Schemas[name]; ok {
+		return componentErr(name, errors.New("already exists"))
+	}
+
+	props := openapi.Schemas{}
+
+	for prop, p := range m.Properties.ByIndex() {
+		switch prop {
+		case "type":
+			props.Set(prop, &openapi.Schema{Type: openapi.TypeString, Const: jsontext.Value(strconv.Quote(kind))})
+		case like:
+			props.Set(kind, member)
+		default:
+			props.Set(prop, p)
+		}
+	}
+
+	required := slices.Clone(m.Required)
+	if i := slices.Index(required, like); i >= 0 {
+		required[i] = kind
+	}
+
+	doc.Components.Schemas.Set(name, &openapi.Schema{
+		Title: strcase.ToCase(kind, strcase.TitleCase, ' '), Type: openapi.TypeObject,
+		Properties: props, Required: required, AdditionalProperties: m.AdditionalProperties,
+	})
+
+	*alts = append(*alts, refTo(doc, name))
+
+	return nil
+}
+
+// addPropertyKinds adds the kinds of property Notion has but the official spec does not list, made from those of
+// last_edited_time.
+func addPropertyKinds(doc *openapi.Document) error {
+	nullableDateTime := func() *openapi.Schema {
+		return &openapi.Schema{
+			OneOf: openapi.SchemaList{{Type: openapi.TypeString, Format: openapi.FormatDateTime}, {Type: openapi.TypeNull}},
+		}
+	}
+
+	for _, f := range []struct {
+		union, model, kind string
+		member             *openapi.Schema
+	}{
+		{"PropertyConfig", "lastEditedTimeDatabasePropertyConfigResponse", "place", refTo(doc, "emptyObject")},
+		{"PropertyConfig", "lastEditedTimeDatabasePropertyConfigResponse", "last_visited_time", refTo(doc, "emptyObject")},
+		{"simplePropertyValueResponse", "lastEditedTimeSimplePropertyValueResponse", "last_visited_time", nullableDateTime()},
+		{"propertyItemObjectResponse", "lastEditedTimePropertyItemObjectResponse", "last_visited_time", nullableDateTime()},
+	} {
+		if err := addForm(doc, f.union, f.model, "last_edited_time", f.kind, f.member); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// unionForms are the forms of the union name: its oneOf, or that of the part of its allOf that has one.
+func unionForms(doc *openapi.Document, name string) (*openapi.SchemaList, error) {
+	s, ok := doc.Components.Schemas[name]
+	if !ok {
+		return nil, componentErr(name, errors.New("not found"))
+	}
+
+	switch {
+	case len(s.OneOf) > 0:
+		return &s.OneOf, nil
+	case len(s.AnyOf) > 0:
+		return &s.AnyOf, nil
+	}
+
+	for _, part := range s.AllOf {
+		if len(part.OneOf) > 0 {
+			return &part.OneOf, nil
+		}
+	}
+
+	return nil, componentErr(name, errors.New("is no union"))
 }
 
 // extractArrayOf names every array of the component item, which the official spec spells out inline each time.
@@ -825,7 +949,6 @@ func nameFilter(doc *openapi.Document) error {
 }
 
 // setFilterForms sets what Filter may be: any or all of other filters, a property filter, or a timestamp filter.
-// It is set again after enrich, which files filters it was given under a form they lack the required members of.
 func setFilterForms(doc *openapi.Document) {
 	for _, c := range []struct{ name, op, description string }{
 		{"FilterOr", "or", "The entries any of the filters allow."},
@@ -836,16 +959,10 @@ func setFilterForms(doc *openapi.Document) {
 			Description: c.description, Type: openapi.TypeArray, MaxItems: new(uint(100)), Items: refTo(doc, "Filter"),
 		})
 
-		form := &openapi.Schema{
+		doc.Components.Schemas.Set(c.name, &openapi.Schema{
 			Type: openapi.TypeObject, Properties: props, Required: []string{c.op},
 			AdditionalProperties: &openapi.AdditionalProperties{},
-		}
-
-		if s, ok := doc.Components.Schemas[c.name]; ok {
-			s.Replace(form) // in place, so that what refers to it still does
-		} else {
-			doc.Components.Schemas.Set(c.name, form)
-		}
+		})
 	}
 
 	doc.Components.Schemas["Filter"].OneOf = openapi.SchemaList{
@@ -939,6 +1056,10 @@ func fixOpenAPI() (*openapi.Document, error) {
 		return nil, fmt.Errorf("renaming schemas: %w", err)
 	}
 
+	if err := addPropertyKinds(doc); err != nil {
+		return nil, err
+	}
+
 	if err := extractArrayOf(doc, "RichTexts", "RichText"); err != nil {
 		return nil, err
 	}
@@ -974,17 +1095,9 @@ func fixOpenAPI() (*openapi.Document, error) {
 	nameObjects(doc)
 	nameBranches(doc)
 
-	if err := allowDateTimes(doc, "dateResponse", "start", "end"); err != nil {
+	if err := allowDateTimes(doc); err != nil {
 		return nil, err
 	}
-
-	// its forms differ only in the value of type, which codegen does not check yet, so a group_by matched them all
-	g, ok := doc.Components.Schemas["groupByConfigResponse"]
-	if !ok {
-		return nil, componentErr("groupByConfigResponse", errors.New("not found"))
-	}
-
-	g.AnyOf, g.OneOf = alternatives(g), nil
 
 	if err := applyPasses(doc); err != nil {
 		return nil, err
@@ -1018,15 +1131,7 @@ func applyPasses(doc *openapi.Document) error {
 		name string
 		run  func(*openapi.Document) error
 	}{
-		{"enrich", func(d *openapi.Document) error {
-			if err := enrich.Enrich(d, ias); err != nil {
-				return err
-			}
-
-			setFilterForms(d)
-
-			return setResults(d)
-		}},
+		{"enrich", func(d *openapi.Document) error { return enrich.Enrich(d, ias) }},
 		{"flatten", flattenDoc},
 		{"compress", func(d *openapi.Document) error { return compress.Document(d, compress.Config{}) }},
 		{"flatten again", flattenDoc},
@@ -1055,5 +1160,6 @@ func generateCode(doc *openapi.Document) error {
 		Types:       true,
 		Client:      true,
 		ClientTest:  true,
+		Debug:       true,
 	})
 }

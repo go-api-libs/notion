@@ -2509,7 +2509,7 @@ type AgentTriggersItem struct {
 	// Structured recurrence cadence. Present only for recurrence triggers.
 	Schedule AgentTriggersItemSchedule `json:"schedule,omitzero"`
 	// Remaining per-type trigger configuration (e.g. watched channel ids, reaction config), keys in snake_case. Present only when the trigger carries such state.
-	Config map[string]any `json:"config,omitzero"`
+	Config *struct{} `json:"config,omitzero"`
 }
 
 // Structured recurrence cadence. Present only for recurrence triggers.
@@ -7243,7 +7243,7 @@ type CreateMeetingNoteAllOf0Source struct {
 	// Audio or video source for the meeting note.
 	Source CreateMeetingNoteAllOf0SourceSource `json:"source"`
 	// Not accepted for block sources.
-	Parent any `json:"parent,omitzero"`
+	Parent *struct{} `json:"parent,omitzero"`
 }
 
 // Audio or video source for the meeting note.
@@ -8316,6 +8316,61 @@ func (e DateGroupByConfigType) Valid() bool {
 	}
 }
 
+// An ISO 8601 date, with an optional time.
+// DateOrDateTime is an untagged anyOf union: at least one field is set after unmarshaling.
+type DateOrDateTime struct {
+	Date *civil.Date
+	Time *time.Time
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *DateOrDateTime) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = DateOrDateTime{}
+
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv civil.Date
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.Date = &vv
+			matched++
+		}
+	}
+
+	{
+		var vv time.Time
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.Time = &vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *DateOrDateTime) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.Date != nil:
+		return json.MarshalEncode(enc, v.Date, jsonOptsTo(enc))
+	case v.Time != nil:
+		return json.MarshalEncode(enc, v.Time, jsonOptsTo(enc))
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
 // DateOrRelativeDate defines a model
 // DateOrRelativeDate is an untagged anyOf union: at least one field is set after unmarshaling.
 type DateOrRelativeDate struct {
@@ -8692,9 +8747,9 @@ func (v *DatePropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decod
 // DateRequest defines a model
 type DateRequest struct {
 	// The start date of the date object.
-	Start civil.Date `json:"start"`
+	Start DateOrDateTime `json:"start"`
 	// The end date of the date object, if any.
-	End civil.Date `json:"end,omitzero"`
+	End *DateOrDateTime `json:"end,omitzero"`
 	// The time zone of the date object, if any. E.g. America/Los_Angeles, Europe/London, etc.
 	TimeZone TimeZoneRequest `json:"time_zone,omitzero"`
 }
@@ -8702,9 +8757,9 @@ type DateRequest struct {
 // DateResponse defines a model
 type DateResponse struct {
 	// The start date of the date object.
-	Start string `json:"start"`
+	Start DateOrDateTime `json:"start"`
 	// The end date of the date object, if any.
-	End string `json:"end"`
+	End *DateOrDateTime `json:"end"`
 	// The time zone of the date object.
 	TimeZone TimeZoneRequest `json:"time_zone"`
 }
@@ -10523,7 +10578,7 @@ func (v *GroupByConfigRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 }
 
 // Group-by configuration based on property type.
-// GroupByConfigResponse is an untagged anyOf union: at least one field is set after unmarshaling.
+// GroupByConfigResponse is an untagged oneOf union: exactly one field is set after unmarshaling.
 type GroupByConfigResponse struct {
 	SelectGroupByConfigResponse   *SelectGroupByConfigResponse
 	StatusGroupByConfigResponse   *StatusGroupByConfigResponse
@@ -10553,7 +10608,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	// a member outside its enum rules an alternative out; leniently, only while another fits
 	for _, enums := range jsonEnumPasses(strict) {
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property_id", "sort", "type"}, map[string]string{}
 			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"select\"", "\"multi_select\""}})) {
@@ -10565,7 +10621,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			}
 		}
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]string{"type": "\"status\""}
 			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"group_by": {"\"group\"", "\"option\""}})) {
@@ -10577,7 +10634,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			}
 		}
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property_id", "sort", "type"}, map[string]string{}
 			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"person\"", "\"created_by\"", "\"last_edited_by\""}})) {
@@ -10589,7 +10647,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			}
 		}
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property_id", "sort", "type"}, map[string]string{"type": "\"relation\""}
 			if jsonFits(raw, required, pinned) {
@@ -10601,7 +10660,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			}
 		}
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]string{}
 			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"date\"", "\"created_time\"", "\"last_edited_time\""}, "group_by": {"\"relative\"", "\"day\"", "\"week\"", "\"month\"", "\"year\""}, "start_day_of_week": {"0", "1"}})) {
@@ -10613,7 +10673,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			}
 		}
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]string{}
 			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"text\"", "\"title\"", "\"url\"", "\"email\"", "\"phone_number\""}, "group_by": {"\"exact\"", "\"alphabet_prefix\""}})) {
@@ -10625,7 +10686,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			}
 		}
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property_id", "sort", "type"}, map[string]string{"type": "\"number\""}
 			if jsonFits(raw, required, pinned) {
@@ -10637,7 +10699,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			}
 		}
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property_id", "sort", "type"}, map[string]string{"type": "\"checkbox\""}
 			if jsonFits(raw, required, pinned) {
@@ -10649,7 +10712,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			}
 		}
 
-		{
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"group_by", "property_id", "type"}, map[string]string{"type": "\"formula\""}
 			if jsonFits(raw, required, pinned) {
@@ -10666,8 +10730,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		}
 	}
 
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
 	}
 
 	return nil
@@ -11072,6 +11136,7 @@ type LastEditedTimePropertyItemObjectResponse struct {
 	LastEditedTime time.Time `json:"last_edited_time"`
 	Object         string    `json:"object"`
 	ID             string    `json:"id"`
+	RequestID      uuid.UUID `json:"request_id,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether LastEditedTimePropertyItemObjectResponse declares it.
@@ -11085,6 +11150,35 @@ func (v *LastEditedTimePropertyItemObjectResponse) unmarshalJSONMember(dec *json
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
 	case "id":
 		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// LastVisitedTimePropertyItemObjectResponse defines a model
+type LastVisitedTimePropertyItemObjectResponse struct {
+	Type            string    `json:"type"`
+	LastVisitedTime time.Time `json:"last_visited_time"`
+	Object          string    `json:"object"`
+	ID              string    `json:"id"`
+	RequestID       uuid.UUID `json:"request_id,omitzero"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether LastVisitedTimePropertyItemObjectResponse declares it.
+func (v *LastVisitedTimePropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "last_visited_time":
+		return true, json.UnmarshalDecode(dec, &v.LastVisitedTime, jsonOptsOf(dec))
+	case "object":
+		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
 	}
 
 	return false, nil
@@ -15007,10 +15101,11 @@ type PlacePropertyConfiguration struct {
 
 // PlacePropertyItemObjectResponse defines a model
 type PlacePropertyItemObjectResponse struct {
-	Type   string                    `json:"type"`
-	Place  PagePropertiesValuePlace2 `json:"place"`
-	Object string                    `json:"object"`
-	ID     string                    `json:"id"`
+	Type      string                    `json:"type"`
+	Place     PagePropertiesValuePlace2 `json:"place"`
+	Object    string                    `json:"object"`
+	ID        string                    `json:"id"`
+	RequestID uuid.UUID                 `json:"request_id,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether PlacePropertyItemObjectResponse declares it.
@@ -15024,6 +15119,8 @@ func (v *PlacePropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Deco
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
 	case "id":
 		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
 	}
 
 	return false, nil
@@ -15521,56 +15618,60 @@ type PropertyConfig struct {
 	// The name of the property.
 	Name string `json:"name"`
 	// The description of the property.
-	Description    PropertyDescriptionRequest                      `json:"description"`
-	Type           PropertyConfigType                              `json:"type"`
-	Number         *NumberDatabasePropertyConfigResponseNumber     `json:"number,omitzero"`
-	Formula        *ContentWithExpression                          `json:"formula,omitzero"`
-	Select         *SelectDatabasePropertyConfigSelect             `json:"select,omitzero"`
-	MultiSelect    *SelectDatabasePropertyConfigSelect             `json:"multi_select,omitzero"`
-	Status         *StatusDatabasePropertyConfigResponseStatus     `json:"status,omitzero"`
-	Relation       *DatabasePropertyRelationConfigResponse         `json:"relation,omitzero"`
-	Rollup         *RollupDatabasePropertyConfigResponseRollup     `json:"rollup,omitzero"`
-	UniqueID       *UniqueIDDatabasePropertyConfigResponseUniqueID `json:"unique_id,omitzero"`
-	Title          *EmptyObject                                    `json:"title,omitzero"`
-	RichText       *EmptyObject                                    `json:"rich_text,omitzero"`
-	URL            *EmptyObject                                    `json:"url,omitzero"`
-	People         *EmptyObject                                    `json:"people,omitzero"`
-	Files          *EmptyObject                                    `json:"files,omitzero"`
-	Email          *EmptyObject                                    `json:"email,omitzero"`
-	PhoneNumber    *EmptyObject                                    `json:"phone_number,omitzero"`
-	Date           *EmptyObject                                    `json:"date,omitzero"`
-	Checkbox       *EmptyObject                                    `json:"checkbox,omitzero"`
-	CreatedBy      *EmptyObject                                    `json:"created_by,omitzero"`
-	CreatedTime    *EmptyObject                                    `json:"created_time,omitzero"`
-	LastEditedBy   *EmptyObject                                    `json:"last_edited_by,omitzero"`
-	LastEditedTime *EmptyObject                                    `json:"last_edited_time,omitzero"`
+	Description     PropertyDescriptionRequest                      `json:"description"`
+	Type            PropertyConfigType                              `json:"type"`
+	Number          *NumberDatabasePropertyConfigResponseNumber     `json:"number,omitzero"`
+	Formula         *ContentWithExpression                          `json:"formula,omitzero"`
+	Select          *SelectDatabasePropertyConfigSelect             `json:"select,omitzero"`
+	MultiSelect     *SelectDatabasePropertyConfigSelect             `json:"multi_select,omitzero"`
+	Status          *StatusDatabasePropertyConfigResponseStatus     `json:"status,omitzero"`
+	Relation        *DatabasePropertyRelationConfigResponse         `json:"relation,omitzero"`
+	Rollup          *RollupDatabasePropertyConfigResponseRollup     `json:"rollup,omitzero"`
+	UniqueID        *UniqueIDDatabasePropertyConfigResponseUniqueID `json:"unique_id,omitzero"`
+	Title           *EmptyObject                                    `json:"title,omitzero"`
+	RichText        *EmptyObject                                    `json:"rich_text,omitzero"`
+	URL             *EmptyObject                                    `json:"url,omitzero"`
+	People          *EmptyObject                                    `json:"people,omitzero"`
+	Files           *EmptyObject                                    `json:"files,omitzero"`
+	Email           *EmptyObject                                    `json:"email,omitzero"`
+	PhoneNumber     *EmptyObject                                    `json:"phone_number,omitzero"`
+	Date            *EmptyObject                                    `json:"date,omitzero"`
+	Checkbox        *EmptyObject                                    `json:"checkbox,omitzero"`
+	CreatedBy       *EmptyObject                                    `json:"created_by,omitzero"`
+	CreatedTime     *EmptyObject                                    `json:"created_time,omitzero"`
+	LastEditedBy    *EmptyObject                                    `json:"last_edited_by,omitzero"`
+	LastEditedTime  *EmptyObject                                    `json:"last_edited_time,omitzero"`
+	Place           *EmptyObject                                    `json:"place,omitzero"`
+	LastVisitedTime *EmptyObject                                    `json:"last_visited_time,omitzero"`
 }
 
 // PropertyConfigType is a value of PropertyConfig's type, naming the members it holds.
 type PropertyConfigType string
 
 const (
-	PropertyConfigTypeNumber         PropertyConfigType = "number"
-	PropertyConfigTypeFormula        PropertyConfigType = "formula"
-	PropertyConfigTypeSelect         PropertyConfigType = "select"
-	PropertyConfigTypeMultiSelect    PropertyConfigType = "multi_select"
-	PropertyConfigTypeStatus         PropertyConfigType = "status"
-	PropertyConfigTypeRelation       PropertyConfigType = "relation"
-	PropertyConfigTypeRollup         PropertyConfigType = "rollup"
-	PropertyConfigTypeUniqueID       PropertyConfigType = "unique_id"
-	PropertyConfigTypeTitle          PropertyConfigType = "title"
-	PropertyConfigTypeRichText       PropertyConfigType = "rich_text"
-	PropertyConfigTypeURL            PropertyConfigType = "url"
-	PropertyConfigTypePeople         PropertyConfigType = "people"
-	PropertyConfigTypeFiles          PropertyConfigType = "files"
-	PropertyConfigTypeEmail          PropertyConfigType = "email"
-	PropertyConfigTypePhoneNumber    PropertyConfigType = "phone_number"
-	PropertyConfigTypeDate           PropertyConfigType = "date"
-	PropertyConfigTypeCheckbox       PropertyConfigType = "checkbox"
-	PropertyConfigTypeCreatedBy      PropertyConfigType = "created_by"
-	PropertyConfigTypeCreatedTime    PropertyConfigType = "created_time"
-	PropertyConfigTypeLastEditedBy   PropertyConfigType = "last_edited_by"
-	PropertyConfigTypeLastEditedTime PropertyConfigType = "last_edited_time"
+	PropertyConfigTypeNumber          PropertyConfigType = "number"
+	PropertyConfigTypeFormula         PropertyConfigType = "formula"
+	PropertyConfigTypeSelect          PropertyConfigType = "select"
+	PropertyConfigTypeMultiSelect     PropertyConfigType = "multi_select"
+	PropertyConfigTypeStatus          PropertyConfigType = "status"
+	PropertyConfigTypeRelation        PropertyConfigType = "relation"
+	PropertyConfigTypeRollup          PropertyConfigType = "rollup"
+	PropertyConfigTypeUniqueID        PropertyConfigType = "unique_id"
+	PropertyConfigTypeTitle           PropertyConfigType = "title"
+	PropertyConfigTypeRichText        PropertyConfigType = "rich_text"
+	PropertyConfigTypeURL             PropertyConfigType = "url"
+	PropertyConfigTypePeople          PropertyConfigType = "people"
+	PropertyConfigTypeFiles           PropertyConfigType = "files"
+	PropertyConfigTypeEmail           PropertyConfigType = "email"
+	PropertyConfigTypePhoneNumber     PropertyConfigType = "phone_number"
+	PropertyConfigTypeDate            PropertyConfigType = "date"
+	PropertyConfigTypeCheckbox        PropertyConfigType = "checkbox"
+	PropertyConfigTypeCreatedBy       PropertyConfigType = "created_by"
+	PropertyConfigTypeCreatedTime     PropertyConfigType = "created_time"
+	PropertyConfigTypeLastEditedBy    PropertyConfigType = "last_edited_by"
+	PropertyConfigTypeLastEditedTime  PropertyConfigType = "last_edited_time"
+	PropertyConfigTypePlace           PropertyConfigType = "place"
+	PropertyConfigTypeLastVisitedTime PropertyConfigType = "last_visited_time"
 )
 
 // Valid indicates whether the value is a known member of the PropertyConfigType enum.
@@ -15581,27 +15682,29 @@ func (e PropertyConfigType) Valid() bool {
 
 // tagsOfPropertyConfig holds, for each value of type, the members of its alternative's own, each with how it is needed.
 var tagsOfPropertyConfig = map[string]map[string]jsonTagNeed{
-	"number":           {"number": jsonTagRequired},
-	"formula":          {"formula": jsonTagRequired},
-	"select":           {"select": jsonTagRequired},
-	"multi_select":     {"multi_select": jsonTagRequired},
-	"status":           {"status": jsonTagRequired},
-	"relation":         {"relation": jsonTagRequired},
-	"rollup":           {"rollup": jsonTagRequired},
-	"unique_id":        {"unique_id": jsonTagRequired},
-	"title":            {"title": jsonTagRequired},
-	"rich_text":        {"rich_text": jsonTagRequired},
-	"url":              {"url": jsonTagRequired},
-	"people":           {"people": jsonTagRequired},
-	"files":            {"files": jsonTagRequired},
-	"email":            {"email": jsonTagRequired},
-	"phone_number":     {"phone_number": jsonTagRequired},
-	"date":             {"date": jsonTagRequired},
-	"checkbox":         {"checkbox": jsonTagRequired},
-	"created_by":       {"created_by": jsonTagRequired},
-	"created_time":     {"created_time": jsonTagRequired},
-	"last_edited_by":   {"last_edited_by": jsonTagRequired},
-	"last_edited_time": {"last_edited_time": jsonTagRequired},
+	"number":            {"number": jsonTagRequired},
+	"formula":           {"formula": jsonTagRequired},
+	"select":            {"select": jsonTagRequired},
+	"multi_select":      {"multi_select": jsonTagRequired},
+	"status":            {"status": jsonTagRequired},
+	"relation":          {"relation": jsonTagRequired},
+	"rollup":            {"rollup": jsonTagRequired},
+	"unique_id":         {"unique_id": jsonTagRequired},
+	"title":             {"title": jsonTagRequired},
+	"rich_text":         {"rich_text": jsonTagRequired},
+	"url":               {"url": jsonTagRequired},
+	"people":            {"people": jsonTagRequired},
+	"files":             {"files": jsonTagRequired},
+	"email":             {"email": jsonTagRequired},
+	"phone_number":      {"phone_number": jsonTagRequired},
+	"date":              {"date": jsonTagRequired},
+	"checkbox":          {"checkbox": jsonTagRequired},
+	"created_by":        {"created_by": jsonTagRequired},
+	"created_time":      {"created_time": jsonTagRequired},
+	"last_edited_by":    {"last_edited_by": jsonTagRequired},
+	"last_edited_time":  {"last_edited_time": jsonTagRequired},
+	"place":             {"place": jsonTagRequired},
+	"last_visited_time": {"last_visited_time": jsonTagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -15669,6 +15772,12 @@ func (v *PropertyConfig) taggedMembers() []string {
 	}
 	if v.LastEditedTime != nil {
 		set = append(set, "last_edited_time")
+	}
+	if v.Place != nil {
+		set = append(set, "place")
+	}
+	if v.LastVisitedTime != nil {
+		set = append(set, "last_visited_time")
 	}
 
 	return set
@@ -16235,30 +16344,31 @@ func (v *PropertyFilterVerificationVerification) MarshalJSONTo(enc *jsontext.Enc
 // PropertyItemObjectResponse defines a model
 // PropertyItemObjectResponse is an untagged anyOf union: at least one field is set after unmarshaling.
 type PropertyItemObjectResponse struct {
-	NumberPropertyItemObjectResponse         *NumberPropertyItemObjectResponse
-	URLPropertyItemObjectResponse            *URLPropertyItemObjectResponse
-	SelectPropertyItemObjectResponse         *SelectPropertyItemObjectResponse
-	MultiSelectPropertyItemObjectResponse    *MultiSelectPropertyItemObjectResponse
-	StatusPropertyItemObjectResponse         *StatusPropertyItemObjectResponse
-	DatePropertyItemObjectResponse           *DatePropertyItemObjectResponse
-	EmailPropertyItemObjectResponse          *EmailPropertyItemObjectResponse
-	PhoneNumberPropertyItemObjectResponse    *PhoneNumberPropertyItemObjectResponse
-	CheckboxPropertyItemObjectResponse       *CheckboxPropertyItemObjectResponse
-	FilesPropertyItemObjectResponse          *FilesPropertyItemObjectResponse
-	CreatedByPropertyItemObjectResponse      *CreatedByPropertyItemObjectResponse
-	CreatedTimePropertyItemObjectResponse    *CreatedTimePropertyItemObjectResponse
-	LastEditedByPropertyItemObjectResponse   *LastEditedByPropertyItemObjectResponse
-	LastEditedTimePropertyItemObjectResponse *LastEditedTimePropertyItemObjectResponse
-	FormulaPropertyItemObjectResponse        *FormulaPropertyItemObjectResponse
-	ButtonPropertyItemObjectResponse         *ButtonPropertyItemObjectResponse
-	UniqueIDPropertyItemObjectResponse       *UniqueIDPropertyItemObjectResponse
-	VerificationPropertyItemObjectResponse   *VerificationPropertyItemObjectResponse
-	PlacePropertyItemObjectResponse          *PlacePropertyItemObjectResponse
-	TitlePropertyItemObjectResponse          *TitlePropertyItemObjectResponse
-	RichTextPropertyItemObjectResponse       *RichTextPropertyItemObjectResponse
-	PeoplePropertyItemObjectResponse         *PeoplePropertyItemObjectResponse
-	RelationPropertyItemObjectResponse       *RelationPropertyItemObjectResponse
-	RollupPropertyItemObjectResponse         *RollupPropertyItemObjectResponse
+	NumberPropertyItemObjectResponse          *NumberPropertyItemObjectResponse
+	URLPropertyItemObjectResponse             *URLPropertyItemObjectResponse
+	SelectPropertyItemObjectResponse          *SelectPropertyItemObjectResponse
+	MultiSelectPropertyItemObjectResponse     *MultiSelectPropertyItemObjectResponse
+	StatusPropertyItemObjectResponse          *StatusPropertyItemObjectResponse
+	DatePropertyItemObjectResponse            *DatePropertyItemObjectResponse
+	EmailPropertyItemObjectResponse           *EmailPropertyItemObjectResponse
+	PhoneNumberPropertyItemObjectResponse     *PhoneNumberPropertyItemObjectResponse
+	CheckboxPropertyItemObjectResponse        *CheckboxPropertyItemObjectResponse
+	FilesPropertyItemObjectResponse           *FilesPropertyItemObjectResponse
+	CreatedByPropertyItemObjectResponse       *CreatedByPropertyItemObjectResponse
+	CreatedTimePropertyItemObjectResponse     *CreatedTimePropertyItemObjectResponse
+	LastEditedByPropertyItemObjectResponse    *LastEditedByPropertyItemObjectResponse
+	LastEditedTimePropertyItemObjectResponse  *LastEditedTimePropertyItemObjectResponse
+	FormulaPropertyItemObjectResponse         *FormulaPropertyItemObjectResponse
+	ButtonPropertyItemObjectResponse          *ButtonPropertyItemObjectResponse
+	UniqueIDPropertyItemObjectResponse        *UniqueIDPropertyItemObjectResponse
+	VerificationPropertyItemObjectResponse    *VerificationPropertyItemObjectResponse
+	PlacePropertyItemObjectResponse           *PlacePropertyItemObjectResponse
+	TitlePropertyItemObjectResponse           *TitlePropertyItemObjectResponse
+	RichTextPropertyItemObjectResponse        *RichTextPropertyItemObjectResponse
+	PeoplePropertyItemObjectResponse          *PeoplePropertyItemObjectResponse
+	RelationPropertyItemObjectResponse        *RelationPropertyItemObjectResponse
+	RollupPropertyItemObjectResponse          *RollupPropertyItemObjectResponse
+	LastVisitedTimePropertyItemObjectResponse *LastVisitedTimePropertyItemObjectResponse
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
@@ -16440,6 +16550,13 @@ func (v *PropertyItemObjectResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) er
 		}
 
 		v.RollupPropertyItemObjectResponse = &vv
+	case "last_visited_time":
+		var vv LastVisitedTimePropertyItemObjectResponse
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.LastVisitedTimePropertyItemObjectResponse = &vv
 	default:
 		return jsonUnknownValue("type", tag)
 	}
@@ -16503,6 +16620,8 @@ func (v *PropertyItemObjectResponse) MarshalJSONTo(enc *jsontext.Encoder) error 
 		variant, tag = v.RelationPropertyItemObjectResponse, "relation"
 	case v.RollupPropertyItemObjectResponse != nil:
 		variant, tag = v.RollupPropertyItemObjectResponse, "rollup"
+	case v.LastVisitedTimePropertyItemObjectResponse != nil:
+		variant, tag = v.LastVisitedTimePropertyItemObjectResponse, "last_visited_time"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -16646,62 +16765,64 @@ type PropertySorts []PropertySort
 // PropertyValue defines a model
 type PropertyValue struct {
 	IDObject
-	Type           PropertyValueType                                 `json:"type"`
-	Number         *float64                                          `json:"number,omitzero"`
-	URL            *string                                           `json:"url,omitzero"`
-	Select         *PartialSelectPropertyValueResponse               `json:"select,omitzero"`
-	MultiSelect    []PartialSelectPropertyValueResponse              `json:"multi_select,omitzero"`
-	Status         *PartialSelectPropertyValueResponse               `json:"status,omitzero"`
-	Date           *DateResponse                                     `json:"date,omitzero"`
-	Email          *string                                           `json:"email,omitzero"`
-	PhoneNumber    *string                                           `json:"phone_number,omitzero"`
-	Checkbox       *bool                                             `json:"checkbox,omitzero"`
-	Files          []InternalOrExternalFileWithNameResponse          `json:"files,omitzero"`
-	CreatedBy      *UserOrPartial                                    `json:"created_by,omitzero"`
-	CreatedTime    *time.Time                                        `json:"created_time,omitzero"`
-	LastEditedBy   *UserOrPartial                                    `json:"last_edited_by,omitzero"`
-	LastEditedTime *time.Time                                        `json:"last_edited_time,omitzero"`
-	Formula        *FormulaPropertyValueResponse                     `json:"formula,omitzero"`
-	Button         *EmptyObject                                      `json:"button,omitzero"`
-	UniqueID       *UniqueIDPropertyValueResponse                    `json:"unique_id,omitzero"`
-	Verification   *VerificationPropertyValueResponse                `json:"verification,omitzero"`
-	Place          *PlacePropertyValueResponse                       `json:"place,omitzero"`
-	Title          RichTexts                                         `json:"title,omitzero"`
-	RichText       RichTexts                                         `json:"rich_text,omitzero"`
-	People         []PeopleArrayBasedPropertyValueResponsePeopleItem `json:"people,omitzero"`
-	Relation       []RelationItemPropertyValue                       `json:"relation,omitzero"`
-	HasMore        *bool                                             `json:"has_more,omitzero"`
-	Rollup         *PartialRollupValueResponse                       `json:"rollup,omitzero"`
+	Type            PropertyValueType                                 `json:"type"`
+	Number          *float64                                          `json:"number,omitzero"`
+	URL             *string                                           `json:"url,omitzero"`
+	Select          *PartialSelectPropertyValueResponse               `json:"select,omitzero"`
+	MultiSelect     []PartialSelectPropertyValueResponse              `json:"multi_select,omitzero"`
+	Status          *PartialSelectPropertyValueResponse               `json:"status,omitzero"`
+	Date            *DateResponse                                     `json:"date,omitzero"`
+	Email           *string                                           `json:"email,omitzero"`
+	PhoneNumber     *string                                           `json:"phone_number,omitzero"`
+	Checkbox        *bool                                             `json:"checkbox,omitzero"`
+	Files           []InternalOrExternalFileWithNameResponse          `json:"files,omitzero"`
+	CreatedBy       *UserOrPartial                                    `json:"created_by,omitzero"`
+	CreatedTime     *time.Time                                        `json:"created_time,omitzero"`
+	LastEditedBy    *UserOrPartial                                    `json:"last_edited_by,omitzero"`
+	LastEditedTime  *time.Time                                        `json:"last_edited_time,omitzero"`
+	Formula         *FormulaPropertyValueResponse                     `json:"formula,omitzero"`
+	Button          *EmptyObject                                      `json:"button,omitzero"`
+	UniqueID        *UniqueIDPropertyValueResponse                    `json:"unique_id,omitzero"`
+	Verification    *VerificationPropertyValueResponse                `json:"verification,omitzero"`
+	Place           *PlacePropertyValueResponse                       `json:"place,omitzero"`
+	LastVisitedTime *time.Time                                        `json:"last_visited_time,omitzero"`
+	Title           RichTexts                                         `json:"title,omitzero"`
+	RichText        RichTexts                                         `json:"rich_text,omitzero"`
+	People          []PeopleArrayBasedPropertyValueResponsePeopleItem `json:"people,omitzero"`
+	Relation        []RelationItemPropertyValue                       `json:"relation,omitzero"`
+	HasMore         *bool                                             `json:"has_more,omitzero"`
+	Rollup          *PartialRollupValueResponse                       `json:"rollup,omitzero"`
 }
 
 // PropertyValueType is a value of PropertyValue's type, naming the members it holds.
 type PropertyValueType string
 
 const (
-	PropertyValueTypeNumber         PropertyValueType = "number"
-	PropertyValueTypeURL            PropertyValueType = "url"
-	PropertyValueTypeSelect         PropertyValueType = "select"
-	PropertyValueTypeMultiSelect    PropertyValueType = "multi_select"
-	PropertyValueTypeStatus         PropertyValueType = "status"
-	PropertyValueTypeDate           PropertyValueType = "date"
-	PropertyValueTypeEmail          PropertyValueType = "email"
-	PropertyValueTypePhoneNumber    PropertyValueType = "phone_number"
-	PropertyValueTypeCheckbox       PropertyValueType = "checkbox"
-	PropertyValueTypeFiles          PropertyValueType = "files"
-	PropertyValueTypeCreatedBy      PropertyValueType = "created_by"
-	PropertyValueTypeCreatedTime    PropertyValueType = "created_time"
-	PropertyValueTypeLastEditedBy   PropertyValueType = "last_edited_by"
-	PropertyValueTypeLastEditedTime PropertyValueType = "last_edited_time"
-	PropertyValueTypeFormula        PropertyValueType = "formula"
-	PropertyValueTypeButton         PropertyValueType = "button"
-	PropertyValueTypeUniqueID       PropertyValueType = "unique_id"
-	PropertyValueTypeVerification   PropertyValueType = "verification"
-	PropertyValueTypePlace          PropertyValueType = "place"
-	PropertyValueTypeTitle          PropertyValueType = "title"
-	PropertyValueTypeRichText       PropertyValueType = "rich_text"
-	PropertyValueTypePeople         PropertyValueType = "people"
-	PropertyValueTypeRelation       PropertyValueType = "relation"
-	PropertyValueTypeRollup         PropertyValueType = "rollup"
+	PropertyValueTypeNumber          PropertyValueType = "number"
+	PropertyValueTypeURL             PropertyValueType = "url"
+	PropertyValueTypeSelect          PropertyValueType = "select"
+	PropertyValueTypeMultiSelect     PropertyValueType = "multi_select"
+	PropertyValueTypeStatus          PropertyValueType = "status"
+	PropertyValueTypeDate            PropertyValueType = "date"
+	PropertyValueTypeEmail           PropertyValueType = "email"
+	PropertyValueTypePhoneNumber     PropertyValueType = "phone_number"
+	PropertyValueTypeCheckbox        PropertyValueType = "checkbox"
+	PropertyValueTypeFiles           PropertyValueType = "files"
+	PropertyValueTypeCreatedBy       PropertyValueType = "created_by"
+	PropertyValueTypeCreatedTime     PropertyValueType = "created_time"
+	PropertyValueTypeLastEditedBy    PropertyValueType = "last_edited_by"
+	PropertyValueTypeLastEditedTime  PropertyValueType = "last_edited_time"
+	PropertyValueTypeFormula         PropertyValueType = "formula"
+	PropertyValueTypeButton          PropertyValueType = "button"
+	PropertyValueTypeUniqueID        PropertyValueType = "unique_id"
+	PropertyValueTypeVerification    PropertyValueType = "verification"
+	PropertyValueTypePlace           PropertyValueType = "place"
+	PropertyValueTypeLastVisitedTime PropertyValueType = "last_visited_time"
+	PropertyValueTypeTitle           PropertyValueType = "title"
+	PropertyValueTypeRichText        PropertyValueType = "rich_text"
+	PropertyValueTypePeople          PropertyValueType = "people"
+	PropertyValueTypeRelation        PropertyValueType = "relation"
+	PropertyValueTypeRollup          PropertyValueType = "rollup"
 )
 
 // Valid indicates whether the value is a known member of the PropertyValueType enum.
@@ -16712,30 +16833,31 @@ func (e PropertyValueType) Valid() bool {
 
 // tagsOfPropertyValue holds, for each value of type, the members of its alternative's own, each with how it is needed.
 var tagsOfPropertyValue = map[string]map[string]jsonTagNeed{
-	"number":           {"number": jsonTagRequiredOrNull},
-	"url":              {"url": jsonTagRequiredOrNull},
-	"select":           {"select": jsonTagRequiredOrNull},
-	"multi_select":     {"multi_select": jsonTagRequired},
-	"status":           {"status": jsonTagRequiredOrNull},
-	"date":             {"date": jsonTagRequiredOrNull},
-	"email":            {"email": jsonTagRequiredOrNull},
-	"phone_number":     {"phone_number": jsonTagRequiredOrNull},
-	"checkbox":         {"checkbox": jsonTagRequired},
-	"files":            {"files": jsonTagRequired},
-	"created_by":       {"created_by": jsonTagRequired},
-	"created_time":     {"created_time": jsonTagRequired},
-	"last_edited_by":   {"last_edited_by": jsonTagRequired},
-	"last_edited_time": {"last_edited_time": jsonTagRequired},
-	"formula":          {"formula": jsonTagRequired},
-	"button":           {"button": jsonTagRequired},
-	"unique_id":        {"unique_id": jsonTagRequired},
-	"verification":     {"verification": jsonTagRequiredOrNull},
-	"place":            {"place": jsonTagRequiredOrNull},
-	"title":            {"title": jsonTagRequired},
-	"rich_text":        {"rich_text": jsonTagRequired},
-	"people":           {"people": jsonTagRequired},
-	"relation":         {"has_more": jsonTagOptional, "relation": jsonTagRequired},
-	"rollup":           {"rollup": jsonTagRequired},
+	"number":            {"number": jsonTagRequiredOrNull},
+	"url":               {"url": jsonTagRequiredOrNull},
+	"select":            {"select": jsonTagRequiredOrNull},
+	"multi_select":      {"multi_select": jsonTagRequired},
+	"status":            {"status": jsonTagRequiredOrNull},
+	"date":              {"date": jsonTagRequiredOrNull},
+	"email":             {"email": jsonTagRequiredOrNull},
+	"phone_number":      {"phone_number": jsonTagRequiredOrNull},
+	"checkbox":          {"checkbox": jsonTagRequired},
+	"files":             {"files": jsonTagRequired},
+	"created_by":        {"created_by": jsonTagRequired},
+	"created_time":      {"created_time": jsonTagRequired},
+	"last_edited_by":    {"last_edited_by": jsonTagRequired},
+	"last_edited_time":  {"last_edited_time": jsonTagRequired},
+	"formula":           {"formula": jsonTagRequired},
+	"button":            {"button": jsonTagRequired},
+	"unique_id":         {"unique_id": jsonTagRequired},
+	"verification":      {"verification": jsonTagRequiredOrNull},
+	"place":             {"place": jsonTagRequiredOrNull},
+	"last_visited_time": {"last_visited_time": jsonTagRequiredOrNull},
+	"title":             {"title": jsonTagRequired},
+	"rich_text":         {"rich_text": jsonTagRequired},
+	"people":            {"people": jsonTagRequired},
+	"relation":          {"has_more": jsonTagOptional, "relation": jsonTagRequired},
+	"rollup":            {"rollup": jsonTagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -16797,6 +16919,9 @@ func (v *PropertyValue) taggedMembers() []string {
 	}
 	if v.Place != nil {
 		set = append(set, "place")
+	}
+	if v.LastVisitedTime != nil {
+		set = append(set, "last_visited_time")
 	}
 	if v.Title != nil {
 		set = append(set, "title")
@@ -23644,60 +23769,62 @@ func (e SessionStatus) Valid() bool {
 
 // SimpleOrArrayPropertyValueResponse defines a model
 type SimpleOrArrayPropertyValueResponse struct {
-	Type           SimpleOrArrayPropertyValueResponseType            `json:"type"`
-	Number         *float64                                          `json:"number,omitzero"`
-	URL            *string                                           `json:"url,omitzero"`
-	Select         *PartialSelectPropertyValueResponse               `json:"select,omitzero"`
-	MultiSelect    []PartialSelectPropertyValueResponse              `json:"multi_select,omitzero"`
-	Status         *PartialSelectPropertyValueResponse               `json:"status,omitzero"`
-	Date           *DateResponse                                     `json:"date,omitzero"`
-	Email          *string                                           `json:"email,omitzero"`
-	PhoneNumber    *string                                           `json:"phone_number,omitzero"`
-	Checkbox       *bool                                             `json:"checkbox,omitzero"`
-	Files          []InternalOrExternalFileWithNameResponse          `json:"files,omitzero"`
-	CreatedBy      *UserOrPartial                                    `json:"created_by,omitzero"`
-	CreatedTime    *time.Time                                        `json:"created_time,omitzero"`
-	LastEditedBy   *UserOrPartial                                    `json:"last_edited_by,omitzero"`
-	LastEditedTime *time.Time                                        `json:"last_edited_time,omitzero"`
-	Formula        *FormulaPropertyValueResponse                     `json:"formula,omitzero"`
-	Button         *EmptyObject                                      `json:"button,omitzero"`
-	UniqueID       *UniqueIDPropertyValueResponse                    `json:"unique_id,omitzero"`
-	Verification   *VerificationPropertyValueResponse                `json:"verification,omitzero"`
-	Place          *PlacePropertyValueResponse                       `json:"place,omitzero"`
-	Title          RichTexts                                         `json:"title,omitzero"`
-	RichText       RichTexts                                         `json:"rich_text,omitzero"`
-	People         []PeopleArrayBasedPropertyValueResponsePeopleItem `json:"people,omitzero"`
-	Relation       []RelationItemPropertyValue                       `json:"relation,omitzero"`
-	HasMore        *bool                                             `json:"has_more,omitzero"`
+	Type            SimpleOrArrayPropertyValueResponseType            `json:"type"`
+	Number          *float64                                          `json:"number,omitzero"`
+	URL             *string                                           `json:"url,omitzero"`
+	Select          *PartialSelectPropertyValueResponse               `json:"select,omitzero"`
+	MultiSelect     []PartialSelectPropertyValueResponse              `json:"multi_select,omitzero"`
+	Status          *PartialSelectPropertyValueResponse               `json:"status,omitzero"`
+	Date            *DateResponse                                     `json:"date,omitzero"`
+	Email           *string                                           `json:"email,omitzero"`
+	PhoneNumber     *string                                           `json:"phone_number,omitzero"`
+	Checkbox        *bool                                             `json:"checkbox,omitzero"`
+	Files           []InternalOrExternalFileWithNameResponse          `json:"files,omitzero"`
+	CreatedBy       *UserOrPartial                                    `json:"created_by,omitzero"`
+	CreatedTime     *time.Time                                        `json:"created_time,omitzero"`
+	LastEditedBy    *UserOrPartial                                    `json:"last_edited_by,omitzero"`
+	LastEditedTime  *time.Time                                        `json:"last_edited_time,omitzero"`
+	Formula         *FormulaPropertyValueResponse                     `json:"formula,omitzero"`
+	Button          *EmptyObject                                      `json:"button,omitzero"`
+	UniqueID        *UniqueIDPropertyValueResponse                    `json:"unique_id,omitzero"`
+	Verification    *VerificationPropertyValueResponse                `json:"verification,omitzero"`
+	Place           *PlacePropertyValueResponse                       `json:"place,omitzero"`
+	LastVisitedTime *time.Time                                        `json:"last_visited_time,omitzero"`
+	Title           RichTexts                                         `json:"title,omitzero"`
+	RichText        RichTexts                                         `json:"rich_text,omitzero"`
+	People          []PeopleArrayBasedPropertyValueResponsePeopleItem `json:"people,omitzero"`
+	Relation        []RelationItemPropertyValue                       `json:"relation,omitzero"`
+	HasMore         *bool                                             `json:"has_more,omitzero"`
 }
 
 // SimpleOrArrayPropertyValueResponseType is a value of SimpleOrArrayPropertyValueResponse's type, naming the members it holds.
 type SimpleOrArrayPropertyValueResponseType string
 
 const (
-	SimpleOrArrayPropertyValueResponseTypeNumber         SimpleOrArrayPropertyValueResponseType = "number"
-	SimpleOrArrayPropertyValueResponseTypeURL            SimpleOrArrayPropertyValueResponseType = "url"
-	SimpleOrArrayPropertyValueResponseTypeSelect         SimpleOrArrayPropertyValueResponseType = "select"
-	SimpleOrArrayPropertyValueResponseTypeMultiSelect    SimpleOrArrayPropertyValueResponseType = "multi_select"
-	SimpleOrArrayPropertyValueResponseTypeStatus         SimpleOrArrayPropertyValueResponseType = "status"
-	SimpleOrArrayPropertyValueResponseTypeDate           SimpleOrArrayPropertyValueResponseType = "date"
-	SimpleOrArrayPropertyValueResponseTypeEmail          SimpleOrArrayPropertyValueResponseType = "email"
-	SimpleOrArrayPropertyValueResponseTypePhoneNumber    SimpleOrArrayPropertyValueResponseType = "phone_number"
-	SimpleOrArrayPropertyValueResponseTypeCheckbox       SimpleOrArrayPropertyValueResponseType = "checkbox"
-	SimpleOrArrayPropertyValueResponseTypeFiles          SimpleOrArrayPropertyValueResponseType = "files"
-	SimpleOrArrayPropertyValueResponseTypeCreatedBy      SimpleOrArrayPropertyValueResponseType = "created_by"
-	SimpleOrArrayPropertyValueResponseTypeCreatedTime    SimpleOrArrayPropertyValueResponseType = "created_time"
-	SimpleOrArrayPropertyValueResponseTypeLastEditedBy   SimpleOrArrayPropertyValueResponseType = "last_edited_by"
-	SimpleOrArrayPropertyValueResponseTypeLastEditedTime SimpleOrArrayPropertyValueResponseType = "last_edited_time"
-	SimpleOrArrayPropertyValueResponseTypeFormula        SimpleOrArrayPropertyValueResponseType = "formula"
-	SimpleOrArrayPropertyValueResponseTypeButton         SimpleOrArrayPropertyValueResponseType = "button"
-	SimpleOrArrayPropertyValueResponseTypeUniqueID       SimpleOrArrayPropertyValueResponseType = "unique_id"
-	SimpleOrArrayPropertyValueResponseTypeVerification   SimpleOrArrayPropertyValueResponseType = "verification"
-	SimpleOrArrayPropertyValueResponseTypePlace          SimpleOrArrayPropertyValueResponseType = "place"
-	SimpleOrArrayPropertyValueResponseTypeTitle          SimpleOrArrayPropertyValueResponseType = "title"
-	SimpleOrArrayPropertyValueResponseTypeRichText       SimpleOrArrayPropertyValueResponseType = "rich_text"
-	SimpleOrArrayPropertyValueResponseTypePeople         SimpleOrArrayPropertyValueResponseType = "people"
-	SimpleOrArrayPropertyValueResponseTypeRelation       SimpleOrArrayPropertyValueResponseType = "relation"
+	SimpleOrArrayPropertyValueResponseTypeNumber          SimpleOrArrayPropertyValueResponseType = "number"
+	SimpleOrArrayPropertyValueResponseTypeURL             SimpleOrArrayPropertyValueResponseType = "url"
+	SimpleOrArrayPropertyValueResponseTypeSelect          SimpleOrArrayPropertyValueResponseType = "select"
+	SimpleOrArrayPropertyValueResponseTypeMultiSelect     SimpleOrArrayPropertyValueResponseType = "multi_select"
+	SimpleOrArrayPropertyValueResponseTypeStatus          SimpleOrArrayPropertyValueResponseType = "status"
+	SimpleOrArrayPropertyValueResponseTypeDate            SimpleOrArrayPropertyValueResponseType = "date"
+	SimpleOrArrayPropertyValueResponseTypeEmail           SimpleOrArrayPropertyValueResponseType = "email"
+	SimpleOrArrayPropertyValueResponseTypePhoneNumber     SimpleOrArrayPropertyValueResponseType = "phone_number"
+	SimpleOrArrayPropertyValueResponseTypeCheckbox        SimpleOrArrayPropertyValueResponseType = "checkbox"
+	SimpleOrArrayPropertyValueResponseTypeFiles           SimpleOrArrayPropertyValueResponseType = "files"
+	SimpleOrArrayPropertyValueResponseTypeCreatedBy       SimpleOrArrayPropertyValueResponseType = "created_by"
+	SimpleOrArrayPropertyValueResponseTypeCreatedTime     SimpleOrArrayPropertyValueResponseType = "created_time"
+	SimpleOrArrayPropertyValueResponseTypeLastEditedBy    SimpleOrArrayPropertyValueResponseType = "last_edited_by"
+	SimpleOrArrayPropertyValueResponseTypeLastEditedTime  SimpleOrArrayPropertyValueResponseType = "last_edited_time"
+	SimpleOrArrayPropertyValueResponseTypeFormula         SimpleOrArrayPropertyValueResponseType = "formula"
+	SimpleOrArrayPropertyValueResponseTypeButton          SimpleOrArrayPropertyValueResponseType = "button"
+	SimpleOrArrayPropertyValueResponseTypeUniqueID        SimpleOrArrayPropertyValueResponseType = "unique_id"
+	SimpleOrArrayPropertyValueResponseTypeVerification    SimpleOrArrayPropertyValueResponseType = "verification"
+	SimpleOrArrayPropertyValueResponseTypePlace           SimpleOrArrayPropertyValueResponseType = "place"
+	SimpleOrArrayPropertyValueResponseTypeLastVisitedTime SimpleOrArrayPropertyValueResponseType = "last_visited_time"
+	SimpleOrArrayPropertyValueResponseTypeTitle           SimpleOrArrayPropertyValueResponseType = "title"
+	SimpleOrArrayPropertyValueResponseTypeRichText        SimpleOrArrayPropertyValueResponseType = "rich_text"
+	SimpleOrArrayPropertyValueResponseTypePeople          SimpleOrArrayPropertyValueResponseType = "people"
+	SimpleOrArrayPropertyValueResponseTypeRelation        SimpleOrArrayPropertyValueResponseType = "relation"
 )
 
 // Valid indicates whether the value is a known member of the SimpleOrArrayPropertyValueResponseType enum.
@@ -23708,29 +23835,30 @@ func (e SimpleOrArrayPropertyValueResponseType) Valid() bool {
 
 // tagsOfSimpleOrArrayPropertyValueResponse holds, for each value of type, the members of its alternative's own, each with how it is needed.
 var tagsOfSimpleOrArrayPropertyValueResponse = map[string]map[string]jsonTagNeed{
-	"number":           {"number": jsonTagRequiredOrNull},
-	"url":              {"url": jsonTagRequiredOrNull},
-	"select":           {"select": jsonTagRequiredOrNull},
-	"multi_select":     {"multi_select": jsonTagRequired},
-	"status":           {"status": jsonTagRequiredOrNull},
-	"date":             {"date": jsonTagRequiredOrNull},
-	"email":            {"email": jsonTagRequiredOrNull},
-	"phone_number":     {"phone_number": jsonTagRequiredOrNull},
-	"checkbox":         {"checkbox": jsonTagRequired},
-	"files":            {"files": jsonTagRequired},
-	"created_by":       {"created_by": jsonTagRequired},
-	"created_time":     {"created_time": jsonTagRequired},
-	"last_edited_by":   {"last_edited_by": jsonTagRequired},
-	"last_edited_time": {"last_edited_time": jsonTagRequired},
-	"formula":          {"formula": jsonTagRequired},
-	"button":           {"button": jsonTagRequired},
-	"unique_id":        {"unique_id": jsonTagRequired},
-	"verification":     {"verification": jsonTagRequiredOrNull},
-	"place":            {"place": jsonTagRequiredOrNull},
-	"title":            {"title": jsonTagRequired},
-	"rich_text":        {"rich_text": jsonTagRequired},
-	"people":           {"people": jsonTagRequired},
-	"relation":         {"has_more": jsonTagOptional, "relation": jsonTagRequired},
+	"number":            {"number": jsonTagRequiredOrNull},
+	"url":               {"url": jsonTagRequiredOrNull},
+	"select":            {"select": jsonTagRequiredOrNull},
+	"multi_select":      {"multi_select": jsonTagRequired},
+	"status":            {"status": jsonTagRequiredOrNull},
+	"date":              {"date": jsonTagRequiredOrNull},
+	"email":             {"email": jsonTagRequiredOrNull},
+	"phone_number":      {"phone_number": jsonTagRequiredOrNull},
+	"checkbox":          {"checkbox": jsonTagRequired},
+	"files":             {"files": jsonTagRequired},
+	"created_by":        {"created_by": jsonTagRequired},
+	"created_time":      {"created_time": jsonTagRequired},
+	"last_edited_by":    {"last_edited_by": jsonTagRequired},
+	"last_edited_time":  {"last_edited_time": jsonTagRequired},
+	"formula":           {"formula": jsonTagRequired},
+	"button":            {"button": jsonTagRequired},
+	"unique_id":         {"unique_id": jsonTagRequired},
+	"verification":      {"verification": jsonTagRequiredOrNull},
+	"place":             {"place": jsonTagRequiredOrNull},
+	"last_visited_time": {"last_visited_time": jsonTagRequiredOrNull},
+	"title":             {"title": jsonTagRequired},
+	"rich_text":         {"rich_text": jsonTagRequired},
+	"people":            {"people": jsonTagRequired},
+	"relation":          {"has_more": jsonTagOptional, "relation": jsonTagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -23792,6 +23920,9 @@ func (v *SimpleOrArrayPropertyValueResponse) taggedMembers() []string {
 	}
 	if v.Place != nil {
 		set = append(set, "place")
+	}
+	if v.LastVisitedTime != nil {
+		set = append(set, "last_visited_time")
 	}
 	if v.Title != nil {
 		set = append(set, "title")
@@ -25704,10 +25835,11 @@ type UniqueIDPropertyConfigurationUniqueID struct {
 
 // UniqueIDPropertyItemObjectResponse defines a model
 type UniqueIDPropertyItemObjectResponse struct {
-	Type     string                                     `json:"type"`
-	UniqueID UniqueIDPropertyItemObjectResponseUniqueID `json:"unique_id"`
-	Object   string                                     `json:"object"`
-	ID       string                                     `json:"id"`
+	Type      string                                     `json:"type"`
+	UniqueID  UniqueIDPropertyItemObjectResponseUniqueID `json:"unique_id"`
+	Object    string                                     `json:"object"`
+	ID        string                                     `json:"id"`
+	RequestID uuid.UUID                                  `json:"request_id,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether UniqueIDPropertyItemObjectResponse declares it.
@@ -25721,6 +25853,8 @@ func (v *UniqueIDPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.D
 		return true, json.UnmarshalDecode(dec, &v.Object, jsonOptsOf(dec))
 	case "id":
 		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	case "request_id":
+		return true, json.UnmarshalDecode(dec, &v.RequestID, jsonOptsOf(dec))
 	}
 
 	return false, nil

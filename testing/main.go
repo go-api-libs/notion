@@ -82,6 +82,7 @@ func run(ctx context.Context) error {
 		{Method: http.MethodGet, URL: "https://api.notion.com/v1/views?database_id=" + dbID.String()},
 		{Method: http.MethodGet, URL: "https://api.notion.com/v1/databases/" + dbID.String()},
 		{Method: http.MethodGet, URL: "https://api.notion.com/v1/data_sources/" + dataSourceID.String()},
+		{Method: http.MethodGet, URL: "https://api.notion.com/v1/data_sources/" + dataSourceID.String() + "/templates"},
 		{Method: http.MethodGet, URL: "https://api.notion.com/v1/blocks/" + dbID.String()},
 		{Method: http.MethodGet, URL: "https://api.notion.com/v1/users/me"},
 		{Method: http.MethodGet, URL: "https://api.notion.com/v1/users?page_size=3"},
@@ -218,6 +219,7 @@ func recordExample(ctx context.Context, record func(cassette.Request) (cassette.
 		get("pages/" + page),
 		get("pages/" + page + "/properties/title"),
 		get("blocks/" + page + "/children?page_size=3"),
+		get("comments?block_id=" + page),
 	} {
 		if _, err := record(r); err != nil {
 			return err
@@ -336,6 +338,39 @@ func (w *walker) database(id string) error {
 		}
 
 		if err := w.properties(query.Response.Body); err != nil {
+			return err
+		}
+
+		if err := w.templates(ds.ID); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// templates records the templates of the data source, and walks each like a subpage.
+func (w *walker) templates(dataSourceID string) error {
+	ia, err := w.record(get("data_sources/" + dataSourceID + "/templates"))
+	if err != nil {
+		return err
+	}
+
+	var list struct {
+		Templates []struct {
+			ID string `json:"id"`
+		} `json:"templates"`
+	}
+	if err := json.Unmarshal(ia.Response.Body, &list); err != nil {
+		return fmt.Errorf("decoding templates of %s: %w", dataSourceID, err)
+	}
+
+	for _, t := range list.Templates {
+		if _, err := w.record(get("pages/" + t.ID)); err != nil {
+			return err
+		}
+
+		if err := w.children(t.ID); err != nil {
 			return err
 		}
 	}

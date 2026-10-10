@@ -9293,7 +9293,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "dd0b011c-2bbe-4964-853e-df0f5d26f5c3"
           }
         },
         "required": [
@@ -9365,7 +9366,8 @@
           "custom",
           "user",
           "integration"
-        ]
+        ],
+        "example": "integration"
       },
       "CommentOrPartial": {
         "anyOf": [
@@ -10536,7 +10538,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "05032afd-5f3c-481a-b58e-6489cd56eec1"
+            "example": "6b19f5ad-8e9a-4db4-b1a2-2c7724b49eeb"
           }
         },
         "required": [
@@ -10657,6 +10659,17 @@
           "github_prs"
         ]
       },
+      "DateEnd": {
+        "description": "The end date of the date object, if any.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/DateOrDateTime"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "DateFormulaPropertyDate": {
         "anyOf": [
           {
@@ -10685,6 +10698,21 @@
           "date",
           "created_time",
           "last_edited_time"
+        ]
+      },
+      "DateOrDateTime": {
+        "description": "An ISO 8601 date, with an optional time.",
+        "anyOf": [
+          {
+            "type": "string",
+            "format": "date",
+            "example": "2022-07-14"
+          },
+          {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-03T17:11:00.000+00:00"
+          }
         ]
       },
       "DatePropertyFilterAfter": {
@@ -10817,18 +10845,6 @@
         },
         "required": [
           "this_week"
-        ]
-      },
-      "DateRequestEnd": {
-        "description": "The end date of the date object, if any.",
-        "oneOf": [
-          {
-            "type": "string",
-            "format": "date"
-          },
-          {
-            "type": "null"
-          }
         ]
       },
       "DateTimeZone": {
@@ -11026,6 +11042,17 @@
         ],
         "additionalProperties": false
       },
+      "FileUploadObjectExpiryTime": {
+        "oneOf": [
+          {
+            "type": "string",
+            "format": "date-time"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "FileUploadObjectFileImportResultAllOfError": {
         "type": "object",
         "properties": {
@@ -11091,17 +11118,6 @@
           "person",
           "bot",
           "agent"
-        ]
-      },
-      "FileUploadObjectResponseExpiryTime": {
-        "oneOf": [
-          {
-            "type": "string",
-            "format": "date-time"
-          },
-          {
-            "type": "null"
-          }
         ]
       },
       "FileUploadObjectResponseFileImportResult": {
@@ -11613,7 +11629,8 @@
           },
           "name": {
             "description": "Name of the template.",
-            "type": "string"
+            "type": "string",
+            "example": "German Coaching"
           },
           "is_default": {
             "description": "Whether this template is the default template for the data source.",
@@ -12516,7 +12533,7 @@
               "string",
               "null"
             ],
-            "example": "s:ff0daf10-69a9-4caf-ba61-961a24f9a9aa:39588fcd-daf4-81b5-9e98-dc425530a49e"
+            "example": "s:eacf2f7f-1426-4eb2-a5f1-d63a0bb76f59:3a388fcd-daf4-81f1-9d95-c45c25832f17"
           },
           "has_more": {
             "type": "boolean"
@@ -12533,7 +12550,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "e198e7c3-dec6-47a4-b613-1bad528e92f5"
+            "example": "b2c57706-ce0c-4e22-af55-e69a8f8ca5ad"
           }
         },
         "required": [
@@ -13860,6 +13877,12 @@
           },
           {
             "$ref": "#/components/schemas/lastEditedTimeDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/placeDatabasePropertyConfigResponse"
+          },
+          {
+            "$ref": "#/components/schemas/lastVisitedTimeDatabasePropertyConfigResponse"
           }
         ]
       },
@@ -16694,7 +16717,8 @@
         "properties": {
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "3f188fcd-daf4-818c-ac08-cd0a453149e3"
           }
         },
         "required": [
@@ -18339,7 +18363,7 @@
         "oneOf": [
           {
             "type": "number",
-            "example": 0
+            "example": 2
           },
           {
             "type": "null"
@@ -19665,13 +19689,15 @@
             "type": [
               "string",
               "null"
-            ]
+            ],
+            "example": "COV"
           },
           "number": {
             "type": [
               "number",
               "null"
-            ]
+            ],
+            "example": 2
           }
         },
         "required": [
@@ -21556,7 +21582,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "c5e205ab-aaea-4346-9880-bf961d9fcbb2"
+            "example": "ec54f26e-9c42-4b5d-9439-5282caeb8bbc"
           }
         },
         "required": [
@@ -21687,7 +21713,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "e73a456f-a8bd-4505-81aa-cd2b79b1fa8a"
+            "example": "d7399d28-607b-466f-b6c8-1229b2d2243d"
           }
         },
         "required": [
@@ -21996,7 +22022,8 @@
           "transcription_failed",
           "summary_in_progress",
           "notes_ready"
-        ]
+        ],
+        "example": "transcription_not_started"
       },
       "arrayBasedPropertyValueResponse": {
         "oneOf": [
@@ -22098,7 +22125,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "84559901-5eb1-43c2-9713-72083fbcd407"
+            "example": "d7c1b2cf-3d13-43e0-bc1a-bd10c38ca9f4"
           }
         },
         "required": [
@@ -22606,7 +22633,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "29710632-6752-4eb5-9df0-4698b61c58ab"
+            "example": "8d7abf1d-07aa-4880-965b-66a8d33cc4bc"
           }
         },
         "required": [
@@ -22704,7 +22731,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "1057a65b-d6f0-47de-87b6-19c8de6573a3"
+            "example": "55f397dd-95bc-43bd-91b2-81ee5696d5de"
           }
         },
         "required": [
@@ -22760,7 +22787,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "a6c01538-fb27-427f-8ee7-2ad03fe7bab2"
+            "example": "79f94581-e75b-4e44-9f54-1fa468dddd87"
           }
         },
         "required": [
@@ -22825,7 +22852,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "815be90c-b534-4a1b-82a6-3e8b3319f7c1"
+            "example": "b12e4834-2001-415d-b7fe-7fbcd64042a1"
           }
         },
         "required": [
@@ -23020,7 +23047,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "1c8f53d3-686c-40ac-afe4-6a31a943709d"
+            "example": "c8cc2d53-6dec-49ad-8b1b-5f8ac857e583"
           }
         },
         "required": [
@@ -23483,7 +23510,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "450f64a0-18ab-47a7-9077-3572091079b8"
+            "example": "ac8ba929-0cc5-47d2-a833-a51ba0084392"
           }
         },
         "required": [
@@ -23560,7 +23587,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "4ceabbf0-0119-4d36-be45-a78c3245fce5"
+            "example": "5c006015-9c07-43fa-9af9-5c1927091a8d"
           }
         },
         "required": [
@@ -23625,7 +23652,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "39bb7017-09e9-42b1-874a-be9fc8aec90b"
+            "example": "056ec69b-4fcc-4c54-b4f9-9d858d798650"
           }
         },
         "required": [
@@ -23690,7 +23717,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "70321354-c5e6-4115-9d1b-676e1e764bb2"
+            "example": "11e4987e-7d30-46b2-a172-403eac120110"
           }
         },
         "required": [
@@ -23755,7 +23782,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "01d55938-92f2-490d-8411-e8d7ece99f7c"
+            "example": "817283f4-f441-43bb-8b83-e94467a187f1"
           }
         },
         "required": [
@@ -23820,7 +23847,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "8d2ff643-ecc4-4427-a797-f1065413e5b4"
+            "example": "edd63b56-040e-4c02-9dad-e6f21c4412bc"
           }
         },
         "required": [
@@ -23970,12 +23997,14 @@
           "created_time": {
             "description": "The time when the comment was created.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-06T09:51:00.000Z"
           },
           "last_edited_time": {
             "description": "The time when the comment was last edited.",
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-06T09:51:00.000Z"
           },
           "created_by": {
             "description": "The user who created the comment.",
@@ -24470,7 +24499,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "16a9d0dc-8a50-453d-bd4f-8f6141108cfb"
+            "example": "5fc45978-216f-488d-bd4a-82995cc4a8f0"
           }
         },
         "required": [
@@ -24558,7 +24587,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "31e3660a-cd9d-4ec5-b3bf-cc85a379c46c"
+            "example": "9cc81438-48ec-4e34-a5ae-406e8f9b5ae3"
           }
         },
         "required": [
@@ -24635,11 +24664,13 @@
           },
           "name": {
             "description": "The name of the custom emoji.",
-            "type": "string"
+            "type": "string",
+            "example": "old-man-yells-at-notion"
           },
           "url": {
             "description": "The URL of the custom emoji.",
-            "type": "string"
+            "type": "string",
+            "example": "https://s3-us-west-2.amazonaws.com/public.notion-static.com/2cf84a56-facc-40e2-b456-d00e487d679b/old-man-yells-at-notion.png"
           }
         },
         "required": [
@@ -24919,7 +24950,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "e2cfdc69-9ce8-4add-93cb-21f61e6dc7d0"
+            "example": "965fe607-d7ec-44db-a8a5-2163d52a926b"
           }
         },
         "required": [
@@ -25115,7 +25146,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "53397722-9d4c-47ad-9e1a-381a3a02ebe4"
+            "example": "030fec8e-5ed9-4910-8422-724cbcbf6218"
           }
         },
         "required": [
@@ -25616,7 +25647,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "9b5572cc-3b29-46dd-ad45-b89eaf912c59"
+            "example": "7cf7bf55-0697-4838-883a-7f492e3b48c2"
           }
         },
         "required": [
@@ -25631,11 +25662,10 @@
         "properties": {
           "start": {
             "description": "The start date of the date object.",
-            "type": "string",
-            "format": "date"
+            "$ref": "#/components/schemas/DateOrDateTime"
           },
           "end": {
-            "$ref": "#/components/schemas/DateRequestEnd"
+            "$ref": "#/components/schemas/DateEnd"
           },
           "time_zone": {
             "description": "The time zone of the date object, if any. E.g. America/Los_Angeles, Europe/London, etc.",
@@ -25652,12 +25682,10 @@
         "properties": {
           "start": {
             "description": "The start date of the date object.",
-            "type": "string",
-            "example": "2026-10-03T17:11:00.000+00:00"
+            "$ref": "#/components/schemas/DateOrDateTime"
           },
           "end": {
-            "description": "The end date of the date object, if any.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/DateEnd"
           },
           "time_zone": {
             "description": "The time zone of the date object.",
@@ -25762,7 +25790,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "f0731845-a942-4a8d-94a5-27e079f29477"
+            "example": "a95a2689-353d-478d-ad0f-41b86c78b338"
           }
         },
         "required": [
@@ -25856,7 +25884,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "b8a82d45-d9ce-46dd-aab7-eae1ead1cff9"
+            "example": "d3a7aa48-176e-4d30-9a75-fb9f9edaaa3f"
           }
         },
         "required": [
@@ -25933,7 +25961,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "e7b32f92-6c1a-4ffe-83cb-72393ac8af98"
+            "example": "1af2a67e-45f9-4457-a8ee-24eddb68bf58"
           }
         },
         "required": [
@@ -26067,7 +26095,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "32dd990f-5240-4709-bc4e-e91823142cbb"
+            "example": "c51d1c77-02c6-4688-b962-5f44d9d19e3b"
           }
         },
         "required": [
@@ -26308,7 +26336,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "103b2180-064e-4a54-ae05-8b320bef0a28"
+            "example": "3d8bbc49-bcfc-4de5-a246-5ba2b5de1c3c"
           }
         },
         "required": [
@@ -26518,7 +26546,7 @@
             "type": "boolean"
           },
           "expiry_time": {
-            "$ref": "#/components/schemas/FileUploadObjectResponseExpiryTime"
+            "$ref": "#/components/schemas/FileUploadObjectExpiryTime"
           },
           "status": {
             "description": "One of: `pending`, `uploaded`, `expired`, `failed`",
@@ -26685,7 +26713,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "1bf0b6c2-b453-44d1-9c52-28b5e8d5a8da"
+            "example": "87bab925-29e6-450c-a6c5-5290074809a6"
           }
         },
         "required": [
@@ -27060,7 +27088,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "ee24be35-48ea-4ab0-a234-fa0f661080eb"
+            "example": "2d0ce657-eb2f-4343-8fe9-83b55fe695b4"
           }
         },
         "required": [
@@ -27290,7 +27318,7 @@
       },
       "groupByConfigResponse": {
         "description": "Group-by configuration based on property type.",
-        "anyOf": [
+        "oneOf": [
           {
             "$ref": "#/components/schemas/selectGroupByConfigResponse"
           },
@@ -27507,7 +27535,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "8800a02d-adea-4d1e-8ee9-b61c4a4261c8"
+            "example": "6be91df4-940f-467c-9cd5-7130de3f0423"
           }
         },
         "required": [
@@ -27572,7 +27600,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "dc13fd60-5990-47a7-a4b5-31591ec8b861"
+            "example": "fbfc6384-3719-466a-bc86-bddb77a2a91c"
           }
         },
         "required": [
@@ -27637,7 +27665,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "0af8cb34-99e9-45cb-91f9-625d22a8d46d"
+            "example": "e708f0fc-9082-4e99-a9f0-857c39016748"
           }
         },
         "required": [
@@ -27674,18 +27702,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "3f188fcd-daf4-812d-a699-f75e71ae3e07"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-06T08:28:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-06T08:28:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -27698,7 +27729,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "a75c1afb-15da-4867-939b-3b92e00cc5f1"
           }
         },
         "required": [
@@ -27821,7 +27853,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "60fed403-8a7e-4e93-a7a9-ec96f1034d61"
+            "example": "cdb3c52e-4ca3-4160-bf26-7d9730e58609"
           }
         },
         "required": [
@@ -27872,13 +27904,13 @@
           "url": {
             "description": "The URL of the file.",
             "type": "string",
-            "example": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/30d8226f-1494-40f3-898c-4683f6e14a38/sparkles_2728.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB466Z7BP7XHS%2F20261005%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261005T203800Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEBoaCXVzLXdlc3QtMiJHMEUCIHF9UO9BzsHuDDv4mEzRgrSKr0%2BjFZFP2q98Giw0HHqiAiEArfljUyzvdXG5w9nNsHPzgKNvwzWfBUNvnxchYZ26PAkqiAQI4v%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDEHY%2F3NuEcVJd7UUHCrcA66LJFjo%2FXsWZiDNm4rdCmfC03AJvcyDCUYTKWJmf45iBd36lnSEXMZPeve7fvaxPbwXGzZRz%2Ftanu61SSDEvs7F25g3J0uFPrPmmDDUuU%2Fo8dMMpLMTplYLXlQ%2BWVqlHqCo1FjHxH9i8FbvtV1VZLpJOCQB3N0H%2FfkvWAjDPyXmuJCpk6pF71PWrAyK0%2FuzCGSyAdW807mjXU7569P%2F%2FzCBkmWr9uvO6jTN5HB0AkEIb69Vq1GrK1Rk%2BaGs6uZ6QZiWLpggAKVkYtybPuBI87RUeAw1HltJaM59PRtzV2uqCnXVzHVWyh4hkf0kbNcRR4SJwbIpmPQr9kqfr%2FIvdeCVtWWa0xfFzH%2BxG%2FZAKRtv288C%2BQ01sJADPlK%2FXJZeHuW0nylPuKq1xWmOvx17AKA4uchTzwTQmkp4dkzr0dMuVGgc00V7LoCyAsF6z12I1Lop3Za0Co9dVarSN0VjbtcWJau4xWFwcvv80JaVOJvbRBO6zE9iSXNZs5lOmiXgqhXZqPy1%2BCxNE%2B8wdbGfOml1iRRMRUrPy1JhbI0Y7sSjXg2uYp7gdXNiH%2FdMXmH%2Bnct%2BwWBI7Foz4qlwNjL0SFBP6zadpZM5MzJWvIco6JGvfAYY%2FreJstre%2BGCGMMDCj9YGOqUBN4TPWz%2FQRRTQo01Q02m3w8Ild3V0lhYOXf2UyPL5JJsk%2BVUvsnVpAeHvoZw%2BRhF87RueBzmHxCgVn66bICf9oNJ9ImPXVUDQNp7z8cOwODKlPfP9%2BuZUvten%2Bld0145Rkxeow5s9y79VwOwCl%2FwAq%2Fd62pDS3i2y78N3QydQUfHP3kdF%2BBk7JafwY93u2c7i8LoXSvk1379vumE%2FCTjbO4Jojy3J&X-Amz-Signature=6342a97156efbd3ffc1f59076443ce2bef9e68640dffae1c7ee3060904e37d99&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+            "example": "https://prod-files-secure.s3.us-west-2.amazonaws.com/0bbd5b1f-358c-4cdc-9cb6-ed497d79f10a/30d8226f-1494-40f3-898c-4683f6e14a38/sparkles_2728.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=ASIAZI2LB4665ZLEVMQG%2F20261006%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20261006T095351Z&X-Amz-Expires=3600&X-Amz-Security-Token=IQoJb3JpZ2luX2VjECkaCXVzLXdlc3QtMiJHMEUCIQDbpyCe0wa3EesY5yE6UgB4ZO6R6XwlZQeaoP%2BvRildiQIgLeS8O7JaikJH1nXWfKhYhDtaZLwCduLbzsA%2FqTsmfvAqiAQI8f%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FARAAGgw2Mzc0MjMxODM4MDUiDALvTYGxLorJTKZ4fircA%2FxI25W9F5mPvy9EAGLgBvxRbKEDwDuBjimmm28wqqJVN%2BD%2Fto9pzrBT%2Bn6HD7pUtSpzxZocsFWDWpkY8czRUgqPiFgG4w5sLdGvkRrgEIU3lWYVc2d5UrFeKo%2BP6vDPi%2BH8vbmqyTgt21NqDqDYTu0IteI9plmQyCNCc8ojNRF1%2BB1A%2F9r0%2FRIIfOgyYyu7L32HO4U7JDxsBRuWaPr7H5UfEGpvJlESuY6Ch%2Bdnnr3KeDjw5fOvQ3j7BWFr1eJ54TEuBR7I1WtilHtRTIa3CTwNuCKzVi%2FqmrRw8tpIfFvs9JRL%2F0JJ0vmM%2BmtWNxeKR4W2JQgZ9Z1nZXb7fyz%2F80OeZCpjzEZMLQhlVy23%2FF8W2mhvwJYGZvO6n52ZdykAkopzJAbu7OrhKWc0S%2F4tOv3h%2BSquHcvVaLTIiFkCFDk6ut%2FBV3yHNOZXLikWXKNca1H7jNFgcwKUzl5i4q7UhJ34Uab9YW9h0s1ahbDfnw5vOLiAPuYCm02M%2BxbTdStmxPg0BwyLyihpCX0xDDlEcfot8GtMn1y5p%2BwwZiSU0cSEEvDrUp25sxmuv6e1erGXoTxoJv2flWIUglztyjwUn%2BZ3O1zmP1l5kbAcoD0hV1pTM9cjaaxXLOo0W%2Fs%2BML%2FyktYGOqUByGFjwHvaaEd0II48CxjIcg3B%2B5an8osDYkvLH3ldZLRGx6tGvwlqpr14y21hQ5IaqHlMvRW%2FRRpx30dPescfWlAwPEVHMnId%2BlnX3zkiX6YZOOnGljDJtNdNtyB80LG7UxoMe19%2FVUomixlH2BTiWSYhVv0CEg4w8bpZ39Qqo1XNBFjgkmdUgWxJn64FzRZ06XU8y01WBQWCUAVO%2B1TftTAe3qdo&X-Amz-Signature=1a6706d1a1bbea93f7913940db1d3fc95f37eb196a0f230f9b766801a8210902&X-Amz-SignedHeaders=host&x-amz-checksum-mode=ENABLED&x-id=GetObject"
           },
           "expiry_time": {
             "description": "The time when the URL will expire.",
             "type": "string",
             "format": "date-time",
-            "example": "2026-10-05T21:38:00.707Z"
+            "example": "2026-10-06T10:53:51.686Z"
           }
         },
         "required": [
@@ -28083,7 +28115,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "d45d80e4-d4f5-4682-8121-b483e77c4dc2"
+            "example": "1d25df0e-54ac-4d9a-8ec0-70e53a3d166c"
           }
         },
         "required": [
@@ -28157,14 +28189,21 @@
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-06T08:30:00.000Z"
           },
           "object": {
             "type": "string",
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "x%3D~k"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "0c113d5e-eecc-4f5a-b109-1fc8f9b9128b"
           }
         },
         "required": [
@@ -28185,7 +28224,8 @@
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-06T08:30:00.000Z"
           }
         },
         "required": [
@@ -28193,6 +28233,23 @@
           "last_edited_time"
         ],
         "additionalProperties": false
+      },
+      "lastVisitedTimeDatabasePropertyConfigResponse": {
+        "title": "Last Visited Time",
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "last_visited_time"
+          },
+          "last_visited_time": {
+            "$ref": "#/components/schemas/emptyObject"
+          }
+        },
+        "required": [
+          "type",
+          "last_visited_time"
+        ]
       },
       "lastVisitedTimePropertyConfigurationRequest": {
         "title": "Last Visited Time",
@@ -28210,6 +28267,56 @@
         "required": [
           "last_visited_time"
         ]
+      },
+      "lastVisitedTimePropertyItemObjectResponse": {
+        "title": "Last Visited Time",
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "last_visited_time"
+          },
+          "last_visited_time": {
+            "$ref": "#/components/schemas/FileUploadObjectExpiryTime"
+          },
+          "object": {
+            "type": "string",
+            "const": "property_item"
+          },
+          "id": {
+            "type": "string",
+            "example": "x%3D~k"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "ac60eb83-db91-4e36-bceb-bd4b51fb6908"
+          }
+        },
+        "required": [
+          "type",
+          "last_visited_time",
+          "object",
+          "id"
+        ]
+      },
+      "lastVisitedTimeSimplePropertyValueResponse": {
+        "title": "Last Visited Time",
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "last_visited_time"
+          },
+          "last_visited_time": {
+            "$ref": "#/components/schemas/FileUploadObjectExpiryTime"
+          }
+        },
+        "required": [
+          "type",
+          "last_visited_time"
+        ],
+        "additionalProperties": false
       },
       "linkMentionResponse": {
         "type": "object",
@@ -28301,7 +28408,7 @@
           "last_edited_time": {
             "type": "string",
             "format": "date-time",
-            "example": "2026-10-05T20:21:00.000Z"
+            "example": "2026-10-06T09:43:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -28315,7 +28422,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "a599d51c-2082-48a5-8f2c-876cc64a0a43"
+            "example": "6d22c47b-f3f4-4e07-88a5-50a10410cf4e"
           }
         },
         "required": [
@@ -28338,7 +28445,7 @@
           "url": {
             "description": "The URL of the link preview mention.",
             "type": "string",
-            "example": "https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/325/melting-face_1fae0.png"
+            "example": "https://github.com/go-api-libs/notion/pull/4"
           }
         },
         "required": [
@@ -28394,7 +28501,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "181cdfb2-9480-444f-b31f-64005445f6a0"
+            "example": "f0ccd0a3-272a-40e8-815d-4b6072eb732b"
           }
         },
         "required": [
@@ -28632,18 +28739,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "3f188fcd-daf4-80d2-a980-f5cdc36e2c4a"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-06T09:49:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-06T09:49:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -28656,7 +28766,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "fd20bf8f-ffc0-4f29-b86d-cc44d0b3a66e"
           }
         },
         "required": [
@@ -28782,7 +28893,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "52fcd3d4-8c56-48c5-86d9-e73825751714"
+            "example": "4db3b553-803f-4966-bb02-767d3f5ee846"
           }
         },
         "required": [
@@ -28836,7 +28947,8 @@
           "purple",
           "pink",
           "red"
-        ]
+        ],
+        "example": "blue"
       },
       "noticonIconResponse": {
         "type": "object",
@@ -28858,6 +28970,7 @@
       },
       "noticonName": {
         "type": "string",
+        "example": "pizza",
         "examples": [
           "pizza",
           "meeting",
@@ -29079,7 +29192,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "b9f7409a-3631-4e51-923d-65d2d61da267"
+            "example": "9c41796f-90a8-4133-8bd2-48a99bf3d370"
           }
         },
         "required": [
@@ -29164,7 +29277,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "ee7b5dff-6f2e-491f-9534-95702e73c7a3"
+            "example": "951fecc2-8884-44f8-959f-b11daedf5cd0"
           }
         },
         "required": [
@@ -29633,7 +29746,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "9569454a-ca00-4f51-8b3e-5f104eb8bc51"
+            "example": "7cf8c0d3-605d-4446-9661-47a60a8bf562"
           }
         },
         "required": [
@@ -30075,7 +30188,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "b04099dc-d536-4098-b44b-13190adfae31"
+            "example": "18430cfa-5526-469e-8d30-62627568ec37"
           }
         },
         "required": [
@@ -30334,7 +30447,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "b14e6997-faac-419f-a650-c21a22917028"
+            "example": "910f0047-8546-4903-be20-96cafbd6840f"
           }
         },
         "required": [
@@ -30362,6 +30475,23 @@
           "phone_number"
         ],
         "additionalProperties": false
+      },
+      "placeDatabasePropertyConfigResponse": {
+        "title": "Place",
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "place"
+          },
+          "place": {
+            "$ref": "#/components/schemas/emptyObject"
+          }
+        },
+        "required": [
+          "type",
+          "place"
+        ]
       },
       "placePropertyConfiguration": {
         "title": "Place",
@@ -30396,7 +30526,13 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "kuJP"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "ea86c0f6-9b98-45ff-8804-c470c0d3d557"
           }
         },
         "required": [
@@ -30410,10 +30546,14 @@
         "type": "object",
         "properties": {
           "lat": {
-            "type": "number"
+            "type": "number",
+            "format": "double",
+            "example": 52.52
           },
           "lon": {
-            "type": "number"
+            "type": "number",
+            "format": "double",
+            "example": 13.405
           },
           "name": {
             "$ref": "#/components/schemas/PagePublicURL"
@@ -30704,6 +30844,9 @@
           },
           {
             "$ref": "#/components/schemas/rollupPropertyItemObjectResponse"
+          },
+          {
+            "$ref": "#/components/schemas/lastVisitedTimePropertyItemObjectResponse"
           }
         ]
       },
@@ -30854,7 +30997,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "f79cc160-4a36-4c3f-9ba9-c8cc84ec3a17"
+            "example": "8f3879c2-882e-4eca-a576-140b1c84c1f6"
           }
         },
         "required": [
@@ -31031,7 +31174,8 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "%3Ewe%5B"
           }
         },
         "required": [
@@ -31521,7 +31665,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "6bb8bf25-c1d2-47a7-873e-c4a6026f38d1"
+            "example": "8c9610aa-70e9-4061-a863-b13b4623ce59"
           }
         },
         "required": [
@@ -31618,6 +31762,9 @@
           },
           {
             "$ref": "#/components/schemas/placeSimplePropertyValueResponse"
+          },
+          {
+            "$ref": "#/components/schemas/lastVisitedTimeSimplePropertyValueResponse"
           }
         ]
       },
@@ -31891,7 +32038,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "7d925202-3e62-479d-b84d-97e53ef7f2a2"
+            "example": "e87b32be-8368-4545-9b25-46fbb9e47494"
           }
         },
         "required": [
@@ -32083,7 +32230,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "424d2451-987a-4df4-bb29-883f44aaad96"
+            "example": "29240ab7-a591-40a4-81a7-a19fc5a6e873"
           }
         },
         "required": [
@@ -32120,18 +32267,21 @@
           },
           "id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "3f188fcd-daf4-81b1-8fae-e1cba685a9f3"
           },
           "created_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-06T08:28:00.000Z"
           },
           "created_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
           },
           "last_edited_time": {
             "type": "string",
-            "format": "date-time"
+            "format": "date-time",
+            "example": "2026-10-06T08:28:00.000Z"
           },
           "last_edited_by": {
             "$ref": "#/components/schemas/partialUserObjectResponse"
@@ -32144,7 +32294,8 @@
           },
           "request_id": {
             "type": "string",
-            "format": "uuid"
+            "format": "uuid",
+            "example": "80776380-c302-47b1-924a-f26fa1225204"
           }
         },
         "required": [
@@ -32285,7 +32436,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "6e1d1b9a-8f98-40c7-a513-32d252dbac15"
+            "example": "edcc6223-ff9e-49fe-a934-2187df21421b"
           }
         },
         "required": [
@@ -32350,7 +32501,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "4c61be2e-4830-44a5-9dd9-eff006a5082e"
+            "example": "601b320d-59a7-47b0-b705-1c8ceaeb554f"
           }
         },
         "required": [
@@ -32464,7 +32615,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "8e3f4ce5-8fe2-4557-ae98-05bd34c00a0f"
+            "example": "f89b1975-1599-48c2-9230-19dd034b0a48"
           }
         },
         "required": [
@@ -33215,7 +33366,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "794950cb-4451-4459-b46d-6ab740ab6810"
+            "example": "059af09c-a47e-4d77-ac70-cc537ee9b1c6"
           }
         },
         "required": [
@@ -33280,7 +33431,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "46fbfa98-a49b-4744-b1a0-f1010aa8df57"
+            "example": "aa0180ff-4546-4db3-af5b-17140d25823a"
           }
         },
         "required": [
@@ -33419,7 +33570,13 @@
             "const": "property_item"
           },
           "id": {
-            "type": "string"
+            "type": "string",
+            "example": "%7B%7B%3D%3B"
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "4b747e00-ae08-4ddd-8e10-60f7680c416e"
           }
         },
         "required": [
@@ -33512,7 +33669,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "e4738252-668d-4ad4-9da0-ef25e3d57059"
+            "example": "73ec65cb-3789-464f-874c-db67b94e3a2d"
           }
         },
         "required": [
@@ -33724,7 +33881,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "beace63d-9712-4057-8e95-1e8dc5c9c557"
+            "example": "549c7911-b141-4bed-82c6-abdcb0866bc2"
           }
         },
         "required": [
@@ -33990,7 +34147,7 @@
           "request_id": {
             "type": "string",
             "format": "uuid",
-            "example": "7fc4dd69-4c4a-4a6b-8e9f-342b12793ecc"
+            "example": "1436ce54-41ea-41f8-8ed5-0363243cb4c1"
           }
         },
         "required": [
