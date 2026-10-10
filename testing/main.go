@@ -49,12 +49,12 @@ func run(ctx context.Context) error {
 		return err
 	}
 
-	ias = slices.DeleteFunc(ias, eqTo(cassette.Interaction{}))
+	ias = slices.DeleteFunc(ias, eqTo(&cassette.Interaction{}))
 
-	record := func(r cassette.Request) (cassette.Interaction, error) {
+	record := func(r cassette.Request) (*cassette.Interaction, error) {
 		ia, err := do(ctx, r)
 		if err != nil {
-			return ia, fmt.Errorf("%s %s: %w", r.Method, r.URL, err)
+			return nil, fmt.Errorf("%s %s: %w", r.Method, r.URL, err)
 		}
 
 		ias = slices.DeleteFunc(ias, eqTo(ia))
@@ -212,7 +212,7 @@ func unnest(filter any) any {
 
 // recordExample records the example page, a block of each shape in it and its subpages, and each database in it.
 // Its lists of blocks are walked without being recorded, since a recording keeps only three items of each list.
-func recordExample(ctx context.Context, record func(cassette.Request) (cassette.Interaction, error)) error {
+func recordExample(ctx context.Context, record func(cassette.Request) (*cassette.Interaction, error)) error {
 	page := examplePageID.String()
 
 	for _, r := range []cassette.Request{
@@ -234,7 +234,7 @@ func recordExample(ctx context.Context, record func(cassette.Request) (cassette.
 // walker records a block of each shape it comes across.
 type walker struct {
 	ctx    context.Context
-	record func(cassette.Request) (cassette.Interaction, error)
+	record func(cassette.Request) (*cassette.Interaction, error)
 	seen   map[string]bool // the shapes recorded
 }
 
@@ -460,12 +460,12 @@ var pace = time.Tick(time.Second / 3)
 
 // do sends r to Notion at the pace it allows, again after the wait it asks for when it limits the rate, and records
 // the interaction.
-func do(ctx context.Context, r cassette.Request) (cassette.Interaction, error) {
+func do(ctx context.Context, r cassette.Request) (*cassette.Interaction, error) {
 	for {
 		select {
 		case <-pace:
 		case <-ctx.Done():
-			return cassette.Interaction{}, ctx.Err()
+			return nil, ctx.Err()
 		}
 
 		ia, err := send(ctx, r)
@@ -484,7 +484,7 @@ func do(ctx context.Context, r cassette.Request) (cassette.Interaction, error) {
 }
 
 // send sends r to Notion and records the interaction.
-func send(ctx context.Context, r cassette.Request) (cassette.Interaction, error) {
+func send(ctx context.Context, r cassette.Request) (*cassette.Interaction, error) {
 	var reqBody io.Reader
 	if len(r.Body) > 0 {
 		reqBody = bytes.NewReader(r.Body)
@@ -492,7 +492,7 @@ func send(ctx context.Context, r cassette.Request) (cassette.Interaction, error)
 
 	req, err := http.NewRequestWithContext(ctx, r.Method, r.URL, reqBody)
 	if err != nil {
-		return cassette.Interaction{}, err
+		return nil, err
 	}
 
 	if len(r.Headers) > 0 {
@@ -509,10 +509,10 @@ func send(ctx context.Context, r cassette.Request) (cassette.Interaction, error)
 
 	r, err = cassette.NewRequest(req)
 	if err != nil {
-		return cassette.Interaction{}, err
+		return nil, err
 	}
 
-	ia := cassette.Interaction{Request: r}
+	ia := &cassette.Interaction{Request: r}
 
 	rsp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -529,8 +529,8 @@ func send(ctx context.Context, r cassette.Request) (cassette.Interaction, error)
 
 // eqTo reports whether an interaction is a's: the same request URL and body, so that queries of the same URL are
 // recorded apart.
-func eqTo(a cassette.Interaction) func(cassette.Interaction) bool {
-	return func(b cassette.Interaction) bool {
+func eqTo(a *cassette.Interaction) func(*cassette.Interaction) bool {
+	return func(b *cassette.Interaction) bool {
 		return a.Request.URL == b.Request.URL && bytes.Equal(compact(a.Request.Body), compact(b.Request.Body))
 	}
 }

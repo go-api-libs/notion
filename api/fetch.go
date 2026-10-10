@@ -1123,7 +1123,7 @@ func applyPasses(doc *openapi.Document) error {
 	}
 
 	// the placeholder for the next interaction to record has no response
-	ias = slices.DeleteFunc(ias, func(ia cassette.Interaction) bool { return ia.Response.StatusCode == 0 })
+	ias = slices.DeleteFunc(ias, func(ia *cassette.Interaction) bool { return ia.Response.StatusCode == 0 })
 
 	flattenDoc := func(d *openapi.Document) error { return flatten.Document(d, flatten.Config{MarkOrigin: true}) }
 
