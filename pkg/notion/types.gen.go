@@ -2509,7 +2509,7 @@ type AgentTriggersItem struct {
 	// Structured recurrence cadence. Present only for recurrence triggers.
 	Schedule AgentTriggersItemSchedule `json:"schedule,omitzero"`
 	// Remaining per-type trigger configuration (e.g. watched channel ids, reaction config), keys in snake_case. Present only when the trigger carries such state.
-	Config map[string]any `json:"config,omitzero"`
+	Config *struct{} `json:"config,omitzero"`
 }
 
 // Structured recurrence cadence. Present only for recurrence triggers.
@@ -7243,7 +7243,7 @@ type CreateMeetingNoteAllOf0Source struct {
 	// Audio or video source for the meeting note.
 	Source CreateMeetingNoteAllOf0SourceSource `json:"source"`
 	// Not accepted for block sources.
-	Parent any `json:"parent,omitzero"`
+	Parent *struct{} `json:"parent,omitzero"`
 }
 
 // Audio or video source for the meeting note.

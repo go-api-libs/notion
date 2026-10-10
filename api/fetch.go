@@ -1160,5 +1160,6 @@ func generateCode(doc *openapi.Document) error {
 		Types:       true,
 		Client:      true,
 		ClientTest:  true,
+		Debug:       true,
 	})
 }

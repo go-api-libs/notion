@@ -9,6 +9,7 @@ import (
 	"encoding/base64"
 	"encoding/json/v2"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -17,6 +18,7 @@ import (
 	"strings"
 	"uuid"
 
+	"github.com/MarkRosemaker/openapi-enrich/cassette"
 	"github.com/go-api-libs/api"
 )
 
@@ -40,6 +42,8 @@ type Client struct {
 	baseURL *url.URL
 	// The user agent
 	userAgent string
+	// Enable debug mode
+	debug bool
 }
 
 // ClientOption configures a [Client].
@@ -77,6 +81,9 @@ func WithBasic(username, password string) ClientOption {
 		}
 	}
 }
+
+// WithDebug is a [ClientOption] that sets the debug mode to true.
+func WithDebug(c *Client) { c.debug = true }
 
 // NewClient creates a new Client, reading the bearer token from [os.Getenv]("NOTION_API_TOKEN"), reading the basic auth username and password from [os.Getenv]("NOTION_API_USERNAME") and [os.Getenv]("NOTION_API_PASSWORD").
 func NewClient(opts ...ClientOption) (*Client, error) {
@@ -132,11 +139,28 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -152,11 +176,28 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -165,11 +206,28 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -178,11 +236,28 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -191,11 +266,28 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -204,11 +296,28 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -217,11 +326,28 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -230,11 +356,28 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -243,11 +386,28 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -256,11 +416,28 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -269,11 +446,28 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -282,11 +476,28 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -295,14 +506,37 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -338,11 +572,28 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID IDRequest)
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -358,11 +609,28 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID IDRequest)
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -371,11 +639,28 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID IDRequest)
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -384,11 +669,28 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID IDRequest)
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -397,11 +699,28 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID IDRequest)
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -410,11 +729,28 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID IDRequest)
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -423,11 +759,28 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID IDRequest)
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -436,11 +789,28 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID IDRequest)
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -449,11 +819,28 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID IDRequest)
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -462,11 +849,28 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID IDRequest)
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -475,11 +879,28 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID IDRequest)
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -488,11 +909,28 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID IDRequest)
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -501,14 +939,37 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID IDRequest)
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -558,11 +1019,28 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -578,11 +1056,28 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -591,11 +1086,28 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -604,11 +1116,28 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -617,11 +1146,28 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -630,11 +1176,28 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -643,11 +1206,28 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -656,11 +1236,28 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -669,11 +1266,28 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -682,11 +1296,28 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -695,11 +1326,28 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -708,11 +1356,28 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -721,14 +1386,37 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -781,11 +1469,28 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -801,11 +1506,28 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusAccepted:
@@ -821,11 +1543,28 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -834,11 +1573,28 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -847,11 +1603,28 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -860,11 +1633,28 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -873,11 +1663,28 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -886,11 +1693,28 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -899,11 +1723,28 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -912,11 +1753,28 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -925,11 +1783,28 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -938,11 +1813,28 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -951,11 +1843,28 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -964,14 +1873,37 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -1017,11 +1949,28 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRe
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -1037,11 +1986,28 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRe
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -1050,11 +2016,28 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -1063,11 +2046,28 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -1076,11 +2076,28 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -1089,11 +2106,28 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -1102,11 +2136,28 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -1115,11 +2166,28 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -1128,11 +2196,28 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -1141,11 +2226,28 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -1154,11 +2256,28 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -1167,11 +2286,28 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -1180,14 +2316,37 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -1240,11 +2399,28 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID IDReques
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -1260,11 +2436,28 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID IDReques
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -1273,11 +2466,28 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID IDReques
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -1286,11 +2496,28 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID IDReques
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -1299,11 +2526,28 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID IDReques
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -1312,11 +2556,28 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID IDReques
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -1325,11 +2586,28 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID IDReques
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -1338,11 +2616,28 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID IDReques
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -1351,11 +2646,28 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID IDReques
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -1364,11 +2676,28 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID IDReques
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -1377,11 +2706,28 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID IDReques
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -1390,11 +2736,28 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID IDReques
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -1403,14 +2766,37 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID IDReques
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -1453,11 +2839,28 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID IDRequest
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -1473,11 +2876,28 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID IDRequest
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -1486,11 +2906,28 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID IDRequest
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -1499,11 +2936,28 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID IDRequest
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -1512,11 +2966,28 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID IDRequest
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -1525,11 +2996,28 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID IDRequest
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -1538,11 +3026,28 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID IDRequest
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -1551,11 +3056,28 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID IDRequest
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -1564,11 +3086,28 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID IDRequest
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -1577,11 +3116,28 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID IDRequest
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -1590,11 +3146,28 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID IDRequest
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -1603,11 +3176,28 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID IDRequest
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -1616,14 +3206,37 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID IDRequest
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -1673,11 +3286,28 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -1693,11 +3323,28 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -1706,11 +3353,28 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -1719,11 +3383,28 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -1732,11 +3413,28 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -1745,11 +3443,28 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -1758,11 +3473,28 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -1771,11 +3503,28 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -1784,11 +3533,28 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -1797,11 +3563,28 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -1810,11 +3593,28 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -1823,11 +3623,28 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -1836,14 +3653,37 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -1893,11 +3733,28 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -1913,11 +3770,28 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -1926,11 +3800,28 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -1939,11 +3830,28 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -1952,11 +3860,28 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -1965,11 +3890,28 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -1978,11 +3920,28 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -1991,11 +3950,28 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -2004,11 +3980,28 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -2017,11 +4010,28 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -2030,11 +4040,28 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -2043,11 +4070,28 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -2056,14 +4100,37 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -2106,11 +4173,28 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -2126,11 +4210,28 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusAccepted:
@@ -2146,11 +4247,28 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -2159,11 +4277,28 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -2172,11 +4307,28 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -2185,11 +4337,28 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -2198,11 +4367,28 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -2211,11 +4397,28 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -2224,11 +4427,28 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -2237,11 +4457,28 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -2250,11 +4487,28 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -2263,11 +4517,28 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -2276,11 +4547,28 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -2289,14 +4577,37 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -2332,11 +4643,28 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -2352,11 +4680,28 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -2365,11 +4710,28 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -2378,11 +4740,28 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -2391,11 +4770,28 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -2404,11 +4800,28 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -2417,11 +4830,28 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -2430,11 +4860,28 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -2443,11 +4890,28 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -2456,11 +4920,28 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -2469,11 +4950,28 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -2482,11 +4980,28 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -2495,14 +5010,37 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -2538,11 +5076,28 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -2558,11 +5113,28 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -2571,11 +5143,28 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -2584,11 +5173,28 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -2597,11 +5203,28 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -2610,11 +5233,28 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -2623,11 +5263,28 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -2636,11 +5293,28 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -2649,11 +5323,28 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -2662,11 +5353,28 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -2675,11 +5383,28 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -2688,11 +5413,28 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -2701,14 +5443,37 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -2744,11 +5509,28 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID IDRe
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -2764,11 +5546,28 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID IDRe
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -2777,11 +5576,28 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -2790,11 +5606,28 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -2803,11 +5636,28 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -2816,11 +5666,28 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -2829,11 +5696,28 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -2842,11 +5726,28 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -2855,11 +5756,28 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -2868,11 +5786,28 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -2881,11 +5816,28 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -2894,11 +5846,28 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -2907,14 +5876,37 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -2957,11 +5949,28 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID IDRe
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -2977,11 +5986,28 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID IDRe
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -2990,11 +6016,28 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -3003,11 +6046,28 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -3016,11 +6076,28 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -3029,11 +6106,28 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -3042,11 +6136,28 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -3055,11 +6166,28 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -3068,11 +6196,28 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -3081,11 +6226,28 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -3094,11 +6256,28 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -3107,11 +6286,28 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -3120,14 +6316,37 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -3177,11 +6396,28 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -3197,11 +6433,28 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -3210,11 +6463,28 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -3223,11 +6493,28 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -3236,11 +6523,28 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -3249,11 +6553,28 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -3262,11 +6583,28 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -3275,11 +6613,28 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -3288,11 +6643,28 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -3301,11 +6673,28 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -3314,11 +6703,28 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -3327,11 +6733,28 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -3340,14 +6763,37 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -3390,11 +6836,28 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -3410,11 +6873,28 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -3423,11 +6903,28 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -3436,11 +6933,28 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -3449,11 +6963,28 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -3462,11 +6993,28 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -3475,11 +7023,28 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -3488,11 +7053,28 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -3501,11 +7083,28 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -3514,11 +7113,28 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -3527,11 +7143,28 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -3540,11 +7173,28 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -3553,14 +7203,37 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -3596,11 +7269,28 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -3616,11 +7306,28 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -3629,11 +7336,28 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -3642,11 +7366,28 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -3655,11 +7396,28 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -3668,11 +7426,28 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -3681,11 +7456,28 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -3694,11 +7486,28 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -3707,11 +7516,28 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -3720,11 +7546,28 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -3733,11 +7576,28 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -3746,11 +7606,28 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -3759,14 +7636,37 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -3809,11 +7709,28 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -3829,11 +7746,28 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -3842,11 +7776,28 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -3855,11 +7806,28 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -3868,11 +7836,28 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -3881,11 +7866,28 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -3894,11 +7896,28 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -3907,11 +7926,28 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -3920,11 +7956,28 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -3933,11 +7986,28 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -3946,11 +8016,28 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -3959,11 +8046,28 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -3972,14 +8076,37 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -4032,11 +8159,28 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -4052,11 +8196,28 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -4065,11 +8226,28 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -4078,11 +8256,28 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -4091,11 +8286,28 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -4104,11 +8316,28 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -4117,11 +8346,28 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -4130,11 +8376,28 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -4143,11 +8406,28 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -4156,11 +8436,28 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -4169,11 +8466,28 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -4182,11 +8496,28 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -4195,14 +8526,37 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -4245,11 +8599,28 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -4265,11 +8636,28 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -4278,11 +8666,28 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -4291,11 +8696,28 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -4304,11 +8726,28 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -4317,11 +8756,28 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -4330,11 +8786,28 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -4343,11 +8816,28 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -4356,11 +8846,28 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -4369,11 +8876,28 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -4382,11 +8906,28 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -4395,11 +8936,28 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -4408,14 +8966,37 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -4469,11 +9050,28 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -4489,11 +9087,28 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -4502,11 +9117,28 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -4515,11 +9147,28 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -4528,11 +9177,28 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -4541,11 +9207,28 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -4554,11 +9237,28 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -4567,11 +9267,28 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -4580,11 +9297,28 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -4593,11 +9327,28 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -4606,11 +9357,28 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -4619,11 +9387,28 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -4632,14 +9417,37 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -4675,11 +9483,28 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -4695,11 +9520,28 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -4708,11 +9550,28 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -4721,11 +9580,28 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -4734,11 +9610,28 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -4747,11 +9640,28 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -4760,11 +9670,28 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -4773,11 +9700,28 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -4786,11 +9730,28 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -4799,11 +9760,28 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -4812,11 +9790,28 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -4825,11 +9820,28 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -4838,14 +9850,37 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -4888,11 +9923,28 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -4908,11 +9960,28 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -4921,11 +9990,28 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -4934,11 +10020,28 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -4947,11 +10050,28 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -4960,11 +10080,28 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -4973,11 +10110,28 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -4986,11 +10140,28 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -4999,11 +10170,28 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -5012,11 +10200,28 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -5025,11 +10230,28 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -5038,11 +10260,28 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -5051,14 +10290,37 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -5101,11 +10363,28 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -5121,11 +10400,28 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -5134,11 +10430,28 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -5147,11 +10460,28 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -5160,11 +10490,28 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -5173,11 +10520,28 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -5186,11 +10550,28 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -5199,11 +10580,28 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -5212,11 +10610,28 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -5225,11 +10640,28 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -5238,11 +10670,28 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -5251,11 +10700,28 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -5264,14 +10730,37 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -5314,11 +10803,28 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -5334,11 +10840,28 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -5347,11 +10870,28 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -5360,11 +10900,28 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -5373,11 +10930,28 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -5386,11 +10960,28 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -5399,11 +10990,28 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -5412,11 +11020,28 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -5425,11 +11050,28 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -5438,11 +11080,28 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -5451,11 +11110,28 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -5464,11 +11140,28 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -5477,14 +11170,37 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -5535,11 +11251,28 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -5555,11 +11288,28 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -5568,11 +11318,28 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -5581,11 +11348,28 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -5594,11 +11378,28 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -5607,11 +11408,28 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -5620,11 +11438,28 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -5633,11 +11468,28 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -5646,11 +11498,28 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -5659,11 +11528,28 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -5672,11 +11558,28 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -5685,11 +11588,28 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -5698,14 +11618,37 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -5748,11 +11691,28 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -5768,11 +11728,28 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -5781,11 +11758,28 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -5794,11 +11788,28 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -5807,11 +11818,28 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -5820,11 +11848,28 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -5833,11 +11878,28 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -5846,11 +11908,28 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -5859,11 +11938,28 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -5872,11 +11968,28 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -5885,11 +11998,28 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -5898,11 +12028,28 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -5911,14 +12058,37 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -5954,11 +12124,28 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -5974,11 +12161,28 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -5987,11 +12191,28 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -6000,11 +12221,28 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -6013,11 +12251,28 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -6026,11 +12281,28 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -6039,11 +12311,28 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -6052,11 +12341,28 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -6065,11 +12371,28 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -6078,11 +12401,28 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -6091,11 +12431,28 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -6104,11 +12461,28 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -6117,14 +12491,37 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -6160,11 +12557,28 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -6180,11 +12594,28 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -6193,11 +12624,28 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -6206,11 +12654,28 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -6219,11 +12684,28 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -6232,11 +12714,28 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -6245,11 +12744,28 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -6258,11 +12774,28 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -6271,11 +12804,28 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -6284,11 +12834,28 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -6297,11 +12864,28 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -6310,11 +12894,28 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -6323,14 +12924,37 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -6373,11 +12997,28 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -6393,11 +13034,28 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -6406,11 +13064,28 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -6419,11 +13094,28 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -6432,11 +13124,28 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -6445,11 +13154,28 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -6458,11 +13184,28 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -6471,11 +13214,28 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -6484,11 +13244,28 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -6497,11 +13274,28 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -6510,11 +13304,28 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -6523,11 +13334,28 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -6536,14 +13364,37 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -6597,11 +13448,28 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -6617,11 +13485,28 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -6630,11 +13515,28 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -6643,11 +13545,28 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -6656,11 +13575,28 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -6669,11 +13605,28 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -6682,11 +13635,28 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -6695,11 +13665,28 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -6708,11 +13695,28 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -6721,11 +13725,28 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -6734,11 +13755,28 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -6747,11 +13785,28 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -6760,14 +13815,37 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -6810,11 +13888,28 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -6830,11 +13925,28 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -6843,11 +13955,28 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -6856,11 +13985,28 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -6869,11 +14015,28 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -6882,11 +14045,28 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -6895,11 +14075,28 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -6908,11 +14105,28 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -6921,11 +14135,28 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -6934,11 +14165,28 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -6947,11 +14195,28 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -6960,11 +14225,28 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -6973,14 +14255,37 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -7023,11 +14328,28 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -7043,11 +14365,28 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -7056,11 +14395,28 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -7069,11 +14425,28 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -7082,11 +14455,28 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -7095,11 +14485,28 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -7108,11 +14515,28 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -7121,11 +14545,28 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -7134,11 +14575,28 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -7147,11 +14605,28 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -7160,11 +14635,28 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -7173,11 +14665,28 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -7186,14 +14695,37 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -7229,11 +14761,28 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -7249,11 +14798,28 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -7262,11 +14828,28 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -7275,11 +14858,28 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -7288,11 +14888,28 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -7301,11 +14918,28 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -7314,11 +14948,28 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -7327,11 +14978,28 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -7340,11 +15008,28 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -7353,11 +15038,28 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -7366,11 +15068,28 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -7379,11 +15098,28 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -7392,14 +15128,37 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -7435,11 +15194,28 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -7455,11 +15231,28 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -7468,11 +15261,28 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -7481,11 +15291,28 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -7494,11 +15321,28 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -7507,11 +15351,28 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -7520,11 +15381,28 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -7533,11 +15411,28 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -7546,11 +15441,28 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -7559,11 +15471,28 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -7572,11 +15501,28 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -7585,11 +15531,28 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -7598,14 +15561,37 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -7659,11 +15645,28 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -7679,11 +15682,28 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -7692,11 +15712,28 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -7705,11 +15742,28 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -7718,11 +15772,28 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -7731,11 +15802,28 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -7744,11 +15832,28 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -7757,11 +15862,28 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -7770,11 +15892,28 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -7783,11 +15922,28 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -7796,11 +15952,28 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -7809,11 +15982,28 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -7822,14 +16012,37 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -7887,11 +16100,28 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -7907,11 +16137,28 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -7920,11 +16167,28 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -7933,11 +16197,28 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -7946,11 +16227,28 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -7959,11 +16257,28 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -7972,11 +16287,28 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -7985,11 +16317,28 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -7998,11 +16347,28 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -8011,11 +16377,28 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -8024,11 +16407,28 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -8037,11 +16437,28 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -8050,14 +16467,37 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -8100,11 +16540,28 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -8120,11 +16577,28 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -8133,11 +16607,28 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -8146,11 +16637,28 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -8159,11 +16667,28 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -8172,11 +16697,28 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -8185,11 +16727,28 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -8198,11 +16757,28 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -8211,11 +16787,28 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -8224,11 +16817,28 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -8237,11 +16847,28 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -8250,11 +16877,28 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -8263,14 +16907,37 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -8306,11 +16973,28 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID IDRe
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -8326,11 +17010,28 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID IDRe
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -8339,11 +17040,28 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -8352,11 +17070,28 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -8365,11 +17100,28 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -8378,11 +17130,28 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -8391,11 +17160,28 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -8404,11 +17190,28 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -8417,11 +17220,28 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -8430,11 +17250,28 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -8443,11 +17280,28 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -8456,11 +17310,28 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -8469,14 +17340,37 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -8512,11 +17406,28 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID IDReque
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -8532,11 +17443,28 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID IDReque
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -8545,11 +17473,28 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID IDReque
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -8558,11 +17503,28 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID IDReque
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -8571,11 +17533,28 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID IDReque
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -8584,11 +17563,28 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID IDReque
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -8597,11 +17593,28 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID IDReque
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -8610,11 +17623,28 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID IDReque
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -8623,11 +17653,28 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID IDReque
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -8636,11 +17683,28 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID IDReque
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -8649,11 +17713,28 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID IDReque
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -8662,11 +17743,28 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID IDReque
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -8675,14 +17773,37 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID IDReque
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -8725,11 +17846,28 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID IDRequ
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -8745,11 +17883,28 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID IDRequ
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -8758,11 +17913,28 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID IDRequ
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -8771,11 +17943,28 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID IDRequ
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -8784,11 +17973,28 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID IDRequ
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -8797,11 +18003,28 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID IDRequ
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -8810,11 +18033,28 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID IDRequ
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -8823,11 +18063,28 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID IDRequ
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -8836,11 +18093,28 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID IDRequ
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -8849,11 +18123,28 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID IDRequ
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -8862,11 +18153,28 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID IDRequ
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -8875,11 +18183,28 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID IDRequ
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -8888,14 +18213,37 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID IDRequ
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -8938,11 +18286,28 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -8958,11 +18323,28 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -8971,11 +18353,28 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -8984,11 +18383,28 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -8997,11 +18413,28 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -9010,11 +18443,28 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -9023,11 +18473,28 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -9036,11 +18503,28 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -9049,11 +18533,28 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -9062,11 +18563,28 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -9075,11 +18593,28 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -9088,11 +18623,28 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -9101,14 +18653,37 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -9158,11 +18733,28 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -9178,11 +18770,28 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -9191,11 +18800,28 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -9204,11 +18830,28 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -9217,11 +18860,28 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -9230,11 +18890,28 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -9243,11 +18920,28 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -9256,11 +18950,28 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -9269,11 +18980,28 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -9282,11 +19010,28 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -9295,11 +19040,28 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -9308,11 +19070,28 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -9321,14 +19100,37 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -9364,11 +19166,28 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -9384,11 +19203,28 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -9397,11 +19233,28 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -9410,11 +19263,28 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -9423,11 +19293,28 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -9436,11 +19323,28 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -9449,11 +19353,28 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -9462,11 +19383,28 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -9475,11 +19413,28 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -9488,11 +19443,28 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -9501,11 +19473,28 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -9514,11 +19503,28 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -9527,14 +19533,37 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -9577,11 +19606,28 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -9597,11 +19643,28 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -9610,11 +19673,28 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -9623,11 +19703,28 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -9636,11 +19733,28 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -9649,11 +19763,28 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -9662,11 +19793,28 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -9675,11 +19823,28 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -9688,11 +19853,28 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -9701,11 +19883,28 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -9714,11 +19913,28 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -9727,11 +19943,28 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -9740,14 +19973,37 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -9790,11 +20046,28 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -9810,11 +20083,28 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -9823,11 +20113,28 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -9836,11 +20143,28 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -9849,11 +20173,28 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -9862,11 +20203,28 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -9875,11 +20233,28 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -9888,11 +20263,28 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -9901,11 +20293,28 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -9914,11 +20323,28 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -9927,11 +20353,28 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -9940,11 +20383,28 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -9953,14 +20413,37 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -10003,11 +20486,28 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -10023,11 +20523,28 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -10036,11 +20553,28 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -10049,11 +20583,28 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -10062,11 +20613,28 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -10075,11 +20643,28 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -10088,11 +20673,28 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -10101,11 +20703,28 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -10114,11 +20733,28 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -10127,11 +20763,28 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -10140,11 +20793,28 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -10153,11 +20823,28 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -10166,14 +20853,37 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -10219,11 +20929,28 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -10239,11 +20966,28 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -10252,11 +20996,28 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -10265,11 +21026,28 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -10278,11 +21056,28 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -10291,11 +21086,28 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -10304,11 +21116,28 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -10317,11 +21146,28 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -10330,11 +21176,28 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -10343,11 +21206,28 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -10356,11 +21236,28 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -10369,11 +21266,28 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -10382,14 +21296,37 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -10425,11 +21362,28 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -10445,11 +21399,28 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -10458,11 +21429,28 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -10471,11 +21459,28 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -10484,11 +21489,28 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -10497,11 +21519,28 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -10510,11 +21549,28 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -10523,11 +21579,28 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -10536,11 +21609,28 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -10549,11 +21639,28 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -10562,11 +21669,28 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -10575,11 +21699,28 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -10588,14 +21729,37 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -10645,11 +21809,28 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -10665,11 +21846,28 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -10678,11 +21876,28 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -10691,11 +21906,28 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -10704,11 +21936,28 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -10717,11 +21966,28 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -10730,11 +21996,28 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -10743,11 +22026,28 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -10756,11 +22056,28 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -10769,11 +22086,28 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -10782,11 +22116,28 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -10795,11 +22146,28 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -10808,14 +22176,37 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -10858,11 +22249,28 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -10878,11 +22286,28 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -10891,11 +22316,28 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -10904,11 +22346,28 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -10917,11 +22376,28 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -10930,11 +22406,28 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -10943,11 +22436,28 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -10956,11 +22466,28 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -10969,11 +22496,28 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -10982,11 +22526,28 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -10995,11 +22556,28 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -11008,11 +22586,28 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -11021,14 +22616,37 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -11071,11 +22689,28 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -11091,11 +22726,28 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -11104,11 +22756,28 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -11117,11 +22786,28 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -11130,11 +22816,28 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -11143,11 +22846,28 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -11156,11 +22876,28 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -11169,11 +22906,28 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -11182,11 +22936,28 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -11195,11 +22966,28 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -11208,11 +22996,28 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -11221,11 +23026,28 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -11234,14 +23056,37 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -11284,11 +23129,28 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -11304,11 +23166,28 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -11317,11 +23196,28 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -11330,11 +23226,28 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -11343,11 +23256,28 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -11356,11 +23286,28 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -11369,11 +23316,28 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -11382,11 +23346,28 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -11395,11 +23376,28 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -11408,11 +23406,28 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -11421,11 +23436,28 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -11434,11 +23466,28 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -11447,14 +23496,37 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -11504,11 +23576,28 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -11524,11 +23613,28 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -11537,11 +23643,28 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -11550,11 +23673,28 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -11563,11 +23703,28 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -11576,11 +23733,28 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -11589,11 +23763,28 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -11602,11 +23793,28 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -11615,11 +23823,28 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -11628,11 +23853,28 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -11641,11 +23883,28 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -11654,11 +23913,28 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -11667,14 +23943,37 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -11710,11 +24009,28 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -11730,11 +24046,28 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -11743,11 +24076,28 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -11756,11 +24106,28 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -11769,11 +24136,28 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -11782,11 +24166,28 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -11795,11 +24196,28 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -11808,11 +24226,28 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -11821,11 +24256,28 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -11834,11 +24286,28 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -11847,11 +24316,28 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -11860,11 +24346,28 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -11873,14 +24376,37 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -11916,11 +24442,28 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id IDRe
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -11936,11 +24479,28 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id IDRe
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -11949,11 +24509,28 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -11962,11 +24539,28 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -11975,11 +24569,28 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -11988,11 +24599,28 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -12001,11 +24629,28 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -12014,11 +24659,28 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -12027,11 +24689,28 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -12040,11 +24719,28 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -12053,11 +24749,28 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -12066,11 +24779,28 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -12079,14 +24809,37 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id IDRe
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -12129,11 +24882,28 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -12149,11 +24919,28 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -12162,11 +24949,28 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -12175,11 +24979,28 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -12188,11 +25009,28 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -12201,11 +25039,28 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -12214,11 +25069,28 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -12227,11 +25099,28 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -12240,11 +25129,28 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -12253,11 +25159,28 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -12266,11 +25189,28 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -12279,11 +25219,28 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -12292,14 +25249,37 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -12335,11 +25315,28 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		URL:        u,
 	}).WithContext(ctx)
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -12355,11 +25352,28 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -12368,11 +25382,28 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -12381,11 +25412,28 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -12394,11 +25442,28 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -12407,11 +25472,28 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -12420,11 +25502,28 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -12433,11 +25532,28 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -12446,11 +25562,28 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -12459,11 +25592,28 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -12472,11 +25622,28 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -12485,11 +25652,28 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -12498,14 +25682,37 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -12548,11 +25755,28 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -12568,11 +25792,28 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -12581,11 +25822,28 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -12594,11 +25852,28 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -12607,11 +25882,28 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -12620,11 +25912,28 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -12633,11 +25942,28 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -12646,11 +25972,28 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -12659,11 +26002,28 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -12672,11 +26032,28 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -12685,11 +26062,28 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -12698,11 +26092,28 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -12711,14 +26122,37 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -12761,11 +26195,28 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -12781,11 +26232,28 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -12794,11 +26262,28 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -12807,11 +26292,28 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -12820,11 +26322,28 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -12833,11 +26352,28 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -12846,11 +26382,28 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -12859,11 +26412,28 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -12872,11 +26442,28 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -12885,11 +26472,28 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -12898,11 +26502,28 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -12911,11 +26532,28 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -12924,14 +26562,37 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -12974,11 +26635,28 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID I
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -12994,11 +26672,28 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID I
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -13007,11 +26702,28 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -13020,11 +26732,28 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -13033,11 +26762,28 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotFound:
@@ -13046,11 +26792,28 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusNotAcceptable:
@@ -13059,11 +26822,28 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusConflict:
@@ -13072,11 +26852,28 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusTooManyRequests:
@@ -13085,11 +26882,28 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -13098,11 +26912,28 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusServiceUnavailable:
@@ -13111,11 +26942,28 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusGatewayTimeout:
@@ -13124,11 +26972,28 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case 529:
@@ -13137,14 +27002,37 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID I
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -13187,11 +27075,28 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -13207,11 +27112,28 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -13220,11 +27142,28 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -13233,11 +27172,28 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -13246,11 +27202,28 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -13259,14 +27232,37 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -13309,11 +27305,28 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body RevokeTo
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -13329,11 +27342,28 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body RevokeTo
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -13342,11 +27372,28 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body RevokeTo
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -13355,11 +27402,28 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body RevokeTo
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -13368,11 +27432,28 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body RevokeTo
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -13381,14 +27462,37 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body RevokeTo
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
@@ -13431,11 +27535,28 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Revo
 	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
 	defer pr.Close()
 
+	var (
+		ia  cassette.Interaction
+		err error
+	)
+	if c.debug {
+		ia.Request, err = cassette.NewRequest(req)
+		if err != nil {
+			return nil, fmt.Errorf("recording request: %w", err)
+		}
+	}
 	rsp, err := c.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer rsp.Body.Close()
+
+	if c.debug {
+		ia.Response, err = cassette.NewResponse(rsp)
+		if err != nil {
+			return nil, fmt.Errorf("recording response: %w", err)
+		}
+	}
 
 	switch rsp.StatusCode {
 	case http.StatusOK:
@@ -13451,11 +27572,28 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Revo
 			}
 
 			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return &out, nil
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusBadRequest:
@@ -13464,11 +27602,28 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Revo
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusUnauthorized:
@@ -13477,11 +27632,28 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Revo
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusForbidden:
@@ -13490,11 +27662,28 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Revo
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	case http.StatusInternalServerError:
@@ -13503,14 +27692,37 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Revo
 		case "application/json":
 			var out Error
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
-				return nil, api.WrapDecodingError(rsp, err)
+				if !c.debug {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if err2 := cassette.AddInteraction("api/interactions.json", ia); err2 != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), err2)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
 			}
 
 			return nil, api.NewErrCustom(rsp, &out)
 		default:
+			if c.debug {
+				if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+					return nil, errors.Join(api.NewErrUnknownContentType(rsp), err)
+				}
+			}
+
 			return nil, api.NewErrUnknownContentType(rsp)
 		}
 	default:
+		if c.debug {
+			if err := cassette.AddInteraction("api/interactions.json", ia); err != nil {
+				return nil, errors.Join(api.NewErrUnknownStatusCode(rsp), err)
+			}
+		}
+
 		return nil, api.NewErrUnknownStatusCode(rsp)
 	}
 }
