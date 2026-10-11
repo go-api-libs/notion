@@ -11,13 +11,14 @@ import (
 	"log"
 	"maps"
 	"net/http"
+	"net/url"
 	"os"
 	"slices"
 	"strconv"
 	"time"
 	"uuid"
 
-	"github.com/MarkRosemaker/openapi-enrich/cassette"
+	"github.com/MarkRosemaker/cassette"
 )
 
 var (
@@ -54,7 +55,7 @@ func run(ctx context.Context) error {
 	record := func(r cassette.Request) (*cassette.Interaction, error) {
 		ia, err := do(ctx, r)
 		if err != nil {
-			return nil, fmt.Errorf("%s %s: %w", r.Method, r.URL, err)
+			return nil, fmt.Errorf("%s %s: %w", r.Method, &r.URL, err)
 		}
 
 		ias = slices.DeleteFunc(ias, eqTo(ia))
@@ -63,7 +64,10 @@ func run(ctx context.Context) error {
 		return ia, nil
 	}
 
-	view, err := record(cassette.Request{Method: http.MethodGet, URL: "https://api.notion.com/v1/views/" + viewID.String()})
+	view, err := record(cassette.Request{
+		Method: http.MethodGet,
+		URL:    mustParseURL("https://api.notion.com/v1/views/" + viewID.String()),
+	})
 	if err != nil {
 		return err
 	}
@@ -79,16 +83,16 @@ func run(ctx context.Context) error {
 	}
 
 	for _, r := range []cassette.Request{
-		{Method: http.MethodGet, URL: "https://api.notion.com/v1/views?database_id=" + dbID.String()},
-		{Method: http.MethodGet, URL: "https://api.notion.com/v1/databases/" + dbID.String()},
-		{Method: http.MethodGet, URL: "https://api.notion.com/v1/data_sources/" + dataSourceID.String()},
-		{Method: http.MethodGet, URL: "https://api.notion.com/v1/data_sources/" + dataSourceID.String() + "/templates"},
-		{Method: http.MethodGet, URL: "https://api.notion.com/v1/blocks/" + dbID.String()},
-		{Method: http.MethodGet, URL: "https://api.notion.com/v1/users/me"},
-		{Method: http.MethodGet, URL: "https://api.notion.com/v1/users?page_size=3"},
-		{Method: http.MethodPost, URL: "https://api.notion.com/v1/search", Body: []byte(`{"page_size":3}`)},
+		{Method: http.MethodGet, URL: mustParseURL("https://api.notion.com/v1/views?database_id=" + dbID.String())},
+		{Method: http.MethodGet, URL: mustParseURL("https://api.notion.com/v1/databases/" + dbID.String())},
+		{Method: http.MethodGet, URL: mustParseURL("https://api.notion.com/v1/data_sources/" + dataSourceID.String())},
+		{Method: http.MethodGet, URL: mustParseURL("https://api.notion.com/v1/data_sources/" + dataSourceID.String() + "/templates")},
+		{Method: http.MethodGet, URL: mustParseURL("https://api.notion.com/v1/blocks/" + dbID.String())},
+		{Method: http.MethodGet, URL: mustParseURL("https://api.notion.com/v1/users/me")},
+		{Method: http.MethodGet, URL: mustParseURL("https://api.notion.com/v1/users?page_size=3")},
+		{Method: http.MethodPost, URL: mustParseURL("https://api.notion.com/v1/search"), Body: []byte(`{"page_size":3}`)},
 		// an error, for the order of its members
-		{Method: http.MethodGet, URL: "https://api.notion.com/v1/pages/" + uuid.Nil().String()},
+		{Method: http.MethodGet, URL: mustParseURL("https://api.notion.com/v1/pages/" + uuid.Nil().String())},
 	} {
 		if _, err := record(r); err != nil {
 			return err
@@ -97,7 +101,7 @@ func run(ctx context.Context) error {
 
 	query, err := record(cassette.Request{
 		Method: http.MethodPost,
-		URL:    "https://api.notion.com/v1/data_sources/" + dataSourceID.String() + "/query",
+		URL:    mustParseURL("https://api.notion.com/v1/data_sources/" + dataSourceID.String() + "/query"),
 		Body:   []byte(`{"page_size":3}`),
 	})
 	if err != nil {
@@ -121,10 +125,10 @@ func run(ctx context.Context) error {
 	pageID := list.Results[0].ID
 
 	for _, r := range []cassette.Request{
-		{Method: http.MethodGet, URL: "https://api.notion.com/v1/pages/" + pageID},
-		{Method: http.MethodGet, URL: "https://api.notion.com/v1/pages/" + pageID + "/properties/title"},
-		{Method: http.MethodGet, URL: "https://api.notion.com/v1/blocks/" + pageID + "/children?page_size=3"},
-		{Method: http.MethodGet, URL: "https://api.notion.com/v1/comments?block_id=" + pageID},
+		{Method: http.MethodGet, URL: mustParseURL("https://api.notion.com/v1/pages/" + pageID)},
+		{Method: http.MethodGet, URL: mustParseURL("https://api.notion.com/v1/pages/" + pageID + "/properties/title")},
+		{Method: http.MethodGet, URL: mustParseURL("https://api.notion.com/v1/blocks/" + pageID + "/children?page_size=3")},
+		{Method: http.MethodGet, URL: mustParseURL("https://api.notion.com/v1/comments?block_id=" + pageID)},
 	} {
 		if _, err := record(r); err != nil {
 			return err
@@ -135,11 +139,19 @@ func run(ctx context.Context) error {
 		return fmt.Errorf("example page: %w", err)
 	}
 
-	ias.Mask()
 	ias.TrimResponseHeaders()
-	ias.TrimResponseBodies(3)
+	// ias.TrimResponseBodies(3)
 
 	return ias.WriteFile(pathInteractions)
+}
+
+func mustParseURL(s string) url.URL {
+	u, err := url.Parse(s)
+	if err != nil {
+		panic(err)
+	}
+
+	return *u
 }
 
 // queryOfView is the query of the data source the view shows, with the view's filter and sorts.
@@ -171,7 +183,7 @@ func queryOfView(view []byte) (cassette.Request, error) {
 
 	return cassette.Request{
 		Method: http.MethodPost,
-		URL:    "https://api.notion.com/v1/data_sources/" + v.DataSourceID + "/query",
+		URL:    mustParseURL("https://api.notion.com/v1/data_sources/" + v.DataSourceID + "/query"),
 		Body:   body,
 	}, nil
 }
@@ -246,7 +258,7 @@ func (w *walker) children(id string) error {
 			url += "&start_cursor=" + cursor
 		}
 
-		ia, err := do(w.ctx, cassette.Request{Method: http.MethodGet, URL: url})
+		ia, err := do(w.ctx, cassette.Request{Method: http.MethodGet, URL: mustParseURL(url)})
 		if err != nil {
 			return err
 		}
@@ -331,7 +343,9 @@ func (w *walker) database(id string) error {
 		}
 
 		query, err := w.record(cassette.Request{
-			Method: http.MethodPost, URL: baseURL + "data_sources/" + ds.ID + "/query", Body: []byte(`{"page_size":3}`),
+			Method: http.MethodPost,
+			URL:    mustParseURL(baseURL + "data_sources/" + ds.ID + "/query"),
+			Body:   []byte(`{"page_size":3}`),
 		})
 		if err != nil {
 			return err
@@ -452,7 +466,10 @@ func shapeOf(v any) any {
 
 // get is a GET request of the path below the API's URL.
 func get(path string) cassette.Request {
-	return cassette.Request{Method: http.MethodGet, URL: baseURL + path}
+	return cassette.Request{
+		Method: http.MethodGet,
+		URL:    mustParseURL(baseURL + path),
+	}
 }
 
 // pace spaces requests out to the three a second Notion allows on average.
@@ -490,7 +507,7 @@ func send(ctx context.Context, r cassette.Request) (*cassette.Interaction, error
 		reqBody = bytes.NewReader(r.Body)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, r.Method, r.URL, reqBody)
+	req, err := http.NewRequestWithContext(ctx, r.Method, r.URL.String(), reqBody)
 	if err != nil {
 		return nil, err
 	}

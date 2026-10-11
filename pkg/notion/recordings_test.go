@@ -3,10 +3,11 @@ package notion
 import (
 	"encoding/json/v2"
 	"net/http"
+	"net/url"
 	"strings"
 	"testing"
 
-	"github.com/MarkRosemaker/openapi-enrich/cassette"
+	"github.com/MarkRosemaker/cassette"
 )
 
 // TestRecordedResponses decodes every successful response testing/main.go recorded into the type its endpoint
@@ -27,7 +28,7 @@ func TestRecordedResponses(t *testing.T) {
 			continue
 		}
 
-		t.Run(ia.Request.Method+" "+ia.Request.URL, func(t *testing.T) {
+		t.Run(ia.Request.Method+" "+ia.Request.URL.String(), func(t *testing.T) {
 			if err := json.Unmarshal(ia.Response.Body, v); err != nil {
 				t.Error(err)
 			}
@@ -36,8 +37,8 @@ func TestRecordedResponses(t *testing.T) {
 }
 
 // responseOf is a new value of the type the endpoint at url returns, or nil for one not covered.
-func responseOf(url string) any {
-	switch path := strings.TrimPrefix(url, "https://api.notion.com/v1/"); {
+func responseOf(url url.URL) any {
+	switch path := strings.TrimPrefix(url.String(), "https://api.notion.com/v1/"); {
 	case strings.HasSuffix(path, "/templates"):
 		return new(ListDataSourceTemplatesOk)
 	case strings.HasPrefix(path, "comments"):
