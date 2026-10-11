@@ -1,5 +1,9 @@
 # Roadmap
 
+## Use `github.com/MarkRosemaker/cassette`'s Framework
+
+Use cassette's implementation fully instead of home-grown recorder.
+
 ## Test coverage of the example page
 
 `testing/main.go` records the [example page](https://app.notion.com/p/fae-tools/Example-Page-96245c8f178444a482ad1941127c3ec3),
