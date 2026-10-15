@@ -1646,6 +1646,9 @@
     "/search": {
       "parameters": [
         {
+          "$ref": "#/components/parameters/filter_properties5"
+        },
+        {
           "$ref": "#/components/parameters/notionVersion"
         }
       ],
@@ -42281,6 +42284,7 @@
         "style": "form",
         "explode": true,
         "schema": {
+          "description": "Property names or IDs to include in each page's `properties` object. Other properties are left out. Repeat the parameter to pass more than one value, for example `filter_properties=title&filter_properties=Status`. Pages that aren't in a data source always return only `title`.",
           "type": "array",
           "items": {
             "type": "string"
@@ -42293,9 +42297,22 @@
         "style": "form",
         "explode": true,
         "schema": {
-          "description": "Supply a list of property IDs to filter properties in the response. Note that if a page doesn't have a property, it won't be included in the filtered response.",
+          "description": "Property names or IDs to include in each page's `properties` object. Other properties are left out. Repeat the parameter to pass more than one value, for example `filter_properties=title&filter_properties=Status`. Pages that aren't in a data source always return only `title`.",
           "type": "array",
           "maxItems": 100,
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "filter_properties5": {
+        "name": "filter_properties",
+        "in": "query",
+        "style": "form",
+        "explode": true,
+        "schema": {
+          "description": "Property names or IDs to include in each page's `properties` object. Other properties are left out. Repeat the parameter to pass more than one value, for example `filter_properties=title&filter_properties=Status`. Pages that aren't in a data source always return only `title`. Search skips names or IDs that don't exist on a page.",
+          "type": "array",
           "items": {
             "type": "string"
           }

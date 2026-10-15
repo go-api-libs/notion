@@ -87,6 +87,11 @@ type ListDataSourceTemplatesParams struct {
 	PageSize    int
 }
 
+// PostSearchParams holds the query parameters for PostSearch.
+type PostSearchParams struct {
+	FilterProperties []string
+}
+
 // ListCommentsParams holds the query parameters for ListComments.
 type ListCommentsParams struct {
 	BlockID     IDRequest

@@ -8493,20 +8493,30 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 // Search by title
 //
 //	POST /search
-func (c *Client) PostSearch(ctx context.Context, body PostSearch) (*PageOrDataSourceList, error) {
-	return c.PostSearchWithResult[PageOrDataSourceList](ctx, body)
+func (c *Client) PostSearch(ctx context.Context, params *PostSearchParams, body PostSearch) (*PageOrDataSourceList, error) {
+	return c.PostSearchWithResult[PageOrDataSourceList](ctx, params, body)
 }
 
 // Search by title
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /search
-func (c *Client) PostSearchWithResult[R any](ctx context.Context, body PostSearch) (*R, error) {
+func (c *Client) PostSearchWithResult[R any](ctx context.Context, params *PostSearchParams, body PostSearch) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
 	u := c.baseURL.JoinPath("search")
+	if params != nil {
+		q := make(url.Values, 1)
+
+		for _, v := range params.FilterProperties {
+			q.Add("filter_properties", v)
+		}
+
+		u.RawQuery = q.Encode()
+	}
+
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{

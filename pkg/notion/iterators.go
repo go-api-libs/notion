@@ -32,7 +32,7 @@ func (c *Client) PostDatabaseQueryAll(
 
 // PostSearchAll yields every page and data source the search finds, fetching them a page of 100 at a time. It stops
 // at the first error, which it yields.
-func (c *Client) PostSearchAll(ctx context.Context, body PostSearch) iter.Seq2[PageOrDataSource, error] {
+func (c *Client) PostSearchAll(ctx context.Context, params *PostSearchParams, body PostSearch) iter.Seq2[PageOrDataSource, error] {
 	if body.PageSize == nil {
 		body.PageSize = new(float64(maxPageSize))
 	}
@@ -45,7 +45,7 @@ func (c *Client) PostSearchAll(ctx context.Context, body PostSearch) iter.Seq2[P
 
 		body.StartCursor = start
 
-		list, err := c.PostSearch(ctx, body)
+		list, err := c.PostSearch(ctx, params, body)
 		if err != nil {
 			return nil, "", false, err
 		}
