@@ -8817,6 +8817,7 @@
           "max_file_upload_size_in_bytes": {
             "description": "The maximum allowable size of a file upload, in bytes",
             "type": "integer",
+            "format": "int64",
             "minimum": 0,
             "example": 5368709120
           }
