@@ -4663,7 +4663,7 @@ type BotInfoResponseOwnerUserUserPerson struct {
 // Limits and restrictions that apply to the bot's workspace
 type BotInfoResponseWorkspaceLimits struct {
 	// The maximum allowable size of a file upload, in bytes
-	MaxFileUploadSizeInBytes int64 `json:"max_file_upload_size_in_bytes"`
+	MaxFileUploadSizeInBytes int `json:"max_file_upload_size_in_bytes"`
 }
 
 // Details about the bot, when the `type` of the user is `bot`.
