@@ -13147,18 +13147,18 @@ type PageMarkdownResponse struct {
 	Truncated bool `json:"truncated"`
 	// Block IDs that could not be loaded (appeared as <unknown> tags in the markdown). Pass these IDs back to this endpoint to fetch their content separately.
 	UnknownBlockIds []IDResponse `json:"unknown_block_ids"`
-	// Markdown parser warnings for the request's content. Returned only by the update endpoint with `markdown_version: "v2"`, and only when there is at least one warning.
+	// Content warnings from a synchronous update. Returned only when there is at least one warning.
 	Warnings PageMarkdownResponseWarnings `json:"warnings,omitzero"`
 }
 
-// Markdown parser warnings for the request's content. Returned only by the update endpoint with `markdown_version: "v2"`, and only when there is at least one warning.
+// Content warnings from a synchronous update. Returned only when there is at least one warning.
 type PageMarkdownResponseWarnings []PageMarkdownResponseWarningsItem
 
 // PageMarkdownResponseWarningsItem defines a model
 type PageMarkdownResponseWarningsItem struct {
-	// The warning category, for example `unsupported_tag`.
+	// The warning category, for example `unsupported_tag` or `no_match`.
 	Code string `json:"code"`
-	// What the parser changed or ignored.
+	// What the request changed, ignored, or could not match.
 	Message string `json:"message"`
 }
 
@@ -27931,13 +27931,13 @@ type UpdatePageMarkdownAllOf0ReplaceContentReplaceContent struct {
 
 // Update specific content using search-and-replace operations.
 type UpdatePageMarkdownAllOf0UpdateContentUpdateContent struct {
-	// An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content).
+	// An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content). Operations that match are applied, and each one that matches nothing is reported in "warnings". The call fails only when no operation that changes content matches.
 	ContentUpdates UpdatePageMarkdownAllOf0UpdateContentUpdateContentContentUpdates `json:"content_updates"`
 	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
 	AllowDeletingContent *bool `json:"allow_deleting_content,omitzero"`
 }
 
-// An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content).
+// An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content). Operations that match are applied, and each one that matches nothing is reported in "warnings". The call fails only when no operation that changes content matches.
 type UpdatePageMarkdownAllOf0UpdateContentUpdateContentContentUpdates []UpdatePageMarkdownAllOf0UpdateContentUpdateContentContentUpdatesItem
 
 // UpdatePageMarkdownAllOf0UpdateContentUpdateContentContentUpdatesItem defines a model

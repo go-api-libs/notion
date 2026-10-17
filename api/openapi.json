@@ -12468,7 +12468,7 @@
         ]
       },
       "PageMarkdownResponseWarnings": {
-        "description": "Markdown parser warnings for the request's content. Returned only by the update endpoint with `markdown_version: \"v2\"`, and only when there is at least one warning.",
+        "description": "Content warnings from a synchronous update. Returned only when there is at least one warning.",
         "type": "array",
         "maxItems": 100,
         "items": {
@@ -12479,11 +12479,11 @@
         "type": "object",
         "properties": {
           "code": {
-            "description": "The warning category, for example `unsupported_tag`.",
+            "description": "The warning category, for example `unsupported_tag` or `no_match`.",
             "type": "string"
           },
           "message": {
-            "description": "What the parser changed or ignored.",
+            "description": "What the request changed, ignored, or could not match.",
             "type": "string"
           }
         },
@@ -21306,7 +21306,7 @@
         ]
       },
       "UpdatePageMarkdownAllOf0UpdateContentUpdateContentContentUpdates": {
-        "description": "An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content).",
+        "description": "An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content). Operations that match are applied, and each one that matches nothing is reported in \"warnings\". The call fails only when no operation that changes content matches.",
         "type": "array",
         "maxItems": 100,
         "items": {
