@@ -7891,7 +7891,8 @@
                     "type": "string"
                   },
                   "page_size": {
-                    "type": "number"
+                    "type": "integer",
+                    "minimum": 1
                   },
                   "is_archived": {
                     "description": "Whether to return archived pages. When omitted or false, returns non-archived pages. When true, returns archived pages.",

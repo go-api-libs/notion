@@ -15168,9 +15168,9 @@ type PluginListResultsItem struct {
 
 // PostDatabaseQuery defines a model
 type PostDatabaseQuery struct {
-	Sorts       Sorts    `json:"sorts,omitzero"`
-	StartCursor string   `json:"start_cursor,omitzero"`
-	PageSize    *float64 `json:"page_size,omitzero"`
+	Sorts       Sorts  `json:"sorts,omitzero"`
+	StartCursor string `json:"start_cursor,omitzero"`
+	PageSize    int    `json:"page_size,omitzero"`
 	// Whether to return archived pages. When omitted or false, returns non-archived pages. When true, returns archived pages.
 	IsArchived *bool `json:"is_archived,omitzero"`
 	// Optionally filter the results to only include pages or data sources. Regular, non-wiki databases only support page children. The default behavior is no result type filtering, in other words, returning both pages and data sources for wikis.

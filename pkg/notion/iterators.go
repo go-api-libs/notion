@@ -14,8 +14,8 @@ const maxPageSize = 100
 func (c *Client) PostDatabaseQueryAll(
 	ctx context.Context, dataSourceID IDRequest, params *PostDatabaseQueryParams, body PostDatabaseQuery,
 ) iter.Seq2[PageOrDataSource, error] {
-	if body.PageSize == nil {
-		body.PageSize = new(float64(maxPageSize))
+	if body.PageSize == 0 {
+		body.PageSize = maxPageSize
 	}
 
 	return all(func(cursor string) ([]PageOrDataSource, string, bool, error) {

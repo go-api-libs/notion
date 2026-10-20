@@ -13539,7 +13539,8 @@
             "type": "string"
           },
           "page_size": {
-            "type": "number",
+            "type": "integer",
+            "minimum": 1,
             "example": 3
           },
           "is_archived": {
