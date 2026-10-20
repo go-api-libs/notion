@@ -6859,6 +6859,8 @@ type CreateDatabase struct {
 	Icon PageIconRequest `json:"icon,omitzero"`
 	// The cover image for the database.
 	Cover PageCoverRequest `json:"cover,omitzero"`
+	// Whether to show the data source title above the database's views. Matches the Show data source title toggle in the Notion app. Defaults to true. Full-page databases with one data source don't show this title.
+	ShowDataSourceTitle *bool `json:"show_data_source_title,omitzero"`
 }
 
 // Create a typed database with Notion's canonical schema. One of `tasks`, `projects`, or `skills`. Cannot be combined with `initial_data_source`. When `title` is omitted, the database is named after the type.
@@ -6886,6 +6888,8 @@ type CreateDatabaseForViewRequest struct {
 	Parent CreateDatabaseParentAllOfPageID `json:"parent"`
 	// Where to place the new database block within the parent page. Defaults to appending at the end.
 	Position CreateDatabaseForViewRequestPosition `json:"position,omitzero"`
+	// Whether to show the data source title above the new linked database's views. Defaults to true.
+	ShowDataSourceTitle *bool `json:"show_data_source_title,omitzero"`
 }
 
 // Where to place the new database block within the parent page. Defaults to appending at the end.
@@ -7922,6 +7926,8 @@ type Database struct {
 	InTrash bool `json:"in_trash"`
 	// Whether the database is locked from editing in the Notion app UI.
 	IsLocked bool `json:"is_locked"`
+	// Whether the data source title is shown above the database's views, matching the Show data source title toggle in the Notion app. Full-page databases with one data source don't show this title even when this is `true`.
+	ShowDataSourceTitle *bool `json:"show_data_source_title,omitzero"`
 	// The time when the database was created.
 	CreatedTime time.Time `json:"created_time"`
 	// The time when the database was last edited.
@@ -27497,6 +27503,8 @@ type UpdateDatabase struct {
 	InTrash *bool `json:"in_trash,omitzero"`
 	// Whether the database should be locked from editing in the Notion app UI. If not provided, the locked state will not be updated.
 	IsLocked *bool `json:"is_locked,omitzero"`
+	// Whether to show the data source title above the database's views. Matches the Show data source title toggle in the Notion app. If not provided, the setting will not be updated.
+	ShowDataSourceTitle *bool `json:"show_data_source_title,omitzero"`
 }
 
 // UpdateEmbedFileUploadRequest defines a model

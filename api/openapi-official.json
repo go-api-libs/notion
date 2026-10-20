@@ -8846,6 +8846,10 @@
                   "is_locked": {
                     "description": "Whether the database should be locked from editing in the Notion app UI. If not provided, the locked state will not be updated.",
                     "type": "boolean"
+                  },
+                  "show_data_source_title": {
+                    "description": "Whether to show the data source title above the database's views. Matches the Show data source title toggle in the Notion app. If not provided, the setting will not be updated.",
+                    "type": "boolean"
                   }
                 }
               }
@@ -9116,6 +9120,10 @@
                   "cover": {
                     "description": "The cover image for the database.",
                     "$ref": "#/components/schemas/pageCoverRequest"
+                  },
+                  "show_data_source_title": {
+                    "description": "Whether to show the data source title above the database's views. Matches the Show data source title toggle in the Notion app. Defaults to true. Full-page databases with one data source don't show this title.",
+                    "type": "boolean"
                   }
                 },
                 "required": [
@@ -36620,6 +36628,10 @@
               "type",
               "block_id"
             ]
+          },
+          "show_data_source_title": {
+            "description": "Whether to show the data source title above the new linked database's views. Defaults to true.",
+            "type": "boolean"
           }
         },
         "required": [
@@ -37908,6 +37920,10 @@
             "description": "Whether the database is locked from editing in the Notion app UI.",
             "type": "boolean"
           },
+          "show_data_source_title": {
+            "description": "Whether the data source title is shown above the database's views, matching the Show data source title toggle in the Notion app. Full-page databases with one data source don't show this title even when this is `true`.",
+            "type": "boolean"
+          },
           "created_time": {
             "description": "The time when the database was created.",
             "type": "string",
@@ -37974,6 +37990,7 @@
           "database_type",
           "in_trash",
           "is_locked",
+          "show_data_source_title",
           "created_time",
           "last_edited_time",
           "data_sources",
