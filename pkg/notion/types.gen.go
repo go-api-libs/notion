@@ -24114,6 +24114,8 @@ func (e Status) Valid() bool {
 
 // StatusDatabasePropertyConfigResponseStatus defines a model
 type StatusDatabasePropertyConfigResponseStatus struct {
+	// The name of the configured default status option, or null when no default is configured. Read-only.
+	DefaultOption string `json:"default_option,omitzero"`
 	// The options for the status property.
 	Options []SelectProperty `json:"options"`
 	// The groups for the status property.

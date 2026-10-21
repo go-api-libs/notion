@@ -48390,6 +48390,17 @@
           "status": {
             "type": "object",
             "properties": {
+              "default_option": {
+                "description": "The name of the configured default status option, or null when no default is configured. Read-only.",
+                "oneOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
               "options": {
                 "description": "The options for the status property.",
                 "type": "array",
@@ -48437,6 +48448,7 @@
               }
             },
             "required": [
+              "default_option",
               "options",
               "groups"
             ],
