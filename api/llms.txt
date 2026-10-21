@@ -2,6 +2,7 @@
 
 - [Overview](https://developers.notion.com/guides/get-started/overview.md): Discover what Notion connections are, when to use each type, and what you can build.
 - [API quickstart](https://developers.notion.com/guides/get-started/quick-start.md): Create a page in your Notion workspace with a personal access token and a single API request.
+- [Developer tools](https://developers.notion.com/guides/get-started/developer-tools.md): Turn on developer features in Notion and customize the Developer section in your sidebar.
 - [Personal access tokens](https://developers.notion.com/guides/get-started/personal-access-tokens.md): Create and use personal access tokens for user-scoped API and Workers access.
 - [Internal connections](https://developers.notion.com/guides/get-started/internal-connections.md): Learn how internal connections work, how permissions are managed, and how to create one.
 - [Public connections](https://developers.notion.com/guides/get-started/public-connections.md): Learn how public connections work, how users authorize them, and how to create one.
