@@ -28113,6 +28113,22 @@ type UploadFile struct {
 	PartNumber string `json:"part_number,omitzero"`
 }
 
+// UploadSkill defines a model
+type UploadSkill struct {
+	// The skill directory as a gzip-compressed tar archive (maximum 20 MiB).
+	File struct{} `json:"file"`
+}
+
+// UploadSkillOk defines a model
+type UploadSkillOk struct {
+	// Import committed.
+	Status string `json:"status"`
+	// Updated skill page.
+	PageID uuid.UUID `json:"page_id"`
+	// Content version of the uploaded skill. Matches `version_id` from GET /v1/ai/skills/{id} until the skill changes.
+	VersionID string `json:"version_id"`
+}
+
 // UserList defines a model
 type UserList struct {
 	Type       string               `json:"type"`

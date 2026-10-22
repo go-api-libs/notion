@@ -21788,6 +21788,351 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Revo
 	}
 }
 
+// Upload a skill
+//
+//	POST /ai/skills/{id}/upload
+func (c *Client) UploadSkill(ctx context.Context, id IDRequest, body UploadSkill) (*UploadSkillOk, error) {
+	return c.UploadSkillWithResult[UploadSkillOk](ctx, id, body)
+}
+
+// Upload a skill
+// You can define a custom result to unmarshal the response into.
+//
+//	POST /ai/skills/{id}/upload
+func (c *Client) UploadSkillWithResult[R any](ctx context.Context, id IDRequest, body UploadSkill) (*R, error) {
+	if c.bearer == "" {
+		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
+	}
+
+	u := c.baseURL.JoinPath("ai", "skills", string(id), "upload")
+	pr, pw := io.Pipe()
+	req := (&http.Request{
+		Header: http.Header{
+			"Authorization":  []string{c.bearer},
+			"Notion-Version": []string{"2026-03-11"},
+			"User-Agent":     []string{c.userAgent},
+			"Content-Type":   []string{"multipart/form-data"},
+		},
+		Host:          u.Host,
+		Method:        http.MethodPost,
+		Proto:         "HTTP/1.1",
+		ProtoMajor:    1,
+		ProtoMinor:    1,
+		URL:           u,
+		Body:          pr,
+		ContentLength: -1,
+	}).WithContext(ctx)
+
+	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
+	defer pr.Close()
+
+	rsp, ia, err := c.do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer rsp.Body.Close()
+
+	switch rsp.StatusCode {
+	case http.StatusOK:
+		// OK
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out R
+
+			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
+			opts := jsonOptsLenient
+			if _, ok := any(&out).(*UploadSkillOk); ok {
+				opts = jsonOpts
+			}
+
+			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+				if ia == nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if kerr := c.keep(ia); kerr != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
+				}
+
+				out = *new(R)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+			}
+
+			return &out, nil
+		default:
+			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
+		}
+	case http.StatusBadRequest:
+		// Bad Request
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out Error
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if ia == nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if kerr := c.keep(ia); kerr != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+			}
+
+			return nil, api.NewErrCustom(rsp, &out)
+		default:
+			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
+		}
+	case http.StatusUnauthorized:
+		// Unauthorized
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out Error
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if ia == nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if kerr := c.keep(ia); kerr != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+			}
+
+			return nil, api.NewErrCustom(rsp, &out)
+		default:
+			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
+		}
+	case http.StatusForbidden:
+		// Forbidden
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out Error
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if ia == nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if kerr := c.keep(ia); kerr != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+			}
+
+			return nil, api.NewErrCustom(rsp, &out)
+		default:
+			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
+		}
+	case http.StatusNotFound:
+		// Not Found
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out Error
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if ia == nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if kerr := c.keep(ia); kerr != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+			}
+
+			return nil, api.NewErrCustom(rsp, &out)
+		default:
+			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
+		}
+	case http.StatusNotAcceptable:
+		// Not Acceptable
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out Error
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if ia == nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if kerr := c.keep(ia); kerr != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+			}
+
+			return nil, api.NewErrCustom(rsp, &out)
+		default:
+			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
+		}
+	case http.StatusConflict:
+		// Conflict
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out Error
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if ia == nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if kerr := c.keep(ia); kerr != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+			}
+
+			return nil, api.NewErrCustom(rsp, &out)
+		default:
+			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
+		}
+	case http.StatusTooManyRequests:
+		// Too Many Requests
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out Error
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if ia == nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if kerr := c.keep(ia); kerr != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+			}
+
+			return nil, api.NewErrCustom(rsp, &out)
+		default:
+			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
+		}
+	case http.StatusInternalServerError:
+		// Internal Server Error
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out Error
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if ia == nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if kerr := c.keep(ia); kerr != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+			}
+
+			return nil, api.NewErrCustom(rsp, &out)
+		default:
+			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
+		}
+	case http.StatusServiceUnavailable:
+		// Service Unavailable
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out Error
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if ia == nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if kerr := c.keep(ia); kerr != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+			}
+
+			return nil, api.NewErrCustom(rsp, &out)
+		default:
+			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
+		}
+	case http.StatusGatewayTimeout:
+		// Gateway Timeout
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out Error
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if ia == nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if kerr := c.keep(ia); kerr != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+			}
+
+			return nil, api.NewErrCustom(rsp, &out)
+		default:
+			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
+		}
+	case 529:
+		// The Service Is Overloaded
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out Error
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if ia == nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+
+				if kerr := c.keep(ia); kerr != nil {
+					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
+				}
+
+				out = *new(Error)
+				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
+					return nil, api.WrapDecodingError(rsp, err)
+				}
+			}
+
+			return nil, api.NewErrCustom(rsp, &out)
+		default:
+			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
+		}
+	default:
+		return nil, c.failed(ia, api.NewErrUnknownStatusCode(rsp))
+	}
+}
+
 // do sends req and, in debug mode, records the call, for [Client.keep] to add should the client not decode the
 // response.
 func (c *Client) do(req *http.Request) (*http.Response, *cassette.Interaction, error) {

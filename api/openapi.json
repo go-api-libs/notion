@@ -4219,6 +4219,75 @@
           "https://developers.notion.com/guides/get-started/authorization"
         ]
       }
+    },
+    "/ai/skills/{id}/upload": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/id3"
+        },
+        {
+          "$ref": "#/components/parameters/notionVersion"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Agent Skills"
+        ],
+        "summary": "Upload a skill",
+        "operationId": "upload-skill",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UploadSkill"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UploadSkillOk"
+          },
+          "400": {
+            "$ref": "#/components/responses/UploadSkillBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/UploadSkillUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/UploadSkillForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/UploadSkillNotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/UploadSkillNotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/UploadSkillConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/UploadSkillTooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/UploadSkillInternalServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/UploadSkillServiceUnavailable"
+          },
+          "504": {
+            "$ref": "#/components/responses/UploadSkillGatewayTimeout"
+          },
+          "529": {
+            "$ref": "#/components/responses/UploadSkillTheServiceIsOverloaded"
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "javascript",
+            "label": "TypeScript SDK",
+            "source": "import { Client } from \"@notionhq/client\"\n\nconst notion = new Client({\n  auth: process.env.NOTION_API_KEY,\n  notionVersion: \"2026-03-11\"\n})\n\nimport { readFile } from \"fs/promises\"\n\nconst skillId = \"b55c9c91-384d-452b-81db-d1ef79372b75\"\nconst response = await notion.request({\n  method: \"post\",\n  path: \"ai/skills/\" + encodeURIComponent(skillId) + \"/upload\",\n  formDataParams: {\n    file: {\n      filename: \"skill.tar.gz\",\n      data: new Blob([await readFile(\"./skill.tar.gz\")], {\n        type: \"application/gzip\"\n      })\n    }\n  }\n})"
+          }
+        ],
+        "x-notion-docs-ref": "https://developers.notion.com/reference/agent-skills/upload-skill",
+        "x-notion-docs-guides": [
+          "https://developers.notion.com/guides/agent-skills/overview"
+        ]
+      }
     }
   },
   "webhooks": {
@@ -21569,6 +21638,44 @@
         "required": [
           "file"
         ]
+      },
+      "UploadSkill": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "description": "The skill directory as a gzip-compressed tar archive (maximum 20 MiB).",
+            "type": "object"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "additionalProperties": false
+      },
+      "UploadSkillOk": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "description": "Import committed.",
+            "type": "string",
+            "const": "completed"
+          },
+          "page_id": {
+            "description": "Updated skill page.",
+            "type": "string",
+            "format": "uuid"
+          },
+          "version_id": {
+            "description": "Content version of the uploaded skill. Matches `version_id` from GET /v1/ai/skills/{id} until the skill changes.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "page_id",
+          "version_id"
+        ],
+        "additionalProperties": false
       },
       "UserList": {
         "title": "User",
@@ -42166,6 +42273,126 @@
             }
           }
         }
+      },
+      "UploadSkillBadRequest": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UploadSkillConflict": {
+        "description": "Conflict",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UploadSkillForbidden": {
+        "description": "Forbidden",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UploadSkillGatewayTimeout": {
+        "description": "Gateway Timeout",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UploadSkillInternalServerError": {
+        "description": "Internal Server Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UploadSkillNotAcceptable": {
+        "description": "Not Acceptable",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UploadSkillNotFound": {
+        "description": "Not Found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UploadSkillOk": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UploadSkillOk"
+            }
+          }
+        }
+      },
+      "UploadSkillServiceUnavailable": {
+        "description": "Service Unavailable",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UploadSkillTheServiceIsOverloaded": {
+        "description": "The Service Is Overloaded",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UploadSkillTooManyRequests": {
+        "description": "Too Many Requests",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UploadSkillUnauthorized": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
       }
     },
     "parameters": {
@@ -42360,6 +42587,15 @@
         "required": true,
         "schema": {
           "description": "Identifier for a Notion skill page.",
+          "$ref": "#/components/schemas/idRequest"
+        }
+      },
+      "id3": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "description": "Target page in a Skills database. Create a new page first to import a new skill.",
           "$ref": "#/components/schemas/idRequest"
         }
       },
@@ -42979,6 +43215,16 @@
           "multipart/form-data": {
             "schema": {
               "$ref": "#/components/schemas/UploadFile"
+            }
+          }
+        }
+      },
+      "UploadSkill": {
+        "required": true,
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "$ref": "#/components/schemas/UploadSkill"
             }
           }
         }

@@ -13,7 +13,7 @@
 - [Overview](https://developers.notion.com/guides/notion-agent-apis/overview.md): Power apps and integrations with Custom Agents.
 - [Quickstart](https://developers.notion.com/guides/notion-agent-apis/quickstart.md): Pick a Custom Agent, start a chat, and read its reply through the API.
 - [Upgrading to public beta](https://developers.notion.com/guides/notion-agent-apis/upgrading-to-public-beta.md): Migrate your private alpha integration to the public beta.
-- [Agent Skills API](https://developers.notion.com/guides/agent-skills/overview.md): Learn how to download AI skills stored in Notion.
+- [Agent Skills API](https://developers.notion.com/guides/agent-skills/overview.md): Learn how to download and upload AI skills stored in Notion.
 - [Notion MCP](https://developers.notion.com/guides/mcp/overview.md): Learn how MCP clients connect to your Notion workspace.
 - [Common MCP clients](https://developers.notion.com/guides/mcp/common-mcp-clients.md): Find setup documentation for MCP clients that can connect to Notion MCP.
 - [Connect to Notion MCP](https://developers.notion.com/guides/mcp/get-started-with-mcp.md): Connect an MCP client to your Notion workspace.
@@ -159,6 +159,7 @@
 - [List plugins](https://developers.notion.com/reference/agent-skills/list-skills-plugins.md): List the plugins available to your connection.
 - [Get plugin](https://developers.notion.com/reference/agent-skills/get-plugin-directory.md): Download a plugin directory containing skills and supporting files.
 - [Get skill](https://developers.notion.com/reference/agent-skills/get-skill-directory.md): Download a skill directory containing its instructions and supporting files.
+- [Upload a skill](https://developers.notion.com/reference/agent-skills/upload-skill.md): Upload a skill directory archive to a skill page in one request.
 - [Page created](https://developers.notion.com/reference/webhooks/page-created.md): Webhook event for page created in a workspace
 - [Page content updated](https://developers.notion.com/reference/webhooks/page-content-updated.md): Webhook event for page content updated in a workspace
 - [Page properties updated](https://developers.notion.com/reference/webhooks/page-properties-updated.md): Webhook event for page properties updated in a workspace
