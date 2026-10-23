@@ -29,6 +29,8 @@ var jsonOpts = json.JoinOptions(
 	)),
 	json.WithUnmarshalers(json.JoinUnmarshalers(
 		json.UnmarshalFromFunc(jsonutil.URLUnmarshal),
+		json.UnmarshalFromFunc(jsonutil.DateUnmarshalEmptyAsZero),
+		json.UnmarshalFromFunc(jsonutil.TimeUnmarshalEmptyAsZero),
 	)),
 )
 
