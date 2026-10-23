@@ -11845,6 +11845,561 @@
         ],
         "additionalProperties": false
       },
+      "MeetingNotesPropertyFilterFilter": {
+        "description": "The comparison to apply. Use the arm matching the property's type.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf0"
+          },
+          {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf1"
+          },
+          {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf2"
+          },
+          {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf3"
+          },
+          {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOperator"
+          }
+        ]
+      },
+      "MeetingNotesPropertyFilterFilterOneOf0": {
+        "type": "object",
+        "properties": {
+          "operator": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf0Operator"
+          },
+          "value": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf0Value"
+          }
+        },
+        "required": [
+          "operator",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOneOf0Operator": {
+        "description": "How to compare the text.",
+        "type": "string",
+        "enum": [
+          "string_is",
+          "string_is_not",
+          "string_contains",
+          "string_does_not_contain",
+          "string_starts_with",
+          "string_ends_with"
+        ]
+      },
+      "MeetingNotesPropertyFilterFilterOneOf0Value": {
+        "description": "The text to compare against.",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `exact`",
+            "type": "string",
+            "const": "exact"
+          },
+          "value": {
+            "description": "The literal text the operator compares against.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOneOf1": {
+        "type": "object",
+        "properties": {
+          "operator": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf1Operator"
+          },
+          "value": {
+            "description": "The people to compare against.",
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf1ValueItem"
+            }
+          }
+        },
+        "required": [
+          "operator",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOneOf1Operator": {
+        "description": "Whether the property must contain the people listed.",
+        "type": "string",
+        "enum": [
+          "person_contains",
+          "person_does_not_contain"
+        ]
+      },
+      "MeetingNotesPropertyFilterFilterOneOf1ValueItem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf1ValueItemExact"
+          },
+          {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative"
+          }
+        ]
+      },
+      "MeetingNotesPropertyFilterFilterOneOf1ValueItemExact": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `exact`",
+            "type": "string",
+            "const": "exact"
+          },
+          "value": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf1ValueItemExactValue"
+          }
+        },
+        "required": [
+          "type",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOneOf1ValueItemExactValue": {
+        "description": "Pointer to the Notion user to match.",
+        "type": "object",
+        "properties": {
+          "table": {
+            "description": "Always `notion_user`",
+            "type": "string",
+            "const": "notion_user"
+          },
+          "id": {
+            "description": "The user's ID, as a UUID or the `user://<uuid>` form returned by user search.",
+            "type": "string",
+            "examples": [
+              "3f2b25f3-0a52-4a90-8f0d-5a3f0e6c1d2e",
+              "user://3f2b25f3-0a52-4a90-8f0d-5a3f0e6c1d2e"
+            ]
+          }
+        },
+        "required": [
+          "table",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `relative`",
+            "type": "string",
+            "const": "relative"
+          },
+          "value": {
+            "description": "Always `me`",
+            "type": "string",
+            "const": "me"
+          }
+        },
+        "required": [
+          "type",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOneOf2": {
+        "type": "object",
+        "properties": {
+          "operator": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf2Operator"
+          },
+          "value": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf2Value"
+          },
+          "use_end": {
+            "description": "Compare against the end of a date range rather than its start.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "operator",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOneOf2Operator": {
+        "description": "How to compare the date.",
+        "type": "string",
+        "enum": [
+          "date_is",
+          "date_is_before",
+          "date_is_after",
+          "date_is_on_or_before",
+          "date_is_on_or_after"
+        ]
+      },
+      "MeetingNotesPropertyFilterFilterOneOf2Value": {
+        "description": "The date to compare against.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf2ValueRelative"
+          },
+          {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf2ValueExact"
+          }
+        ]
+      },
+      "MeetingNotesPropertyFilterFilterOneOf2ValueExact": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `exact`",
+            "type": "string",
+            "const": "exact"
+          },
+          "value": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf2ValueExactValue"
+          }
+        },
+        "required": [
+          "type",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOneOf2ValueExactValue": {
+        "description": "Use the is_empty operator to match an unset date.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate"
+          },
+          {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDatetime"
+          }
+        ]
+      },
+      "MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `date`",
+            "type": "string",
+            "const": "date"
+          },
+          "start_date": {
+            "description": "The calendar date as an ISO 8601 date string.",
+            "type": "string",
+            "format": "date",
+            "examples": [
+              "1990-12-28"
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "start_date"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDatetime": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `datetime`",
+            "type": "string",
+            "const": "datetime"
+          },
+          "start_date": {
+            "description": "The calendar date as an ISO 8601 date string.",
+            "type": "string",
+            "format": "date",
+            "examples": [
+              "1990-12-28"
+            ]
+          },
+          "start_time": {
+            "description": "The time of day in 24-hour HH:MM format.",
+            "type": "string",
+            "examples": [
+              "09:30"
+            ]
+          },
+          "time_zone": {
+            "description": "The IANA time zone name the time is interpreted in.",
+            "type": "string",
+            "examples": [
+              "America/Los_Angeles"
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "start_date",
+          "start_time",
+          "time_zone"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOneOf2ValueRelative": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `relative`",
+            "type": "string",
+            "const": "relative"
+          },
+          "value": {
+            "description": "One of: `today`, `tomorrow`, `yesterday`, `one_week_ago`, `one_week_from_now`, `one_month_ago`, `one_month_from_now`",
+            "$ref": "#/components/schemas/relativeDateValue"
+          }
+        },
+        "required": [
+          "type",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOneOf3": {
+        "type": "object",
+        "properties": {
+          "operator": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf3Operator"
+          },
+          "value": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf3Value"
+          },
+          "use_end": {
+            "description": "Compare against the end of a date range rather than its start.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "operator",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOneOf3Operator": {
+        "description": "How to compare the date against the range.",
+        "type": "string",
+        "enum": [
+          "date_is_within",
+          "date_is_relative_to"
+        ]
+      },
+      "MeetingNotesPropertyFilterFilterOneOf3Value": {
+        "description": "The range to compare against.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf3ValueCustom"
+          },
+          {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding"
+          },
+          {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2"
+          },
+          {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf3ValueExact"
+          }
+        ]
+      },
+      "MeetingNotesPropertyFilterFilterOneOf3ValueCustom": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `relative`",
+            "type": "string",
+            "const": "relative"
+          },
+          "value": {
+            "description": "Always `custom`",
+            "type": "string",
+            "const": "custom"
+          },
+          "direction": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirection"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterOneOfValueCustomUnit"
+          },
+          "count": {
+            "description": "How many units wide the window is.",
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "type",
+          "value",
+          "direction",
+          "unit",
+          "count"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirection": {
+        "description": "Whether the window runs backwards or forwards from now.",
+        "type": "string",
+        "enum": [
+          "past",
+          "future"
+        ]
+      },
+      "MeetingNotesPropertyFilterFilterOneOf3ValueExact": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `exact`",
+            "type": "string",
+            "const": "exact"
+          },
+          "value": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf3ValueExactValue"
+          }
+        },
+        "required": [
+          "type",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOneOf3ValueExactValue": {
+        "description": "Use the is_empty operator to match an unset date.",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `daterange`",
+            "type": "string",
+            "const": "daterange"
+          },
+          "start_date": {
+            "description": "Inclusive start of the range as an ISO 8601 date string, if any.",
+            "type": "string",
+            "format": "date",
+            "examples": [
+              "1990-12-28"
+            ]
+          },
+          "end_date": {
+            "description": "Inclusive end of the range as an ISO 8601 date string, if any.",
+            "type": "string",
+            "format": "date",
+            "examples": [
+              "1991-01-04"
+            ]
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `relative`",
+            "type": "string",
+            "const": "relative"
+          },
+          "value": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2Value"
+          }
+        },
+        "required": [
+          "type",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2Value": {
+        "description": "One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`",
+        "type": "string",
+        "enum": [
+          "this_week",
+          "the_past_week",
+          "the_past_month",
+          "the_past_year",
+          "the_next_week",
+          "the_next_month",
+          "the_next_year"
+        ]
+      },
+      "MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `relative`",
+            "type": "string",
+            "const": "relative"
+          },
+          "value": {
+            "description": "Always `surrounding`",
+            "type": "string",
+            "const": "surrounding"
+          },
+          "unit": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterOneOfValueCustomUnit"
+          }
+        },
+        "required": [
+          "type",
+          "value",
+          "unit"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOperator": {
+        "type": "object",
+        "properties": {
+          "operator": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOperatorOperator"
+          }
+        },
+        "required": [
+          "operator"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterOperatorOperator": {
+        "description": "Whether the property must be empty or set.",
+        "type": "string",
+        "enum": [
+          "is_empty",
+          "is_not_empty"
+        ]
+      },
+      "MeetingNotesPropertyFilterOneOfValueCustomUnit": {
+        "description": "One of: `year`, `month`, `week`, `day`",
+        "type": "string",
+        "enum": [
+          "year",
+          "month",
+          "week",
+          "day"
+        ]
+      },
+      "MeetingNotesPropertyFilterProperty": {
+        "description": "Which meeting-note property to filter on. Prefer the short names; the schema URI form is accepted for compatibility.",
+        "type": "string",
+        "enum": [
+          "title",
+          "attendees",
+          "created_time",
+          "created_by",
+          "last_edited_time",
+          "last_edited_by",
+          "notion://meeting_notes/attendees"
+        ]
+      },
       "MentionRichTextItemMentionPage": {
         "type": "object",
         "properties": {
@@ -15250,28 +15805,12 @@
       "QueryMeetingNotesFilterFiltersItem": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOf"
+            "$ref": "#/components/schemas/meetingNotesPropertyFilter"
           },
           {
             "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOf1"
           }
         ]
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOf": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfProperty"
-          },
-          "filter": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilter"
-          }
-        },
-        "required": [
-          "property",
-          "filter"
-        ],
-        "additionalProperties": false
       },
       "QueryMeetingNotesFilterFiltersItemOneOf1": {
         "type": "object",
@@ -15281,7 +15820,12 @@
             "$ref": "#/components/schemas/QueryMeetingNotesFilterOperator"
           },
           "filters": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOf1Filters"
+            "description": "The conditions in this group. A group with no conditions matches nothing, so send at least one.",
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/meetingNotesPropertyFilter"
+            }
           }
         },
         "required": [
@@ -15289,569 +15833,6 @@
           "filters"
         ],
         "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOf1Filters": {
-        "description": "The conditions in this group. A group with no conditions matches nothing, so send at least one.",
-        "type": "array",
-        "maxItems": 100,
-        "items": {
-          "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOf"
-        }
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilter": {
-        "description": "The comparison to apply. Use the arm matching the property's type.",
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf"
-          },
-          {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2"
-          },
-          {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3"
-          },
-          {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4"
-          },
-          {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOperator"
-          }
-        ]
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf": {
-        "type": "object",
-        "properties": {
-          "operator": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator"
-          },
-          "value": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue"
-          }
-        },
-        "required": [
-          "operator",
-          "value"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2": {
-        "type": "object",
-        "properties": {
-          "operator": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator2"
-          },
-          "value": {
-            "description": "The people to compare against.",
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItem"
-            }
-          }
-        },
-        "required": [
-          "operator",
-          "value"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3": {
-        "type": "object",
-        "properties": {
-          "operator": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3"
-          },
-          "value": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue2"
-          },
-          "use_end": {
-            "description": "Compare against the end of a date range rather than its start.",
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "operator",
-          "value"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4": {
-        "type": "object",
-        "properties": {
-          "operator": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator4"
-          },
-          "value": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue3"
-          },
-          "use_end": {
-            "description": "Compare against the end of a date range rather than its start.",
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "operator",
-          "value"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator": {
-        "description": "How to compare the text.",
-        "type": "string",
-        "enum": [
-          "string_is",
-          "string_is_not",
-          "string_contains",
-          "string_does_not_contain",
-          "string_starts_with",
-          "string_ends_with"
-        ]
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator2": {
-        "description": "Whether the property must contain the people listed.",
-        "type": "string",
-        "enum": [
-          "person_contains",
-          "person_does_not_contain"
-        ]
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3": {
-        "description": "How to compare the date.",
-        "type": "string",
-        "enum": [
-          "date_is",
-          "date_is_before",
-          "date_is_after",
-          "date_is_on_or_before",
-          "date_is_on_or_after"
-        ]
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator4": {
-        "description": "How to compare the date against the range.",
-        "type": "string",
-        "enum": [
-          "date_is_within",
-          "date_is_relative_to"
-        ]
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue": {
-        "description": "The text to compare against.",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `exact`",
-            "type": "string",
-            "const": "exact"
-          },
-          "value": {
-            "description": "The literal text the operator compares against.",
-            "type": "string"
-          }
-        },
-        "required": [
-          "type",
-          "value"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue2": {
-        "description": "The date to compare against.",
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative"
-          },
-          {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact"
-          }
-        ]
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue3": {
-        "description": "The range to compare against.",
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom"
-          },
-          {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding"
-          },
-          {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf"
-          },
-          {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2"
-          }
-        ]
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `relative`",
-            "type": "string",
-            "const": "relative"
-          },
-          "value": {
-            "description": "Always `custom`",
-            "type": "string",
-            "const": "custom"
-          },
-          "direction": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirection"
-          },
-          "unit": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit"
-          },
-          "count": {
-            "description": "How many units wide the window is.",
-            "type": "integer",
-            "minimum": 1
-          }
-        },
-        "required": [
-          "type",
-          "value",
-          "direction",
-          "unit",
-          "count"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirection": {
-        "description": "Whether the window runs backwards or forwards from now.",
-        "type": "string",
-        "enum": [
-          "past",
-          "future"
-        ]
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit": {
-        "description": "One of: `year`, `month`, `week`, `day`",
-        "type": "string",
-        "enum": [
-          "year",
-          "month",
-          "week",
-          "day"
-        ]
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `exact`",
-            "type": "string",
-            "const": "exact"
-          },
-          "value": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue"
-          }
-        },
-        "required": [
-          "type",
-          "value"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `exact`",
-            "type": "string",
-            "const": "exact"
-          },
-          "value": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue2"
-          }
-        },
-        "required": [
-          "type",
-          "value"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue": {
-        "description": "Use the is_empty operator to match an unset date.",
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate"
-          },
-          {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime"
-          }
-        ]
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue2": {
-        "description": "Use the is_empty operator to match an unset date.",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `daterange`",
-            "type": "string",
-            "const": "daterange"
-          },
-          "start_date": {
-            "description": "Inclusive start of the range as an ISO 8601 date string, if any.",
-            "type": "string",
-            "format": "date",
-            "examples": [
-              "1990-12-28"
-            ]
-          },
-          "end_date": {
-            "description": "Inclusive end of the range as an ISO 8601 date string, if any.",
-            "type": "string",
-            "format": "date",
-            "examples": [
-              "1991-01-04"
-            ]
-          }
-        },
-        "required": [
-          "type"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `date`",
-            "type": "string",
-            "const": "date"
-          },
-          "start_date": {
-            "description": "The calendar date as an ISO 8601 date string.",
-            "type": "string",
-            "format": "date",
-            "examples": [
-              "1990-12-28"
-            ]
-          }
-        },
-        "required": [
-          "type",
-          "start_date"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `datetime`",
-            "type": "string",
-            "const": "datetime"
-          },
-          "start_date": {
-            "description": "The calendar date as an ISO 8601 date string.",
-            "type": "string",
-            "format": "date",
-            "examples": [
-              "1990-12-28"
-            ]
-          },
-          "start_time": {
-            "description": "The time of day in 24-hour HH:MM format.",
-            "type": "string",
-            "examples": [
-              "09:30"
-            ]
-          },
-          "time_zone": {
-            "description": "The IANA time zone name the time is interpreted in.",
-            "type": "string",
-            "examples": [
-              "America/Los_Angeles"
-            ]
-          }
-        },
-        "required": [
-          "type",
-          "start_date",
-          "start_time",
-          "time_zone"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItem": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact"
-          },
-          {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative"
-          }
-        ]
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `exact`",
-            "type": "string",
-            "const": "exact"
-          },
-          "value": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExactValue"
-          }
-        },
-        "required": [
-          "type",
-          "value"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExactValue": {
-        "description": "Pointer to the Notion user to match.",
-        "type": "object",
-        "properties": {
-          "table": {
-            "description": "Always `notion_user`",
-            "type": "string",
-            "const": "notion_user"
-          },
-          "id": {
-            "description": "The user's ID, as a UUID or the `user://<uuid>` form returned by user search.",
-            "type": "string",
-            "examples": [
-              "3f2b25f3-0a52-4a90-8f0d-5a3f0e6c1d2e",
-              "user://3f2b25f3-0a52-4a90-8f0d-5a3f0e6c1d2e"
-            ]
-          }
-        },
-        "required": [
-          "table",
-          "id"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `relative`",
-            "type": "string",
-            "const": "relative"
-          },
-          "value": {
-            "description": "Always `me`",
-            "type": "string",
-            "const": "me"
-          }
-        },
-        "required": [
-          "type",
-          "value"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `relative`",
-            "type": "string",
-            "const": "relative"
-          },
-          "value": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue"
-          }
-        },
-        "required": [
-          "type",
-          "value"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue": {
-        "description": "One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`",
-        "type": "string",
-        "enum": [
-          "this_week",
-          "the_past_week",
-          "the_past_month",
-          "the_past_year",
-          "the_next_week",
-          "the_next_month",
-          "the_next_year"
-        ]
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `relative`",
-            "type": "string",
-            "const": "relative"
-          },
-          "value": {
-            "description": "One of: `today`, `tomorrow`, `yesterday`, `one_week_ago`, `one_week_from_now`, `one_month_ago`, `one_month_from_now`",
-            "$ref": "#/components/schemas/relativeDateValue"
-          }
-        },
-        "required": [
-          "type",
-          "value"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `relative`",
-            "type": "string",
-            "const": "relative"
-          },
-          "value": {
-            "description": "Always `surrounding`",
-            "type": "string",
-            "const": "surrounding"
-          },
-          "unit": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit"
-          }
-        },
-        "required": [
-          "type",
-          "value",
-          "unit"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOperator": {
-        "type": "object",
-        "properties": {
-          "operator": {
-            "$ref": "#/components/schemas/QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2"
-          }
-        },
-        "required": [
-          "operator"
-        ],
-        "additionalProperties": false
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2": {
-        "description": "Whether the property must be empty or set.",
-        "type": "string",
-        "enum": [
-          "is_empty",
-          "is_not_empty"
-        ]
-      },
-      "QueryMeetingNotesFilterFiltersItemOneOfProperty": {
-        "description": "Which meeting-note property to filter on. Prefer the short names; the schema URI form is accepted for compatibility.",
-        "type": "string",
-        "enum": [
-          "title",
-          "attendees",
-          "created_time",
-          "created_by",
-          "last_edited_time",
-          "last_edited_by",
-          "notion://meeting_notes/attendees"
-        ]
       },
       "QueryMeetingNotesFilterOperator": {
         "type": "string",
@@ -16032,7 +16013,7 @@
         "description": "A session event property filter, or an and/or compound filter nested up to three levels deep.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/QuerySessionsFilterID"
+            "$ref": "#/components/schemas/sessionIdFilter"
           },
           {
             "$ref": "#/components/schemas/QuerySessionEventsFilterType"
@@ -16132,7 +16113,7 @@
       "QuerySessionEventsFilterOrItem": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/QuerySessionsFilterID"
+            "$ref": "#/components/schemas/sessionIdFilter"
           },
           {
             "$ref": "#/components/schemas/QuerySessionEventsFilterType"
@@ -16184,7 +16165,7 @@
       "QuerySessionEventsFilterOrItemOrItem": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/QuerySessionsFilterID"
+            "$ref": "#/components/schemas/sessionIdFilter"
           },
           {
             "$ref": "#/components/schemas/QuerySessionEventsFilterType"
@@ -16236,7 +16217,7 @@
       "QuerySessionEventsFilterOrItemOrItemOrItem": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/QuerySessionsFilterID"
+            "$ref": "#/components/schemas/sessionIdFilter"
           },
           {
             "$ref": "#/components/schemas/QuerySessionEventsFilterType"
@@ -16405,16 +16386,16 @@
         "description": "A session property filter, or an and/or compound filter nested up to two levels deep.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/QuerySessionsFilterID"
+            "$ref": "#/components/schemas/sessionIdFilter"
           },
           {
-            "$ref": "#/components/schemas/QuerySessionsFilterAgentID"
+            "$ref": "#/components/schemas/sessionAgentIdFilter"
           },
           {
-            "$ref": "#/components/schemas/QuerySessionsFilterStatus"
+            "$ref": "#/components/schemas/sessionStatusFilter"
           },
           {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOf"
+            "$ref": "#/components/schemas/sessionTimestampFilter"
           },
           {
             "$ref": "#/components/schemas/QuerySessionsFilterAnd"
@@ -16422,30 +16403,6 @@
           {
             "$ref": "#/components/schemas/QuerySessionsFilterOr"
           }
-        ]
-      },
-      "QuerySessionsFilterAgentID": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "$ref": "#/components/schemas/QuerySessionsFilterAgentIDProperty"
-          },
-          "string": {
-            "description": "An exact string comparison.",
-            "$ref": "#/components/schemas/QueryAgentsFilterIDID"
-          }
-        },
-        "required": [
-          "property",
-          "string"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionsFilterAgentIDProperty": {
-        "description": "Filter sessions by agent_id.",
-        "type": "string",
-        "enum": [
-          "agent_id"
         ]
       },
       "QuerySessionsFilterAnd": {
@@ -16456,81 +16413,13 @@
             "type": "array",
             "maxItems": 100,
             "items": {
-              "$ref": "#/components/schemas/QuerySessionsFilterOrItem"
+              "$ref": "#/components/schemas/sessionNestedFilter"
             }
           }
         },
         "required": [
           "and"
         ],
-        "additionalProperties": false
-      },
-      "QuerySessionsFilterID": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "description": "Filter sessions by id.",
-            "$ref": "#/components/schemas/QuerySessionsFilterIDProperty"
-          },
-          "string": {
-            "description": "An exact string comparison.",
-            "$ref": "#/components/schemas/QueryAgentsFilterIDID"
-          }
-        },
-        "required": [
-          "property",
-          "string"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionsFilterIDProperty": {
-        "type": "string",
-        "enum": [
-          "id"
-        ]
-      },
-      "QuerySessionsFilterOneOf": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "description": "The session timestamp to compare.",
-            "$ref": "#/components/schemas/QuerySessionsSortsItemProperty"
-          },
-          "timestamp": {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOfTimestamp"
-          }
-        },
-        "required": [
-          "property",
-          "timestamp"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionsFilterOneOfTimestamp": {
-        "description": "A timestamp range.",
-        "type": "object",
-        "properties": {
-          "before": {
-            "description": "Return sessions before this time.",
-            "type": "string",
-            "format": "date-time"
-          },
-          "after": {
-            "description": "Return sessions after this time.",
-            "type": "string",
-            "format": "date-time"
-          },
-          "on_or_before": {
-            "description": "Return sessions at or before this time.",
-            "type": "string",
-            "format": "date-time"
-          },
-          "on_or_after": {
-            "description": "Return sessions at or after this time.",
-            "type": "string",
-            "format": "date-time"
-          }
-        },
         "additionalProperties": false
       },
       "QuerySessionsFilterOr": {
@@ -16541,7 +16430,7 @@
             "type": "array",
             "maxItems": 100,
             "items": {
-              "$ref": "#/components/schemas/QuerySessionsFilterOrItem"
+              "$ref": "#/components/schemas/sessionNestedFilter"
             }
           }
         },
@@ -16549,123 +16438,6 @@
           "or"
         ],
         "additionalProperties": false
-      },
-      "QuerySessionsFilterOrItem": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterID"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterAgentID"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterStatus"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOf"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterOrItemAnd"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterOrItemOr"
-          }
-        ]
-      },
-      "QuerySessionsFilterOrItemAnd": {
-        "type": "object",
-        "properties": {
-          "and": {
-            "description": "Return sessions that match every child filter.",
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/QuerySessionsFilterOrItemOrItem"
-            }
-          }
-        },
-        "required": [
-          "and"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionsFilterOrItemOr": {
-        "type": "object",
-        "properties": {
-          "or": {
-            "description": "Return sessions that match any child filter.",
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/QuerySessionsFilterOrItemOrItem"
-            }
-          }
-        },
-        "required": [
-          "or"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionsFilterOrItemOrItem": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterID"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterAgentID"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterStatus"
-          },
-          {
-            "$ref": "#/components/schemas/QuerySessionsFilterOneOf"
-          }
-        ]
-      },
-      "QuerySessionsFilterStatus": {
-        "type": "object",
-        "properties": {
-          "property": {
-            "$ref": "#/components/schemas/QuerySessionsFilterStatusProperty"
-          },
-          "status": {
-            "$ref": "#/components/schemas/QuerySessionsFilterStatus2"
-          }
-        },
-        "required": [
-          "property",
-          "status"
-        ],
-        "additionalProperties": false
-      },
-      "QuerySessionsFilterStatus2": {
-        "description": "A session status comparison.",
-        "type": "object",
-        "properties": {
-          "equals": {
-            "description": "Return sessions with this status.",
-            "$ref": "#/components/schemas/SessionStatus"
-          },
-          "in": {
-            "$ref": "#/components/schemas/QuerySessionsFilterStatusIn"
-          }
-        },
-        "additionalProperties": false
-      },
-      "QuerySessionsFilterStatusIn": {
-        "description": "Return sessions with any of these statuses.",
-        "type": "array",
-        "maxItems": 7,
-        "items": {
-          "$ref": "#/components/schemas/SessionStatus"
-        }
-      },
-      "QuerySessionsFilterStatusProperty": {
-        "description": "Filter sessions by status.",
-        "type": "string",
-        "enum": [
-          "status"
-        ]
       },
       "QuerySessionsSorts": {
         "description": "Ordered sort precedence. Defaults to updated_at descending.",
@@ -18385,6 +18157,13 @@
         ],
         "additionalProperties": false
       },
+      "SessionAgentIDFilterProperty": {
+        "description": "Filter sessions by agent_id.",
+        "type": "string",
+        "enum": [
+          "agent_id"
+        ]
+      },
       "SessionAgentVersion": {
         "oneOf": [
           {
@@ -18931,6 +18710,12 @@
           }
         ]
       },
+      "SessionIDFilterProperty": {
+        "type": "string",
+        "enum": [
+          "id"
+        ]
+      },
       "SessionList": {
         "type": "object",
         "properties": {
@@ -19132,6 +18917,56 @@
         ],
         "additionalProperties": false
       },
+      "SessionNestedFilterAnd": {
+        "type": "object",
+        "properties": {
+          "and": {
+            "description": "Return sessions that match every child filter.",
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/SessionNestedFilterOrItem"
+            }
+          }
+        },
+        "required": [
+          "and"
+        ],
+        "additionalProperties": false
+      },
+      "SessionNestedFilterOr": {
+        "type": "object",
+        "properties": {
+          "or": {
+            "description": "Return sessions that match any child filter.",
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/SessionNestedFilterOrItem"
+            }
+          }
+        },
+        "required": [
+          "or"
+        ],
+        "additionalProperties": false
+      },
+      "SessionNestedFilterOrItem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/sessionIdFilter"
+          },
+          {
+            "$ref": "#/components/schemas/sessionAgentIdFilter"
+          },
+          {
+            "$ref": "#/components/schemas/sessionStatusFilter"
+          },
+          {
+            "$ref": "#/components/schemas/sessionTimestampFilter"
+          }
+        ]
+      },
       "SessionRequiredActions": {
         "type": "array",
         "items": {
@@ -19200,6 +19035,62 @@
           "canceled",
           "terminated"
         ]
+      },
+      "SessionStatusFilterProperty": {
+        "description": "Filter sessions by status.",
+        "type": "string",
+        "enum": [
+          "status"
+        ]
+      },
+      "SessionStatusFilterStatus": {
+        "description": "A session status comparison.",
+        "type": "object",
+        "properties": {
+          "equals": {
+            "description": "Return sessions with this status.",
+            "$ref": "#/components/schemas/SessionStatus"
+          },
+          "in": {
+            "$ref": "#/components/schemas/SessionStatusFilterStatusIn"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SessionStatusFilterStatusIn": {
+        "description": "Return sessions with any of these statuses.",
+        "type": "array",
+        "maxItems": 7,
+        "items": {
+          "$ref": "#/components/schemas/SessionStatus"
+        }
+      },
+      "SessionTimestampFilterTimestamp": {
+        "description": "A timestamp range.",
+        "type": "object",
+        "properties": {
+          "before": {
+            "description": "Return sessions before this time.",
+            "type": "string",
+            "format": "date-time"
+          },
+          "after": {
+            "description": "Return sessions after this time.",
+            "type": "string",
+            "format": "date-time"
+          },
+          "on_or_before": {
+            "description": "Return sessions at or before this time.",
+            "type": "string",
+            "format": "date-time"
+          },
+          "on_or_after": {
+            "description": "Return sessions at or after this time.",
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
       },
       "SessionToolTypes": {
         "oneOf": [
@@ -28916,6 +28807,22 @@
           "in_trash"
         ]
       },
+      "meetingNotesPropertyFilter": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterProperty"
+          },
+          "filter": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilter"
+          }
+        },
+        "required": [
+          "property",
+          "filter"
+        ],
+        "additionalProperties": false
+      },
       "mentionRichTextItemRequest": {
         "title": "Mention",
         "type": "object",
@@ -31823,6 +31730,96 @@
         "required": [
           "type",
           "select"
+        ],
+        "additionalProperties": false
+      },
+      "sessionAgentIdFilter": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "$ref": "#/components/schemas/SessionAgentIDFilterProperty"
+          },
+          "string": {
+            "description": "An exact string comparison.",
+            "$ref": "#/components/schemas/QueryAgentsFilterIDID"
+          }
+        },
+        "required": [
+          "property",
+          "string"
+        ],
+        "additionalProperties": false
+      },
+      "sessionIdFilter": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "description": "Filter sessions by id.",
+            "$ref": "#/components/schemas/SessionIDFilterProperty"
+          },
+          "string": {
+            "description": "An exact string comparison.",
+            "$ref": "#/components/schemas/QueryAgentsFilterIDID"
+          }
+        },
+        "required": [
+          "property",
+          "string"
+        ],
+        "additionalProperties": false
+      },
+      "sessionNestedFilter": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/sessionIdFilter"
+          },
+          {
+            "$ref": "#/components/schemas/sessionAgentIdFilter"
+          },
+          {
+            "$ref": "#/components/schemas/sessionStatusFilter"
+          },
+          {
+            "$ref": "#/components/schemas/sessionTimestampFilter"
+          },
+          {
+            "$ref": "#/components/schemas/SessionNestedFilterAnd"
+          },
+          {
+            "$ref": "#/components/schemas/SessionNestedFilterOr"
+          }
+        ]
+      },
+      "sessionStatusFilter": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "$ref": "#/components/schemas/SessionStatusFilterProperty"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SessionStatusFilterStatus"
+          }
+        },
+        "required": [
+          "property",
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "sessionTimestampFilter": {
+        "type": "object",
+        "properties": {
+          "property": {
+            "description": "The session timestamp to compare.",
+            "$ref": "#/components/schemas/QuerySessionsSortsItemProperty"
+          },
+          "timestamp": {
+            "$ref": "#/components/schemas/SessionTimestampFilterTimestamp"
+          }
+        },
+        "required": [
+          "property",
+          "timestamp"
         ],
         "additionalProperties": false
       },

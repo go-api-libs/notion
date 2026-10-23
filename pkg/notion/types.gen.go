@@ -11838,6 +11838,860 @@ type MediaContentWithURLAndCaptionResponse struct {
 	Caption RichTexts `json:"caption"`
 }
 
+// MeetingNotesPropertyFilter defines a model
+type MeetingNotesPropertyFilter struct {
+	// Which meeting-note property to filter on. Prefer the short names; the schema URI form is accepted for compatibility.
+	Property MeetingNotesPropertyFilterProperty `json:"property"`
+	// The comparison to apply. Use the arm matching the property's type.
+	Filter MeetingNotesPropertyFilterFilter `json:"filter"`
+}
+
+// The comparison to apply. Use the arm matching the property's type.
+// MeetingNotesPropertyFilterFilter is an untagged oneOf union: exactly one field is set after unmarshaling.
+type MeetingNotesPropertyFilterFilter struct {
+	MeetingNotesPropertyFilterFilterOneOf0   *MeetingNotesPropertyFilterFilterOneOf0
+	MeetingNotesPropertyFilterFilterOneOf1   *MeetingNotesPropertyFilterFilterOneOf1
+	MeetingNotesPropertyFilterFilterOneOf2   *MeetingNotesPropertyFilterFilterOneOf2
+	MeetingNotesPropertyFilterFilterOneOf3   *MeetingNotesPropertyFilterFilterOneOf3
+	MeetingNotesPropertyFilterFilterOperator *MeetingNotesPropertyFilterFilterOperator
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *MeetingNotesPropertyFilterFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = MeetingNotesPropertyFilterFilter{}
+
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// a member outside its enum rules an alternative out; leniently, only while another fits
+	for _, enums := range jsonEnumPasses(strict) {
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"operator", "value"}, map[string]string{}
+			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"string_is\"", "\"string_is_not\"", "\"string_contains\"", "\"string_does_not_contain\"", "\"string_starts_with\"", "\"string_ends_with\""}})) {
+				var vv MeetingNotesPropertyFilterFilterOneOf0
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.MeetingNotesPropertyFilterFilterOneOf0 = &vv
+					matched++
+				}
+			}
+		}
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"operator", "value"}, map[string]string{}
+			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"person_contains\"", "\"person_does_not_contain\""}})) {
+				var vv MeetingNotesPropertyFilterFilterOneOf1
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.MeetingNotesPropertyFilterFilterOneOf1 = &vv
+					matched++
+				}
+			}
+		}
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"operator", "value"}, map[string]string{}
+			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"date_is\"", "\"date_is_before\"", "\"date_is_after\"", "\"date_is_on_or_before\"", "\"date_is_on_or_after\""}})) {
+				var vv MeetingNotesPropertyFilterFilterOneOf2
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.MeetingNotesPropertyFilterFilterOneOf2 = &vv
+					matched++
+				}
+			}
+		}
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"operator", "value"}, map[string]string{}
+			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"date_is_within\"", "\"date_is_relative_to\""}})) {
+				var vv MeetingNotesPropertyFilterFilterOneOf3
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.MeetingNotesPropertyFilterFilterOneOf3 = &vv
+					matched++
+				}
+			}
+		}
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"operator"}, map[string]string{}
+			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"is_empty\"", "\"is_not_empty\""}})) {
+				var vv MeetingNotesPropertyFilterFilterOperator
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.MeetingNotesPropertyFilterFilterOperator = &vv
+					matched++
+				}
+			}
+		}
+
+		if matched > 0 {
+			break
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *MeetingNotesPropertyFilterFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.MeetingNotesPropertyFilterFilterOneOf0 != nil:
+		return json.MarshalEncode(enc, v.MeetingNotesPropertyFilterFilterOneOf0, jsonOptsTo(enc))
+	case v.MeetingNotesPropertyFilterFilterOneOf1 != nil:
+		return json.MarshalEncode(enc, v.MeetingNotesPropertyFilterFilterOneOf1, jsonOptsTo(enc))
+	case v.MeetingNotesPropertyFilterFilterOneOf2 != nil:
+		return json.MarshalEncode(enc, v.MeetingNotesPropertyFilterFilterOneOf2, jsonOptsTo(enc))
+	case v.MeetingNotesPropertyFilterFilterOneOf3 != nil:
+		return json.MarshalEncode(enc, v.MeetingNotesPropertyFilterFilterOneOf3, jsonOptsTo(enc))
+	case v.MeetingNotesPropertyFilterFilterOperator != nil:
+		return json.MarshalEncode(enc, v.MeetingNotesPropertyFilterFilterOperator, jsonOptsTo(enc))
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// MeetingNotesPropertyFilterFilterOneOf0 defines a model
+type MeetingNotesPropertyFilterFilterOneOf0 struct {
+	// How to compare the text.
+	Operator MeetingNotesPropertyFilterFilterOneOf0Operator `json:"operator"`
+	// The text to compare against.
+	Value MeetingNotesPropertyFilterFilterOneOf0Value `json:"value"`
+}
+
+// How to compare the text.
+type MeetingNotesPropertyFilterFilterOneOf0Operator string
+
+const (
+	MeetingNotesPropertyFilterFilterOneOf0OperatorStringIs             MeetingNotesPropertyFilterFilterOneOf0Operator = "string_is"
+	MeetingNotesPropertyFilterFilterOneOf0OperatorStringIsNot          MeetingNotesPropertyFilterFilterOneOf0Operator = "string_is_not"
+	MeetingNotesPropertyFilterFilterOneOf0OperatorStringContains       MeetingNotesPropertyFilterFilterOneOf0Operator = "string_contains"
+	MeetingNotesPropertyFilterFilterOneOf0OperatorStringDoesNotContain MeetingNotesPropertyFilterFilterOneOf0Operator = "string_does_not_contain"
+	MeetingNotesPropertyFilterFilterOneOf0OperatorStringStartsWith     MeetingNotesPropertyFilterFilterOneOf0Operator = "string_starts_with"
+	MeetingNotesPropertyFilterFilterOneOf0OperatorStringEndsWith       MeetingNotesPropertyFilterFilterOneOf0Operator = "string_ends_with"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNotesPropertyFilterFilterOneOf0Operator enum.
+func (e MeetingNotesPropertyFilterFilterOneOf0Operator) Valid() bool {
+	switch e {
+	case MeetingNotesPropertyFilterFilterOneOf0OperatorStringIs, MeetingNotesPropertyFilterFilterOneOf0OperatorStringIsNot, MeetingNotesPropertyFilterFilterOneOf0OperatorStringContains, MeetingNotesPropertyFilterFilterOneOf0OperatorStringDoesNotContain, MeetingNotesPropertyFilterFilterOneOf0OperatorStringStartsWith, MeetingNotesPropertyFilterFilterOneOf0OperatorStringEndsWith:
+		return true
+	default:
+		return false
+	}
+}
+
+// The text to compare against.
+type MeetingNotesPropertyFilterFilterOneOf0Value struct {
+	// Always `exact`
+	Type string `json:"type"`
+	// The literal text the operator compares against.
+	Value string `json:"value"`
+}
+
+// MeetingNotesPropertyFilterFilterOneOf1 defines a model
+type MeetingNotesPropertyFilterFilterOneOf1 struct {
+	// Whether the property must contain the people listed.
+	Operator MeetingNotesPropertyFilterFilterOneOf1Operator `json:"operator"`
+	// The people to compare against.
+	Value []MeetingNotesPropertyFilterFilterOneOf1ValueItem `json:"value"`
+}
+
+// Whether the property must contain the people listed.
+type MeetingNotesPropertyFilterFilterOneOf1Operator string
+
+const (
+	MeetingNotesPropertyFilterFilterOneOf1OperatorPersonContains       MeetingNotesPropertyFilterFilterOneOf1Operator = "person_contains"
+	MeetingNotesPropertyFilterFilterOneOf1OperatorPersonDoesNotContain MeetingNotesPropertyFilterFilterOneOf1Operator = "person_does_not_contain"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNotesPropertyFilterFilterOneOf1Operator enum.
+func (e MeetingNotesPropertyFilterFilterOneOf1Operator) Valid() bool {
+	switch e {
+	case MeetingNotesPropertyFilterFilterOneOf1OperatorPersonContains, MeetingNotesPropertyFilterFilterOneOf1OperatorPersonDoesNotContain:
+		return true
+	default:
+		return false
+	}
+}
+
+// MeetingNotesPropertyFilterFilterOneOf1ValueItem defines a model
+// MeetingNotesPropertyFilterFilterOneOf1ValueItem is an untagged oneOf union: exactly one field is set after unmarshaling.
+type MeetingNotesPropertyFilterFilterOneOf1ValueItem struct {
+	MeetingNotesPropertyFilterFilterOneOf1ValueItemExact    *MeetingNotesPropertyFilterFilterOneOf1ValueItemExact
+	MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative *MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
+// decodes each further member as it is read. With type first, nothing is read twice.
+func (v *MeetingNotesPropertyFilterFilterOneOf1ValueItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = MeetingNotesPropertyFilterFilterOneOf1ValueItem{}
+
+	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if err != nil {
+		return err
+	}
+
+	switch tag {
+	case "exact":
+		var vv MeetingNotesPropertyFilterFilterOneOf1ValueItemExact
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.MeetingNotesPropertyFilterFilterOneOf1ValueItemExact = &vv
+	case "relative":
+		var vv MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative = &vv
+	default:
+		return jsonUnknownValue("type", tag)
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+func (v *MeetingNotesPropertyFilterFilterOneOf1ValueItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	var (
+		variant any
+		tag     string
+	)
+
+	switch {
+	case v.MeetingNotesPropertyFilterFilterOneOf1ValueItemExact != nil:
+		variant, tag = v.MeetingNotesPropertyFilterFilterOneOf1ValueItemExact, "exact"
+	case v.MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative != nil:
+		variant, tag = v.MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative, "relative"
+	default:
+		return &json.SemanticError{Err: errors.New("no alternative set")}
+	}
+
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
+	if err != nil {
+		return err
+	}
+
+	if out, err = jsonFirst(out, "type", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
+}
+
+// MeetingNotesPropertyFilterFilterOneOf1ValueItemExact defines a model
+type MeetingNotesPropertyFilterFilterOneOf1ValueItemExact struct {
+	// Always `exact`
+	Type string `json:"type"`
+	// Pointer to the Notion user to match.
+	Value MeetingNotesPropertyFilterFilterOneOf1ValueItemExactValue `json:"value"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MeetingNotesPropertyFilterFilterOneOf1ValueItemExact declares it.
+func (v *MeetingNotesPropertyFilterFilterOneOf1ValueItemExact) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "value":
+		return true, json.UnmarshalDecode(dec, &v.Value, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// Pointer to the Notion user to match.
+type MeetingNotesPropertyFilterFilterOneOf1ValueItemExactValue struct {
+	// Always `notion_user`
+	Table string `json:"table"`
+	// The user's ID, as a UUID or the `user://<uuid>` form returned by user search.
+	ID string `json:"id"`
+}
+
+// MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative defines a model
+type MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative struct {
+	// Always `relative`
+	Type string `json:"type"`
+	// Always `me`
+	Value string `json:"value"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative declares it.
+func (v *MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "value":
+		return true, json.UnmarshalDecode(dec, &v.Value, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// MeetingNotesPropertyFilterFilterOneOf2 defines a model
+type MeetingNotesPropertyFilterFilterOneOf2 struct {
+	// How to compare the date.
+	Operator MeetingNotesPropertyFilterFilterOneOf2Operator `json:"operator"`
+	// The date to compare against.
+	Value MeetingNotesPropertyFilterFilterOneOf2Value `json:"value"`
+	// Compare against the end of a date range rather than its start.
+	UseEnd *bool `json:"use_end,omitzero"`
+}
+
+// How to compare the date.
+type MeetingNotesPropertyFilterFilterOneOf2Operator string
+
+const (
+	MeetingNotesPropertyFilterFilterOneOf2OperatorDateIs           MeetingNotesPropertyFilterFilterOneOf2Operator = "date_is"
+	MeetingNotesPropertyFilterFilterOneOf2OperatorDateIsBefore     MeetingNotesPropertyFilterFilterOneOf2Operator = "date_is_before"
+	MeetingNotesPropertyFilterFilterOneOf2OperatorDateIsAfter      MeetingNotesPropertyFilterFilterOneOf2Operator = "date_is_after"
+	MeetingNotesPropertyFilterFilterOneOf2OperatorDateIsOnOrBefore MeetingNotesPropertyFilterFilterOneOf2Operator = "date_is_on_or_before"
+	MeetingNotesPropertyFilterFilterOneOf2OperatorDateIsOnOrAfter  MeetingNotesPropertyFilterFilterOneOf2Operator = "date_is_on_or_after"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNotesPropertyFilterFilterOneOf2Operator enum.
+func (e MeetingNotesPropertyFilterFilterOneOf2Operator) Valid() bool {
+	switch e {
+	case MeetingNotesPropertyFilterFilterOneOf2OperatorDateIs, MeetingNotesPropertyFilterFilterOneOf2OperatorDateIsBefore, MeetingNotesPropertyFilterFilterOneOf2OperatorDateIsAfter, MeetingNotesPropertyFilterFilterOneOf2OperatorDateIsOnOrBefore, MeetingNotesPropertyFilterFilterOneOf2OperatorDateIsOnOrAfter:
+		return true
+	default:
+		return false
+	}
+}
+
+// The date to compare against.
+// MeetingNotesPropertyFilterFilterOneOf2Value is an untagged oneOf union: exactly one field is set after unmarshaling.
+type MeetingNotesPropertyFilterFilterOneOf2Value struct {
+	MeetingNotesPropertyFilterFilterOneOf2ValueRelative *MeetingNotesPropertyFilterFilterOneOf2ValueRelative
+	MeetingNotesPropertyFilterFilterOneOf2ValueExact    *MeetingNotesPropertyFilterFilterOneOf2ValueExact
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
+// decodes each further member as it is read. With type first, nothing is read twice.
+func (v *MeetingNotesPropertyFilterFilterOneOf2Value) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = MeetingNotesPropertyFilterFilterOneOf2Value{}
+
+	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if err != nil {
+		return err
+	}
+
+	switch tag {
+	case "relative":
+		var vv MeetingNotesPropertyFilterFilterOneOf2ValueRelative
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.MeetingNotesPropertyFilterFilterOneOf2ValueRelative = &vv
+	case "exact":
+		var vv MeetingNotesPropertyFilterFilterOneOf2ValueExact
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.MeetingNotesPropertyFilterFilterOneOf2ValueExact = &vv
+	default:
+		return jsonUnknownValue("type", tag)
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+func (v *MeetingNotesPropertyFilterFilterOneOf2Value) MarshalJSONTo(enc *jsontext.Encoder) error {
+	var (
+		variant any
+		tag     string
+	)
+
+	switch {
+	case v.MeetingNotesPropertyFilterFilterOneOf2ValueRelative != nil:
+		variant, tag = v.MeetingNotesPropertyFilterFilterOneOf2ValueRelative, "relative"
+	case v.MeetingNotesPropertyFilterFilterOneOf2ValueExact != nil:
+		variant, tag = v.MeetingNotesPropertyFilterFilterOneOf2ValueExact, "exact"
+	default:
+		return &json.SemanticError{Err: errors.New("no alternative set")}
+	}
+
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
+	if err != nil {
+		return err
+	}
+
+	if out, err = jsonFirst(out, "type", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
+}
+
+// MeetingNotesPropertyFilterFilterOneOf2ValueExact defines a model
+type MeetingNotesPropertyFilterFilterOneOf2ValueExact struct {
+	// Always `exact`
+	Type string `json:"type"`
+	// Use the is_empty operator to match an unset date.
+	Value MeetingNotesPropertyFilterFilterOneOf2ValueExactValue `json:"value"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MeetingNotesPropertyFilterFilterOneOf2ValueExact declares it.
+func (v *MeetingNotesPropertyFilterFilterOneOf2ValueExact) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "value":
+		return true, json.UnmarshalDecode(dec, &v.Value, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// Use the is_empty operator to match an unset date.
+// MeetingNotesPropertyFilterFilterOneOf2ValueExactValue is an untagged oneOf union: exactly one field is set after unmarshaling.
+type MeetingNotesPropertyFilterFilterOneOf2ValueExactValue struct {
+	MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate     *MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate
+	MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDatetime *MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDatetime
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
+// decodes each further member as it is read. With type first, nothing is read twice.
+func (v *MeetingNotesPropertyFilterFilterOneOf2ValueExactValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = MeetingNotesPropertyFilterFilterOneOf2ValueExactValue{}
+
+	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if err != nil {
+		return err
+	}
+
+	switch tag {
+	case "date":
+		var vv MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate = &vv
+	case "datetime":
+		var vv MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDatetime
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDatetime = &vv
+	default:
+		return jsonUnknownValue("type", tag)
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+func (v *MeetingNotesPropertyFilterFilterOneOf2ValueExactValue) MarshalJSONTo(enc *jsontext.Encoder) error {
+	var (
+		variant any
+		tag     string
+	)
+
+	switch {
+	case v.MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate != nil:
+		variant, tag = v.MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate, "date"
+	case v.MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDatetime != nil:
+		variant, tag = v.MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDatetime, "datetime"
+	default:
+		return &json.SemanticError{Err: errors.New("no alternative set")}
+	}
+
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
+	if err != nil {
+		return err
+	}
+
+	if out, err = jsonFirst(out, "type", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
+}
+
+// MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate defines a model
+type MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate struct {
+	// Always `date`
+	Type string `json:"type"`
+	// The calendar date as an ISO 8601 date string.
+	StartDate civil.Date `json:"start_date"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate declares it.
+func (v *MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "start_date":
+		return true, json.UnmarshalDecode(dec, &v.StartDate, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDatetime defines a model
+type MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDatetime struct {
+	// Always `datetime`
+	Type string `json:"type"`
+	// The calendar date as an ISO 8601 date string.
+	StartDate civil.Date `json:"start_date"`
+	// The time of day in 24-hour HH:MM format.
+	StartTime string `json:"start_time"`
+	// The IANA time zone name the time is interpreted in.
+	TimeZone string `json:"time_zone"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDatetime declares it.
+func (v *MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDatetime) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "start_date":
+		return true, json.UnmarshalDecode(dec, &v.StartDate, jsonOptsOf(dec))
+	case "start_time":
+		return true, json.UnmarshalDecode(dec, &v.StartTime, jsonOptsOf(dec))
+	case "time_zone":
+		return true, json.UnmarshalDecode(dec, &v.TimeZone, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// MeetingNotesPropertyFilterFilterOneOf2ValueRelative defines a model
+type MeetingNotesPropertyFilterFilterOneOf2ValueRelative struct {
+	// Always `relative`
+	Type string `json:"type"`
+	// One of: `today`, `tomorrow`, `yesterday`, `one_week_ago`, `one_week_from_now`, `one_month_ago`, `one_month_from_now`
+	Value RelativeDateValue `json:"value"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MeetingNotesPropertyFilterFilterOneOf2ValueRelative declares it.
+func (v *MeetingNotesPropertyFilterFilterOneOf2ValueRelative) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "value":
+		return true, json.UnmarshalDecode(dec, &v.Value, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// MeetingNotesPropertyFilterFilterOneOf3 defines a model
+type MeetingNotesPropertyFilterFilterOneOf3 struct {
+	// How to compare the date against the range.
+	Operator MeetingNotesPropertyFilterFilterOneOf3Operator `json:"operator"`
+	// The range to compare against.
+	Value MeetingNotesPropertyFilterFilterOneOf3Value `json:"value"`
+	// Compare against the end of a date range rather than its start.
+	UseEnd *bool `json:"use_end,omitzero"`
+}
+
+// How to compare the date against the range.
+type MeetingNotesPropertyFilterFilterOneOf3Operator string
+
+const (
+	MeetingNotesPropertyFilterFilterOneOf3OperatorDateIsWithin     MeetingNotesPropertyFilterFilterOneOf3Operator = "date_is_within"
+	MeetingNotesPropertyFilterFilterOneOf3OperatorDateIsRelativeTo MeetingNotesPropertyFilterFilterOneOf3Operator = "date_is_relative_to"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNotesPropertyFilterFilterOneOf3Operator enum.
+func (e MeetingNotesPropertyFilterFilterOneOf3Operator) Valid() bool {
+	switch e {
+	case MeetingNotesPropertyFilterFilterOneOf3OperatorDateIsWithin, MeetingNotesPropertyFilterFilterOneOf3OperatorDateIsRelativeTo:
+		return true
+	default:
+		return false
+	}
+}
+
+// The range to compare against.
+// MeetingNotesPropertyFilterFilterOneOf3Value is an untagged oneOf union: exactly one field is set after unmarshaling.
+type MeetingNotesPropertyFilterFilterOneOf3Value struct {
+	MeetingNotesPropertyFilterFilterOneOf3ValueCustom      *MeetingNotesPropertyFilterFilterOneOf3ValueCustom
+	MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding *MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding
+	MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2      *MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2
+	MeetingNotesPropertyFilterFilterOneOf3ValueExact       *MeetingNotesPropertyFilterFilterOneOf3ValueExact
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *MeetingNotesPropertyFilterFilterOneOf3Value) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = MeetingNotesPropertyFilterFilterOneOf3Value{}
+
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// a member outside its enum rules an alternative out; leniently, only while another fits
+	for _, enums := range jsonEnumPasses(strict) {
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"count", "direction", "type", "unit", "value"}, map[string]string{"type": "\"relative\"", "value": "\"custom\""}
+			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"direction": {"\"past\"", "\"future\""}, "unit": {"\"year\"", "\"month\"", "\"week\"", "\"day\""}})) {
+				var vv MeetingNotesPropertyFilterFilterOneOf3ValueCustom
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.MeetingNotesPropertyFilterFilterOneOf3ValueCustom = &vv
+					matched++
+				}
+			}
+		}
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"type", "unit", "value"}, map[string]string{"type": "\"relative\"", "value": "\"surrounding\""}
+			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"unit": {"\"year\"", "\"month\"", "\"week\"", "\"day\""}})) {
+				var vv MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding = &vv
+					matched++
+				}
+			}
+		}
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"type", "value"}, map[string]string{"type": "\"relative\""}
+			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"value": {"\"this_week\"", "\"the_past_week\"", "\"the_past_month\"", "\"the_past_year\"", "\"the_next_week\"", "\"the_next_month\"", "\"the_next_year\""}})) {
+				var vv MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2 = &vv
+					matched++
+				}
+			}
+		}
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"type", "value"}, map[string]string{"type": "\"exact\""}
+			if jsonFits(raw, required, pinned) {
+				var vv MeetingNotesPropertyFilterFilterOneOf3ValueExact
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.MeetingNotesPropertyFilterFilterOneOf3ValueExact = &vv
+					matched++
+				}
+			}
+		}
+
+		if matched > 0 {
+			break
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *MeetingNotesPropertyFilterFilterOneOf3Value) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.MeetingNotesPropertyFilterFilterOneOf3ValueCustom != nil:
+		return json.MarshalEncode(enc, v.MeetingNotesPropertyFilterFilterOneOf3ValueCustom, jsonOptsTo(enc))
+	case v.MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding != nil:
+		return json.MarshalEncode(enc, v.MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding, jsonOptsTo(enc))
+	case v.MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2 != nil:
+		return json.MarshalEncode(enc, v.MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2, jsonOptsTo(enc))
+	case v.MeetingNotesPropertyFilterFilterOneOf3ValueExact != nil:
+		return json.MarshalEncode(enc, v.MeetingNotesPropertyFilterFilterOneOf3ValueExact, jsonOptsTo(enc))
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// MeetingNotesPropertyFilterFilterOneOf3ValueCustom defines a model
+type MeetingNotesPropertyFilterFilterOneOf3ValueCustom struct {
+	// Always `relative`
+	Type string `json:"type"`
+	// Always `custom`
+	Value string `json:"value"`
+	// Whether the window runs backwards or forwards from now.
+	Direction MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirection `json:"direction"`
+	// One of: `year`, `month`, `week`, `day`
+	Unit MeetingNotesPropertyFilterOneOfValueCustomUnit `json:"unit"`
+	// How many units wide the window is.
+	Count int `json:"count"`
+}
+
+// Whether the window runs backwards or forwards from now.
+type MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirection string
+
+const (
+	MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirectionPast   MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirection = "past"
+	MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirectionFuture MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirection = "future"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirection enum.
+func (e MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirection) Valid() bool {
+	switch e {
+	case MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirectionPast, MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirectionFuture:
+		return true
+	default:
+		return false
+	}
+}
+
+// MeetingNotesPropertyFilterFilterOneOf3ValueExact defines a model
+type MeetingNotesPropertyFilterFilterOneOf3ValueExact struct {
+	// Always `exact`
+	Type string `json:"type"`
+	// Use the is_empty operator to match an unset date.
+	Value MeetingNotesPropertyFilterFilterOneOf3ValueExactValue `json:"value"`
+}
+
+// Use the is_empty operator to match an unset date.
+type MeetingNotesPropertyFilterFilterOneOf3ValueExactValue struct {
+	// Always `daterange`
+	Type string `json:"type"`
+	// Inclusive start of the range as an ISO 8601 date string, if any.
+	StartDate civil.Date `json:"start_date,omitzero"`
+	// Inclusive end of the range as an ISO 8601 date string, if any.
+	EndDate civil.Date `json:"end_date,omitzero"`
+}
+
+// MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2 defines a model
+type MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2 struct {
+	// Always `relative`
+	Type string `json:"type"`
+	// One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`
+	Value MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2Value `json:"value"`
+}
+
+// One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`
+type MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2Value string
+
+const (
+	MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueThisWeek     MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2Value = "this_week"
+	MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueThePastWeek  MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2Value = "the_past_week"
+	MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueThePastMonth MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2Value = "the_past_month"
+	MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueThePastYear  MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2Value = "the_past_year"
+	MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueTheNextWeek  MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2Value = "the_next_week"
+	MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueTheNextMonth MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2Value = "the_next_month"
+	MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueTheNextYear  MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2Value = "the_next_year"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2Value enum.
+func (e MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2Value) Valid() bool {
+	switch e {
+	case MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueThisWeek, MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueThePastWeek, MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueThePastMonth, MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueThePastYear, MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueTheNextWeek, MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueTheNextMonth, MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueTheNextYear:
+		return true
+	default:
+		return false
+	}
+}
+
+// MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding defines a model
+type MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding struct {
+	// Always `relative`
+	Type string `json:"type"`
+	// Always `surrounding`
+	Value string `json:"value"`
+	// One of: `year`, `month`, `week`, `day`
+	Unit MeetingNotesPropertyFilterOneOfValueCustomUnit `json:"unit"`
+}
+
+// MeetingNotesPropertyFilterFilterOperator defines a model
+type MeetingNotesPropertyFilterFilterOperator struct {
+	// Whether the property must be empty or set.
+	Operator MeetingNotesPropertyFilterFilterOperatorOperator `json:"operator"`
+}
+
+// Whether the property must be empty or set.
+type MeetingNotesPropertyFilterFilterOperatorOperator string
+
+const (
+	MeetingNotesPropertyFilterFilterOperatorOperatorIsEmpty    MeetingNotesPropertyFilterFilterOperatorOperator = "is_empty"
+	MeetingNotesPropertyFilterFilterOperatorOperatorIsNotEmpty MeetingNotesPropertyFilterFilterOperatorOperator = "is_not_empty"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNotesPropertyFilterFilterOperatorOperator enum.
+func (e MeetingNotesPropertyFilterFilterOperatorOperator) Valid() bool {
+	switch e {
+	case MeetingNotesPropertyFilterFilterOperatorOperatorIsEmpty, MeetingNotesPropertyFilterFilterOperatorOperatorIsNotEmpty:
+		return true
+	default:
+		return false
+	}
+}
+
+// One of: `year`, `month`, `week`, `day`
+type MeetingNotesPropertyFilterOneOfValueCustomUnit string
+
+const (
+	MeetingNotesPropertyFilterOneOfValueCustomUnitYear  MeetingNotesPropertyFilterOneOfValueCustomUnit = "year"
+	MeetingNotesPropertyFilterOneOfValueCustomUnitMonth MeetingNotesPropertyFilterOneOfValueCustomUnit = "month"
+	MeetingNotesPropertyFilterOneOfValueCustomUnitWeek  MeetingNotesPropertyFilterOneOfValueCustomUnit = "week"
+	MeetingNotesPropertyFilterOneOfValueCustomUnitDay   MeetingNotesPropertyFilterOneOfValueCustomUnit = "day"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNotesPropertyFilterOneOfValueCustomUnit enum.
+func (e MeetingNotesPropertyFilterOneOfValueCustomUnit) Valid() bool {
+	switch e {
+	case MeetingNotesPropertyFilterOneOfValueCustomUnitYear, MeetingNotesPropertyFilterOneOfValueCustomUnitMonth, MeetingNotesPropertyFilterOneOfValueCustomUnitWeek, MeetingNotesPropertyFilterOneOfValueCustomUnitDay:
+		return true
+	default:
+		return false
+	}
+}
+
+// Which meeting-note property to filter on. Prefer the short names; the schema URI form is accepted for compatibility.
+type MeetingNotesPropertyFilterProperty string
+
+const (
+	MeetingNotesPropertyFilterPropertyTitle                       MeetingNotesPropertyFilterProperty = "title"
+	MeetingNotesPropertyFilterPropertyAttendees                   MeetingNotesPropertyFilterProperty = "attendees"
+	MeetingNotesPropertyFilterPropertyCreatedTime                 MeetingNotesPropertyFilterProperty = "created_time"
+	MeetingNotesPropertyFilterPropertyCreatedBy                   MeetingNotesPropertyFilterProperty = "created_by"
+	MeetingNotesPropertyFilterPropertyLastEditedTime              MeetingNotesPropertyFilterProperty = "last_edited_time"
+	MeetingNotesPropertyFilterPropertyLastEditedBy                MeetingNotesPropertyFilterProperty = "last_edited_by"
+	MeetingNotesPropertyFilterPropertyNotionMeetingNotesAttendees MeetingNotesPropertyFilterProperty = "notion://meeting_notes/attendees"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNotesPropertyFilterProperty enum.
+func (e MeetingNotesPropertyFilterProperty) Valid() bool {
+	switch e {
+	case MeetingNotesPropertyFilterPropertyTitle, MeetingNotesPropertyFilterPropertyAttendees, MeetingNotesPropertyFilterPropertyCreatedTime, MeetingNotesPropertyFilterPropertyCreatedBy, MeetingNotesPropertyFilterPropertyLastEditedTime, MeetingNotesPropertyFilterPropertyLastEditedBy, MeetingNotesPropertyFilterPropertyNotionMeetingNotesAttendees:
+		return true
+	default:
+		return false
+	}
+}
+
 // MentionRichTextItemMentionPage defines a model
 type MentionRichTextItemMentionPage struct {
 	// The ID of the page in the mention.
@@ -18080,7 +18934,7 @@ type QueryMeetingNotesFilter struct {
 // QueryMeetingNotesFilterFiltersItem defines a model
 // QueryMeetingNotesFilterFiltersItem is an untagged oneOf union: exactly one field is set after unmarshaling.
 type QueryMeetingNotesFilterFiltersItem struct {
-	QueryMeetingNotesFilterFiltersItemOneOf  *QueryMeetingNotesFilterFiltersItemOneOf
+	MeetingNotesPropertyFilter               *MeetingNotesPropertyFilter
 	QueryMeetingNotesFilterFiltersItemOneOf1 *QueryMeetingNotesFilterFiltersItemOneOf1
 }
 
@@ -18106,9 +18960,9 @@ func (v *QueryMeetingNotesFilterFiltersItem) UnmarshalJSONFrom(dec *jsontext.Dec
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"filter", "property"}, map[string]string{}
 			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"property": {"\"title\"", "\"attendees\"", "\"created_time\"", "\"created_by\"", "\"last_edited_time\"", "\"last_edited_by\"", "\"notion://meeting_notes/attendees\""}})) {
-				var vv QueryMeetingNotesFilterFiltersItemOneOf
+				var vv MeetingNotesPropertyFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QueryMeetingNotesFilterFiltersItemOneOf = &vv
+					v.MeetingNotesPropertyFilter = &vv
 					matched++
 				}
 			}
@@ -18142,8 +18996,8 @@ func (v *QueryMeetingNotesFilterFiltersItem) UnmarshalJSONFrom(dec *jsontext.Dec
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *QueryMeetingNotesFilterFiltersItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.QueryMeetingNotesFilterFiltersItemOneOf != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOf, jsonOptsTo(enc))
+	case v.MeetingNotesPropertyFilter != nil:
+		return json.MarshalEncode(enc, v.MeetingNotesPropertyFilter, jsonOptsTo(enc))
 	case v.QueryMeetingNotesFilterFiltersItemOneOf1 != nil:
 		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOf1, jsonOptsTo(enc))
 	}
@@ -18151,869 +19005,12 @@ func (v *QueryMeetingNotesFilterFiltersItem) MarshalJSONTo(enc *jsontext.Encoder
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// QueryMeetingNotesFilterFiltersItemOneOf defines a model
-type QueryMeetingNotesFilterFiltersItemOneOf struct {
-	// Which meeting-note property to filter on. Prefer the short names; the schema URI form is accepted for compatibility.
-	Property QueryMeetingNotesFilterFiltersItemOneOfProperty `json:"property"`
-	// The comparison to apply. Use the arm matching the property's type.
-	Filter QueryMeetingNotesFilterFiltersItemOneOfFilter `json:"filter"`
-}
-
 // QueryMeetingNotesFilterFiltersItemOneOf1 defines a model
 type QueryMeetingNotesFilterFiltersItemOneOf1 struct {
 	// Whether every child must match, or any of them.
 	Operator QueryMeetingNotesFilterOperator `json:"operator"`
 	// The conditions in this group. A group with no conditions matches nothing, so send at least one.
-	Filters QueryMeetingNotesFilterFiltersItemOneOf1Filters `json:"filters"`
-}
-
-// The conditions in this group. A group with no conditions matches nothing, so send at least one.
-type QueryMeetingNotesFilterFiltersItemOneOf1Filters []QueryMeetingNotesFilterFiltersItemOneOf
-
-// The comparison to apply. Use the arm matching the property's type.
-// QueryMeetingNotesFilterFiltersItemOneOfFilter is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QueryMeetingNotesFilterFiltersItemOneOfFilter struct {
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf    *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2   *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3   *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4   *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOperator *QueryMeetingNotesFilterFiltersItemOneOfFilterOperator
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = QueryMeetingNotesFilterFiltersItemOneOfFilter{}
-
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"operator", "value"}, map[string]string{}
-			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"string_is\"", "\"string_is_not\"", "\"string_contains\"", "\"string_does_not_contain\"", "\"string_starts_with\"", "\"string_ends_with\""}})) {
-				var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf = &vv
-					matched++
-				}
-			}
-		}
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"operator", "value"}, map[string]string{}
-			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"person_contains\"", "\"person_does_not_contain\""}})) {
-				var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2 = &vv
-					matched++
-				}
-			}
-		}
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"operator", "value"}, map[string]string{}
-			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"date_is\"", "\"date_is_before\"", "\"date_is_after\"", "\"date_is_on_or_before\"", "\"date_is_on_or_after\""}})) {
-				var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3 = &vv
-					matched++
-				}
-			}
-		}
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"operator", "value"}, map[string]string{}
-			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"date_is_within\"", "\"date_is_relative_to\""}})) {
-				var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4 = &vv
-					matched++
-				}
-			}
-		}
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"operator"}, map[string]string{}
-			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"is_empty\"", "\"is_not_empty\""}})) {
-				var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOperator
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QueryMeetingNotesFilterFiltersItemOneOfFilterOperator = &vv
-					matched++
-				}
-			}
-		}
-
-		if matched > 0 {
-			break
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf, jsonOptsTo(enc))
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2 != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2, jsonOptsTo(enc))
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3 != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3, jsonOptsTo(enc))
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4 != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4, jsonOptsTo(enc))
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOperator != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOperator, jsonOptsTo(enc))
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf struct {
-	// How to compare the text.
-	Operator QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator `json:"operator"`
-	// The text to compare against.
-	Value QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue `json:"value"`
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2 defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf2 struct {
-	// Whether the property must contain the people listed.
-	Operator QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator2 `json:"operator"`
-	// The people to compare against.
-	Value []QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItem `json:"value"`
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3 defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf3 struct {
-	// How to compare the date.
-	Operator QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3 `json:"operator"`
-	// The date to compare against.
-	Value QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue2 `json:"value"`
-	// Compare against the end of a date range rather than its start.
-	UseEnd *bool `json:"use_end,omitzero"`
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4 defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOf4 struct {
-	// How to compare the date against the range.
-	Operator QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator4 `json:"operator"`
-	// The range to compare against.
-	Value QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue3 `json:"value"`
-	// Compare against the end of a date range rather than its start.
-	UseEnd *bool `json:"use_end,omitzero"`
-}
-
-// How to compare the text.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator string
-
-const (
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperatorStringIs             QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator = "string_is"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperatorStringIsNot          QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator = "string_is_not"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperatorStringContains       QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator = "string_contains"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperatorStringDoesNotContain QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator = "string_does_not_contain"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperatorStringStartsWith     QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator = "string_starts_with"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperatorStringEndsWith       QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator = "string_ends_with"
-)
-
-// Valid indicates whether the value is a known member of the QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator enum.
-func (e QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator) Valid() bool {
-	switch e {
-	case QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperatorStringIs, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperatorStringIsNot, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperatorStringContains, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperatorStringDoesNotContain, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperatorStringStartsWith, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperatorStringEndsWith:
-		return true
-	default:
-		return false
-	}
-}
-
-// Whether the property must contain the people listed.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator2 string
-
-const (
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator2PersonContains       QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator2 = "person_contains"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator2PersonDoesNotContain QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator2 = "person_does_not_contain"
-)
-
-// Valid indicates whether the value is a known member of the QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator2 enum.
-func (e QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator2) Valid() bool {
-	switch e {
-	case QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator2PersonContains, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator2PersonDoesNotContain:
-		return true
-	default:
-		return false
-	}
-}
-
-// How to compare the date.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3 string
-
-const (
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3DateIs           QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3 = "date_is"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3DateIsBefore     QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3 = "date_is_before"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3DateIsAfter      QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3 = "date_is_after"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3DateIsOnOrBefore QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3 = "date_is_on_or_before"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3DateIsOnOrAfter  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3 = "date_is_on_or_after"
-)
-
-// Valid indicates whether the value is a known member of the QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3 enum.
-func (e QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3) Valid() bool {
-	switch e {
-	case QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3DateIs, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3DateIsBefore, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3DateIsAfter, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3DateIsOnOrBefore, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator3DateIsOnOrAfter:
-		return true
-	default:
-		return false
-	}
-}
-
-// How to compare the date against the range.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator4 string
-
-const (
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator4DateIsWithin     QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator4 = "date_is_within"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator4DateIsRelativeTo QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator4 = "date_is_relative_to"
-)
-
-// Valid indicates whether the value is a known member of the QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator4 enum.
-func (e QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator4) Valid() bool {
-	switch e {
-	case QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator4DateIsWithin, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfOperator4DateIsRelativeTo:
-		return true
-	default:
-		return false
-	}
-}
-
-// The text to compare against.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue struct {
-	// Always `exact`
-	Type string `json:"type"`
-	// The literal text the operator compares against.
-	Value string `json:"value"`
-}
-
-// The date to compare against.
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue2 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue2 struct {
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact    *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue2{}
-
-	tag, first, dec, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "relative":
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative = &vv
-	case "exact":
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue2) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative != nil:
-		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative, "relative"
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact != nil:
-		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact, "exact"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOptsTo(enc))
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
-// The range to compare against.
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue3 is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue3 struct {
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom      *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf       *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2      *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue3) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue3{}
-
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"count", "direction", "type", "unit", "value"}, map[string]string{"type": "\"relative\"", "value": "\"custom\""}
-			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"direction": {"\"past\"", "\"future\""}, "unit": {"\"year\"", "\"month\"", "\"week\"", "\"day\""}})) {
-				var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom = &vv
-					matched++
-				}
-			}
-		}
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"type", "unit", "value"}, map[string]string{"type": "\"relative\"", "value": "\"surrounding\""}
-			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"unit": {"\"year\"", "\"month\"", "\"week\"", "\"day\""}})) {
-				var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding = &vv
-					matched++
-				}
-			}
-		}
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"type", "value"}, map[string]string{"type": "\"relative\""}
-			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"value": {"\"this_week\"", "\"the_past_week\"", "\"the_past_month\"", "\"the_past_year\"", "\"the_next_week\"", "\"the_next_month\"", "\"the_next_year\""}})) {
-				var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf = &vv
-					matched++
-				}
-			}
-		}
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"type", "value"}, map[string]string{"type": "\"exact\""}
-			if jsonFits(raw, required, pinned) {
-				var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2 = &vv
-					matched++
-				}
-			}
-		}
-
-		if matched > 0 {
-			break
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValue3) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom, jsonOptsTo(enc))
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding, jsonOptsTo(enc))
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf, jsonOptsTo(enc))
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2 != nil:
-		return json.MarshalEncode(enc, v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2, jsonOptsTo(enc))
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustom struct {
-	// Always `relative`
-	Type string `json:"type"`
-	// Always `custom`
-	Value string `json:"value"`
-	// Whether the window runs backwards or forwards from now.
-	Direction QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirection `json:"direction"`
-	// One of: `year`, `month`, `week`, `day`
-	Unit QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit `json:"unit"`
-	// How many units wide the window is.
-	Count int `json:"count"`
-}
-
-// Whether the window runs backwards or forwards from now.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirection string
-
-const (
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirectionPast   QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirection = "past"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirectionFuture QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirection = "future"
-)
-
-// Valid indicates whether the value is a known member of the QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirection enum.
-func (e QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirection) Valid() bool {
-	switch e {
-	case QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirectionPast, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomDirectionFuture:
-		return true
-	default:
-		return false
-	}
-}
-
-// One of: `year`, `month`, `week`, `day`
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit string
-
-const (
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnitYear  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit = "year"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnitMonth QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit = "month"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnitWeek  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit = "week"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnitDay   QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit = "day"
-)
-
-// Valid indicates whether the value is a known member of the QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit enum.
-func (e QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit) Valid() bool {
-	switch e {
-	case QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnitYear, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnitMonth, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnitWeek, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnitDay:
-		return true
-	default:
-		return false
-	}
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact struct {
-	// Always `exact`
-	Type string `json:"type"`
-	// Use the is_empty operator to match an unset date.
-	Value QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue `json:"value"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact declares it.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "value":
-		return true, json.UnmarshalDecode(dec, &v.Value, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2 defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExact2 struct {
-	// Always `exact`
-	Type string `json:"type"`
-	// Use the is_empty operator to match an unset date.
-	Value QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue2 `json:"value"`
-}
-
-// Use the is_empty operator to match an unset date.
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue struct {
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate     *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue{}
-
-	tag, first, dec, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "date":
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate = &vv
-	case "datetime":
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate != nil:
-		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate, "date"
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime != nil:
-		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime, "datetime"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOptsTo(enc))
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
-// Use the is_empty operator to match an unset date.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValue2 struct {
-	// Always `daterange`
-	Type string `json:"type"`
-	// Inclusive start of the range as an ISO 8601 date string, if any.
-	StartDate civil.Date `json:"start_date,omitzero"`
-	// Inclusive end of the range as an ISO 8601 date string, if any.
-	EndDate civil.Date `json:"end_date,omitzero"`
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate struct {
-	// Always `date`
-	Type string `json:"type"`
-	// The calendar date as an ISO 8601 date string.
-	StartDate civil.Date `json:"start_date"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate declares it.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDate) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "start_date":
-		return true, json.UnmarshalDecode(dec, &v.StartDate, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime struct {
-	// Always `datetime`
-	Type string `json:"type"`
-	// The calendar date as an ISO 8601 date string.
-	StartDate civil.Date `json:"start_date"`
-	// The time of day in 24-hour HH:MM format.
-	StartTime string `json:"start_time"`
-	// The IANA time zone name the time is interpreted in.
-	TimeZone string `json:"time_zone"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime declares it.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueExactValueDatetime) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "start_date":
-		return true, json.UnmarshalDecode(dec, &v.StartDate, jsonOptsOf(dec))
-	case "start_time":
-		return true, json.UnmarshalDecode(dec, &v.StartTime, jsonOptsOf(dec))
-	case "time_zone":
-		return true, json.UnmarshalDecode(dec, &v.TimeZone, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItem defines a model
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItem is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItem struct {
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact    *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItem{}
-
-	tag, first, dec, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "exact":
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact = &vv
-	case "relative":
-		var vv QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact != nil:
-		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact, "exact"
-	case v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative != nil:
-		variant, tag = v.QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative, "relative"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOptsTo(enc))
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact struct {
-	// Always `exact`
-	Type string `json:"type"`
-	// Pointer to the Notion user to match.
-	Value QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExactValue `json:"value"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact declares it.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExact) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "value":
-		return true, json.UnmarshalDecode(dec, &v.Value, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// Pointer to the Notion user to match.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemExactValue struct {
-	// Always `notion_user`
-	Table string `json:"table"`
-	// The user's ID, as a UUID or the `user://<uuid>` form returned by user search.
-	ID string `json:"id"`
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative struct {
-	// Always `relative`
-	Type string `json:"type"`
-	// Always `me`
-	Value string `json:"value"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative declares it.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueItemRelative) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "value":
-		return true, json.UnmarshalDecode(dec, &v.Value, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOf struct {
-	// Always `relative`
-	Type string `json:"type"`
-	// One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`
-	Value QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue `json:"value"`
-}
-
-// One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue string
-
-const (
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueThisWeek     QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue = "this_week"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueThePastWeek  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue = "the_past_week"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueThePastMonth QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue = "the_past_month"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueThePastYear  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue = "the_past_year"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueTheNextWeek  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue = "the_next_week"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueTheNextMonth QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue = "the_next_month"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueTheNextYear  QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue = "the_next_year"
-)
-
-// Valid indicates whether the value is a known member of the QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue enum.
-func (e QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValue) Valid() bool {
-	switch e {
-	case QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueThisWeek, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueThePastWeek, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueThePastMonth, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueThePastYear, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueTheNextWeek, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueTheNextMonth, QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueOneOfValueTheNextYear:
-		return true
-	default:
-		return false
-	}
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative struct {
-	// Always `relative`
-	Type string `json:"type"`
-	// One of: `today`, `tomorrow`, `yesterday`, `one_week_ago`, `one_week_from_now`, `one_month_ago`, `one_month_from_now`
-	Value RelativeDateValue `json:"value"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative declares it.
-func (v *QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueRelative) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "value":
-		return true, json.UnmarshalDecode(dec, &v.Value, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueSurrounding struct {
-	// Always `relative`
-	Type string `json:"type"`
-	// Always `surrounding`
-	Value string `json:"value"`
-	// One of: `year`, `month`, `week`, `day`
-	Unit QueryMeetingNotesFilterFiltersItemOneOfFilterOneOfValueCustomUnit `json:"unit"`
-}
-
-// QueryMeetingNotesFilterFiltersItemOneOfFilterOperator defines a model
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOperator struct {
-	// Whether the property must be empty or set.
-	Operator QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2 `json:"operator"`
-}
-
-// Whether the property must be empty or set.
-type QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2 string
-
-const (
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2IsEmpty    QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2 = "is_empty"
-	QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2IsNotEmpty QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2 = "is_not_empty"
-)
-
-// Valid indicates whether the value is a known member of the QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2 enum.
-func (e QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2) Valid() bool {
-	switch e {
-	case QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2IsEmpty, QueryMeetingNotesFilterFiltersItemOneOfFilterOperator2IsNotEmpty:
-		return true
-	default:
-		return false
-	}
-}
-
-// Which meeting-note property to filter on. Prefer the short names; the schema URI form is accepted for compatibility.
-type QueryMeetingNotesFilterFiltersItemOneOfProperty string
-
-const (
-	QueryMeetingNotesFilterFiltersItemOneOfPropertyTitle                       QueryMeetingNotesFilterFiltersItemOneOfProperty = "title"
-	QueryMeetingNotesFilterFiltersItemOneOfPropertyAttendees                   QueryMeetingNotesFilterFiltersItemOneOfProperty = "attendees"
-	QueryMeetingNotesFilterFiltersItemOneOfPropertyCreatedTime                 QueryMeetingNotesFilterFiltersItemOneOfProperty = "created_time"
-	QueryMeetingNotesFilterFiltersItemOneOfPropertyCreatedBy                   QueryMeetingNotesFilterFiltersItemOneOfProperty = "created_by"
-	QueryMeetingNotesFilterFiltersItemOneOfPropertyLastEditedTime              QueryMeetingNotesFilterFiltersItemOneOfProperty = "last_edited_time"
-	QueryMeetingNotesFilterFiltersItemOneOfPropertyLastEditedBy                QueryMeetingNotesFilterFiltersItemOneOfProperty = "last_edited_by"
-	QueryMeetingNotesFilterFiltersItemOneOfPropertyNotionMeetingNotesAttendees QueryMeetingNotesFilterFiltersItemOneOfProperty = "notion://meeting_notes/attendees"
-)
-
-// Valid indicates whether the value is a known member of the QueryMeetingNotesFilterFiltersItemOneOfProperty enum.
-func (e QueryMeetingNotesFilterFiltersItemOneOfProperty) Valid() bool {
-	switch e {
-	case QueryMeetingNotesFilterFiltersItemOneOfPropertyTitle, QueryMeetingNotesFilterFiltersItemOneOfPropertyAttendees, QueryMeetingNotesFilterFiltersItemOneOfPropertyCreatedTime, QueryMeetingNotesFilterFiltersItemOneOfPropertyCreatedBy, QueryMeetingNotesFilterFiltersItemOneOfPropertyLastEditedTime, QueryMeetingNotesFilterFiltersItemOneOfPropertyLastEditedBy, QueryMeetingNotesFilterFiltersItemOneOfPropertyNotionMeetingNotesAttendees:
-		return true
-	default:
-		return false
-	}
+	Filters []MeetingNotesPropertyFilter `json:"filters"`
 }
 
 // QueryMeetingNotesFilterOperator defines a model
@@ -19135,7 +19132,7 @@ type QuerySessionEvents struct {
 // A session event property filter, or an and/or compound filter nested up to three levels deep.
 // QuerySessionEventsFilter is an untagged oneOf union: exactly one field is set after unmarshaling.
 type QuerySessionEventsFilter struct {
-	QuerySessionsFilterID             *QuerySessionsFilterID
+	SessionIDFilter                   *SessionIDFilter
 	QuerySessionEventsFilterType      *QuerySessionEventsFilterType
 	QuerySessionEventsFilterSequence  *QuerySessionEventsFilterSequence
 	QuerySessionEventsFilterCreatedAt *QuerySessionEventsFilterCreatedAt
@@ -19162,9 +19159,9 @@ func (v *QuerySessionEventsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"property", "string"}, map[string]string{"property": "\"id\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuerySessionsFilterID
+			var vv SessionIDFilter
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuerySessionsFilterID = &vv
+				v.SessionIDFilter = &vv
 				matched++
 			}
 		}
@@ -19245,8 +19242,8 @@ func (v *QuerySessionEventsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *QuerySessionEventsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.QuerySessionsFilterID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOptsTo(enc))
+	case v.SessionIDFilter != nil:
+		return json.MarshalEncode(enc, v.SessionIDFilter, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterType != nil:
 		return json.MarshalEncode(enc, v.QuerySessionEventsFilterType, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterSequence != nil:
@@ -19319,7 +19316,7 @@ type QuerySessionEventsFilterOr struct {
 // QuerySessionEventsFilterOrItem defines a model
 // QuerySessionEventsFilterOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
 type QuerySessionEventsFilterOrItem struct {
-	QuerySessionsFilterID             *QuerySessionsFilterID
+	SessionIDFilter                   *SessionIDFilter
 	QuerySessionEventsFilterType      *QuerySessionEventsFilterType
 	QuerySessionEventsFilterSequence  *QuerySessionEventsFilterSequence
 	QuerySessionEventsFilterCreatedAt *QuerySessionEventsFilterCreatedAt
@@ -19346,9 +19343,9 @@ func (v *QuerySessionEventsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"property", "string"}, map[string]string{"property": "\"id\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuerySessionsFilterID
+			var vv SessionIDFilter
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuerySessionsFilterID = &vv
+				v.SessionIDFilter = &vv
 				matched++
 			}
 		}
@@ -19429,8 +19426,8 @@ func (v *QuerySessionEventsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *QuerySessionEventsFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.QuerySessionsFilterID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOptsTo(enc))
+	case v.SessionIDFilter != nil:
+		return json.MarshalEncode(enc, v.SessionIDFilter, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterType != nil:
 		return json.MarshalEncode(enc, v.QuerySessionEventsFilterType, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterSequence != nil:
@@ -19459,7 +19456,7 @@ type QuerySessionEventsFilterOrItemOr struct {
 // QuerySessionEventsFilterOrItemOrItem defines a model
 // QuerySessionEventsFilterOrItemOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
 type QuerySessionEventsFilterOrItemOrItem struct {
-	QuerySessionsFilterID                   *QuerySessionsFilterID
+	SessionIDFilter                         *SessionIDFilter
 	QuerySessionEventsFilterType            *QuerySessionEventsFilterType
 	QuerySessionEventsFilterSequence        *QuerySessionEventsFilterSequence
 	QuerySessionEventsFilterCreatedAt       *QuerySessionEventsFilterCreatedAt
@@ -19486,9 +19483,9 @@ func (v *QuerySessionEventsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.D
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"property", "string"}, map[string]string{"property": "\"id\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuerySessionsFilterID
+			var vv SessionIDFilter
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuerySessionsFilterID = &vv
+				v.SessionIDFilter = &vv
 				matched++
 			}
 		}
@@ -19569,8 +19566,8 @@ func (v *QuerySessionEventsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.D
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *QuerySessionEventsFilterOrItemOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.QuerySessionsFilterID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOptsTo(enc))
+	case v.SessionIDFilter != nil:
+		return json.MarshalEncode(enc, v.SessionIDFilter, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterType != nil:
 		return json.MarshalEncode(enc, v.QuerySessionEventsFilterType, jsonOptsTo(enc))
 	case v.QuerySessionEventsFilterSequence != nil:
@@ -19599,7 +19596,7 @@ type QuerySessionEventsFilterOrItemOrItemOr struct {
 // QuerySessionEventsFilterOrItemOrItemOrItem defines a model
 // QuerySessionEventsFilterOrItemOrItemOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
 type QuerySessionEventsFilterOrItemOrItemOrItem struct {
-	QuerySessionsFilterID             *QuerySessionsFilterID
+	SessionIDFilter                   *SessionIDFilter
 	QuerySessionEventsFilterType      *QuerySessionEventsFilterType
 	QuerySessionEventsFilterSequence  *QuerySessionEventsFilterSequence
 	QuerySessionEventsFilterCreatedAt *QuerySessionEventsFilterCreatedAt
@@ -19617,12 +19614,12 @@ func (v *QuerySessionEventsFilterOrItemOrItemOrItem) UnmarshalJSONFrom(dec *json
 
 	switch tag {
 	case "id":
-		var vv QuerySessionsFilterID
+		var vv SessionIDFilter
 		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.QuerySessionsFilterID = &vv
+		v.SessionIDFilter = &vv
 	case "type":
 		var vv QuerySessionEventsFilterType
 		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
@@ -19659,8 +19656,8 @@ func (v *QuerySessionEventsFilterOrItemOrItemOrItem) MarshalJSONTo(enc *jsontext
 	)
 
 	switch {
-	case v.QuerySessionsFilterID != nil:
-		variant, tag = v.QuerySessionsFilterID, "id"
+	case v.SessionIDFilter != nil:
+		variant, tag = v.SessionIDFilter, "id"
 	case v.QuerySessionEventsFilterType != nil:
 		variant, tag = v.QuerySessionEventsFilterType, "type"
 	case v.QuerySessionEventsFilterSequence != nil:
@@ -19838,12 +19835,12 @@ type QuerySessions struct {
 // A session property filter, or an and/or compound filter nested up to two levels deep.
 // QuerySessionsFilter is an untagged oneOf union: exactly one field is set after unmarshaling.
 type QuerySessionsFilter struct {
-	QuerySessionsFilterID      *QuerySessionsFilterID
-	QuerySessionsFilterAgentID *QuerySessionsFilterAgentID
-	QuerySessionsFilterStatus  *QuerySessionsFilterStatus
-	QuerySessionsFilterOneOf   *QuerySessionsFilterOneOf
-	QuerySessionsFilterAnd     *QuerySessionsFilterAnd
-	QuerySessionsFilterOr      *QuerySessionsFilterOr
+	SessionIDFilter        *SessionIDFilter
+	SessionAgentIDFilter   *SessionAgentIDFilter
+	SessionStatusFilter    *SessionStatusFilter
+	SessionTimestampFilter *SessionTimestampFilter
+	QuerySessionsFilterAnd *QuerySessionsFilterAnd
+	QuerySessionsFilterOr  *QuerySessionsFilterOr
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -19868,9 +19865,9 @@ func (v *QuerySessionsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property", "string"}, map[string]string{"property": "\"id\""}
 			if jsonFits(raw, required, pinned) {
-				var vv QuerySessionsFilterID
+				var vv SessionIDFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QuerySessionsFilterID = &vv
+					v.SessionIDFilter = &vv
 					matched++
 				}
 			}
@@ -19881,9 +19878,9 @@ func (v *QuerySessionsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property", "string"}, map[string]string{"property": "\"agent_id\""}
 			if jsonFits(raw, required, pinned) {
-				var vv QuerySessionsFilterAgentID
+				var vv SessionAgentIDFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QuerySessionsFilterAgentID = &vv
+					v.SessionAgentIDFilter = &vv
 					matched++
 				}
 			}
@@ -19894,9 +19891,9 @@ func (v *QuerySessionsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property", "status"}, map[string]string{"property": "\"status\""}
 			if jsonFits(raw, required, pinned) {
-				var vv QuerySessionsFilterStatus
+				var vv SessionStatusFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QuerySessionsFilterStatus = &vv
+					v.SessionStatusFilter = &vv
 					matched++
 				}
 			}
@@ -19907,9 +19904,9 @@ func (v *QuerySessionsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property", "timestamp"}, map[string]string{}
 			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"property": {"\"created_at\"", "\"updated_at\""}})) {
-				var vv QuerySessionsFilterOneOf
+				var vv SessionTimestampFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QuerySessionsFilterOneOf = &vv
+					v.SessionTimestampFilter = &vv
 					matched++
 				}
 			}
@@ -19956,14 +19953,14 @@ func (v *QuerySessionsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *QuerySessionsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.QuerySessionsFilterID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOptsTo(enc))
-	case v.QuerySessionsFilterAgentID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterAgentID, jsonOptsTo(enc))
-	case v.QuerySessionsFilterStatus != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterStatus, jsonOptsTo(enc))
-	case v.QuerySessionsFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOptsTo(enc))
+	case v.SessionIDFilter != nil:
+		return json.MarshalEncode(enc, v.SessionIDFilter, jsonOptsTo(enc))
+	case v.SessionAgentIDFilter != nil:
+		return json.MarshalEncode(enc, v.SessionAgentIDFilter, jsonOptsTo(enc))
+	case v.SessionStatusFilter != nil:
+		return json.MarshalEncode(enc, v.SessionStatusFilter, jsonOptsTo(enc))
+	case v.SessionTimestampFilter != nil:
+		return json.MarshalEncode(enc, v.SessionTimestampFilter, jsonOptsTo(enc))
 	case v.QuerySessionsFilterAnd != nil:
 		return json.MarshalEncode(enc, v.QuerySessionsFilterAnd, jsonOptsTo(enc))
 	case v.QuerySessionsFilterOr != nil:
@@ -19973,390 +19970,16 @@ func (v *QuerySessionsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// QuerySessionsFilterAgentID defines a model
-type QuerySessionsFilterAgentID struct {
-	// Filter sessions by agent_id.
-	Property QuerySessionsFilterAgentIDProperty `json:"property"`
-	// An exact string comparison.
-	String QueryAgentsFilterIDID `json:"string"`
-}
-
-// Filter sessions by agent_id.
-type QuerySessionsFilterAgentIDProperty string
-
-const (
-	QuerySessionsFilterAgentIDPropertyAgentID QuerySessionsFilterAgentIDProperty = "agent_id"
-)
-
-// Valid indicates whether the value is a known member of the QuerySessionsFilterAgentIDProperty enum.
-func (e QuerySessionsFilterAgentIDProperty) Valid() bool {
-	switch e {
-	case QuerySessionsFilterAgentIDPropertyAgentID:
-		return true
-	default:
-		return false
-	}
-}
-
 // QuerySessionsFilterAnd defines a model
 type QuerySessionsFilterAnd struct {
 	// Return sessions that match every child filter.
-	And []QuerySessionsFilterOrItem `json:"and"`
-}
-
-// QuerySessionsFilterID defines a model
-type QuerySessionsFilterID struct {
-	// Filter sessions by id.
-	Property QuerySessionsFilterIDProperty `json:"property"`
-	// An exact string comparison.
-	String QueryAgentsFilterIDID `json:"string"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionsFilterID declares it.
-func (v *QuerySessionsFilterID) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "property":
-		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
-	case "string":
-		return true, json.UnmarshalDecode(dec, &v.String, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// QuerySessionsFilterIDProperty defines a model
-type QuerySessionsFilterIDProperty string
-
-const (
-	QuerySessionsFilterIDPropertyID QuerySessionsFilterIDProperty = "id"
-)
-
-// Valid indicates whether the value is a known member of the QuerySessionsFilterIDProperty enum.
-func (e QuerySessionsFilterIDProperty) Valid() bool {
-	switch e {
-	case QuerySessionsFilterIDPropertyID:
-		return true
-	default:
-		return false
-	}
-}
-
-// QuerySessionsFilterOneOf defines a model
-type QuerySessionsFilterOneOf struct {
-	// The session timestamp to compare.
-	Property QuerySessionsSortsItemProperty `json:"property"`
-	// A timestamp range.
-	Timestamp QuerySessionsFilterOneOfTimestamp `json:"timestamp"`
-}
-
-// A timestamp range.
-type QuerySessionsFilterOneOfTimestamp struct {
-	// Return sessions before this time.
-	Before time.Time `json:"before,omitzero"`
-	// Return sessions after this time.
-	After time.Time `json:"after,omitzero"`
-	// Return sessions at or before this time.
-	OnOrBefore time.Time `json:"on_or_before,omitzero"`
-	// Return sessions at or after this time.
-	OnOrAfter time.Time `json:"on_or_after,omitzero"`
+	And []SessionNestedFilter `json:"and"`
 }
 
 // QuerySessionsFilterOr defines a model
 type QuerySessionsFilterOr struct {
 	// Return sessions that match any child filter.
-	Or []QuerySessionsFilterOrItem `json:"or"`
-}
-
-// QuerySessionsFilterOrItem defines a model
-// QuerySessionsFilterOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QuerySessionsFilterOrItem struct {
-	QuerySessionsFilterID        *QuerySessionsFilterID
-	QuerySessionsFilterAgentID   *QuerySessionsFilterAgentID
-	QuerySessionsFilterStatus    *QuerySessionsFilterStatus
-	QuerySessionsFilterOneOf     *QuerySessionsFilterOneOf
-	QuerySessionsFilterOrItemAnd *QuerySessionsFilterOrItemAnd
-	QuerySessionsFilterOrItemOr  *QuerySessionsFilterOrItemOr
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *QuerySessionsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = QuerySessionsFilterOrItem{}
-
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"property", "string"}, map[string]string{"property": "\"id\""}
-			if jsonFits(raw, required, pinned) {
-				var vv QuerySessionsFilterID
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QuerySessionsFilterID = &vv
-					matched++
-				}
-			}
-		}
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"property", "string"}, map[string]string{"property": "\"agent_id\""}
-			if jsonFits(raw, required, pinned) {
-				var vv QuerySessionsFilterAgentID
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QuerySessionsFilterAgentID = &vv
-					matched++
-				}
-			}
-		}
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"property", "status"}, map[string]string{"property": "\"status\""}
-			if jsonFits(raw, required, pinned) {
-				var vv QuerySessionsFilterStatus
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QuerySessionsFilterStatus = &vv
-					matched++
-				}
-			}
-		}
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"property", "timestamp"}, map[string]string{}
-			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"property": {"\"created_at\"", "\"updated_at\""}})) {
-				var vv QuerySessionsFilterOneOf
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QuerySessionsFilterOneOf = &vv
-					matched++
-				}
-			}
-		}
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"and"}, map[string]string{}
-			if jsonFits(raw, required, pinned) {
-				var vv QuerySessionsFilterOrItemAnd
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QuerySessionsFilterOrItemAnd = &vv
-					matched++
-				}
-			}
-		}
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"or"}, map[string]string{}
-			if jsonFits(raw, required, pinned) {
-				var vv QuerySessionsFilterOrItemOr
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QuerySessionsFilterOrItemOr = &vv
-					matched++
-				}
-			}
-		}
-
-		if matched > 0 {
-			break
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *QuerySessionsFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.QuerySessionsFilterID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOptsTo(enc))
-	case v.QuerySessionsFilterAgentID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterAgentID, jsonOptsTo(enc))
-	case v.QuerySessionsFilterStatus != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterStatus, jsonOptsTo(enc))
-	case v.QuerySessionsFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOptsTo(enc))
-	case v.QuerySessionsFilterOrItemAnd != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOrItemAnd, jsonOptsTo(enc))
-	case v.QuerySessionsFilterOrItemOr != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOrItemOr, jsonOptsTo(enc))
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// QuerySessionsFilterOrItemAnd defines a model
-type QuerySessionsFilterOrItemAnd struct {
-	// Return sessions that match every child filter.
-	And []QuerySessionsFilterOrItemOrItem `json:"and"`
-}
-
-// QuerySessionsFilterOrItemOr defines a model
-type QuerySessionsFilterOrItemOr struct {
-	// Return sessions that match any child filter.
-	Or []QuerySessionsFilterOrItemOrItem `json:"or"`
-}
-
-// QuerySessionsFilterOrItemOrItem defines a model
-// QuerySessionsFilterOrItemOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
-type QuerySessionsFilterOrItemOrItem struct {
-	QuerySessionsFilterID      *QuerySessionsFilterID
-	QuerySessionsFilterAgentID *QuerySessionsFilterAgentID
-	QuerySessionsFilterStatus  *QuerySessionsFilterStatus
-	QuerySessionsFilterOneOf   *QuerySessionsFilterOneOf
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *QuerySessionsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = QuerySessionsFilterOrItemOrItem{}
-
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"property", "string"}, map[string]string{"property": "\"id\""}
-			if jsonFits(raw, required, pinned) {
-				var vv QuerySessionsFilterID
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QuerySessionsFilterID = &vv
-					matched++
-				}
-			}
-		}
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"property", "string"}, map[string]string{"property": "\"agent_id\""}
-			if jsonFits(raw, required, pinned) {
-				var vv QuerySessionsFilterAgentID
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QuerySessionsFilterAgentID = &vv
-					matched++
-				}
-			}
-		}
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"property", "status"}, map[string]string{"property": "\"status\""}
-			if jsonFits(raw, required, pinned) {
-				var vv QuerySessionsFilterStatus
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QuerySessionsFilterStatus = &vv
-					matched++
-				}
-			}
-		}
-
-		// leniently, more than one may match, and the first does
-		if strict || matched == 0 {
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, pinned := []string{"property", "timestamp"}, map[string]string{}
-			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"property": {"\"created_at\"", "\"updated_at\""}})) {
-				var vv QuerySessionsFilterOneOf
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.QuerySessionsFilterOneOf = &vv
-					matched++
-				}
-			}
-		}
-
-		if matched > 0 {
-			break
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *QuerySessionsFilterOrItemOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.QuerySessionsFilterID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterID, jsonOptsTo(enc))
-	case v.QuerySessionsFilterAgentID != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterAgentID, jsonOptsTo(enc))
-	case v.QuerySessionsFilterStatus != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterStatus, jsonOptsTo(enc))
-	case v.QuerySessionsFilterOneOf != nil:
-		return json.MarshalEncode(enc, v.QuerySessionsFilterOneOf, jsonOptsTo(enc))
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// QuerySessionsFilterStatus defines a model
-type QuerySessionsFilterStatus struct {
-	// Filter sessions by status.
-	Property QuerySessionsFilterStatusProperty `json:"property"`
-	// A session status comparison.
-	Status QuerySessionsFilterStatus2 `json:"status"`
-}
-
-// A session status comparison.
-type QuerySessionsFilterStatus2 struct {
-	// Return sessions with this status.
-	Equals SessionStatus `json:"equals,omitzero"`
-	// Return sessions with any of these statuses.
-	In QuerySessionsFilterStatusIn `json:"in,omitzero"`
-}
-
-// Return sessions with any of these statuses.
-type QuerySessionsFilterStatusIn []SessionStatus
-
-// Filter sessions by status.
-type QuerySessionsFilterStatusProperty string
-
-const (
-	QuerySessionsFilterStatusPropertyStatus QuerySessionsFilterStatusProperty = "status"
-)
-
-// Valid indicates whether the value is a known member of the QuerySessionsFilterStatusProperty enum.
-func (e QuerySessionsFilterStatusProperty) Valid() bool {
-	switch e {
-	case QuerySessionsFilterStatusPropertyStatus:
-		return true
-	default:
-		return false
-	}
+	Or []SessionNestedFilter `json:"or"`
 }
 
 // Ordered sort precedence. Defaults to updated_at descending.
@@ -23034,6 +22657,31 @@ type Session struct {
 	MessageCount    *int                     `json:"message_count,omitzero"`
 }
 
+// SessionAgentIDFilter defines a model
+type SessionAgentIDFilter struct {
+	// Filter sessions by agent_id.
+	Property SessionAgentIDFilterProperty `json:"property"`
+	// An exact string comparison.
+	String QueryAgentsFilterIDID `json:"string"`
+}
+
+// Filter sessions by agent_id.
+type SessionAgentIDFilterProperty string
+
+const (
+	SessionAgentIDFilterPropertyAgentID SessionAgentIDFilterProperty = "agent_id"
+)
+
+// Valid indicates whether the value is a known member of the SessionAgentIDFilterProperty enum.
+func (e SessionAgentIDFilterProperty) Valid() bool {
+	switch e {
+	case SessionAgentIDFilterPropertyAgentID:
+		return true
+	default:
+		return false
+	}
+}
+
 // SessionAgentVersionOneOf defines a model
 type SessionAgentVersionOneOf struct {
 	ID          string    `json:"id"`
@@ -23571,6 +23219,43 @@ func (v *SessionEventListResultsItemUserMessageContentItemText) unmarshalJSONMem
 	return false, nil
 }
 
+// SessionIDFilter defines a model
+type SessionIDFilter struct {
+	// Filter sessions by id.
+	Property SessionIDFilterProperty `json:"property"`
+	// An exact string comparison.
+	String QueryAgentsFilterIDID `json:"string"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether SessionIDFilter declares it.
+func (v *SessionIDFilter) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "property":
+		return true, json.UnmarshalDecode(dec, &v.Property, jsonOptsOf(dec))
+	case "string":
+		return true, json.UnmarshalDecode(dec, &v.String, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// SessionIDFilterProperty defines a model
+type SessionIDFilterProperty string
+
+const (
+	SessionIDFilterPropertyID SessionIDFilterProperty = "id"
+)
+
+// Valid indicates whether the value is a known member of the SessionIDFilterProperty enum.
+func (e SessionIDFilterProperty) Valid() bool {
+	switch e {
+	case SessionIDFilterPropertyID:
+		return true
+	default:
+		return false
+	}
+}
+
 // SessionList defines a model
 type SessionList struct {
 	// Always `list`
@@ -23718,6 +23403,262 @@ func (v *SessionModelsPinned) unmarshalJSONMember(dec *jsontext.Decoder, name st
 	return false, nil
 }
 
+// SessionNestedFilter defines a model
+// SessionNestedFilter is an untagged oneOf union: exactly one field is set after unmarshaling.
+type SessionNestedFilter struct {
+	SessionIDFilter        *SessionIDFilter
+	SessionAgentIDFilter   *SessionAgentIDFilter
+	SessionStatusFilter    *SessionStatusFilter
+	SessionTimestampFilter *SessionTimestampFilter
+	SessionNestedFilterAnd *SessionNestedFilterAnd
+	SessionNestedFilterOr  *SessionNestedFilterOr
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *SessionNestedFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = SessionNestedFilter{}
+
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// a member outside its enum rules an alternative out; leniently, only while another fits
+	for _, enums := range jsonEnumPasses(strict) {
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"property", "string"}, map[string]string{"property": "\"id\""}
+			if jsonFits(raw, required, pinned) {
+				var vv SessionIDFilter
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.SessionIDFilter = &vv
+					matched++
+				}
+			}
+		}
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"property", "string"}, map[string]string{"property": "\"agent_id\""}
+			if jsonFits(raw, required, pinned) {
+				var vv SessionAgentIDFilter
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.SessionAgentIDFilter = &vv
+					matched++
+				}
+			}
+		}
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"property", "status"}, map[string]string{"property": "\"status\""}
+			if jsonFits(raw, required, pinned) {
+				var vv SessionStatusFilter
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.SessionStatusFilter = &vv
+					matched++
+				}
+			}
+		}
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"property", "timestamp"}, map[string]string{}
+			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"property": {"\"created_at\"", "\"updated_at\""}})) {
+				var vv SessionTimestampFilter
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.SessionTimestampFilter = &vv
+					matched++
+				}
+			}
+		}
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"and"}, map[string]string{}
+			if jsonFits(raw, required, pinned) {
+				var vv SessionNestedFilterAnd
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.SessionNestedFilterAnd = &vv
+					matched++
+				}
+			}
+		}
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"or"}, map[string]string{}
+			if jsonFits(raw, required, pinned) {
+				var vv SessionNestedFilterOr
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.SessionNestedFilterOr = &vv
+					matched++
+				}
+			}
+		}
+
+		if matched > 0 {
+			break
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *SessionNestedFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.SessionIDFilter != nil:
+		return json.MarshalEncode(enc, v.SessionIDFilter, jsonOptsTo(enc))
+	case v.SessionAgentIDFilter != nil:
+		return json.MarshalEncode(enc, v.SessionAgentIDFilter, jsonOptsTo(enc))
+	case v.SessionStatusFilter != nil:
+		return json.MarshalEncode(enc, v.SessionStatusFilter, jsonOptsTo(enc))
+	case v.SessionTimestampFilter != nil:
+		return json.MarshalEncode(enc, v.SessionTimestampFilter, jsonOptsTo(enc))
+	case v.SessionNestedFilterAnd != nil:
+		return json.MarshalEncode(enc, v.SessionNestedFilterAnd, jsonOptsTo(enc))
+	case v.SessionNestedFilterOr != nil:
+		return json.MarshalEncode(enc, v.SessionNestedFilterOr, jsonOptsTo(enc))
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// SessionNestedFilterAnd defines a model
+type SessionNestedFilterAnd struct {
+	// Return sessions that match every child filter.
+	And []SessionNestedFilterOrItem `json:"and"`
+}
+
+// SessionNestedFilterOr defines a model
+type SessionNestedFilterOr struct {
+	// Return sessions that match any child filter.
+	Or []SessionNestedFilterOrItem `json:"or"`
+}
+
+// SessionNestedFilterOrItem defines a model
+// SessionNestedFilterOrItem is an untagged oneOf union: exactly one field is set after unmarshaling.
+type SessionNestedFilterOrItem struct {
+	SessionIDFilter        *SessionIDFilter
+	SessionAgentIDFilter   *SessionAgentIDFilter
+	SessionStatusFilter    *SessionStatusFilter
+	SessionTimestampFilter *SessionTimestampFilter
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *SessionNestedFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = SessionNestedFilterOrItem{}
+
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// a member outside its enum rules an alternative out; leniently, only while another fits
+	for _, enums := range jsonEnumPasses(strict) {
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"property", "string"}, map[string]string{"property": "\"id\""}
+			if jsonFits(raw, required, pinned) {
+				var vv SessionIDFilter
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.SessionIDFilter = &vv
+					matched++
+				}
+			}
+		}
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"property", "string"}, map[string]string{"property": "\"agent_id\""}
+			if jsonFits(raw, required, pinned) {
+				var vv SessionAgentIDFilter
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.SessionAgentIDFilter = &vv
+					matched++
+				}
+			}
+		}
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"property", "status"}, map[string]string{"property": "\"status\""}
+			if jsonFits(raw, required, pinned) {
+				var vv SessionStatusFilter
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.SessionStatusFilter = &vv
+					matched++
+				}
+			}
+		}
+
+		// leniently, more than one may match, and the first does
+		if strict || matched == 0 {
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"property", "timestamp"}, map[string]string{}
+			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"property": {"\"created_at\"", "\"updated_at\""}})) {
+				var vv SessionTimestampFilter
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.SessionTimestampFilter = &vv
+					matched++
+				}
+			}
+		}
+
+		if matched > 0 {
+			break
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *SessionNestedFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.SessionIDFilter != nil:
+		return json.MarshalEncode(enc, v.SessionIDFilter, jsonOptsTo(enc))
+	case v.SessionAgentIDFilter != nil:
+		return json.MarshalEncode(enc, v.SessionAgentIDFilter, jsonOptsTo(enc))
+	case v.SessionStatusFilter != nil:
+		return json.MarshalEncode(enc, v.SessionStatusFilter, jsonOptsTo(enc))
+	case v.SessionTimestampFilter != nil:
+		return json.MarshalEncode(enc, v.SessionTimestampFilter, jsonOptsTo(enc))
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
 // SessionRequiredActions defines a model
 type SessionRequiredActions []SessionRequiredActionsItem
 
@@ -23777,6 +23718,62 @@ func (e SessionStatus) Valid() bool {
 	default:
 		return false
 	}
+}
+
+// SessionStatusFilter defines a model
+type SessionStatusFilter struct {
+	// Filter sessions by status.
+	Property SessionStatusFilterProperty `json:"property"`
+	// A session status comparison.
+	Status SessionStatusFilterStatus `json:"status"`
+}
+
+// Filter sessions by status.
+type SessionStatusFilterProperty string
+
+const (
+	SessionStatusFilterPropertyStatus SessionStatusFilterProperty = "status"
+)
+
+// Valid indicates whether the value is a known member of the SessionStatusFilterProperty enum.
+func (e SessionStatusFilterProperty) Valid() bool {
+	switch e {
+	case SessionStatusFilterPropertyStatus:
+		return true
+	default:
+		return false
+	}
+}
+
+// A session status comparison.
+type SessionStatusFilterStatus struct {
+	// Return sessions with this status.
+	Equals SessionStatus `json:"equals,omitzero"`
+	// Return sessions with any of these statuses.
+	In SessionStatusFilterStatusIn `json:"in,omitzero"`
+}
+
+// Return sessions with any of these statuses.
+type SessionStatusFilterStatusIn []SessionStatus
+
+// SessionTimestampFilter defines a model
+type SessionTimestampFilter struct {
+	// The session timestamp to compare.
+	Property QuerySessionsSortsItemProperty `json:"property"`
+	// A timestamp range.
+	Timestamp SessionTimestampFilterTimestamp `json:"timestamp"`
+}
+
+// A timestamp range.
+type SessionTimestampFilterTimestamp struct {
+	// Return sessions before this time.
+	Before time.Time `json:"before,omitzero"`
+	// Return sessions after this time.
+	After time.Time `json:"after,omitzero"`
+	// Return sessions at or before this time.
+	OnOrBefore time.Time `json:"on_or_before,omitzero"`
+	// Return sessions at or after this time.
+	OnOrAfter time.Time `json:"on_or_after,omitzero"`
 }
 
 // SimpleOrArrayPropertyValueResponse defines a model
