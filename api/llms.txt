@@ -246,6 +246,7 @@
 - [Deny or restore enterprise-managed MCP client access](https://developers.notion.com/reference/admin/update-mcp-client-connection-enterprise-managed-access.md): Deny or restore a member's access through enterprise-managed MCP connections.
 - [List personal access tokens in a workspace](https://developers.notion.com/reference/admin/list-personal-access-tokens.md): List active, expired, and revoked personal access tokens in a workspace.
 - [Revoke a personal access token in a workspace](https://developers.notion.com/reference/admin/revoke-personal-access-token.md): Permanently revoke a personal access token in a workspace.
+- [List workspaces in the organization](https://developers.notion.com/reference/admin/list-spaces.md): List the workspaces your organization owns.
 - [Enqueue a workspace export](https://developers.notion.com/reference/admin/enqueue-space-export.md): Enqueue a workspace export.
 - [Get workspace export status](https://developers.notion.com/reference/admin/get-space-export-status.md): Get workspace export status.
 - [Changelog](https://developers.notion.com/page/changelog.md)
