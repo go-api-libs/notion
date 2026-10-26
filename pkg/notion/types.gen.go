@@ -8064,8 +8064,10 @@ type DatabaseParentResponse struct {
 
 // DatabasePropertyRelationConfigResponse defines a model
 type DatabasePropertyRelationConfigResponse struct {
-	DatabaseID     IDResponse                                                      `json:"database_id"`
-	DataSourceID   IDResponse                                                      `json:"data_source_id"`
+	DatabaseID   IDResponse `json:"database_id"`
+	DataSourceID IDResponse `json:"data_source_id"`
+	// The maximum number of pages each page can relate to, or null when there is no limit. Read-only.
+	Limit          int                                                             `json:"limit,omitzero"`
 	Type           DatabasePropertyRelationConfigResponseType                      `json:"type,omitzero"`
 	SingleProperty *EmptyObject                                                    `json:"single_property,omitzero"`
 	DualProperty   *DualPropertyDatabasePropertyRelationConfigResponseDualProperty `json:"dual_property,omitzero"`

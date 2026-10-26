@@ -10652,6 +10652,18 @@
           }
         ]
       },
+      "DatabasePropertyRelationConfigResponseCommonLimit": {
+        "description": "The maximum number of pages each page can relate to, or null when there is no limit. Read-only.",
+        "oneOf": [
+          {
+            "type": "integer",
+            "minimum": 1
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "DatabaseQueryResultType": {
         "type": "string",
         "enum": [
@@ -25382,6 +25394,9 @@
           },
           "data_source_id": {
             "$ref": "#/components/schemas/idResponse"
+          },
+          "limit": {
+            "$ref": "#/components/schemas/DatabasePropertyRelationConfigResponseCommonLimit"
           }
         },
         "required": [

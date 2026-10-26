@@ -36182,11 +36182,24 @@
           },
           "data_source_id": {
             "$ref": "#/components/schemas/idResponse"
+          },
+          "limit": {
+            "description": "The maximum number of pages each page can relate to, or null when there is no limit. Read-only.",
+            "oneOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
           "database_id",
-          "data_source_id"
+          "data_source_id",
+          "limit"
         ],
         "additionalProperties": false
       },

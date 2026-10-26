@@ -42,6 +42,7 @@
 - [Retrieving existing files](https://developers.notion.com/guides/data-apis/retrieving-files.md): Learn how to get a download link for files in the Notion API.
 - [Uploading larger files](https://developers.notion.com/guides/data-apis/sending-larger-files.md): Learn how to send files larger than 20 MB in multiple parts.
 - [Importing external files](https://developers.notion.com/guides/data-apis/importing-external-files.md): Learn how to migrate files from an external URL to Notion.
+- [Connection health](https://developers.notion.com/guides/manage-connections/connection-health.md): See how many API requests a connection sent in the last 24 hours, how many failed, and why.
 - [Example code](https://developers.notion.com/guides/resources/examples.md)
 - [Postman workspace](https://developers.notion.com/guides/resources/notion-s-api-workspace.md)
 - [Historical changelog](https://developers.notion.com/guides/resources/historical-changelog.md): View an archive of Notion Developers updates prior to September 2023
