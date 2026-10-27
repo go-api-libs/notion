@@ -15882,6 +15882,10 @@
         "description": "Meeting note content fields.",
         "type": "object",
         "properties": {
+          "is_full_page": {
+            "description": "Whether this is a full-page meeting note.",
+            "type": "boolean"
+          },
           "title": {
             "description": "Title of the meeting note as rich text.",
             "$ref": "#/components/schemas/RichTexts"
@@ -15900,6 +15904,9 @@
             "$ref": "#/components/schemas/QueryMeetingNotesResultsItemMeetingNotesRecording"
           }
         },
+        "required": [
+          "is_full_page"
+        ],
         "additionalProperties": false
       },
       "QueryMeetingNotesResultsItemMeetingNotesCalendarEvent": {
@@ -15912,6 +15919,10 @@
           },
           "end_time": {
             "description": "ISO-8601 end time of the calendar event.",
+            "type": "string"
+          },
+          "event_id": {
+            "description": "ID of the calendar event, as returned by the calendar tools.",
             "type": "string"
           },
           "attendees": {
@@ -33595,6 +33606,9 @@
       "transcriptionBlockResponse": {
         "type": "object",
         "properties": {
+          "is_full_page": {
+            "type": "boolean"
+          },
           "title": {
             "$ref": "#/components/schemas/RichTexts"
           },
@@ -33622,6 +33636,9 @@
           "end_time": {
             "type": "string",
             "format": "date-time"
+          },
+          "event_id": {
+            "type": "string"
           },
           "attendees": {
             "type": "array",

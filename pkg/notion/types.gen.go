@@ -19048,6 +19048,8 @@ type QueryMeetingNotesOkResults []CreateMeetingNoteMeetingNotes
 
 // Meeting note content fields.
 type QueryMeetingNotesResultsItemMeetingNotes struct {
+	// Whether this is a full-page meeting note.
+	IsFullPage bool `json:"is_full_page"`
 	// Title of the meeting note as rich text.
 	Title RichTexts `json:"title,omitzero"`
 	// Current processing status of the meeting note transcription.
@@ -19066,6 +19068,8 @@ type QueryMeetingNotesResultsItemMeetingNotesCalendarEvent struct {
 	StartTime string `json:"start_time"`
 	// ISO-8601 end time of the calendar event.
 	EndTime string `json:"end_time"`
+	// ID of the calendar event, as returned by the calendar tools.
+	EventID string `json:"event_id,omitzero"`
 	// List of attendee user IDs.
 	Attendees []IDResponse `json:"attendees,omitzero"`
 }
@@ -25769,6 +25773,7 @@ type ToDoBlockObjectResponseToDo struct {
 
 // TranscriptionBlockResponse defines a model
 type TranscriptionBlockResponse struct {
+	IsFullPage    *bool                              `json:"is_full_page,omitzero"`
 	Title         RichTexts                          `json:"title,omitzero"`
 	Status        APITranscriptionStatus             `json:"status,omitzero"`
 	Children      *TranscriptionChildrenResponse     `json:"children,omitzero"`
@@ -25780,6 +25785,7 @@ type TranscriptionBlockResponse struct {
 type TranscriptionCalendarEventResponse struct {
 	StartTime time.Time   `json:"start_time"`
 	EndTime   time.Time   `json:"end_time"`
+	EventID   string      `json:"event_id,omitzero"`
 	Attendees []IDRequest `json:"attendees,omitzero"`
 }
 
