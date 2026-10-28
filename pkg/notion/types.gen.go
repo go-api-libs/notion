@@ -5547,6 +5547,8 @@ type CommentCreatedWebhookPayloadData struct {
 	PageID IDResponse `json:"page_id"`
 	// The ID of the discussion containing the comment.
 	DiscussionID IDResponse `json:"discussion_id"`
+	// The ID of the database property the comment is on, for comments on a page property. Matches the property's `id` in the page object. Omitted for other comments.
+	PropertyID string `json:"property_id,omitzero"`
 }
 
 // CommentDeletedWebhookPayload defines a model
@@ -5600,6 +5602,8 @@ type CommentObjectResponse struct {
 	HasPendingAttachments bool `json:"has_pending_attachments"`
 	// Any file attachments associated with the comment.
 	Attachments CommentObjectResponseAttachments `json:"attachments,omitzero"`
+	// The ID of the database property the comment is on, for comments on a page property. Matches the property's `id` in the page object. Omitted for other comments.
+	PropertyID string `json:"property_id,omitzero"`
 }
 
 // Any file attachments associated with the comment.

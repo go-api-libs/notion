@@ -9324,6 +9324,10 @@
           "discussion_id": {
             "description": "The ID of the discussion containing the comment.",
             "$ref": "#/components/schemas/idResponse"
+          },
+          "property_id": {
+            "description": "The ID of the database property the comment is on, for comments on a page property. Matches the property's `id` in the page object. Omitted for other comments.",
+            "type": "string"
           }
         },
         "required": [
@@ -24069,6 +24073,10 @@
           },
           "attachments": {
             "$ref": "#/components/schemas/CommentObjectResponseAttachments"
+          },
+          "property_id": {
+            "description": "The ID of the database property the comment is on, for comments on a page property. Matches the property's `id` in the page object. Omitted for other comments.",
+            "type": "string"
           }
         },
         "required": [
