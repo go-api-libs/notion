@@ -10,10 +10,6 @@
 - [Secure API credentials](https://developers.notion.com/guides/get-started/handling-api-keys.md): Learn how to manage and secure credentials for the Notion API.
 - [Preparing your connection for users](https://developers.notion.com/guides/get-started/preparing-for-users.md): Learn how to create databases, pages, and views in a user's workspace right after they install your public connection.
 - [List on the Marketplace](https://developers.notion.com/guides/get-started/marketplace-listing.md): Learn how to list your public connection on the Notion Marketplace.
-- [Overview](https://developers.notion.com/guides/notion-agent-apis/overview.md): Power apps and integrations with Custom Agents.
-- [Quickstart](https://developers.notion.com/guides/notion-agent-apis/quickstart.md): Pick a Custom Agent, start a chat, and read its reply through the API.
-- [Upgrading to public beta](https://developers.notion.com/guides/notion-agent-apis/upgrading-to-public-beta.md): Migrate your private alpha integration to the public beta.
-- [Agent Skills API](https://developers.notion.com/guides/agent-skills/overview.md): Learn how to download and upload AI skills stored in Notion.
 - [Notion MCP](https://developers.notion.com/guides/mcp/overview.md): Learn how MCP clients connect to your Notion workspace.
 - [Common MCP clients](https://developers.notion.com/guides/mcp/common-mcp-clients.md): Find setup documentation for MCP clients that can connect to Notion MCP.
 - [Connect to Notion MCP](https://developers.notion.com/guides/mcp/get-started-with-mcp.md): Connect an MCP client to your Notion workspace.
@@ -23,6 +19,10 @@
 - [Build an MCP client for Notion](https://developers.notion.com/guides/mcp/build-mcp-client.md): Connect a custom MCP client to Notion MCP with OAuth 2.0 and PKCE.
 - [Enterprise-managed authorization](https://developers.notion.com/guides/mcp/enterprise-managed-authorization.md): Reference for getting Notion MCP access tokens with an identity provider's ID-JAG instead of the browser OAuth flow.
 - [Hosting Notion MCP locally](https://developers.notion.com/guides/mcp/hosting-open-source-mcp.md): Learn how and when to use the open-source Notion MCP server.
+- [Overview](https://developers.notion.com/guides/notion-agent-apis/overview.md): Power apps and integrations with Custom Agents.
+- [Quickstart](https://developers.notion.com/guides/notion-agent-apis/quickstart.md): Pick a Custom Agent, start a chat, and read its reply through the API.
+- [Upgrading to public beta](https://developers.notion.com/guides/notion-agent-apis/upgrading-to-public-beta.md): Migrate your private alpha integration to the public beta.
+- [Agent Skills API](https://developers.notion.com/guides/agent-skills/overview.md): Learn how to download and upload AI skills stored in Notion.
 - [Upgrade guide](https://developers.notion.com/guides/get-started/upgrade-guide-2026-03-11.md): Learn how to upgrade your connections to 2026-03-11.
 - [Upgrade guide](https://developers.notion.com/guides/get-started/upgrade-guide-2025-09-03.md): Learn how to upgrade your connections to 2025-09-03.
 - [FAQs](https://developers.notion.com/guides/get-started/upgrade-faqs-2025-09-03.md): Commonly asked questions about migrating to 2025-09-03.
