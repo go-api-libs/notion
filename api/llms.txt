@@ -235,6 +235,7 @@
 - [Get agents in a space](https://developers.notion.com/reference/admin/get-workflows-metadata-for-space.md): Get agents in a space.
 - [Get credit usage for an agent in a space](https://developers.notion.com/reference/admin/get-agent-credit-usage.md): Get credit usage for an agent in a space.
 - [Get credit usage for agents in a space](https://developers.notion.com/reference/admin/get-agents-credit-usage.md): Get credit usage for agents in a space.
+- [Update an agent in a space](https://developers.notion.com/reference/admin/update-agent.md): Update an agent's owner, credit source, credit limits, or admin status in one request.
 - [Update credit limit for an agent in a space](https://developers.notion.com/reference/admin/update-agent-credit-limit.md): Update credit limit for an agent in a space.
 - [Get a custom agent's sharing permissions](https://developers.notion.com/reference/admin/get-agent-permissions.md): Get a Custom Agent's sharing permissions.
 - [Update a custom agent's sharing permissions](https://developers.notion.com/reference/admin/update-agent-permissions.md): Update a Custom Agent's sharing permissions.
