@@ -35,6 +35,7 @@
 - [Working with views](https://developers.notion.com/guides/data-apis/working-with-views.md): Learn how to set up and manage database views using the Notion API.
 - [Working with comments](https://developers.notion.com/guides/data-apis/working-with-comments.md): Learn how to add and retrieve comments with the Notion API.
 - [Working with markdown content](https://developers.notion.com/guides/data-apis/working-with-markdown-content.md): Learn how to create, read, and update Notion page content using markdown instead of the block API.
+- [Migrate to Notion-flavored Markdown (v2)](https://developers.notion.com/guides/data-apis/migrate-to-notion-flavored-markdown.md): Switch your markdown requests from enhanced markdown (v1) to Notion-flavored Markdown (v2) and update your parser for the syntax changes.
 - [Enhanced markdown format (v1, deprecated)](https://developers.notion.com/guides/data-apis/enhanced-markdown.md): Reference for the enhanced markdown format used by the markdown content endpoints.
 - [Notion-flavored Markdown format](https://developers.notion.com/guides/data-apis/notion-flavored-markdown.md): Reference for Notion-flavored Markdown, the syntax used by markdown_version v2.
 - [Working with files and media](https://developers.notion.com/guides/data-apis/working-with-files-and-media.md): Learn how to add and retrieve files and media on pages with the Notion API.
@@ -223,6 +224,8 @@
 - [Update a legal hold](https://developers.notion.com/reference/admin/update-legal-hold.md): Update a legal hold.
 - [Revoke a managed user's sessions](https://developers.notion.com/reference/admin/revoke-user-session.md): Revoke a managed user's sessions.
 - [List users](https://developers.notion.com/reference/admin/list-users.md): List active workspace members and guest bots.
+- [Get credit usage for users in a space](https://developers.notion.com/reference/admin/list-user-credit-usage.md): Get credit usage for users in a space.
+- [Get credit usage for a user in a space](https://developers.notion.com/reference/admin/list-user-credit-usage-periods.md): Get credit usage for a user in a space.
 - [List groups](https://developers.notion.com/reference/admin/list-permission-groups.md): List permission groups in a workspace.
 - [Retrieve a group](https://developers.notion.com/reference/admin/retrieve-permission-group.md): Retrieve a permission group in a workspace.
 - [Create a group](https://developers.notion.com/reference/admin/create-permission-group.md): Create an admin-managed permission group in a workspace.

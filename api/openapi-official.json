@@ -20609,14 +20609,14 @@
                       ]
                     },
                     "total_credits_used": {
-                      "description": "Premium AI credits consumed by this agent within the window.",
+                      "description": "Premium AI credits consumed by this agent within the window. Values of 1 or more are whole credits, and values below 1 have at most two significant figures. Both round down.",
                       "type": "number"
                     },
                     "credit_limit": {
                       "description": "Enforced per-agent credit limit; null when none is configured, and \"hidden\" when the caller lacks full access to the agent.",
                       "oneOf": [
                         {
-                          "type": "number"
+                          "type": "integer"
                         },
                         {
                           "description": "Always `hidden`",
@@ -21061,7 +21061,7 @@
                     "description": "The per-agent credit limit as a non-negative integer, or null to clear the limit.",
                     "oneOf": [
                       {
-                        "type": "number"
+                        "type": "integer"
                       },
                       {
                         "type": "null"
@@ -21344,7 +21344,7 @@
                                   "description": "The per-agent credit limit as a non-negative integer, or null to clear the limit.",
                                   "oneOf": [
                                     {
-                                      "type": "number"
+                                      "type": "integer"
                                     },
                                     {
                                       "type": "null"
@@ -22892,6 +22892,7 @@
                       ]
                     },
                     "credits_used": {
+                      "description": "Premium AI credits this session consumed. Reported with at most two decimal places, rounded down.",
                       "oneOf": [
                         {
                           "type": "number"
@@ -23465,6 +23466,7 @@
                             ]
                           },
                           "credits_used": {
+                            "description": "Premium AI credits this session consumed. Reported with at most two decimal places, rounded down.",
                             "oneOf": [
                               {
                                 "type": "number",
@@ -35399,6 +35401,91 @@
                 "type": "null"
               }
             ]
+          },
+          "sync_metadata": {
+            "description": "Stored sync metadata, included when listing or retrieving data sources.",
+            "type": "object",
+            "properties": {
+              "external_database_sync": {
+                "description": "Stored identity of an external database sync.",
+                "type": "object",
+                "properties": {
+                  "sync_id": {
+                    "description": "The stored sync ID. This is not a credential.",
+                    "$ref": "#/components/schemas/idResponse"
+                  },
+                  "provider": {
+                    "description": "The sync provider: github (GitHub), jira (Jira), or salesforce (Salesforce).",
+                    "type": "string",
+                    "enum": [
+                      "github",
+                      "jira",
+                      "salesforce"
+                    ]
+                  }
+                },
+                "required": [
+                  "sync_id",
+                  "provider"
+                ],
+                "additionalProperties": false
+              },
+              "external_collection_type": {
+                "description": "The provider of a legacy synced data source: Jira or Salesforce. Values are case-sensitive.",
+                "type": "string",
+                "enum": [
+                  "Jira",
+                  "Salesforce"
+                ]
+              },
+              "sync_id": {
+                "description": "The stored sync ID when provider details are unavailable. This is not a credential.",
+                "$ref": "#/components/schemas/idResponse"
+              },
+              "sync_state": {
+                "description": "Stored state for a legacy synced data source. Missing or invalid timestamps are omitted. This is not a live health check.",
+                "type": "object",
+                "properties": {
+                  "syncing": {
+                    "description": "Stored legacy sync state: true means syncing, false means not syncing, and row_limit_exceeded means the row limit stopped syncing. False does not guarantee a successful sync.",
+                    "oneOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "description": "Always `row_limit_exceeded`",
+                        "type": "string",
+                        "const": "row_limit_exceeded"
+                      }
+                    ]
+                  },
+                  "last_synced_at": {
+                    "description": "Stored legacy sync update time in UTC ISO 8601 format. This does not guarantee that all source changes have been imported.",
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "last_sync_checkpoint_at": {
+                    "description": "Stored legacy sync checkpoint time in UTC ISO 8601 format.",
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "last_sync_heartbeat_at": {
+                    "description": "Stored legacy sync heartbeat time in UTC ISO 8601 format.",
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "required": [
+                  "syncing"
+                ],
+                "additionalProperties": false
+              },
+              "synced_collection_key": {
+                "description": "Opaque, developer-defined collection key for a worker sync. It is not a globally unique ID or a credential. Worker status is not included.",
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
           }
         },
         "required": [
@@ -35457,6 +35544,91 @@
           "name": {
             "description": "The name of the data source.",
             "type": "string"
+          },
+          "sync_metadata": {
+            "description": "Stored sync metadata, included when retrieving a database.",
+            "type": "object",
+            "properties": {
+              "external_database_sync": {
+                "description": "Stored identity of an external database sync.",
+                "type": "object",
+                "properties": {
+                  "sync_id": {
+                    "description": "The stored sync ID. This is not a credential.",
+                    "$ref": "#/components/schemas/idResponse"
+                  },
+                  "provider": {
+                    "description": "The sync provider: github (GitHub), jira (Jira), or salesforce (Salesforce).",
+                    "type": "string",
+                    "enum": [
+                      "github",
+                      "jira",
+                      "salesforce"
+                    ]
+                  }
+                },
+                "required": [
+                  "sync_id",
+                  "provider"
+                ],
+                "additionalProperties": false
+              },
+              "external_collection_type": {
+                "description": "The provider of a legacy synced data source: Jira or Salesforce. Values are case-sensitive.",
+                "type": "string",
+                "enum": [
+                  "Jira",
+                  "Salesforce"
+                ]
+              },
+              "sync_id": {
+                "description": "The stored sync ID when provider details are unavailable. This is not a credential.",
+                "$ref": "#/components/schemas/idResponse"
+              },
+              "sync_state": {
+                "description": "Stored state for a legacy synced data source. Missing or invalid timestamps are omitted. This is not a live health check.",
+                "type": "object",
+                "properties": {
+                  "syncing": {
+                    "description": "Stored legacy sync state: true means syncing, false means not syncing, and row_limit_exceeded means the row limit stopped syncing. False does not guarantee a successful sync.",
+                    "oneOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "description": "Always `row_limit_exceeded`",
+                        "type": "string",
+                        "const": "row_limit_exceeded"
+                      }
+                    ]
+                  },
+                  "last_synced_at": {
+                    "description": "Stored legacy sync update time in UTC ISO 8601 format. This does not guarantee that all source changes have been imported.",
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "last_sync_checkpoint_at": {
+                    "description": "Stored legacy sync checkpoint time in UTC ISO 8601 format.",
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "last_sync_heartbeat_at": {
+                    "description": "Stored legacy sync heartbeat time in UTC ISO 8601 format.",
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                },
+                "required": [
+                  "syncing"
+                ],
+                "additionalProperties": false
+              },
+              "synced_collection_key": {
+                "description": "Opaque, developer-defined collection key for a worker sync. It is not a globally unique ID or a credential. Worker status is not included.",
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
           }
         },
         "required": [

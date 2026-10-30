@@ -1864,7 +1864,7 @@ type AgentInsights struct {
 	Status      AgentStatus           `json:"status"`
 	PauseReason AgentPauseReasonOneOf `json:"pause_reason"`
 	CreatedBy   SessionCreatedBy      `json:"created_by"`
-	// Premium AI credits consumed by this agent within the window.
+	// Premium AI credits consumed by this agent within the window. Values of 1 or more are whole credits, and values below 1 have at most two significant figures. Both round down.
 	TotalCreditsUsed float64 `json:"total_credits_used"`
 	// Enforced per-agent credit limit; null when none is configured, and "hidden" when the caller lacks full access to the agent.
 	CreditLimit AgentInsightsCreditLimit `json:"credit_limit"`
@@ -1894,8 +1894,8 @@ func (e AgentInsightsAgentType) Valid() bool {
 // Enforced per-agent credit limit; null when none is configured, and "hidden" when the caller lacks full access to the agent.
 // AgentInsightsCreditLimit is an untagged oneOf union: exactly one field is set after unmarshaling.
 type AgentInsightsCreditLimit struct {
-	Float64 *float64
-	String  string
+	Int    *int
+	String string
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -1914,9 +1914,9 @@ func (v *AgentInsightsCreditLimit) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv float64
+		var vv int
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.Float64 = &vv
+			v.Int = &vv
 			matched++
 		}
 	}
@@ -1940,8 +1940,8 @@ func (v *AgentInsightsCreditLimit) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *AgentInsightsCreditLimit) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.Float64 != nil:
-		return json.MarshalEncode(enc, v.Float64, jsonOptsTo(enc))
+	case v.Int != nil:
+		return json.MarshalEncode(enc, v.Int, jsonOptsTo(enc))
 	case v.String != "":
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
@@ -7688,8 +7688,139 @@ type DataSourceObjectResponse struct {
 	// The URL of the data source.
 	URL string `json:"url"`
 	// The public URL of the data source if it is publicly accessible.
-	PublicURL string    `json:"public_url"`
-	RequestID uuid.UUID `json:"request_id,omitzero"`
+	PublicURL string `json:"public_url"`
+	// Stored sync metadata, included when listing or retrieving data sources.
+	SyncMetadata *DataSourceObjectSyncMetadata `json:"sync_metadata,omitzero"`
+	RequestID    uuid.UUID                     `json:"request_id,omitzero"`
+}
+
+// DataSourceObjectSyncMetadata defines a model
+type DataSourceObjectSyncMetadata struct {
+	// Stored identity of an external database sync.
+	ExternalDatabaseSync DataSourceObjectSyncMetadataExternalDatabaseSync `json:"external_database_sync,omitzero"`
+	// The provider of a legacy synced data source: Jira or Salesforce. Values are case-sensitive.
+	ExternalCollectionType DataSourceObjectSyncMetadataExternalCollectionType `json:"external_collection_type,omitzero"`
+	// The stored sync ID when provider details are unavailable. This is not a credential.
+	SyncID IDResponse `json:"sync_id,omitzero"`
+	// Stored state for a legacy synced data source. Missing or invalid timestamps are omitted. This is not a live health check.
+	SyncState DataSourceObjectSyncMetadataSyncState `json:"sync_state,omitzero"`
+	// Opaque, developer-defined collection key for a worker sync. It is not a globally unique ID or a credential. Worker status is not included.
+	SyncedCollectionKey string `json:"synced_collection_key,omitzero"`
+}
+
+// The provider of a legacy synced data source: Jira or Salesforce. Values are case-sensitive.
+type DataSourceObjectSyncMetadataExternalCollectionType string
+
+const (
+	DataSourceObjectSyncMetadataExternalCollectionTypeJira       DataSourceObjectSyncMetadataExternalCollectionType = "Jira"
+	DataSourceObjectSyncMetadataExternalCollectionTypeSalesforce DataSourceObjectSyncMetadataExternalCollectionType = "Salesforce"
+)
+
+// Valid indicates whether the value is a known member of the DataSourceObjectSyncMetadataExternalCollectionType enum.
+func (e DataSourceObjectSyncMetadataExternalCollectionType) Valid() bool {
+	switch e {
+	case DataSourceObjectSyncMetadataExternalCollectionTypeJira, DataSourceObjectSyncMetadataExternalCollectionTypeSalesforce:
+		return true
+	default:
+		return false
+	}
+}
+
+// Stored identity of an external database sync.
+type DataSourceObjectSyncMetadataExternalDatabaseSync struct {
+	// The stored sync ID. This is not a credential.
+	SyncID IDResponse `json:"sync_id"`
+	// The sync provider: github (GitHub), jira (Jira), or salesforce (Salesforce).
+	Provider DataSourceObjectSyncMetadataExternalDatabaseSyncProvider `json:"provider"`
+}
+
+// The sync provider: github (GitHub), jira (Jira), or salesforce (Salesforce).
+type DataSourceObjectSyncMetadataExternalDatabaseSyncProvider string
+
+const (
+	DataSourceObjectSyncMetadataExternalDatabaseSyncProviderGithub     DataSourceObjectSyncMetadataExternalDatabaseSyncProvider = "github"
+	DataSourceObjectSyncMetadataExternalDatabaseSyncProviderJira       DataSourceObjectSyncMetadataExternalDatabaseSyncProvider = "jira"
+	DataSourceObjectSyncMetadataExternalDatabaseSyncProviderSalesforce DataSourceObjectSyncMetadataExternalDatabaseSyncProvider = "salesforce"
+)
+
+// Valid indicates whether the value is a known member of the DataSourceObjectSyncMetadataExternalDatabaseSyncProvider enum.
+func (e DataSourceObjectSyncMetadataExternalDatabaseSyncProvider) Valid() bool {
+	switch e {
+	case DataSourceObjectSyncMetadataExternalDatabaseSyncProviderGithub, DataSourceObjectSyncMetadataExternalDatabaseSyncProviderJira, DataSourceObjectSyncMetadataExternalDatabaseSyncProviderSalesforce:
+		return true
+	default:
+		return false
+	}
+}
+
+// Stored state for a legacy synced data source. Missing or invalid timestamps are omitted. This is not a live health check.
+type DataSourceObjectSyncMetadataSyncState struct {
+	// Stored legacy sync state: true means syncing, false means not syncing, and row_limit_exceeded means the row limit stopped syncing. False does not guarantee a successful sync.
+	Syncing DataSourceObjectSyncMetadataSyncStateSyncing `json:"syncing"`
+	// Stored legacy sync update time in UTC ISO 8601 format. This does not guarantee that all source changes have been imported.
+	LastSyncedAt time.Time `json:"last_synced_at,omitzero"`
+	// Stored legacy sync checkpoint time in UTC ISO 8601 format.
+	LastSyncCheckpointAt time.Time `json:"last_sync_checkpoint_at,omitzero"`
+	// Stored legacy sync heartbeat time in UTC ISO 8601 format.
+	LastSyncHeartbeatAt time.Time `json:"last_sync_heartbeat_at,omitzero"`
+}
+
+// Stored legacy sync state: true means syncing, false means not syncing, and row_limit_exceeded means the row limit stopped syncing. False does not guarantee a successful sync.
+// DataSourceObjectSyncMetadataSyncStateSyncing is an untagged oneOf union: exactly one field is set after unmarshaling.
+type DataSourceObjectSyncMetadataSyncStateSyncing struct {
+	Bool   *bool
+	String string
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *DataSourceObjectSyncMetadataSyncStateSyncing) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = DataSourceObjectSyncMetadataSyncStateSyncing{}
+
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv bool
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.Bool = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv string
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.String = vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *DataSourceObjectSyncMetadataSyncStateSyncing) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.Bool != nil:
+		return json.MarshalEncode(enc, v.Bool, jsonOptsTo(enc))
+	case v.String != "":
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
 // DataSourceOrPartial defines a model
@@ -7771,6 +7902,8 @@ type DataSourceReferenceResponse struct {
 	ID IDResponse `json:"id"`
 	// The name of the data source.
 	Name string `json:"name"`
+	// Stored sync metadata, included when retrieving a database.
+	SyncMetadata *DataSourceObjectSyncMetadata `json:"sync_metadata,omitzero"`
 }
 
 // DataSourceSchemaUpdatedWebhookPayload defines a model
@@ -22664,9 +22797,10 @@ type Session struct {
 	ChatUserEmails  []string                 `json:"chat_user_emails,omitzero"`
 	ToolTypes       []string                 `json:"tool_types,omitzero"`
 	ToolCallCount   *int                     `json:"tool_call_count,omitzero"`
-	CreditsUsed     *float64                 `json:"credits_used,omitzero"`
-	RunsCompleted   *int                     `json:"runs_completed,omitzero"`
-	MessageCount    *int                     `json:"message_count,omitzero"`
+	// Premium AI credits this session consumed. Reported with at most two decimal places, rounded down.
+	CreditsUsed   *float64 `json:"credits_used,omitzero"`
+	RunsCompleted *int     `json:"runs_completed,omitzero"`
+	MessageCount  *int     `json:"message_count,omitzero"`
 }
 
 // SessionAgentIDFilter defines a model
@@ -23308,9 +23442,10 @@ type SessionListResultsItem struct {
 	ChatUserEmails  []string                 `json:"chat_user_emails,omitzero"`
 	ToolTypes       []string                 `json:"tool_types,omitzero"`
 	ToolCallCount   *int                     `json:"tool_call_count,omitzero"`
-	CreditsUsed     *float64                 `json:"credits_used,omitzero"`
-	RunsCompleted   *int                     `json:"runs_completed,omitzero"`
-	MessageCount    *int                     `json:"message_count,omitzero"`
+	// Premium AI credits this session consumed. Reported with at most two decimal places, rounded down.
+	CreditsUsed   *float64 `json:"credits_used,omitzero"`
+	RunsCompleted *int     `json:"runs_completed,omitzero"`
+	MessageCount  *int     `json:"message_count,omitzero"`
 }
 
 // SessionModels defines a model
@@ -27451,7 +27586,7 @@ func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem) MarshalJSO
 // UpdateAgentCreditLimit defines a model
 type UpdateAgentCreditLimit struct {
 	// The per-agent credit limit as a non-negative integer, or null to clear the limit.
-	CreditLimit *float64 `json:"credit_limit"`
+	CreditLimit *int `json:"credit_limit"`
 }
 
 // UpdateAgentCreditLimitOk defines a model
