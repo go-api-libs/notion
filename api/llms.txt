@@ -34,8 +34,8 @@
 - [Creating pages from templates](https://developers.notion.com/guides/data-apis/creating-pages-from-templates.md): Learn how to apply data source templates to pages created in the Notion API.
 - [Working with views](https://developers.notion.com/guides/data-apis/working-with-views.md): Learn how to set up and manage database views using the Notion API.
 - [Working with comments](https://developers.notion.com/guides/data-apis/working-with-comments.md): Learn how to add and retrieve comments with the Notion API.
-- [Working with markdown content](https://developers.notion.com/guides/data-apis/working-with-markdown-content.md): Learn how to create, read, and update Notion page content using enhanced markdown instead of the block API.
-- [Enhanced markdown format](https://developers.notion.com/guides/data-apis/enhanced-markdown.md): Reference for the enhanced markdown format used by the markdown content endpoints.
+- [Working with markdown content](https://developers.notion.com/guides/data-apis/working-with-markdown-content.md): Learn how to create, read, and update Notion page content using markdown instead of the block API.
+- [Enhanced markdown format (v1, deprecated)](https://developers.notion.com/guides/data-apis/enhanced-markdown.md): Reference for the enhanced markdown format used by the markdown content endpoints.
 - [Notion-flavored Markdown format](https://developers.notion.com/guides/data-apis/notion-flavored-markdown.md): Reference for Notion-flavored Markdown, the syntax used by markdown_version v2.
 - [Working with files and media](https://developers.notion.com/guides/data-apis/working-with-files-and-media.md): Learn how to add and retrieve files and media on pages with the Notion API.
 - [Uploading small files](https://developers.notion.com/guides/data-apis/uploading-small-files.md): Learn how to send and attach files up to 20 MB using the Notion API.

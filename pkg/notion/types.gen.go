@@ -6044,7 +6044,7 @@ type CreateAComment struct {
 	Attachments CreateACommentAttachments `json:"attachments,omitzero"`
 	// Display name for the comment.
 	DisplayName CreateACommentDisplayName `json:"display_name,omitzero"`
-	// The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.
+	// The Markdown syntax to use. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown) and is recommended. `v1` is enhanced markdown. It's deprecated. It's the default on current Notion-Versions. The next Notion-Version rejects `v1` with a `400` `validation_error`.
 	MarkdownVersion      MarkdownVersion      `json:"markdown_version,omitzero"`
 	CreateACommentAllOf0 CreateACommentAllOf0 `json:"-"`
 }
@@ -11467,7 +11467,7 @@ func (v *MapViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name 
 	return false, nil
 }
 
-// The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.
+// The Markdown syntax to use. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown) and is recommended. `v1` is enhanced markdown. It's deprecated. It's the default on current Notion-Versions. The next Notion-Version rejects `v1` with a `400` `validation_error`.
 type MarkdownVersion string
 
 const (
@@ -14009,7 +14009,7 @@ type PageMarkdownResponse struct {
 	Object string `json:"object"`
 	// The ID of the page or block.
 	ID IDResponse `json:"id"`
-	// The page content as Markdown, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).
+	// The page content as Markdown, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).
 	Markdown string `json:"markdown"`
 	// Whether the content was truncated due to exceeding the record count limit.
 	Truncated bool `json:"truncated"`
@@ -16055,11 +16055,11 @@ type PostPage struct {
 	Cover      *PageCoverRequest              `json:"cover,omitzero"`
 	Content    []BlockObjectRequest           `json:"content,omitzero"`
 	Children   []BlockObjectRequest           `json:"children,omitzero"`
-	// Page content as Markdown, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`). Mutually exclusive with content/children.
+	// Page content as Markdown, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions). Mutually exclusive with content/children.
 	Markdown string `json:"markdown,omitzero"`
 	// Set to true to receive an async_task response for markdown page creation. Only supported when markdown is provided.
 	AllowAsync *bool `json:"allow_async,omitzero"`
-	// The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.
+	// The Markdown syntax to use. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown) and is recommended. `v1` is enhanced markdown. It's deprecated. It's the default on current Notion-Versions. The next Notion-Version rejects `v1` with a `400` `validation_error`.
 	MarkdownVersion MarkdownVersion    `json:"markdown_version,omitzero"`
 	Template        PostPageTemplate   `json:"template,omitzero"`
 	Position        PagePositionSchema `json:"position,omitzero"`
@@ -26816,7 +26816,7 @@ type UpdateABlockVideo struct {
 
 // UpdateAComment defines a model
 type UpdateAComment struct {
-	// The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.
+	// The Markdown syntax to use. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown) and is recommended. `v1` is enhanced markdown. It's deprecated. It's the default on current Notion-Versions. The next Notion-Version rejects `v1` with a `400` `validation_error`.
 	MarkdownVersion      MarkdownVersion      `json:"markdown_version,omitzero"`
 	UpdateACommentAllOf0 UpdateACommentAllOf0 `json:"-"`
 }
@@ -27551,7 +27551,7 @@ type UpdateMediaContentWithURLAndCaptionRequest struct {
 type UpdatePageMarkdown struct {
 	// Set to true to opt into receiving an async_task result when this update operation is accepted for background execution. If omitted or false, the endpoint keeps the existing synchronous response shape.
 	AllowAsync *bool `json:"allow_async,omitzero"`
-	// The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.
+	// The Markdown syntax to use. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown) and is recommended. `v1` is enhanced markdown. It's deprecated. It's the default on current Notion-Versions. The next Notion-Version rejects `v1` with a `400` `validation_error`.
 	MarkdownVersion MarkdownVersion        `json:"markdown_version,omitzero"`
 	Type            UpdatePageMarkdownType `json:"type"`
 	// Insert new content into the page.
@@ -27850,7 +27850,7 @@ func (e UpdatePageMarkdownAcceptedOperationRestSurface) Valid() bool {
 
 // Insert new content into the page.
 type UpdatePageMarkdownAllOf0InsertContentInsertContent struct {
-	// The Markdown content to insert into the page, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).
+	// The Markdown content to insert into the page, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).
 	Content string `json:"content"`
 	// Selection of existing content to insert after, using the ellipsis format ("start text...end text"). Omit to append at the end of the page.
 	After string `json:"after,omitzero"`
@@ -27934,7 +27934,7 @@ func (v *UpdatePageMarkdownAllOf0InsertContentInsertContentPosition) MarshalJSON
 
 // Replace a range of content in the page.
 type UpdatePageMarkdownAllOf0ReplaceContentRangeReplaceContentRange struct {
-	// The new Markdown content to replace the matched range, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).
+	// The new Markdown content to replace the matched range, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).
 	Content string `json:"content"`
 	// Selection of existing content to replace, using the ellipsis format ("start text...end text").
 	ContentRange string `json:"content_range"`
@@ -27944,7 +27944,7 @@ type UpdatePageMarkdownAllOf0ReplaceContentRangeReplaceContentRange struct {
 
 // Replace the entire page content with new markdown.
 type UpdatePageMarkdownAllOf0ReplaceContentReplaceContent struct {
-	// The new Markdown content to replace the entire page content, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).
+	// The new Markdown content to replace the entire page content, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).
 	NewStr string `json:"new_str"`
 	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
 	AllowDeletingContent *bool `json:"allow_deleting_content,omitzero"`

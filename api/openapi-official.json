@@ -1242,7 +1242,7 @@
                     }
                   },
                   "markdown": {
-                    "description": "Page content as Markdown, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`). Mutually exclusive with content/children.",
+                    "description": "Page content as Markdown, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions). Mutually exclusive with content/children.",
                     "type": "string"
                   },
                   "allow_async": {
@@ -1250,7 +1250,7 @@
                     "type": "boolean"
                   },
                   "markdown_version": {
-                    "description": "The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.",
+                    "description": "The Markdown syntax to use. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown) and is recommended. `v1` is enhanced markdown. It's deprecated. It's the default on current Notion-Versions. The next Notion-Version rejects `v1` with a `400` `validation_error`.",
                     "type": "string",
                     "enum": [
                       "v1",
@@ -3003,7 +3003,7 @@
             "name": "markdown_version",
             "in": "query",
             "schema": {
-              "description": "The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.",
+              "description": "The Markdown syntax to use. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown) and is recommended. `v1` is enhanced markdown. It's deprecated. It's the default on current Notion-Versions. The next Notion-Version rejects `v1` with a `400` `validation_error`.",
               "type": "string",
               "enum": [
                 "v1",
@@ -3183,7 +3183,7 @@
                         "type": "boolean"
                       },
                       "markdown_version": {
-                        "description": "The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.",
+                        "description": "The Markdown syntax to use. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown) and is recommended. `v1` is enhanced markdown. It's deprecated. It's the default on current Notion-Versions. The next Notion-Version rejects `v1` with a `400` `validation_error`.",
                         "type": "string",
                         "enum": [
                           "v1",
@@ -3208,7 +3208,7 @@
                             "type": "object",
                             "properties": {
                               "content": {
-                                "description": "The Markdown content to insert into the page, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).",
+                                "description": "The Markdown content to insert into the page, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).",
                                 "type": "string",
                                 "examples": [
                                   "## New Section\n\nInserted content here."
@@ -3275,7 +3275,7 @@
                             "type": "object",
                             "properties": {
                               "content": {
-                                "description": "The new Markdown content to replace the matched range, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).",
+                                "description": "The new Markdown content to replace the matched range, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).",
                                 "type": "string",
                                 "examples": [
                                   "## Updated Section\n\nNew content replaces the old."
@@ -3371,7 +3371,7 @@
                             "type": "object",
                             "properties": {
                               "new_str": {
-                                "description": "The new Markdown content to replace the entire page content, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).",
+                                "description": "The new Markdown content to replace the entire page content, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).",
                                 "type": "string",
                                 "examples": [
                                   "# Updated Page\n\nCompletely new page content."
@@ -9943,7 +9943,7 @@
                         ]
                       },
                       "markdown_version": {
-                        "description": "The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.",
+                        "description": "The Markdown syntax to use. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown) and is recommended. `v1` is enhanced markdown. It's deprecated. It's the default on current Notion-Versions. The next Notion-Version rejects `v1` with a `400` `validation_error`.",
                         "type": "string",
                         "enum": [
                           "v1",
@@ -10600,7 +10600,7 @@
                     "type": "object",
                     "properties": {
                       "markdown_version": {
-                        "description": "The Markdown syntax to use. `v1` (the default) is enhanced markdown. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown), an opt-in preview.",
+                        "description": "The Markdown syntax to use. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown) and is recommended. `v1` is enhanced markdown. It's deprecated. It's the default on current Notion-Versions. The next Notion-Version rejects `v1` with a `400` `validation_error`.",
                         "type": "string",
                         "enum": [
                           "v1",
@@ -43044,7 +43044,7 @@
             "$ref": "#/components/schemas/idResponse"
           },
           "markdown": {
-            "description": "The page content as Markdown, in the syntax set by `markdown_version`: enhanced markdown (`v1`, the default) or Notion-flavored Markdown (`v2`).",
+            "description": "The page content as Markdown, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).",
             "type": "string"
           },
           "truncated": {
