@@ -1,6 +1,6 @@
 # Notion Docs
 
-- [Overview](https://developers.notion.com/guides/get-started/overview.md): Discover what Notion connections are, when to use each type, and what you can build.
+- [Notion connections](https://developers.notion.com/guides/get-started/overview.md): Compare internal connections, public connections, and personal access tokens.
 - [API quickstart](https://developers.notion.com/guides/get-started/quick-start.md): Create a page in your Notion workspace with a personal access token and a single API request.
 - [Developer tools](https://developers.notion.com/guides/get-started/developer-tools.md): Turn on developer features in Notion and customize the Developer section in your sidebar.
 - [Personal access tokens](https://developers.notion.com/guides/get-started/personal-access-tokens.md): Create and use personal access tokens for user-scoped API and Workers access.
@@ -51,13 +51,14 @@
 - [SIEM events](https://developers.notion.com/compliance/siem-events.md): A comprehensive list of webhook events available in your SIEM platform once you set up the Notion SIEM connection.
 - [Audit log events](https://developers.notion.com/compliance/audit-log-events.md): A comprehensive list of events tracked in the Notion audit log for compliance and security monitoring.
 - [Introduction](https://developers.notion.com/guides/link-previews/introduction.md): Learn how link previews work in Notion.
-- [Introduction](https://developers.notion.com/reference/intro.md): Learn the conventions, authentication, and pagination patterns used across the Notion API.
+- [Introduction](https://developers.notion.com/reference/intro.md): Find the base URL, headers, and data formats for Notion API requests.
+- [Pagination](https://developers.notion.com/reference/pagination.md): Read lists of results with cursor-based pagination in the Notion API.
 - [Connection capabilities](https://developers.notion.com/reference/capabilities.md): Learn about the capabilities that control what a connection can do and see in a Notion workspace.
 - [Webhooks](https://developers.notion.com/reference/webhooks.md): Learn how your connection can automatically respond to workspace activity in real-time.
 - [Event types & delivery](https://developers.notion.com/reference/webhooks-events-delivery.md): Learn about the different event types and how they are delivered to your connection.
 - [Request limits](https://developers.notion.com/reference/request-limits.md): To ensure a consistent developer experience for all API users, the Notion API is rate limited and basic size limits apply to request parameters.
 - [Workspace block limits](https://developers.notion.com/reference/workspace-block-limits.md): Learn when the Free workspace block limit blocks an API write and how to handle the error.
-- [Status codes](https://developers.notion.com/reference/status-codes.md): Responses from the API use HTTP response codes to indicate general classes of success and error.
+- [Status codes](https://developers.notion.com/reference/status-codes.md): Look up HTTP status codes and the error details returned by the Notion API.
 - [Retrieve an async task](https://developers.notion.com/reference/retrieve-async-task.md): Retrieve the status and result of an async task.
 - [Versioning](https://developers.notion.com/reference/versioning.md): Learn about API change management and how to set the appropriate version in your connection.
 - [Changes by version](https://developers.notion.com/reference/changes-by-version.md)
@@ -104,7 +105,7 @@
 - [Retrieve a database](https://developers.notion.com/reference/retrieve-database.md)
 - [Create a data source](https://developers.notion.com/reference/create-a-data-source.md)
 - [Retrieve a data source](https://developers.notion.com/reference/retrieve-a-data-source.md)
-- [List data source templates](https://developers.notion.com/reference/list-data-source-templates.md): Use this API to retrieve details of all page templates available for a data source.
+- [List data source templates](https://developers.notion.com/reference/list-data-source-templates.md): List the page templates your connection can read in a data source.
 - [Update a data source](https://developers.notion.com/reference/update-a-data-source.md)
 - [Update data source properties](https://developers.notion.com/reference/update-data-source-properties.md): Add, rename, remove, or change properties in a data source schema.
 - [Query a data source](https://developers.notion.com/reference/query-a-data-source.md)
@@ -136,8 +137,8 @@
 - [Complete a file upload](https://developers.notion.com/reference/complete-file-upload.md): Use this API to finalize a `mode=multi_part` [file upload](/reference/file-upload) after all of the parts have been sent successfully.
 - [Retrieve a file upload](https://developers.notion.com/reference/retrieve-file-upload.md): Use this API to get the details of a [File Upload](/reference/file-upload) object.
 - [List file uploads](https://developers.notion.com/reference/list-file-uploads.md): Use this API to retrieve [file uploads](/reference/file-upload) for the current bot connection, sorted by most recent first.
-- [Search by title](https://developers.notion.com/reference/post-search.md): Searches all parent or child pages and data_sources that have been shared with a connection.
-- [Search optimizations and limitations](https://developers.notion.com/reference/search-optimizations-and-limitations.md)
+- [Search by title](https://developers.notion.com/reference/post-search.md): Find pages and data sources by title.
+- [Search optimizations and limitations](https://developers.notion.com/reference/search-optimizations-and-limitations.md): Find out what search can return and how to narrow the results.
 - [List all users](https://developers.notion.com/reference/get-users.md): Returns a paginated list of [Users](/reference/user) for the workspace. The response may contain fewer than `page_size` of results.
 - [Retrieve a user](https://developers.notion.com/reference/get-user.md): Retrieves a [User](/reference/user) using the ID specified.
 - [Retrieve your token's bot user](https://developers.notion.com/reference/get-self.md): Retrieves the [User](/reference/user) associated with the token provided in the authorization header.
