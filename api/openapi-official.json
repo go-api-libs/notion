@@ -154,7 +154,7 @@
         ],
         "x-notion-docs-ref": "https://developers.notion.com/reference/get-self",
         "x-notion-docs-guides": [
-          "https://developers.notion.com/guides/get-started/overview"
+          "https://developers.notion.com/guides/connections-and-tokens/overview"
         ]
       }
     },
@@ -310,7 +310,7 @@
         ],
         "x-notion-docs-ref": "https://developers.notion.com/reference/get-user",
         "x-notion-docs-guides": [
-          "https://developers.notion.com/guides/get-started/overview"
+          "https://developers.notion.com/guides/connections-and-tokens/overview"
         ]
       }
     },
@@ -508,7 +508,7 @@
         ],
         "x-notion-docs-ref": "https://developers.notion.com/reference/get-users",
         "x-notion-docs-guides": [
-          "https://developers.notion.com/guides/get-started/overview"
+          "https://developers.notion.com/guides/connections-and-tokens/overview"
         ]
       }
     },
@@ -27531,7 +27531,7 @@
         ],
         "x-notion-docs-ref": "https://developers.notion.com/reference/create-a-token",
         "x-notion-docs-guides": [
-          "https://developers.notion.com/guides/get-started/authorization"
+          "https://developers.notion.com/guides/authorization/overview"
         ]
       }
     },
@@ -27637,7 +27637,7 @@
         ],
         "x-notion-docs-ref": "https://developers.notion.com/reference/revoke-token",
         "x-notion-docs-guides": [
-          "https://developers.notion.com/guides/get-started/authorization"
+          "https://developers.notion.com/guides/authorization/overview"
         ]
       }
     },
@@ -27755,7 +27755,7 @@
         ],
         "x-notion-docs-ref": "https://developers.notion.com/reference/introspect-token",
         "x-notion-docs-guides": [
-          "https://developers.notion.com/guides/get-started/authorization"
+          "https://developers.notion.com/guides/authorization/overview"
         ]
       }
     },

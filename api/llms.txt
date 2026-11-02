@@ -1,15 +1,17 @@
 # Notion Docs
 
-- [Notion connections](https://developers.notion.com/guides/get-started/overview.md): Compare internal connections, public connections, and personal access tokens.
-- [API quickstart](https://developers.notion.com/guides/get-started/quick-start.md): Create a page in your Notion workspace with a personal access token and a single API request.
-- [Developer tools](https://developers.notion.com/guides/get-started/developer-tools.md): Turn on developer features in Notion and customize the Developer section in your sidebar.
-- [Personal access tokens](https://developers.notion.com/guides/get-started/personal-access-tokens.md): Create and use personal access tokens for user-scoped API and Workers access.
-- [Internal connections](https://developers.notion.com/guides/get-started/internal-connections.md): Learn how internal connections work, how permissions are managed, and how to create one.
-- [Public connections](https://developers.notion.com/guides/get-started/public-connections.md): Learn how public connections work, how users authorize them, and how to create one.
-- [Authorization](https://developers.notion.com/guides/get-started/authorization.md): This guide describes the authorization flows for Notion connections and personal access tokens.
-- [Secure API credentials](https://developers.notion.com/guides/get-started/handling-api-keys.md): Learn how to manage and secure credentials for the Notion API.
-- [Preparing your connection for users](https://developers.notion.com/guides/get-started/preparing-for-users.md): Learn how to create databases, pages, and views in a user's workspace right after they install your public connection.
-- [List on the Marketplace](https://developers.notion.com/guides/get-started/marketplace-listing.md): Learn how to list your public connection on the Notion Marketplace.
+- [Quickstart](https://developers.notion.com/guides/notion-api/quick-start.md): Create a page in your Notion workspace with a personal access token and a single API request.
+- [Connections and tokens](https://developers.notion.com/guides/connections-and-tokens/overview.md): Compare personal access tokens, internal connections, OAuth integrations, and public integrations for your Notion app or automation.
+- [Personal access tokens](https://developers.notion.com/guides/connections-and-tokens/personal-access-tokens.md): Create and manage personal access tokens for Notion API requests, scripts, and Workers using your own permissions.
+- [Internal connections](https://developers.notion.com/guides/connections-and-tokens/internal-connections.md): Create an internal Notion connection for team automations, grant access to pages, and authenticate API requests.
+- [OAuth integrations](https://developers.notion.com/guides/connections-and-tokens/oauth-integrations/overview.md): Build an internal tool for your Notion workspaces where each user authorizes their own access.
+- [Set up content for users](https://developers.notion.com/guides/connections-and-tokens/oauth-integrations/preparing-for-users.md): Create pages, databases, and views in a user’s Notion workspace after they authorize your scoped OAuth integration or public integration.
+- [Public integrations](https://developers.notion.com/guides/connections-and-tokens/public-integrations/overview.md): Create an OAuth integration available to any Notion workspace, with the option to list it on the Marketplace.
+- [List on the Marketplace](https://developers.notion.com/guides/connections-and-tokens/public-integrations/marketplace-listing.md): Submit your public connection to the Notion Marketplace and prepare its listing for review.
+- [Authorization](https://developers.notion.com/guides/authorization/overview.md): Authenticate Notion API requests with personal access tokens, internal connection tokens, or OAuth integration OAuth flows.
+- [Secure API credentials](https://developers.notion.com/guides/authorization/credential-security.md): Store, rotate, and revoke Notion API credentials, and respond when a token is exposed.
+- [Developer tools](https://developers.notion.com/guides/developer-tools/overview.md): Access developer tools, copy resource IDs, and monitor connection health in Notion.
+- [Connection health](https://developers.notion.com/guides/developer-tools/connection-health.md): Monitor your Notion connection’s API requests, errors, and rate limits in the Developer portal’s Health tab.
 - [Overview](https://developers.notion.com/guides/mcp/overview.md): Connect your AI assistant to Notion with MCP to manage projects and tasks, work with meeting notes, and create documents with your team.
 - [Connect to Notion MCP](https://developers.notion.com/guides/mcp/get-started-with-mcp.md): Connect Notion to your AI assistant through its connector library, Notion’s directory, or manual MCP setup.
 - [Build an MCP client for Notion](https://developers.notion.com/guides/mcp/build-mcp-client.md): Connect your app or AI assistant to Notion MCP with OAuth 2.0, PKCE, and support for Notion’s tools.
@@ -57,7 +59,6 @@
 - [Retrieving existing files](https://developers.notion.com/guides/data-apis/retrieving-files.md): Learn how to get a download link for files in the Notion API.
 - [Uploading larger files](https://developers.notion.com/guides/data-apis/sending-larger-files.md): Learn how to send files larger than 20 MB in multiple parts.
 - [Importing external files](https://developers.notion.com/guides/data-apis/importing-external-files.md): Learn how to migrate files from an external URL to Notion.
-- [Connection health](https://developers.notion.com/guides/manage-connections/connection-health.md): See how many API requests a connection sent in the last 24 hours, how many failed, and why.
 - [Example code](https://developers.notion.com/guides/resources/examples.md)
 - [Postman workspace](https://developers.notion.com/guides/resources/notion-s-api-workspace.md)
 - [Historical changelog](https://developers.notion.com/guides/resources/historical-changelog.md): View an archive of Notion Developers updates prior to September 2023
@@ -260,6 +261,16 @@
 - [Delete an agent in a space](https://developers.notion.com/reference/admin/delete-agent.md): Delete an agent in a space.
 - [Disable or re-enable an agent in a space](https://developers.notion.com/reference/admin/update-agent-status.md): Disable or re-enable an agent in a space.
 - [Update who can create agents in a space](https://developers.notion.com/reference/admin/update-agent-creation-policy.md): Update who can create agents in a space.
+- [List credit access policies](https://developers.notion.com/reference/admin/list-credit-access-policies.md): List credit access policies.
+- [Get credit access policy](https://developers.notion.com/reference/admin/get-credit-access-policy.md): Get credit access policy.
+- [Create credit access policy](https://developers.notion.com/reference/admin/create-credit-access-policy.md): Create credit access policy.
+- [Update credit access policy](https://developers.notion.com/reference/admin/update-credit-access-policy.md): Update credit access policy.
+- [Delete credit access policy](https://developers.notion.com/reference/admin/delete-credit-access-policy.md): Delete credit access policy.
+- [List credit access assignments](https://developers.notion.com/reference/admin/list-credit-access-assignments.md): List credit access assignments.
+- [Get credit access assignment](https://developers.notion.com/reference/admin/get-credit-access-assignment.md): Get credit access assignment.
+- [Create credit access assignment](https://developers.notion.com/reference/admin/create-credit-access-assignment.md): Create credit access assignment.
+- [Update credit access assignment](https://developers.notion.com/reference/admin/update-credit-access-assignment.md): Update credit access assignment.
+- [Delete credit access assignment](https://developers.notion.com/reference/admin/delete-credit-access-assignment.md): Delete credit access assignment.
 - [List MCP client connections in an organization](https://developers.notion.com/reference/admin/list-mcp-client-connections.md): List members' connections to Notion through MCP clients.
 - [Revoke an MCP client connection](https://developers.notion.com/reference/admin/revoke-mcp-client-connection.md): Revoke a member's active connection to Notion from an MCP client.
 - [Deny or restore enterprise-managed MCP client access](https://developers.notion.com/reference/admin/update-mcp-client-connection-enterprise-managed-access.md): Deny or restore a member's access through enterprise-managed MCP connections.
