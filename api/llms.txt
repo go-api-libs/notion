@@ -10,15 +10,29 @@
 - [Secure API credentials](https://developers.notion.com/guides/get-started/handling-api-keys.md): Learn how to manage and secure credentials for the Notion API.
 - [Preparing your connection for users](https://developers.notion.com/guides/get-started/preparing-for-users.md): Learn how to create databases, pages, and views in a user's workspace right after they install your public connection.
 - [List on the Marketplace](https://developers.notion.com/guides/get-started/marketplace-listing.md): Learn how to list your public connection on the Notion Marketplace.
-- [Notion MCP](https://developers.notion.com/guides/mcp/overview.md): Learn how MCP clients connect to your Notion workspace.
-- [Common MCP clients](https://developers.notion.com/guides/mcp/common-mcp-clients.md): Find setup documentation for MCP clients that can connect to Notion MCP.
-- [Connect to Notion MCP](https://developers.notion.com/guides/mcp/get-started-with-mcp.md): Connect an MCP client to your Notion workspace.
-- [Supported tools](https://developers.notion.com/guides/mcp/mcp-supported-tools.md): Learn what you can do with Notion MCP tools.
-- [Use Notion Skills with MCP](https://developers.notion.com/guides/mcp/notion-skills.md): Learn how MCP clients create, find, and use reusable instructions stored as Notion pages.
-- [Security best practices](https://developers.notion.com/guides/mcp/mcp-security-best-practices.md): Learn how to keep your workspace secure when using Notion MCP.
-- [Build an MCP client for Notion](https://developers.notion.com/guides/mcp/build-mcp-client.md): Connect a custom MCP client to Notion MCP with OAuth 2.0 and PKCE.
-- [Enterprise-managed authorization](https://developers.notion.com/guides/mcp/enterprise-managed-authorization.md): Reference for getting Notion MCP access tokens with an identity provider's ID-JAG instead of the browser OAuth flow.
-- [Hosting Notion MCP locally](https://developers.notion.com/guides/mcp/hosting-open-source-mcp.md): Learn how and when to use the open-source Notion MCP server.
+- [Overview](https://developers.notion.com/guides/mcp/overview.md): Connect your AI assistant to Notion with MCP to manage projects and tasks, work with meeting notes, and create documents with your team.
+- [Connect to Notion MCP](https://developers.notion.com/guides/mcp/get-started-with-mcp.md): Connect Notion to your AI assistant through its connector library, Notion’s directory, or manual MCP setup.
+- [Build an MCP client for Notion](https://developers.notion.com/guides/mcp/build-mcp-client.md): Connect your app or AI assistant to Notion MCP with OAuth 2.0, PKCE, and support for Notion’s tools.
+- [Supported tools](https://developers.notion.com/guides/mcp/mcp-supported-tools.md): Explore Notion MCP tools to manage projects and tasks, find meeting notes, share feedback, use Skills, and delegate work to Custom Agents.
+- [Search and read information](https://developers.notion.com/guides/mcp/tools-search.md): Find project decisions, summarize meeting notes, and search Notion pages and connected apps.
+- [Search and read information — technical reference](https://developers.notion.com/guides/mcp/tools-search-reference.md): Find search filters, response formats, and access requirements for Notion MCP search, meeting notes, users, and connected sources.
+- [Work together in Notion](https://developers.notion.com/guides/mcp/tools-comments.md): Add comments, follow discussions, suggest edits, and track changes with your team and AI assistants.
+- [Work together in Notion — technical reference](https://developers.notion.com/guides/mcp/tools-comments-reference.md): Find parameters and permissions for Notion MCP comments, discussions, suggested edits, page history, and restoring pages.
+- [Create and organize pages](https://developers.notion.com/guides/mcp/tools-pages.md): Draft project plans, update tasks, create meeting agendas, and organize pages with your AI assistant.
+- [Create and organize pages — technical reference](https://developers.notion.com/guides/mcp/tools-pages-reference.md): Find parameters and examples for creating, editing, moving, duplicating, and deleting Notion pages through MCP.
+- [Manage databases and views](https://developers.notion.com/guides/mcp/tools-databases.md): Create project trackers, manage tasks, and organize content calendars with database properties and views.
+- [Manage databases and views — technical reference](https://developers.notion.com/guides/mcp/tools-databases-reference.md): Find parameters for Notion MCP databases, data sources, views, and queries, including filters and access requirements.
+- [Work with files](https://developers.notion.com/guides/mcp/tools-files.md): Upload documents, attach files to project pages, organize folders, and get download links.
+- [Work with files — technical reference](https://developers.notion.com/guides/mcp/tools-files-reference.md): Find upload steps, file-size limits, attachment options, and download-link requirements for Notion MCP file tools.
+- [Reuse instructions and delegate work](https://developers.notion.com/guides/mcp/tools-skills-agents.md): Use shared Skills to repeat tasks with your AI assistant, or delegate work to Custom Agents your team can access in Notion.
+- [Reuse instructions and delegate work — technical reference](https://developers.notion.com/guides/mcp/tools-skills-agents-reference.md): Find parameters for importing and enabling Notion Skills, searching memories, and starting and managing Custom Agent sessions.
+- [Manage your time](https://developers.notion.com/guides/mcp/tools-calendars.md): Plan your day, find time to meet, manage calendar events, and prepare for meetings.
+- [Manage your time — technical reference](https://developers.notion.com/guides/mcp/tools-calendars-reference.md): Find parameters and permissions for Notion MCP calendars, events, coworker schedules, contacts, and meeting rooms.
+- [Notion MCP tool FAQs](https://developers.notion.com/guides/mcp/tools-faqs.md): Browse the complete Notion MCP tool list and find answers about tool access, AI assistant differences, and rate limits.
+- [Notion MCP rate limits](https://developers.notion.com/guides/mcp/rate-limits.md): Understand Notion MCP request limits, handle rate-limit errors, and retry tool calls.
+- [Use Notion Skills with MCP](https://developers.notion.com/guides/mcp/notion-skills.md): Create reusable instructions as Skills in Notion, share them with teammates, and use them across AI assistants connected to Notion MCP.
+- [Enterprise-managed authorization](https://developers.notion.com/guides/mcp/enterprise-managed-authorization.md): Connect to Notion MCP through your identity provider using ID-JAG token exchange instead of browser-based OAuth.
+- [Security best practices](https://developers.notion.com/guides/mcp/mcp-security-best-practices.md): Protect your Notion workspace when connecting AI assistants, manage client access, and reduce the risks of prompt injection.
 - [Overview](https://developers.notion.com/guides/notion-agent-apis/overview.md): Power apps and integrations with Custom Agents.
 - [Quickstart](https://developers.notion.com/guides/notion-agent-apis/quickstart.md): Pick a Custom Agent, start a chat, and read its reply through the API.
 - [Upgrading to public beta](https://developers.notion.com/guides/notion-agent-apis/upgrading-to-public-beta.md): Migrate your private alpha integration to the public beta.
