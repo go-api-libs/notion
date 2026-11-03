@@ -208,13 +208,13 @@ func (e APITranscriptionStatus) Valid() bool {
 type Agent struct {
 	// Always `agent`
 	Object string   `json:"object"`
-	ID     AgentID6 `json:"id"`
+	ID     AgentID2 `json:"id"`
 	// What kind of agent this is: "notion_ai" is the personal agent; "custom_agent" is a standalone agent you chat with; "autofill_custom_agent" fills a database property; "external" runs through an external provider.
-	AgentType          AgentAgentType `json:"agent_type"`
-	Name               string         `json:"name"`
-	Description        string         `json:"description"`
-	InstructionsPageID IDResponse     `json:"instructions_page_id"`
-	Icon               AgentIcon      `json:"icon"`
+	AgentType          AgentType  `json:"agent_type"`
+	Name               string     `json:"name"`
+	Description        string     `json:"description"`
+	InstructionsPageID IDResponse `json:"instructions_page_id"`
+	Icon               AgentIcon  `json:"icon"`
 	// The model the agent runs on: auto (Notion selects) or a pinned model.
 	Model AgentModel `json:"model"`
 	// Integrations the agent is connected to (Notion, Slack, Discord, MCP servers, and other connectors), each with an account and per-target permissions.
@@ -244,26 +244,6 @@ type Agent struct {
 	LastEditedTime time.Time `json:"last_edited_time,omitzero"`
 	// The agent's inline instructions when verbose=true, or null when its instructions are stored on a page.
 	Instructions string `json:"instructions,omitzero"`
-}
-
-// What kind of agent this is: "notion_ai" is the personal agent; "custom_agent" is a standalone agent you chat with; "autofill_custom_agent" fills a database property; "external" runs through an external provider.
-type AgentAgentType string
-
-const (
-	AgentAgentTypeNotionAi            AgentAgentType = "notion_ai"
-	AgentAgentTypeCustomAgent         AgentAgentType = "custom_agent"
-	AgentAgentTypeAutofillCustomAgent AgentAgentType = "autofill_custom_agent"
-	AgentAgentTypeExternal            AgentAgentType = "external"
-)
-
-// Valid indicates whether the value is a known member of the AgentAgentType enum.
-func (e AgentAgentType) Valid() bool {
-	switch e {
-	case AgentAgentTypeNotionAi, AgentAgentTypeCustomAgent, AgentAgentTypeAutofillCustomAgent, AgentAgentTypeExternal:
-		return true
-	default:
-		return false
-	}
 }
 
 // AgentBatch defines a model
@@ -406,7 +386,7 @@ func (v *AgentBatchOperationsItemDelete) unmarshalJSONMember(dec *jsontext.Decod
 
 // AgentBatchOperationsItemUpdateCreditLimit defines a model
 type AgentBatchOperationsItemUpdateCreditLimit struct {
-	// Set or clear one agent's credit limit, equivalent to `PATCH /v1/agents/:agent_id/credit_limit`. Requires full access to the agent.
+	// Set or clear one agent's credit limit, equivalent to `PATCH /v1/agents/:agent_id/credit_limit`. Requires a personal access token whose user has full access to the agent.
 	Action string `json:"action"`
 	// The agent ID (a UUID), or `notion_ai` for the personal agent. Endpoint-specific restrictions still apply.
 	AgentID AgentID `json:"agent_id"`
@@ -435,7 +415,7 @@ type AgentBatchOperationsItemUpdateStatus struct {
 	// The agent ID (a UUID), or `notion_ai` for the personal agent. Endpoint-specific restrictions still apply.
 	AgentID AgentID `json:"agent_id"`
 	// The status to apply to this agent.
-	Fields UpdateAgentStatus `json:"fields"`
+	Fields UpdateAgentStatus3 `json:"fields"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentBatchOperationsItemUpdateStatus declares it.
@@ -1640,10 +1620,10 @@ func (v *AgentHasUnpublishedChanges) MarshalJSONTo(enc *jsontext.Encoder) error 
 }
 
 // AgentID defines a model
-// AgentID is an untagged oneOf union: exactly one field is set after unmarshaling.
+// AgentID is an untagged anyOf union: at least one field is set after unmarshaling.
 type AgentID struct {
-	IDRequest    IDRequest
-	AgentIDOneOf AgentIDOneOf
+	IDRequest IDRequest
+	String    string
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -1651,7 +1631,6 @@ func (v *AgentID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentID{}
 
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -1660,8 +1639,7 @@ func (v *AgentID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	var matched int
 
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
+	{
 		var vv IDRequest
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
 			v.IDRequest = vv
@@ -1669,17 +1647,16 @@ func (v *AgentID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		}
 	}
 
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv AgentIDOneOf
+	{
+		var vv string
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.AgentIDOneOf = vv
+			v.String = vv
 			matched++
 		}
 	}
 
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
 	}
 
 	return nil
@@ -1690,23 +1667,23 @@ func (v *AgentID) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.IDRequest != "":
 		return json.MarshalEncode(enc, v.IDRequest, jsonOptsTo(enc))
-	case v.AgentIDOneOf != "":
-		return json.MarshalEncode(enc, v.AgentIDOneOf, jsonOptsTo(enc))
+	case v.String != "":
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// AgentID6 defines a model
-// AgentID6 is an untagged anyOf union: at least one field is set after unmarshaling.
-type AgentID6 struct {
+// AgentID2 defines a model
+// AgentID2 is an untagged anyOf union: at least one field is set after unmarshaling.
+type AgentID2 struct {
 	IDResponse *IDResponse
 	String     string
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *AgentID6) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = AgentID6{}
+func (v *AgentID2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = AgentID2{}
 
 	opts := jsonOptsOf(dec)
 
@@ -1741,7 +1718,7 @@ func (v *AgentID6) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *AgentID6) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *AgentID2) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.IDResponse != nil:
 		return json.MarshalEncode(enc, v.IDResponse, jsonOptsTo(enc))
@@ -1750,24 +1727,6 @@ func (v *AgentID6) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// One of: `notion_ai`, `33333333-3333-3333-3333-333333333333`
-type AgentIDOneOf string
-
-const (
-	AgentIDOneOfNotionAi                                                         AgentIDOneOf = "notion_ai"
-	AgentIDOneOfThreeThreeThreeThreeThreeThreeThreeThree333333333333333333333333 AgentIDOneOf = "33333333-3333-3333-3333-333333333333"
-)
-
-// Valid indicates whether the value is a known member of the AgentIDOneOf enum.
-func (e AgentIDOneOf) Valid() bool {
-	switch e {
-	case AgentIDOneOfNotionAi, AgentIDOneOfThreeThreeThreeThreeThreeThreeThreeThree333333333333333333333333:
-		return true
-	default:
-		return false
-	}
 }
 
 // AgentIcon defines a model
@@ -2649,6 +2608,26 @@ func (v *AgentTriggersItemScheduleEndDate) unmarshalJSONMember(dec *jsontext.Dec
 	}
 
 	return false, nil
+}
+
+// What kind of agent this is: "notion_ai" is the personal agent; "custom_agent" is a standalone agent you chat with; "autofill_custom_agent" fills a database property; "external" runs through an external provider.
+type AgentType string
+
+const (
+	AgentTypeNotionAi            AgentType = "notion_ai"
+	AgentTypeCustomAgent         AgentType = "custom_agent"
+	AgentTypeAutofillCustomAgent AgentType = "autofill_custom_agent"
+	AgentTypeExternal            AgentType = "external"
+)
+
+// Valid indicates whether the value is a known member of the AgentType enum.
+func (e AgentType) Valid() bool {
+	switch e {
+	case AgentTypeNotionAi, AgentTypeCustomAgent, AgentTypeAutofillCustomAgent, AgentTypeExternal:
+		return true
+	default:
+		return false
+	}
 }
 
 // AgentVersionOneOf defines a model
@@ -27583,6 +27562,20 @@ func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem) MarshalJSO
 	return enc.WriteValue(out)
 }
 
+// UpdateAgent defines a model
+type UpdateAgent struct {
+	// Enable or disable the agent. Re-enabling works only for an agent an editor disabled, through the API or in agent settings.
+	Status UpdateAgentStatus `json:"status,omitzero"`
+	// The agent's display name.
+	Name string `json:"name,omitzero"`
+	// The custom agent's short description. Use an empty string to clear it.
+	Description string `json:"description,omitzero"`
+	// Whether the personal-access-token owner has this agent in their favorites.
+	IsFavorited *bool `json:"is_favorited,omitzero"`
+	// The model selection. Use auto to let Notion choose, or pinned with an available public model ID.
+	Model UpdateAgentModel `json:"model,omitzero"`
+}
+
 // UpdateAgentCreditLimit defines a model
 type UpdateAgentCreditLimit struct {
 	// The per-agent credit limit as a non-negative integer, or null to clear the limit.
@@ -27598,28 +27591,115 @@ type UpdateAgentCreditLimitOk struct {
 	LastEditedTime string `json:"last_edited_time"`
 }
 
-// UpdateAgentStatus defines a model
-type UpdateAgentStatus struct {
-	// Set to "active" to re-enable an agent that was disabled through this API, or "disabled" to turn off a running agent.
-	Status UpdateAgentStatus2 `json:"status"`
+// The model selection. Use auto to let Notion choose, or pinned with an available public model ID.
+// UpdateAgentModel is an untagged oneOf union: exactly one field is set after unmarshaling.
+type UpdateAgentModel struct {
+	AgentModelAuto         *AgentModelAuto
+	UpdateAgentModelPinned *UpdateAgentModelPinned
 }
 
-// UpdateAgentStatus2 defines a model
-type UpdateAgentStatus2 string
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member mode names the alternative, which then
+// decodes each further member as it is read. With mode first, nothing is read twice.
+func (v *UpdateAgentModel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = UpdateAgentModel{}
+
+	tag, first, dec, err := jsonFirstMember(dec, "mode")
+	if err != nil {
+		return err
+	}
+
+	switch tag {
+	case "auto":
+		var vv AgentModelAuto
+		if err := jsonMembersFrom(dec, "mode", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.AgentModelAuto = &vv
+	case "pinned":
+		var vv UpdateAgentModelPinned
+		if err := jsonMembersFrom(dec, "mode", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.UpdateAgentModelPinned = &vv
+	default:
+		return jsonUnknownValue("mode", tag)
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with mode first, as decoding wants it, and set to the variant's value.
+func (v *UpdateAgentModel) MarshalJSONTo(enc *jsontext.Encoder) error {
+	var (
+		variant any
+		tag     string
+	)
+
+	switch {
+	case v.AgentModelAuto != nil:
+		variant, tag = v.AgentModelAuto, "auto"
+	case v.UpdateAgentModelPinned != nil:
+		variant, tag = v.UpdateAgentModelPinned, "pinned"
+	default:
+		return &json.SemanticError{Err: errors.New("no alternative set")}
+	}
+
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
+	if err != nil {
+		return err
+	}
+
+	if out, err = jsonFirst(out, "mode", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
+}
+
+// UpdateAgentModelPinned defines a model
+type UpdateAgentModelPinned struct {
+	// Use the selected model for each run after publishing the agent.
+	Mode string `json:"mode"`
+	// A public model ID, such as `claude-sonnet-5`. It must currently be available to the caller in this workspace.
+	ID string `json:"id"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether UpdateAgentModelPinned declares it.
+func (v *UpdateAgentModelPinned) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "mode":
+		return true, json.UnmarshalDecode(dec, &v.Mode, jsonOptsOf(dec))
+	case "id":
+		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// UpdateAgentStatus defines a model
+type UpdateAgentStatus string
 
 const (
-	UpdateAgentStatus2Active   UpdateAgentStatus2 = "active"
-	UpdateAgentStatus2Disabled UpdateAgentStatus2 = "disabled"
+	UpdateAgentStatusActive   UpdateAgentStatus = "active"
+	UpdateAgentStatusDisabled UpdateAgentStatus = "disabled"
 )
 
-// Valid indicates whether the value is a known member of the UpdateAgentStatus2 enum.
-func (e UpdateAgentStatus2) Valid() bool {
+// Valid indicates whether the value is a known member of the UpdateAgentStatus enum.
+func (e UpdateAgentStatus) Valid() bool {
 	switch e {
-	case UpdateAgentStatus2Active, UpdateAgentStatus2Disabled:
+	case UpdateAgentStatusActive, UpdateAgentStatusDisabled:
 		return true
 	default:
 		return false
 	}
+}
+
+// UpdateAgentStatus3 defines a model
+type UpdateAgentStatus3 struct {
+	// Set to "active" to re-enable an agent that an editor disabled, through this API or in agent settings, or "disabled" to turn off a running agent.
+	Status UpdateAgentStatus `json:"status"`
 }
 
 // UpdateAgentStatusOk defines a model
@@ -28190,8 +28270,10 @@ func (v *UpdateSessionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 // UpdateSessionRequestMessage defines a model
 type UpdateSessionRequestMessage struct {
-	Message       string                                 `json:"message"`
-	AgentID       AgentID                                `json:"agent_id,omitzero"`
+	Message string `json:"message"`
+	// The agent to start a session with: a custom agent ID, or `notion_ai` for the personal agent with a personal access token. Required when `session_id` is omitted.
+	AgentID AgentID `json:"agent_id,omitzero"`
+	// An existing session to send this message to. Omit it to start a new session.
 	SessionID     IDRequest                              `json:"session_id,omitzero"`
 	Attachments   UpdateSessionRequestMessageAttachments `json:"attachments,omitzero"`
 	Metadata      map[string]string                      `json:"metadata,omitzero"`

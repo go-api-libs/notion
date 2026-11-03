@@ -3272,6 +3272,67 @@
           }
         ],
         "x-notion-docs-ref": "https://developers.notion.com/reference/notion-agent-apis/delete-agent"
+      },
+      "patch": {
+        "tags": [
+          "Agents"
+        ],
+        "summary": "Update agent",
+        "operationId": "update-agent",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/agent_id"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UpdateAgent"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UpdateAgentOk"
+          },
+          "400": {
+            "$ref": "#/components/responses/UpdateAgentBadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/UpdateAgentUnauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/UpdateAgentForbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/UpdateAgentNotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/UpdateAgentNotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/UpdateAgentConflict"
+          },
+          "429": {
+            "$ref": "#/components/responses/UpdateAgentTooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/UpdateAgentInternalServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/UpdateAgentServiceUnavailable"
+          },
+          "504": {
+            "$ref": "#/components/responses/UpdateAgentGatewayTimeout"
+          },
+          "529": {
+            "$ref": "#/components/responses/UpdateAgentTheServiceIsOverloaded"
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "javascript",
+            "label": "TypeScript SDK",
+            "source": "import { Client } from \"@notionhq/client\"\n\nconst notion = new Client({ auth: process.env.NOTION_API_KEY })\n\nconst agentId = \"1f0c7c06-781b-4987-9986-5c8dd3028013\"\nconst response = await notion.request({\n  method: \"patch\",\n  path: \"agents/\" + encodeURIComponent(agentId),\n  body: { name: \"Weekly report writer\", status: \"disabled\" }\n})"
+          }
+        ],
+        "x-notion-docs-ref": "https://developers.notion.com/reference/notion-agent-apis/update-agent"
       }
     },
     "/agents/{agent_id}/insights": {
@@ -3400,6 +3461,7 @@
             "$ref": "#/components/responses/UpdateAgentStatusTheServiceIsOverloaded"
           }
         },
+        "deprecated": true,
         "x-codeSamples": [
           {
             "lang": "javascript",
@@ -3413,7 +3475,7 @@
     "/agents/{agent_id}/credit_limit": {
       "parameters": [
         {
-          "$ref": "#/components/parameters/agent_id5"
+          "$ref": "#/components/parameters/agent_id6"
         },
         {
           "$ref": "#/components/parameters/notionVersion"
@@ -5078,10 +5140,10 @@
             "const": "agent"
           },
           "id": {
-            "$ref": "#/components/schemas/AgentID6"
+            "$ref": "#/components/schemas/AgentID2"
           },
           "agent_type": {
-            "$ref": "#/components/schemas/AgentAgentType"
+            "$ref": "#/components/schemas/AgentType"
           },
           "name": {
             "type": "string"
@@ -5182,16 +5244,6 @@
           "is_favorited"
         ],
         "additionalProperties": false
-      },
-      "AgentAgentType": {
-        "description": "What kind of agent this is: \"notion_ai\" is the personal agent; \"custom_agent\" is a standalone agent you chat with; \"autofill_custom_agent\" fills a database property; \"external\" runs through an external provider.",
-        "type": "string",
-        "enum": [
-          "notion_ai",
-          "custom_agent",
-          "autofill_custom_agent",
-          "external"
-        ]
       },
       "AgentBatch": {
         "type": "object",
@@ -5313,7 +5365,7 @@
         "type": "object",
         "properties": {
           "action": {
-            "description": "Set or clear one agent's credit limit, equivalent to `PATCH /v1/agents/:agent_id/credit_limit`. Requires full access to the agent.",
+            "description": "Set or clear one agent's credit limit, equivalent to `PATCH /v1/agents/:agent_id/credit_limit`. Requires a personal access token whose user has full access to the agent.",
             "type": "string",
             "const": "update_credit_limit"
           },
@@ -5347,7 +5399,7 @@
           },
           "fields": {
             "description": "The status to apply to this agent.",
-            "$ref": "#/components/schemas/UpdateAgentStatus"
+            "$ref": "#/components/schemas/UpdateAgentStatus3"
           }
         },
         "required": [
@@ -6200,16 +6252,18 @@
         ]
       },
       "AgentID": {
-        "oneOf": [
+        "anyOf": [
           {
             "$ref": "#/components/schemas/idRequest"
           },
           {
-            "$ref": "#/components/schemas/AgentIDOneOf"
+            "description": "Always `notion_ai`",
+            "type": "string",
+            "const": "notion_ai"
           }
         ]
       },
-      "AgentID6": {
+      "AgentID2": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/idResponse"
@@ -6219,14 +6273,6 @@
             "type": "string",
             "const": "notion_ai"
           }
-        ]
-      },
-      "AgentIDOneOf": {
-        "description": "One of: `notion_ai`, `33333333-3333-3333-3333-333333333333`",
-        "type": "string",
-        "enum": [
-          "notion_ai",
-          "33333333-3333-3333-3333-333333333333"
         ]
       },
       "AgentIcon": {
@@ -6925,6 +6971,16 @@
           "end_at"
         ],
         "additionalProperties": false
+      },
+      "AgentType": {
+        "description": "What kind of agent this is: \"notion_ai\" is the personal agent; \"custom_agent\" is a standalone agent you chat with; \"autofill_custom_agent\" fills a database property; \"external\" runs through an external provider.",
+        "type": "string",
+        "enum": [
+          "notion_ai",
+          "custom_agent",
+          "autofill_custom_agent",
+          "external"
+        ]
       },
       "AgentVersion": {
         "oneOf": [
@@ -20955,6 +21011,31 @@
           }
         }
       },
+      "UpdateAgent": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "description": "Enable or disable the agent. Re-enabling works only for an agent an editor disabled, through the API or in agent settings.",
+            "$ref": "#/components/schemas/UpdateAgentStatus"
+          },
+          "name": {
+            "description": "The agent's display name.",
+            "type": "string"
+          },
+          "description": {
+            "description": "The custom agent's short description. Use an empty string to clear it.",
+            "type": "string"
+          },
+          "is_favorited": {
+            "description": "Whether the personal-access-token owner has this agent in their favorites.",
+            "type": "boolean"
+          },
+          "model": {
+            "$ref": "#/components/schemas/UpdateAgentModel"
+          }
+        },
+        "additionalProperties": false
+      },
       "UpdateAgentCreditLimit": {
         "type": "object",
         "properties": {
@@ -21000,25 +21081,55 @@
         ],
         "additionalProperties": false
       },
+      "UpdateAgentModel": {
+        "description": "The model selection. Use auto to let Notion choose, or pinned with an available public model ID.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/AgentModelAuto"
+          },
+          {
+            "$ref": "#/components/schemas/UpdateAgentModelPinned"
+          }
+        ]
+      },
+      "UpdateAgentModelPinned": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "description": "Use the selected model for each run after publishing the agent.",
+            "type": "string",
+            "const": "pinned"
+          },
+          "id": {
+            "description": "A public model ID, such as `claude-sonnet-5`. It must currently be available to the caller in this workspace.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "mode",
+          "id"
+        ],
+        "additionalProperties": false
+      },
       "UpdateAgentStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "disabled"
+        ]
+      },
+      "UpdateAgentStatus3": {
         "type": "object",
         "properties": {
           "status": {
-            "description": "Set to \"active\" to re-enable an agent that was disabled through this API, or \"disabled\" to turn off a running agent.",
-            "$ref": "#/components/schemas/UpdateAgentStatus2"
+            "description": "Set to \"active\" to re-enable an agent that an editor disabled, through this API or in agent settings, or \"disabled\" to turn off a running agent.",
+            "$ref": "#/components/schemas/UpdateAgentStatus"
           }
         },
         "required": [
           "status"
         ],
         "additionalProperties": false
-      },
-      "UpdateAgentStatus2": {
-        "type": "string",
-        "enum": [
-          "active",
-          "disabled"
-        ]
       },
       "UpdateAgentStatusOk": {
         "type": "object",
@@ -21463,9 +21574,11 @@
             "maxLength": 10000
           },
           "agent_id": {
+            "description": "The agent to start a session with: a custom agent ID, or `notion_ai` for the personal agent with a personal access token. Required when `session_id` is omitted.",
             "$ref": "#/components/schemas/AgentID"
           },
           "session_id": {
+            "description": "An existing session to send this message to. Omit it to start a new session.",
             "$ref": "#/components/schemas/idRequest"
           },
           "attachments": {
@@ -41690,6 +41803,26 @@
           }
         }
       },
+      "UpdateAgentBadRequest": {
+        "description": "Bad Request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UpdateAgentConflict": {
+        "description": "Conflict",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
       "UpdateAgentCreditLimitBadRequest": {
         "description": "Bad Request",
         "content": {
@@ -41810,6 +41943,76 @@
           }
         }
       },
+      "UpdateAgentForbidden": {
+        "description": "Forbidden",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UpdateAgentGatewayTimeout": {
+        "description": "Gateway Timeout",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UpdateAgentInternalServerError": {
+        "description": "Internal Server Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UpdateAgentNotAcceptable": {
+        "description": "Not Acceptable",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UpdateAgentNotFound": {
+        "description": "Not Found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UpdateAgentOk": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Agent"
+            }
+          }
+        }
+      },
+      "UpdateAgentServiceUnavailable": {
+        "description": "Service Unavailable",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
       "UpdateAgentStatusBadRequest": {
         "description": "Bad Request",
         "content": {
@@ -41921,6 +42124,36 @@
         }
       },
       "UpdateAgentStatusUnauthorized": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UpdateAgentTheServiceIsOverloaded": {
+        "description": "The Service Is Overloaded",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UpdateAgentTooManyRequests": {
+        "description": "Too Many Requests",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "UpdateAgentUnauthorized": {
         "description": "Unauthorized",
         "content": {
           "application/json": {
@@ -42560,7 +42793,7 @@
           "$ref": "#/components/schemas/AgentID"
         }
       },
-      "agent_id5": {
+      "agent_id6": {
         "name": "agent_id",
         "in": "path",
         "required": true,
@@ -43305,6 +43538,16 @@
           }
         }
       },
+      "UpdateAgent": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateAgent"
+            }
+          }
+        }
+      },
       "UpdateAgentCreditLimit": {
         "required": true,
         "content": {
@@ -43320,7 +43563,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/UpdateAgentStatus"
+              "$ref": "#/components/schemas/UpdateAgentStatus3"
             }
           }
         }

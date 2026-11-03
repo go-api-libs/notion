@@ -35,9 +35,9 @@
 - [Use Notion Skills with MCP](https://developers.notion.com/guides/mcp/notion-skills.md): Create reusable instructions as Skills in Notion, share them with teammates, and use them across AI assistants connected to Notion MCP.
 - [Enterprise-managed authorization](https://developers.notion.com/guides/mcp/enterprise-managed-authorization.md): Connect to Notion MCP through your identity provider using ID-JAG token exchange instead of browser-based OAuth.
 - [Security best practices](https://developers.notion.com/guides/mcp/mcp-security-best-practices.md): Protect your Notion workspace when connecting AI assistants, manage client access, and reduce the risks of prompt injection.
-- [Overview](https://developers.notion.com/guides/notion-agent-apis/overview.md): Power apps and integrations with Custom Agents.
+- [Overview](https://developers.notion.com/guides/notion-agent-apis/overview.md): Power apps and integrations with Custom Agents and the personal agent.
 - [Quickstart](https://developers.notion.com/guides/notion-agent-apis/quickstart.md): Pick a Custom Agent, start a chat, and read its reply through the API.
-- [Upgrading to public beta](https://developers.notion.com/guides/notion-agent-apis/upgrading-to-public-beta.md): Migrate your private alpha integration to the public beta.
+- [Upgrading from the alpha routes](https://developers.notion.com/guides/notion-agent-apis/upgrading-to-public-beta.md): Migrate a private alpha integration to the current Notion Agent APIs.
 - [Agent Skills API](https://developers.notion.com/guides/agent-skills/overview.md): Learn how to download and upload AI skills stored in Notion.
 - [Upgrade guide](https://developers.notion.com/guides/get-started/upgrade-guide-2026-03-11.md): Learn how to upgrade your connections to 2026-03-11.
 - [Upgrade guide](https://developers.notion.com/guides/get-started/upgrade-guide-2025-09-03.md): Learn how to upgrade your connections to 2025-09-03.
@@ -158,12 +158,13 @@
 - [Retrieve a user](https://developers.notion.com/reference/get-user.md): Retrieves a [User](/reference/user) using the ID specified.
 - [Retrieve your token's bot user](https://developers.notion.com/reference/get-self.md): Retrieves the [User](/reference/user) associated with the token provided in the authorization header.
 - [List custom emojis](https://developers.notion.com/reference/list-custom-emojis.md): Retrieves a list of custom emojis in the workspace.
-- [Query agents](https://developers.notion.com/reference/notion-agent-apis/query-agents.md): Find Custom Agents that an integration can access.
-- [Retrieve an agent](https://developers.notion.com/reference/notion-agent-apis/retrieve-agent.md): Retrieve metadata for one accessible Custom Agent.
+- [Query agents](https://developers.notion.com/reference/notion-agent-apis/query-agents.md): Find the Custom Agents and personal agent that an integration can access.
+- [Retrieve an agent](https://developers.notion.com/reference/notion-agent-apis/retrieve-agent.md): Retrieve metadata for one accessible Custom Agent or the personal agent.
 - [Retrieve agent insights](https://developers.notion.com/reference/notion-agent-apis/retrieve-agent-insights.md): Retrieve configuration and usage insights for a Custom Agent or the authenticated user's personal agent.
-- [Update agent status](https://developers.notion.com/reference/notion-agent-apis/update-agent-status.md): Enable or disable a Custom Agent.
+- [Update an agent](https://developers.notion.com/reference/notion-agent-apis/update-agent.md): Change a Custom Agent's or the personal agent's name, model, status, and other settings in one request.
+- [Update agent status](https://developers.notion.com/reference/notion-agent-apis/update-agent-status.md): Enable or disable a Custom Agent. Deprecated in favor of Update an agent.
 - [Update an agent credit limit](https://developers.notion.com/reference/notion-agent-apis/update-agent-credit-limit.md): Set or clear the credit limit for a Custom Agent.
-- [Delete an agent](https://developers.notion.com/reference/notion-agent-apis/delete-agent.md): Soft-delete a Custom Agent that the integration can manage.
+- [Delete an agent](https://developers.notion.com/reference/notion-agent-apis/delete-agent.md): Soft-delete a Custom Agent with a personal access token.
 - [Batch manage agent](https://developers.notion.com/reference/notion-agent-apis/batch-manage-agent.md): Asynchronously apply multiple agent management operations.
 - [Create or update a session](https://developers.notion.com/reference/notion-agent-apis/update-session.md): Start a session, send a message, submit an action, or stream a session turn.
 - [Retrieve a session](https://developers.notion.com/reference/notion-agent-apis/retrieve-session.md): Retrieve the status, metadata, and required actions for a session.

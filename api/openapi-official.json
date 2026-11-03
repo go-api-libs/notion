@@ -18828,17 +18828,14 @@
             "required": true,
             "schema": {
               "description": "The agent ID (a UUID), or `notion_ai` for the personal agent. Endpoint-specific restrictions still apply.",
-              "oneOf": [
+              "anyOf": [
                 {
                   "$ref": "#/components/schemas/idRequest"
                 },
                 {
-                  "description": "One of: `notion_ai`, `33333333-3333-3333-3333-333333333333`",
+                  "description": "Always `notion_ai`",
                   "type": "string",
-                  "enum": [
-                    "notion_ai",
-                    "33333333-3333-3333-3333-333333333333"
-                  ]
+                  "const": "notion_ai"
                 }
               ]
             }
@@ -20281,17 +20278,14 @@
             "required": true,
             "schema": {
               "description": "The agent ID (a UUID), or `notion_ai` for the personal agent. The personal agent cannot be deleted.",
-              "oneOf": [
+              "anyOf": [
                 {
                   "$ref": "#/components/schemas/idRequest"
                 },
                 {
-                  "description": "One of: `notion_ai`, `33333333-3333-3333-3333-333333333333`",
+                  "description": "Always `notion_ai`",
                   "type": "string",
-                  "enum": [
-                    "notion_ai",
-                    "33333333-3333-3333-3333-333333333333"
-                  ]
+                  "const": "notion_ai"
                 }
               ]
             }
@@ -20451,6 +20445,1518 @@
           }
         ],
         "x-notion-docs-ref": "https://developers.notion.com/reference/notion-agent-apis/delete-agent"
+      },
+      "patch": {
+        "tags": [
+          "Agents"
+        ],
+        "summary": "Update agent",
+        "operationId": "update-agent",
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "description": "The agent ID (a UUID), or `notion_ai` for the personal agent. Endpoint-specific restrictions still apply.",
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/idRequest"
+                },
+                {
+                  "description": "Always `notion_ai`",
+                  "type": "string",
+                  "const": "notion_ai"
+                }
+              ]
+            }
+          },
+          {
+            "$ref": "#/components/parameters/notionVersion"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "description": "Enable or disable the agent. Re-enabling works only for an agent an editor disabled, through the API or in agent settings.",
+                    "type": "string",
+                    "enum": [
+                      "active",
+                      "disabled"
+                    ]
+                  },
+                  "name": {
+                    "description": "The agent's display name.",
+                    "type": "string"
+                  },
+                  "description": {
+                    "description": "The custom agent's short description. Use an empty string to clear it.",
+                    "type": "string"
+                  },
+                  "is_favorited": {
+                    "description": "Whether the personal-access-token owner has this agent in their favorites.",
+                    "type": "boolean"
+                  },
+                  "model": {
+                    "description": "The model selection. Use auto to let Notion choose, or pinned with an available public model ID.",
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "mode": {
+                            "description": "Let Notion select the model for each run.",
+                            "type": "string",
+                            "const": "auto"
+                          }
+                        },
+                        "required": [
+                          "mode"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "mode": {
+                            "description": "Use the selected model for each run after publishing the agent.",
+                            "type": "string",
+                            "const": "pinned"
+                          },
+                          "id": {
+                            "description": "A public model ID, such as `claude-sonnet-5`. It must currently be available to the caller in this workspace.",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "mode",
+                          "id"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "description": "Always `agent`",
+                      "type": "string",
+                      "const": "agent"
+                    },
+                    "id": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/components/schemas/idResponse"
+                        },
+                        {
+                          "description": "Always `notion_ai`",
+                          "type": "string",
+                          "const": "notion_ai"
+                        }
+                      ]
+                    },
+                    "agent_type": {
+                      "description": "What kind of agent this is: \"notion_ai\" is the personal agent; \"custom_agent\" is a standalone agent you chat with; \"autofill_custom_agent\" fills a database property; \"external\" runs through an external provider.",
+                      "type": "string",
+                      "enum": [
+                        "notion_ai",
+                        "custom_agent",
+                        "autofill_custom_agent",
+                        "external"
+                      ]
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "instructions_page_id": {
+                      "oneOf": [
+                        {
+                          "$ref": "#/components/schemas/idResponse"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "icon": {
+                      "oneOf": [
+                        {
+                          "$ref": "#/components/schemas/pageIconResponse"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "description": "Type of icon. In this case, a custom agent avatar.",
+                              "type": "string",
+                              "const": "custom_agent_avatar"
+                            },
+                            "custom_agent_avatar": {
+                              "description": "The static and animated URLs for the agent avatar.",
+                              "type": "object",
+                              "properties": {
+                                "static_url": {
+                                  "description": "The URL of the static custom agent avatar.",
+                                  "type": "string"
+                                },
+                                "animated_url": {
+                                  "description": "The URL of the animated custom agent avatar.",
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "static_url",
+                                "animated_url"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "custom_agent_avatar"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "model": {
+                      "description": "The model the agent runs on: auto (Notion selects) or a pinned model.",
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "mode": {
+                              "description": "Always `auto`",
+                              "type": "string",
+                              "const": "auto"
+                            }
+                          },
+                          "required": [
+                            "mode"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "mode": {
+                              "description": "Always `pinned`",
+                              "type": "string",
+                              "const": "pinned"
+                            },
+                            "id": {
+                              "description": "The public model this agent maps to (e.g. \"claude-sonnet-5\"), or null for a pre-release / early-access model.",
+                              "oneOf": [
+                                {
+                                  "type": "string"
+                                },
+                                {
+                                  "type": "null"
+                                }
+                              ]
+                            }
+                          },
+                          "required": [
+                            "mode",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    },
+                    "connections": {
+                      "description": "Integrations the agent is connected to (Notion, Slack, Discord, MCP servers, and other connectors), each with an account and per-target permissions.",
+                      "type": "array",
+                      "maxItems": 100,
+                      "items": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "description": "Always `notion`",
+                                "type": "string",
+                                "const": "notion"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "account": {
+                                "type": "null"
+                              },
+                              "permissions": {
+                                "type": "array",
+                                "maxItems": 100,
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "target": {
+                                      "oneOf": [
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "description": "Always `page`",
+                                              "type": "string",
+                                              "const": "page"
+                                            },
+                                            "id": {
+                                              "type": "string"
+                                            }
+                                          },
+                                          "required": [
+                                            "type",
+                                            "id"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "description": "Always `database_property`",
+                                              "type": "string",
+                                              "const": "database_property"
+                                            },
+                                            "data_source_id": {
+                                              "type": "string"
+                                            },
+                                            "property_id": {
+                                              "type": "string"
+                                            }
+                                          },
+                                          "required": [
+                                            "type",
+                                            "data_source_id",
+                                            "property_id"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "description": "Always `agent`",
+                                              "type": "string",
+                                              "const": "agent"
+                                            },
+                                            "id": {
+                                              "type": "string"
+                                            }
+                                          },
+                                          "required": [
+                                            "type",
+                                            "id"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "description": "Always `workspace`",
+                                              "type": "string",
+                                              "const": "workspace"
+                                            }
+                                          },
+                                          "required": [
+                                            "type"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "description": "Always `owner_private_pages`",
+                                              "type": "string",
+                                              "const": "owner_private_pages"
+                                            }
+                                          },
+                                          "required": [
+                                            "type"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "description": "Always `web_search`",
+                                              "type": "string",
+                                              "const": "web_search"
+                                            },
+                                            "allowed_domains": {
+                                              "description": "Domains web search is restricted to, or null when unrestricted.",
+                                              "oneOf": [
+                                                {
+                                                  "type": "array",
+                                                  "maxItems": 100,
+                                                  "items": {
+                                                    "type": "string"
+                                                  }
+                                                },
+                                                {
+                                                  "type": "null"
+                                                }
+                                              ]
+                                            }
+                                          },
+                                          "required": [
+                                            "type",
+                                            "allowed_domains"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "description": "Always `notion_help_docs_search`",
+                                              "type": "string",
+                                              "const": "notion_help_docs_search"
+                                            }
+                                          },
+                                          "required": [
+                                            "type"
+                                          ],
+                                          "additionalProperties": false
+                                        }
+                                      ]
+                                    },
+                                    "scopes": {
+                                      "description": "Content roles (\"reader\" | \"comment_only\" | \"read_and_write\" | \"editor\") for scoped targets, or search verbs (\"allow\" | \"disallow\") for the search targets.",
+                                      "type": "array",
+                                      "maxItems": 100,
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "target",
+                                    "scopes"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "name",
+                              "account",
+                              "permissions"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "description": "Always `slack`",
+                                "type": "string",
+                                "const": "slack"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "account": {
+                                "description": "The linked Slack workspace, null when none is linked, or \"hidden\" when the caller lacks edit access to the agent.",
+                                "oneOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": {
+                                        "description": "Always `slack_workspace`",
+                                        "type": "string",
+                                        "const": "slack_workspace"
+                                      },
+                                      "team_id": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "type",
+                                      "team_id"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "description": "Always `hidden`",
+                                    "type": "string",
+                                    "const": "hidden"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "permissions": {
+                                "type": "array",
+                                "maxItems": 100,
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "target": {
+                                      "oneOf": [
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "description": "Always `slack_channel`",
+                                              "type": "string",
+                                              "const": "slack_channel"
+                                            },
+                                            "id": {
+                                              "type": "string"
+                                            }
+                                          },
+                                          "required": [
+                                            "type",
+                                            "id"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "description": "Always `slack_all_public_channels`",
+                                              "type": "string",
+                                              "const": "slack_all_public_channels"
+                                            }
+                                          },
+                                          "required": [
+                                            "type"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "description": "Always `slack_all_channels`",
+                                              "type": "string",
+                                              "const": "slack_all_channels"
+                                            }
+                                          },
+                                          "required": [
+                                            "type"
+                                          ],
+                                          "additionalProperties": false
+                                        }
+                                      ]
+                                    },
+                                    "scopes": {
+                                      "description": "Slack verbs granted on this target (\"read\" | \"write\" | \"reply_in_thread\" | \"react\").",
+                                      "type": "array",
+                                      "maxItems": 100,
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "target",
+                                    "scopes"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "name",
+                              "account",
+                              "permissions"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "description": "Always `discord`",
+                                "type": "string",
+                                "const": "discord"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "account": {
+                                "description": "The linked Discord server, null when none is linked, or \"hidden\" when the caller lacks edit access to the agent.",
+                                "oneOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": {
+                                        "description": "Always `discord_server`",
+                                        "type": "string",
+                                        "const": "discord_server"
+                                      },
+                                      "id": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "type",
+                                      "id"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "description": "Always `hidden`",
+                                    "type": "string",
+                                    "const": "hidden"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "permissions": {
+                                "type": "array",
+                                "maxItems": 100,
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "target": {
+                                      "oneOf": [
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "description": "Always `discord_channel`",
+                                              "type": "string",
+                                              "const": "discord_channel"
+                                            },
+                                            "id": {
+                                              "type": "string"
+                                            }
+                                          },
+                                          "required": [
+                                            "type",
+                                            "id"
+                                          ],
+                                          "additionalProperties": false
+                                        },
+                                        {
+                                          "type": "object",
+                                          "properties": {
+                                            "type": {
+                                              "description": "Always `discord_all_channels`",
+                                              "type": "string",
+                                              "const": "discord_all_channels"
+                                            }
+                                          },
+                                          "required": [
+                                            "type"
+                                          ],
+                                          "additionalProperties": false
+                                        }
+                                      ]
+                                    },
+                                    "scopes": {
+                                      "description": "Discord verbs granted on this target (\"read\" | \"write\" | \"reply_in_thread\" | \"react\").",
+                                      "type": "array",
+                                      "maxItems": 100,
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "target",
+                                    "scopes"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "name",
+                              "account",
+                              "permissions"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "description": "Always `mcp_server`",
+                                "type": "string",
+                                "const": "mcp_server"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "account": {
+                                "description": "The MCP server host, null when none is linked, or \"hidden\" when the caller lacks edit access to the agent.",
+                                "oneOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": {
+                                        "description": "Always `mcp_server`",
+                                        "type": "string",
+                                        "const": "mcp_server"
+                                      },
+                                      "server_host": {
+                                        "description": "The MCP server host (never the full URL, which can carry credentials or private path components).",
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "type",
+                                      "server_host"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "description": "Always `hidden`",
+                                    "type": "string",
+                                    "const": "hidden"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "enabled_tools": {
+                                "description": "The tools the agent may call, null when all tools are enabled (including any the server adds later), or \"hidden\" when the caller lacks edit access to the agent.",
+                                "oneOf": [
+                                  {
+                                    "type": "array",
+                                    "maxItems": 100,
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "title": {
+                                          "oneOf": [
+                                            {
+                                              "type": "string"
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "name",
+                                        "title"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  },
+                                  {
+                                    "description": "Always `hidden`",
+                                    "type": "string",
+                                    "const": "hidden"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "run_tools_automatically": {
+                                "description": "Whether read / write tool calls run without a confirmation step.",
+                                "type": "object",
+                                "properties": {
+                                  "read": {
+                                    "description": "Whether read tool calls run without a confirmation step.",
+                                    "type": "boolean"
+                                  },
+                                  "write": {
+                                    "description": "Whether write tool calls run without a confirmation step.",
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "read",
+                                  "write"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "name",
+                              "account",
+                              "enabled_tools",
+                              "run_tools_automatically"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "description": "Always `custom_mcp_server`",
+                                "type": "string",
+                                "const": "custom_mcp_server"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "account": {
+                                "description": "The MCP server host, null when none is linked, or \"hidden\" when the caller lacks edit access to the agent.",
+                                "oneOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": {
+                                        "description": "Always `mcp_server`",
+                                        "type": "string",
+                                        "const": "mcp_server"
+                                      },
+                                      "server_host": {
+                                        "description": "The MCP server host (never the full URL, which can carry credentials or private path components).",
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "type",
+                                      "server_host"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "description": "Always `hidden`",
+                                    "type": "string",
+                                    "const": "hidden"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "enabled_tools": {
+                                "description": "The tools the agent may call, null when all tools are enabled (including any the server adds later), or \"hidden\" when the caller lacks edit access to the agent.",
+                                "oneOf": [
+                                  {
+                                    "type": "array",
+                                    "maxItems": 100,
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "name": {
+                                          "type": "string"
+                                        },
+                                        "title": {
+                                          "oneOf": [
+                                            {
+                                              "type": "string"
+                                            },
+                                            {
+                                              "type": "null"
+                                            }
+                                          ]
+                                        }
+                                      },
+                                      "required": [
+                                        "name",
+                                        "title"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  },
+                                  {
+                                    "description": "Always `hidden`",
+                                    "type": "string",
+                                    "const": "hidden"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "run_tools_automatically": {
+                                "description": "Whether read / write tool calls run without a confirmation step.",
+                                "type": "object",
+                                "properties": {
+                                  "read": {
+                                    "description": "Whether read tool calls run without a confirmation step.",
+                                    "type": "boolean"
+                                  },
+                                  "write": {
+                                    "description": "Whether write tool calls run without a confirmation step.",
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "read",
+                                  "write"
+                                ],
+                                "additionalProperties": false
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "name",
+                              "account",
+                              "enabled_tools",
+                              "run_tools_automatically"
+                            ],
+                            "additionalProperties": false
+                          },
+                          {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "description": "The connector's machine name (e.g. \"github\", \"google_drive\").",
+                                "type": "string",
+                                "enum": [
+                                  "asana",
+                                  "box",
+                                  "calendar",
+                                  "computer",
+                                  "confluence",
+                                  "cursor",
+                                  "feedback",
+                                  "files",
+                                  "fs",
+                                  "github",
+                                  "gmail",
+                                  "google_calendar",
+                                  "google_drive",
+                                  "google_drive_oauth",
+                                  "gtm",
+                                  "helpdocs",
+                                  "images",
+                                  "jira",
+                                  "linear",
+                                  "mail",
+                                  "marketplace",
+                                  "memory",
+                                  "microsoft_teams",
+                                  "microsoft_teams_oauth",
+                                  "outlook",
+                                  "salesforce",
+                                  "search",
+                                  "security",
+                                  "sharepoint",
+                                  "sharepoint_oauth",
+                                  "shopify",
+                                  "skills",
+                                  "system",
+                                  "test",
+                                  "web",
+                                  "webhooks",
+                                  "worker",
+                                  "workers"
+                                ]
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "account": {
+                                "description": "The provider-side account identifier, null when none is linked, or \"hidden\" when the caller lacks edit access to the agent.",
+                                "oneOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "permissions": {
+                                "type": "array",
+                                "maxItems": 100,
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "target": {
+                                      "type": "object",
+                                      "properties": {
+                                        "type": {
+                                          "type": "string"
+                                        },
+                                        "id": {
+                                          "type": "string"
+                                        }
+                                      },
+                                      "required": [
+                                        "type",
+                                        "id"
+                                      ],
+                                      "additionalProperties": false
+                                    },
+                                    "scopes": {
+                                      "description": "The scopes granted on this target.",
+                                      "type": "array",
+                                      "maxItems": 100,
+                                      "items": {
+                                        "type": "string"
+                                      }
+                                    }
+                                  },
+                                  "required": [
+                                    "target",
+                                    "scopes"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              }
+                            },
+                            "required": [
+                              "type",
+                              "name",
+                              "account",
+                              "permissions"
+                            ],
+                            "additionalProperties": false
+                          }
+                        ]
+                      }
+                    },
+                    "status": {
+                      "description": "\"active\" when the agent can run; \"disabled\" when it is paused (see pause_reason); \"deleted\" when it has been removed.",
+                      "type": "string",
+                      "enum": [
+                        "active",
+                        "disabled",
+                        "deleted"
+                      ]
+                    },
+                    "pause_reason": {
+                      "description": "Why the agent is paused when status is \"disabled\" (e.g. \"credit_limit\", \"disabled_from_workspace_settings\"); null when active.",
+                      "oneOf": [
+                        {
+                          "description": "One of: `run_limit`, `credit_limit`, `runaway_credit_usage`, `workspace_credit_limit`, `owner_allowance_limit`, `failure_limit`, `mark_session_failed_autopause`, `disabled_from_workspace_settings`, `disabled_from_workspace_settings_but_resumable`, `disabled_from_api`, `disabled_from_agent_settings`, `disabled_due_to_no_members_with_access`, `disabled_due_to_lack_of_editors`, `disabled_by_notion`, `internal_error`, `needs_user_review`, `tool_unavailable`",
+                          "type": "string",
+                          "enum": [
+                            "run_limit",
+                            "credit_limit",
+                            "runaway_credit_usage",
+                            "workspace_credit_limit",
+                            "owner_allowance_limit",
+                            "failure_limit",
+                            "mark_session_failed_autopause",
+                            "disabled_from_workspace_settings",
+                            "disabled_from_workspace_settings_but_resumable",
+                            "disabled_from_api",
+                            "disabled_from_agent_settings",
+                            "disabled_due_to_no_members_with_access",
+                            "disabled_due_to_lack_of_editors",
+                            "disabled_by_notion",
+                            "internal_error",
+                            "needs_user_review",
+                            "tool_unavailable"
+                          ]
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "created_by": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "object": {
+                              "description": "Always `user`",
+                              "type": "string",
+                              "const": "user"
+                            },
+                            "type": {
+                              "description": "Always `user`",
+                              "type": "string",
+                              "const": "user"
+                            },
+                            "id": {
+                              "description": "The ID of the user that created this agent.",
+                              "$ref": "#/components/schemas/idResponse"
+                            }
+                          },
+                          "required": [
+                            "object",
+                            "type",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "version": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "description": "The ID of the published artifact.",
+                              "$ref": "#/components/schemas/idResponse"
+                            },
+                            "number": {
+                              "description": "The version number.",
+                              "type": "number"
+                            },
+                            "published_at": {
+                              "description": "The ISO 8601 timestamp when this version was published.",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "number",
+                            "published_at"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "agent_version": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "description": "The ID of the published artifact.",
+                              "$ref": "#/components/schemas/idResponse"
+                            },
+                            "number": {
+                              "description": "The version number.",
+                              "type": "number"
+                            },
+                            "published_at": {
+                              "description": "The ISO 8601 timestamp when this version was published.",
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "number",
+                            "published_at"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "has_unpublished_changes": {
+                      "description": "Whether the draft has edits not yet in the published version, or \"hidden\" when the caller lacks edit access to the agent.",
+                      "oneOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "description": "Always `hidden`",
+                          "type": "string",
+                          "const": "hidden"
+                        }
+                      ]
+                    },
+                    "last_run_time": {
+                      "description": "ISO 8601 timestamp of the agent's most recent run, null if it has never run, or \"hidden\" when the caller lacks edit access to the agent.",
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^\\d{4}-\\d{2}-\\d{2}T"
+                        },
+                        {
+                          "description": "Always `hidden`",
+                          "type": "string",
+                          "const": "hidden"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "last_run_at": {
+                      "description": "ISO 8601 timestamp of the agent's most recent run, null if it has never run, or \"hidden\" when the caller lacks edit access to the agent.",
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^\\d{4}-\\d{2}-\\d{2}T"
+                        },
+                        {
+                          "description": "Always `hidden`",
+                          "type": "string",
+                          "const": "hidden"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "credit_limit": {
+                      "description": "The per-agent credit limit that applies to this agent, null when uncapped, or \"hidden\" when the caller lacks full access to the agent. This is the effective limit computed at runtime, folding in both the agent's own limit and any workspace-admin default.",
+                      "oneOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0
+                        },
+                        {
+                          "description": "Always `hidden`",
+                          "type": "string",
+                          "const": "hidden"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "triggers": {
+                      "description": "The agent's configured triggers, each with a machine type, an enabled flag, and (for recurrence triggers) a structured schedule.",
+                      "type": "array",
+                      "maxItems": 100,
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "description": "Machine trigger type (e.g. \"notion.agent.mentioned\", \"recurrence\", \"slack.reaction.added\").",
+                            "type": "string"
+                          },
+                          "enabled": {
+                            "description": "Whether this trigger is currently enabled.",
+                            "type": "boolean"
+                          },
+                          "schedule": {
+                            "description": "Structured recurrence cadence. Present only for recurrence triggers.",
+                            "type": "object",
+                            "properties": {
+                              "frequency": {
+                                "description": "Base cadence unit (\"hour\" | \"day\" | \"week\" | \"month\" | \"year\").",
+                                "type": "string"
+                              },
+                              "interval": {
+                                "description": "Multiplier on the frequency (e.g. every 2 weeks).",
+                                "type": "integer",
+                                "minimum": 1
+                              },
+                              "weekdays": {
+                                "description": "Days of the week the schedule runs (e.g. \"monday\"). Present for weekly cadences and monthly weekday restrictions.",
+                                "type": "array",
+                                "maxItems": 100,
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "monthdays": {
+                                "description": "Days of the month the schedule runs. Present for monthly monthday restrictions.",
+                                "type": "array",
+                                "maxItems": 100,
+                                "items": {
+                                  "type": "integer",
+                                  "minimum": 1
+                                }
+                              },
+                              "week_numbers": {
+                                "description": "Week-of-month ordinals for a monthly weekday restriction (e.g. [2, 3] for the 2nd and 3rd occurrence); -1 means the last week.",
+                                "type": "array",
+                                "maxItems": 100,
+                                "items": {
+                                  "type": "integer"
+                                }
+                              },
+                              "hour": {
+                                "description": "Hour of day (0–23) the schedule runs.",
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              "minute": {
+                                "description": "Minute of the hour (0–59) the schedule runs.",
+                                "type": "integer",
+                                "minimum": 0
+                              },
+                              "timezone": {
+                                "description": "IANA timezone (e.g. \"America/New_York\").",
+                                "type": "string"
+                              },
+                              "start_date": {
+                                "description": "ISO 8601 timestamp the schedule starts from.",
+                                "type": "string"
+                              },
+                              "end": {
+                                "description": "When the schedule stops, when it is bounded.",
+                                "oneOf": [
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": {
+                                        "description": "Always `date`",
+                                        "type": "string",
+                                        "const": "date"
+                                      },
+                                      "end_at": {
+                                        "description": "ISO 8601 timestamp when the schedule stops.",
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "type",
+                                      "end_at"
+                                    ],
+                                    "additionalProperties": false
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": {
+                                        "description": "Always `count`",
+                                        "type": "string",
+                                        "const": "count"
+                                      },
+                                      "occurrences": {
+                                        "description": "Number of occurrences after which the schedule stops.",
+                                        "type": "integer",
+                                        "minimum": 0
+                                      }
+                                    },
+                                    "required": [
+                                      "type",
+                                      "occurrences"
+                                    ],
+                                    "additionalProperties": false
+                                  }
+                                ]
+                              }
+                            },
+                            "required": [
+                              "frequency",
+                              "interval"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "config": {
+                            "description": "Remaining per-type trigger configuration (e.g. watched channel ids, reaction config), keys in snake_case. Present only when the trigger carries such state.",
+                            "type": "object",
+                            "additionalProperties": {}
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "enabled"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "is_favorited": {
+                      "description": "Whether this agent is in the caller's personal favorites, or null when the caller has no personal favorites scope.",
+                      "oneOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "created_time": {
+                      "description": "Date and time when this agent was created.",
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "last_edited_time": {
+                      "description": "Date and time when this agent was last edited.",
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "instructions": {
+                      "description": "The agent's inline instructions when verbose=true, or null when its instructions are stored on a page.",
+                      "oneOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "object",
+                    "id",
+                    "agent_type",
+                    "name",
+                    "description",
+                    "instructions_page_id",
+                    "icon",
+                    "model",
+                    "connections",
+                    "status",
+                    "pause_reason",
+                    "created_by",
+                    "version",
+                    "agent_version",
+                    "has_unpublished_changes",
+                    "last_run_time",
+                    "last_run_at",
+                    "credit_limit",
+                    "triggers",
+                    "is_favorited"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_api_400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_api_401"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_api_403"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_api_404"
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_api_406"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_api_409"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_api_429"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_api_500"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_api_503"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_api_504"
+                }
+              }
+            }
+          },
+          "529": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/error_api_529"
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "javascript",
+            "label": "TypeScript SDK",
+            "source": "import { Client } from \"@notionhq/client\"\n\nconst notion = new Client({ auth: process.env.NOTION_API_KEY })\n\nconst agentId = \"1f0c7c06-781b-4987-9986-5c8dd3028013\"\nconst response = await notion.request({\n  method: \"patch\",\n  path: \"agents/\" + encodeURIComponent(agentId),\n  body: { name: \"Weekly report writer\", status: \"disabled\" }\n})"
+          }
+        ],
+        "x-notion-docs-ref": "https://developers.notion.com/reference/notion-agent-apis/update-agent"
       }
     },
     "/v1/agents/{agent_id}/insights": {
@@ -20467,17 +21973,14 @@
             "required": true,
             "schema": {
               "description": "The agent ID (a UUID), or `notion_ai` for the personal agent. Endpoint-specific restrictions still apply.",
-              "oneOf": [
+              "anyOf": [
                 {
                   "$ref": "#/components/schemas/idRequest"
                 },
                 {
-                  "description": "One of: `notion_ai`, `33333333-3333-3333-3333-333333333333`",
+                  "description": "Always `notion_ai`",
                   "type": "string",
-                  "enum": [
-                    "notion_ai",
-                    "33333333-3333-3333-3333-333333333333"
-                  ]
+                  "const": "notion_ai"
                 }
               ]
             }
@@ -20786,17 +22289,14 @@
             "required": true,
             "schema": {
               "description": "The agent ID (a UUID), or `notion_ai` for the personal agent. Endpoint-specific restrictions still apply.",
-              "oneOf": [
+              "anyOf": [
                 {
                   "$ref": "#/components/schemas/idRequest"
                 },
                 {
-                  "description": "One of: `notion_ai`, `33333333-3333-3333-3333-333333333333`",
+                  "description": "Always `notion_ai`",
                   "type": "string",
-                  "enum": [
-                    "notion_ai",
-                    "33333333-3333-3333-3333-333333333333"
-                  ]
+                  "const": "notion_ai"
                 }
               ]
             }
@@ -20813,7 +22313,7 @@
                 "type": "object",
                 "properties": {
                   "status": {
-                    "description": "Set to \"active\" to re-enable an agent that was disabled through this API, or \"disabled\" to turn off a running agent.",
+                    "description": "Set to \"active\" to re-enable an agent that an editor disabled, through this API or in agent settings, or \"disabled\" to turn off a running agent.",
                     "type": "string",
                     "enum": [
                       "active",
@@ -21007,6 +22507,7 @@
             }
           }
         },
+        "deprecated": true,
         "x-codeSamples": [
           {
             "lang": "javascript",
@@ -21031,17 +22532,14 @@
             "required": true,
             "schema": {
               "description": "The ID of the custom agent (a UUID). The personal agent (Notion AI) is not supported by this endpoint.",
-              "oneOf": [
+              "anyOf": [
                 {
                   "$ref": "#/components/schemas/idRequest"
                 },
                 {
-                  "description": "One of: `notion_ai`, `33333333-3333-3333-3333-333333333333`",
+                  "description": "Always `notion_ai`",
                   "type": "string",
-                  "enum": [
-                    "notion_ai",
-                    "33333333-3333-3333-3333-333333333333"
-                  ]
+                  "const": "notion_ai"
                 }
               ]
             }
@@ -21272,17 +22770,14 @@
                             },
                             "agent_id": {
                               "description": "The agent ID (a UUID), or `notion_ai` for the personal agent. Endpoint-specific restrictions still apply.",
-                              "oneOf": [
+                              "anyOf": [
                                 {
                                   "$ref": "#/components/schemas/idRequest"
                                 },
                                 {
-                                  "description": "One of: `notion_ai`, `33333333-3333-3333-3333-333333333333`",
+                                  "description": "Always `notion_ai`",
                                   "type": "string",
-                                  "enum": [
-                                    "notion_ai",
-                                    "33333333-3333-3333-3333-333333333333"
-                                  ]
+                                  "const": "notion_ai"
                                 }
                               ]
                             },
@@ -21316,23 +22811,20 @@
                           "type": "object",
                           "properties": {
                             "action": {
-                              "description": "Set or clear one agent's credit limit, equivalent to `PATCH /v1/agents/:agent_id/credit_limit`. Requires full access to the agent.",
+                              "description": "Set or clear one agent's credit limit, equivalent to `PATCH /v1/agents/:agent_id/credit_limit`. Requires a personal access token whose user has full access to the agent.",
                               "type": "string",
                               "const": "update_credit_limit"
                             },
                             "agent_id": {
                               "description": "The agent ID (a UUID), or `notion_ai` for the personal agent. Endpoint-specific restrictions still apply.",
-                              "oneOf": [
+                              "anyOf": [
                                 {
                                   "$ref": "#/components/schemas/idRequest"
                                 },
                                 {
-                                  "description": "One of: `notion_ai`, `33333333-3333-3333-3333-333333333333`",
+                                  "description": "Always `notion_ai`",
                                   "type": "string",
-                                  "enum": [
-                                    "notion_ai",
-                                    "33333333-3333-3333-3333-333333333333"
-                                  ]
+                                  "const": "notion_ai"
                                 }
                               ]
                             },
@@ -21375,17 +22867,14 @@
                             },
                             "agent_id": {
                               "description": "The agent ID (a UUID), or `notion_ai` for the personal agent. Endpoint-specific restrictions still apply.",
-                              "oneOf": [
+                              "anyOf": [
                                 {
                                   "$ref": "#/components/schemas/idRequest"
                                 },
                                 {
-                                  "description": "One of: `notion_ai`, `33333333-3333-3333-3333-333333333333`",
+                                  "description": "Always `notion_ai`",
                                   "type": "string",
-                                  "enum": [
-                                    "notion_ai",
-                                    "33333333-3333-3333-3333-333333333333"
-                                  ]
+                                  "const": "notion_ai"
                                 }
                               ]
                             }
@@ -22227,21 +23716,20 @@
                         "maxLength": 10000
                       },
                       "agent_id": {
-                        "oneOf": [
+                        "description": "The agent to start a session with: a custom agent ID, or `notion_ai` for the personal agent with a personal access token. Required when `session_id` is omitted.",
+                        "anyOf": [
                           {
                             "$ref": "#/components/schemas/idRequest"
                           },
                           {
-                            "description": "One of: `notion_ai`, `33333333-3333-3333-3333-333333333333`",
+                            "description": "Always `notion_ai`",
                             "type": "string",
-                            "enum": [
-                              "notion_ai",
-                              "33333333-3333-3333-3333-333333333333"
-                            ]
+                            "const": "notion_ai"
                           }
                         ]
                       },
                       "session_id": {
+                        "description": "An existing session to send this message to. Omit it to start a new session.",
                         "$ref": "#/components/schemas/idRequest"
                       },
                       "attachments": {
