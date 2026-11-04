@@ -10664,8 +10664,7 @@
           {
             "type": "object",
             "additionalProperties": {
-              "description": "A property filter condition. Same shape as a property filter but without the \"property\" field. For example: { \"select\": { \"equals\": \"High\" } }. An empty object means the quick filter has no criteria yet.",
-              "$ref": "#/components/schemas/quickFilterCondition"
+              "$ref": "#/components/schemas/quickFilterConditionResponse"
             }
           },
           {
@@ -15155,7 +15154,7 @@
         "type": "object",
         "properties": {
           "verification": {
-            "$ref": "#/components/schemas/PropertyFilterVerificationVerification"
+            "$ref": "#/components/schemas/PropertyFilterVerification2"
           },
           "property": {
             "type": "string"
@@ -15171,7 +15170,7 @@
         ],
         "additionalProperties": false
       },
-      "PropertyFilterVerificationVerification": {
+      "PropertyFilterVerification2": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/verificationPropertyStatusFilter"
@@ -16654,6 +16653,380 @@
           "created_at",
           "updated_at"
         ]
+      },
+      "QuickFilterConditionRequestCheckbox": {
+        "title": "Checkbox",
+        "type": "object",
+        "properties": {
+          "checkbox": {
+            "$ref": "#/components/schemas/checkboxPropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "checkbox"
+          }
+        },
+        "required": [
+          "checkbox"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestCreatedBy": {
+        "title": "Created By",
+        "type": "object",
+        "properties": {
+          "created_by": {
+            "$ref": "#/components/schemas/peoplePropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "created_by"
+          }
+        },
+        "required": [
+          "created_by"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestCreatedTime": {
+        "title": "Created Time",
+        "type": "object",
+        "properties": {
+          "created_time": {
+            "$ref": "#/components/schemas/datePropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "created_time"
+          }
+        },
+        "required": [
+          "created_time"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestDate": {
+        "title": "Date",
+        "type": "object",
+        "properties": {
+          "date": {
+            "$ref": "#/components/schemas/datePropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "date"
+          }
+        },
+        "required": [
+          "date"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestEmail": {
+        "title": "Email",
+        "type": "object",
+        "properties": {
+          "email": {
+            "$ref": "#/components/schemas/textPropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "email"
+          }
+        },
+        "required": [
+          "email"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestFiles": {
+        "title": "Files",
+        "type": "object",
+        "properties": {
+          "files": {
+            "$ref": "#/components/schemas/existencePropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "files"
+          }
+        },
+        "required": [
+          "files"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestFormula": {
+        "title": "Formula",
+        "type": "object",
+        "properties": {
+          "formula": {
+            "$ref": "#/components/schemas/formulaPropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "formula"
+          }
+        },
+        "required": [
+          "formula"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestLastEditedBy": {
+        "title": "Last Edited By",
+        "type": "object",
+        "properties": {
+          "last_edited_by": {
+            "$ref": "#/components/schemas/peoplePropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "last_edited_by"
+          }
+        },
+        "required": [
+          "last_edited_by"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestLastEditedTime": {
+        "title": "Last Edited Time",
+        "type": "object",
+        "properties": {
+          "last_edited_time": {
+            "$ref": "#/components/schemas/datePropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "last_edited_time"
+          }
+        },
+        "required": [
+          "last_edited_time"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestMultiSelect": {
+        "title": "Multi Select",
+        "type": "object",
+        "properties": {
+          "multi_select": {
+            "$ref": "#/components/schemas/multiSelectPropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "multi_select"
+          }
+        },
+        "required": [
+          "multi_select"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestNumber": {
+        "title": "Number",
+        "type": "object",
+        "properties": {
+          "number": {
+            "$ref": "#/components/schemas/numberPropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "number"
+          }
+        },
+        "required": [
+          "number"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestPeople": {
+        "title": "People",
+        "type": "object",
+        "properties": {
+          "people": {
+            "$ref": "#/components/schemas/peoplePropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "people"
+          }
+        },
+        "required": [
+          "people"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestPhoneNumber": {
+        "title": "Phone Number",
+        "type": "object",
+        "properties": {
+          "phone_number": {
+            "$ref": "#/components/schemas/textPropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "phone_number"
+          }
+        },
+        "required": [
+          "phone_number"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestRelation": {
+        "title": "Relation",
+        "type": "object",
+        "properties": {
+          "relation": {
+            "$ref": "#/components/schemas/relationPropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "relation"
+          }
+        },
+        "required": [
+          "relation"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestRichText": {
+        "title": "Rich Text",
+        "type": "object",
+        "properties": {
+          "rich_text": {
+            "$ref": "#/components/schemas/textPropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "rich_text"
+          }
+        },
+        "required": [
+          "rich_text"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestRollup": {
+        "title": "Rollup",
+        "type": "object",
+        "properties": {
+          "rollup": {
+            "$ref": "#/components/schemas/rollupPropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "rollup"
+          }
+        },
+        "required": [
+          "rollup"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestSelect": {
+        "title": "Select",
+        "type": "object",
+        "properties": {
+          "select": {
+            "$ref": "#/components/schemas/selectPropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "select"
+          }
+        },
+        "required": [
+          "select"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestStatus": {
+        "title": "Status",
+        "type": "object",
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/statusPropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "status"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestTitle": {
+        "title": "Title",
+        "type": "object",
+        "properties": {
+          "title": {
+            "$ref": "#/components/schemas/textPropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "title"
+          }
+        },
+        "required": [
+          "title"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestURL": {
+        "title": "Url",
+        "type": "object",
+        "properties": {
+          "url": {
+            "$ref": "#/components/schemas/textPropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "url"
+          }
+        },
+        "required": [
+          "url"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestUniqueID": {
+        "title": "Unique Id",
+        "type": "object",
+        "properties": {
+          "unique_id": {
+            "$ref": "#/components/schemas/numberPropertyFilter"
+          },
+          "type": {
+            "type": "string",
+            "const": "unique_id"
+          }
+        },
+        "required": [
+          "unique_id"
+        ],
+        "additionalProperties": false
+      },
+      "QuickFilterConditionRequestVerification": {
+        "title": "Verification",
+        "type": "object",
+        "properties": {
+          "verification": {
+            "$ref": "#/components/schemas/PropertyFilterVerification2"
+          },
+          "type": {
+            "type": "string",
+            "const": "verification"
+          }
+        },
+        "required": [
+          "verification"
+        ],
+        "additionalProperties": false
       },
       "RelationPropertyConfigurationRelation": {
         "type": "object",
@@ -21736,8 +22109,7 @@
       "UpdateViewRequestQuickFiltersOneOf0Value": {
         "oneOf": [
           {
-            "description": "A property filter condition. Same shape as a property filter but without the \"property\" field (the hashmap key identifies the property). For example: { \"select\": { \"equals\": \"High\" } }. Pass an empty object to add the property to the filter bar without criteria.",
-            "$ref": "#/components/schemas/quickFilterCondition"
+            "$ref": "#/components/schemas/quickFilterConditionRequest"
           },
           {
             "type": "null"
@@ -24672,19 +25044,18 @@
             "$ref": "#/components/schemas/idRequest"
           },
           "filter": {
-            "description": "Filter to apply to the view. Uses the same format as the data source query filter.",
+            "description": "Filter to apply to the view. Uses the same format as the data source query filter. Simple property filters appear in the view's filter bar. For example, a status filter can exclude several values with does_not_equal.",
             "$ref": "#/components/schemas/Filter"
           },
           "sorts": {
-            "description": "Sorts to apply to the view. Uses the same format as the data source query sorts.",
+            "description": "Property sorts to save on the view. Timestamp sorts are accepted but are not saved.",
             "$ref": "#/components/schemas/Sorts"
           },
           "quick_filters": {
             "description": "Quick filters to pin in the view's filter bar. Keys are property names or IDs. Values are filter conditions (same shape as a property filter but without the property field). Each quick filter appears as a clickable pill above the view, independent of the advanced filter.",
             "type": "object",
             "additionalProperties": {
-              "description": "A property filter condition. Same shape as a property filter but without the \"property\" field (the hashmap key identifies the property). For example: { \"select\": { \"equals\": \"High\" } }. Pass an empty object to add the property to the filter bar without criteria.",
-              "$ref": "#/components/schemas/quickFilterCondition"
+              "$ref": "#/components/schemas/quickFilterConditionRequest"
             }
           },
           "create_database": {
@@ -31241,7 +31612,82 @@
           "message"
         ]
       },
-      "quickFilterCondition": {
+      "quickFilterConditionRequest": {
+        "description": "A property filter condition. The quick filter key identifies the property. Pass an empty object to add the property to the filter bar without criteria.",
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestTitle"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestRichText"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestNumber"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestCheckbox"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestSelect"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestMultiSelect"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestStatus"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestDate"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestPeople"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestFiles"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestURL"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestEmail"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestPhoneNumber"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestRelation"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestCreatedBy"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestCreatedTime"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestLastEditedBy"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestLastEditedTime"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestFormula"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestUniqueID"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestRollup"
+          },
+          {
+            "$ref": "#/components/schemas/QuickFilterConditionRequestVerification"
+          }
+        ]
+      },
+      "quickFilterConditionResponse": {
+        "description": "A property filter condition. Same shape as a property filter but without the \"property\" field. For example: { \"select\": { \"equals\": \"High\" } }. An empty object means the quick filter has no criteria yet.",
         "type": "object"
       },
       "quoteBlockObjectResponse": {

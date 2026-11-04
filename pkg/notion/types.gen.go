@@ -7410,12 +7410,12 @@ type CreateViewRequest struct {
 	DatabaseID IDRequest `json:"database_id,omitzero"`
 	// The ID of a dashboard view to add this view to as a widget. Mutually exclusive with database_id and create_database.
 	ViewID IDRequest `json:"view_id,omitzero"`
-	// Filter to apply to the view. Uses the same format as the data source query filter.
+	// Filter to apply to the view. Uses the same format as the data source query filter. Simple property filters appear in the view's filter bar. For example, a status filter can exclude several values with does_not_equal.
 	Filter Filter `json:"filter,omitzero"`
-	// Sorts to apply to the view. Uses the same format as the data source query sorts.
+	// Property sorts to save on the view. Timestamp sorts are accepted but are not saved.
 	Sorts Sorts `json:"sorts,omitzero"`
 	// Quick filters to pin in the view's filter bar. Keys are property names or IDs. Values are filter conditions (same shape as a property filter but without the property field). Each quick filter appears as a clickable pill above the view, independent of the advanced filter.
-	QuickFilters map[string]QuickFilterCondition `json:"quick_filters,omitzero"`
+	QuickFilters map[string]QuickFilterConditionRequest `json:"quick_filters,omitzero"`
 	// Create a new linked database block on a page and add the view to it. Mutually exclusive with database_id and view_id.
 	CreateDatabase CreateDatabaseForViewRequest `json:"create_database,omitzero"`
 	// View presentation configuration. The type field must match the view type.
@@ -7936,7 +7936,7 @@ type DataSourceViewObjectResponse struct {
 	// The sorts applied to this view (same shape as data source query sorts).
 	Sorts Sorts `json:"sorts,omitzero"`
 	// Quick filters pinned to the view's filter bar. Keys are property IDs. Values are filter conditions (same shape as a property filter without the property field). Null when no quick filters are set.
-	QuickFilters map[string]QuickFilterCondition `json:"quick_filters,omitzero"`
+	QuickFilters map[string]QuickFilterConditionResponse `json:"quick_filters,omitzero"`
 	// View presentation configuration.
 	Configuration *ViewConfigResponse `json:"configuration,omitzero"`
 	// For dashboard widget views, the ID of the parent dashboard view. Only present when this view is a widget inside a dashboard.
@@ -17049,30 +17049,30 @@ type PropertyDescriptionRequest string
 
 // PropertyFilter defines a model
 type PropertyFilter struct {
-	Property       string                                  `json:"property"`
-	Type           PropertyFilterType                      `json:"type,omitzero"`
-	Title          *TextPropertyFilter                     `json:"title,omitzero"`
-	RichText       *TextPropertyFilter                     `json:"rich_text,omitzero"`
-	Number         *NumberPropertyFilter                   `json:"number,omitzero"`
-	Checkbox       *CheckboxPropertyFilter                 `json:"checkbox,omitzero"`
-	Select         *SelectPropertyFilter                   `json:"select,omitzero"`
-	MultiSelect    *MultiSelectPropertyFilter              `json:"multi_select,omitzero"`
-	Status         *StatusPropertyFilter                   `json:"status,omitzero"`
-	Date           *DatePropertyFilter                     `json:"date,omitzero"`
-	People         *PeoplePropertyFilter                   `json:"people,omitzero"`
-	Files          *ExistencePropertyFilter                `json:"files,omitzero"`
-	URL            *TextPropertyFilter                     `json:"url,omitzero"`
-	Email          *TextPropertyFilter                     `json:"email,omitzero"`
-	PhoneNumber    *TextPropertyFilter                     `json:"phone_number,omitzero"`
-	Relation       *RelationPropertyFilter                 `json:"relation,omitzero"`
-	CreatedBy      *PeoplePropertyFilter                   `json:"created_by,omitzero"`
-	CreatedTime    *DatePropertyFilter                     `json:"created_time,omitzero"`
-	LastEditedBy   *PeoplePropertyFilter                   `json:"last_edited_by,omitzero"`
-	LastEditedTime *DatePropertyFilter                     `json:"last_edited_time,omitzero"`
-	Formula        *FormulaPropertyFilter                  `json:"formula,omitzero"`
-	UniqueID       *NumberPropertyFilter                   `json:"unique_id,omitzero"`
-	Rollup         *RollupPropertyFilter                   `json:"rollup,omitzero"`
-	Verification   *PropertyFilterVerificationVerification `json:"verification,omitzero"`
+	Property       string                       `json:"property"`
+	Type           PropertyFilterType           `json:"type,omitzero"`
+	Title          *TextPropertyFilter          `json:"title,omitzero"`
+	RichText       *TextPropertyFilter          `json:"rich_text,omitzero"`
+	Number         *NumberPropertyFilter        `json:"number,omitzero"`
+	Checkbox       *CheckboxPropertyFilter      `json:"checkbox,omitzero"`
+	Select         *SelectPropertyFilter        `json:"select,omitzero"`
+	MultiSelect    *MultiSelectPropertyFilter   `json:"multi_select,omitzero"`
+	Status         *StatusPropertyFilter        `json:"status,omitzero"`
+	Date           *DatePropertyFilter          `json:"date,omitzero"`
+	People         *PeoplePropertyFilter        `json:"people,omitzero"`
+	Files          *ExistencePropertyFilter     `json:"files,omitzero"`
+	URL            *TextPropertyFilter          `json:"url,omitzero"`
+	Email          *TextPropertyFilter          `json:"email,omitzero"`
+	PhoneNumber    *TextPropertyFilter          `json:"phone_number,omitzero"`
+	Relation       *RelationPropertyFilter      `json:"relation,omitzero"`
+	CreatedBy      *PeoplePropertyFilter        `json:"created_by,omitzero"`
+	CreatedTime    *DatePropertyFilter          `json:"created_time,omitzero"`
+	LastEditedBy   *PeoplePropertyFilter        `json:"last_edited_by,omitzero"`
+	LastEditedTime *DatePropertyFilter          `json:"last_edited_time,omitzero"`
+	Formula        *FormulaPropertyFilter       `json:"formula,omitzero"`
+	UniqueID       *NumberPropertyFilter        `json:"unique_id,omitzero"`
+	Rollup         *RollupPropertyFilter        `json:"rollup,omitzero"`
+	Verification   *PropertyFilterVerification2 `json:"verification,omitzero"`
 }
 
 // PropertyFilterType is a value of PropertyFilter's type, naming the members it holds.
@@ -17255,16 +17255,16 @@ func (v *PropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// PropertyFilterVerificationVerification defines a model
-// PropertyFilterVerificationVerification is an untagged anyOf union: at least one field is set after unmarshaling.
-type PropertyFilterVerificationVerification struct {
+// PropertyFilterVerification2 defines a model
+// PropertyFilterVerification2 is an untagged anyOf union: at least one field is set after unmarshaling.
+type PropertyFilterVerification2 struct {
 	VerificationPropertyStatusFilter       *VerificationPropertyStatusFilter
 	VerificationPropertyDoesNotEqualFilter *VerificationPropertyDoesNotEqualFilter
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *PropertyFilterVerificationVerification) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = PropertyFilterVerificationVerification{}
+func (v *PropertyFilterVerification2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = PropertyFilterVerification2{}
 
 	opts := jsonOptsOf(dec)
 	strict := jsonStrict(dec)
@@ -17316,7 +17316,7 @@ func (v *PropertyFilterVerificationVerification) UnmarshalJSONFrom(dec *jsontext
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *PropertyFilterVerificationVerification) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *PropertyFilterVerification2) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.VerificationPropertyStatusFilter != nil:
 		return json.MarshalEncode(enc, v.VerificationPropertyStatusFilter, jsonOptsTo(enc))
@@ -20135,8 +20135,514 @@ func (e QuerySessionsSortsItemProperty) Valid() bool {
 	}
 }
 
-// QuickFilterCondition defines a model
-type QuickFilterCondition struct{}
+// A property filter condition. The quick filter key identifies the property. Pass an empty object to add the property to the filter bar without criteria.
+// QuickFilterConditionRequest is an untagged anyOf union: at least one field is set after unmarshaling.
+type QuickFilterConditionRequest struct {
+	EmptyObject                               *EmptyObject
+	QuickFilterConditionRequestTitle          *QuickFilterConditionRequestTitle
+	QuickFilterConditionRequestRichText       *QuickFilterConditionRequestRichText
+	QuickFilterConditionRequestNumber         *QuickFilterConditionRequestNumber
+	QuickFilterConditionRequestCheckbox       *QuickFilterConditionRequestCheckbox
+	QuickFilterConditionRequestSelect         *QuickFilterConditionRequestSelect
+	QuickFilterConditionRequestMultiSelect    *QuickFilterConditionRequestMultiSelect
+	QuickFilterConditionRequestStatus         *QuickFilterConditionRequestStatus
+	QuickFilterConditionRequestDate           *QuickFilterConditionRequestDate
+	QuickFilterConditionRequestPeople         *QuickFilterConditionRequestPeople
+	QuickFilterConditionRequestFiles          *QuickFilterConditionRequestFiles
+	QuickFilterConditionRequestURL            *QuickFilterConditionRequestURL
+	QuickFilterConditionRequestEmail          *QuickFilterConditionRequestEmail
+	QuickFilterConditionRequestPhoneNumber    *QuickFilterConditionRequestPhoneNumber
+	QuickFilterConditionRequestRelation       *QuickFilterConditionRequestRelation
+	QuickFilterConditionRequestCreatedBy      *QuickFilterConditionRequestCreatedBy
+	QuickFilterConditionRequestCreatedTime    *QuickFilterConditionRequestCreatedTime
+	QuickFilterConditionRequestLastEditedBy   *QuickFilterConditionRequestLastEditedBy
+	QuickFilterConditionRequestLastEditedTime *QuickFilterConditionRequestLastEditedTime
+	QuickFilterConditionRequestFormula        *QuickFilterConditionRequestFormula
+	QuickFilterConditionRequestUniqueID       *QuickFilterConditionRequestUniqueID
+	QuickFilterConditionRequestRollup         *QuickFilterConditionRequestRollup
+	QuickFilterConditionRequestVerification   *QuickFilterConditionRequestVerification
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = QuickFilterConditionRequest{}
+
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv EmptyObject
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.EmptyObject = &vv
+			matched++
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"title"}, map[string]string{"type": "\"title\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestTitle
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestTitle = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"rich_text"}, map[string]string{"type": "\"rich_text\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestRichText
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestRichText = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"number"}, map[string]string{"type": "\"number\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestNumber
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestNumber = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"checkbox"}, map[string]string{"type": "\"checkbox\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestCheckbox
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestCheckbox = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"select"}, map[string]string{"type": "\"select\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestSelect
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestSelect = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"multi_select"}, map[string]string{"type": "\"multi_select\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestMultiSelect
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestMultiSelect = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"status"}, map[string]string{"type": "\"status\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestStatus
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestStatus = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"date"}, map[string]string{"type": "\"date\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestDate
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestDate = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"people"}, map[string]string{"type": "\"people\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestPeople
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestPeople = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"files"}, map[string]string{"type": "\"files\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestFiles
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestFiles = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"url"}, map[string]string{"type": "\"url\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestURL
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestURL = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"email"}, map[string]string{"type": "\"email\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestEmail
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestEmail = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"phone_number"}, map[string]string{"type": "\"phone_number\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestPhoneNumber
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestPhoneNumber = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"relation"}, map[string]string{"type": "\"relation\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestRelation
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestRelation = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"created_by"}, map[string]string{"type": "\"created_by\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestCreatedBy
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestCreatedBy = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"created_time"}, map[string]string{"type": "\"created_time\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestCreatedTime
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestCreatedTime = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"last_edited_by"}, map[string]string{"type": "\"last_edited_by\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestLastEditedBy
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestLastEditedBy = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"last_edited_time"}, map[string]string{"type": "\"last_edited_time\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestLastEditedTime
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestLastEditedTime = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"formula"}, map[string]string{"type": "\"formula\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestFormula
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestFormula = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"unique_id"}, map[string]string{"type": "\"unique_id\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestUniqueID
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestUniqueID = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"rollup"}, map[string]string{"type": "\"rollup\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestRollup
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestRollup = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"verification"}, map[string]string{"type": "\"verification\""}
+		if jsonFits(raw, required, pinned) {
+			var vv QuickFilterConditionRequestVerification
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.QuickFilterConditionRequestVerification = &vv
+				matched++
+			}
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *QuickFilterConditionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.EmptyObject != nil:
+		return json.MarshalEncode(enc, v.EmptyObject, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestTitle != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestTitle, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestRichText != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestRichText, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestNumber != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestNumber, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestCheckbox != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestCheckbox, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestSelect != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestSelect, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestMultiSelect != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestMultiSelect, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestStatus != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestStatus, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestDate != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestDate, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestPeople != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestPeople, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestFiles != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestFiles, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestURL != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestURL, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestEmail != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestEmail, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestPhoneNumber != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestPhoneNumber, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestRelation != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestRelation, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestCreatedBy != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestCreatedBy, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestCreatedTime != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestCreatedTime, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestLastEditedBy != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestLastEditedBy, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestLastEditedTime != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestLastEditedTime, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestFormula != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestFormula, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestUniqueID != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestUniqueID, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestRollup != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestRollup, jsonOptsTo(enc))
+	case v.QuickFilterConditionRequestVerification != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRequestVerification, jsonOptsTo(enc))
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// QuickFilterConditionRequestCheckbox defines a model
+type QuickFilterConditionRequestCheckbox struct {
+	Checkbox CheckboxPropertyFilter `json:"checkbox"`
+	Type     string                 `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestCreatedBy defines a model
+type QuickFilterConditionRequestCreatedBy struct {
+	CreatedBy PeoplePropertyFilter `json:"created_by"`
+	Type      string               `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestCreatedTime defines a model
+type QuickFilterConditionRequestCreatedTime struct {
+	CreatedTime DatePropertyFilter `json:"created_time"`
+	Type        string             `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestDate defines a model
+type QuickFilterConditionRequestDate struct {
+	Date DatePropertyFilter `json:"date"`
+	Type string             `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestEmail defines a model
+type QuickFilterConditionRequestEmail struct {
+	Email TextPropertyFilter `json:"email"`
+	Type  string             `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestFiles defines a model
+type QuickFilterConditionRequestFiles struct {
+	Files ExistencePropertyFilter `json:"files"`
+	Type  string                  `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestFormula defines a model
+type QuickFilterConditionRequestFormula struct {
+	Formula FormulaPropertyFilter `json:"formula"`
+	Type    string                `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestLastEditedBy defines a model
+type QuickFilterConditionRequestLastEditedBy struct {
+	LastEditedBy PeoplePropertyFilter `json:"last_edited_by"`
+	Type         string               `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestLastEditedTime defines a model
+type QuickFilterConditionRequestLastEditedTime struct {
+	LastEditedTime DatePropertyFilter `json:"last_edited_time"`
+	Type           string             `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestMultiSelect defines a model
+type QuickFilterConditionRequestMultiSelect struct {
+	MultiSelect MultiSelectPropertyFilter `json:"multi_select"`
+	Type        string                    `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestNumber defines a model
+type QuickFilterConditionRequestNumber struct {
+	Number NumberPropertyFilter `json:"number"`
+	Type   string               `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestPeople defines a model
+type QuickFilterConditionRequestPeople struct {
+	People PeoplePropertyFilter `json:"people"`
+	Type   string               `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestPhoneNumber defines a model
+type QuickFilterConditionRequestPhoneNumber struct {
+	PhoneNumber TextPropertyFilter `json:"phone_number"`
+	Type        string             `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestRelation defines a model
+type QuickFilterConditionRequestRelation struct {
+	Relation RelationPropertyFilter `json:"relation"`
+	Type     string                 `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestRichText defines a model
+type QuickFilterConditionRequestRichText struct {
+	RichText TextPropertyFilter `json:"rich_text"`
+	Type     string             `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestRollup defines a model
+type QuickFilterConditionRequestRollup struct {
+	Rollup RollupPropertyFilter `json:"rollup"`
+	Type   string               `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestSelect defines a model
+type QuickFilterConditionRequestSelect struct {
+	Select SelectPropertyFilter `json:"select"`
+	Type   string               `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestStatus defines a model
+type QuickFilterConditionRequestStatus struct {
+	Status StatusPropertyFilter `json:"status"`
+	Type   string               `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestTitle defines a model
+type QuickFilterConditionRequestTitle struct {
+	Title TextPropertyFilter `json:"title"`
+	Type  string             `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestURL defines a model
+type QuickFilterConditionRequestURL struct {
+	URL  TextPropertyFilter `json:"url"`
+	Type string             `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestUniqueID defines a model
+type QuickFilterConditionRequestUniqueID struct {
+	UniqueID NumberPropertyFilter `json:"unique_id"`
+	Type     string               `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRequestVerification defines a model
+type QuickFilterConditionRequestVerification struct {
+	Verification PropertyFilterVerification2 `json:"verification"`
+	Type         string                      `json:"type,omitzero"`
+}
+
+// A property filter condition. Same shape as a property filter but without the "property" field. For example: { "select": { "equals": "High" } }. An empty object means the quick filter has no criteria yet.
+type QuickFilterConditionResponse struct{}
 
 // RelationGroupByConfigRequest defines a model
 type RelationGroupByConfigRequest struct {
@@ -28328,7 +28834,7 @@ type UpdateViewRequest struct {
 	// Property sorts to apply to the view. Only property-based sorts are supported. Pass null to clear the sorts.
 	Sorts PropertySorts `json:"sorts,omitzero"`
 	// Quick filters for the view's filter bar. Keys are property names or IDs. Set a key to a filter condition to add/update that quick filter. Set a key to null to remove it. Pass null for the entire field to clear all quick filters. Unmentioned quick filters are preserved.
-	QuickFilters map[string]QuickFilterCondition `json:"quick_filters,omitzero"`
+	QuickFilters map[string]QuickFilterConditionRequest `json:"quick_filters,omitzero"`
 	// View presentation configuration. The type field must match the view type. Individual nullable fields within the configuration can be set to null to clear them.
 	Configuration ViewConfigRequest `json:"configuration,omitzero"`
 }

@@ -6419,87 +6419,11 @@
                   "sorts": {
                     "type": "array",
                     "items": {
-                      "anyOf": [
-                        {
-                          "type": "object",
-                          "properties": {
-                            "property": {
-                              "type": "string"
-                            },
-                            "direction": {
-                              "type": "string",
-                              "enum": [
-                                "ascending",
-                                "descending"
-                              ]
-                            }
-                          },
-                          "required": [
-                            "property",
-                            "direction"
-                          ]
-                        },
-                        {
-                          "type": "object",
-                          "properties": {
-                            "timestamp": {
-                              "type": "string",
-                              "enum": [
-                                "created_time",
-                                "last_edited_time"
-                              ]
-                            },
-                            "direction": {
-                              "type": "string",
-                              "enum": [
-                                "ascending",
-                                "descending"
-                              ]
-                            }
-                          },
-                          "required": [
-                            "timestamp",
-                            "direction"
-                          ]
-                        }
-                      ]
+                      "$ref": "#/components/schemas/viewSortRequest"
                     }
                   },
                   "filter": {
-                    "anyOf": [
-                      {
-                        "anyOf": [
-                          {
-                            "type": "object",
-                            "properties": {
-                              "or": {
-                                "$ref": "#/components/schemas/groupFilterOperatorArray"
-                              }
-                            },
-                            "required": [
-                              "or"
-                            ]
-                          },
-                          {
-                            "type": "object",
-                            "properties": {
-                              "and": {
-                                "$ref": "#/components/schemas/groupFilterOperatorArray"
-                              }
-                            },
-                            "required": [
-                              "and"
-                            ]
-                          }
-                        ]
-                      },
-                      {
-                        "$ref": "#/components/schemas/propertyFilter"
-                      },
-                      {
-                        "$ref": "#/components/schemas/timestampFilter"
-                      }
-                    ]
+                    "$ref": "#/components/schemas/viewFilterRequest"
                   },
                   "start_cursor": {
                     "type": "string"
@@ -31299,11 +31223,11 @@
             "$ref": "#/components/schemas/idRequest"
           },
           "filter": {
-            "description": "Filter to apply to the view. Uses the same format as the data source query filter.",
+            "description": "Filter to apply to the view. Uses the same format as the data source query filter. Simple property filters appear in the view's filter bar. For example, a status filter can exclude several values with does_not_equal.",
             "$ref": "#/components/schemas/viewFilterRequest"
           },
           "sorts": {
-            "description": "Sorts to apply to the view. Uses the same format as the data source query sorts.",
+            "description": "Property sorts to save on the view. Timestamp sorts are accepted but are not saved.",
             "$ref": "#/components/schemas/viewSortsRequest"
           },
           "quick_filters": {
@@ -42298,8 +42222,397 @@
         ]
       },
       "quickFilterConditionRequest": {
-        "description": "A property filter condition. Same shape as a property filter but without the \"property\" field (the hashmap key identifies the property). For example: { \"select\": { \"equals\": \"High\" } }. Pass an empty object to add the property to the filter bar without criteria.",
-        "type": "object"
+        "description": "A property filter condition. The quick filter key identifies the property. Pass an empty object to add the property to the filter bar without criteria.",
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          {
+            "anyOf": [
+              {
+                "title": "Title",
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "$ref": "#/components/schemas/textPropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "title"
+                  }
+                },
+                "required": [
+                  "title"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Rich Text",
+                "type": "object",
+                "properties": {
+                  "rich_text": {
+                    "$ref": "#/components/schemas/textPropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "rich_text"
+                  }
+                },
+                "required": [
+                  "rich_text"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Number",
+                "type": "object",
+                "properties": {
+                  "number": {
+                    "$ref": "#/components/schemas/numberPropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "number"
+                  }
+                },
+                "required": [
+                  "number"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Checkbox",
+                "type": "object",
+                "properties": {
+                  "checkbox": {
+                    "$ref": "#/components/schemas/checkboxPropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "checkbox"
+                  }
+                },
+                "required": [
+                  "checkbox"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Select",
+                "type": "object",
+                "properties": {
+                  "select": {
+                    "$ref": "#/components/schemas/selectPropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "select"
+                  }
+                },
+                "required": [
+                  "select"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Multi Select",
+                "type": "object",
+                "properties": {
+                  "multi_select": {
+                    "$ref": "#/components/schemas/multiSelectPropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "multi_select"
+                  }
+                },
+                "required": [
+                  "multi_select"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Status",
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "$ref": "#/components/schemas/statusPropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "status"
+                  }
+                },
+                "required": [
+                  "status"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Date",
+                "type": "object",
+                "properties": {
+                  "date": {
+                    "$ref": "#/components/schemas/datePropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "date"
+                  }
+                },
+                "required": [
+                  "date"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "People",
+                "type": "object",
+                "properties": {
+                  "people": {
+                    "$ref": "#/components/schemas/peoplePropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "people"
+                  }
+                },
+                "required": [
+                  "people"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Files",
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "$ref": "#/components/schemas/existencePropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "files"
+                  }
+                },
+                "required": [
+                  "files"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Url",
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "$ref": "#/components/schemas/textPropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "url"
+                  }
+                },
+                "required": [
+                  "url"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Email",
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "$ref": "#/components/schemas/textPropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "email"
+                  }
+                },
+                "required": [
+                  "email"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Phone Number",
+                "type": "object",
+                "properties": {
+                  "phone_number": {
+                    "$ref": "#/components/schemas/textPropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "phone_number"
+                  }
+                },
+                "required": [
+                  "phone_number"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Relation",
+                "type": "object",
+                "properties": {
+                  "relation": {
+                    "$ref": "#/components/schemas/relationPropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "relation"
+                  }
+                },
+                "required": [
+                  "relation"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Created By",
+                "type": "object",
+                "properties": {
+                  "created_by": {
+                    "$ref": "#/components/schemas/peoplePropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "created_by"
+                  }
+                },
+                "required": [
+                  "created_by"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Created Time",
+                "type": "object",
+                "properties": {
+                  "created_time": {
+                    "$ref": "#/components/schemas/datePropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "created_time"
+                  }
+                },
+                "required": [
+                  "created_time"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Last Edited By",
+                "type": "object",
+                "properties": {
+                  "last_edited_by": {
+                    "$ref": "#/components/schemas/peoplePropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "last_edited_by"
+                  }
+                },
+                "required": [
+                  "last_edited_by"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Last Edited Time",
+                "type": "object",
+                "properties": {
+                  "last_edited_time": {
+                    "$ref": "#/components/schemas/datePropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "last_edited_time"
+                  }
+                },
+                "required": [
+                  "last_edited_time"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Formula",
+                "type": "object",
+                "properties": {
+                  "formula": {
+                    "$ref": "#/components/schemas/formulaPropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "formula"
+                  }
+                },
+                "required": [
+                  "formula"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Unique Id",
+                "type": "object",
+                "properties": {
+                  "unique_id": {
+                    "$ref": "#/components/schemas/numberPropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "unique_id"
+                  }
+                },
+                "required": [
+                  "unique_id"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Rollup",
+                "type": "object",
+                "properties": {
+                  "rollup": {
+                    "$ref": "#/components/schemas/rollupPropertyFilter"
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "rollup"
+                  }
+                },
+                "required": [
+                  "rollup"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "title": "Verification",
+                "type": "object",
+                "properties": {
+                  "verification": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/verificationPropertyStatusFilter"
+                      },
+                      {
+                        "$ref": "#/components/schemas/verificationPropertyDoesNotEqualFilter"
+                      }
+                    ]
+                  },
+                  "type": {
+                    "type": "string",
+                    "const": "verification"
+                  }
+                },
+                "required": [
+                  "verification"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        ]
       },
       "quickFilterConditionResponse": {
         "description": "A property filter condition. Same shape as a property filter but without the \"property\" field. For example: { \"select\": { \"equals\": \"High\" } }. An empty object means the quick filter has no criteria yet.",
@@ -47141,8 +47454,41 @@
         ]
       },
       "viewFilterRequest": {
-        "description": "Filter for the view. Uses the same format as the data source query filter (property filters, timestamp filters, or compound and/or filters). Simple property filters appear in the view's filter bar in the Notion UI. Select, status, and multi_select filter operators accept a single string or an array of strings to filter by multiple values (e.g. { \"does_not_equal\": [\"Done\", \"Archive\"] }).",
-        "type": "object"
+        "description": "A property filter, timestamp filter, or compound and/or filter.",
+        "anyOf": [
+          {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "or": {
+                    "$ref": "#/components/schemas/groupFilterOperatorArray"
+                  }
+                },
+                "required": [
+                  "or"
+                ]
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "and": {
+                    "$ref": "#/components/schemas/groupFilterOperatorArray"
+                  }
+                },
+                "required": [
+                  "and"
+                ]
+              }
+            ]
+          },
+          {
+            "$ref": "#/components/schemas/propertyFilter"
+          },
+          {
+            "$ref": "#/components/schemas/timestampFilter"
+          }
+        ]
       },
       "viewFilterResponse": {
         "description": "Filter for the view. Can be a property filter (filter by property value), timestamp filter (filter by created_time or last_edited_time), or compound filter (combine filters with and/or logic). Compound filters support up to 2 levels of nesting.",
@@ -47713,8 +48059,51 @@
         "additionalProperties": false
       },
       "viewSortRequest": {
-        "description": "Sort for the view. Can be a property sort (with property and direction) or timestamp sort (with timestamp and direction).",
-        "type": "object"
+        "description": "Sort by property name or ID, or by timestamp.",
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "property": {
+                "type": "string"
+              },
+              "direction": {
+                "type": "string",
+                "enum": [
+                  "ascending",
+                  "descending"
+                ]
+              }
+            },
+            "required": [
+              "property",
+              "direction"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "timestamp": {
+                "type": "string",
+                "enum": [
+                  "created_time",
+                  "last_edited_time"
+                ]
+              },
+              "direction": {
+                "type": "string",
+                "enum": [
+                  "ascending",
+                  "descending"
+                ]
+              }
+            },
+            "required": [
+              "timestamp",
+              "direction"
+            ]
+          }
+        ]
       },
       "viewSortResponse": {
         "description": "Sort for the view. Can sort by property or timestamp.",
