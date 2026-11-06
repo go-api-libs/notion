@@ -142,6 +142,21 @@ func persistOpenAPI(ctx context.Context) error {
 	return doc.WriteJSON(w)
 }
 
+func stripSuffixes(doc *openapi.Document) error {
+	suffixes := []string{"Request"} // , "Response"
+
+	toRename := map[string]string{}
+	for n := range doc.Components.Schemas.ByIndex() {
+		for _, suffix := range suffixes {
+			if before, ok := strings.CutSuffix(n, suffix); ok {
+				toRename[n] = strcase.ToGoPascal(before)
+			}
+		}
+	}
+
+	return edit.RenameSchemas(doc, toRename)
+}
+
 // consolidateErrors replaces the schemas whose names start with any of prefixes, each an allOf of the common error and
 // a code and status, with one schema called name that allows every code and status they did. Its code refers to a
 // schema of its own, called codeName.
@@ -422,6 +437,10 @@ func nameObjects(doc *openapi.Document) {
 func setResults(doc *openapi.Document) error {
 	const list, item = "PageOrDataSourceList", "PageOrDataSource"
 
+	if err := edit.RenameSchema(doc, "pageOrDataSourceListResponse", list); err != nil {
+		return err
+	}
+
 	s, ok := doc.Components.Schemas[list]
 	if !ok {
 		return componentErr(list, errors.New("not found"))
@@ -687,7 +706,7 @@ var dateProps = []struct {
 	schema string
 	props  []string
 }{
-	{"dateRequest", []string{"start", "end"}},
+	{"Date", []string{"start", "end"}},
 	{"dateResponse", []string{"start", "end"}},
 }
 
@@ -876,18 +895,18 @@ func extractArrayOf(doc *openapi.Document, name, item string) error {
 // nameSorts makes the sorts of a data source's entries one Sort, whether a view's, read or written, or a query's.
 func nameSorts(doc *openapi.Document) error {
 	if err := edit.RenameSchemas(doc, map[string]string{
-		"viewSortResponse":         "Sort",
-		"propertySortResponse":     "PropertySort",
-		"timestampSortResponse":    "TimestampSort",
-		"viewPropertySortsRequest": "PropertySorts",
+		"viewSortResponse":      "Sort",
+		"propertySortResponse":  "PropertySort",
+		"timestampSortResponse": "TimestampSort",
+		"ViewPropertySorts":     "PropertySorts",
 	}); err != nil {
 		return fmt.Errorf("renaming sorts: %w", err)
 	}
 
 	// a view's sorts are written as they are read: its update allows property sorts only
 	if err := edit.RedirectSchemas(doc, map[string]string{
-		"viewSortRequest":         "Sort",
-		"viewPropertySortRequest": "PropertySort",
+		"ViewSort":         "Sort",
+		"ViewPropertySort": "PropertySort",
 	}); err != nil {
 		return fmt.Errorf("redirecting sorts: %w", err)
 	}
@@ -910,7 +929,7 @@ func nameSorts(doc *openapi.Document) error {
 		return err
 	}
 
-	return edit.RedirectSchemas(doc, map[string]string{"viewSortsRequest": "Sorts"})
+	return edit.RedirectSchemas(doc, map[string]string{"ViewSorts": "Sorts"})
 }
 
 // nameFilter makes the filters of a data source's entries one Filter, whether a view's, read or written, or a query's.
@@ -937,7 +956,7 @@ func nameFilter(doc *openapi.Document) error {
 	query.Properties.Set("filter", refTo(doc, "Filter"))
 
 	if err := edit.RedirectSchemas(doc, map[string]string{
-		"viewFilterRequest":  "Filter",
+		"ViewFilter":         "Filter",
 		"viewFilterResponse": "Filter",
 	}); err != nil {
 		return fmt.Errorf("redirecting filters: %w", err)
@@ -1027,6 +1046,10 @@ func fixOpenAPI() (*openapi.Document, error) {
 				)
 			}
 		}
+	}
+
+	if err := stripSuffixes(doc); err != nil {
+		return nil, err
 	}
 
 	if err := consolidateErrors(doc, []string{"error_api_", "error_oauth_"},

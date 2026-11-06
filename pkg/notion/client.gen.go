@@ -466,7 +466,7 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 // Retrieve a user
 //
 //	GET /users/{user_id}
-func (c *Client) GetUser(ctx context.Context, userID IDRequest) (*UserObjectResponse, error) {
+func (c *Client) GetUser(ctx context.Context, userID ID) (*UserObjectResponse, error) {
 	return c.GetUserWithResult[UserObjectResponse](ctx, userID)
 }
 
@@ -474,7 +474,7 @@ func (c *Client) GetUser(ctx context.Context, userID IDRequest) (*UserObjectResp
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /users/{user_id}
-func (c *Client) GetUserWithResult[R any](ctx context.Context, userID IDRequest) (*R, error) {
+func (c *Client) GetUserWithResult[R any](ctx context.Context, userID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -1542,7 +1542,7 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 // Retrieve a page
 //
 //	GET /pages/{page_id}
-func (c *Client) RetrieveAPage(ctx context.Context, pageID IDRequest, params *RetrieveAPageParams) (*PageOrPartial, error) {
+func (c *Client) RetrieveAPage(ctx context.Context, pageID ID, params *RetrieveAPageParams) (*PageOrPartial, error) {
 	return c.RetrieveAPageWithResult[PageOrPartial](ctx, pageID, params)
 }
 
@@ -1550,7 +1550,7 @@ func (c *Client) RetrieveAPage(ctx context.Context, pageID IDRequest, params *Re
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /pages/{page_id}
-func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRequest, params *RetrieveAPageParams) (*R, error) {
+func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID ID, params *RetrieveAPageParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -1890,7 +1890,7 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID IDRe
 // Update page
 //
 //	PATCH /pages/{page_id}
-func (c *Client) PatchPage(ctx context.Context, pageID IDRequest, params *PatchPageParams, body PatchPage) (*PageOrPartial, error) {
+func (c *Client) PatchPage(ctx context.Context, pageID ID, params *PatchPageParams, body PatchPage) (*PageOrPartial, error) {
 	return c.PatchPageWithResult[PageOrPartial](ctx, pageID, params, body)
 }
 
@@ -1898,7 +1898,7 @@ func (c *Client) PatchPage(ctx context.Context, pageID IDRequest, params *PatchP
 // You can define a custom result to unmarshal the response into.
 //
 //	PATCH /pages/{page_id}
-func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID IDRequest, params *PatchPageParams, body PatchPage) (*R, error) {
+func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID ID, params *PatchPageParams, body PatchPage) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -2245,7 +2245,7 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID IDReques
 // Move a page
 //
 //	POST /pages/{page_id}/move
-func (c *Client) MovePage(ctx context.Context, pageID IDRequest, body MovePage) (*PageOrPartial, error) {
+func (c *Client) MovePage(ctx context.Context, pageID ID, body MovePage) (*PageOrPartial, error) {
 	return c.MovePageWithResult[PageOrPartial](ctx, pageID, body)
 }
 
@@ -2253,7 +2253,7 @@ func (c *Client) MovePage(ctx context.Context, pageID IDRequest, body MovePage) 
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /pages/{page_id}/move
-func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID IDRequest, body MovePage) (*R, error) {
+func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID ID, body MovePage) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -2590,7 +2590,7 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID IDRequest
 // Retrieve a page property item
 //
 //	GET /pages/{page_id}/properties/{property_id}
-func (c *Client) RetrieveAPageProperty(ctx context.Context, pageID IDRequest, propertyID string, params *RetrieveAPagePropertyParams) (*RetrieveAPagePropertyOk, error) {
+func (c *Client) RetrieveAPageProperty(ctx context.Context, pageID ID, propertyID string, params *RetrieveAPagePropertyParams) (*RetrieveAPagePropertyOk, error) {
 	return c.RetrieveAPagePropertyWithResult[RetrieveAPagePropertyOk](ctx, pageID, propertyID, params)
 }
 
@@ -2598,7 +2598,7 @@ func (c *Client) RetrieveAPageProperty(ctx context.Context, pageID IDRequest, pr
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /pages/{page_id}/properties/{property_id}
-func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pageID IDRequest, propertyID string, params *RetrieveAPagePropertyParams) (*R, error) {
+func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pageID ID, propertyID string, params *RetrieveAPagePropertyParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -2942,7 +2942,7 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 // Retrieve a page as markdown
 //
 //	GET /pages/{page_id}/markdown
-func (c *Client) RetrievePageMarkdown(ctx context.Context, pageID IDRequest, params *RetrievePageMarkdownParams) (*PageMarkdownResponse, error) {
+func (c *Client) RetrievePageMarkdown(ctx context.Context, pageID ID, params *RetrievePageMarkdownParams) (*PageMarkdownResponse, error) {
 	return c.RetrievePageMarkdownWithResult[PageMarkdownResponse](ctx, pageID, params)
 }
 
@@ -2950,7 +2950,7 @@ func (c *Client) RetrievePageMarkdown(ctx context.Context, pageID IDRequest, par
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /pages/{page_id}/markdown
-func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, pageID IDRequest, params *RetrievePageMarkdownParams) (*R, error) {
+func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, pageID ID, params *RetrievePageMarkdownParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -3294,7 +3294,7 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 // Update a page's content as markdown
 //
 //	PATCH /pages/{page_id}/markdown
-func (c *Client) UpdatePageMarkdown(ctx context.Context, pageID IDRequest, body UpdatePageMarkdown) (*PageMarkdownResponse, error) {
+func (c *Client) UpdatePageMarkdown(ctx context.Context, pageID ID, body UpdatePageMarkdown) (*PageMarkdownResponse, error) {
 	return c.UpdatePageMarkdownWithResult[PageMarkdownResponse](ctx, pageID, body)
 }
 
@@ -3302,7 +3302,7 @@ func (c *Client) UpdatePageMarkdown(ctx context.Context, pageID IDRequest, body 
 // You can define a custom result to unmarshal the response into.
 //
 //	PATCH /pages/{page_id}/markdown
-func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID IDRequest, body UpdatePageMarkdown) (*R, error) {
+func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID ID, body UpdatePageMarkdown) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -4008,7 +4008,7 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 // Retrieve a block
 //
 //	GET /blocks/{block_id}
-func (c *Client) RetrieveABlock(ctx context.Context, blockID IDRequest) (*BlockOrPartial, error) {
+func (c *Client) RetrieveABlock(ctx context.Context, blockID ID) (*BlockOrPartial, error) {
 	return c.RetrieveABlockWithResult[BlockOrPartial](ctx, blockID)
 }
 
@@ -4016,7 +4016,7 @@ func (c *Client) RetrieveABlock(ctx context.Context, blockID IDRequest) (*BlockO
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /blocks/{block_id}
-func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID IDRequest) (*R, error) {
+func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -4346,7 +4346,7 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 // Delete a block
 //
 //	DELETE /blocks/{block_id}
-func (c *Client) DeleteABlock(ctx context.Context, blockID IDRequest) (*BlockOrPartial, error) {
+func (c *Client) DeleteABlock(ctx context.Context, blockID ID) (*BlockOrPartial, error) {
 	return c.DeleteABlockWithResult[BlockOrPartial](ctx, blockID)
 }
 
@@ -4354,7 +4354,7 @@ func (c *Client) DeleteABlock(ctx context.Context, blockID IDRequest) (*BlockOrP
 // You can define a custom result to unmarshal the response into.
 //
 //	DELETE /blocks/{block_id}
-func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID IDRequest) (*R, error) {
+func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -4684,7 +4684,7 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID IDRe
 // Update a block
 //
 //	PATCH /blocks/{block_id}
-func (c *Client) UpdateABlock(ctx context.Context, blockID IDRequest, body UpdateABlock) (*BlockOrPartial, error) {
+func (c *Client) UpdateABlock(ctx context.Context, blockID ID, body UpdateABlock) (*BlockOrPartial, error) {
 	return c.UpdateABlockWithResult[BlockOrPartial](ctx, blockID, body)
 }
 
@@ -4692,7 +4692,7 @@ func (c *Client) UpdateABlock(ctx context.Context, blockID IDRequest, body Updat
 // You can define a custom result to unmarshal the response into.
 //
 //	PATCH /blocks/{block_id}
-func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID IDRequest, body UpdateABlock) (*R, error) {
+func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID ID, body UpdateABlock) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -5029,7 +5029,7 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID IDRe
 // Retrieve block children
 //
 //	GET /blocks/{block_id}/children
-func (c *Client) GetBlockChildren(ctx context.Context, blockID IDRequest, params *GetBlockChildrenParams) (*BlockList, error) {
+func (c *Client) GetBlockChildren(ctx context.Context, blockID ID, params *GetBlockChildrenParams) (*BlockList, error) {
 	return c.GetBlockChildrenWithResult[BlockList](ctx, blockID, params)
 }
 
@@ -5037,7 +5037,7 @@ func (c *Client) GetBlockChildren(ctx context.Context, blockID IDRequest, params
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /blocks/{block_id}/children
-func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID IDRequest, params *GetBlockChildrenParams) (*R, error) {
+func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID ID, params *GetBlockChildrenParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -5381,7 +5381,7 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 // Append block children
 //
 //	PATCH /blocks/{block_id}/children
-func (c *Client) PatchBlockChildren(ctx context.Context, blockID IDRequest, body PatchBlockChildren) (*BlockList, error) {
+func (c *Client) PatchBlockChildren(ctx context.Context, blockID ID, body PatchBlockChildren) (*BlockList, error) {
 	return c.PatchBlockChildrenWithResult[BlockList](ctx, blockID, body)
 }
 
@@ -5389,7 +5389,7 @@ func (c *Client) PatchBlockChildren(ctx context.Context, blockID IDRequest, body
 // You can define a custom result to unmarshal the response into.
 //
 //	PATCH /blocks/{block_id}/children
-func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockID IDRequest, body PatchBlockChildren) (*R, error) {
+func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockID ID, body PatchBlockChildren) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -5726,7 +5726,7 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 // Retrieve a data source
 //
 //	GET /data_sources/{data_source_id}
-func (c *Client) RetrieveADataSource(ctx context.Context, dataSourceID IDRequest) (*DataSourceOrPartial, error) {
+func (c *Client) RetrieveADataSource(ctx context.Context, dataSourceID ID) (*DataSourceOrPartial, error) {
 	return c.RetrieveADataSourceWithResult[DataSourceOrPartial](ctx, dataSourceID)
 }
 
@@ -5734,7 +5734,7 @@ func (c *Client) RetrieveADataSource(ctx context.Context, dataSourceID IDRequest
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /data_sources/{data_source_id}
-func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataSourceID IDRequest) (*R, error) {
+func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataSourceID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -6064,7 +6064,7 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 // Update a data source
 //
 //	PATCH /data_sources/{data_source_id}
-func (c *Client) UpdateADataSource(ctx context.Context, dataSourceID IDRequest, body UpdateADataSource) (*DataSourceOrPartial, error) {
+func (c *Client) UpdateADataSource(ctx context.Context, dataSourceID ID, body UpdateADataSource) (*DataSourceOrPartial, error) {
 	return c.UpdateADataSourceWithResult[DataSourceOrPartial](ctx, dataSourceID, body)
 }
 
@@ -6072,7 +6072,7 @@ func (c *Client) UpdateADataSource(ctx context.Context, dataSourceID IDRequest, 
 // You can define a custom result to unmarshal the response into.
 //
 //	PATCH /data_sources/{data_source_id}
-func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSourceID IDRequest, body UpdateADataSource) (*R, error) {
+func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSourceID ID, body UpdateADataSource) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -6409,7 +6409,7 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 // Query a data source
 //
 //	POST /data_sources/{data_source_id}/query
-func (c *Client) PostDatabaseQuery(ctx context.Context, dataSourceID IDRequest, params *PostDatabaseQueryParams, body PostDatabaseQuery) (*PageOrDataSourceList, error) {
+func (c *Client) PostDatabaseQuery(ctx context.Context, dataSourceID ID, params *PostDatabaseQueryParams, body PostDatabaseQuery) (*PageOrDataSourceList, error) {
 	return c.PostDatabaseQueryWithResult[PageOrDataSourceList](ctx, dataSourceID, params, body)
 }
 
@@ -6417,7 +6417,7 @@ func (c *Client) PostDatabaseQuery(ctx context.Context, dataSourceID IDRequest, 
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /data_sources/{data_source_id}/query
-func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSourceID IDRequest, params *PostDatabaseQueryParams, body PostDatabaseQuery) (*R, error) {
+func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSourceID ID, params *PostDatabaseQueryParams, body PostDatabaseQuery) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -7109,7 +7109,7 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 // List templates in a data source
 //
 //	GET /data_sources/{data_source_id}/templates
-func (c *Client) ListDataSourceTemplates(ctx context.Context, dataSourceID IDRequest, params *ListDataSourceTemplatesParams) (*ListDataSourceTemplatesOk, error) {
+func (c *Client) ListDataSourceTemplates(ctx context.Context, dataSourceID ID, params *ListDataSourceTemplatesParams) (*ListDataSourceTemplatesOk, error) {
 	return c.ListDataSourceTemplatesWithResult[ListDataSourceTemplatesOk](ctx, dataSourceID, params)
 }
 
@@ -7117,7 +7117,7 @@ func (c *Client) ListDataSourceTemplates(ctx context.Context, dataSourceID IDReq
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /data_sources/{data_source_id}/templates
-func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, dataSourceID IDRequest, params *ListDataSourceTemplatesParams) (*R, error) {
+func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, dataSourceID ID, params *ListDataSourceTemplatesParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -7465,7 +7465,7 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 // Retrieve a database
 //
 //	GET /databases/{database_id}
-func (c *Client) RetrieveDatabase(ctx context.Context, databaseID IDRequest) (*DatabaseOrPartial, error) {
+func (c *Client) RetrieveDatabase(ctx context.Context, databaseID ID) (*DatabaseOrPartial, error) {
 	return c.RetrieveDatabaseWithResult[DatabaseOrPartial](ctx, databaseID)
 }
 
@@ -7473,7 +7473,7 @@ func (c *Client) RetrieveDatabase(ctx context.Context, databaseID IDRequest) (*D
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /databases/{database_id}
-func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, databaseID IDRequest) (*R, error) {
+func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, databaseID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -7803,7 +7803,7 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 // Update a database
 //
 //	PATCH /databases/{database_id}
-func (c *Client) UpdateDatabase(ctx context.Context, databaseID IDRequest, body UpdateDatabase) (*DatabaseOrPartial, error) {
+func (c *Client) UpdateDatabase(ctx context.Context, databaseID ID, body UpdateDatabase) (*DatabaseOrPartial, error) {
 	return c.UpdateDatabaseWithResult[DatabaseOrPartial](ctx, databaseID, body)
 }
 
@@ -7811,7 +7811,7 @@ func (c *Client) UpdateDatabase(ctx context.Context, databaseID IDRequest, body 
 // You can define a custom result to unmarshal the response into.
 //
 //	PATCH /databases/{database_id}
-func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID IDRequest, body UpdateDatabase) (*R, error) {
+func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID ID, body UpdateDatabase) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -9546,7 +9546,7 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 // Retrieve a comment
 //
 //	GET /comments/{comment_id}
-func (c *Client) RetrieveComment(ctx context.Context, commentID IDRequest) (*CommentOrPartial, error) {
+func (c *Client) RetrieveComment(ctx context.Context, commentID ID) (*CommentOrPartial, error) {
 	return c.RetrieveCommentWithResult[CommentOrPartial](ctx, commentID)
 }
 
@@ -9554,7 +9554,7 @@ func (c *Client) RetrieveComment(ctx context.Context, commentID IDRequest) (*Com
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /comments/{comment_id}
-func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID IDRequest) (*R, error) {
+func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -9884,7 +9884,7 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 // Delete a comment
 //
 //	DELETE /comments/{comment_id}
-func (c *Client) DeleteAComment(ctx context.Context, commentID IDRequest) (*CommentOrPartial, error) {
+func (c *Client) DeleteAComment(ctx context.Context, commentID ID) (*CommentOrPartial, error) {
 	return c.DeleteACommentWithResult[CommentOrPartial](ctx, commentID)
 }
 
@@ -9892,7 +9892,7 @@ func (c *Client) DeleteAComment(ctx context.Context, commentID IDRequest) (*Comm
 // You can define a custom result to unmarshal the response into.
 //
 //	DELETE /comments/{comment_id}
-func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID IDRequest) (*R, error) {
+func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -10222,7 +10222,7 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 // Update a comment
 //
 //	PATCH /comments/{comment_id}
-func (c *Client) UpdateAComment(ctx context.Context, commentID IDRequest, body UpdateAComment) (*CommentOrPartial, error) {
+func (c *Client) UpdateAComment(ctx context.Context, commentID ID, body UpdateAComment) (*CommentOrPartial, error) {
 	return c.UpdateACommentWithResult[CommentOrPartial](ctx, commentID, body)
 }
 
@@ -10230,7 +10230,7 @@ func (c *Client) UpdateAComment(ctx context.Context, commentID IDRequest, body U
 // You can define a custom result to unmarshal the response into.
 //
 //	PATCH /comments/{comment_id}
-func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID IDRequest, body UpdateAComment) (*R, error) {
+func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID ID, body UpdateAComment) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -11268,7 +11268,7 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 // Upload a file
 //
 //	POST /file_uploads/{file_upload_id}/send
-func (c *Client) UploadFile(ctx context.Context, fileUploadID IDRequest, body UploadFile) (*FileUploadObjectResponse, error) {
+func (c *Client) UploadFile(ctx context.Context, fileUploadID ID, body UploadFile) (*FileUploadObjectResponse, error) {
 	return c.UploadFileWithResult[FileUploadObjectResponse](ctx, fileUploadID, body)
 }
 
@@ -11276,7 +11276,7 @@ func (c *Client) UploadFile(ctx context.Context, fileUploadID IDRequest, body Up
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /file_uploads/{file_upload_id}/send
-func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID IDRequest, body UploadFile) (*R, error) {
+func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID ID, body UploadFile) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -11613,7 +11613,7 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 // Complete a multi-part file upload
 //
 //	POST /file_uploads/{file_upload_id}/complete
-func (c *Client) CompleteFileUpload(ctx context.Context, fileUploadID IDRequest) (*FileUploadObjectResponse, error) {
+func (c *Client) CompleteFileUpload(ctx context.Context, fileUploadID ID) (*FileUploadObjectResponse, error) {
 	return c.CompleteFileUploadWithResult[FileUploadObjectResponse](ctx, fileUploadID)
 }
 
@@ -11621,7 +11621,7 @@ func (c *Client) CompleteFileUpload(ctx context.Context, fileUploadID IDRequest)
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /file_uploads/{file_upload_id}/complete
-func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUploadID IDRequest) (*R, error) {
+func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUploadID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -11951,7 +11951,7 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 // Retrieve a file upload
 //
 //	GET /file_uploads/{file_upload_id}
-func (c *Client) RetrieveFileUpload(ctx context.Context, fileUploadID IDRequest) (*FileUploadObjectResponse, error) {
+func (c *Client) RetrieveFileUpload(ctx context.Context, fileUploadID ID) (*FileUploadObjectResponse, error) {
 	return c.RetrieveFileUploadWithResult[FileUploadObjectResponse](ctx, fileUploadID)
 }
 
@@ -11959,7 +11959,7 @@ func (c *Client) RetrieveFileUpload(ctx context.Context, fileUploadID IDRequest)
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /file_uploads/{file_upload_id}
-func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUploadID IDRequest) (*R, error) {
+func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUploadID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -13005,7 +13005,7 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 // Create a view
 //
 //	POST /views
-func (c *Client) CreateView(ctx context.Context, body CreateViewRequest) (*DataSourceViewOrPartial, error) {
+func (c *Client) CreateView(ctx context.Context, body CreateView) (*DataSourceViewOrPartial, error) {
 	return c.CreateViewWithResult[DataSourceViewOrPartial](ctx, body)
 }
 
@@ -13013,7 +13013,7 @@ func (c *Client) CreateView(ctx context.Context, body CreateViewRequest) (*DataS
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /views
-func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateViewRequest) (*R, error) {
+func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateView) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -13350,7 +13350,7 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 // Retrieve a view
 //
 //	GET /views/{view_id}
-func (c *Client) RetrieveAView(ctx context.Context, viewID IDRequest) (*DataSourceViewOrPartial, error) {
+func (c *Client) RetrieveAView(ctx context.Context, viewID ID) (*DataSourceViewOrPartial, error) {
 	return c.RetrieveAViewWithResult[DataSourceViewOrPartial](ctx, viewID)
 }
 
@@ -13358,7 +13358,7 @@ func (c *Client) RetrieveAView(ctx context.Context, viewID IDRequest) (*DataSour
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /views/{view_id}
-func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID IDRequest) (*R, error) {
+func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -13688,7 +13688,7 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID IDRe
 // Delete a view
 //
 //	DELETE /views/{view_id}
-func (c *Client) DeleteView(ctx context.Context, viewID IDRequest) (*PartialDataSourceViewObjectResponse, error) {
+func (c *Client) DeleteView(ctx context.Context, viewID ID) (*PartialDataSourceViewObjectResponse, error) {
 	return c.DeleteViewWithResult[PartialDataSourceViewObjectResponse](ctx, viewID)
 }
 
@@ -13696,7 +13696,7 @@ func (c *Client) DeleteView(ctx context.Context, viewID IDRequest) (*PartialData
 // You can define a custom result to unmarshal the response into.
 //
 //	DELETE /views/{view_id}
-func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID IDRequest) (*R, error) {
+func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -14026,7 +14026,7 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID IDReque
 // Update a view
 //
 //	PATCH /views/{view_id}
-func (c *Client) UpdateAView(ctx context.Context, viewID IDRequest, body UpdateViewRequest) (*DataSourceViewOrPartial, error) {
+func (c *Client) UpdateAView(ctx context.Context, viewID ID, body UpdateView) (*DataSourceViewOrPartial, error) {
 	return c.UpdateAViewWithResult[DataSourceViewOrPartial](ctx, viewID, body)
 }
 
@@ -14034,7 +14034,7 @@ func (c *Client) UpdateAView(ctx context.Context, viewID IDRequest, body UpdateV
 // You can define a custom result to unmarshal the response into.
 //
 //	PATCH /views/{view_id}
-func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID IDRequest, body UpdateViewRequest) (*R, error) {
+func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID ID, body UpdateView) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -14371,7 +14371,7 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID IDRequ
 // Create a view query
 //
 //	POST /views/{view_id}/queries
-func (c *Client) CreateViewQuery(ctx context.Context, viewID IDRequest, body CreateViewQueryRequest) (*ViewQueryResponse, error) {
+func (c *Client) CreateViewQuery(ctx context.Context, viewID ID, body CreateViewQuery) (*ViewQueryResponse, error) {
 	return c.CreateViewQueryWithResult[ViewQueryResponse](ctx, viewID, body)
 }
 
@@ -14379,7 +14379,7 @@ func (c *Client) CreateViewQuery(ctx context.Context, viewID IDRequest, body Cre
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /views/{view_id}/queries
-func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID IDRequest, body CreateViewQueryRequest) (*R, error) {
+func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID, body CreateViewQuery) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -14716,7 +14716,7 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 // Get view query results
 //
 //	GET /views/{view_id}/queries/{query_id}
-func (c *Client) GetViewQueryResults(ctx context.Context, viewID IDRequest, queryID IDRequest, params *GetViewQueryResultsParams) (*PageList, error) {
+func (c *Client) GetViewQueryResults(ctx context.Context, viewID ID, queryID ID, params *GetViewQueryResultsParams) (*PageList, error) {
 	return c.GetViewQueryResultsWithResult[PageList](ctx, viewID, queryID, params)
 }
 
@@ -14724,7 +14724,7 @@ func (c *Client) GetViewQueryResults(ctx context.Context, viewID IDRequest, quer
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /views/{view_id}/queries/{query_id}
-func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewID IDRequest, queryID IDRequest, params *GetViewQueryResultsParams) (*R, error) {
+func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewID ID, queryID ID, params *GetViewQueryResultsParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -15068,7 +15068,7 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 // Delete a view query
 //
 //	DELETE /views/{view_id}/queries/{query_id}
-func (c *Client) DeleteViewQuery(ctx context.Context, viewID IDRequest, queryID IDRequest) (*DeletedViewQueryResponse, error) {
+func (c *Client) DeleteViewQuery(ctx context.Context, viewID ID, queryID ID) (*DeletedViewQueryResponse, error) {
 	return c.DeleteViewQueryWithResult[DeletedViewQueryResponse](ctx, viewID, queryID)
 }
 
@@ -15076,7 +15076,7 @@ func (c *Client) DeleteViewQuery(ctx context.Context, viewID IDRequest, queryID 
 // You can define a custom result to unmarshal the response into.
 //
 //	DELETE /views/{view_id}/queries/{query_id}
-func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID IDRequest, queryID IDRequest) (*R, error) {
+func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID, queryID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -19553,7 +19553,7 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 // Get a skill directory
 //
 //	GET /ai/skills/{id}
-func (c *Client) GetSkillDirectory(ctx context.Context, id IDRequest) (*GetSkillDirectoryOk, error) {
+func (c *Client) GetSkillDirectory(ctx context.Context, id ID) (*GetSkillDirectoryOk, error) {
 	return c.GetSkillDirectoryWithResult[GetSkillDirectoryOk](ctx, id)
 }
 
@@ -19561,7 +19561,7 @@ func (c *Client) GetSkillDirectory(ctx context.Context, id IDRequest) (*GetSkill
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /ai/skills/{id}
-func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id IDRequest) (*R, error) {
+func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -20236,7 +20236,7 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 // Retrieve a session
 //
 //	GET /sessions/{session_id}
-func (c *Client) RetrieveSession(ctx context.Context, sessionID IDRequest) (*Session, error) {
+func (c *Client) RetrieveSession(ctx context.Context, sessionID ID) (*Session, error) {
 	return c.RetrieveSessionWithResult[Session](ctx, sessionID)
 }
 
@@ -20244,7 +20244,7 @@ func (c *Client) RetrieveSession(ctx context.Context, sessionID IDRequest) (*Ses
 // You can define a custom result to unmarshal the response into.
 //
 //	GET /sessions/{session_id}
-func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID IDRequest) (*R, error) {
+func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -20919,7 +20919,7 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 // Query session events
 //
 //	POST /sessions/{session_id}/events/query
-func (c *Client) QuerySessionEvents(ctx context.Context, sessionID IDRequest, body QuerySessionEvents) (*SessionEventList, error) {
+func (c *Client) QuerySessionEvents(ctx context.Context, sessionID ID, body QuerySessionEvents) (*SessionEventList, error) {
 	return c.QuerySessionEventsWithResult[SessionEventList](ctx, sessionID, body)
 }
 
@@ -20927,7 +20927,7 @@ func (c *Client) QuerySessionEvents(ctx context.Context, sessionID IDRequest, bo
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /sessions/{session_id}/events/query
-func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessionID IDRequest, body QuerySessionEvents) (*R, error) {
+func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessionID ID, body QuerySessionEvents) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -21264,7 +21264,7 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 // Cancel a session
 //
 //	POST /sessions/{session_id}/cancel
-func (c *Client) CancelSession(ctx context.Context, sessionID IDRequest, body CancelSession) (*CancelSession2, error) {
+func (c *Client) CancelSession(ctx context.Context, sessionID ID, body CancelSession) (*CancelSession2, error) {
 	return c.CancelSessionWithResult[CancelSession2](ctx, sessionID, body)
 }
 
@@ -21272,7 +21272,7 @@ func (c *Client) CancelSession(ctx context.Context, sessionID IDRequest, body Ca
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /sessions/{session_id}/cancel
-func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID IDRequest, body CancelSession) (*R, error) {
+func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID ID, body CancelSession) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -22140,7 +22140,7 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Revo
 // Upload a skill
 //
 //	POST /ai/skills/{id}/upload
-func (c *Client) UploadSkill(ctx context.Context, id IDRequest, body UploadSkill) (*UploadSkillOk, error) {
+func (c *Client) UploadSkill(ctx context.Context, id ID, body UploadSkill) (*UploadSkillOk, error) {
 	return c.UploadSkillWithResult[UploadSkillOk](ctx, id, body)
 }
 
@@ -22148,7 +22148,7 @@ func (c *Client) UploadSkill(ctx context.Context, id IDRequest, body UploadSkill
 // You can define a custom result to unmarshal the response into.
 //
 //	POST /ai/skills/{id}/upload
-func (c *Client) UploadSkillWithResult[R any](ctx context.Context, id IDRequest, body UploadSkill) (*R, error) {
+func (c *Client) UploadSkillWithResult[R any](ctx context.Context, id ID, body UploadSkill) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}

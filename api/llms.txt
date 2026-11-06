@@ -74,7 +74,6 @@
 - [Request limits](https://developers.notion.com/reference/request-limits.md): To ensure a consistent developer experience for all API users, the Notion API is rate limited and basic size limits apply to request parameters.
 - [Workspace block limits](https://developers.notion.com/reference/workspace-block-limits.md): Learn when the Free workspace block limit blocks an API write and how to handle the error.
 - [Status codes](https://developers.notion.com/reference/status-codes.md): Look up HTTP status codes and the error details returned by the Notion API.
-- [Retrieve an async task](https://developers.notion.com/reference/retrieve-async-task.md): Retrieve the status and result of an async task.
 - [Versioning](https://developers.notion.com/reference/versioning.md): Learn about API change management and how to set the appropriate version in your connection.
 - [Changes by version](https://developers.notion.com/reference/changes-by-version.md)
 - [Block](https://developers.notion.com/reference/block.md): A block object represents a piece of content within Notion. The API translates the headings, toggles, paragraphs, lists, media, and more that you can interact with in the Notion UI as different [block type objects](/reference/block#block-type-objects).
@@ -100,6 +99,7 @@
 - [Introspect a token](https://developers.notion.com/reference/introspect-token.md): Get a token's active status, scope, and issued time.
 - [Revoke a token](https://developers.notion.com/reference/revoke-token.md): Revoke an access token.
 - [Refresh a token](https://developers.notion.com/reference/refresh-a-token.md): Refreshes an access token, generating a new access token and new refresh token
+- [Retrieve an async task](https://developers.notion.com/reference/retrieve-async-task.md): Retrieve the status and result of an async task.
 - [Append block children](https://developers.notion.com/reference/patch-block-children.md): Creates and appends new children blocks to the parent `block_id` specified. Blocks can be parented by other blocks, pages, or databases.
 - [Retrieve a block](https://developers.notion.com/reference/retrieve-a-block.md): Retrieves a [Block object](/reference/block) using the ID specified.
 - [Retrieve block children](https://developers.notion.com/reference/get-block-children.md): Returns a paginated array of child [block objects](/reference/block) contained in the block using the ID specified. In order to receive a complete representation of a block, you may need to recursively retrieve the block children of child blocks.

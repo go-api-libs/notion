@@ -12,7 +12,7 @@ const maxPageSize = 100
 // PostDatabaseQueryAll yields every entry of the data source the query selects, in its order, fetching them a page of
 // 100 at a time. It stops at the first error, which it yields.
 func (c *Client) PostDatabaseQueryAll(
-	ctx context.Context, dataSourceID IDRequest, params *PostDatabaseQueryParams, body PostDatabaseQuery,
+	ctx context.Context, dataSourceID ID, params *PostDatabaseQueryParams, body PostDatabaseQuery,
 ) iter.Seq2[PageOrDataSource, error] {
 	if body.PageSize == 0 {
 		body.PageSize = maxPageSize
@@ -56,7 +56,7 @@ func (c *Client) PostSearchAll(ctx context.Context, params *PostSearchParams, bo
 
 // GetBlockChildrenAll yields every block within the block or page, in its order, fetching them a page of 100 at a
 // time. It stops at the first error, which it yields.
-func (c *Client) GetBlockChildrenAll(ctx context.Context, blockID IDRequest) iter.Seq2[BlockOrPartial, error] {
+func (c *Client) GetBlockChildrenAll(ctx context.Context, blockID ID) iter.Seq2[BlockOrPartial, error] {
 	return all(func(cursor string) ([]BlockOrPartial, string, bool, error) {
 		start, err := startCursor(cursor)
 		if err != nil {

@@ -15,7 +15,7 @@ import (
 )
 
 // viewID is the board view of https://app.notion.com/p/fae-tools/457d00dcfc3a4ddba42ffe376530bee0?v=cb3265bc5d5e488fbd8a69221c107915.
-const viewID notion.IDRequest = "cb3265bc-5d5e-488f-bd8a-69221c107915"
+const viewID notion.ID = "cb3265bc-5d5e-488f-bd8a-69221c107915"
 
 func main() {
 	ctx := context.Background()
@@ -46,7 +46,7 @@ func main() {
 // queryOfView returns the data source the view shows, and the query of it that filters and sorts its entries like
 // the view. It stays the same until the view's filter or sorts are edited, so read it once: Notion evaluates relative
 // dates such as "today" with each query.
-func queryOfView(ctx context.Context, c *notion.Client, id notion.IDRequest) (notion.IDRequest, notion.PostDatabaseQuery, error) {
+func queryOfView(ctx context.Context, c *notion.Client, id notion.ID) (notion.ID, notion.PostDatabaseQuery, error) {
 	v, err := c.RetrieveAView(ctx, id)
 	if err != nil {
 		return "", notion.PostDatabaseQuery{}, err
@@ -62,5 +62,5 @@ func queryOfView(ctx context.Context, c *notion.Client, id notion.IDRequest) (no
 		query.Filter = view.Filter.Flatten() // a view may nest its filter deeper than a query allows
 	}
 
-	return notion.IDRequest(view.DataSourceID), query, nil
+	return notion.ID(view.DataSourceID), query, nil
 }

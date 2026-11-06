@@ -27,7 +27,7 @@ func TestDateOrDateTime(t *testing.T) {
 
 	start := time.Date(2026, 10, 5, 20, 33, 0, 0, time.FixedZone("", 2*60*60))
 
-	b, err := json.Marshal(DateRequest{Start: DateOrDateTime{Time: &start}})
+	b, err := json.Marshal(Date{Start: DateOrDateTime{Time: &start}})
 	if err != nil {
 		t.Fatal(err)
 	}

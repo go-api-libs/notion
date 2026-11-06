@@ -96,7 +96,7 @@ type PostSearchParams struct {
 
 // ListCommentsParams holds the query parameters for ListComments.
 type ListCommentsParams struct {
-	BlockID     IDRequest
+	BlockID     ID
 	StartCursor string
 	PageSize    int
 }
@@ -117,8 +117,8 @@ type ListCustomEmojisParams struct {
 
 // ListViewsParams holds the query parameters for ListViews.
 type ListViewsParams struct {
-	DatabaseID   IDRequest
-	DataSourceID IDRequest
+	DatabaseID   ID
+	DataSourceID ID
 	StartCursor  string
 	PageSize     int
 }
@@ -1622,8 +1622,8 @@ func (v *AgentHasUnpublishedChanges) MarshalJSONTo(enc *jsontext.Encoder) error 
 // AgentID defines a model
 // AgentID is an untagged anyOf union: at least one field is set after unmarshaling.
 type AgentID struct {
-	IDRequest IDRequest
-	String    string
+	ID     ID
+	String string
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -1640,9 +1640,9 @@ func (v *AgentID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv IDRequest
+		var vv ID
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.IDRequest = vv
+			v.ID = vv
 			matched++
 		}
 	}
@@ -1665,8 +1665,8 @@ func (v *AgentID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *AgentID) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.IDRequest != "":
-		return json.MarshalEncode(enc, v.IDRequest, jsonOptsTo(enc))
+	case v.ID != "":
+		return json.MarshalEncode(enc, v.ID, jsonOptsTo(enc))
 	case v.String != "":
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
@@ -2140,7 +2140,7 @@ type AgentListResultsItemNotionAi struct {
 type AgentListResultsItemNotionAiIcon struct {
 	Type AgentListResultsItemNotionAiIconType `json:"type"`
 	// The emoji character used as the icon.
-	Emoji EmojiRequest `json:"emoji,omitzero"`
+	Emoji Emoji `json:"emoji,omitzero"`
 	// The file URL for the icon.
 	File *InternalFileResponse `json:"file,omitzero"`
 	// The external URL for the icon.
@@ -2640,8 +2640,8 @@ type AgentVersionOneOf struct {
 	PublishedAt string `json:"published_at"`
 }
 
-// AnnotationRequest defines a model
-type AnnotationRequest struct {
+// Annotation defines a model
+type Annotation struct {
 	// Whether the text is formatted as bold.
 	Bold *bool `json:"bold,omitzero"`
 	// Whether the text is formatted as italic.
@@ -3251,268 +3251,88 @@ type BlockList struct {
 	RequestID  uuid.UUID        `json:"request_id,omitzero"`
 }
 
-// BlockObjectAudio defines a model
-type BlockObjectAudio struct {
-	Audio  MediaContentWithFileAndCaptionRequest `json:"audio"`
-	Type   string                                `json:"type,omitzero"`
-	Object string                                `json:"object,omitzero"`
+// BlockObject defines a model
+type BlockObject struct {
+	Object           string                                     `json:"object,omitzero"`
+	Type             BlockObjectType                            `json:"type,omitzero"`
+	Embed            *BlockObjectEmbed2                         `json:"embed,omitzero"`
+	Bookmark         *MediaContentWithURLAndCaption             `json:"bookmark,omitzero"`
+	Image            *MediaContentWithFileAndCaption            `json:"image,omitzero"`
+	Video            *MediaContentWithFileAndCaption            `json:"video,omitzero"`
+	PDF              *MediaContentWithFileAndCaption            `json:"pdf,omitzero"`
+	File             *MediaContentWithFileNameAndCaption        `json:"file,omitzero"`
+	Audio            *MediaContentWithFileAndCaption            `json:"audio,omitzero"`
+	Code             *BlockObjectCode2                          `json:"code,omitzero"`
+	Equation         *ContentWithExpression                     `json:"equation,omitzero"`
+	Divider          *EmptyObject                               `json:"divider,omitzero"`
+	Breadcrumb       *EmptyObject                               `json:"breadcrumb,omitzero"`
+	Tab              *TabRequestWithNestedTabItemChildren       `json:"tab,omitzero"`
+	TableOfContents  *BlockObjectTableOfContentsTableOfContents `json:"table_of_contents,omitzero"`
+	LinkToPage       *BlockObjectLinkToPageLinkToPage           `json:"link_to_page,omitzero"`
+	TableRow         *ContentWithTableRow                       `json:"table_row,omitzero"`
+	Table            *TableRequestWithTableRowChildren          `json:"table,omitzero"`
+	ColumnList       *ColumnList                                `json:"column_list,omitzero"`
+	Column           *ColumnWithChildren                        `json:"column,omitzero"`
+	Heading1         *BlockObjectHeading                        `json:"heading_1,omitzero"`
+	Heading2         *BlockObjectHeading                        `json:"heading_2,omitzero"`
+	Heading3         *BlockObjectHeading                        `json:"heading_3,omitzero"`
+	Heading4         *BlockObjectHeading                        `json:"heading_4,omitzero"`
+	Paragraph        *BlockObjectCallout2                       `json:"paragraph,omitzero"`
+	BulletedListItem *BlockObjectQuote2                         `json:"bulleted_list_item,omitzero"`
+	NumberedListItem *BlockObjectQuote2                         `json:"numbered_list_item,omitzero"`
+	Quote            *BlockObjectQuote2                         `json:"quote,omitzero"`
+	ToDo             *BlockObjectToDoToDo                       `json:"to_do,omitzero"`
+	Toggle           *BlockObjectQuote2                         `json:"toggle,omitzero"`
+	Template         *BlockObjectTemplateTemplate               `json:"template,omitzero"`
+	Callout          *BlockObjectCallout2                       `json:"callout,omitzero"`
+	SyncedBlock      *BlockObjectSyncedBlockSyncedBlock         `json:"synced_block,omitzero"`
 }
 
-// BlockObjectBookmark defines a model
-type BlockObjectBookmark struct {
-	Bookmark MediaContentWithURLAndCaptionRequest `json:"bookmark"`
-	Type     string                               `json:"type,omitzero"`
-	Object   string                               `json:"object,omitzero"`
-}
-
-// BlockObjectBreadcrumb defines a model
-type BlockObjectBreadcrumb struct {
-	Breadcrumb EmptyObject `json:"breadcrumb"`
-	Type       string      `json:"type,omitzero"`
-	Object     string      `json:"object,omitzero"`
-}
-
-// BlockObjectCallout defines a model
-type BlockObjectCallout struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                                      `json:"color,omitzero"`
-	Children []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
-	Icon     PageIconRequest                               `json:"icon,omitzero"`
-}
-
-// BlockObjectCode defines a model
-type BlockObjectCode struct {
-	Code   BlockObjectCode2 `json:"code"`
-	Type   string           `json:"type,omitzero"`
-	Object string           `json:"object,omitzero"`
-}
-
-// BlockObjectCode2 defines a model
-type BlockObjectCode2 struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
-	Language LanguageRequest       `json:"language"`
-	Caption  []RichTextItemRequest `json:"caption,omitzero"`
-}
-
-// BlockObjectColumn defines a model
-type BlockObjectColumn struct {
-	Column ColumnWithChildrenRequest `json:"column"`
-	Type   string                    `json:"type,omitzero"`
-	Object string                    `json:"object,omitzero"`
-}
-
-// BlockObjectDivider defines a model
-type BlockObjectDivider struct {
-	Divider EmptyObject `json:"divider"`
-	Type    string      `json:"type,omitzero"`
-	Object  string      `json:"object,omitzero"`
-}
-
-// BlockObjectEmbed defines a model
-type BlockObjectEmbed struct {
-	Embed  BlockObjectEmbed2 `json:"embed"`
-	Type   string            `json:"type,omitzero"`
-	Object string            `json:"object,omitzero"`
-}
-
-// BlockObjectEmbed2 defines a model
-// BlockObjectEmbed2 is an untagged anyOf union: at least one field is set after unmarshaling.
-type BlockObjectEmbed2 struct {
-	MediaContentWithURLAndCaptionRequest *MediaContentWithURLAndCaptionRequest
-	EmbedFileUpload                      *EmbedFileUpload
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *BlockObjectEmbed2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = BlockObjectEmbed2{}
-
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		// decoding checks neither the members the alternative requires nor those it pins to one value
-		required, pinned := []string{"url"}, map[string]string{}
-		if jsonFits(raw, required, pinned) {
-			var vv MediaContentWithURLAndCaptionRequest
-			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.MediaContentWithURLAndCaptionRequest = &vv
-				matched++
-			}
-		}
-	}
-
-	{
-		// decoding checks neither the members the alternative requires nor those it pins to one value
-		required, pinned := []string{"file_upload"}, map[string]string{"type": "\"file_upload\""}
-		if jsonFits(raw, required, pinned) {
-			var vv EmbedFileUpload
-			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.EmbedFileUpload = &vv
-				matched++
-			}
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *BlockObjectEmbed2) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.MediaContentWithURLAndCaptionRequest != nil:
-		return json.MarshalEncode(enc, v.MediaContentWithURLAndCaptionRequest, jsonOptsTo(enc))
-	case v.EmbedFileUpload != nil:
-		return json.MarshalEncode(enc, v.EmbedFileUpload, jsonOptsTo(enc))
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// BlockObjectEquation defines a model
-type BlockObjectEquation struct {
-	Equation ContentWithExpression `json:"equation"`
-	Type     string                `json:"type,omitzero"`
-	Object   string                `json:"object,omitzero"`
-}
-
-// BlockObjectFile defines a model
-type BlockObjectFile struct {
-	File   MediaContentWithFileNameAndCaptionRequest `json:"file"`
-	Type   string                                    `json:"type,omitzero"`
-	Object string                                    `json:"object,omitzero"`
-}
-
-// BlockObjectHeading defines a model
-type BlockObjectHeading struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color        APIColor                                      `json:"color,omitzero"`
-	IsToggleable *bool                                         `json:"is_toggleable,omitzero"`
-	Children     []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
-}
-
-// BlockObjectImage defines a model
-type BlockObjectImage struct {
-	Image  MediaContentWithFileAndCaptionRequest `json:"image"`
-	Type   string                                `json:"type,omitzero"`
-	Object string                                `json:"object,omitzero"`
-}
-
-// BlockObjectLinkToPage defines a model
-type BlockObjectLinkToPage struct {
-	LinkToPage UpdateABlockLinkToPageLinkToPage `json:"link_to_page"`
-	Type       string                           `json:"type,omitzero"`
-	Object     string                           `json:"object,omitzero"`
-}
-
-// BlockObjectPdf defines a model
-type BlockObjectPdf struct {
-	PDF    MediaContentWithFileAndCaptionRequest `json:"pdf"`
-	Type   string                                `json:"type,omitzero"`
-	Object string                                `json:"object,omitzero"`
-}
-
-// BlockObjectQuote defines a model
-type BlockObjectQuote struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                                      `json:"color,omitzero"`
-	Children []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
-}
-
-// BlockObjectRequest defines a model
-type BlockObjectRequest struct {
-	Object           string                                      `json:"object,omitzero"`
-	Type             BlockObjectRequestType                      `json:"type,omitzero"`
-	Embed            *BlockObjectEmbed2                          `json:"embed,omitzero"`
-	Bookmark         *MediaContentWithURLAndCaptionRequest       `json:"bookmark,omitzero"`
-	Image            *MediaContentWithFileAndCaptionRequest      `json:"image,omitzero"`
-	Video            *MediaContentWithFileAndCaptionRequest      `json:"video,omitzero"`
-	PDF              *MediaContentWithFileAndCaptionRequest      `json:"pdf,omitzero"`
-	File             *MediaContentWithFileNameAndCaptionRequest  `json:"file,omitzero"`
-	Audio            *MediaContentWithFileAndCaptionRequest      `json:"audio,omitzero"`
-	Code             *BlockObjectCode2                           `json:"code,omitzero"`
-	Equation         *ContentWithExpression                      `json:"equation,omitzero"`
-	Divider          *EmptyObject                                `json:"divider,omitzero"`
-	Breadcrumb       *EmptyObject                                `json:"breadcrumb,omitzero"`
-	Tab              *TabRequestWithNestedTabItemChildren        `json:"tab,omitzero"`
-	TableOfContents  *UpdateABlockTableOfContentsTableOfContents `json:"table_of_contents,omitzero"`
-	LinkToPage       *UpdateABlockLinkToPageLinkToPage           `json:"link_to_page,omitzero"`
-	TableRow         *ContentWithTableRowRequest                 `json:"table_row,omitzero"`
-	Table            *TableRequestWithTableRowChildren           `json:"table,omitzero"`
-	ColumnList       *ColumnListRequest                          `json:"column_list,omitzero"`
-	Column           *ColumnWithChildrenRequest                  `json:"column,omitzero"`
-	Heading1         *BlockObjectHeading                         `json:"heading_1,omitzero"`
-	Heading2         *BlockObjectHeading                         `json:"heading_2,omitzero"`
-	Heading3         *BlockObjectHeading                         `json:"heading_3,omitzero"`
-	Heading4         *BlockObjectHeading                         `json:"heading_4,omitzero"`
-	Paragraph        *BlockObjectCallout                         `json:"paragraph,omitzero"`
-	BulletedListItem *BlockObjectQuote                           `json:"bulleted_list_item,omitzero"`
-	NumberedListItem *BlockObjectQuote                           `json:"numbered_list_item,omitzero"`
-	Quote            *BlockObjectQuote                           `json:"quote,omitzero"`
-	ToDo             *BlockObjectRequestToDoToDo                 `json:"to_do,omitzero"`
-	Toggle           *BlockObjectQuote                           `json:"toggle,omitzero"`
-	Template         *BlockObjectRequestTemplateTemplate         `json:"template,omitzero"`
-	Callout          *BlockObjectCallout                         `json:"callout,omitzero"`
-	SyncedBlock      *BlockObjectRequestSyncedBlockSyncedBlock   `json:"synced_block,omitzero"`
-}
-
-// BlockObjectRequestType is a value of BlockObjectRequest's type, naming the members it holds.
-type BlockObjectRequestType string
+// BlockObjectType is a value of BlockObject's type, naming the members it holds.
+type BlockObjectType string
 
 const (
-	BlockObjectRequestTypeEmbed            BlockObjectRequestType = "embed"
-	BlockObjectRequestTypeBookmark         BlockObjectRequestType = "bookmark"
-	BlockObjectRequestTypeImage            BlockObjectRequestType = "image"
-	BlockObjectRequestTypeVideo            BlockObjectRequestType = "video"
-	BlockObjectRequestTypePdf              BlockObjectRequestType = "pdf"
-	BlockObjectRequestTypeFile             BlockObjectRequestType = "file"
-	BlockObjectRequestTypeAudio            BlockObjectRequestType = "audio"
-	BlockObjectRequestTypeCode             BlockObjectRequestType = "code"
-	BlockObjectRequestTypeEquation         BlockObjectRequestType = "equation"
-	BlockObjectRequestTypeDivider          BlockObjectRequestType = "divider"
-	BlockObjectRequestTypeBreadcrumb       BlockObjectRequestType = "breadcrumb"
-	BlockObjectRequestTypeTab              BlockObjectRequestType = "tab"
-	BlockObjectRequestTypeTableOfContents  BlockObjectRequestType = "table_of_contents"
-	BlockObjectRequestTypeLinkToPage       BlockObjectRequestType = "link_to_page"
-	BlockObjectRequestTypeTableRow         BlockObjectRequestType = "table_row"
-	BlockObjectRequestTypeTable            BlockObjectRequestType = "table"
-	BlockObjectRequestTypeColumnList       BlockObjectRequestType = "column_list"
-	BlockObjectRequestTypeColumn           BlockObjectRequestType = "column"
-	BlockObjectRequestTypeHeading1         BlockObjectRequestType = "heading_1"
-	BlockObjectRequestTypeHeading2         BlockObjectRequestType = "heading_2"
-	BlockObjectRequestTypeHeading3         BlockObjectRequestType = "heading_3"
-	BlockObjectRequestTypeHeading4         BlockObjectRequestType = "heading_4"
-	BlockObjectRequestTypeParagraph        BlockObjectRequestType = "paragraph"
-	BlockObjectRequestTypeBulletedListItem BlockObjectRequestType = "bulleted_list_item"
-	BlockObjectRequestTypeNumberedListItem BlockObjectRequestType = "numbered_list_item"
-	BlockObjectRequestTypeQuote            BlockObjectRequestType = "quote"
-	BlockObjectRequestTypeToDo             BlockObjectRequestType = "to_do"
-	BlockObjectRequestTypeToggle           BlockObjectRequestType = "toggle"
-	BlockObjectRequestTypeTemplate         BlockObjectRequestType = "template"
-	BlockObjectRequestTypeCallout          BlockObjectRequestType = "callout"
-	BlockObjectRequestTypeSyncedBlock      BlockObjectRequestType = "synced_block"
+	BlockObjectTypeEmbed            BlockObjectType = "embed"
+	BlockObjectTypeBookmark         BlockObjectType = "bookmark"
+	BlockObjectTypeImage            BlockObjectType = "image"
+	BlockObjectTypeVideo            BlockObjectType = "video"
+	BlockObjectTypePdf              BlockObjectType = "pdf"
+	BlockObjectTypeFile             BlockObjectType = "file"
+	BlockObjectTypeAudio            BlockObjectType = "audio"
+	BlockObjectTypeCode             BlockObjectType = "code"
+	BlockObjectTypeEquation         BlockObjectType = "equation"
+	BlockObjectTypeDivider          BlockObjectType = "divider"
+	BlockObjectTypeBreadcrumb       BlockObjectType = "breadcrumb"
+	BlockObjectTypeTab              BlockObjectType = "tab"
+	BlockObjectTypeTableOfContents  BlockObjectType = "table_of_contents"
+	BlockObjectTypeLinkToPage       BlockObjectType = "link_to_page"
+	BlockObjectTypeTableRow         BlockObjectType = "table_row"
+	BlockObjectTypeTable            BlockObjectType = "table"
+	BlockObjectTypeColumnList       BlockObjectType = "column_list"
+	BlockObjectTypeColumn           BlockObjectType = "column"
+	BlockObjectTypeHeading1         BlockObjectType = "heading_1"
+	BlockObjectTypeHeading2         BlockObjectType = "heading_2"
+	BlockObjectTypeHeading3         BlockObjectType = "heading_3"
+	BlockObjectTypeHeading4         BlockObjectType = "heading_4"
+	BlockObjectTypeParagraph        BlockObjectType = "paragraph"
+	BlockObjectTypeBulletedListItem BlockObjectType = "bulleted_list_item"
+	BlockObjectTypeNumberedListItem BlockObjectType = "numbered_list_item"
+	BlockObjectTypeQuote            BlockObjectType = "quote"
+	BlockObjectTypeToDo             BlockObjectType = "to_do"
+	BlockObjectTypeToggle           BlockObjectType = "toggle"
+	BlockObjectTypeTemplate         BlockObjectType = "template"
+	BlockObjectTypeCallout          BlockObjectType = "callout"
+	BlockObjectTypeSyncedBlock      BlockObjectType = "synced_block"
 )
 
-// Valid indicates whether the value is a known member of the BlockObjectRequestType enum.
-func (e BlockObjectRequestType) Valid() bool {
-	_, ok := tagsOfBlockObjectRequest[string(e)]
+// Valid indicates whether the value is a known member of the BlockObjectType enum.
+func (e BlockObjectType) Valid() bool {
+	_, ok := tagsOfBlockObject[string(e)]
 	return ok
 }
 
-// tagsOfBlockObjectRequest holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfBlockObjectRequest = map[string]map[string]jsonTagNeed{
+// tagsOfBlockObject holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfBlockObject = map[string]map[string]jsonTagNeed{
 	"embed":              {"embed": jsonTagRequired},
 	"bookmark":           {"bookmark": jsonTagRequired},
 	"image":              {"image": jsonTagRequired},
@@ -3547,7 +3367,7 @@ var tagsOfBlockObjectRequest = map[string]map[string]jsonTagNeed{
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
-func (v *BlockObjectRequest) taggedMembers() []string {
+func (v *BlockObject) taggedMembers() []string {
 	var set []string
 	if v.Embed != nil {
 		set = append(set, "embed")
@@ -3648,10 +3468,10 @@ func (v *BlockObjectRequest) taggedMembers() []string {
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
 // alternative's own, only those of the one type names are set.
-func (v *BlockObjectRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain BlockObjectRequest
+func (v *BlockObject) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain BlockObject
 
-	*v = BlockObjectRequest{}
+	*v = BlockObject{}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -3669,83 +3489,335 @@ func (v *BlockObjectRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfBlockObjectRequest, v.taggedMembers()); ok && v.Type == "" {
-		v.Type = BlockObjectRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfBlockObject, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = BlockObjectType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfBlockObjectRequest, v.taggedMembers(), present, jsonStrict(dec))
+	return jsonCheckTag("type", string(v.Type), tagsOfBlockObject, v.taggedMembers(), present, jsonStrict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
 // the value whose member is set.
-func (v *BlockObjectRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain BlockObjectRequest
+func (v *BlockObject) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain BlockObject
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfBlockObjectRequest, set); ok && out.Type == "" {
-		out.Type = BlockObjectRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfBlockObject, set); ok && out.Type == "" {
+		out.Type = BlockObjectType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfBlockObjectRequest, set, nil, true); err != nil {
+	if err := jsonCheckTag("type", string(out.Type), tagsOfBlockObject, set, nil, true); err != nil {
 		return err
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// BlockObjectRequestSyncedBlockSyncedBlock defines a model
-type BlockObjectRequestSyncedBlockSyncedBlock struct {
-	SyncedFrom UpdateABlockSyncedBlockSyncedBlockSyncedFrom  `json:"synced_from"`
-	Children   []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
+// BlockObjectAudio defines a model
+type BlockObjectAudio struct {
+	Audio  MediaContentWithFileAndCaption `json:"audio"`
+	Type   string                         `json:"type,omitzero"`
+	Object string                         `json:"object,omitzero"`
 }
 
-// BlockObjectRequestTemplateTemplate defines a model
-type BlockObjectRequestTemplateTemplate struct {
-	RichText []RichTextItemRequest                         `json:"rich_text"`
-	Children []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
+// BlockObjectBookmark defines a model
+type BlockObjectBookmark struct {
+	Bookmark MediaContentWithURLAndCaption `json:"bookmark"`
+	Type     string                        `json:"type,omitzero"`
+	Object   string                        `json:"object,omitzero"`
 }
 
-// BlockObjectRequestToDoToDo defines a model
-type BlockObjectRequestToDoToDo struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
+// BlockObjectBreadcrumb defines a model
+type BlockObjectBreadcrumb struct {
+	Breadcrumb EmptyObject `json:"breadcrumb"`
+	Type       string      `json:"type,omitzero"`
+	Object     string      `json:"object,omitzero"`
+}
+
+// BlockObjectCallout2 defines a model
+type BlockObjectCallout2 struct {
+	RichText []RichTextItem `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                                      `json:"color,omitzero"`
-	Children []BlockObjectWithSingleLevelOfChildrenRequest `json:"children,omitzero"`
-	Checked  *bool                                         `json:"checked,omitzero"`
+	Color    APIColor                               `json:"color,omitzero"`
+	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
+	Icon     PageIcon                               `json:"icon,omitzero"`
+}
+
+// BlockObjectCode defines a model
+type BlockObjectCode struct {
+	Code   BlockObjectCode2 `json:"code"`
+	Type   string           `json:"type,omitzero"`
+	Object string           `json:"object,omitzero"`
+}
+
+// BlockObjectCode2 defines a model
+type BlockObjectCode2 struct {
+	RichText []RichTextItem `json:"rich_text"`
+	Language Language       `json:"language"`
+	Caption  []RichTextItem `json:"caption,omitzero"`
+}
+
+// BlockObjectColumn defines a model
+type BlockObjectColumn struct {
+	Column ColumnWithChildren `json:"column"`
+	Type   string             `json:"type,omitzero"`
+	Object string             `json:"object,omitzero"`
+}
+
+// BlockObjectDivider defines a model
+type BlockObjectDivider struct {
+	Divider EmptyObject `json:"divider"`
+	Type    string      `json:"type,omitzero"`
+	Object  string      `json:"object,omitzero"`
+}
+
+// BlockObjectEmbed defines a model
+type BlockObjectEmbed struct {
+	Embed  BlockObjectEmbed2 `json:"embed"`
+	Type   string            `json:"type,omitzero"`
+	Object string            `json:"object,omitzero"`
+}
+
+// BlockObjectEmbed2 defines a model
+// BlockObjectEmbed2 is an untagged anyOf union: at least one field is set after unmarshaling.
+type BlockObjectEmbed2 struct {
+	MediaContentWithURLAndCaption *MediaContentWithURLAndCaption
+	EmbedFileUpload               *EmbedFileUpload
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *BlockObjectEmbed2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = BlockObjectEmbed2{}
+
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"url"}, map[string]string{}
+		if jsonFits(raw, required, pinned) {
+			var vv MediaContentWithURLAndCaption
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.MediaContentWithURLAndCaption = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, pinned := []string{"file_upload"}, map[string]string{"type": "\"file_upload\""}
+		if jsonFits(raw, required, pinned) {
+			var vv EmbedFileUpload
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.EmbedFileUpload = &vv
+				matched++
+			}
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *BlockObjectEmbed2) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.MediaContentWithURLAndCaption != nil:
+		return json.MarshalEncode(enc, v.MediaContentWithURLAndCaption, jsonOptsTo(enc))
+	case v.EmbedFileUpload != nil:
+		return json.MarshalEncode(enc, v.EmbedFileUpload, jsonOptsTo(enc))
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// BlockObjectEquation defines a model
+type BlockObjectEquation struct {
+	Equation ContentWithExpression `json:"equation"`
+	Type     string                `json:"type,omitzero"`
+	Object   string                `json:"object,omitzero"`
+}
+
+// BlockObjectFile defines a model
+type BlockObjectFile struct {
+	File   MediaContentWithFileNameAndCaption `json:"file"`
+	Type   string                             `json:"type,omitzero"`
+	Object string                             `json:"object,omitzero"`
+}
+
+// BlockObjectHeading defines a model
+type BlockObjectHeading struct {
+	RichText []RichTextItem `json:"rich_text"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color        APIColor                               `json:"color,omitzero"`
+	IsToggleable *bool                                  `json:"is_toggleable,omitzero"`
+	Children     []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
+}
+
+// BlockObjectImage defines a model
+type BlockObjectImage struct {
+	Image  MediaContentWithFileAndCaption `json:"image"`
+	Type   string                         `json:"type,omitzero"`
+	Object string                         `json:"object,omitzero"`
+}
+
+// BlockObjectLinkToPage defines a model
+type BlockObjectLinkToPage struct {
+	LinkToPage BlockObjectLinkToPageLinkToPage `json:"link_to_page"`
+	Type       string                          `json:"type,omitzero"`
+	Object     string                          `json:"object,omitzero"`
+}
+
+// BlockObjectLinkToPageLinkToPage defines a model
+type BlockObjectLinkToPageLinkToPage struct {
+	Type       BlockObjectLinkToPageLinkToPageType `json:"type,omitzero"`
+	PageID     ID                                  `json:"page_id,omitzero"`
+	DatabaseID ID                                  `json:"database_id,omitzero"`
+	CommentID  ID                                  `json:"comment_id,omitzero"`
+}
+
+// BlockObjectLinkToPageLinkToPageType is a value of BlockObjectLinkToPageLinkToPage's type, naming the members it holds.
+type BlockObjectLinkToPageLinkToPageType string
+
+const (
+	BlockObjectLinkToPageLinkToPageTypePageID     BlockObjectLinkToPageLinkToPageType = "page_id"
+	BlockObjectLinkToPageLinkToPageTypeDatabaseID BlockObjectLinkToPageLinkToPageType = "database_id"
+	BlockObjectLinkToPageLinkToPageTypeCommentID  BlockObjectLinkToPageLinkToPageType = "comment_id"
+)
+
+// Valid indicates whether the value is a known member of the BlockObjectLinkToPageLinkToPageType enum.
+func (e BlockObjectLinkToPageLinkToPageType) Valid() bool {
+	_, ok := tagsOfBlockObjectLinkToPageLinkToPage[string(e)]
+	return ok
+}
+
+// tagsOfBlockObjectLinkToPageLinkToPage holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfBlockObjectLinkToPageLinkToPage = map[string]map[string]jsonTagNeed{
+	"page_id":     {"page_id": jsonTagRequired},
+	"database_id": {"database_id": jsonTagRequired},
+	"comment_id":  {"comment_id": jsonTagRequired},
+}
+
+// taggedMembers returns those of the members of an alternative's own that are set.
+func (v *BlockObjectLinkToPageLinkToPage) taggedMembers() []string {
+	var set []string
+	if v.PageID != "" {
+		set = append(set, "page_id")
+	}
+	if v.DatabaseID != "" {
+		set = append(set, "database_id")
+	}
+	if v.CommentID != "" {
+		set = append(set, "comment_id")
+	}
+
+	return set
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
+// alternative's own, only those of the one type names are set.
+func (v *BlockObjectLinkToPageLinkToPage) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain BlockObjectLinkToPageLinkToPage
+
+	*v = BlockObjectLinkToPageLinkToPage{}
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(raw, (*plain)(v), jsonOptsOf(dec)); err != nil {
+		return err
+	}
+
+	// a member sent as null is there, though its field reads as left out
+	present, err := jsonMembers(raw)
+	if err != nil {
+		return err
+	}
+
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfBlockObjectLinkToPageLinkToPage, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = BlockObjectLinkToPageLinkToPageType(tag)
+	}
+
+	return jsonCheckTag("type", string(v.Type), tagsOfBlockObjectLinkToPageLinkToPage, v.taggedMembers(), present, jsonStrict(dec))
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
+// the value whose member is set.
+func (v *BlockObjectLinkToPageLinkToPage) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain BlockObjectLinkToPageLinkToPage
+
+	out, set := *v, v.taggedMembers()
+	if tag, ok := jsonInferTag(tagsOfBlockObjectLinkToPageLinkToPage, set); ok && out.Type == "" {
+		out.Type = BlockObjectLinkToPageLinkToPageType(tag)
+	}
+
+	if err := jsonCheckTag("type", string(out.Type), tagsOfBlockObjectLinkToPageLinkToPage, set, nil, true); err != nil {
+		return err
+	}
+
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
+}
+
+// BlockObjectPdf defines a model
+type BlockObjectPdf struct {
+	PDF    MediaContentWithFileAndCaption `json:"pdf"`
+	Type   string                         `json:"type,omitzero"`
+	Object string                         `json:"object,omitzero"`
+}
+
+// BlockObjectQuote2 defines a model
+type BlockObjectQuote2 struct {
+	RichText []RichTextItem `json:"rich_text"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color    APIColor                               `json:"color,omitzero"`
+	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
 }
 
 // BlockObjectRequestWithoutChildren defines a model
 type BlockObjectRequestWithoutChildren struct {
-	Object           string                                      `json:"object,omitzero"`
-	Type             BlockObjectRequestWithoutChildrenType       `json:"type,omitzero"`
-	Embed            *BlockObjectEmbed2                          `json:"embed,omitzero"`
-	Bookmark         *MediaContentWithURLAndCaptionRequest       `json:"bookmark,omitzero"`
-	Image            *MediaContentWithFileAndCaptionRequest      `json:"image,omitzero"`
-	Video            *MediaContentWithFileAndCaptionRequest      `json:"video,omitzero"`
-	PDF              *MediaContentWithFileAndCaptionRequest      `json:"pdf,omitzero"`
-	File             *MediaContentWithFileNameAndCaptionRequest  `json:"file,omitzero"`
-	Audio            *MediaContentWithFileAndCaptionRequest      `json:"audio,omitzero"`
-	Code             *BlockObjectCode2                           `json:"code,omitzero"`
-	Equation         *ContentWithExpression                      `json:"equation,omitzero"`
-	Divider          *EmptyObject                                `json:"divider,omitzero"`
-	Breadcrumb       *EmptyObject                                `json:"breadcrumb,omitzero"`
-	Tab              *EmptyObject                                `json:"tab,omitzero"`
-	TableOfContents  *UpdateABlockTableOfContentsTableOfContents `json:"table_of_contents,omitzero"`
-	LinkToPage       *UpdateABlockLinkToPageLinkToPage           `json:"link_to_page,omitzero"`
-	TableRow         *ContentWithTableRowRequest                 `json:"table_row,omitzero"`
-	Heading1         *HeaderContentWithRichTextAndColorRequest   `json:"heading_1,omitzero"`
-	Heading2         *HeaderContentWithRichTextAndColorRequest   `json:"heading_2,omitzero"`
-	Heading3         *HeaderContentWithRichTextAndColorRequest   `json:"heading_3,omitzero"`
-	Heading4         *HeaderContentWithRichTextAndColorRequest   `json:"heading_4,omitzero"`
-	Paragraph        *ContentWithRichTextColorAndIcon            `json:"paragraph,omitzero"`
-	BulletedListItem *ContentWithRichTextAndColorRequest         `json:"bulleted_list_item,omitzero"`
-	NumberedListItem *ContentWithRichTextAndColorRequest         `json:"numbered_list_item,omitzero"`
-	Quote            *ContentWithRichTextAndColorRequest         `json:"quote,omitzero"`
-	ToDo             *BlockObjectRequestWithoutChildrenToDoToDo  `json:"to_do,omitzero"`
-	Toggle           *ContentWithRichTextAndColorRequest         `json:"toggle,omitzero"`
-	Template         *ContentWithRichTextRequest                 `json:"template,omitzero"`
-	Callout          *ContentWithRichTextColorAndIcon            `json:"callout,omitzero"`
-	SyncedBlock      *UpdateABlockSyncedBlockSyncedBlock         `json:"synced_block,omitzero"`
+	Object           string                                     `json:"object,omitzero"`
+	Type             BlockObjectRequestWithoutChildrenType      `json:"type,omitzero"`
+	Embed            *BlockObjectEmbed2                         `json:"embed,omitzero"`
+	Bookmark         *MediaContentWithURLAndCaption             `json:"bookmark,omitzero"`
+	Image            *MediaContentWithFileAndCaption            `json:"image,omitzero"`
+	Video            *MediaContentWithFileAndCaption            `json:"video,omitzero"`
+	PDF              *MediaContentWithFileAndCaption            `json:"pdf,omitzero"`
+	File             *MediaContentWithFileNameAndCaption        `json:"file,omitzero"`
+	Audio            *MediaContentWithFileAndCaption            `json:"audio,omitzero"`
+	Code             *BlockObjectCode2                          `json:"code,omitzero"`
+	Equation         *ContentWithExpression                     `json:"equation,omitzero"`
+	Divider          *EmptyObject                               `json:"divider,omitzero"`
+	Breadcrumb       *EmptyObject                               `json:"breadcrumb,omitzero"`
+	Tab              *EmptyObject                               `json:"tab,omitzero"`
+	TableOfContents  *BlockObjectTableOfContentsTableOfContents `json:"table_of_contents,omitzero"`
+	LinkToPage       *BlockObjectLinkToPageLinkToPage           `json:"link_to_page,omitzero"`
+	TableRow         *ContentWithTableRow                       `json:"table_row,omitzero"`
+	Heading1         *HeaderContentWithRichTextAndColor         `json:"heading_1,omitzero"`
+	Heading2         *HeaderContentWithRichTextAndColor         `json:"heading_2,omitzero"`
+	Heading3         *HeaderContentWithRichTextAndColor         `json:"heading_3,omitzero"`
+	Heading4         *HeaderContentWithRichTextAndColor         `json:"heading_4,omitzero"`
+	Paragraph        *ContentWithRichTextColorAndIcon           `json:"paragraph,omitzero"`
+	BulletedListItem *ContentWithRichTextAndColor               `json:"bulleted_list_item,omitzero"`
+	NumberedListItem *ContentWithRichTextAndColor               `json:"numbered_list_item,omitzero"`
+	Quote            *ContentWithRichTextAndColor               `json:"quote,omitzero"`
+	ToDo             *BlockObjectRequestWithoutChildrenToDoToDo `json:"to_do,omitzero"`
+	Toggle           *ContentWithRichTextAndColor               `json:"toggle,omitzero"`
+	Template         *ContentWithRichText                       `json:"template,omitzero"`
+	Callout          *ContentWithRichTextColorAndIcon           `json:"callout,omitzero"`
+	SyncedBlock      *UpdateABlockSyncedBlockSyncedBlock        `json:"synced_block,omitzero"`
 }
 
 // BlockObjectRequestWithoutChildrenType is a value of BlockObjectRequestWithoutChildren's type, naming the members it holds.
@@ -3960,10 +4032,22 @@ func (v *BlockObjectRequestWithoutChildren) MarshalJSONTo(enc *jsontext.Encoder)
 
 // BlockObjectRequestWithoutChildrenToDoToDo defines a model
 type BlockObjectRequestWithoutChildrenToDoToDo struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
-	Checked  *bool                 `json:"checked,omitzero"`
+	RichText []RichTextItem `json:"rich_text"`
+	Checked  *bool          `json:"checked,omitzero"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor `json:"color,omitzero"`
+}
+
+// BlockObjectSyncedBlockSyncedBlock defines a model
+type BlockObjectSyncedBlockSyncedBlock struct {
+	SyncedFrom BlockObjectSyncedBlockSyncedBlockSyncedFrom `json:"synced_from"`
+	Children   []BlockObjectWithSingleLevelOfChildren      `json:"children,omitzero"`
+}
+
+// BlockObjectSyncedBlockSyncedBlockSyncedFrom defines a model
+type BlockObjectSyncedBlockSyncedBlockSyncedFrom struct {
+	BlockID ID     `json:"block_id"`
+	Type    string `json:"type,omitzero"`
 }
 
 // BlockObjectTable defines a model
@@ -3975,96 +4059,117 @@ type BlockObjectTable struct {
 
 // BlockObjectTableOfContents defines a model
 type BlockObjectTableOfContents struct {
-	TableOfContents UpdateABlockTableOfContentsTableOfContents `json:"table_of_contents"`
-	Type            string                                     `json:"type,omitzero"`
-	Object          string                                     `json:"object,omitzero"`
+	TableOfContents BlockObjectTableOfContentsTableOfContents `json:"table_of_contents"`
+	Type            string                                    `json:"type,omitzero"`
+	Object          string                                    `json:"object,omitzero"`
+}
+
+// BlockObjectTableOfContentsTableOfContents defines a model
+type BlockObjectTableOfContentsTableOfContents struct {
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color APIColor `json:"color,omitzero"`
+}
+
+// BlockObjectTemplateTemplate defines a model
+type BlockObjectTemplateTemplate struct {
+	RichText []RichTextItem                         `json:"rich_text"`
+	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
+}
+
+// BlockObjectToDoToDo defines a model
+type BlockObjectToDoToDo struct {
+	RichText []RichTextItem `json:"rich_text"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color    APIColor                               `json:"color,omitzero"`
+	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
+	Checked  *bool                                  `json:"checked,omitzero"`
 }
 
 // BlockObjectVideo defines a model
 type BlockObjectVideo struct {
-	Video  MediaContentWithFileAndCaptionRequest `json:"video"`
-	Type   string                                `json:"type,omitzero"`
-	Object string                                `json:"object,omitzero"`
+	Video  MediaContentWithFileAndCaption `json:"video"`
+	Type   string                         `json:"type,omitzero"`
+	Object string                         `json:"object,omitzero"`
 }
 
-// BlockObjectWithSingleLevelOfChildrenRequest defines a model
-type BlockObjectWithSingleLevelOfChildrenRequest struct {
-	Object           string                                                             `json:"object,omitzero"`
-	Type             BlockObjectWithSingleLevelOfChildrenRequestType                    `json:"type,omitzero"`
-	Embed            *BlockObjectEmbed2                                                 `json:"embed,omitzero"`
-	Bookmark         *MediaContentWithURLAndCaptionRequest                              `json:"bookmark,omitzero"`
-	Image            *MediaContentWithFileAndCaptionRequest                             `json:"image,omitzero"`
-	Video            *MediaContentWithFileAndCaptionRequest                             `json:"video,omitzero"`
-	PDF              *MediaContentWithFileAndCaptionRequest                             `json:"pdf,omitzero"`
-	File             *MediaContentWithFileNameAndCaptionRequest                         `json:"file,omitzero"`
-	Audio            *MediaContentWithFileAndCaptionRequest                             `json:"audio,omitzero"`
-	Code             *BlockObjectCode2                                                  `json:"code,omitzero"`
-	Equation         *ContentWithExpression                                             `json:"equation,omitzero"`
-	Divider          *EmptyObject                                                       `json:"divider,omitzero"`
-	Breadcrumb       *EmptyObject                                                       `json:"breadcrumb,omitzero"`
-	Tab              *TabRequestWithTabItemChildren                                     `json:"tab,omitzero"`
-	TableOfContents  *UpdateABlockTableOfContentsTableOfContents                        `json:"table_of_contents,omitzero"`
-	LinkToPage       *UpdateABlockLinkToPageLinkToPage                                  `json:"link_to_page,omitzero"`
-	TableRow         *ContentWithTableRowRequest                                        `json:"table_row,omitzero"`
-	Heading1         *HeaderContentWithSingleLevelOfChildrenRequest                     `json:"heading_1,omitzero"`
-	Heading2         *HeaderContentWithSingleLevelOfChildrenRequest                     `json:"heading_2,omitzero"`
-	Heading3         *HeaderContentWithSingleLevelOfChildrenRequest                     `json:"heading_3,omitzero"`
-	Heading4         *HeaderContentWithSingleLevelOfChildrenRequest                     `json:"heading_4,omitzero"`
-	Paragraph        *ParagraphWithSingleLevelOfChildren                                `json:"paragraph,omitzero"`
-	BulletedListItem *ContentWithSingleLevelOfChildrenRequest                           `json:"bulleted_list_item,omitzero"`
-	NumberedListItem *ContentWithSingleLevelOfChildrenRequest                           `json:"numbered_list_item,omitzero"`
-	Quote            *ContentWithSingleLevelOfChildrenRequest                           `json:"quote,omitzero"`
-	Table            *TableRequestWithTableRowChildren                                  `json:"table,omitzero"`
-	ToDo             *BlockObjectWithSingleLevelOfChildrenRequestToDoToDo               `json:"to_do,omitzero"`
-	Toggle           *ContentWithSingleLevelOfChildrenRequest                           `json:"toggle,omitzero"`
-	Template         *BlockObjectWithSingleLevelOfChildrenRequestTemplateTemplate       `json:"template,omitzero"`
-	Callout          *ParagraphWithSingleLevelOfChildren                                `json:"callout,omitzero"`
-	SyncedBlock      *BlockObjectWithSingleLevelOfChildrenRequestSyncedBlockSyncedBlock `json:"synced_block,omitzero"`
+// BlockObjectWithSingleLevelOfChildren defines a model
+type BlockObjectWithSingleLevelOfChildren struct {
+	Object           string                                                      `json:"object,omitzero"`
+	Type             BlockObjectWithSingleLevelOfChildrenType                    `json:"type,omitzero"`
+	Embed            *BlockObjectEmbed2                                          `json:"embed,omitzero"`
+	Bookmark         *MediaContentWithURLAndCaption                              `json:"bookmark,omitzero"`
+	Image            *MediaContentWithFileAndCaption                             `json:"image,omitzero"`
+	Video            *MediaContentWithFileAndCaption                             `json:"video,omitzero"`
+	PDF              *MediaContentWithFileAndCaption                             `json:"pdf,omitzero"`
+	File             *MediaContentWithFileNameAndCaption                         `json:"file,omitzero"`
+	Audio            *MediaContentWithFileAndCaption                             `json:"audio,omitzero"`
+	Code             *BlockObjectCode2                                           `json:"code,omitzero"`
+	Equation         *ContentWithExpression                                      `json:"equation,omitzero"`
+	Divider          *EmptyObject                                                `json:"divider,omitzero"`
+	Breadcrumb       *EmptyObject                                                `json:"breadcrumb,omitzero"`
+	Tab              *TabRequestWithTabItemChildren                              `json:"tab,omitzero"`
+	TableOfContents  *BlockObjectTableOfContentsTableOfContents                  `json:"table_of_contents,omitzero"`
+	LinkToPage       *BlockObjectLinkToPageLinkToPage                            `json:"link_to_page,omitzero"`
+	TableRow         *ContentWithTableRow                                        `json:"table_row,omitzero"`
+	Heading1         *HeaderContentWithSingleLevelOfChildren                     `json:"heading_1,omitzero"`
+	Heading2         *HeaderContentWithSingleLevelOfChildren                     `json:"heading_2,omitzero"`
+	Heading3         *HeaderContentWithSingleLevelOfChildren                     `json:"heading_3,omitzero"`
+	Heading4         *HeaderContentWithSingleLevelOfChildren                     `json:"heading_4,omitzero"`
+	Paragraph        *ParagraphWithSingleLevelOfChildren                         `json:"paragraph,omitzero"`
+	BulletedListItem *ContentWithSingleLevelOfChildren                           `json:"bulleted_list_item,omitzero"`
+	NumberedListItem *ContentWithSingleLevelOfChildren                           `json:"numbered_list_item,omitzero"`
+	Quote            *ContentWithSingleLevelOfChildren                           `json:"quote,omitzero"`
+	Table            *TableRequestWithTableRowChildren                           `json:"table,omitzero"`
+	ToDo             *BlockObjectWithSingleLevelOfChildrenToDoToDo               `json:"to_do,omitzero"`
+	Toggle           *ContentWithSingleLevelOfChildren                           `json:"toggle,omitzero"`
+	Template         *BlockObjectWithSingleLevelOfChildrenTemplateTemplate       `json:"template,omitzero"`
+	Callout          *ParagraphWithSingleLevelOfChildren                         `json:"callout,omitzero"`
+	SyncedBlock      *BlockObjectWithSingleLevelOfChildrenSyncedBlockSyncedBlock `json:"synced_block,omitzero"`
 }
 
-// BlockObjectWithSingleLevelOfChildrenRequestType is a value of BlockObjectWithSingleLevelOfChildrenRequest's type, naming the members it holds.
-type BlockObjectWithSingleLevelOfChildrenRequestType string
+// BlockObjectWithSingleLevelOfChildrenType is a value of BlockObjectWithSingleLevelOfChildren's type, naming the members it holds.
+type BlockObjectWithSingleLevelOfChildrenType string
 
 const (
-	BlockObjectWithSingleLevelOfChildrenRequestTypeEmbed            BlockObjectWithSingleLevelOfChildrenRequestType = "embed"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeBookmark         BlockObjectWithSingleLevelOfChildrenRequestType = "bookmark"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeImage            BlockObjectWithSingleLevelOfChildrenRequestType = "image"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeVideo            BlockObjectWithSingleLevelOfChildrenRequestType = "video"
-	BlockObjectWithSingleLevelOfChildrenRequestTypePdf              BlockObjectWithSingleLevelOfChildrenRequestType = "pdf"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeFile             BlockObjectWithSingleLevelOfChildrenRequestType = "file"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeAudio            BlockObjectWithSingleLevelOfChildrenRequestType = "audio"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeCode             BlockObjectWithSingleLevelOfChildrenRequestType = "code"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeEquation         BlockObjectWithSingleLevelOfChildrenRequestType = "equation"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeDivider          BlockObjectWithSingleLevelOfChildrenRequestType = "divider"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeBreadcrumb       BlockObjectWithSingleLevelOfChildrenRequestType = "breadcrumb"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeTab              BlockObjectWithSingleLevelOfChildrenRequestType = "tab"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeTableOfContents  BlockObjectWithSingleLevelOfChildrenRequestType = "table_of_contents"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeLinkToPage       BlockObjectWithSingleLevelOfChildrenRequestType = "link_to_page"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeTableRow         BlockObjectWithSingleLevelOfChildrenRequestType = "table_row"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeHeading1         BlockObjectWithSingleLevelOfChildrenRequestType = "heading_1"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeHeading2         BlockObjectWithSingleLevelOfChildrenRequestType = "heading_2"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeHeading3         BlockObjectWithSingleLevelOfChildrenRequestType = "heading_3"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeHeading4         BlockObjectWithSingleLevelOfChildrenRequestType = "heading_4"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeParagraph        BlockObjectWithSingleLevelOfChildrenRequestType = "paragraph"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeBulletedListItem BlockObjectWithSingleLevelOfChildrenRequestType = "bulleted_list_item"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeNumberedListItem BlockObjectWithSingleLevelOfChildrenRequestType = "numbered_list_item"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeQuote            BlockObjectWithSingleLevelOfChildrenRequestType = "quote"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeTable            BlockObjectWithSingleLevelOfChildrenRequestType = "table"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeToDo             BlockObjectWithSingleLevelOfChildrenRequestType = "to_do"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeToggle           BlockObjectWithSingleLevelOfChildrenRequestType = "toggle"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeTemplate         BlockObjectWithSingleLevelOfChildrenRequestType = "template"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeCallout          BlockObjectWithSingleLevelOfChildrenRequestType = "callout"
-	BlockObjectWithSingleLevelOfChildrenRequestTypeSyncedBlock      BlockObjectWithSingleLevelOfChildrenRequestType = "synced_block"
+	BlockObjectWithSingleLevelOfChildrenTypeEmbed            BlockObjectWithSingleLevelOfChildrenType = "embed"
+	BlockObjectWithSingleLevelOfChildrenTypeBookmark         BlockObjectWithSingleLevelOfChildrenType = "bookmark"
+	BlockObjectWithSingleLevelOfChildrenTypeImage            BlockObjectWithSingleLevelOfChildrenType = "image"
+	BlockObjectWithSingleLevelOfChildrenTypeVideo            BlockObjectWithSingleLevelOfChildrenType = "video"
+	BlockObjectWithSingleLevelOfChildrenTypePdf              BlockObjectWithSingleLevelOfChildrenType = "pdf"
+	BlockObjectWithSingleLevelOfChildrenTypeFile             BlockObjectWithSingleLevelOfChildrenType = "file"
+	BlockObjectWithSingleLevelOfChildrenTypeAudio            BlockObjectWithSingleLevelOfChildrenType = "audio"
+	BlockObjectWithSingleLevelOfChildrenTypeCode             BlockObjectWithSingleLevelOfChildrenType = "code"
+	BlockObjectWithSingleLevelOfChildrenTypeEquation         BlockObjectWithSingleLevelOfChildrenType = "equation"
+	BlockObjectWithSingleLevelOfChildrenTypeDivider          BlockObjectWithSingleLevelOfChildrenType = "divider"
+	BlockObjectWithSingleLevelOfChildrenTypeBreadcrumb       BlockObjectWithSingleLevelOfChildrenType = "breadcrumb"
+	BlockObjectWithSingleLevelOfChildrenTypeTab              BlockObjectWithSingleLevelOfChildrenType = "tab"
+	BlockObjectWithSingleLevelOfChildrenTypeTableOfContents  BlockObjectWithSingleLevelOfChildrenType = "table_of_contents"
+	BlockObjectWithSingleLevelOfChildrenTypeLinkToPage       BlockObjectWithSingleLevelOfChildrenType = "link_to_page"
+	BlockObjectWithSingleLevelOfChildrenTypeTableRow         BlockObjectWithSingleLevelOfChildrenType = "table_row"
+	BlockObjectWithSingleLevelOfChildrenTypeHeading1         BlockObjectWithSingleLevelOfChildrenType = "heading_1"
+	BlockObjectWithSingleLevelOfChildrenTypeHeading2         BlockObjectWithSingleLevelOfChildrenType = "heading_2"
+	BlockObjectWithSingleLevelOfChildrenTypeHeading3         BlockObjectWithSingleLevelOfChildrenType = "heading_3"
+	BlockObjectWithSingleLevelOfChildrenTypeHeading4         BlockObjectWithSingleLevelOfChildrenType = "heading_4"
+	BlockObjectWithSingleLevelOfChildrenTypeParagraph        BlockObjectWithSingleLevelOfChildrenType = "paragraph"
+	BlockObjectWithSingleLevelOfChildrenTypeBulletedListItem BlockObjectWithSingleLevelOfChildrenType = "bulleted_list_item"
+	BlockObjectWithSingleLevelOfChildrenTypeNumberedListItem BlockObjectWithSingleLevelOfChildrenType = "numbered_list_item"
+	BlockObjectWithSingleLevelOfChildrenTypeQuote            BlockObjectWithSingleLevelOfChildrenType = "quote"
+	BlockObjectWithSingleLevelOfChildrenTypeTable            BlockObjectWithSingleLevelOfChildrenType = "table"
+	BlockObjectWithSingleLevelOfChildrenTypeToDo             BlockObjectWithSingleLevelOfChildrenType = "to_do"
+	BlockObjectWithSingleLevelOfChildrenTypeToggle           BlockObjectWithSingleLevelOfChildrenType = "toggle"
+	BlockObjectWithSingleLevelOfChildrenTypeTemplate         BlockObjectWithSingleLevelOfChildrenType = "template"
+	BlockObjectWithSingleLevelOfChildrenTypeCallout          BlockObjectWithSingleLevelOfChildrenType = "callout"
+	BlockObjectWithSingleLevelOfChildrenTypeSyncedBlock      BlockObjectWithSingleLevelOfChildrenType = "synced_block"
 )
 
-// Valid indicates whether the value is a known member of the BlockObjectWithSingleLevelOfChildrenRequestType enum.
-func (e BlockObjectWithSingleLevelOfChildrenRequestType) Valid() bool {
-	_, ok := tagsOfBlockObjectWithSingleLevelOfChildrenRequest[string(e)]
+// Valid indicates whether the value is a known member of the BlockObjectWithSingleLevelOfChildrenType enum.
+func (e BlockObjectWithSingleLevelOfChildrenType) Valid() bool {
+	_, ok := tagsOfBlockObjectWithSingleLevelOfChildren[string(e)]
 	return ok
 }
 
-// tagsOfBlockObjectWithSingleLevelOfChildrenRequest holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfBlockObjectWithSingleLevelOfChildrenRequest = map[string]map[string]jsonTagNeed{
+// tagsOfBlockObjectWithSingleLevelOfChildren holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfBlockObjectWithSingleLevelOfChildren = map[string]map[string]jsonTagNeed{
 	"embed":              {"embed": jsonTagRequired},
 	"bookmark":           {"bookmark": jsonTagRequired},
 	"image":              {"image": jsonTagRequired},
@@ -4097,7 +4202,7 @@ var tagsOfBlockObjectWithSingleLevelOfChildrenRequest = map[string]map[string]js
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
-func (v *BlockObjectWithSingleLevelOfChildrenRequest) taggedMembers() []string {
+func (v *BlockObjectWithSingleLevelOfChildren) taggedMembers() []string {
 	var set []string
 	if v.Embed != nil {
 		set = append(set, "embed")
@@ -4192,10 +4297,10 @@ func (v *BlockObjectWithSingleLevelOfChildrenRequest) taggedMembers() []string {
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
 // alternative's own, only those of the one type names are set.
-func (v *BlockObjectWithSingleLevelOfChildrenRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain BlockObjectWithSingleLevelOfChildrenRequest
+func (v *BlockObjectWithSingleLevelOfChildren) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain BlockObjectWithSingleLevelOfChildren
 
-	*v = BlockObjectWithSingleLevelOfChildrenRequest{}
+	*v = BlockObjectWithSingleLevelOfChildren{}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -4213,45 +4318,45 @@ func (v *BlockObjectWithSingleLevelOfChildrenRequest) UnmarshalJSONFrom(dec *jso
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfBlockObjectWithSingleLevelOfChildrenRequest, v.taggedMembers()); ok && v.Type == "" {
-		v.Type = BlockObjectWithSingleLevelOfChildrenRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfBlockObjectWithSingleLevelOfChildren, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = BlockObjectWithSingleLevelOfChildrenType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfBlockObjectWithSingleLevelOfChildrenRequest, v.taggedMembers(), present, jsonStrict(dec))
+	return jsonCheckTag("type", string(v.Type), tagsOfBlockObjectWithSingleLevelOfChildren, v.taggedMembers(), present, jsonStrict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
 // the value whose member is set.
-func (v *BlockObjectWithSingleLevelOfChildrenRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain BlockObjectWithSingleLevelOfChildrenRequest
+func (v *BlockObjectWithSingleLevelOfChildren) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain BlockObjectWithSingleLevelOfChildren
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfBlockObjectWithSingleLevelOfChildrenRequest, set); ok && out.Type == "" {
-		out.Type = BlockObjectWithSingleLevelOfChildrenRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfBlockObjectWithSingleLevelOfChildren, set); ok && out.Type == "" {
+		out.Type = BlockObjectWithSingleLevelOfChildrenType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfBlockObjectWithSingleLevelOfChildrenRequest, set, nil, true); err != nil {
+	if err := jsonCheckTag("type", string(out.Type), tagsOfBlockObjectWithSingleLevelOfChildren, set, nil, true); err != nil {
 		return err
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// BlockObjectWithSingleLevelOfChildrenRequestSyncedBlockSyncedBlock defines a model
-type BlockObjectWithSingleLevelOfChildrenRequestSyncedBlockSyncedBlock struct {
-	SyncedFrom UpdateABlockSyncedBlockSyncedBlockSyncedFrom `json:"synced_from"`
-	Children   []BlockObjectRequestWithoutChildren          `json:"children,omitzero"`
+// BlockObjectWithSingleLevelOfChildrenSyncedBlockSyncedBlock defines a model
+type BlockObjectWithSingleLevelOfChildrenSyncedBlockSyncedBlock struct {
+	SyncedFrom BlockObjectSyncedBlockSyncedBlockSyncedFrom `json:"synced_from"`
+	Children   []BlockObjectRequestWithoutChildren         `json:"children,omitzero"`
 }
 
-// BlockObjectWithSingleLevelOfChildrenRequestTemplateTemplate defines a model
-type BlockObjectWithSingleLevelOfChildrenRequestTemplateTemplate struct {
-	RichText []RichTextItemRequest               `json:"rich_text"`
+// BlockObjectWithSingleLevelOfChildrenTemplateTemplate defines a model
+type BlockObjectWithSingleLevelOfChildrenTemplateTemplate struct {
+	RichText []RichTextItem                      `json:"rich_text"`
 	Children []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
 }
 
-// BlockObjectWithSingleLevelOfChildrenRequestToDoToDo defines a model
-type BlockObjectWithSingleLevelOfChildrenRequestToDoToDo struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
+// BlockObjectWithSingleLevelOfChildrenToDoToDo defines a model
+type BlockObjectWithSingleLevelOfChildrenToDoToDo struct {
+	RichText []RichTextItem `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color    APIColor                            `json:"color,omitzero"`
 	Children []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
@@ -4321,83 +4426,28 @@ func (v *BlockOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// BoardViewConfigCardLayout2 defines a model
-type BoardViewConfigCardLayout2 string
-
-const (
-	BoardViewConfigCardLayout2List    BoardViewConfigCardLayout2 = "list"
-	BoardViewConfigCardLayout2Compact BoardViewConfigCardLayout2 = "compact"
-)
-
-// Valid indicates whether the value is a known member of the BoardViewConfigCardLayout2 enum.
-func (e BoardViewConfigCardLayout2) Valid() bool {
-	switch e {
-	case BoardViewConfigCardLayout2List, BoardViewConfigCardLayout2Compact:
-		return true
-	default:
-		return false
-	}
-}
-
-// BoardViewConfigCoverAspect2 defines a model
-type BoardViewConfigCoverAspect2 string
-
-const (
-	BoardViewConfigCoverAspect2Contain BoardViewConfigCoverAspect2 = "contain"
-	BoardViewConfigCoverAspect2Cover   BoardViewConfigCoverAspect2 = "cover"
-)
-
-// Valid indicates whether the value is a known member of the BoardViewConfigCoverAspect2 enum.
-func (e BoardViewConfigCoverAspect2) Valid() bool {
-	switch e {
-	case BoardViewConfigCoverAspect2Contain, BoardViewConfigCoverAspect2Cover:
-		return true
-	default:
-		return false
-	}
-}
-
-// BoardViewConfigCoverSize2 defines a model
-type BoardViewConfigCoverSize2 string
-
-const (
-	BoardViewConfigCoverSize2Small  BoardViewConfigCoverSize2 = "small"
-	BoardViewConfigCoverSize2Medium BoardViewConfigCoverSize2 = "medium"
-	BoardViewConfigCoverSize2Large  BoardViewConfigCoverSize2 = "large"
-)
-
-// Valid indicates whether the value is a known member of the BoardViewConfigCoverSize2 enum.
-func (e BoardViewConfigCoverSize2) Valid() bool {
-	switch e {
-	case BoardViewConfigCoverSize2Small, BoardViewConfigCoverSize2Medium, BoardViewConfigCoverSize2Large:
-		return true
-	default:
-		return false
-	}
-}
-
-// BoardViewConfigRequest defines a model
-type BoardViewConfigRequest struct {
+// BoardViewConfig defines a model
+type BoardViewConfig struct {
 	// The view type. Must be "board".
 	Type string `json:"type"`
 	// Group-by configuration for board columns.
-	GroupBy GroupByConfigRequest `json:"group_by"`
+	GroupBy GroupByConfig `json:"group_by"`
 	// Secondary group-by configuration for sub-grouping within columns. Pass null to remove sub-grouping.
-	SubGroupBy *GroupByConfigRequest `json:"sub_group_by,omitzero"`
+	SubGroupBy *GroupByConfig `json:"sub_group_by,omitzero"`
 	// Property visibility and display configuration on cards. Pass null to clear.
-	Properties []ViewPropertyConfigRequest `json:"properties,omitzero"`
+	Properties []ViewPropertyConfig `json:"properties,omitzero"`
 	// Cover image configuration for cards. Pass null to clear.
-	Cover CoverConfigRequest `json:"cover,omitzero"`
+	Cover CoverConfig `json:"cover,omitzero"`
 	// Size of the cover image on cards. Pass null to clear.
-	CoverSize BoardViewConfigCoverSize2 `json:"cover_size,omitzero"`
+	CoverSize BoardViewConfigCoverSizeOneOf `json:"cover_size,omitzero"`
 	// Aspect ratio mode for cover images. "contain" fits the image, "cover" fills the area. Pass null to clear.
-	CoverAspect BoardViewConfigCoverAspect2 `json:"cover_aspect,omitzero"`
+	CoverAspect BoardViewConfigCoverAspectOneOf `json:"cover_aspect,omitzero"`
 	// Card layout mode. "list" shows full cards, "compact" shows condensed cards. Pass null to clear.
-	CardLayout BoardViewConfigCardLayout2 `json:"card_layout,omitzero"`
+	CardLayout BoardViewConfigCardLayoutOneOf `json:"card_layout,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether BoardViewConfigRequest declares it.
-func (v *BoardViewConfigRequest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether BoardViewConfig declares it.
+func (v *BoardViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -4420,6 +4470,61 @@ func (v *BoardViewConfigRequest) unmarshalJSONMember(dec *jsontext.Decoder, name
 	return false, nil
 }
 
+// BoardViewConfigCardLayoutOneOf defines a model
+type BoardViewConfigCardLayoutOneOf string
+
+const (
+	BoardViewConfigCardLayoutOneOfList    BoardViewConfigCardLayoutOneOf = "list"
+	BoardViewConfigCardLayoutOneOfCompact BoardViewConfigCardLayoutOneOf = "compact"
+)
+
+// Valid indicates whether the value is a known member of the BoardViewConfigCardLayoutOneOf enum.
+func (e BoardViewConfigCardLayoutOneOf) Valid() bool {
+	switch e {
+	case BoardViewConfigCardLayoutOneOfList, BoardViewConfigCardLayoutOneOfCompact:
+		return true
+	default:
+		return false
+	}
+}
+
+// BoardViewConfigCoverAspectOneOf defines a model
+type BoardViewConfigCoverAspectOneOf string
+
+const (
+	BoardViewConfigCoverAspectOneOfContain BoardViewConfigCoverAspectOneOf = "contain"
+	BoardViewConfigCoverAspectOneOfCover   BoardViewConfigCoverAspectOneOf = "cover"
+)
+
+// Valid indicates whether the value is a known member of the BoardViewConfigCoverAspectOneOf enum.
+func (e BoardViewConfigCoverAspectOneOf) Valid() bool {
+	switch e {
+	case BoardViewConfigCoverAspectOneOfContain, BoardViewConfigCoverAspectOneOfCover:
+		return true
+	default:
+		return false
+	}
+}
+
+// BoardViewConfigCoverSizeOneOf defines a model
+type BoardViewConfigCoverSizeOneOf string
+
+const (
+	BoardViewConfigCoverSizeOneOfSmall  BoardViewConfigCoverSizeOneOf = "small"
+	BoardViewConfigCoverSizeOneOfMedium BoardViewConfigCoverSizeOneOf = "medium"
+	BoardViewConfigCoverSizeOneOfLarge  BoardViewConfigCoverSizeOneOf = "large"
+)
+
+// Valid indicates whether the value is a known member of the BoardViewConfigCoverSizeOneOf enum.
+func (e BoardViewConfigCoverSizeOneOf) Valid() bool {
+	switch e {
+	case BoardViewConfigCoverSizeOneOfSmall, BoardViewConfigCoverSizeOneOfMedium, BoardViewConfigCoverSizeOneOfLarge:
+		return true
+	default:
+		return false
+	}
+}
+
 // BoardViewConfigResponse defines a model
 type BoardViewConfigResponse struct {
 	// The view configuration type.
@@ -4433,11 +4538,11 @@ type BoardViewConfigResponse struct {
 	// Card cover/preview image configuration.
 	Cover CoverConfigResponse `json:"cover,omitzero"`
 	// Cover image size.
-	CoverSize BoardViewConfigCoverSize2 `json:"cover_size,omitzero"`
+	CoverSize BoardViewConfigCoverSizeOneOf `json:"cover_size,omitzero"`
 	// Cover image aspect ratio.
-	CoverAspect BoardViewConfigCoverAspect2 `json:"cover_aspect,omitzero"`
+	CoverAspect BoardViewConfigCoverAspectOneOf `json:"cover_aspect,omitzero"`
 	// Card layout mode (list shows all properties, compact shows inline).
-	CardLayout BoardViewConfigCardLayout2 `json:"card_layout,omitzero"`
+	CardLayout BoardViewConfigCardLayoutOneOf `json:"card_layout,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether BoardViewConfigResponse declares it.
@@ -4734,22 +4839,22 @@ func (v *ButtonPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Dec
 	return false, nil
 }
 
-// CalendarViewConfigRequest defines a model
-type CalendarViewConfigRequest struct {
+// CalendarViewConfig defines a model
+type CalendarViewConfig struct {
 	// The view type. Must be "calendar".
 	Type string `json:"type"`
 	// Property ID of the date property used to position items on the calendar.
 	DatePropertyID string `json:"date_property_id"`
 	// Property visibility and display configuration on calendar cards. Pass null to clear.
-	Properties []ViewPropertyConfigRequest `json:"properties,omitzero"`
+	Properties []ViewPropertyConfig `json:"properties,omitzero"`
 	// Default calendar range. "week" shows a week view, "month" shows a month view. Pass null to clear.
-	ViewRange CalendarViewConfigViewRange `json:"view_range,omitzero"`
+	ViewRange CalendarViewConfigViewRangeOneOf `json:"view_range,omitzero"`
 	// Whether to show weekend days. Pass null to clear.
 	ShowWeekends *bool `json:"show_weekends,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether CalendarViewConfigRequest declares it.
-func (v *CalendarViewConfigRequest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether CalendarViewConfig declares it.
+func (v *CalendarViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -4777,7 +4882,7 @@ type CalendarViewConfigResponse struct {
 	// Properties to display on calendar event cards.
 	Properties []ViewPropertyConfigResponse `json:"properties,omitzero"`
 	// Calendar view range.
-	ViewRange CalendarViewConfigViewRange `json:"view_range,omitzero"`
+	ViewRange CalendarViewConfigViewRangeOneOf `json:"view_range,omitzero"`
 	// Whether to show weekend days.
 	ShowWeekends *bool `json:"show_weekends,omitzero"`
 }
@@ -4802,18 +4907,18 @@ func (v *CalendarViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, 
 	return false, nil
 }
 
-// CalendarViewConfigViewRange defines a model
-type CalendarViewConfigViewRange string
+// CalendarViewConfigViewRangeOneOf defines a model
+type CalendarViewConfigViewRangeOneOf string
 
 const (
-	CalendarViewConfigViewRangeWeek  CalendarViewConfigViewRange = "week"
-	CalendarViewConfigViewRangeMonth CalendarViewConfigViewRange = "month"
+	CalendarViewConfigViewRangeOneOfWeek  CalendarViewConfigViewRangeOneOf = "week"
+	CalendarViewConfigViewRangeOneOfMonth CalendarViewConfigViewRangeOneOf = "month"
 )
 
-// Valid indicates whether the value is a known member of the CalendarViewConfigViewRange enum.
-func (e CalendarViewConfigViewRange) Valid() bool {
+// Valid indicates whether the value is a known member of the CalendarViewConfigViewRangeOneOf enum.
+func (e CalendarViewConfigViewRangeOneOf) Valid() bool {
 	switch e {
-	case CalendarViewConfigViewRangeWeek, CalendarViewConfigViewRangeMonth:
+	case CalendarViewConfigViewRangeOneOfWeek, CalendarViewConfigViewRangeOneOfMonth:
 		return true
 	default:
 		return false
@@ -4843,6 +4948,14 @@ type CancelSession2 struct {
 
 // CancelSessionRequiredActions defines a model
 type CancelSessionRequiredActions []SessionRequiredActionsItem
+
+// ChartAggregation defines a model
+type ChartAggregation struct {
+	// The aggregation operator. "count" counts all rows and does not require a property_id. All other operators require a property_id.
+	Aggregator ChartAggregationAggregator `json:"aggregator"`
+	// The property to aggregate on. Required for all operators except "count".
+	PropertyID string `json:"property_id,omitzero"`
+}
 
 // The aggregation operator. "count" counts all rows and does not require a property_id. All other operators require a property_id.
 type ChartAggregationAggregator string
@@ -4880,20 +4993,26 @@ func (e ChartAggregationAggregator) Valid() bool {
 	}
 }
 
-// ChartAggregationRequest defines a model
-type ChartAggregationRequest struct {
-	// The aggregation operator. "count" counts all rows and does not require a property_id. All other operators require a property_id.
-	Aggregator ChartAggregationAggregator `json:"aggregator"`
-	// The property to aggregate on. Required for all operators except "count".
-	PropertyID string `json:"property_id,omitzero"`
-}
-
 // ChartAggregationResponse defines a model
 type ChartAggregationResponse struct {
 	// The aggregation operator. "count" counts all rows and does not require a property_id. All other operators require a property_id.
 	Aggregator ChartAggregationAggregator `json:"aggregator"`
 	// The property to aggregate on. Required for all operators except "count".
 	PropertyID string `json:"property_id,omitzero"`
+}
+
+// ChartReferenceLine defines a model
+type ChartReferenceLine struct {
+	// The y-axis value where the reference line is drawn.
+	Value float64 `json:"value"`
+	// Label displayed alongside the reference line.
+	Label string `json:"label"`
+	// Color of the reference line.
+	Color NoticonColor `json:"color"`
+	// Line style: "solid" for a continuous line, "dash" for a dashed line.
+	DashStyle ChartReferenceLineDashStyle `json:"dash_style"`
+	// Unique identifier for the reference line. Auto-generated if omitted.
+	ID string `json:"id,omitzero"`
 }
 
 // Line style: "solid" for a continuous line, "dash" for a dashed line.
@@ -4914,20 +5033,6 @@ func (e ChartReferenceLineDashStyle) Valid() bool {
 	}
 }
 
-// ChartReferenceLineRequest defines a model
-type ChartReferenceLineRequest struct {
-	// The y-axis value where the reference line is drawn.
-	Value float64 `json:"value"`
-	// Label displayed alongside the reference line.
-	Label string `json:"label"`
-	// Color of the reference line.
-	Color NoticonColor `json:"color"`
-	// Line style: "solid" for a continuous line, "dash" for a dashed line.
-	DashStyle ChartReferenceLineDashStyle `json:"dash_style"`
-	// Unique identifier for the reference line. Auto-generated if omitted.
-	ID string `json:"id,omitzero"`
-}
-
 // ChartReferenceLineResponse defines a model
 type ChartReferenceLineResponse struct {
 	// Unique identifier for the reference line.
@@ -4942,184 +5047,38 @@ type ChartReferenceLineResponse struct {
 	DashStyle ChartReferenceLineDashStyle `json:"dash_style"`
 }
 
-// ChartViewConfigAxisLabels defines a model
-type ChartViewConfigAxisLabels string
-
-const (
-	ChartViewConfigAxisLabelsNone  ChartViewConfigAxisLabels = "none"
-	ChartViewConfigAxisLabelsXAxis ChartViewConfigAxisLabels = "x_axis"
-	ChartViewConfigAxisLabelsYAxis ChartViewConfigAxisLabels = "y_axis"
-	ChartViewConfigAxisLabelsBoth  ChartViewConfigAxisLabels = "both"
-)
-
-// Valid indicates whether the value is a known member of the ChartViewConfigAxisLabels enum.
-func (e ChartViewConfigAxisLabels) Valid() bool {
-	switch e {
-	case ChartViewConfigAxisLabelsNone, ChartViewConfigAxisLabelsXAxis, ChartViewConfigAxisLabelsYAxis, ChartViewConfigAxisLabelsBoth:
-		return true
-	default:
-		return false
-	}
-}
-
-// ChartViewConfigChartType defines a model
-type ChartViewConfigChartType string
-
-const (
-	ChartViewConfigChartTypeColumn ChartViewConfigChartType = "column"
-	ChartViewConfigChartTypeBar    ChartViewConfigChartType = "bar"
-	ChartViewConfigChartTypeLine   ChartViewConfigChartType = "line"
-	ChartViewConfigChartTypeDonut  ChartViewConfigChartType = "donut"
-	ChartViewConfigChartTypeNumber ChartViewConfigChartType = "number"
-)
-
-// Valid indicates whether the value is a known member of the ChartViewConfigChartType enum.
-func (e ChartViewConfigChartType) Valid() bool {
-	switch e {
-	case ChartViewConfigChartTypeColumn, ChartViewConfigChartTypeBar, ChartViewConfigChartTypeLine, ChartViewConfigChartTypeDonut, ChartViewConfigChartTypeNumber:
-		return true
-	default:
-		return false
-	}
-}
-
-// ChartViewConfigColorTheme defines a model
-type ChartViewConfigColorTheme string
-
-const (
-	ChartViewConfigColorThemeGray     ChartViewConfigColorTheme = "gray"
-	ChartViewConfigColorThemeBlue     ChartViewConfigColorTheme = "blue"
-	ChartViewConfigColorThemeYellow   ChartViewConfigColorTheme = "yellow"
-	ChartViewConfigColorThemeGreen    ChartViewConfigColorTheme = "green"
-	ChartViewConfigColorThemePurple   ChartViewConfigColorTheme = "purple"
-	ChartViewConfigColorThemeTeal     ChartViewConfigColorTheme = "teal"
-	ChartViewConfigColorThemeOrange   ChartViewConfigColorTheme = "orange"
-	ChartViewConfigColorThemePink     ChartViewConfigColorTheme = "pink"
-	ChartViewConfigColorThemeRed      ChartViewConfigColorTheme = "red"
-	ChartViewConfigColorThemeAuto     ChartViewConfigColorTheme = "auto"
-	ChartViewConfigColorThemeColorful ChartViewConfigColorTheme = "colorful"
-)
-
-// Valid indicates whether the value is a known member of the ChartViewConfigColorTheme enum.
-func (e ChartViewConfigColorTheme) Valid() bool {
-	switch e {
-	case ChartViewConfigColorThemeGray, ChartViewConfigColorThemeBlue, ChartViewConfigColorThemeYellow, ChartViewConfigColorThemeGreen, ChartViewConfigColorThemePurple, ChartViewConfigColorThemeTeal, ChartViewConfigColorThemeOrange, ChartViewConfigColorThemePink, ChartViewConfigColorThemeRed, ChartViewConfigColorThemeAuto, ChartViewConfigColorThemeColorful:
-		return true
-	default:
-		return false
-	}
-}
-
-// ChartViewConfigDonutLabels defines a model
-type ChartViewConfigDonutLabels string
-
-const (
-	ChartViewConfigDonutLabelsNone         ChartViewConfigDonutLabels = "none"
-	ChartViewConfigDonutLabelsValue        ChartViewConfigDonutLabels = "value"
-	ChartViewConfigDonutLabelsName         ChartViewConfigDonutLabels = "name"
-	ChartViewConfigDonutLabelsNameAndValue ChartViewConfigDonutLabels = "name_and_value"
-)
-
-// Valid indicates whether the value is a known member of the ChartViewConfigDonutLabels enum.
-func (e ChartViewConfigDonutLabels) Valid() bool {
-	switch e {
-	case ChartViewConfigDonutLabelsNone, ChartViewConfigDonutLabelsValue, ChartViewConfigDonutLabelsName, ChartViewConfigDonutLabelsNameAndValue:
-		return true
-	default:
-		return false
-	}
-}
-
-// ChartViewConfigGridLines defines a model
-type ChartViewConfigGridLines string
-
-const (
-	ChartViewConfigGridLinesNone       ChartViewConfigGridLines = "none"
-	ChartViewConfigGridLinesHorizontal ChartViewConfigGridLines = "horizontal"
-	ChartViewConfigGridLinesVertical   ChartViewConfigGridLines = "vertical"
-	ChartViewConfigGridLinesBoth       ChartViewConfigGridLines = "both"
-)
-
-// Valid indicates whether the value is a known member of the ChartViewConfigGridLines enum.
-func (e ChartViewConfigGridLines) Valid() bool {
-	switch e {
-	case ChartViewConfigGridLinesNone, ChartViewConfigGridLinesHorizontal, ChartViewConfigGridLinesVertical, ChartViewConfigGridLinesBoth:
-		return true
-	default:
-		return false
-	}
-}
-
-// ChartViewConfigGroupStyle defines a model
-type ChartViewConfigGroupStyle string
-
-const (
-	ChartViewConfigGroupStyleNormal     ChartViewConfigGroupStyle = "normal"
-	ChartViewConfigGroupStylePercent    ChartViewConfigGroupStyle = "percent"
-	ChartViewConfigGroupStyleSideBySide ChartViewConfigGroupStyle = "side_by_side"
-)
-
-// Valid indicates whether the value is a known member of the ChartViewConfigGroupStyle enum.
-func (e ChartViewConfigGroupStyle) Valid() bool {
-	switch e {
-	case ChartViewConfigGroupStyleNormal, ChartViewConfigGroupStylePercent, ChartViewConfigGroupStyleSideBySide:
-		return true
-	default:
-		return false
-	}
-}
-
-// ChartViewConfigLegendPosition defines a model
-type ChartViewConfigLegendPosition string
-
-const (
-	ChartViewConfigLegendPositionOff    ChartViewConfigLegendPosition = "off"
-	ChartViewConfigLegendPositionBottom ChartViewConfigLegendPosition = "bottom"
-	ChartViewConfigLegendPositionSide   ChartViewConfigLegendPosition = "side"
-)
-
-// Valid indicates whether the value is a known member of the ChartViewConfigLegendPosition enum.
-func (e ChartViewConfigLegendPosition) Valid() bool {
-	switch e {
-	case ChartViewConfigLegendPositionOff, ChartViewConfigLegendPositionBottom, ChartViewConfigLegendPositionSide:
-		return true
-	default:
-		return false
-	}
-}
-
-// ChartViewConfigRequest defines a model
-type ChartViewConfigRequest struct {
+// ChartViewConfig defines a model
+type ChartViewConfig struct {
 	// The view type. Must be "chart".
 	Type string `json:"type"`
 	// The chart type.
 	ChartType ChartViewConfigChartType `json:"chart_type"`
 	// X-axis grouping configuration for grouped data mode. Pass null to clear.
-	XAxis *GroupByConfigRequest `json:"x_axis,omitzero"`
+	XAxis *GroupByConfig `json:"x_axis,omitzero"`
 	// Y-axis aggregation for grouped data mode. Pass null to clear.
-	YAxis ChartAggregationRequest `json:"y_axis,omitzero"`
+	YAxis ChartAggregation `json:"y_axis,omitzero"`
 	// Property ID for x-axis values in results mode. Pass null to clear.
 	XAxisPropertyID string `json:"x_axis_property_id,omitzero"`
 	// Property ID for y-axis values in results mode. Pass null to clear.
 	YAxisPropertyID string `json:"y_axis_property_id,omitzero"`
 	// Aggregation for number charts. Pass null to clear.
-	Value ChartAggregationRequest `json:"value,omitzero"`
+	Value ChartAggregation `json:"value,omitzero"`
 	// Sort order for chart data. Pass null to clear.
-	Sort ChartViewConfigSort `json:"sort,omitzero"`
+	Sort ChartViewConfigSortOneOf `json:"sort,omitzero"`
 	// Color theme. Pass null to clear.
-	ColorTheme ChartViewConfigColorTheme `json:"color_theme,omitzero"`
+	ColorTheme ChartViewConfigColorThemeOneOf `json:"color_theme,omitzero"`
 	// Chart height. Pass null to clear.
-	Height MapViewConfigHeight2 `json:"height,omitzero"`
+	Height MapViewConfigHeightOneOf `json:"height,omitzero"`
 	// Whether to hide groups with no data. Pass null to clear.
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 	// Legend position. Pass null to clear.
-	LegendPosition ChartViewConfigLegendPosition `json:"legend_position,omitzero"`
+	LegendPosition ChartViewConfigLegendPositionOneOf `json:"legend_position,omitzero"`
 	// Whether to show data labels. Pass null to clear.
 	ShowDataLabels *bool `json:"show_data_labels,omitzero"`
 	// Which axis labels to show. Pass null to clear.
-	AxisLabels ChartViewConfigAxisLabels `json:"axis_labels,omitzero"`
+	AxisLabels ChartViewConfigAxisLabelsOneOf `json:"axis_labels,omitzero"`
 	// Which grid lines to show. Pass null to clear.
-	GridLines ChartViewConfigGridLines `json:"grid_lines,omitzero"`
+	GridLines ChartViewConfigGridLinesOneOf `json:"grid_lines,omitzero"`
 	// Cumulative values (line only). Pass null to clear.
 	Cumulative *bool `json:"cumulative,omitzero"`
 	// Smooth line curves (line only). Pass null to clear.
@@ -5127,27 +5086,27 @@ type ChartViewConfigRequest struct {
 	// Hide area fill (line only). Pass null to clear.
 	HideLineFillArea *bool `json:"hide_line_fill_area,omitzero"`
 	// Grouped/stacked bar display style. Pass null to clear.
-	GroupStyle ChartViewConfigGroupStyle `json:"group_style,omitzero"`
+	GroupStyle ChartViewConfigGroupStyleOneOf `json:"group_style,omitzero"`
 	// Custom y-axis minimum. Pass null to clear.
 	YAxisMin *float64 `json:"y_axis_min,omitzero"`
 	// Custom y-axis maximum. Pass null to clear.
 	YAxisMax *float64 `json:"y_axis_max,omitzero"`
 	// Donut slice labels. Pass null to clear.
-	DonutLabels ChartViewConfigDonutLabels `json:"donut_labels,omitzero"`
+	DonutLabels ChartViewConfigDonutLabelsOneOf `json:"donut_labels,omitzero"`
 	// Hide title (number only). Pass null to clear.
 	HideTitle *bool `json:"hide_title,omitzero"`
 	// Stack-by grouping for stacked/grouped bar charts. Pass null to clear.
-	StackBy *GroupByConfigRequest `json:"stack_by,omitzero"`
+	StackBy *GroupByConfig `json:"stack_by,omitzero"`
 	// Reference lines on the chart. Pass null to clear.
-	ReferenceLines []ChartReferenceLineRequest `json:"reference_lines,omitzero"`
+	ReferenceLines []ChartReferenceLine `json:"reference_lines,omitzero"`
 	// Chart caption text. Pass null to clear.
 	Caption string `json:"caption,omitzero"`
 	// Whether to color chart elements by their numeric value (gradient coloring). Pass null to clear.
 	ColorByValue *bool `json:"color_by_value,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether ChartViewConfigRequest declares it.
-func (v *ChartViewConfigRequest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether ChartViewConfig declares it.
+func (v *ChartViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -5208,6 +5167,152 @@ func (v *ChartViewConfigRequest) unmarshalJSONMember(dec *jsontext.Decoder, name
 	return false, nil
 }
 
+// ChartViewConfigAxisLabelsOneOf defines a model
+type ChartViewConfigAxisLabelsOneOf string
+
+const (
+	ChartViewConfigAxisLabelsOneOfNone  ChartViewConfigAxisLabelsOneOf = "none"
+	ChartViewConfigAxisLabelsOneOfXAxis ChartViewConfigAxisLabelsOneOf = "x_axis"
+	ChartViewConfigAxisLabelsOneOfYAxis ChartViewConfigAxisLabelsOneOf = "y_axis"
+	ChartViewConfigAxisLabelsOneOfBoth  ChartViewConfigAxisLabelsOneOf = "both"
+)
+
+// Valid indicates whether the value is a known member of the ChartViewConfigAxisLabelsOneOf enum.
+func (e ChartViewConfigAxisLabelsOneOf) Valid() bool {
+	switch e {
+	case ChartViewConfigAxisLabelsOneOfNone, ChartViewConfigAxisLabelsOneOfXAxis, ChartViewConfigAxisLabelsOneOfYAxis, ChartViewConfigAxisLabelsOneOfBoth:
+		return true
+	default:
+		return false
+	}
+}
+
+// ChartViewConfigChartType defines a model
+type ChartViewConfigChartType string
+
+const (
+	ChartViewConfigChartTypeColumn ChartViewConfigChartType = "column"
+	ChartViewConfigChartTypeBar    ChartViewConfigChartType = "bar"
+	ChartViewConfigChartTypeLine   ChartViewConfigChartType = "line"
+	ChartViewConfigChartTypeDonut  ChartViewConfigChartType = "donut"
+	ChartViewConfigChartTypeNumber ChartViewConfigChartType = "number"
+)
+
+// Valid indicates whether the value is a known member of the ChartViewConfigChartType enum.
+func (e ChartViewConfigChartType) Valid() bool {
+	switch e {
+	case ChartViewConfigChartTypeColumn, ChartViewConfigChartTypeBar, ChartViewConfigChartTypeLine, ChartViewConfigChartTypeDonut, ChartViewConfigChartTypeNumber:
+		return true
+	default:
+		return false
+	}
+}
+
+// ChartViewConfigColorThemeOneOf defines a model
+type ChartViewConfigColorThemeOneOf string
+
+const (
+	ChartViewConfigColorThemeOneOfGray     ChartViewConfigColorThemeOneOf = "gray"
+	ChartViewConfigColorThemeOneOfBlue     ChartViewConfigColorThemeOneOf = "blue"
+	ChartViewConfigColorThemeOneOfYellow   ChartViewConfigColorThemeOneOf = "yellow"
+	ChartViewConfigColorThemeOneOfGreen    ChartViewConfigColorThemeOneOf = "green"
+	ChartViewConfigColorThemeOneOfPurple   ChartViewConfigColorThemeOneOf = "purple"
+	ChartViewConfigColorThemeOneOfTeal     ChartViewConfigColorThemeOneOf = "teal"
+	ChartViewConfigColorThemeOneOfOrange   ChartViewConfigColorThemeOneOf = "orange"
+	ChartViewConfigColorThemeOneOfPink     ChartViewConfigColorThemeOneOf = "pink"
+	ChartViewConfigColorThemeOneOfRed      ChartViewConfigColorThemeOneOf = "red"
+	ChartViewConfigColorThemeOneOfAuto     ChartViewConfigColorThemeOneOf = "auto"
+	ChartViewConfigColorThemeOneOfColorful ChartViewConfigColorThemeOneOf = "colorful"
+)
+
+// Valid indicates whether the value is a known member of the ChartViewConfigColorThemeOneOf enum.
+func (e ChartViewConfigColorThemeOneOf) Valid() bool {
+	switch e {
+	case ChartViewConfigColorThemeOneOfGray, ChartViewConfigColorThemeOneOfBlue, ChartViewConfigColorThemeOneOfYellow, ChartViewConfigColorThemeOneOfGreen, ChartViewConfigColorThemeOneOfPurple, ChartViewConfigColorThemeOneOfTeal, ChartViewConfigColorThemeOneOfOrange, ChartViewConfigColorThemeOneOfPink, ChartViewConfigColorThemeOneOfRed, ChartViewConfigColorThemeOneOfAuto, ChartViewConfigColorThemeOneOfColorful:
+		return true
+	default:
+		return false
+	}
+}
+
+// ChartViewConfigDonutLabelsOneOf defines a model
+type ChartViewConfigDonutLabelsOneOf string
+
+const (
+	ChartViewConfigDonutLabelsOneOfNone         ChartViewConfigDonutLabelsOneOf = "none"
+	ChartViewConfigDonutLabelsOneOfValue        ChartViewConfigDonutLabelsOneOf = "value"
+	ChartViewConfigDonutLabelsOneOfName         ChartViewConfigDonutLabelsOneOf = "name"
+	ChartViewConfigDonutLabelsOneOfNameAndValue ChartViewConfigDonutLabelsOneOf = "name_and_value"
+)
+
+// Valid indicates whether the value is a known member of the ChartViewConfigDonutLabelsOneOf enum.
+func (e ChartViewConfigDonutLabelsOneOf) Valid() bool {
+	switch e {
+	case ChartViewConfigDonutLabelsOneOfNone, ChartViewConfigDonutLabelsOneOfValue, ChartViewConfigDonutLabelsOneOfName, ChartViewConfigDonutLabelsOneOfNameAndValue:
+		return true
+	default:
+		return false
+	}
+}
+
+// ChartViewConfigGridLinesOneOf defines a model
+type ChartViewConfigGridLinesOneOf string
+
+const (
+	ChartViewConfigGridLinesOneOfNone       ChartViewConfigGridLinesOneOf = "none"
+	ChartViewConfigGridLinesOneOfHorizontal ChartViewConfigGridLinesOneOf = "horizontal"
+	ChartViewConfigGridLinesOneOfVertical   ChartViewConfigGridLinesOneOf = "vertical"
+	ChartViewConfigGridLinesOneOfBoth       ChartViewConfigGridLinesOneOf = "both"
+)
+
+// Valid indicates whether the value is a known member of the ChartViewConfigGridLinesOneOf enum.
+func (e ChartViewConfigGridLinesOneOf) Valid() bool {
+	switch e {
+	case ChartViewConfigGridLinesOneOfNone, ChartViewConfigGridLinesOneOfHorizontal, ChartViewConfigGridLinesOneOfVertical, ChartViewConfigGridLinesOneOfBoth:
+		return true
+	default:
+		return false
+	}
+}
+
+// ChartViewConfigGroupStyleOneOf defines a model
+type ChartViewConfigGroupStyleOneOf string
+
+const (
+	ChartViewConfigGroupStyleOneOfNormal     ChartViewConfigGroupStyleOneOf = "normal"
+	ChartViewConfigGroupStyleOneOfPercent    ChartViewConfigGroupStyleOneOf = "percent"
+	ChartViewConfigGroupStyleOneOfSideBySide ChartViewConfigGroupStyleOneOf = "side_by_side"
+)
+
+// Valid indicates whether the value is a known member of the ChartViewConfigGroupStyleOneOf enum.
+func (e ChartViewConfigGroupStyleOneOf) Valid() bool {
+	switch e {
+	case ChartViewConfigGroupStyleOneOfNormal, ChartViewConfigGroupStyleOneOfPercent, ChartViewConfigGroupStyleOneOfSideBySide:
+		return true
+	default:
+		return false
+	}
+}
+
+// ChartViewConfigLegendPositionOneOf defines a model
+type ChartViewConfigLegendPositionOneOf string
+
+const (
+	ChartViewConfigLegendPositionOneOfOff    ChartViewConfigLegendPositionOneOf = "off"
+	ChartViewConfigLegendPositionOneOfBottom ChartViewConfigLegendPositionOneOf = "bottom"
+	ChartViewConfigLegendPositionOneOfSide   ChartViewConfigLegendPositionOneOf = "side"
+)
+
+// Valid indicates whether the value is a known member of the ChartViewConfigLegendPositionOneOf enum.
+func (e ChartViewConfigLegendPositionOneOf) Valid() bool {
+	switch e {
+	case ChartViewConfigLegendPositionOneOfOff, ChartViewConfigLegendPositionOneOfBottom, ChartViewConfigLegendPositionOneOfSide:
+		return true
+	default:
+		return false
+	}
+}
+
 // ChartViewConfigResponse defines a model
 type ChartViewConfigResponse struct {
 	// The view configuration type.
@@ -5225,21 +5330,21 @@ type ChartViewConfigResponse struct {
 	// Aggregation configuration for number charts (single value display).
 	Value ChartAggregationResponse `json:"value,omitzero"`
 	// Sort order for chart data.
-	Sort ChartViewConfigSort `json:"sort,omitzero"`
+	Sort ChartViewConfigSortOneOf `json:"sort,omitzero"`
 	// Color theme for the chart.
-	ColorTheme ChartViewConfigColorTheme `json:"color_theme,omitzero"`
+	ColorTheme ChartViewConfigColorThemeOneOf `json:"color_theme,omitzero"`
 	// Chart height.
-	Height MapViewConfigHeight2 `json:"height,omitzero"`
+	Height MapViewConfigHeightOneOf `json:"height,omitzero"`
 	// Whether to hide groups with no data on the x-axis.
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 	// Legend display position. "off" hides the legend.
-	LegendPosition ChartViewConfigLegendPosition `json:"legend_position,omitzero"`
+	LegendPosition ChartViewConfigLegendPositionOneOf `json:"legend_position,omitzero"`
 	// Whether to show data value labels on chart elements.
 	ShowDataLabels *bool `json:"show_data_labels,omitzero"`
 	// Which axis labels to display.
-	AxisLabels ChartViewConfigAxisLabels `json:"axis_labels,omitzero"`
+	AxisLabels ChartViewConfigAxisLabelsOneOf `json:"axis_labels,omitzero"`
 	// Which grid lines to display.
-	GridLines ChartViewConfigGridLines `json:"grid_lines,omitzero"`
+	GridLines ChartViewConfigGridLinesOneOf `json:"grid_lines,omitzero"`
 	// Whether to show cumulative values (line charts only).
 	Cumulative *bool `json:"cumulative,omitzero"`
 	// Whether to use smooth curves (line charts only).
@@ -5247,13 +5352,13 @@ type ChartViewConfigResponse struct {
 	// Whether to hide the shaded area under the line (line charts only).
 	HideLineFillArea *bool `json:"hide_line_fill_area,omitzero"`
 	// How grouped/stacked bars are displayed. "normal" stacks values, "percent" normalizes to 100%, "side_by_side" places bars next to each other.
-	GroupStyle ChartViewConfigGroupStyle `json:"group_style,omitzero"`
+	GroupStyle ChartViewConfigGroupStyleOneOf `json:"group_style,omitzero"`
 	// Custom minimum value for the y-axis. Null clears the override.
 	YAxisMin *float64 `json:"y_axis_min,omitzero"`
 	// Custom maximum value for the y-axis. Null clears the override.
 	YAxisMax *float64 `json:"y_axis_max,omitzero"`
 	// What to display on donut chart slices.
-	DonutLabels ChartViewConfigDonutLabels `json:"donut_labels,omitzero"`
+	DonutLabels ChartViewConfigDonutLabelsOneOf `json:"donut_labels,omitzero"`
 	// Whether to hide the title label (number charts only).
 	HideTitle *bool `json:"hide_title,omitzero"`
 	// Stack-by grouping configuration for stacked/grouped bar charts (column/bar/line only). Null when not stacked.
@@ -5328,35 +5433,35 @@ func (v *ChartViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, nam
 	return false, nil
 }
 
-// ChartViewConfigSort defines a model
-type ChartViewConfigSort string
+// ChartViewConfigSortOneOf defines a model
+type ChartViewConfigSortOneOf string
 
 const (
-	ChartViewConfigSortManual      ChartViewConfigSort = "manual"
-	ChartViewConfigSortXAscending  ChartViewConfigSort = "x_ascending"
-	ChartViewConfigSortXDescending ChartViewConfigSort = "x_descending"
-	ChartViewConfigSortYAscending  ChartViewConfigSort = "y_ascending"
-	ChartViewConfigSortYDescending ChartViewConfigSort = "y_descending"
+	ChartViewConfigSortOneOfManual      ChartViewConfigSortOneOf = "manual"
+	ChartViewConfigSortOneOfXAscending  ChartViewConfigSortOneOf = "x_ascending"
+	ChartViewConfigSortOneOfXDescending ChartViewConfigSortOneOf = "x_descending"
+	ChartViewConfigSortOneOfYAscending  ChartViewConfigSortOneOf = "y_ascending"
+	ChartViewConfigSortOneOfYDescending ChartViewConfigSortOneOf = "y_descending"
 )
 
-// Valid indicates whether the value is a known member of the ChartViewConfigSort enum.
-func (e ChartViewConfigSort) Valid() bool {
+// Valid indicates whether the value is a known member of the ChartViewConfigSortOneOf enum.
+func (e ChartViewConfigSortOneOf) Valid() bool {
 	switch e {
-	case ChartViewConfigSortManual, ChartViewConfigSortXAscending, ChartViewConfigSortXDescending, ChartViewConfigSortYAscending, ChartViewConfigSortYDescending:
+	case ChartViewConfigSortOneOfManual, ChartViewConfigSortOneOfXAscending, ChartViewConfigSortOneOfXDescending, ChartViewConfigSortOneOfYAscending, ChartViewConfigSortOneOfYDescending:
 		return true
 	default:
 		return false
 	}
 }
 
-// CheckboxGroupByConfigRequest defines a model
-type CheckboxGroupByConfigRequest struct {
+// CheckboxGroupByConfig defines a model
+type CheckboxGroupByConfig struct {
 	// The property type for grouping.
 	Type string `json:"type"`
 	// Property ID to group by.
 	PropertyID string `json:"property_id"`
 	// Sort order for groups.
-	Sort GroupSortRequest `json:"sort"`
+	Sort GroupSort `json:"sort"`
 	// Whether to hide groups that have no items.
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 }
@@ -5484,13 +5589,13 @@ func (v *CheckboxPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.D
 
 // CodeBlockObjectResponseCode defines a model
 type CodeBlockObjectResponseCode struct {
-	RichText RichTexts       `json:"rich_text"`
-	Caption  RichTexts       `json:"caption"`
-	Language LanguageRequest `json:"language"`
+	RichText RichTexts `json:"rich_text"`
+	Caption  RichTexts `json:"caption"`
+	Language Language  `json:"language"`
 }
 
-// ColumnListRequest defines a model
-type ColumnListRequest struct {
+// ColumnList defines a model
+type ColumnList struct {
 	Children []BlockObjectColumn `json:"children"`
 }
 
@@ -5500,9 +5605,9 @@ type ColumnResponse struct {
 	WidthRatio *float64 `json:"width_ratio,omitzero"`
 }
 
-// ColumnWithChildrenRequest defines a model
-type ColumnWithChildrenRequest struct {
-	Children []BlockObjectWithSingleLevelOfChildrenRequest `json:"children"`
+// ColumnWithChildren defines a model
+type ColumnWithChildren struct {
+	Children []BlockObjectWithSingleLevelOfChildren `json:"children"`
 	// Ratio between 0 and 1 of the width of this column relative to all columns in the list. If not provided, uses an equal width.
 	WidthRatio float64 `json:"width_ratio,omitzero"`
 }
@@ -5885,6 +5990,18 @@ type ContentWithExpression struct {
 	Expression string `json:"expression"`
 }
 
+// ContentWithRichText defines a model
+type ContentWithRichText struct {
+	RichText []RichTextItem `json:"rich_text"`
+}
+
+// ContentWithRichTextAndColor defines a model
+type ContentWithRichTextAndColor struct {
+	RichText []RichTextItem `json:"rich_text"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color APIColor `json:"color,omitzero"`
+}
+
 // ContentWithRichTextAndColorAndListResponse defines a model
 type ContentWithRichTextAndColorAndListResponse struct {
 	RichText RichTexts `json:"rich_text"`
@@ -5892,13 +6009,6 @@ type ContentWithRichTextAndColorAndListResponse struct {
 	Color          APIColor           `json:"color"`
 	ListStartIndex int                `json:"list_start_index,omitzero"`
 	ListFormat     NumberedListFormat `json:"list_format,omitzero"`
-}
-
-// ContentWithRichTextAndColorRequest defines a model
-type ContentWithRichTextAndColorRequest struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color APIColor `json:"color,omitzero"`
 }
 
 // ContentWithRichTextAndColorResponse defines a model
@@ -5910,10 +6020,10 @@ type ContentWithRichTextAndColorResponse struct {
 
 // ContentWithRichTextColorAndIcon defines a model
 type ContentWithRichTextColorAndIcon struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
+	RichText []RichTextItem `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color APIColor        `json:"color,omitzero"`
-	Icon  PageIconRequest `json:"icon,omitzero"`
+	Color APIColor `json:"color,omitzero"`
+	Icon  PageIcon `json:"icon,omitzero"`
 }
 
 // ContentWithRichTextColorAndIcon2 defines a model
@@ -5926,20 +6036,15 @@ type ContentWithRichTextColorAndIcon2 struct {
 
 // ContentWithRichTextColorAndIconUpdate defines a model
 type ContentWithRichTextColorAndIconUpdate struct {
-	RichText []RichTextItemRequest `json:"rich_text,omitzero"`
-	Icon     PageIconRequest       `json:"icon,omitzero"`
+	RichText []RichTextItem `json:"rich_text,omitzero"`
+	Icon     PageIcon       `json:"icon,omitzero"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor `json:"color,omitzero"`
 }
 
-// ContentWithRichTextRequest defines a model
-type ContentWithRichTextRequest struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
-}
-
-// ContentWithSingleLevelOfChildrenRequest defines a model
-type ContentWithSingleLevelOfChildrenRequest struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
+// ContentWithSingleLevelOfChildren defines a model
+type ContentWithSingleLevelOfChildren struct {
+	RichText []RichTextItem `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color    APIColor                            `json:"color,omitzero"`
 	Children []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
@@ -5952,9 +6057,9 @@ type ContentWithTableResponse struct {
 	TableWidth      int  `json:"table_width"`
 }
 
-// ContentWithTableRowRequest defines a model
-type ContentWithTableRowRequest struct {
-	Cells []RichTextItemRequest `json:"cells"`
+// ContentWithTableRow defines a model
+type ContentWithTableRow struct {
+	Cells []RichTextItem `json:"cells"`
 }
 
 // ContentWithTableRowResponse defines a model
@@ -5962,31 +6067,12 @@ type ContentWithTableRowResponse struct {
 	Cells []RichTexts `json:"cells"`
 }
 
-// CoverConfigRequest defines a model
-type CoverConfigRequest struct {
+// CoverConfig defines a model
+type CoverConfig struct {
 	// Source of the cover image.
-	Type CoverConfigRequestType `json:"type"`
+	Type CoverConfigType `json:"type"`
 	// Property ID when type is "property".
 	PropertyID string `json:"property_id,omitzero"`
-}
-
-// Source of the cover image.
-type CoverConfigRequestType string
-
-const (
-	CoverConfigRequestTypePageCover   CoverConfigRequestType = "page_cover"
-	CoverConfigRequestTypePageContent CoverConfigRequestType = "page_content"
-	CoverConfigRequestTypeProperty    CoverConfigRequestType = "property"
-)
-
-// Valid indicates whether the value is a known member of the CoverConfigRequestType enum.
-func (e CoverConfigRequestType) Valid() bool {
-	switch e {
-	case CoverConfigRequestTypePageCover, CoverConfigRequestTypePageContent, CoverConfigRequestTypeProperty:
-		return true
-	default:
-		return false
-	}
 }
 
 // CoverConfigResponse defines a model
@@ -6011,6 +6097,25 @@ const (
 func (e CoverConfigResponseType) Valid() bool {
 	switch e {
 	case CoverConfigResponseTypePageCover, CoverConfigResponseTypePageContent, CoverConfigResponseTypePageContentFirst, CoverConfigResponseTypeProperty:
+		return true
+	default:
+		return false
+	}
+}
+
+// Source of the cover image.
+type CoverConfigType string
+
+const (
+	CoverConfigTypePageCover   CoverConfigType = "page_cover"
+	CoverConfigTypePageContent CoverConfigType = "page_content"
+	CoverConfigTypeProperty    CoverConfigType = "property"
+)
+
+// Valid indicates whether the value is a known member of the CoverConfigType enum.
+func (e CoverConfigType) Valid() bool {
+	switch e {
+	case CoverConfigTypePageCover, CoverConfigTypePageContent, CoverConfigTypeProperty:
 		return true
 	default:
 		return false
@@ -6305,7 +6410,7 @@ type CreateACommentAllOf0OneOf0 struct {
 	// The parent of the comment. This can be a page or a block.
 	Parent CreateACommentAllOfOneOfParent `json:"parent"`
 	// An array of rich text objects that represent the content of the comment.
-	RichText []RichTextItemRequest `json:"rich_text"`
+	RichText []RichTextItem `json:"rich_text"`
 }
 
 // CreateACommentAllOf0OneOf1 defines a model
@@ -6319,15 +6424,15 @@ type CreateACommentAllOf0OneOf1 struct {
 // CreateACommentAllOf0OneOf2 defines a model
 type CreateACommentAllOf0OneOf2 struct {
 	// The ID of the discussion to comment on.
-	DiscussionID IDRequest `json:"discussion_id"`
+	DiscussionID ID `json:"discussion_id"`
 	// An array of rich text objects that represent the content of the comment.
-	RichText []RichTextItemRequest `json:"rich_text"`
+	RichText []RichTextItem `json:"rich_text"`
 }
 
 // CreateACommentAllOf0OneOf3 defines a model
 type CreateACommentAllOf0OneOf3 struct {
 	// The ID of the discussion to comment on.
-	DiscussionID IDRequest `json:"discussion_id"`
+	DiscussionID ID `json:"discussion_id"`
 	// The content of the comment as a Markdown string. Comment Markdown supports inline formatting only (bold, italic, strikethrough, code, links), inline equations ($expression$), and mentions. Block-level Markdown such as fenced code blocks, headings, lists, tables, and blockquotes does not render as structured blocks in comments.
 	Markdown string `json:"markdown"`
 }
@@ -6336,9 +6441,9 @@ type CreateACommentAllOf0OneOf3 struct {
 type CreateACommentAllOfOneOfParent struct {
 	Type CreateACommentAllOfOneOfParentType `json:"type,omitzero"`
 	// The ID of the parent page (with or without dashes), for example, 195de9221179449fab8075a27c979105
-	PageID IDRequest `json:"page_id,omitzero"`
+	PageID ID `json:"page_id,omitzero"`
 	// The ID of the parent block (with or without dashes), for example, 195de9221179449fab8075a27c979105
-	BlockID IDRequest `json:"block_id,omitzero"`
+	BlockID ID `json:"block_id,omitzero"`
 }
 
 // CreateACommentAllOfOneOfParentType is a value of CreateACommentAllOfOneOfParent's type, naming the members it holds.
@@ -6521,13 +6626,13 @@ type CreateACommentDisplayNameCustomCustom struct {
 // CreateADatabase defines a model
 type CreateADatabase struct {
 	// An object specifying the parent of the new data source to be created.
-	Parent ParentOfDataSourceRequest `json:"parent"`
+	Parent ParentOfDataSource `json:"parent"`
 	// Property schema of data source.
-	Properties map[string]PropertyConfigurationRequest `json:"properties"`
+	Properties map[string]PropertyConfiguration `json:"properties"`
 	// Title of data source as it appears in Notion.
-	Title []RichTextItemRequest `json:"title,omitzero"`
+	Title []RichTextItem `json:"title,omitzero"`
 	// Page icon.
-	Icon *PageIconRequest `json:"icon,omitzero"`
+	Icon *PageIcon `json:"icon,omitzero"`
 }
 
 // CreateAToken defines a model
@@ -6792,7 +6897,7 @@ type CreateATokenOkOwnerUserUserPerson struct {
 	Person    CreateATokenOkOwnerUserUserPersonPerson `json:"person"`
 	Name      string                                  `json:"name"`
 	AvatarURL string                                  `json:"avatar_url"`
-	ID        IDRequest                               `json:"id"`
+	ID        ID                                      `json:"id"`
 	Object    string                                  `json:"object"`
 }
 
@@ -6831,19 +6936,19 @@ type CreateDatabase struct {
 	// The parent page or workspace where the database will be created.
 	Parent CreateDatabaseParent `json:"parent"`
 	// The title of the database.
-	Title []RichTextItemRequest `json:"title,omitzero"`
+	Title []RichTextItem `json:"title,omitzero"`
 	// The description of the database.
-	Description []RichTextItemRequest `json:"description,omitzero"`
+	Description []RichTextItem `json:"description,omitzero"`
 	// Whether the database should be displayed inline in the parent page. Defaults to false.
 	IsInline *bool `json:"is_inline,omitzero"`
 	// Initial data source configuration for the database.
-	InitialDataSource *InitialDataSourceRequest `json:"initial_data_source,omitzero"`
+	InitialDataSource *InitialDataSource `json:"initial_data_source,omitzero"`
 	// Create a typed database with Notion's canonical schema. One of `tasks`, `projects`, or `skills`. Cannot be combined with `initial_data_source`. When `title` is omitted, the database is named after the type.
 	DatabaseType CreateDatabaseDatabaseType `json:"database_type,omitzero"`
 	// The icon for the database.
-	Icon PageIconRequest `json:"icon,omitzero"`
+	Icon PageIcon `json:"icon,omitzero"`
 	// The cover image for the database.
-	Cover PageCoverRequest `json:"cover,omitzero"`
+	Cover PageCover `json:"cover,omitzero"`
 	// Whether to show the data source title above the database's views. Matches the Show data source title toggle in the Notion app. Defaults to true. Full-page databases with one data source don't show this title.
 	ShowDataSourceTitle *bool `json:"show_data_source_title,omitzero"`
 }
@@ -6867,29 +6972,29 @@ func (e CreateDatabaseDatabaseType) Valid() bool {
 	}
 }
 
-// CreateDatabaseForViewRequest defines a model
-type CreateDatabaseForViewRequest struct {
+// CreateDatabaseForView defines a model
+type CreateDatabaseForView struct {
 	// The parent page for the new linked database block.
 	Parent CreateDatabaseParentAllOfPageID `json:"parent"`
 	// Where to place the new database block within the parent page. Defaults to appending at the end.
-	Position CreateDatabaseForViewRequestPosition `json:"position,omitzero"`
+	Position CreateDatabaseForViewPosition `json:"position,omitzero"`
 	// Whether to show the data source title above the new linked database's views. Defaults to true.
 	ShowDataSourceTitle *bool `json:"show_data_source_title,omitzero"`
 }
 
 // Where to place the new database block within the parent page. Defaults to appending at the end.
-type CreateDatabaseForViewRequestPosition struct {
+type CreateDatabaseForViewPosition struct {
 	// Position type. "after_block" places the new database after the specified block in the page.
 	Type string `json:"type"`
 	// The ID of an existing block in the page. The new database will be placed after this block.
-	BlockID IDRequest `json:"block_id"`
+	BlockID ID `json:"block_id"`
 }
 
 // CreateDatabaseParent defines a model
 type CreateDatabaseParent struct {
 	// The type of parent.
 	Type      CreateDatabaseParentType `json:"type"`
-	PageID    IDRequest                `json:"page_id,omitzero"`
+	PageID    ID                       `json:"page_id,omitzero"`
 	Workspace *bool                    `json:"workspace,omitzero"`
 }
 
@@ -6957,8 +7062,8 @@ func (v *CreateDatabaseParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 // CreateDatabaseParentAllOfPageID defines a model
 type CreateDatabaseParentAllOfPageID struct {
 	// Always `page_id`
-	Type   string    `json:"type"`
-	PageID IDRequest `json:"page_id"`
+	Type   string `json:"type"`
+	PageID ID     `json:"page_id"`
 }
 
 // The type of parent.
@@ -7222,7 +7327,7 @@ type CreateMeetingNoteAllOf0OneOf0Parent struct {
 	// Always "page_id".
 	Type string `json:"type"`
 	// Page ID where the meeting note should be created. Required for file_upload sources.
-	PageID IDRequest `json:"page_id"`
+	PageID ID `json:"page_id"`
 }
 
 // Audio or video source for the meeting note.
@@ -7230,7 +7335,7 @@ type CreateMeetingNoteAllOf0OneOf0Source struct {
 	// Always "file_upload".
 	Type string `json:"type"`
 	// ID of a completed public API file upload.
-	FileUploadID IDRequest `json:"file_upload_id"`
+	FileUploadID ID `json:"file_upload_id"`
 }
 
 // CreateMeetingNoteAllOf0Source defines a model
@@ -7246,7 +7351,7 @@ type CreateMeetingNoteAllOf0SourceSource struct {
 	// Always "block".
 	Type string `json:"type"`
 	// ID of an existing audio, video, or file block.
-	BlockID IDRequest `json:"block_id"`
+	BlockID ID `json:"block_id"`
 }
 
 // Language hint for transcription. Defaults to automatic detection.
@@ -7392,38 +7497,38 @@ type CreateMeetingNoteOptions struct {
 	KickoffSummary *bool `json:"kickoff_summary,omitzero"`
 }
 
-// CreateViewQueryRequest defines a model
-type CreateViewQueryRequest struct {
-	// The number of results to return per page. Maximum: 100
-	PageSize int `json:"page_size,omitzero"`
-}
-
-// CreateViewRequest defines a model
-type CreateViewRequest struct {
+// CreateView defines a model
+type CreateView struct {
 	// The ID of the data source this view should be scoped to.
-	DataSourceID IDRequest `json:"data_source_id"`
+	DataSourceID ID `json:"data_source_id"`
 	// The name of the view.
 	Name string `json:"name"`
 	// The type of view to create.
 	Type ViewType `json:"type"`
 	// The ID of the database to create a view in. Mutually exclusive with view_id and create_database.
-	DatabaseID IDRequest `json:"database_id,omitzero"`
+	DatabaseID ID `json:"database_id,omitzero"`
 	// The ID of a dashboard view to add this view to as a widget. Mutually exclusive with database_id and create_database.
-	ViewID IDRequest `json:"view_id,omitzero"`
+	ViewID ID `json:"view_id,omitzero"`
 	// Filter to apply to the view. Uses the same format as the data source query filter. Simple property filters appear in the view's filter bar. For example, a status filter can exclude several values with does_not_equal.
 	Filter Filter `json:"filter,omitzero"`
 	// Property sorts to save on the view. Timestamp sorts are accepted but are not saved.
 	Sorts Sorts `json:"sorts,omitzero"`
 	// Quick filters to pin in the view's filter bar. Keys are property names or IDs. Values are filter conditions (same shape as a property filter but without the property field). Each quick filter appears as a clickable pill above the view, independent of the advanced filter.
-	QuickFilters map[string]QuickFilterConditionRequest `json:"quick_filters,omitzero"`
+	QuickFilters map[string]QuickFilterCondition `json:"quick_filters,omitzero"`
 	// Create a new linked database block on a page and add the view to it. Mutually exclusive with database_id and view_id.
-	CreateDatabase CreateDatabaseForViewRequest `json:"create_database,omitzero"`
+	CreateDatabase CreateDatabaseForView `json:"create_database,omitzero"`
 	// View presentation configuration. The type field must match the view type.
-	Configuration ViewConfigRequest `json:"configuration,omitzero"`
+	Configuration ViewConfig `json:"configuration,omitzero"`
 	// Where to place the new view in the database's view tab bar. Only applicable when database_id is provided. Defaults to "end" (append).
-	Position ViewPositionRequest `json:"position,omitzero"`
+	Position ViewPosition `json:"position,omitzero"`
 	// Where to place the new widget in a dashboard view. Only applicable when view_id is provided. Defaults to creating a new row at the end.
-	Placement WidgetPlacementRequest `json:"placement,omitzero"`
+	Placement WidgetPlacement `json:"placement,omitzero"`
+}
+
+// CreateViewQuery defines a model
+type CreateViewQuery struct {
+	// The number of results to return per page. Maximum: 100
+	PageSize int `json:"page_size,omitzero"`
 }
 
 // CreatedByPropertyConfiguration defines a model
@@ -7527,7 +7632,7 @@ type CustomEmojiPageIcon2 struct {
 // CustomEmojiPageIconCustomEmoji defines a model
 type CustomEmojiPageIconCustomEmoji struct {
 	// The ID of the custom emoji.
-	ID IDRequest `json:"id"`
+	ID ID `json:"id"`
 	// The name of the custom emoji.
 	Name string `json:"name,omitzero"`
 	// The URL of the custom emoji.
@@ -8374,6 +8479,32 @@ type DatabaseUndeletedWebhookPayload struct {
 	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
+// Date defines a model
+type Date struct {
+	// The start date of the date object.
+	Start DateOrDateTime `json:"start"`
+	// The end date of the date object, if any.
+	End *DateOrDateTime `json:"end,omitzero"`
+	// The time zone of the date object, if any. E.g. America/Los_Angeles, Europe/London, etc.
+	TimeZone TimeZone `json:"time_zone,omitzero"`
+}
+
+// DateGroupByConfig defines a model
+type DateGroupByConfig struct {
+	// The property type for grouping.
+	Type DateGroupByConfigType `json:"type"`
+	// Property ID to group by.
+	PropertyID string `json:"property_id"`
+	// Granularity for date grouping.
+	GroupBy DateGroupByConfigGroupBy `json:"group_by"`
+	// Sort order for groups.
+	Sort GroupSort `json:"sort"`
+	// Whether to hide groups that have no items.
+	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
+	// Start day of week for week grouping (0 = Sunday, 1 = Monday).
+	StartDayOfWeek *float64 `json:"start_day_of_week,omitzero"`
+}
+
 // Granularity for date grouping.
 type DateGroupByConfigGroupBy string
 
@@ -8393,22 +8524,6 @@ func (e DateGroupByConfigGroupBy) Valid() bool {
 	default:
 		return false
 	}
-}
-
-// DateGroupByConfigRequest defines a model
-type DateGroupByConfigRequest struct {
-	// The property type for grouping.
-	Type DateGroupByConfigType `json:"type"`
-	// Property ID to group by.
-	PropertyID string `json:"property_id"`
-	// Granularity for date grouping.
-	GroupBy DateGroupByConfigGroupBy `json:"group_by"`
-	// Sort order for groups.
-	Sort GroupSortRequest `json:"sort"`
-	// Whether to hide groups that have no items.
-	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
-	// Start day of week for week grouping (0 = Sunday, 1 = Monday).
-	StartDayOfWeek *float64 `json:"start_day_of_week,omitzero"`
 }
 
 // DateGroupByConfigResponse defines a model
@@ -8876,16 +8991,6 @@ func (v *DatePropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Decod
 	return false, nil
 }
 
-// DateRequest defines a model
-type DateRequest struct {
-	// The start date of the date object.
-	Start DateOrDateTime `json:"start"`
-	// The end date of the date object, if any.
-	End *DateOrDateTime `json:"end,omitzero"`
-	// The time zone of the date object, if any. E.g. America/Los_Angeles, Europe/London, etc.
-	TimeZone TimeZoneRequest `json:"time_zone,omitzero"`
-}
-
 // DateResponse defines a model
 type DateResponse struct {
 	// The start date of the date object.
@@ -8893,7 +8998,7 @@ type DateResponse struct {
 	// The end date of the date object, if any.
 	End *DateOrDateTime `json:"end"`
 	// The time zone of the date object.
-	TimeZone TimeZoneRequest `json:"time_zone"`
+	TimeZone TimeZone `json:"time_zone"`
 }
 
 // DateSimplePropertyValue defines a model
@@ -8964,13 +9069,13 @@ func (v *EmailPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Deco
 
 // EmbedFileUpload defines a model
 type EmbedFileUpload struct {
-	FileUpload FileUploadIDRequest   `json:"file_upload"`
-	Type       string                `json:"type,omitzero"`
-	Caption    []RichTextItemRequest `json:"caption,omitzero"`
+	FileUpload FileUploadID   `json:"file_upload"`
+	Type       string         `json:"type,omitzero"`
+	Caption    []RichTextItem `json:"caption,omitzero"`
 }
 
-// EmojiRequest defines a model
-type EmojiRequest string
+// Emoji defines a model
+type Emoji string
 
 // EmptyObject defines a model
 type EmptyObject struct{}
@@ -9108,9 +9213,9 @@ type ExpressionObject struct {
 	Expression string `json:"expression"`
 }
 
-// ExternalFileRequest defines a model
-type ExternalFileRequest struct {
-	URL TextRequest `json:"url"`
+// ExternalFile defines a model
+type ExternalFile struct {
+	URL Text `json:"url"`
 }
 
 // ExternalPageIcon defines a model
@@ -9163,9 +9268,9 @@ type FileUploadExpiredWebhookPayload struct {
 	Entity WebhookFileUploadEntity `json:"entity"`
 }
 
-// FileUploadIDRequest defines a model
-type FileUploadIDRequest struct {
-	ID IDRequest `json:"id"`
+// FileUploadID defines a model
+type FileUploadID struct {
+	ID ID `json:"id"`
 }
 
 // FileUploadList defines a model
@@ -9605,8 +9710,8 @@ type FilterOr struct {
 	Or []Filter `json:"or"`
 }
 
-// FormViewConfigRequest defines a model
-type FormViewConfigRequest struct {
+// FormViewConfig defines a model
+type FormViewConfig struct {
 	// The view type. Must be "form".
 	Type string `json:"type"`
 	// Whether the form is closed for submissions. Pass null to clear.
@@ -9614,11 +9719,11 @@ type FormViewConfigRequest struct {
 	// Whether anonymous (non-logged-in) submissions are allowed. Pass null to clear.
 	AnonymousSubmissions *bool `json:"anonymous_submissions,omitzero"`
 	// Permission level granted to the submitter on the created page after form submission. Pass null to clear.
-	SubmissionPermissions FormViewConfigSubmissionPermissions `json:"submission_permissions,omitzero"`
+	SubmissionPermissions FormViewConfigSubmissionPermissionsOneOf `json:"submission_permissions,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether FormViewConfigRequest declares it.
-func (v *FormViewConfigRequest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether FormViewConfig declares it.
+func (v *FormViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -9642,7 +9747,7 @@ type FormViewConfigResponse struct {
 	// Whether anonymous (non-logged-in) submissions are allowed.
 	AnonymousSubmissions *bool `json:"anonymous_submissions,omitzero"`
 	// Permission level granted to the submitter on the created page after form submission.
-	SubmissionPermissions FormViewConfigSubmissionPermissions `json:"submission_permissions,omitzero"`
+	SubmissionPermissions FormViewConfigSubmissionPermissionsOneOf `json:"submission_permissions,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether FormViewConfigResponse declares it.
@@ -9661,37 +9766,37 @@ func (v *FormViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name
 	return false, nil
 }
 
-// FormViewConfigSubmissionPermissions defines a model
-type FormViewConfigSubmissionPermissions string
+// FormViewConfigSubmissionPermissionsOneOf defines a model
+type FormViewConfigSubmissionPermissionsOneOf string
 
 const (
-	FormViewConfigSubmissionPermissionsNone         FormViewConfigSubmissionPermissions = "none"
-	FormViewConfigSubmissionPermissionsCommentOnly  FormViewConfigSubmissionPermissions = "comment_only"
-	FormViewConfigSubmissionPermissionsReader       FormViewConfigSubmissionPermissions = "reader"
-	FormViewConfigSubmissionPermissionsReadAndWrite FormViewConfigSubmissionPermissions = "read_and_write"
-	FormViewConfigSubmissionPermissionsEditor       FormViewConfigSubmissionPermissions = "editor"
+	FormViewConfigSubmissionPermissionsOneOfNone         FormViewConfigSubmissionPermissionsOneOf = "none"
+	FormViewConfigSubmissionPermissionsOneOfCommentOnly  FormViewConfigSubmissionPermissionsOneOf = "comment_only"
+	FormViewConfigSubmissionPermissionsOneOfReader       FormViewConfigSubmissionPermissionsOneOf = "reader"
+	FormViewConfigSubmissionPermissionsOneOfReadAndWrite FormViewConfigSubmissionPermissionsOneOf = "read_and_write"
+	FormViewConfigSubmissionPermissionsOneOfEditor       FormViewConfigSubmissionPermissionsOneOf = "editor"
 )
 
-// Valid indicates whether the value is a known member of the FormViewConfigSubmissionPermissions enum.
-func (e FormViewConfigSubmissionPermissions) Valid() bool {
+// Valid indicates whether the value is a known member of the FormViewConfigSubmissionPermissionsOneOf enum.
+func (e FormViewConfigSubmissionPermissionsOneOf) Valid() bool {
 	switch e {
-	case FormViewConfigSubmissionPermissionsNone, FormViewConfigSubmissionPermissionsCommentOnly, FormViewConfigSubmissionPermissionsReader, FormViewConfigSubmissionPermissionsReadAndWrite, FormViewConfigSubmissionPermissionsEditor:
+	case FormViewConfigSubmissionPermissionsOneOfNone, FormViewConfigSubmissionPermissionsOneOfCommentOnly, FormViewConfigSubmissionPermissionsOneOfReader, FormViewConfigSubmissionPermissionsOneOfReadAndWrite, FormViewConfigSubmissionPermissionsOneOfEditor:
 		return true
 	default:
 		return false
 	}
 }
 
-// FormulaCheckboxSubGroupByRequest defines a model
-type FormulaCheckboxSubGroupByRequest struct {
+// FormulaCheckboxSubGroupBy defines a model
+type FormulaCheckboxSubGroupBy struct {
 	// The formula result type for grouping.
 	Type string `json:"type"`
 	// Sort order for groups.
-	Sort GroupSortRequest `json:"sort"`
+	Sort GroupSort `json:"sort"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether FormulaCheckboxSubGroupByRequest declares it.
-func (v *FormulaCheckboxSubGroupByRequest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether FormulaCheckboxSubGroupBy declares it.
+func (v *FormulaCheckboxSubGroupBy) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -9722,20 +9827,20 @@ func (v *FormulaCheckboxSubGroupByResponse) unmarshalJSONMember(dec *jsontext.De
 	return false, nil
 }
 
-// FormulaDateSubGroupByRequest defines a model
-type FormulaDateSubGroupByRequest struct {
+// FormulaDateSubGroupBy defines a model
+type FormulaDateSubGroupBy struct {
 	// The formula result type for grouping.
 	Type string `json:"type"`
 	// Granularity for date grouping.
 	GroupBy DateGroupByConfigGroupBy `json:"group_by"`
 	// Sort order for groups.
-	Sort GroupSortRequest `json:"sort"`
+	Sort GroupSort `json:"sort"`
 	// Start day of week for week grouping (0 = Sunday, 1 = Monday).
 	StartDayOfWeek *float64 `json:"start_day_of_week,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether FormulaDateSubGroupByRequest declares it.
-func (v *FormulaDateSubGroupByRequest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether FormulaDateSubGroupBy declares it.
+func (v *FormulaDateSubGroupBy) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -9778,31 +9883,31 @@ func (v *FormulaDateSubGroupByResponse) unmarshalJSONMember(dec *jsontext.Decode
 	return false, nil
 }
 
-// FormulaGroupByConfigRequest defines a model
-type FormulaGroupByConfigRequest struct {
+// FormulaGroupByConfig defines a model
+type FormulaGroupByConfig struct {
 	// The property type for grouping.
 	Type string `json:"type"`
 	// Property ID of the formula to group by.
 	PropertyID string `json:"property_id"`
 	// Sub-group-by configuration based on the formula result type.
-	GroupBy FormulaGroupByConfigRequestGroupBy `json:"group_by"`
+	GroupBy FormulaGroupByConfigGroupBy `json:"group_by"`
 	// Whether to hide groups that have no items.
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 }
 
 // Sub-group-by configuration based on the formula result type.
-// FormulaGroupByConfigRequestGroupBy is an untagged oneOf union: exactly one field is set after unmarshaling.
-type FormulaGroupByConfigRequestGroupBy struct {
-	FormulaDateSubGroupByRequest     *FormulaDateSubGroupByRequest
-	FormulaTextSubGroupByRequest     *FormulaTextSubGroupByRequest
-	FormulaNumberSubGroupByRequest   *FormulaNumberSubGroupByRequest
-	FormulaCheckboxSubGroupByRequest *FormulaCheckboxSubGroupByRequest
+// FormulaGroupByConfigGroupBy is an untagged oneOf union: exactly one field is set after unmarshaling.
+type FormulaGroupByConfigGroupBy struct {
+	FormulaDateSubGroupBy     *FormulaDateSubGroupBy
+	FormulaTextSubGroupBy     *FormulaTextSubGroupBy
+	FormulaNumberSubGroupBy   *FormulaNumberSubGroupBy
+	FormulaCheckboxSubGroupBy *FormulaCheckboxSubGroupBy
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
 // decodes each further member as it is read. With type first, nothing is read twice.
-func (v *FormulaGroupByConfigRequestGroupBy) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = FormulaGroupByConfigRequestGroupBy{}
+func (v *FormulaGroupByConfigGroupBy) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = FormulaGroupByConfigGroupBy{}
 
 	tag, first, dec, err := jsonFirstMember(dec, "type")
 	if err != nil {
@@ -9811,33 +9916,33 @@ func (v *FormulaGroupByConfigRequestGroupBy) UnmarshalJSONFrom(dec *jsontext.Dec
 
 	switch tag {
 	case "date":
-		var vv FormulaDateSubGroupByRequest
+		var vv FormulaDateSubGroupBy
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.FormulaDateSubGroupByRequest = &vv
+		v.FormulaDateSubGroupBy = &vv
 	case "text":
-		var vv FormulaTextSubGroupByRequest
+		var vv FormulaTextSubGroupBy
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.FormulaTextSubGroupByRequest = &vv
+		v.FormulaTextSubGroupBy = &vv
 	case "number":
-		var vv FormulaNumberSubGroupByRequest
+		var vv FormulaNumberSubGroupBy
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.FormulaNumberSubGroupByRequest = &vv
+		v.FormulaNumberSubGroupBy = &vv
 	case "checkbox":
-		var vv FormulaCheckboxSubGroupByRequest
+		var vv FormulaCheckboxSubGroupBy
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.FormulaCheckboxSubGroupByRequest = &vv
+		v.FormulaCheckboxSubGroupBy = &vv
 	default:
 		return jsonUnknownValue("type", tag)
 	}
@@ -9846,21 +9951,21 @@ func (v *FormulaGroupByConfigRequestGroupBy) UnmarshalJSONFrom(dec *jsontext.Dec
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *FormulaGroupByConfigRequestGroupBy) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *FormulaGroupByConfigGroupBy) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
 		tag     string
 	)
 
 	switch {
-	case v.FormulaDateSubGroupByRequest != nil:
-		variant, tag = v.FormulaDateSubGroupByRequest, "date"
-	case v.FormulaTextSubGroupByRequest != nil:
-		variant, tag = v.FormulaTextSubGroupByRequest, "text"
-	case v.FormulaNumberSubGroupByRequest != nil:
-		variant, tag = v.FormulaNumberSubGroupByRequest, "number"
-	case v.FormulaCheckboxSubGroupByRequest != nil:
-		variant, tag = v.FormulaCheckboxSubGroupByRequest, "checkbox"
+	case v.FormulaDateSubGroupBy != nil:
+		variant, tag = v.FormulaDateSubGroupBy, "date"
+	case v.FormulaTextSubGroupBy != nil:
+		variant, tag = v.FormulaTextSubGroupBy, "text"
+	case v.FormulaNumberSubGroupBy != nil:
+		variant, tag = v.FormulaNumberSubGroupBy, "number"
+	case v.FormulaCheckboxSubGroupBy != nil:
+		variant, tag = v.FormulaCheckboxSubGroupBy, "checkbox"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -9891,12 +9996,12 @@ type FormulaGroupByConfigResponse struct {
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 }
 
-// FormulaNumberSubGroupByRequest defines a model
-type FormulaNumberSubGroupByRequest struct {
+// FormulaNumberSubGroupBy defines a model
+type FormulaNumberSubGroupBy struct {
 	// The formula result type for grouping.
 	Type string `json:"type"`
 	// Sort order for groups.
-	Sort GroupSortRequest `json:"sort"`
+	Sort GroupSort `json:"sort"`
 	// Start of the range for number grouping buckets.
 	RangeStart *int `json:"range_start,omitzero"`
 	// End of the range for number grouping buckets.
@@ -9905,8 +10010,8 @@ type FormulaNumberSubGroupByRequest struct {
 	RangeSize int `json:"range_size,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether FormulaNumberSubGroupByRequest declares it.
-func (v *FormulaNumberSubGroupByRequest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether FormulaNumberSubGroupBy declares it.
+func (v *FormulaNumberSubGroupBy) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -10384,18 +10489,18 @@ func (v *FormulaSubGroupByResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// FormulaTextSubGroupByRequest defines a model
-type FormulaTextSubGroupByRequest struct {
+// FormulaTextSubGroupBy defines a model
+type FormulaTextSubGroupBy struct {
 	// The formula result type for grouping.
 	Type string `json:"type"`
 	// How to group text values. "exact" = exact match, "alphabet_prefix" = first letter.
 	GroupBy TextGroupByConfigGroupBy `json:"group_by"`
 	// Sort order for groups.
-	Sort GroupSortRequest `json:"sort"`
+	Sort GroupSort `json:"sort"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether FormulaTextSubGroupByRequest declares it.
-func (v *FormulaTextSubGroupByRequest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether FormulaTextSubGroupBy declares it.
+func (v *FormulaTextSubGroupBy) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -10432,24 +10537,24 @@ func (v *FormulaTextSubGroupByResponse) unmarshalJSONMember(dec *jsontext.Decode
 	return false, nil
 }
 
-// GalleryViewConfigRequest defines a model
-type GalleryViewConfigRequest struct {
+// GalleryViewConfig defines a model
+type GalleryViewConfig struct {
 	// The view type. Must be "gallery".
 	Type string `json:"type"`
 	// Property visibility and display configuration on gallery cards. Pass null to clear.
-	Properties []ViewPropertyConfigRequest `json:"properties,omitzero"`
+	Properties []ViewPropertyConfig `json:"properties,omitzero"`
 	// Cover image configuration for cards. Pass null to clear.
-	Cover CoverConfigRequest `json:"cover,omitzero"`
+	Cover CoverConfig `json:"cover,omitzero"`
 	// Size of the cover image on cards. Pass null to clear.
-	CoverSize BoardViewConfigCoverSize2 `json:"cover_size,omitzero"`
+	CoverSize BoardViewConfigCoverSizeOneOf `json:"cover_size,omitzero"`
 	// Aspect ratio mode for cover images. "contain" fits the image, "cover" fills the area. Pass null to clear.
-	CoverAspect BoardViewConfigCoverAspect2 `json:"cover_aspect,omitzero"`
+	CoverAspect BoardViewConfigCoverAspectOneOf `json:"cover_aspect,omitzero"`
 	// Card layout mode. "list" shows full cards, "compact" shows condensed cards. Pass null to clear.
-	CardLayout BoardViewConfigCardLayout2 `json:"card_layout,omitzero"`
+	CardLayout BoardViewConfigCardLayoutOneOf `json:"card_layout,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether GalleryViewConfigRequest declares it.
-func (v *GalleryViewConfigRequest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether GalleryViewConfig declares it.
+func (v *GalleryViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -10477,11 +10582,11 @@ type GalleryViewConfigResponse struct {
 	// Card cover/preview image configuration.
 	Cover CoverConfigResponse `json:"cover,omitzero"`
 	// Cover image size.
-	CoverSize BoardViewConfigCoverSize2 `json:"cover_size,omitzero"`
+	CoverSize BoardViewConfigCoverSizeOneOf `json:"cover_size,omitzero"`
 	// Cover image aspect ratio.
-	CoverAspect BoardViewConfigCoverAspect2 `json:"cover_aspect,omitzero"`
+	CoverAspect BoardViewConfigCoverAspectOneOf `json:"cover_aspect,omitzero"`
 	// Card layout mode (list shows all properties, compact shows inline).
-	CardLayout BoardViewConfigCardLayout2 `json:"card_layout,omitzero"`
+	CardLayout BoardViewConfigCardLayoutOneOf `json:"card_layout,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether GalleryViewConfigResponse declares it.
@@ -10524,22 +10629,22 @@ type GetSkillDirectoryOk struct {
 }
 
 // Group-by configuration based on property type.
-// GroupByConfigRequest is an untagged oneOf union: exactly one field is set after unmarshaling.
-type GroupByConfigRequest struct {
-	SelectGroupByConfigRequest   *SelectGroupByConfigRequest
-	StatusGroupByConfigRequest   *StatusGroupByConfigRequest
-	PersonGroupByConfigRequest   *PersonGroupByConfigRequest
-	RelationGroupByConfigRequest *RelationGroupByConfigRequest
-	DateGroupByConfigRequest     *DateGroupByConfigRequest
-	TextGroupByConfigRequest     *TextGroupByConfigRequest
-	NumberGroupByConfigRequest   *NumberGroupByConfigRequest
-	CheckboxGroupByConfigRequest *CheckboxGroupByConfigRequest
-	FormulaGroupByConfigRequest  *FormulaGroupByConfigRequest
+// GroupByConfig is an untagged oneOf union: exactly one field is set after unmarshaling.
+type GroupByConfig struct {
+	SelectGroupByConfig   *SelectGroupByConfig
+	StatusGroupByConfig   *StatusGroupByConfig
+	PersonGroupByConfig   *PersonGroupByConfig
+	RelationGroupByConfig *RelationGroupByConfig
+	DateGroupByConfig     *DateGroupByConfig
+	TextGroupByConfig     *TextGroupByConfig
+	NumberGroupByConfig   *NumberGroupByConfig
+	CheckboxGroupByConfig *CheckboxGroupByConfig
+	FormulaGroupByConfig  *FormulaGroupByConfig
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *GroupByConfigRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = GroupByConfigRequest{}
+func (v *GroupByConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = GroupByConfig{}
 
 	opts := jsonOptsOf(dec)
 	strict := jsonStrict(dec)
@@ -10559,9 +10664,9 @@ func (v *GroupByConfigRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property_id", "sort", "type"}, map[string]string{}
 			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"select\"", "\"multi_select\""}})) {
-				var vv SelectGroupByConfigRequest
+				var vv SelectGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.SelectGroupByConfigRequest = &vv
+					v.SelectGroupByConfig = &vv
 					matched++
 				}
 			}
@@ -10572,9 +10677,9 @@ func (v *GroupByConfigRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]string{"type": "\"status\""}
 			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"group_by": {"\"group\"", "\"option\""}})) {
-				var vv StatusGroupByConfigRequest
+				var vv StatusGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.StatusGroupByConfigRequest = &vv
+					v.StatusGroupByConfig = &vv
 					matched++
 				}
 			}
@@ -10585,9 +10690,9 @@ func (v *GroupByConfigRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property_id", "sort", "type"}, map[string]string{}
 			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"person\"", "\"created_by\"", "\"last_edited_by\""}})) {
-				var vv PersonGroupByConfigRequest
+				var vv PersonGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.PersonGroupByConfigRequest = &vv
+					v.PersonGroupByConfig = &vv
 					matched++
 				}
 			}
@@ -10598,9 +10703,9 @@ func (v *GroupByConfigRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property_id", "sort", "type"}, map[string]string{"type": "\"relation\""}
 			if jsonFits(raw, required, pinned) {
-				var vv RelationGroupByConfigRequest
+				var vv RelationGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.RelationGroupByConfigRequest = &vv
+					v.RelationGroupByConfig = &vv
 					matched++
 				}
 			}
@@ -10611,9 +10716,9 @@ func (v *GroupByConfigRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]string{}
 			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"date\"", "\"created_time\"", "\"last_edited_time\""}, "group_by": {"\"relative\"", "\"day\"", "\"week\"", "\"month\"", "\"year\""}, "start_day_of_week": {"0", "1"}})) {
-				var vv DateGroupByConfigRequest
+				var vv DateGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.DateGroupByConfigRequest = &vv
+					v.DateGroupByConfig = &vv
 					matched++
 				}
 			}
@@ -10624,9 +10729,9 @@ func (v *GroupByConfigRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]string{}
 			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"text\"", "\"title\"", "\"url\"", "\"email\"", "\"phone_number\""}, "group_by": {"\"exact\"", "\"alphabet_prefix\""}})) {
-				var vv TextGroupByConfigRequest
+				var vv TextGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.TextGroupByConfigRequest = &vv
+					v.TextGroupByConfig = &vv
 					matched++
 				}
 			}
@@ -10637,9 +10742,9 @@ func (v *GroupByConfigRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property_id", "sort", "type"}, map[string]string{"type": "\"number\""}
 			if jsonFits(raw, required, pinned) {
-				var vv NumberGroupByConfigRequest
+				var vv NumberGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.NumberGroupByConfigRequest = &vv
+					v.NumberGroupByConfig = &vv
 					matched++
 				}
 			}
@@ -10650,9 +10755,9 @@ func (v *GroupByConfigRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"property_id", "sort", "type"}, map[string]string{"type": "\"checkbox\""}
 			if jsonFits(raw, required, pinned) {
-				var vv CheckboxGroupByConfigRequest
+				var vv CheckboxGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.CheckboxGroupByConfigRequest = &vv
+					v.CheckboxGroupByConfig = &vv
 					matched++
 				}
 			}
@@ -10663,9 +10768,9 @@ func (v *GroupByConfigRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, pinned := []string{"group_by", "property_id", "type"}, map[string]string{"type": "\"formula\""}
 			if jsonFits(raw, required, pinned) {
-				var vv FormulaGroupByConfigRequest
+				var vv FormulaGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.FormulaGroupByConfigRequest = &vv
+					v.FormulaGroupByConfig = &vv
 					matched++
 				}
 			}
@@ -10684,26 +10789,26 @@ func (v *GroupByConfigRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *GroupByConfigRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *GroupByConfig) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.SelectGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.SelectGroupByConfigRequest, jsonOptsTo(enc))
-	case v.StatusGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.StatusGroupByConfigRequest, jsonOptsTo(enc))
-	case v.PersonGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.PersonGroupByConfigRequest, jsonOptsTo(enc))
-	case v.RelationGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.RelationGroupByConfigRequest, jsonOptsTo(enc))
-	case v.DateGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.DateGroupByConfigRequest, jsonOptsTo(enc))
-	case v.TextGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.TextGroupByConfigRequest, jsonOptsTo(enc))
-	case v.NumberGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.NumberGroupByConfigRequest, jsonOptsTo(enc))
-	case v.CheckboxGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.CheckboxGroupByConfigRequest, jsonOptsTo(enc))
-	case v.FormulaGroupByConfigRequest != nil:
-		return json.MarshalEncode(enc, v.FormulaGroupByConfigRequest, jsonOptsTo(enc))
+	case v.SelectGroupByConfig != nil:
+		return json.MarshalEncode(enc, v.SelectGroupByConfig, jsonOptsTo(enc))
+	case v.StatusGroupByConfig != nil:
+		return json.MarshalEncode(enc, v.StatusGroupByConfig, jsonOptsTo(enc))
+	case v.PersonGroupByConfig != nil:
+		return json.MarshalEncode(enc, v.PersonGroupByConfig, jsonOptsTo(enc))
+	case v.RelationGroupByConfig != nil:
+		return json.MarshalEncode(enc, v.RelationGroupByConfig, jsonOptsTo(enc))
+	case v.DateGroupByConfig != nil:
+		return json.MarshalEncode(enc, v.DateGroupByConfig, jsonOptsTo(enc))
+	case v.TextGroupByConfig != nil:
+		return json.MarshalEncode(enc, v.TextGroupByConfig, jsonOptsTo(enc))
+	case v.NumberGroupByConfig != nil:
+		return json.MarshalEncode(enc, v.NumberGroupByConfig, jsonOptsTo(enc))
+	case v.CheckboxGroupByConfig != nil:
+		return json.MarshalEncode(enc, v.CheckboxGroupByConfig, jsonOptsTo(enc))
+	case v.FormulaGroupByConfig != nil:
+		return json.MarshalEncode(enc, v.FormulaGroupByConfig, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -10895,15 +11000,15 @@ func (v *GroupByConfigResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// GroupObjectRequest defines a model
-type GroupObjectRequest struct {
-	ID     IDRequest `json:"id"`
-	Name   string    `json:"name,omitzero"`
-	Object string    `json:"object,omitzero"`
+// GroupObject defines a model
+type GroupObject struct {
+	ID     ID     `json:"id"`
+	Name   string `json:"name,omitzero"`
+	Object string `json:"object,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether GroupObjectRequest declares it.
-func (v *GroupObjectRequest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether GroupObject declares it.
+func (v *GroupObject) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "id":
 		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
@@ -10926,8 +11031,8 @@ type GroupObjectResponse struct {
 	Name string `json:"name"`
 }
 
-// GroupSortRequest defines a model
-type GroupSortRequest struct {
+// GroupSort defines a model
+type GroupSort struct {
 	// Sort direction for groups.
 	Type GroupSortType `json:"type"`
 }
@@ -10957,9 +11062,9 @@ func (e GroupSortType) Valid() bool {
 	}
 }
 
-// HeaderContentWithRichTextAndColorRequest defines a model
-type HeaderContentWithRichTextAndColorRequest struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
+// HeaderContentWithRichTextAndColor defines a model
+type HeaderContentWithRichTextAndColor struct {
+	RichText []RichTextItem `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color        APIColor `json:"color,omitzero"`
 	IsToggleable *bool    `json:"is_toggleable,omitzero"`
@@ -10973,42 +11078,42 @@ type HeaderContentWithRichTextAndColorResponse struct {
 	IsToggleable bool     `json:"is_toggleable"`
 }
 
-// HeaderContentWithSingleLevelOfChildrenRequest defines a model
-type HeaderContentWithSingleLevelOfChildrenRequest struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
+// HeaderContentWithSingleLevelOfChildren defines a model
+type HeaderContentWithSingleLevelOfChildren struct {
+	RichText []RichTextItem `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color        APIColor                            `json:"color,omitzero"`
 	IsToggleable *bool                               `json:"is_toggleable,omitzero"`
 	Children     []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
 }
 
+// ID defines a model
+type ID string
+
 // IDObject defines a model
 type IDObject struct {
 	ID string `json:"id"`
 }
 
-// IDRequest defines a model
-type IDRequest string
-
 // IDResponse defines a model
 type IDResponse = uuid.UUID
 
 // A Notion native icon, specified by name and optional color.
-type IconPageIconRequestIcon struct {
+type IconPageIconIcon struct {
 	// The name of the Notion icon (e.g. pizza, meeting, home). See the Notion icon picker for valid names.
 	Name NoticonName `json:"name"`
 	// The color variant of the icon. Defaults to gray if not specified. Valid values: gray, lightgray, brown, yellow, orange, green, blue, purple, pink, red.
 	Color NoticonColor `json:"color,omitzero"`
 }
 
-// InitialDataSourceRequest defines a model
-type InitialDataSourceRequest struct {
+// InitialDataSource defines a model
+type InitialDataSource struct {
 	// Property schema for the initial data source, if you'd like to create one.
-	Properties map[string]PropertyConfigurationRequest `json:"properties,omitzero"`
+	Properties map[string]PropertyConfiguration `json:"properties,omitzero"`
 }
 
-// InternalFileRequest defines a model
-type InternalFileRequest struct {
+// InternalFile defines a model
+type InternalFile struct {
 	URL        string    `json:"url"`
 	ExpiryTime time.Time `json:"expiry_time,omitzero"`
 }
@@ -11115,106 +11220,106 @@ type IntrospectTokenOk struct {
 	RequestID uuid.UUID `json:"request_id,omitzero"`
 }
 
-// LanguageRequest defines a model
-type LanguageRequest string
+// Language defines a model
+type Language string
 
 const (
-	LanguageRequestAbap                 LanguageRequest = "abap"
-	LanguageRequestAbc                  LanguageRequest = "abc"
-	LanguageRequestAgda                 LanguageRequest = "agda"
-	LanguageRequestArduino              LanguageRequest = "arduino"
-	LanguageRequestASCIIArt             LanguageRequest = "ascii art"
-	LanguageRequestAssembly             LanguageRequest = "assembly"
-	LanguageRequestBash                 LanguageRequest = "bash"
-	LanguageRequestBasic                LanguageRequest = "basic"
-	LanguageRequestBnf                  LanguageRequest = "bnf"
-	LanguageRequestC                    LanguageRequest = "c"
-	LanguageRequestCSharp               LanguageRequest = "c#"
-	LanguageRequestCPlusPlus            LanguageRequest = "c++"
-	LanguageRequestClojure              LanguageRequest = "clojure"
-	LanguageRequestCoffeescript         LanguageRequest = "coffeescript"
-	LanguageRequestCoq                  LanguageRequest = "coq"
-	LanguageRequestCSS                  LanguageRequest = "css"
-	LanguageRequestDart                 LanguageRequest = "dart"
-	LanguageRequestDhall                LanguageRequest = "dhall"
-	LanguageRequestDiff                 LanguageRequest = "diff"
-	LanguageRequestDocker               LanguageRequest = "docker"
-	LanguageRequestEbnf                 LanguageRequest = "ebnf"
-	LanguageRequestElixir               LanguageRequest = "elixir"
-	LanguageRequestElm                  LanguageRequest = "elm"
-	LanguageRequestErlang               LanguageRequest = "erlang"
-	LanguageRequestFSharp               LanguageRequest = "f#"
-	LanguageRequestFlow                 LanguageRequest = "flow"
-	LanguageRequestFortran              LanguageRequest = "fortran"
-	LanguageRequestGherkin              LanguageRequest = "gherkin"
-	LanguageRequestGlsl                 LanguageRequest = "glsl"
-	LanguageRequestGo                   LanguageRequest = "go"
-	LanguageRequestGraphql              LanguageRequest = "graphql"
-	LanguageRequestGroovy               LanguageRequest = "groovy"
-	LanguageRequestHaskell              LanguageRequest = "haskell"
-	LanguageRequestHcl                  LanguageRequest = "hcl"
-	LanguageRequestHTML                 LanguageRequest = "html"
-	LanguageRequestIdris                LanguageRequest = "idris"
-	LanguageRequestJava                 LanguageRequest = "java"
-	LanguageRequestJavascript           LanguageRequest = "javascript"
-	LanguageRequestJSON                 LanguageRequest = "json"
-	LanguageRequestJulia                LanguageRequest = "julia"
-	LanguageRequestKotlin               LanguageRequest = "kotlin"
-	LanguageRequestLatex                LanguageRequest = "latex"
-	LanguageRequestLess                 LanguageRequest = "less"
-	LanguageRequestLisp                 LanguageRequest = "lisp"
-	LanguageRequestLivescript           LanguageRequest = "livescript"
-	LanguageRequestLlvmIr               LanguageRequest = "llvm ir"
-	LanguageRequestLua                  LanguageRequest = "lua"
-	LanguageRequestMakefile             LanguageRequest = "makefile"
-	LanguageRequestMarkdown             LanguageRequest = "markdown"
-	LanguageRequestMarkup               LanguageRequest = "markup"
-	LanguageRequestMatlab               LanguageRequest = "matlab"
-	LanguageRequestMathematica          LanguageRequest = "mathematica"
-	LanguageRequestMermaid              LanguageRequest = "mermaid"
-	LanguageRequestNix                  LanguageRequest = "nix"
-	LanguageRequestNotionFormula        LanguageRequest = "notion formula"
-	LanguageRequestObjectiveC           LanguageRequest = "objective-c"
-	LanguageRequestOcaml                LanguageRequest = "ocaml"
-	LanguageRequestPascal               LanguageRequest = "pascal"
-	LanguageRequestPerl                 LanguageRequest = "perl"
-	LanguageRequestPhp                  LanguageRequest = "php"
-	LanguageRequestPlainText            LanguageRequest = "plain text"
-	LanguageRequestPowershell           LanguageRequest = "powershell"
-	LanguageRequestProlog               LanguageRequest = "prolog"
-	LanguageRequestProtobuf             LanguageRequest = "protobuf"
-	LanguageRequestPurescript           LanguageRequest = "purescript"
-	LanguageRequestPython               LanguageRequest = "python"
-	LanguageRequestR                    LanguageRequest = "r"
-	LanguageRequestRacket               LanguageRequest = "racket"
-	LanguageRequestReason               LanguageRequest = "reason"
-	LanguageRequestRuby                 LanguageRequest = "ruby"
-	LanguageRequestRust                 LanguageRequest = "rust"
-	LanguageRequestSass                 LanguageRequest = "sass"
-	LanguageRequestScala                LanguageRequest = "scala"
-	LanguageRequestScheme               LanguageRequest = "scheme"
-	LanguageRequestScss                 LanguageRequest = "scss"
-	LanguageRequestShell                LanguageRequest = "shell"
-	LanguageRequestSmalltalk            LanguageRequest = "smalltalk"
-	LanguageRequestSolidity             LanguageRequest = "solidity"
-	LanguageRequestSQL                  LanguageRequest = "sql"
-	LanguageRequestSwift                LanguageRequest = "swift"
-	LanguageRequestToml                 LanguageRequest = "toml"
-	LanguageRequestTypescript           LanguageRequest = "typescript"
-	LanguageRequestVbDotNet             LanguageRequest = "vb.net"
-	LanguageRequestVerilog              LanguageRequest = "verilog"
-	LanguageRequestVhdl                 LanguageRequest = "vhdl"
-	LanguageRequestVisualBasic          LanguageRequest = "visual basic"
-	LanguageRequestWebassembly          LanguageRequest = "webassembly"
-	LanguageRequestXML                  LanguageRequest = "xml"
-	LanguageRequestYaml                 LanguageRequest = "yaml"
-	LanguageRequestJavaCCPlusPlusCSharp LanguageRequest = "java/c/c++/c#"
+	LanguageAbap                 Language = "abap"
+	LanguageAbc                  Language = "abc"
+	LanguageAgda                 Language = "agda"
+	LanguageArduino              Language = "arduino"
+	LanguageASCIIArt             Language = "ascii art"
+	LanguageAssembly             Language = "assembly"
+	LanguageBash                 Language = "bash"
+	LanguageBasic                Language = "basic"
+	LanguageBnf                  Language = "bnf"
+	LanguageC                    Language = "c"
+	LanguageCSharp               Language = "c#"
+	LanguageCPlusPlus            Language = "c++"
+	LanguageClojure              Language = "clojure"
+	LanguageCoffeescript         Language = "coffeescript"
+	LanguageCoq                  Language = "coq"
+	LanguageCSS                  Language = "css"
+	LanguageDart                 Language = "dart"
+	LanguageDhall                Language = "dhall"
+	LanguageDiff                 Language = "diff"
+	LanguageDocker               Language = "docker"
+	LanguageEbnf                 Language = "ebnf"
+	LanguageElixir               Language = "elixir"
+	LanguageElm                  Language = "elm"
+	LanguageErlang               Language = "erlang"
+	LanguageFSharp               Language = "f#"
+	LanguageFlow                 Language = "flow"
+	LanguageFortran              Language = "fortran"
+	LanguageGherkin              Language = "gherkin"
+	LanguageGlsl                 Language = "glsl"
+	LanguageGo                   Language = "go"
+	LanguageGraphql              Language = "graphql"
+	LanguageGroovy               Language = "groovy"
+	LanguageHaskell              Language = "haskell"
+	LanguageHcl                  Language = "hcl"
+	LanguageHTML                 Language = "html"
+	LanguageIdris                Language = "idris"
+	LanguageJava                 Language = "java"
+	LanguageJavascript           Language = "javascript"
+	LanguageJSON                 Language = "json"
+	LanguageJulia                Language = "julia"
+	LanguageKotlin               Language = "kotlin"
+	LanguageLatex                Language = "latex"
+	LanguageLess                 Language = "less"
+	LanguageLisp                 Language = "lisp"
+	LanguageLivescript           Language = "livescript"
+	LanguageLlvmIr               Language = "llvm ir"
+	LanguageLua                  Language = "lua"
+	LanguageMakefile             Language = "makefile"
+	LanguageMarkdown             Language = "markdown"
+	LanguageMarkup               Language = "markup"
+	LanguageMatlab               Language = "matlab"
+	LanguageMathematica          Language = "mathematica"
+	LanguageMermaid              Language = "mermaid"
+	LanguageNix                  Language = "nix"
+	LanguageNotionFormula        Language = "notion formula"
+	LanguageObjectiveC           Language = "objective-c"
+	LanguageOcaml                Language = "ocaml"
+	LanguagePascal               Language = "pascal"
+	LanguagePerl                 Language = "perl"
+	LanguagePhp                  Language = "php"
+	LanguagePlainText            Language = "plain text"
+	LanguagePowershell           Language = "powershell"
+	LanguageProlog               Language = "prolog"
+	LanguageProtobuf             Language = "protobuf"
+	LanguagePurescript           Language = "purescript"
+	LanguagePython               Language = "python"
+	LanguageR                    Language = "r"
+	LanguageRacket               Language = "racket"
+	LanguageReason               Language = "reason"
+	LanguageRuby                 Language = "ruby"
+	LanguageRust                 Language = "rust"
+	LanguageSass                 Language = "sass"
+	LanguageScala                Language = "scala"
+	LanguageScheme               Language = "scheme"
+	LanguageScss                 Language = "scss"
+	LanguageShell                Language = "shell"
+	LanguageSmalltalk            Language = "smalltalk"
+	LanguageSolidity             Language = "solidity"
+	LanguageSQL                  Language = "sql"
+	LanguageSwift                Language = "swift"
+	LanguageToml                 Language = "toml"
+	LanguageTypescript           Language = "typescript"
+	LanguageVbDotNet             Language = "vb.net"
+	LanguageVerilog              Language = "verilog"
+	LanguageVhdl                 Language = "vhdl"
+	LanguageVisualBasic          Language = "visual basic"
+	LanguageWebassembly          Language = "webassembly"
+	LanguageXML                  Language = "xml"
+	LanguageYaml                 Language = "yaml"
+	LanguageJavaCCPlusPlusCSharp Language = "java/c/c++/c#"
 )
 
-// Valid indicates whether the value is a known member of the LanguageRequest enum.
-func (e LanguageRequest) Valid() bool {
+// Valid indicates whether the value is a known member of the Language enum.
+func (e Language) Valid() bool {
 	switch e {
-	case LanguageRequestAbap, LanguageRequestAbc, LanguageRequestAgda, LanguageRequestArduino, LanguageRequestASCIIArt, LanguageRequestAssembly, LanguageRequestBash, LanguageRequestBasic, LanguageRequestBnf, LanguageRequestC, LanguageRequestCSharp, LanguageRequestCPlusPlus, LanguageRequestClojure, LanguageRequestCoffeescript, LanguageRequestCoq, LanguageRequestCSS, LanguageRequestDart, LanguageRequestDhall, LanguageRequestDiff, LanguageRequestDocker, LanguageRequestEbnf, LanguageRequestElixir, LanguageRequestElm, LanguageRequestErlang, LanguageRequestFSharp, LanguageRequestFlow, LanguageRequestFortran, LanguageRequestGherkin, LanguageRequestGlsl, LanguageRequestGo, LanguageRequestGraphql, LanguageRequestGroovy, LanguageRequestHaskell, LanguageRequestHcl, LanguageRequestHTML, LanguageRequestIdris, LanguageRequestJava, LanguageRequestJavascript, LanguageRequestJSON, LanguageRequestJulia, LanguageRequestKotlin, LanguageRequestLatex, LanguageRequestLess, LanguageRequestLisp, LanguageRequestLivescript, LanguageRequestLlvmIr, LanguageRequestLua, LanguageRequestMakefile, LanguageRequestMarkdown, LanguageRequestMarkup, LanguageRequestMatlab, LanguageRequestMathematica, LanguageRequestMermaid, LanguageRequestNix, LanguageRequestNotionFormula, LanguageRequestObjectiveC, LanguageRequestOcaml, LanguageRequestPascal, LanguageRequestPerl, LanguageRequestPhp, LanguageRequestPlainText, LanguageRequestPowershell, LanguageRequestProlog, LanguageRequestProtobuf, LanguageRequestPurescript, LanguageRequestPython, LanguageRequestR, LanguageRequestRacket, LanguageRequestReason, LanguageRequestRuby, LanguageRequestRust, LanguageRequestSass, LanguageRequestScala, LanguageRequestScheme, LanguageRequestScss, LanguageRequestShell, LanguageRequestSmalltalk, LanguageRequestSolidity, LanguageRequestSQL, LanguageRequestSwift, LanguageRequestToml, LanguageRequestTypescript, LanguageRequestVbDotNet, LanguageRequestVerilog, LanguageRequestVhdl, LanguageRequestVisualBasic, LanguageRequestWebassembly, LanguageRequestXML, LanguageRequestYaml, LanguageRequestJavaCCPlusPlusCSharp:
+	case LanguageAbap, LanguageAbc, LanguageAgda, LanguageArduino, LanguageASCIIArt, LanguageAssembly, LanguageBash, LanguageBasic, LanguageBnf, LanguageC, LanguageCSharp, LanguageCPlusPlus, LanguageClojure, LanguageCoffeescript, LanguageCoq, LanguageCSS, LanguageDart, LanguageDhall, LanguageDiff, LanguageDocker, LanguageEbnf, LanguageElixir, LanguageElm, LanguageErlang, LanguageFSharp, LanguageFlow, LanguageFortran, LanguageGherkin, LanguageGlsl, LanguageGo, LanguageGraphql, LanguageGroovy, LanguageHaskell, LanguageHcl, LanguageHTML, LanguageIdris, LanguageJava, LanguageJavascript, LanguageJSON, LanguageJulia, LanguageKotlin, LanguageLatex, LanguageLess, LanguageLisp, LanguageLivescript, LanguageLlvmIr, LanguageLua, LanguageMakefile, LanguageMarkdown, LanguageMarkup, LanguageMatlab, LanguageMathematica, LanguageMermaid, LanguageNix, LanguageNotionFormula, LanguageObjectiveC, LanguageOcaml, LanguagePascal, LanguagePerl, LanguagePhp, LanguagePlainText, LanguagePowershell, LanguageProlog, LanguageProtobuf, LanguagePurescript, LanguagePython, LanguageR, LanguageRacket, LanguageReason, LanguageRuby, LanguageRust, LanguageSass, LanguageScala, LanguageScheme, LanguageScss, LanguageShell, LanguageSmalltalk, LanguageSolidity, LanguageSQL, LanguageSwift, LanguageToml, LanguageTypescript, LanguageVbDotNet, LanguageVerilog, LanguageVhdl, LanguageVisualBasic, LanguageWebassembly, LanguageXML, LanguageYaml, LanguageJavaCCPlusPlusCSharp:
 		return true
 	default:
 		return false
@@ -11351,9 +11456,9 @@ type LinkPreviewMention struct {
 // LinkToPageBlockObjectResponseLinkToPage defines a model
 type LinkToPageBlockObjectResponseLinkToPage struct {
 	Type       LinkToPageBlockObjectResponseLinkToPageType `json:"type"`
-	PageID     IDRequest                                   `json:"page_id,omitzero"`
-	DatabaseID IDRequest                                   `json:"database_id,omitzero"`
-	CommentID  IDRequest                                   `json:"comment_id,omitzero"`
+	PageID     ID                                          `json:"page_id,omitzero"`
+	DatabaseID ID                                          `json:"database_id,omitzero"`
+	CommentID  ID                                          `json:"comment_id,omitzero"`
 }
 
 // LinkToPageBlockObjectResponseLinkToPageType is a value of LinkToPageBlockObjectResponseLinkToPage's type, naming the members it holds.
@@ -11459,16 +11564,16 @@ type ListDataSourceTemplatesOkTemplatesItem struct {
 	IsDefault bool `json:"is_default"`
 }
 
-// ListViewConfigRequest defines a model
-type ListViewConfigRequest struct {
+// ListViewConfig defines a model
+type ListViewConfig struct {
 	// The view type. Must be "list".
 	Type string `json:"type"`
 	// Property visibility and display configuration. Pass null to clear.
-	Properties []ViewPropertyConfigRequest `json:"properties,omitzero"`
+	Properties []ViewPropertyConfig `json:"properties,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether ListViewConfigRequest declares it.
-func (v *ListViewConfigRequest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether ListViewConfig declares it.
+func (v *ListViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -11499,40 +11604,20 @@ func (v *ListViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name
 	return false, nil
 }
 
-// MapViewConfigHeight2 defines a model
-type MapViewConfigHeight2 string
-
-const (
-	MapViewConfigHeight2Small      MapViewConfigHeight2 = "small"
-	MapViewConfigHeight2Medium     MapViewConfigHeight2 = "medium"
-	MapViewConfigHeight2Large      MapViewConfigHeight2 = "large"
-	MapViewConfigHeight2ExtraLarge MapViewConfigHeight2 = "extra_large"
-)
-
-// Valid indicates whether the value is a known member of the MapViewConfigHeight2 enum.
-func (e MapViewConfigHeight2) Valid() bool {
-	switch e {
-	case MapViewConfigHeight2Small, MapViewConfigHeight2Medium, MapViewConfigHeight2Large, MapViewConfigHeight2ExtraLarge:
-		return true
-	default:
-		return false
-	}
-}
-
-// MapViewConfigRequest defines a model
-type MapViewConfigRequest struct {
+// MapViewConfig defines a model
+type MapViewConfig struct {
 	// The view type. Must be "map".
 	Type string `json:"type"`
 	// Map display height. Pass null to clear.
-	Height MapViewConfigHeight2 `json:"height,omitzero"`
+	Height MapViewConfigHeightOneOf `json:"height,omitzero"`
 	// Property ID of the location property used to position items on the map. Pass null to clear.
 	MapBy string `json:"map_by,omitzero"`
 	// Property visibility and display configuration on map pin cards. Pass null to clear.
-	Properties []ViewPropertyConfigRequest `json:"properties,omitzero"`
+	Properties []ViewPropertyConfig `json:"properties,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MapViewConfigRequest declares it.
-func (v *MapViewConfigRequest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MapViewConfig declares it.
+func (v *MapViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -11547,12 +11632,32 @@ func (v *MapViewConfigRequest) unmarshalJSONMember(dec *jsontext.Decoder, name s
 	return false, nil
 }
 
+// MapViewConfigHeightOneOf defines a model
+type MapViewConfigHeightOneOf string
+
+const (
+	MapViewConfigHeightOneOfSmall      MapViewConfigHeightOneOf = "small"
+	MapViewConfigHeightOneOfMedium     MapViewConfigHeightOneOf = "medium"
+	MapViewConfigHeightOneOfLarge      MapViewConfigHeightOneOf = "large"
+	MapViewConfigHeightOneOfExtraLarge MapViewConfigHeightOneOf = "extra_large"
+)
+
+// Valid indicates whether the value is a known member of the MapViewConfigHeightOneOf enum.
+func (e MapViewConfigHeightOneOf) Valid() bool {
+	switch e {
+	case MapViewConfigHeightOneOfSmall, MapViewConfigHeightOneOfMedium, MapViewConfigHeightOneOfLarge, MapViewConfigHeightOneOfExtraLarge:
+		return true
+	default:
+		return false
+	}
+}
+
 // MapViewConfigResponse defines a model
 type MapViewConfigResponse struct {
 	// The view configuration type.
 	Type string `json:"type"`
 	// Map display height.
-	Height MapViewConfigHeight2 `json:"height,omitzero"`
+	Height MapViewConfigHeightOneOf `json:"height,omitzero"`
 	// Property ID of the location property used to position items on the map.
 	MapBy string `json:"map_by,omitzero"`
 	// Map-by property name (convenience field).
@@ -11597,36 +11702,36 @@ func (e MarkdownVersion) Valid() bool {
 	}
 }
 
-// MediaContentWithFileAndCaptionRequest defines a model
-type MediaContentWithFileAndCaptionRequest struct {
-	Caption    []RichTextItemRequest                     `json:"caption,omitzero"`
-	Type       MediaContentWithFileAndCaptionRequestType `json:"type,omitzero"`
-	External   *ExternalFileRequest                      `json:"external,omitzero"`
-	FileUpload *FileUploadIDRequest                      `json:"file_upload,omitzero"`
+// MediaContentWithFileAndCaption defines a model
+type MediaContentWithFileAndCaption struct {
+	Caption    []RichTextItem                     `json:"caption,omitzero"`
+	Type       MediaContentWithFileAndCaptionType `json:"type,omitzero"`
+	External   *ExternalFile                      `json:"external,omitzero"`
+	FileUpload *FileUploadID                      `json:"file_upload,omitzero"`
 }
 
-// MediaContentWithFileAndCaptionRequestType is a value of MediaContentWithFileAndCaptionRequest's type, naming the members it holds.
-type MediaContentWithFileAndCaptionRequestType string
+// MediaContentWithFileAndCaptionType is a value of MediaContentWithFileAndCaption's type, naming the members it holds.
+type MediaContentWithFileAndCaptionType string
 
 const (
-	MediaContentWithFileAndCaptionRequestTypeExternal   MediaContentWithFileAndCaptionRequestType = "external"
-	MediaContentWithFileAndCaptionRequestTypeFileUpload MediaContentWithFileAndCaptionRequestType = "file_upload"
+	MediaContentWithFileAndCaptionTypeExternal   MediaContentWithFileAndCaptionType = "external"
+	MediaContentWithFileAndCaptionTypeFileUpload MediaContentWithFileAndCaptionType = "file_upload"
 )
 
-// Valid indicates whether the value is a known member of the MediaContentWithFileAndCaptionRequestType enum.
-func (e MediaContentWithFileAndCaptionRequestType) Valid() bool {
-	_, ok := tagsOfMediaContentWithFileAndCaptionRequest[string(e)]
+// Valid indicates whether the value is a known member of the MediaContentWithFileAndCaptionType enum.
+func (e MediaContentWithFileAndCaptionType) Valid() bool {
+	_, ok := tagsOfMediaContentWithFileAndCaption[string(e)]
 	return ok
 }
 
-// tagsOfMediaContentWithFileAndCaptionRequest holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfMediaContentWithFileAndCaptionRequest = map[string]map[string]jsonTagNeed{
+// tagsOfMediaContentWithFileAndCaption holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfMediaContentWithFileAndCaption = map[string]map[string]jsonTagNeed{
 	"external":    {"external": jsonTagRequired},
 	"file_upload": {"file_upload": jsonTagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
-func (v *MediaContentWithFileAndCaptionRequest) taggedMembers() []string {
+func (v *MediaContentWithFileAndCaption) taggedMembers() []string {
 	var set []string
 	if v.External != nil {
 		set = append(set, "external")
@@ -11640,10 +11745,10 @@ func (v *MediaContentWithFileAndCaptionRequest) taggedMembers() []string {
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
 // alternative's own, only those of the one type names are set.
-func (v *MediaContentWithFileAndCaptionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain MediaContentWithFileAndCaptionRequest
+func (v *MediaContentWithFileAndCaption) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain MediaContentWithFileAndCaption
 
-	*v = MediaContentWithFileAndCaptionRequest{}
+	*v = MediaContentWithFileAndCaption{}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -11661,24 +11766,24 @@ func (v *MediaContentWithFileAndCaptionRequest) UnmarshalJSONFrom(dec *jsontext.
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfMediaContentWithFileAndCaptionRequest, v.taggedMembers()); ok && v.Type == "" {
-		v.Type = MediaContentWithFileAndCaptionRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfMediaContentWithFileAndCaption, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = MediaContentWithFileAndCaptionType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfMediaContentWithFileAndCaptionRequest, v.taggedMembers(), present, jsonStrict(dec))
+	return jsonCheckTag("type", string(v.Type), tagsOfMediaContentWithFileAndCaption, v.taggedMembers(), present, jsonStrict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
 // the value whose member is set.
-func (v *MediaContentWithFileAndCaptionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain MediaContentWithFileAndCaptionRequest
+func (v *MediaContentWithFileAndCaption) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain MediaContentWithFileAndCaption
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfMediaContentWithFileAndCaptionRequest, set); ok && out.Type == "" {
-		out.Type = MediaContentWithFileAndCaptionRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfMediaContentWithFileAndCaption, set); ok && out.Type == "" {
+		out.Type = MediaContentWithFileAndCaptionType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfMediaContentWithFileAndCaptionRequest, set, nil, true); err != nil {
+	if err := jsonCheckTag("type", string(out.Type), tagsOfMediaContentWithFileAndCaption, set, nil, true); err != nil {
 		return err
 	}
 
@@ -11768,37 +11873,37 @@ func (v *MediaContentWithFileAndCaptionResponse) MarshalJSONTo(enc *jsontext.Enc
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// MediaContentWithFileNameAndCaptionRequest defines a model
-type MediaContentWithFileNameAndCaptionRequest struct {
-	Caption    []RichTextItemRequest                         `json:"caption,omitzero"`
-	Name       StringRequest                                 `json:"name,omitzero"`
-	Type       MediaContentWithFileNameAndCaptionRequestType `json:"type,omitzero"`
-	External   *ExternalFileRequest                          `json:"external,omitzero"`
-	FileUpload *FileUploadIDRequest                          `json:"file_upload,omitzero"`
+// MediaContentWithFileNameAndCaption defines a model
+type MediaContentWithFileNameAndCaption struct {
+	Caption    []RichTextItem                         `json:"caption,omitzero"`
+	Name       String                                 `json:"name,omitzero"`
+	Type       MediaContentWithFileNameAndCaptionType `json:"type,omitzero"`
+	External   *ExternalFile                          `json:"external,omitzero"`
+	FileUpload *FileUploadID                          `json:"file_upload,omitzero"`
 }
 
-// MediaContentWithFileNameAndCaptionRequestType is a value of MediaContentWithFileNameAndCaptionRequest's type, naming the members it holds.
-type MediaContentWithFileNameAndCaptionRequestType string
+// MediaContentWithFileNameAndCaptionType is a value of MediaContentWithFileNameAndCaption's type, naming the members it holds.
+type MediaContentWithFileNameAndCaptionType string
 
 const (
-	MediaContentWithFileNameAndCaptionRequestTypeExternal   MediaContentWithFileNameAndCaptionRequestType = "external"
-	MediaContentWithFileNameAndCaptionRequestTypeFileUpload MediaContentWithFileNameAndCaptionRequestType = "file_upload"
+	MediaContentWithFileNameAndCaptionTypeExternal   MediaContentWithFileNameAndCaptionType = "external"
+	MediaContentWithFileNameAndCaptionTypeFileUpload MediaContentWithFileNameAndCaptionType = "file_upload"
 )
 
-// Valid indicates whether the value is a known member of the MediaContentWithFileNameAndCaptionRequestType enum.
-func (e MediaContentWithFileNameAndCaptionRequestType) Valid() bool {
-	_, ok := tagsOfMediaContentWithFileNameAndCaptionRequest[string(e)]
+// Valid indicates whether the value is a known member of the MediaContentWithFileNameAndCaptionType enum.
+func (e MediaContentWithFileNameAndCaptionType) Valid() bool {
+	_, ok := tagsOfMediaContentWithFileNameAndCaption[string(e)]
 	return ok
 }
 
-// tagsOfMediaContentWithFileNameAndCaptionRequest holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfMediaContentWithFileNameAndCaptionRequest = map[string]map[string]jsonTagNeed{
+// tagsOfMediaContentWithFileNameAndCaption holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfMediaContentWithFileNameAndCaption = map[string]map[string]jsonTagNeed{
 	"external":    {"external": jsonTagRequired},
 	"file_upload": {"file_upload": jsonTagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
-func (v *MediaContentWithFileNameAndCaptionRequest) taggedMembers() []string {
+func (v *MediaContentWithFileNameAndCaption) taggedMembers() []string {
 	var set []string
 	if v.External != nil {
 		set = append(set, "external")
@@ -11812,10 +11917,10 @@ func (v *MediaContentWithFileNameAndCaptionRequest) taggedMembers() []string {
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
 // alternative's own, only those of the one type names are set.
-func (v *MediaContentWithFileNameAndCaptionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain MediaContentWithFileNameAndCaptionRequest
+func (v *MediaContentWithFileNameAndCaption) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain MediaContentWithFileNameAndCaption
 
-	*v = MediaContentWithFileNameAndCaptionRequest{}
+	*v = MediaContentWithFileNameAndCaption{}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -11833,24 +11938,24 @@ func (v *MediaContentWithFileNameAndCaptionRequest) UnmarshalJSONFrom(dec *jsont
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfMediaContentWithFileNameAndCaptionRequest, v.taggedMembers()); ok && v.Type == "" {
-		v.Type = MediaContentWithFileNameAndCaptionRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfMediaContentWithFileNameAndCaption, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = MediaContentWithFileNameAndCaptionType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfMediaContentWithFileNameAndCaptionRequest, v.taggedMembers(), present, jsonStrict(dec))
+	return jsonCheckTag("type", string(v.Type), tagsOfMediaContentWithFileNameAndCaption, v.taggedMembers(), present, jsonStrict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
 // the value whose member is set.
-func (v *MediaContentWithFileNameAndCaptionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain MediaContentWithFileNameAndCaptionRequest
+func (v *MediaContentWithFileNameAndCaption) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain MediaContentWithFileNameAndCaption
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfMediaContentWithFileNameAndCaptionRequest, set); ok && out.Type == "" {
-		out.Type = MediaContentWithFileNameAndCaptionRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfMediaContentWithFileNameAndCaption, set); ok && out.Type == "" {
+		out.Type = MediaContentWithFileNameAndCaptionType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfMediaContentWithFileNameAndCaptionRequest, set, nil, true); err != nil {
+	if err := jsonCheckTag("type", string(out.Type), tagsOfMediaContentWithFileNameAndCaption, set, nil, true); err != nil {
 		return err
 	}
 
@@ -11943,13 +12048,13 @@ func (v *MediaContentWithFileNameAndCaptionResponse) MarshalJSONTo(enc *jsontext
 
 // MediaContentWithURL defines a model
 type MediaContentWithURL struct {
-	URL TextRequest `json:"url"`
+	URL Text `json:"url"`
 }
 
-// MediaContentWithURLAndCaptionRequest defines a model
-type MediaContentWithURLAndCaptionRequest struct {
-	URL     string                `json:"url"`
-	Caption []RichTextItemRequest `json:"caption,omitzero"`
+// MediaContentWithURLAndCaption defines a model
+type MediaContentWithURLAndCaption struct {
+	URL     string         `json:"url"`
+	Caption []RichTextItem `json:"caption,omitzero"`
 }
 
 // MediaContentWithURLAndCaptionResponse defines a model
@@ -12812,48 +12917,42 @@ func (e MeetingNotesPropertyFilterProperty) Valid() bool {
 	}
 }
 
-// MentionRichTextItemMentionPage defines a model
-type MentionRichTextItemMentionPage struct {
-	// The ID of the page in the mention.
-	ID IDResponse `json:"id"`
-}
-
 // Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.
-type MentionRichTextItemRequestMention struct {
-	Type MentionRichTextItemRequestMentionType `json:"type,omitzero"`
+type MentionRichTextItemMention struct {
+	Type MentionRichTextItemMentionType `json:"type,omitzero"`
 	// Details of the user mention.
-	User *PartialUserObjectRequest `json:"user,omitzero"`
+	User *PartialUserObject `json:"user,omitzero"`
 	// Details of the date mention.
-	Date *DateRequest `json:"date,omitzero"`
+	Date *Date `json:"date,omitzero"`
 	// Details of the page mention.
 	Page *RelationItemPropertyValue `json:"page,omitzero"`
 	// Details of the database mention.
 	Database *RelationItemPropertyValue `json:"database,omitzero"`
 	// Details of the template mention.
-	TemplateMention *TemplateMentionRequest         `json:"template_mention,omitzero"`
+	TemplateMention *TemplateMention                `json:"template_mention,omitzero"`
 	CustomEmoji     *CustomEmojiPageIconCustomEmoji `json:"custom_emoji,omitzero"`
 }
 
-// MentionRichTextItemRequestMentionType is a value of MentionRichTextItemRequestMention's type, naming the members it holds.
-type MentionRichTextItemRequestMentionType string
+// MentionRichTextItemMentionType is a value of MentionRichTextItemMention's type, naming the members it holds.
+type MentionRichTextItemMentionType string
 
 const (
-	MentionRichTextItemRequestMentionTypeUser            MentionRichTextItemRequestMentionType = "user"
-	MentionRichTextItemRequestMentionTypeDate            MentionRichTextItemRequestMentionType = "date"
-	MentionRichTextItemRequestMentionTypePage            MentionRichTextItemRequestMentionType = "page"
-	MentionRichTextItemRequestMentionTypeDatabase        MentionRichTextItemRequestMentionType = "database"
-	MentionRichTextItemRequestMentionTypeTemplateMention MentionRichTextItemRequestMentionType = "template_mention"
-	MentionRichTextItemRequestMentionTypeCustomEmoji     MentionRichTextItemRequestMentionType = "custom_emoji"
+	MentionRichTextItemMentionTypeUser            MentionRichTextItemMentionType = "user"
+	MentionRichTextItemMentionTypeDate            MentionRichTextItemMentionType = "date"
+	MentionRichTextItemMentionTypePage            MentionRichTextItemMentionType = "page"
+	MentionRichTextItemMentionTypeDatabase        MentionRichTextItemMentionType = "database"
+	MentionRichTextItemMentionTypeTemplateMention MentionRichTextItemMentionType = "template_mention"
+	MentionRichTextItemMentionTypeCustomEmoji     MentionRichTextItemMentionType = "custom_emoji"
 )
 
-// Valid indicates whether the value is a known member of the MentionRichTextItemRequestMentionType enum.
-func (e MentionRichTextItemRequestMentionType) Valid() bool {
-	_, ok := tagsOfMentionRichTextItemRequestMention[string(e)]
+// Valid indicates whether the value is a known member of the MentionRichTextItemMentionType enum.
+func (e MentionRichTextItemMentionType) Valid() bool {
+	_, ok := tagsOfMentionRichTextItemMention[string(e)]
 	return ok
 }
 
-// tagsOfMentionRichTextItemRequestMention holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfMentionRichTextItemRequestMention = map[string]map[string]jsonTagNeed{
+// tagsOfMentionRichTextItemMention holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfMentionRichTextItemMention = map[string]map[string]jsonTagNeed{
 	"user":             {"user": jsonTagRequired},
 	"date":             {"date": jsonTagRequired},
 	"page":             {"page": jsonTagRequired},
@@ -12863,7 +12962,7 @@ var tagsOfMentionRichTextItemRequestMention = map[string]map[string]jsonTagNeed{
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
-func (v *MentionRichTextItemRequestMention) taggedMembers() []string {
+func (v *MentionRichTextItemMention) taggedMembers() []string {
 	var set []string
 	if v.User != nil {
 		set = append(set, "user")
@@ -12889,10 +12988,10 @@ func (v *MentionRichTextItemRequestMention) taggedMembers() []string {
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
 // alternative's own, only those of the one type names are set.
-func (v *MentionRichTextItemRequestMention) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain MentionRichTextItemRequestMention
+func (v *MentionRichTextItemMention) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain MentionRichTextItemMention
 
-	*v = MentionRichTextItemRequestMention{}
+	*v = MentionRichTextItemMention{}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -12910,28 +13009,34 @@ func (v *MentionRichTextItemRequestMention) UnmarshalJSONFrom(dec *jsontext.Deco
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfMentionRichTextItemRequestMention, v.taggedMembers()); ok && v.Type == "" {
-		v.Type = MentionRichTextItemRequestMentionType(tag)
+	if tag, ok := jsonInferTag(tagsOfMentionRichTextItemMention, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = MentionRichTextItemMentionType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfMentionRichTextItemRequestMention, v.taggedMembers(), present, jsonStrict(dec))
+	return jsonCheckTag("type", string(v.Type), tagsOfMentionRichTextItemMention, v.taggedMembers(), present, jsonStrict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
 // the value whose member is set.
-func (v *MentionRichTextItemRequestMention) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain MentionRichTextItemRequestMention
+func (v *MentionRichTextItemMention) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain MentionRichTextItemMention
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfMentionRichTextItemRequestMention, set); ok && out.Type == "" {
-		out.Type = MentionRichTextItemRequestMentionType(tag)
+	if tag, ok := jsonInferTag(tagsOfMentionRichTextItemMention, set); ok && out.Type == "" {
+		out.Type = MentionRichTextItemMentionType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfMentionRichTextItemRequestMention, set, nil, true); err != nil {
+	if err := jsonCheckTag("type", string(out.Type), tagsOfMentionRichTextItemMention, set, nil, true); err != nil {
 		return err
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
+}
+
+// MentionRichTextItemMentionPage2 defines a model
+type MentionRichTextItemMentionPage2 struct {
+	// The ID of the page in the mention.
+	ID IDResponse `json:"id"`
 }
 
 // Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.
@@ -12946,9 +13051,9 @@ type MentionRichTextItemResponseMention struct {
 	// Details of the link mention.
 	LinkMention *LinkMentionResponse `json:"link_mention,omitzero"`
 	// Details of the page mention.
-	Page *MentionRichTextItemMentionPage `json:"page,omitzero"`
+	Page *MentionRichTextItemMentionPage2 `json:"page,omitzero"`
 	// Details of the database mention.
-	Database *MentionRichTextItemMentionPage `json:"database,omitzero"`
+	Database *MentionRichTextItemMentionPage2 `json:"database,omitzero"`
 	// Details of the template mention.
 	TemplateMention *TemplateMentionResponse `json:"template_mention,omitzero"`
 	// The custom emoji details for the icon.
@@ -13070,9 +13175,9 @@ type MovePage struct {
 type MovePageParent struct {
 	Type MovePageParentType `json:"type,omitzero"`
 	// The ID of the parent page (with or without dashes), for example, 195de9221179449fab8075a27c979105
-	PageID IDRequest `json:"page_id,omitzero"`
+	PageID ID `json:"page_id,omitzero"`
 	// The ID of the parent data source (collection), with or without dashes. For example, f336d0bc-b841-465b-8045-024475c079dd
-	DataSourceID IDRequest `json:"data_source_id,omitzero"`
+	DataSourceID ID `json:"data_source_id,omitzero"`
 }
 
 // MovePageParentType is a value of MovePageParent's type, naming the members it holds.
@@ -13158,7 +13263,7 @@ func (v *MovePageParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 // MovePageParentPageID defines a model
 type MovePageParentPageID struct {
 	// The ID of the parent page (with or without dashes), for example, 195de9221179449fab8075a27c979105
-	PageID IDRequest `json:"page_id"`
+	PageID ID `json:"page_id"`
 	// Always `page_id`
 	Type string `json:"type,omitzero"`
 }
@@ -13356,14 +13461,14 @@ type NumberDatabasePropertyConfigResponseNumber struct {
 // NumberFormat defines a model
 type NumberFormat string
 
-// NumberGroupByConfigRequest defines a model
-type NumberGroupByConfigRequest struct {
+// NumberGroupByConfig defines a model
+type NumberGroupByConfig struct {
 	// The property type for grouping.
 	Type string `json:"type"`
 	// Property ID to group by.
 	PropertyID string `json:"property_id"`
 	// Sort order for groups.
-	Sort GroupSortRequest `json:"sort"`
+	Sort GroupSort `json:"sort"`
 	// Whether to hide groups that have no items.
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 	// Start of the range for number grouping buckets.
@@ -13677,35 +13782,35 @@ type PageContentUpdatedWebhookPayloadData struct {
 	UpdatedBlocks []WebhookExternalBlock `json:"updated_blocks"`
 }
 
-// PageCoverRequest defines a model
-type PageCoverRequest struct {
-	Type       PageCoverRequestType         `json:"type,omitzero"`
+// PageCover defines a model
+type PageCover struct {
+	Type       PageCoverType                `json:"type,omitzero"`
 	FileUpload *IDObject                    `json:"file_upload,omitzero"`
 	External   *TextRichTextItemTextLinkURL `json:"external,omitzero"`
 }
 
-// PageCoverRequestType is a value of PageCoverRequest's type, naming the members it holds.
-type PageCoverRequestType string
+// PageCoverType is a value of PageCover's type, naming the members it holds.
+type PageCoverType string
 
 const (
-	PageCoverRequestTypeFileUpload PageCoverRequestType = "file_upload"
-	PageCoverRequestTypeExternal   PageCoverRequestType = "external"
+	PageCoverTypeFileUpload PageCoverType = "file_upload"
+	PageCoverTypeExternal   PageCoverType = "external"
 )
 
-// Valid indicates whether the value is a known member of the PageCoverRequestType enum.
-func (e PageCoverRequestType) Valid() bool {
-	_, ok := tagsOfPageCoverRequest[string(e)]
+// Valid indicates whether the value is a known member of the PageCoverType enum.
+func (e PageCoverType) Valid() bool {
+	_, ok := tagsOfPageCover[string(e)]
 	return ok
 }
 
-// tagsOfPageCoverRequest holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPageCoverRequest = map[string]map[string]jsonTagNeed{
+// tagsOfPageCover holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfPageCover = map[string]map[string]jsonTagNeed{
 	"file_upload": {"file_upload": jsonTagRequired},
 	"external":    {"external": jsonTagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
-func (v *PageCoverRequest) taggedMembers() []string {
+func (v *PageCover) taggedMembers() []string {
 	var set []string
 	if v.FileUpload != nil {
 		set = append(set, "file_upload")
@@ -13719,10 +13824,10 @@ func (v *PageCoverRequest) taggedMembers() []string {
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
 // alternative's own, only those of the one type names are set.
-func (v *PageCoverRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain PageCoverRequest
+func (v *PageCover) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain PageCover
 
-	*v = PageCoverRequest{}
+	*v = PageCover{}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -13740,24 +13845,24 @@ func (v *PageCoverRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfPageCoverRequest, v.taggedMembers()); ok && v.Type == "" {
-		v.Type = PageCoverRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfPageCover, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = PageCoverType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPageCoverRequest, v.taggedMembers(), present, jsonStrict(dec))
+	return jsonCheckTag("type", string(v.Type), tagsOfPageCover, v.taggedMembers(), present, jsonStrict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
 // the value whose member is set.
-func (v *PageCoverRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain PageCoverRequest
+func (v *PageCover) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain PageCover
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPageCoverRequest, set); ok && out.Type == "" {
-		out.Type = PageCoverRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfPageCover, set); ok && out.Type == "" {
+		out.Type = PageCoverType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPageCoverRequest, set, nil, true); err != nil {
+	if err := jsonCheckTag("type", string(out.Type), tagsOfPageCover, set, nil, true); err != nil {
 		return err
 	}
 
@@ -13878,37 +13983,37 @@ type PageIDParentForBlockBasedObject struct {
 	PageID IDResponse `json:"page_id"`
 }
 
-// PageIconRequest defines a model
-type PageIconRequest struct {
-	Type       PageIconRequestType `json:"type,omitzero"`
-	FileUpload *IDObject           `json:"file_upload,omitzero"`
+// PageIcon defines a model
+type PageIcon struct {
+	Type       PageIconType `json:"type,omitzero"`
+	FileUpload *IDObject    `json:"file_upload,omitzero"`
 	// An emoji character.
-	Emoji       EmojiRequest                    `json:"emoji,omitzero"`
+	Emoji       Emoji                           `json:"emoji,omitzero"`
 	External    *TextRichTextItemTextLinkURL    `json:"external,omitzero"`
 	CustomEmoji *CustomEmojiPageIconCustomEmoji `json:"custom_emoji,omitzero"`
 	// A Notion native icon, specified by name and optional color.
-	Icon *IconPageIconRequestIcon `json:"icon,omitzero"`
+	Icon *IconPageIconIcon `json:"icon,omitzero"`
 }
 
-// PageIconRequestType is a value of PageIconRequest's type, naming the members it holds.
-type PageIconRequestType string
+// PageIconType is a value of PageIcon's type, naming the members it holds.
+type PageIconType string
 
 const (
-	PageIconRequestTypeFileUpload  PageIconRequestType = "file_upload"
-	PageIconRequestTypeEmoji       PageIconRequestType = "emoji"
-	PageIconRequestTypeExternal    PageIconRequestType = "external"
-	PageIconRequestTypeCustomEmoji PageIconRequestType = "custom_emoji"
-	PageIconRequestTypeIcon        PageIconRequestType = "icon"
+	PageIconTypeFileUpload  PageIconType = "file_upload"
+	PageIconTypeEmoji       PageIconType = "emoji"
+	PageIconTypeExternal    PageIconType = "external"
+	PageIconTypeCustomEmoji PageIconType = "custom_emoji"
+	PageIconTypeIcon        PageIconType = "icon"
 )
 
-// Valid indicates whether the value is a known member of the PageIconRequestType enum.
-func (e PageIconRequestType) Valid() bool {
-	_, ok := tagsOfPageIconRequest[string(e)]
+// Valid indicates whether the value is a known member of the PageIconType enum.
+func (e PageIconType) Valid() bool {
+	_, ok := tagsOfPageIcon[string(e)]
 	return ok
 }
 
-// tagsOfPageIconRequest holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPageIconRequest = map[string]map[string]jsonTagNeed{
+// tagsOfPageIcon holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfPageIcon = map[string]map[string]jsonTagNeed{
 	"file_upload":  {"file_upload": jsonTagRequired},
 	"emoji":        {"emoji": jsonTagRequired},
 	"external":     {"external": jsonTagRequired},
@@ -13917,7 +14022,7 @@ var tagsOfPageIconRequest = map[string]map[string]jsonTagNeed{
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
-func (v *PageIconRequest) taggedMembers() []string {
+func (v *PageIcon) taggedMembers() []string {
 	var set []string
 	if v.FileUpload != nil {
 		set = append(set, "file_upload")
@@ -13940,10 +14045,10 @@ func (v *PageIconRequest) taggedMembers() []string {
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
 // alternative's own, only those of the one type names are set.
-func (v *PageIconRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain PageIconRequest
+func (v *PageIcon) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain PageIcon
 
-	*v = PageIconRequest{}
+	*v = PageIcon{}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -13961,24 +14066,24 @@ func (v *PageIconRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfPageIconRequest, v.taggedMembers()); ok && v.Type == "" {
-		v.Type = PageIconRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfPageIcon, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = PageIconType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPageIconRequest, v.taggedMembers(), present, jsonStrict(dec))
+	return jsonCheckTag("type", string(v.Type), tagsOfPageIcon, v.taggedMembers(), present, jsonStrict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
 // the value whose member is set.
-func (v *PageIconRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain PageIconRequest
+func (v *PageIcon) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain PageIcon
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPageIconRequest, set); ok && out.Type == "" {
-		out.Type = PageIconRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfPageIcon, set); ok && out.Type == "" {
+		out.Type = PageIconType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPageIconRequest, set, nil, true); err != nil {
+	if err := jsonCheckTag("type", string(out.Type), tagsOfPageIcon, set, nil, true); err != nil {
 		return err
 	}
 
@@ -13989,7 +14094,7 @@ func (v *PageIconRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 type PageIconResponse struct {
 	Type PageIconResponseType `json:"type"`
 	// The emoji character used as the icon.
-	Emoji EmojiRequest `json:"emoji,omitzero"`
+	Emoji Emoji `json:"emoji,omitzero"`
 	// The file URL for the icon.
 	File *InternalFileResponse `json:"file,omitzero"`
 	// The external URL for the icon.
@@ -14314,14 +14419,14 @@ func (v *PageOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 // PageParentDatabaseID defines a model
 type PageParentDatabaseID struct {
-	DatabaseID IDRequest `json:"database_id"`
-	Type       string    `json:"type,omitzero"`
+	DatabaseID ID     `json:"database_id"`
+	Type       string `json:"type,omitzero"`
 }
 
 // PageParentPageID defines a model
 type PageParentPageID struct {
-	PageID IDRequest `json:"page_id"`
-	Type   string    `json:"type,omitzero"`
+	PageID ID     `json:"page_id"`
+	Type   string `json:"type,omitzero"`
 }
 
 // PagePositionSchema defines a model
@@ -14410,6 +14515,9 @@ type PagePositionSchemaAfterBlock struct {
 	AfterBlock RelationItemPropertyValue `json:"after_block"`
 }
 
+// PageProperties defines a model
+type PageProperties map[string]PagePropertiesValue
+
 // PagePropertiesUpdatedWebhookPayload defines a model
 type PagePropertiesUpdatedWebhookPayload struct {
 	BaseWebhookPayload
@@ -14432,22 +14540,22 @@ type PagePropertiesUpdatedWebhookPayloadData struct {
 // PagePropertiesValue defines a model
 type PagePropertiesValue struct {
 	Type         PagePropertiesValueType                         `json:"type,omitzero"`
-	Title        []RichTextItemRequest                           `json:"title,omitzero"`
-	RichText     []RichTextItemRequest                           `json:"rich_text,omitzero"`
+	Title        []RichTextItem                                  `json:"title,omitzero"`
+	RichText     []RichTextItem                                  `json:"rich_text,omitzero"`
 	Number       *float64                                        `json:"number,omitzero"`
-	URL          *TextRequest                                    `json:"url,omitzero"`
+	URL          *Text                                           `json:"url,omitzero"`
 	Select       *PagePropertiesValueSelect2                     `json:"select,omitzero"`
 	MultiSelect  []PagePropertiesValueMultiSelectMultiSelectItem `json:"multi_select,omitzero"`
-	People       []PagePropertiesValuePeopleItem                 `json:"people,omitzero"`
-	Email        *StringRequest                                  `json:"email,omitzero"`
-	PhoneNumber  *StringRequest                                  `json:"phone_number,omitzero"`
-	Date         *DateRequest                                    `json:"date,omitzero"`
+	People       []PagePropertiesValuePeoplePeopleItem           `json:"people,omitzero"`
+	Email        *String                                         `json:"email,omitzero"`
+	PhoneNumber  *String                                         `json:"phone_number,omitzero"`
+	Date         *Date                                           `json:"date,omitzero"`
 	Checkbox     *bool                                           `json:"checkbox,omitzero"`
 	Relation     []RelationItemPropertyValue                     `json:"relation,omitzero"`
-	Files        []PagePropertiesValueFilesItem                  `json:"files,omitzero"`
+	Files        []PagePropertiesValueFilesFilesItem             `json:"files,omitzero"`
 	Status       *PagePropertiesValueSelect2                     `json:"status,omitzero"`
 	Place        *PagePropertiesValuePlace2                      `json:"place,omitzero"`
-	Verification *PagePropertiesValueVerification2               `json:"verification,omitzero"`
+	Verification *PagePropertiesValueVerificationVerification    `json:"verification,omitzero"`
 }
 
 // PagePropertiesValueType is a value of PagePropertiesValue's type, naming the members it holds.
@@ -14600,39 +14708,39 @@ func (v *PagePropertiesValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// PagePropertiesValueFilesItem defines a model
-type PagePropertiesValueFilesItem struct {
-	Name       StringRequest                    `json:"name,omitzero"`
-	Type       PagePropertiesValueFilesItemType `json:"type,omitzero"`
-	File       *InternalFileRequest             `json:"file,omitzero"`
-	External   *ExternalFileRequest             `json:"external,omitzero"`
-	FileUpload *FileUploadIDRequest             `json:"file_upload,omitzero"`
+// PagePropertiesValueFilesFilesItem defines a model
+type PagePropertiesValueFilesFilesItem struct {
+	Name       String                                `json:"name,omitzero"`
+	Type       PagePropertiesValueFilesFilesItemType `json:"type,omitzero"`
+	File       *InternalFile                         `json:"file,omitzero"`
+	External   *ExternalFile                         `json:"external,omitzero"`
+	FileUpload *FileUploadID                         `json:"file_upload,omitzero"`
 }
 
-// PagePropertiesValueFilesItemType is a value of PagePropertiesValueFilesItem's type, naming the members it holds.
-type PagePropertiesValueFilesItemType string
+// PagePropertiesValueFilesFilesItemType is a value of PagePropertiesValueFilesFilesItem's type, naming the members it holds.
+type PagePropertiesValueFilesFilesItemType string
 
 const (
-	PagePropertiesValueFilesItemTypeFile       PagePropertiesValueFilesItemType = "file"
-	PagePropertiesValueFilesItemTypeExternal   PagePropertiesValueFilesItemType = "external"
-	PagePropertiesValueFilesItemTypeFileUpload PagePropertiesValueFilesItemType = "file_upload"
+	PagePropertiesValueFilesFilesItemTypeFile       PagePropertiesValueFilesFilesItemType = "file"
+	PagePropertiesValueFilesFilesItemTypeExternal   PagePropertiesValueFilesFilesItemType = "external"
+	PagePropertiesValueFilesFilesItemTypeFileUpload PagePropertiesValueFilesFilesItemType = "file_upload"
 )
 
-// Valid indicates whether the value is a known member of the PagePropertiesValueFilesItemType enum.
-func (e PagePropertiesValueFilesItemType) Valid() bool {
-	_, ok := tagsOfPagePropertiesValueFilesItem[string(e)]
+// Valid indicates whether the value is a known member of the PagePropertiesValueFilesFilesItemType enum.
+func (e PagePropertiesValueFilesFilesItemType) Valid() bool {
+	_, ok := tagsOfPagePropertiesValueFilesFilesItem[string(e)]
 	return ok
 }
 
-// tagsOfPagePropertiesValueFilesItem holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPagePropertiesValueFilesItem = map[string]map[string]jsonTagNeed{
+// tagsOfPagePropertiesValueFilesFilesItem holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfPagePropertiesValueFilesFilesItem = map[string]map[string]jsonTagNeed{
 	"file":        {"file": jsonTagRequired},
 	"external":    {"external": jsonTagRequired},
 	"file_upload": {"file_upload": jsonTagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
-func (v *PagePropertiesValueFilesItem) taggedMembers() []string {
+func (v *PagePropertiesValueFilesFilesItem) taggedMembers() []string {
 	var set []string
 	if v.File != nil {
 		set = append(set, "file")
@@ -14649,10 +14757,10 @@ func (v *PagePropertiesValueFilesItem) taggedMembers() []string {
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
 // alternative's own, only those of the one type names are set.
-func (v *PagePropertiesValueFilesItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain PagePropertiesValueFilesItem
+func (v *PagePropertiesValueFilesFilesItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain PagePropertiesValueFilesFilesItem
 
-	*v = PagePropertiesValueFilesItem{}
+	*v = PagePropertiesValueFilesFilesItem{}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -14670,24 +14778,24 @@ func (v *PagePropertiesValueFilesItem) UnmarshalJSONFrom(dec *jsontext.Decoder) 
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfPagePropertiesValueFilesItem, v.taggedMembers()); ok && v.Type == "" {
-		v.Type = PagePropertiesValueFilesItemType(tag)
+	if tag, ok := jsonInferTag(tagsOfPagePropertiesValueFilesFilesItem, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = PagePropertiesValueFilesFilesItemType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPagePropertiesValueFilesItem, v.taggedMembers(), present, jsonStrict(dec))
+	return jsonCheckTag("type", string(v.Type), tagsOfPagePropertiesValueFilesFilesItem, v.taggedMembers(), present, jsonStrict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
 // the value whose member is set.
-func (v *PagePropertiesValueFilesItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain PagePropertiesValueFilesItem
+func (v *PagePropertiesValueFilesFilesItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain PagePropertiesValueFilesFilesItem
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPagePropertiesValueFilesItem, set); ok && out.Type == "" {
-		out.Type = PagePropertiesValueFilesItemType(tag)
+	if tag, ok := jsonInferTag(tagsOfPagePropertiesValueFilesFilesItem, set); ok && out.Type == "" {
+		out.Type = PagePropertiesValueFilesFilesItemType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPagePropertiesValueFilesItem, set, nil, true); err != nil {
+	if err := jsonCheckTag("type", string(out.Type), tagsOfPagePropertiesValueFilesFilesItem, set, nil, true); err != nil {
 		return err
 	}
 
@@ -14766,17 +14874,17 @@ func (v *PagePropertiesValueMultiSelectMultiSelectItem) MarshalJSONTo(enc *jsont
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// PagePropertiesValuePeopleItem defines a model
-// PagePropertiesValuePeopleItem is an untagged anyOf union: at least one field is set after unmarshaling.
-type PagePropertiesValuePeopleItem struct {
-	PartialUserObjectRequest *PartialUserObjectRequest
-	GroupObjectRequest       *GroupObjectRequest
+// PagePropertiesValuePeoplePeopleItem defines a model
+// PagePropertiesValuePeoplePeopleItem is an untagged anyOf union: at least one field is set after unmarshaling.
+type PagePropertiesValuePeoplePeopleItem struct {
+	PartialUserObject *PartialUserObject
+	GroupObject       *GroupObject
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member object names the alternative, which then
 // decodes each further member as it is read. With object first, nothing is read twice.
-func (v *PagePropertiesValuePeopleItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = PagePropertiesValuePeopleItem{}
+func (v *PagePropertiesValuePeoplePeopleItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = PagePropertiesValuePeoplePeopleItem{}
 
 	tag, first, dec, err := jsonFirstMember(dec, "object")
 	if err != nil {
@@ -14785,19 +14893,19 @@ func (v *PagePropertiesValuePeopleItem) UnmarshalJSONFrom(dec *jsontext.Decoder)
 
 	switch tag {
 	case "user":
-		var vv PartialUserObjectRequest
+		var vv PartialUserObject
 		if err := jsonMembersFrom(dec, "object", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.PartialUserObjectRequest = &vv
+		v.PartialUserObject = &vv
 	case "group":
-		var vv GroupObjectRequest
+		var vv GroupObject
 		if err := jsonMembersFrom(dec, "object", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.GroupObjectRequest = &vv
+		v.GroupObject = &vv
 	default:
 		return jsonUnknownValue("object", tag)
 	}
@@ -14806,17 +14914,17 @@ func (v *PagePropertiesValuePeopleItem) UnmarshalJSONFrom(dec *jsontext.Decoder)
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with object first, as decoding wants it, and set to the variant's value.
-func (v *PagePropertiesValuePeopleItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *PagePropertiesValuePeoplePeopleItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
 		tag     string
 	)
 
 	switch {
-	case v.PartialUserObjectRequest != nil:
-		variant, tag = v.PartialUserObjectRequest, "user"
-	case v.GroupObjectRequest != nil:
-		variant, tag = v.GroupObjectRequest, "group"
+	case v.PartialUserObject != nil:
+		variant, tag = v.PartialUserObject, "user"
+	case v.GroupObject != nil:
+		variant, tag = v.GroupObject, "group"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -14917,33 +15025,33 @@ func (v *PagePropertiesValueSelect2) MarshalJSONTo(enc *jsontext.Encoder) error 
 
 // PagePropertiesValueSelectID defines a model
 type PagePropertiesValueSelectID struct {
-	ID   StringRequest `json:"id"`
-	Name TextRequest   `json:"name,omitzero"`
+	ID   String `json:"id"`
+	Name Text   `json:"name,omitzero"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
 	Color       SelectColor `json:"color,omitzero"`
-	Description TextRequest `json:"description,omitzero"`
+	Description Text        `json:"description,omitzero"`
 }
 
 // PagePropertiesValueSelectName defines a model
 type PagePropertiesValueSelectName struct {
-	Name TextRequest   `json:"name"`
-	ID   StringRequest `json:"id,omitzero"`
+	Name Text   `json:"name"`
+	ID   String `json:"id,omitzero"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
 	Color       SelectColor `json:"color,omitzero"`
-	Description TextRequest `json:"description,omitzero"`
+	Description Text        `json:"description,omitzero"`
 }
 
-// PagePropertiesValueVerification2 defines a model
-// PagePropertiesValueVerification2 is an untagged anyOf union: at least one field is set after unmarshaling.
-type PagePropertiesValueVerification2 struct {
-	PagePropertiesValueVerificationVerified   *PagePropertiesValueVerificationVerified
-	PagePropertiesValueVerificationUnverified *PagePropertiesValueVerificationUnverified
+// PagePropertiesValueVerificationVerification defines a model
+// PagePropertiesValueVerificationVerification is an untagged anyOf union: at least one field is set after unmarshaling.
+type PagePropertiesValueVerificationVerification struct {
+	PagePropertiesValueVerificationVerificationVerified   *PagePropertiesValueVerificationVerificationVerified
+	PagePropertiesValueVerificationVerificationUnverified *PagePropertiesValueVerificationVerificationUnverified
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member state names the alternative, which then
 // decodes each further member as it is read. With state first, nothing is read twice.
-func (v *PagePropertiesValueVerification2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = PagePropertiesValueVerification2{}
+func (v *PagePropertiesValueVerificationVerification) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = PagePropertiesValueVerificationVerification{}
 
 	tag, first, dec, err := jsonFirstMember(dec, "state")
 	if err != nil {
@@ -14952,19 +15060,19 @@ func (v *PagePropertiesValueVerification2) UnmarshalJSONFrom(dec *jsontext.Decod
 
 	switch tag {
 	case "verified":
-		var vv PagePropertiesValueVerificationVerified
+		var vv PagePropertiesValueVerificationVerificationVerified
 		if err := jsonMembersFrom(dec, "state", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.PagePropertiesValueVerificationVerified = &vv
+		v.PagePropertiesValueVerificationVerificationVerified = &vv
 	case "unverified":
-		var vv PagePropertiesValueVerificationUnverified
+		var vv PagePropertiesValueVerificationVerificationUnverified
 		if err := jsonMembersFrom(dec, "state", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.PagePropertiesValueVerificationUnverified = &vv
+		v.PagePropertiesValueVerificationVerificationUnverified = &vv
 	default:
 		return jsonUnknownValue("state", tag)
 	}
@@ -14973,17 +15081,17 @@ func (v *PagePropertiesValueVerification2) UnmarshalJSONFrom(dec *jsontext.Decod
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with state first, as decoding wants it, and set to the variant's value.
-func (v *PagePropertiesValueVerification2) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *PagePropertiesValueVerificationVerification) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
 		tag     string
 	)
 
 	switch {
-	case v.PagePropertiesValueVerificationVerified != nil:
-		variant, tag = v.PagePropertiesValueVerificationVerified, "verified"
-	case v.PagePropertiesValueVerificationUnverified != nil:
-		variant, tag = v.PagePropertiesValueVerificationUnverified, "unverified"
+	case v.PagePropertiesValueVerificationVerificationVerified != nil:
+		variant, tag = v.PagePropertiesValueVerificationVerificationVerified, "verified"
+	case v.PagePropertiesValueVerificationVerificationUnverified != nil:
+		variant, tag = v.PagePropertiesValueVerificationVerificationUnverified, "unverified"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -15000,13 +15108,13 @@ func (v *PagePropertiesValueVerification2) MarshalJSONTo(enc *jsontext.Encoder) 
 	return enc.WriteValue(out)
 }
 
-// PagePropertiesValueVerificationUnverified defines a model
-type PagePropertiesValueVerificationUnverified struct {
+// PagePropertiesValueVerificationVerificationUnverified defines a model
+type PagePropertiesValueVerificationVerificationUnverified struct {
 	State string `json:"state"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PagePropertiesValueVerificationUnverified declares it.
-func (v *PagePropertiesValueVerificationUnverified) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PagePropertiesValueVerificationVerificationUnverified declares it.
+func (v *PagePropertiesValueVerificationVerificationUnverified) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "state":
 		return true, json.UnmarshalDecode(dec, &v.State, jsonOptsOf(dec))
@@ -15015,14 +15123,14 @@ func (v *PagePropertiesValueVerificationUnverified) unmarshalJSONMember(dec *jso
 	return false, nil
 }
 
-// PagePropertiesValueVerificationVerified defines a model
-type PagePropertiesValueVerificationVerified struct {
-	State string      `json:"state"`
-	Date  DateRequest `json:"date,omitzero"`
+// PagePropertiesValueVerificationVerificationVerified defines a model
+type PagePropertiesValueVerificationVerificationVerified struct {
+	State string `json:"state"`
+	Date  Date   `json:"date,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PagePropertiesValueVerificationVerified declares it.
-func (v *PagePropertiesValueVerificationVerified) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PagePropertiesValueVerificationVerificationVerified declares it.
+func (v *PagePropertiesValueVerificationVerificationVerified) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "state":
 		return true, json.UnmarshalDecode(dec, &v.State, jsonOptsOf(dec))
@@ -15062,8 +15170,8 @@ func (v *PageTemplateDefault) unmarshalJSONMember(dec *jsontext.Decoder, name st
 
 // PageTemplateID defines a model
 type PageTemplateID struct {
-	Type       string    `json:"type"`
-	TemplateID IDRequest `json:"template_id"`
+	Type       string `json:"type"`
+	TemplateID ID     `json:"template_id"`
 	// IANA timezone to use when resolving template variables like @now and @today (e.g. 'America/New_York'). Defaults to the authorizing user's timezone for public integrations, or UTC for internal integrations.
 	Timezone TemplateTimezone `json:"timezone,omitzero"`
 }
@@ -15148,10 +15256,10 @@ func (e PageWriteNotificationsSchemaMode) Valid() bool {
 
 // ParagraphWithSingleLevelOfChildren defines a model
 type ParagraphWithSingleLevelOfChildren struct {
-	RichText []RichTextItemRequest `json:"rich_text"`
+	RichText []RichTextItem `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color    APIColor                            `json:"color,omitzero"`
-	Icon     PageIconRequest                     `json:"icon,omitzero"`
+	Icon     PageIcon                            `json:"icon,omitzero"`
 	Children []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
 }
 
@@ -15267,12 +15375,12 @@ func (v *ParentForBlockBasedObjectResponse) MarshalJSONTo(enc *jsontext.Encoder)
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// ParentOfDataSourceRequest defines a model
-type ParentOfDataSourceRequest struct {
+// ParentOfDataSource defines a model
+type ParentOfDataSource struct {
 	// Always `database_id`
 	Type string `json:"type,omitzero"`
 	// The ID of the parent database (with or without dashes), for example, 195de9221179449fab8075a27c979105
-	DatabaseID IDRequest `json:"database_id"`
+	DatabaseID ID `json:"database_id"`
 }
 
 // The parent of the data source. This is typically a database (`database_id`), but for externally synced data sources, can be another data source (`data_source_id`).
@@ -15618,16 +15726,16 @@ type PartialSelectResponse struct {
 	Color SelectColor `json:"color"`
 }
 
-// PartialUserObjectRequest defines a model
-type PartialUserObjectRequest struct {
+// PartialUserObject defines a model
+type PartialUserObject struct {
 	// The ID of the user.
-	ID IDRequest `json:"id"`
+	ID ID `json:"id"`
 	// The user object type name.
 	Object string `json:"object,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PartialUserObjectRequest declares it.
-func (v *PartialUserObjectRequest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether PartialUserObject declares it.
+func (v *PartialUserObject) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "id":
 		return true, json.UnmarshalDecode(dec, &v.ID, jsonOptsOf(dec))
@@ -15657,7 +15765,7 @@ type PartialUserObjectResponsePerson struct {
 
 // PatchBlockChildren defines a model
 type PatchBlockChildren struct {
-	Children []BlockObjectRequest  `json:"children"`
+	Children []BlockObject         `json:"children"`
 	Position ContentPositionSchema `json:"position,omitzero"`
 	// Controls the notifications Notion sends people about this change. Set mode to "silent" to skip page update notifications, @mention notifications, and notifications to people added to a Person property, or "default" to use the standard behavior. Database automations, reminders, and connection webhooks still work as usual. Page history, page activity, and workspace audit logs still record the change.
 	Notifications PageWriteNotificationsSchema `json:"notifications,omitzero"`
@@ -15665,9 +15773,9 @@ type PatchBlockChildren struct {
 
 // PatchPage defines a model
 type PatchPage struct {
-	Properties map[string]PagePropertiesValue `json:"properties,omitzero"`
-	Icon       *PageIconRequest               `json:"icon,omitzero"`
-	Cover      *PageCoverRequest              `json:"cover,omitzero"`
+	Properties PageProperties `json:"properties,omitzero"`
+	Icon       *PageIcon      `json:"icon,omitzero"`
+	Cover      *PageCover     `json:"cover,omitzero"`
 	// Whether the page should be locked from editing in the Notion app UI. If not provided, the locked state will not be updated.
 	IsLocked *bool             `json:"is_locked,omitzero"`
 	Template PatchPageTemplate `json:"template,omitzero"`
@@ -15684,7 +15792,7 @@ type PatchPageTemplate struct {
 	// IANA timezone to use when resolving template variables like @now and @today (e.g. 'America/New_York'). Defaults to the authorizing user's timezone for public integrations, or UTC for internal integrations.
 	Timezone   TemplateTimezone      `json:"timezone,omitzero"`
 	Type       PatchPageTemplateType `json:"type"`
-	TemplateID IDRequest             `json:"template_id,omitzero"`
+	TemplateID ID                    `json:"template_id,omitzero"`
 }
 
 // PatchPageTemplateType is a value of PatchPageTemplate's type, naming the members it holds.
@@ -15936,14 +16044,14 @@ func (v *PeoplePropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.Dec
 	return false, nil
 }
 
-// PersonGroupByConfigRequest defines a model
-type PersonGroupByConfigRequest struct {
+// PersonGroupByConfig defines a model
+type PersonGroupByConfig struct {
 	// The property type for grouping.
 	Type PersonGroupByConfigType `json:"type"`
 	// Property ID to group by.
 	PropertyID string `json:"property_id"`
 	// Sort order for groups.
-	Sort GroupSortRequest `json:"sort"`
+	Sort GroupSort `json:"sort"`
 	// Whether to hide groups that have no items.
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 }
@@ -15984,8 +16092,8 @@ func (e PersonGroupByConfigType) Valid() bool {
 // PersonIDOrMe defines a model
 // PersonIDOrMe is an untagged anyOf union: at least one field is set after unmarshaling.
 type PersonIDOrMe struct {
-	IDRequest IDRequest
-	String    string
+	ID     ID
+	String string
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -16002,9 +16110,9 @@ func (v *PersonIDOrMe) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv IDRequest
+		var vv ID
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.IDRequest = vv
+			v.ID = vv
 			matched++
 		}
 	}
@@ -16027,8 +16135,8 @@ func (v *PersonIDOrMe) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *PersonIDOrMe) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.IDRequest != "":
-		return json.MarshalEncode(enc, v.IDRequest, jsonOptsTo(enc))
+	case v.ID != "":
+		return json.MarshalEncode(enc, v.ID, jsonOptsTo(enc))
 	case v.String != "":
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
@@ -16161,12 +16269,12 @@ type PostDatabaseQuery struct {
 
 // PostPage defines a model
 type PostPage struct {
-	Parent     PostPageParent                 `json:"parent,omitzero"`
-	Properties map[string]PagePropertiesValue `json:"properties,omitzero"`
-	Icon       *PageIconRequest               `json:"icon,omitzero"`
-	Cover      *PageCoverRequest              `json:"cover,omitzero"`
-	Content    []BlockObjectRequest           `json:"content,omitzero"`
-	Children   []BlockObjectRequest           `json:"children,omitzero"`
+	Parent     PostPageParent `json:"parent,omitzero"`
+	Properties PageProperties `json:"properties,omitzero"`
+	Icon       *PageIcon      `json:"icon,omitzero"`
+	Cover      *PageCover     `json:"cover,omitzero"`
+	Content    []BlockObject  `json:"content,omitzero"`
+	Children   []BlockObject  `json:"children,omitzero"`
 	// Page content as Markdown, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions). Mutually exclusive with content/children.
 	Markdown string `json:"markdown,omitzero"`
 	// Set to true to receive an async_task response for markdown page creation. Only supported when markdown is provided.
@@ -16182,9 +16290,9 @@ type PostPage struct {
 // PostPageParent defines a model
 type PostPageParent struct {
 	Type         PostPageParentType `json:"type,omitzero"`
-	PageID       IDRequest          `json:"page_id,omitzero"`
-	DatabaseID   IDRequest          `json:"database_id,omitzero"`
-	DataSourceID IDRequest          `json:"data_source_id,omitzero"`
+	PageID       ID                 `json:"page_id,omitzero"`
+	DatabaseID   ID                 `json:"database_id,omitzero"`
+	DataSourceID ID                 `json:"data_source_id,omitzero"`
 	Workspace    *bool              `json:"workspace,omitzero"`
 }
 
@@ -16604,7 +16712,7 @@ type PropertyConfig struct {
 	// The name of the property.
 	Name string `json:"name"`
 	// The description of the property.
-	Description     PropertyDescriptionRequest                      `json:"description"`
+	Description     PropertyDescription                             `json:"description"`
 	Type            PropertyConfigType                              `json:"type"`
 	Number          *NumberDatabasePropertyConfigResponseNumber     `json:"number,omitzero"`
 	Formula         *ContentWithExpression                          `json:"formula,omitzero"`
@@ -16811,16 +16919,16 @@ func (v *PropertyConfig) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// PropertyConfigurationRequest defines a model
-type PropertyConfigurationRequest struct {
+// PropertyConfiguration defines a model
+type PropertyConfiguration struct {
 	// The description of the property.
-	Description     PropertyDescriptionRequest             `json:"description,omitzero"`
-	Type            PropertyConfigurationRequestType       `json:"type,omitzero"`
+	Description     PropertyDescription                    `json:"description,omitzero"`
+	Type            PropertyConfigurationType              `json:"type,omitzero"`
 	Number          *NumberPropertyConfigurationNumber     `json:"number,omitzero"`
 	Formula         *FormulaPropertyConfigurationFormula   `json:"formula,omitzero"`
 	Select          *SelectPropertyConfigurationSelect     `json:"select,omitzero"`
 	MultiSelect     *SelectPropertyConfigurationSelect     `json:"multi_select,omitzero"`
-	Status          *StatusPropertyConfigRequest           `json:"status,omitzero"`
+	Status          *StatusPropertyConfig                  `json:"status,omitzero"`
 	Relation        *RelationPropertyConfigurationRelation `json:"relation,omitzero"`
 	Rollup          *RollupPropertyConfigurationRollup     `json:"rollup,omitzero"`
 	UniqueID        *UniqueIDPropertyConfigurationUniqueID `json:"unique_id,omitzero"`
@@ -16844,46 +16952,46 @@ type PropertyConfigurationRequest struct {
 	Place           *EmptyObject                           `json:"place,omitzero"`
 }
 
-// PropertyConfigurationRequestType is a value of PropertyConfigurationRequest's type, naming the members it holds.
-type PropertyConfigurationRequestType string
+// PropertyConfigurationType is a value of PropertyConfiguration's type, naming the members it holds.
+type PropertyConfigurationType string
 
 const (
-	PropertyConfigurationRequestTypeNumber          PropertyConfigurationRequestType = "number"
-	PropertyConfigurationRequestTypeFormula         PropertyConfigurationRequestType = "formula"
-	PropertyConfigurationRequestTypeSelect          PropertyConfigurationRequestType = "select"
-	PropertyConfigurationRequestTypeMultiSelect     PropertyConfigurationRequestType = "multi_select"
-	PropertyConfigurationRequestTypeStatus          PropertyConfigurationRequestType = "status"
-	PropertyConfigurationRequestTypeRelation        PropertyConfigurationRequestType = "relation"
-	PropertyConfigurationRequestTypeRollup          PropertyConfigurationRequestType = "rollup"
-	PropertyConfigurationRequestTypeUniqueID        PropertyConfigurationRequestType = "unique_id"
-	PropertyConfigurationRequestTypeTitle           PropertyConfigurationRequestType = "title"
-	PropertyConfigurationRequestTypeRichText        PropertyConfigurationRequestType = "rich_text"
-	PropertyConfigurationRequestTypeURL             PropertyConfigurationRequestType = "url"
-	PropertyConfigurationRequestTypePeople          PropertyConfigurationRequestType = "people"
-	PropertyConfigurationRequestTypeFiles           PropertyConfigurationRequestType = "files"
-	PropertyConfigurationRequestTypeEmail           PropertyConfigurationRequestType = "email"
-	PropertyConfigurationRequestTypePhoneNumber     PropertyConfigurationRequestType = "phone_number"
-	PropertyConfigurationRequestTypeDate            PropertyConfigurationRequestType = "date"
-	PropertyConfigurationRequestTypeCheckbox        PropertyConfigurationRequestType = "checkbox"
-	PropertyConfigurationRequestTypeCreatedBy       PropertyConfigurationRequestType = "created_by"
-	PropertyConfigurationRequestTypeCreatedTime     PropertyConfigurationRequestType = "created_time"
-	PropertyConfigurationRequestTypeLastEditedBy    PropertyConfigurationRequestType = "last_edited_by"
-	PropertyConfigurationRequestTypeLastEditedTime  PropertyConfigurationRequestType = "last_edited_time"
-	PropertyConfigurationRequestTypeButton          PropertyConfigurationRequestType = "button"
-	PropertyConfigurationRequestTypeLocation        PropertyConfigurationRequestType = "location"
-	PropertyConfigurationRequestTypeVerification    PropertyConfigurationRequestType = "verification"
-	PropertyConfigurationRequestTypeLastVisitedTime PropertyConfigurationRequestType = "last_visited_time"
-	PropertyConfigurationRequestTypePlace           PropertyConfigurationRequestType = "place"
+	PropertyConfigurationTypeNumber          PropertyConfigurationType = "number"
+	PropertyConfigurationTypeFormula         PropertyConfigurationType = "formula"
+	PropertyConfigurationTypeSelect          PropertyConfigurationType = "select"
+	PropertyConfigurationTypeMultiSelect     PropertyConfigurationType = "multi_select"
+	PropertyConfigurationTypeStatus          PropertyConfigurationType = "status"
+	PropertyConfigurationTypeRelation        PropertyConfigurationType = "relation"
+	PropertyConfigurationTypeRollup          PropertyConfigurationType = "rollup"
+	PropertyConfigurationTypeUniqueID        PropertyConfigurationType = "unique_id"
+	PropertyConfigurationTypeTitle           PropertyConfigurationType = "title"
+	PropertyConfigurationTypeRichText        PropertyConfigurationType = "rich_text"
+	PropertyConfigurationTypeURL             PropertyConfigurationType = "url"
+	PropertyConfigurationTypePeople          PropertyConfigurationType = "people"
+	PropertyConfigurationTypeFiles           PropertyConfigurationType = "files"
+	PropertyConfigurationTypeEmail           PropertyConfigurationType = "email"
+	PropertyConfigurationTypePhoneNumber     PropertyConfigurationType = "phone_number"
+	PropertyConfigurationTypeDate            PropertyConfigurationType = "date"
+	PropertyConfigurationTypeCheckbox        PropertyConfigurationType = "checkbox"
+	PropertyConfigurationTypeCreatedBy       PropertyConfigurationType = "created_by"
+	PropertyConfigurationTypeCreatedTime     PropertyConfigurationType = "created_time"
+	PropertyConfigurationTypeLastEditedBy    PropertyConfigurationType = "last_edited_by"
+	PropertyConfigurationTypeLastEditedTime  PropertyConfigurationType = "last_edited_time"
+	PropertyConfigurationTypeButton          PropertyConfigurationType = "button"
+	PropertyConfigurationTypeLocation        PropertyConfigurationType = "location"
+	PropertyConfigurationTypeVerification    PropertyConfigurationType = "verification"
+	PropertyConfigurationTypeLastVisitedTime PropertyConfigurationType = "last_visited_time"
+	PropertyConfigurationTypePlace           PropertyConfigurationType = "place"
 )
 
-// Valid indicates whether the value is a known member of the PropertyConfigurationRequestType enum.
-func (e PropertyConfigurationRequestType) Valid() bool {
-	_, ok := tagsOfPropertyConfigurationRequest[string(e)]
+// Valid indicates whether the value is a known member of the PropertyConfigurationType enum.
+func (e PropertyConfigurationType) Valid() bool {
+	_, ok := tagsOfPropertyConfiguration[string(e)]
 	return ok
 }
 
-// tagsOfPropertyConfigurationRequest holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPropertyConfigurationRequest = map[string]map[string]jsonTagNeed{
+// tagsOfPropertyConfiguration holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfPropertyConfiguration = map[string]map[string]jsonTagNeed{
 	"number":            {"number": jsonTagRequired},
 	"formula":           {"formula": jsonTagRequired},
 	"select":            {"select": jsonTagRequired},
@@ -16913,7 +17021,7 @@ var tagsOfPropertyConfigurationRequest = map[string]map[string]jsonTagNeed{
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
-func (v *PropertyConfigurationRequest) taggedMembers() []string {
+func (v *PropertyConfiguration) taggedMembers() []string {
 	var set []string
 	if v.Number != nil {
 		set = append(set, "number")
@@ -16999,10 +17107,10 @@ func (v *PropertyConfigurationRequest) taggedMembers() []string {
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
 // alternative's own, only those of the one type names are set.
-func (v *PropertyConfigurationRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain PropertyConfigurationRequest
+func (v *PropertyConfiguration) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain PropertyConfiguration
 
-	*v = PropertyConfigurationRequest{}
+	*v = PropertyConfiguration{}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -17020,32 +17128,32 @@ func (v *PropertyConfigurationRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) 
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfPropertyConfigurationRequest, v.taggedMembers()); ok && v.Type == "" {
-		v.Type = PropertyConfigurationRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfPropertyConfiguration, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = PropertyConfigurationType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPropertyConfigurationRequest, v.taggedMembers(), present, jsonStrict(dec))
+	return jsonCheckTag("type", string(v.Type), tagsOfPropertyConfiguration, v.taggedMembers(), present, jsonStrict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
 // the value whose member is set.
-func (v *PropertyConfigurationRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain PropertyConfigurationRequest
+func (v *PropertyConfiguration) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain PropertyConfiguration
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPropertyConfigurationRequest, set); ok && out.Type == "" {
-		out.Type = PropertyConfigurationRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfPropertyConfiguration, set); ok && out.Type == "" {
+		out.Type = PropertyConfigurationType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPropertyConfigurationRequest, set, nil, true); err != nil {
+	if err := jsonCheckTag("type", string(out.Type), tagsOfPropertyConfiguration, set, nil, true); err != nil {
 		return err
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// PropertyDescriptionRequest defines a model
-type PropertyDescriptionRequest string
+// PropertyDescription defines a model
+type PropertyDescription string
 
 // PropertyFilter defines a model
 type PropertyFilter struct {
@@ -20136,36 +20244,36 @@ func (e QuerySessionsSortsItemProperty) Valid() bool {
 }
 
 // A property filter condition. The quick filter key identifies the property. Pass an empty object to add the property to the filter bar without criteria.
-// QuickFilterConditionRequest is an untagged anyOf union: at least one field is set after unmarshaling.
-type QuickFilterConditionRequest struct {
-	EmptyObject                               *EmptyObject
-	QuickFilterConditionRequestTitle          *QuickFilterConditionRequestTitle
-	QuickFilterConditionRequestRichText       *QuickFilterConditionRequestRichText
-	QuickFilterConditionRequestNumber         *QuickFilterConditionRequestNumber
-	QuickFilterConditionRequestCheckbox       *QuickFilterConditionRequestCheckbox
-	QuickFilterConditionRequestSelect         *QuickFilterConditionRequestSelect
-	QuickFilterConditionRequestMultiSelect    *QuickFilterConditionRequestMultiSelect
-	QuickFilterConditionRequestStatus         *QuickFilterConditionRequestStatus
-	QuickFilterConditionRequestDate           *QuickFilterConditionRequestDate
-	QuickFilterConditionRequestPeople         *QuickFilterConditionRequestPeople
-	QuickFilterConditionRequestFiles          *QuickFilterConditionRequestFiles
-	QuickFilterConditionRequestURL            *QuickFilterConditionRequestURL
-	QuickFilterConditionRequestEmail          *QuickFilterConditionRequestEmail
-	QuickFilterConditionRequestPhoneNumber    *QuickFilterConditionRequestPhoneNumber
-	QuickFilterConditionRequestRelation       *QuickFilterConditionRequestRelation
-	QuickFilterConditionRequestCreatedBy      *QuickFilterConditionRequestCreatedBy
-	QuickFilterConditionRequestCreatedTime    *QuickFilterConditionRequestCreatedTime
-	QuickFilterConditionRequestLastEditedBy   *QuickFilterConditionRequestLastEditedBy
-	QuickFilterConditionRequestLastEditedTime *QuickFilterConditionRequestLastEditedTime
-	QuickFilterConditionRequestFormula        *QuickFilterConditionRequestFormula
-	QuickFilterConditionRequestUniqueID       *QuickFilterConditionRequestUniqueID
-	QuickFilterConditionRequestRollup         *QuickFilterConditionRequestRollup
-	QuickFilterConditionRequestVerification   *QuickFilterConditionRequestVerification
+// QuickFilterCondition is an untagged anyOf union: at least one field is set after unmarshaling.
+type QuickFilterCondition struct {
+	EmptyObject                        *EmptyObject
+	QuickFilterConditionTitle          *QuickFilterConditionTitle
+	QuickFilterConditionRichText       *QuickFilterConditionRichText
+	QuickFilterConditionNumber         *QuickFilterConditionNumber
+	QuickFilterConditionCheckbox       *QuickFilterConditionCheckbox
+	QuickFilterConditionSelect         *QuickFilterConditionSelect
+	QuickFilterConditionMultiSelect    *QuickFilterConditionMultiSelect
+	QuickFilterConditionStatus         *QuickFilterConditionStatus
+	QuickFilterConditionDate           *QuickFilterConditionDate
+	QuickFilterConditionPeople         *QuickFilterConditionPeople
+	QuickFilterConditionFiles          *QuickFilterConditionFiles
+	QuickFilterConditionURL            *QuickFilterConditionURL
+	QuickFilterConditionEmail          *QuickFilterConditionEmail
+	QuickFilterConditionPhoneNumber    *QuickFilterConditionPhoneNumber
+	QuickFilterConditionRelation       *QuickFilterConditionRelation
+	QuickFilterConditionCreatedBy      *QuickFilterConditionCreatedBy
+	QuickFilterConditionCreatedTime    *QuickFilterConditionCreatedTime
+	QuickFilterConditionLastEditedBy   *QuickFilterConditionLastEditedBy
+	QuickFilterConditionLastEditedTime *QuickFilterConditionLastEditedTime
+	QuickFilterConditionFormula        *QuickFilterConditionFormula
+	QuickFilterConditionUniqueID       *QuickFilterConditionUniqueID
+	QuickFilterConditionRollup         *QuickFilterConditionRollup
+	QuickFilterConditionVerification   *QuickFilterConditionVerification
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = QuickFilterConditionRequest{}
+func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = QuickFilterCondition{}
 
 	opts := jsonOptsOf(dec)
 
@@ -20188,9 +20296,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"title"}, map[string]string{"type": "\"title\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestTitle
+			var vv QuickFilterConditionTitle
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestTitle = &vv
+				v.QuickFilterConditionTitle = &vv
 				matched++
 			}
 		}
@@ -20200,9 +20308,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"rich_text"}, map[string]string{"type": "\"rich_text\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestRichText
+			var vv QuickFilterConditionRichText
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestRichText = &vv
+				v.QuickFilterConditionRichText = &vv
 				matched++
 			}
 		}
@@ -20212,9 +20320,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"number"}, map[string]string{"type": "\"number\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestNumber
+			var vv QuickFilterConditionNumber
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestNumber = &vv
+				v.QuickFilterConditionNumber = &vv
 				matched++
 			}
 		}
@@ -20224,9 +20332,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"checkbox"}, map[string]string{"type": "\"checkbox\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestCheckbox
+			var vv QuickFilterConditionCheckbox
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestCheckbox = &vv
+				v.QuickFilterConditionCheckbox = &vv
 				matched++
 			}
 		}
@@ -20236,9 +20344,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"select"}, map[string]string{"type": "\"select\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestSelect
+			var vv QuickFilterConditionSelect
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestSelect = &vv
+				v.QuickFilterConditionSelect = &vv
 				matched++
 			}
 		}
@@ -20248,9 +20356,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"multi_select"}, map[string]string{"type": "\"multi_select\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestMultiSelect
+			var vv QuickFilterConditionMultiSelect
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestMultiSelect = &vv
+				v.QuickFilterConditionMultiSelect = &vv
 				matched++
 			}
 		}
@@ -20260,9 +20368,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"status"}, map[string]string{"type": "\"status\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestStatus
+			var vv QuickFilterConditionStatus
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestStatus = &vv
+				v.QuickFilterConditionStatus = &vv
 				matched++
 			}
 		}
@@ -20272,9 +20380,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"date"}, map[string]string{"type": "\"date\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestDate
+			var vv QuickFilterConditionDate
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestDate = &vv
+				v.QuickFilterConditionDate = &vv
 				matched++
 			}
 		}
@@ -20284,9 +20392,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"people"}, map[string]string{"type": "\"people\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestPeople
+			var vv QuickFilterConditionPeople
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestPeople = &vv
+				v.QuickFilterConditionPeople = &vv
 				matched++
 			}
 		}
@@ -20296,9 +20404,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"files"}, map[string]string{"type": "\"files\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestFiles
+			var vv QuickFilterConditionFiles
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestFiles = &vv
+				v.QuickFilterConditionFiles = &vv
 				matched++
 			}
 		}
@@ -20308,9 +20416,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"url"}, map[string]string{"type": "\"url\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestURL
+			var vv QuickFilterConditionURL
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestURL = &vv
+				v.QuickFilterConditionURL = &vv
 				matched++
 			}
 		}
@@ -20320,9 +20428,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"email"}, map[string]string{"type": "\"email\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestEmail
+			var vv QuickFilterConditionEmail
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestEmail = &vv
+				v.QuickFilterConditionEmail = &vv
 				matched++
 			}
 		}
@@ -20332,9 +20440,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"phone_number"}, map[string]string{"type": "\"phone_number\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestPhoneNumber
+			var vv QuickFilterConditionPhoneNumber
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestPhoneNumber = &vv
+				v.QuickFilterConditionPhoneNumber = &vv
 				matched++
 			}
 		}
@@ -20344,9 +20452,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"relation"}, map[string]string{"type": "\"relation\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestRelation
+			var vv QuickFilterConditionRelation
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestRelation = &vv
+				v.QuickFilterConditionRelation = &vv
 				matched++
 			}
 		}
@@ -20356,9 +20464,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"created_by"}, map[string]string{"type": "\"created_by\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestCreatedBy
+			var vv QuickFilterConditionCreatedBy
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestCreatedBy = &vv
+				v.QuickFilterConditionCreatedBy = &vv
 				matched++
 			}
 		}
@@ -20368,9 +20476,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"created_time"}, map[string]string{"type": "\"created_time\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestCreatedTime
+			var vv QuickFilterConditionCreatedTime
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestCreatedTime = &vv
+				v.QuickFilterConditionCreatedTime = &vv
 				matched++
 			}
 		}
@@ -20380,9 +20488,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"last_edited_by"}, map[string]string{"type": "\"last_edited_by\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestLastEditedBy
+			var vv QuickFilterConditionLastEditedBy
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestLastEditedBy = &vv
+				v.QuickFilterConditionLastEditedBy = &vv
 				matched++
 			}
 		}
@@ -20392,9 +20500,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"last_edited_time"}, map[string]string{"type": "\"last_edited_time\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestLastEditedTime
+			var vv QuickFilterConditionLastEditedTime
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestLastEditedTime = &vv
+				v.QuickFilterConditionLastEditedTime = &vv
 				matched++
 			}
 		}
@@ -20404,9 +20512,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"formula"}, map[string]string{"type": "\"formula\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestFormula
+			var vv QuickFilterConditionFormula
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestFormula = &vv
+				v.QuickFilterConditionFormula = &vv
 				matched++
 			}
 		}
@@ -20416,9 +20524,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"unique_id"}, map[string]string{"type": "\"unique_id\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestUniqueID
+			var vv QuickFilterConditionUniqueID
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestUniqueID = &vv
+				v.QuickFilterConditionUniqueID = &vv
 				matched++
 			}
 		}
@@ -20428,9 +20536,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"rollup"}, map[string]string{"type": "\"rollup\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestRollup
+			var vv QuickFilterConditionRollup
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestRollup = &vv
+				v.QuickFilterConditionRollup = &vv
 				matched++
 			}
 		}
@@ -20440,9 +20548,9 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"verification"}, map[string]string{"type": "\"verification\""}
 		if jsonFits(raw, required, pinned) {
-			var vv QuickFilterConditionRequestVerification
+			var vv QuickFilterConditionVerification
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.QuickFilterConditionRequestVerification = &vv
+				v.QuickFilterConditionVerification = &vv
 				matched++
 			}
 		}
@@ -20456,202 +20564,202 @@ func (v *QuickFilterConditionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *QuickFilterConditionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *QuickFilterCondition) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.EmptyObject != nil:
 		return json.MarshalEncode(enc, v.EmptyObject, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestTitle != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestTitle, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestRichText != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestRichText, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestNumber != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestNumber, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestCheckbox != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestCheckbox, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestSelect != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestSelect, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestMultiSelect != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestMultiSelect, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestStatus != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestStatus, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestDate != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestDate, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestPeople != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestPeople, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestFiles != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestFiles, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestURL != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestURL, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestEmail != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestEmail, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestPhoneNumber != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestPhoneNumber, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestRelation != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestRelation, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestCreatedBy != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestCreatedBy, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestCreatedTime != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestCreatedTime, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestLastEditedBy != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestLastEditedBy, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestLastEditedTime != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestLastEditedTime, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestFormula != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestFormula, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestUniqueID != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestUniqueID, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestRollup != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestRollup, jsonOptsTo(enc))
-	case v.QuickFilterConditionRequestVerification != nil:
-		return json.MarshalEncode(enc, v.QuickFilterConditionRequestVerification, jsonOptsTo(enc))
+	case v.QuickFilterConditionTitle != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionTitle, jsonOptsTo(enc))
+	case v.QuickFilterConditionRichText != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRichText, jsonOptsTo(enc))
+	case v.QuickFilterConditionNumber != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionNumber, jsonOptsTo(enc))
+	case v.QuickFilterConditionCheckbox != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionCheckbox, jsonOptsTo(enc))
+	case v.QuickFilterConditionSelect != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionSelect, jsonOptsTo(enc))
+	case v.QuickFilterConditionMultiSelect != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionMultiSelect, jsonOptsTo(enc))
+	case v.QuickFilterConditionStatus != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionStatus, jsonOptsTo(enc))
+	case v.QuickFilterConditionDate != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionDate, jsonOptsTo(enc))
+	case v.QuickFilterConditionPeople != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionPeople, jsonOptsTo(enc))
+	case v.QuickFilterConditionFiles != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionFiles, jsonOptsTo(enc))
+	case v.QuickFilterConditionURL != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionURL, jsonOptsTo(enc))
+	case v.QuickFilterConditionEmail != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionEmail, jsonOptsTo(enc))
+	case v.QuickFilterConditionPhoneNumber != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionPhoneNumber, jsonOptsTo(enc))
+	case v.QuickFilterConditionRelation != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRelation, jsonOptsTo(enc))
+	case v.QuickFilterConditionCreatedBy != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionCreatedBy, jsonOptsTo(enc))
+	case v.QuickFilterConditionCreatedTime != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionCreatedTime, jsonOptsTo(enc))
+	case v.QuickFilterConditionLastEditedBy != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionLastEditedBy, jsonOptsTo(enc))
+	case v.QuickFilterConditionLastEditedTime != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionLastEditedTime, jsonOptsTo(enc))
+	case v.QuickFilterConditionFormula != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionFormula, jsonOptsTo(enc))
+	case v.QuickFilterConditionUniqueID != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionUniqueID, jsonOptsTo(enc))
+	case v.QuickFilterConditionRollup != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionRollup, jsonOptsTo(enc))
+	case v.QuickFilterConditionVerification != nil:
+		return json.MarshalEncode(enc, v.QuickFilterConditionVerification, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// QuickFilterConditionRequestCheckbox defines a model
-type QuickFilterConditionRequestCheckbox struct {
+// QuickFilterConditionCheckbox defines a model
+type QuickFilterConditionCheckbox struct {
 	Checkbox CheckboxPropertyFilter `json:"checkbox"`
 	Type     string                 `json:"type,omitzero"`
 }
 
-// QuickFilterConditionRequestCreatedBy defines a model
-type QuickFilterConditionRequestCreatedBy struct {
+// QuickFilterConditionCreatedBy defines a model
+type QuickFilterConditionCreatedBy struct {
 	CreatedBy PeoplePropertyFilter `json:"created_by"`
 	Type      string               `json:"type,omitzero"`
 }
 
-// QuickFilterConditionRequestCreatedTime defines a model
-type QuickFilterConditionRequestCreatedTime struct {
+// QuickFilterConditionCreatedTime defines a model
+type QuickFilterConditionCreatedTime struct {
 	CreatedTime DatePropertyFilter `json:"created_time"`
 	Type        string             `json:"type,omitzero"`
 }
 
-// QuickFilterConditionRequestDate defines a model
-type QuickFilterConditionRequestDate struct {
+// QuickFilterConditionDate defines a model
+type QuickFilterConditionDate struct {
 	Date DatePropertyFilter `json:"date"`
 	Type string             `json:"type,omitzero"`
 }
 
-// QuickFilterConditionRequestEmail defines a model
-type QuickFilterConditionRequestEmail struct {
+// QuickFilterConditionEmail defines a model
+type QuickFilterConditionEmail struct {
 	Email TextPropertyFilter `json:"email"`
 	Type  string             `json:"type,omitzero"`
 }
 
-// QuickFilterConditionRequestFiles defines a model
-type QuickFilterConditionRequestFiles struct {
+// QuickFilterConditionFiles defines a model
+type QuickFilterConditionFiles struct {
 	Files ExistencePropertyFilter `json:"files"`
 	Type  string                  `json:"type,omitzero"`
 }
 
-// QuickFilterConditionRequestFormula defines a model
-type QuickFilterConditionRequestFormula struct {
+// QuickFilterConditionFormula defines a model
+type QuickFilterConditionFormula struct {
 	Formula FormulaPropertyFilter `json:"formula"`
 	Type    string                `json:"type,omitzero"`
 }
 
-// QuickFilterConditionRequestLastEditedBy defines a model
-type QuickFilterConditionRequestLastEditedBy struct {
+// QuickFilterConditionLastEditedBy defines a model
+type QuickFilterConditionLastEditedBy struct {
 	LastEditedBy PeoplePropertyFilter `json:"last_edited_by"`
 	Type         string               `json:"type,omitzero"`
 }
 
-// QuickFilterConditionRequestLastEditedTime defines a model
-type QuickFilterConditionRequestLastEditedTime struct {
+// QuickFilterConditionLastEditedTime defines a model
+type QuickFilterConditionLastEditedTime struct {
 	LastEditedTime DatePropertyFilter `json:"last_edited_time"`
 	Type           string             `json:"type,omitzero"`
 }
 
-// QuickFilterConditionRequestMultiSelect defines a model
-type QuickFilterConditionRequestMultiSelect struct {
+// QuickFilterConditionMultiSelect defines a model
+type QuickFilterConditionMultiSelect struct {
 	MultiSelect MultiSelectPropertyFilter `json:"multi_select"`
 	Type        string                    `json:"type,omitzero"`
 }
 
-// QuickFilterConditionRequestNumber defines a model
-type QuickFilterConditionRequestNumber struct {
+// QuickFilterConditionNumber defines a model
+type QuickFilterConditionNumber struct {
 	Number NumberPropertyFilter `json:"number"`
 	Type   string               `json:"type,omitzero"`
 }
 
-// QuickFilterConditionRequestPeople defines a model
-type QuickFilterConditionRequestPeople struct {
+// QuickFilterConditionPeople defines a model
+type QuickFilterConditionPeople struct {
 	People PeoplePropertyFilter `json:"people"`
 	Type   string               `json:"type,omitzero"`
 }
 
-// QuickFilterConditionRequestPhoneNumber defines a model
-type QuickFilterConditionRequestPhoneNumber struct {
+// QuickFilterConditionPhoneNumber defines a model
+type QuickFilterConditionPhoneNumber struct {
 	PhoneNumber TextPropertyFilter `json:"phone_number"`
 	Type        string             `json:"type,omitzero"`
 }
 
-// QuickFilterConditionRequestRelation defines a model
-type QuickFilterConditionRequestRelation struct {
+// QuickFilterConditionRelation defines a model
+type QuickFilterConditionRelation struct {
 	Relation RelationPropertyFilter `json:"relation"`
 	Type     string                 `json:"type,omitzero"`
-}
-
-// QuickFilterConditionRequestRichText defines a model
-type QuickFilterConditionRequestRichText struct {
-	RichText TextPropertyFilter `json:"rich_text"`
-	Type     string             `json:"type,omitzero"`
-}
-
-// QuickFilterConditionRequestRollup defines a model
-type QuickFilterConditionRequestRollup struct {
-	Rollup RollupPropertyFilter `json:"rollup"`
-	Type   string               `json:"type,omitzero"`
-}
-
-// QuickFilterConditionRequestSelect defines a model
-type QuickFilterConditionRequestSelect struct {
-	Select SelectPropertyFilter `json:"select"`
-	Type   string               `json:"type,omitzero"`
-}
-
-// QuickFilterConditionRequestStatus defines a model
-type QuickFilterConditionRequestStatus struct {
-	Status StatusPropertyFilter `json:"status"`
-	Type   string               `json:"type,omitzero"`
-}
-
-// QuickFilterConditionRequestTitle defines a model
-type QuickFilterConditionRequestTitle struct {
-	Title TextPropertyFilter `json:"title"`
-	Type  string             `json:"type,omitzero"`
-}
-
-// QuickFilterConditionRequestURL defines a model
-type QuickFilterConditionRequestURL struct {
-	URL  TextPropertyFilter `json:"url"`
-	Type string             `json:"type,omitzero"`
-}
-
-// QuickFilterConditionRequestUniqueID defines a model
-type QuickFilterConditionRequestUniqueID struct {
-	UniqueID NumberPropertyFilter `json:"unique_id"`
-	Type     string               `json:"type,omitzero"`
-}
-
-// QuickFilterConditionRequestVerification defines a model
-type QuickFilterConditionRequestVerification struct {
-	Verification PropertyFilterVerification2 `json:"verification"`
-	Type         string                      `json:"type,omitzero"`
 }
 
 // A property filter condition. Same shape as a property filter but without the "property" field. For example: { "select": { "equals": "High" } }. An empty object means the quick filter has no criteria yet.
 type QuickFilterConditionResponse struct{}
 
-// RelationGroupByConfigRequest defines a model
-type RelationGroupByConfigRequest struct {
+// QuickFilterConditionRichText defines a model
+type QuickFilterConditionRichText struct {
+	RichText TextPropertyFilter `json:"rich_text"`
+	Type     string             `json:"type,omitzero"`
+}
+
+// QuickFilterConditionRollup defines a model
+type QuickFilterConditionRollup struct {
+	Rollup RollupPropertyFilter `json:"rollup"`
+	Type   string               `json:"type,omitzero"`
+}
+
+// QuickFilterConditionSelect defines a model
+type QuickFilterConditionSelect struct {
+	Select SelectPropertyFilter `json:"select"`
+	Type   string               `json:"type,omitzero"`
+}
+
+// QuickFilterConditionStatus defines a model
+type QuickFilterConditionStatus struct {
+	Status StatusPropertyFilter `json:"status"`
+	Type   string               `json:"type,omitzero"`
+}
+
+// QuickFilterConditionTitle defines a model
+type QuickFilterConditionTitle struct {
+	Title TextPropertyFilter `json:"title"`
+	Type  string             `json:"type,omitzero"`
+}
+
+// QuickFilterConditionURL defines a model
+type QuickFilterConditionURL struct {
+	URL  TextPropertyFilter `json:"url"`
+	Type string             `json:"type,omitzero"`
+}
+
+// QuickFilterConditionUniqueID defines a model
+type QuickFilterConditionUniqueID struct {
+	UniqueID NumberPropertyFilter `json:"unique_id"`
+	Type     string               `json:"type,omitzero"`
+}
+
+// QuickFilterConditionVerification defines a model
+type QuickFilterConditionVerification struct {
+	Verification PropertyFilterVerification2 `json:"verification"`
+	Type         string                      `json:"type,omitzero"`
+}
+
+// RelationGroupByConfig defines a model
+type RelationGroupByConfig struct {
 	// The property type for grouping.
 	Type string `json:"type"`
 	// Property ID to group by.
 	PropertyID string `json:"property_id"`
 	// Sort order for groups.
-	Sort GroupSortRequest `json:"sort"`
+	Sort GroupSort `json:"sort"`
 	// Whether to hide groups that have no items.
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 }
@@ -20672,7 +20780,7 @@ type RelationGroupByConfigResponse struct {
 
 // RelationItemPropertyValue defines a model
 type RelationItemPropertyValue struct {
-	ID IDRequest `json:"id"`
+	ID ID `json:"id"`
 }
 
 // RelationPropertyConfiguration defines a model
@@ -20684,7 +20792,7 @@ type RelationPropertyConfiguration struct {
 
 // RelationPropertyConfigurationRelation defines a model
 type RelationPropertyConfigurationRelation struct {
-	DataSourceID   IDRequest                                                           `json:"data_source_id"`
+	DataSourceID   ID                                                                  `json:"data_source_id"`
 	Type           RelationPropertyConfigurationRelationType                           `json:"type,omitzero"`
 	SingleProperty *EmptyObject                                                        `json:"single_property,omitzero"`
 	DualProperty   *RelationPropertyConfigurationRelationAllOfDualPropertyDualProperty `json:"dual_property,omitzero"`
@@ -20852,12 +20960,12 @@ func (v *RelationPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 // RelationPropertyFilterContains defines a model
 type RelationPropertyFilterContains struct {
-	Contains IDRequest `json:"contains"`
+	Contains ID `json:"contains"`
 }
 
 // RelationPropertyFilterDoesNotContain defines a model
 type RelationPropertyFilterDoesNotContain struct {
-	DoesNotContain IDRequest `json:"does_not_contain"`
+	DoesNotContain ID `json:"does_not_contain"`
 }
 
 // RelationPropertyItemObjectResponse defines a model
@@ -22092,43 +22200,43 @@ func (v *RichText) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// RichTextItemRequest defines a model
-type RichTextItemRequest struct {
+// RichTextItem defines a model
+type RichTextItem struct {
 	// All rich text objects contain an annotations object that sets the styling for the rich text.
-	Annotations *AnnotationRequest      `json:"annotations,omitzero"`
-	Type        RichTextItemRequestType `json:"type,omitzero"`
+	Annotations *Annotation      `json:"annotations,omitzero"`
+	Type        RichTextItemType `json:"type,omitzero"`
 	// If a rich text object's type value is `text`, then the corresponding text field contains an object including the text content and any inline link.
-	Text *TextRichTextItemRequestText `json:"text,omitzero"`
+	Text *TextRichTextItemText `json:"text,omitzero"`
 	// Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.
-	Mention *MentionRichTextItemRequestMention `json:"mention,omitzero"`
+	Mention *MentionRichTextItemMention `json:"mention,omitzero"`
 	// Notion supports inline LaTeX equations as rich text objects with a type value of `equation`.
 	Equation *ExpressionObject `json:"equation,omitzero"`
 }
 
-// RichTextItemRequestType is a value of RichTextItemRequest's type, naming the members it holds.
-type RichTextItemRequestType string
+// RichTextItemType is a value of RichTextItem's type, naming the members it holds.
+type RichTextItemType string
 
 const (
-	RichTextItemRequestTypeText     RichTextItemRequestType = "text"
-	RichTextItemRequestTypeMention  RichTextItemRequestType = "mention"
-	RichTextItemRequestTypeEquation RichTextItemRequestType = "equation"
+	RichTextItemTypeText     RichTextItemType = "text"
+	RichTextItemTypeMention  RichTextItemType = "mention"
+	RichTextItemTypeEquation RichTextItemType = "equation"
 )
 
-// Valid indicates whether the value is a known member of the RichTextItemRequestType enum.
-func (e RichTextItemRequestType) Valid() bool {
-	_, ok := tagsOfRichTextItemRequest[string(e)]
+// Valid indicates whether the value is a known member of the RichTextItemType enum.
+func (e RichTextItemType) Valid() bool {
+	_, ok := tagsOfRichTextItem[string(e)]
 	return ok
 }
 
-// tagsOfRichTextItemRequest holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfRichTextItemRequest = map[string]map[string]jsonTagNeed{
+// tagsOfRichTextItem holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfRichTextItem = map[string]map[string]jsonTagNeed{
 	"text":     {"text": jsonTagRequired},
 	"mention":  {"mention": jsonTagRequired},
 	"equation": {"equation": jsonTagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
-func (v *RichTextItemRequest) taggedMembers() []string {
+func (v *RichTextItem) taggedMembers() []string {
 	var set []string
 	if v.Text != nil {
 		set = append(set, "text")
@@ -22145,10 +22253,10 @@ func (v *RichTextItemRequest) taggedMembers() []string {
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
 // alternative's own, only those of the one type names are set.
-func (v *RichTextItemRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain RichTextItemRequest
+func (v *RichTextItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain RichTextItem
 
-	*v = RichTextItemRequest{}
+	*v = RichTextItem{}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -22166,24 +22274,24 @@ func (v *RichTextItemRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfRichTextItemRequest, v.taggedMembers()); ok && v.Type == "" {
-		v.Type = RichTextItemRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfRichTextItem, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = RichTextItemType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfRichTextItemRequest, v.taggedMembers(), present, jsonStrict(dec))
+	return jsonCheckTag("type", string(v.Type), tagsOfRichTextItem, v.taggedMembers(), present, jsonStrict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
 // the value whose member is set.
-func (v *RichTextItemRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain RichTextItemRequest
+func (v *RichTextItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain RichTextItem
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfRichTextItemRequest, set); ok && out.Type == "" {
-		out.Type = RichTextItemRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfRichTextItem, set); ok && out.Type == "" {
+		out.Type = RichTextItemType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfRichTextItemRequest, set, nil, true); err != nil {
+	if err := jsonCheckTag("type", string(out.Type), tagsOfRichTextItem, set, nil, true); err != nil {
 		return err
 	}
 
@@ -23091,14 +23199,14 @@ type SelectDatabasePropertyConfigSelect struct {
 	Options []SelectProperty `json:"options"`
 }
 
-// SelectGroupByConfigRequest defines a model
-type SelectGroupByConfigRequest struct {
+// SelectGroupByConfig defines a model
+type SelectGroupByConfig struct {
 	// The property type for grouping.
 	Type SelectGroupByConfigType `json:"type"`
 	// Property ID to group by.
 	PropertyID string `json:"property_id"`
 	// Sort order for groups.
-	Sort GroupSortRequest `json:"sort"`
+	Sort GroupSort `json:"sort"`
 	// Whether to hide groups that have no items.
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 }
@@ -24766,6 +24874,20 @@ type StatusDatabasePropertyConfigResponseStatusGroupsItem struct {
 	OptionIds []string `json:"option_ids"`
 }
 
+// StatusGroupByConfig defines a model
+type StatusGroupByConfig struct {
+	// The property type for grouping.
+	Type string `json:"type"`
+	// Property ID to group by.
+	PropertyID string `json:"property_id"`
+	// How to group status values. "group" groups by status group (To Do/In Progress/Done), "option" groups by individual option.
+	GroupBy StatusGroupByConfigGroupBy `json:"group_by"`
+	// Sort order for groups.
+	Sort GroupSort `json:"sort"`
+	// Whether to hide groups that have no items.
+	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
+}
+
 // How to group status values. "group" groups by status group (To Do/In Progress/Done), "option" groups by individual option.
 type StatusGroupByConfigGroupBy string
 
@@ -24782,20 +24904,6 @@ func (e StatusGroupByConfigGroupBy) Valid() bool {
 	default:
 		return false
 	}
-}
-
-// StatusGroupByConfigRequest defines a model
-type StatusGroupByConfigRequest struct {
-	// The property type for grouping.
-	Type string `json:"type"`
-	// Property ID to group by.
-	PropertyID string `json:"property_id"`
-	// How to group status values. "group" groups by status group (To Do/In Progress/Done), "option" groups by individual option.
-	GroupBy StatusGroupByConfigGroupBy `json:"group_by"`
-	// Sort order for groups.
-	Sort GroupSortRequest `json:"sort"`
-	// Whether to hide groups that have no items.
-	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 }
 
 // StatusGroupByConfigResponse defines a model
@@ -24817,8 +24925,8 @@ type StatusGroupByConfigResponse struct {
 // StatusGroupNames defines a model
 // StatusGroupNames is an untagged anyOf union: at least one field is set after unmarshaling.
 type StatusGroupNames struct {
-	StringRequest  StringRequest
-	StringRequest2 []StringRequest
+	String  String
+	String2 []String
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -24835,17 +24943,17 @@ func (v *StatusGroupNames) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	{
-		var vv StringRequest
+		var vv String
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.StringRequest = vv
+			v.String = vv
 			matched++
 		}
 	}
 
 	{
-		var vv []StringRequest
+		var vv []String
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.StringRequest2 = vv
+			v.String2 = vv
 			matched++
 		}
 	}
@@ -24860,13 +24968,23 @@ func (v *StatusGroupNames) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *StatusGroupNames) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.StringRequest != "":
-		return json.MarshalEncode(enc, v.StringRequest, jsonOptsTo(enc))
-	case v.StringRequest2 != nil:
-		return json.MarshalEncode(enc, v.StringRequest2, jsonOptsTo(enc))
+	case v.String != "":
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
+	case v.String2 != nil:
+		return json.MarshalEncode(enc, v.String2, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// StatusOption defines a model
+type StatusOption struct {
+	Name string `json:"name"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
+	Color       SelectColor `json:"color,omitzero"`
+	Description string      `json:"description,omitzero"`
+	// One of: `To-do`, `In progress`, `Complete`
+	Group StatusOptionGroup `json:"group,omitzero"`
 }
 
 // One of: `To-do`, `In progress`, `Complete`
@@ -24888,18 +25006,138 @@ func (e StatusOptionGroup) Valid() bool {
 	}
 }
 
-// StatusOptionRequest defines a model
-type StatusOptionRequest struct {
-	Name string `json:"name"`
+// StatusOptionRequestArray defines a model
+type StatusOptionRequestArray []StatusOption
+
+// StatusOptionUpdate defines a model
+type StatusOptionUpdate struct {
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
 	Color       SelectColor `json:"color,omitzero"`
 	Description string      `json:"description,omitzero"`
 	// One of: `To-do`, `In progress`, `Complete`
-	Group StatusOptionGroup `json:"group,omitzero"`
+	Group                   StatusOptionGroup       `json:"group,omitzero"`
+	StatusOptionUpdateAllOf StatusOptionUpdateAllOf `json:"-"`
 }
 
-// StatusOptionRequestArray defines a model
-type StatusOptionRequestArray []StatusOptionRequest
+// fieldsOfStatusOptionUpdate is StatusOptionUpdate without its methods, to encode the fields outside its union.
+type fieldsOfStatusOptionUpdate StatusOptionUpdate
+
+// membersOfStatusOptionUpdate are the members StatusOptionUpdate declares outside its union.
+var membersOfStatusOptionUpdate = map[string]bool{"color": true, "description": true, "group": true}
+
+// variantsOfStatusOptionUpdate are the alternatives its union is decoded as, in order.
+var variantsOfStatusOptionUpdate = []jsonVariant{
+	{
+		value:    "",
+		members:  map[string]bool{"id": true, "name": true},
+		required: []string{"name"},
+		pinned:   map[string]string{},
+	},
+	{
+		value:    "",
+		members:  map[string]bool{"id": true, "name": true},
+		required: []string{"id"},
+		pinned:   map[string]string{},
+	},
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of StatusOptionUpdateAllOf each
+// decode the members they declare, and a member neither declares is an error.
+func (v *StatusOptionUpdate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
+
+	*v = StatusOptionUpdate{}
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	chosen, err := jsonChooseVariants(raw, "", variantsOfStatusOptionUpdate, membersOfStatusOptionUpdate, true, strict)
+	if err != nil {
+		return err
+	}
+
+	fields, err := jsonSelect(raw, membersOfStatusOptionUpdate)
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(fields, (*fieldsOfStatusOptionUpdate)(v), opts); err != nil {
+		return err
+	}
+
+	for _, i := range chosen {
+		variant, err := jsonSelect(raw, variantsOfStatusOptionUpdate[i].members)
+		if err != nil {
+			return err
+		}
+
+		switch i {
+		case 0:
+			var vv StatusOptionUpdateAllOfName
+			if err := json.Unmarshal(variant, &vv, opts); err != nil {
+				return err
+			}
+
+			v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName = &vv
+		case 1:
+			var vv StatusOptionUpdateAllOfID
+			if err := json.Unmarshal(variant, &vv, opts); err != nil {
+				return err
+			}
+
+			v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID = &vv
+		}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of StatusOptionUpdateAllOf that is set;
+// a member both write must have the same value in each.
+func (v *StatusOptionUpdate) MarshalJSONTo(enc *jsontext.Encoder) error {
+	out, err := json.Marshal((*fieldsOfStatusOptionUpdate)(v), jsonOptsTo(enc))
+	if err != nil {
+		return err
+	}
+
+	var set int
+
+	if v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName != nil {
+
+		variant, err := json.Marshal(v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName, jsonOptsTo(enc))
+		if err != nil {
+			return err
+		}
+
+		if out, err = jsonMerge(out, variant); err != nil {
+			return err
+		}
+
+		set++
+	}
+
+	if v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID != nil {
+
+		variant, err := json.Marshal(v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID, jsonOptsTo(enc))
+		if err != nil {
+			return err
+		}
+
+		if out, err = jsonMerge(out, variant); err != nil {
+			return err
+		}
+
+		set++
+	}
+
+	if set != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of StatusOptionUpdateAllOf set, got %d", set)}
+	}
+
+	return enc.WriteValue(out)
+}
 
 // StatusOptionUpdateAllOf defines a model
 // StatusOptionUpdateAllOf is an untagged oneOf union: exactly one field is set after unmarshaling.
@@ -24979,147 +25217,17 @@ type StatusOptionUpdateAllOfName struct {
 	ID   string `json:"id,omitzero"`
 }
 
-// StatusOptionUpdateRequest defines a model
-type StatusOptionUpdateRequest struct {
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
-	Color       SelectColor `json:"color,omitzero"`
-	Description string      `json:"description,omitzero"`
-	// One of: `To-do`, `In progress`, `Complete`
-	Group                   StatusOptionGroup       `json:"group,omitzero"`
-	StatusOptionUpdateAllOf StatusOptionUpdateAllOf `json:"-"`
-}
-
-// fieldsOfStatusOptionUpdateRequest is StatusOptionUpdateRequest without its methods, to encode the fields outside its union.
-type fieldsOfStatusOptionUpdateRequest StatusOptionUpdateRequest
-
-// membersOfStatusOptionUpdateRequest are the members StatusOptionUpdateRequest declares outside its union.
-var membersOfStatusOptionUpdateRequest = map[string]bool{"color": true, "description": true, "group": true}
-
-// variantsOfStatusOptionUpdateRequest are the alternatives its union is decoded as, in order.
-var variantsOfStatusOptionUpdateRequest = []jsonVariant{
-	{
-		value:    "",
-		members:  map[string]bool{"id": true, "name": true},
-		required: []string{"name"},
-		pinned:   map[string]string{},
-	},
-	{
-		value:    "",
-		members:  map[string]bool{"id": true, "name": true},
-		required: []string{"id"},
-		pinned:   map[string]string{},
-	},
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of StatusOptionUpdateAllOf each
-// decode the members they declare, and a member neither declares is an error.
-func (v *StatusOptionUpdateRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
-
-	*v = StatusOptionUpdateRequest{}
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	chosen, err := jsonChooseVariants(raw, "", variantsOfStatusOptionUpdateRequest, membersOfStatusOptionUpdateRequest, true, strict)
-	if err != nil {
-		return err
-	}
-
-	fields, err := jsonSelect(raw, membersOfStatusOptionUpdateRequest)
-	if err != nil {
-		return err
-	}
-
-	if err := json.Unmarshal(fields, (*fieldsOfStatusOptionUpdateRequest)(v), opts); err != nil {
-		return err
-	}
-
-	for _, i := range chosen {
-		variant, err := jsonSelect(raw, variantsOfStatusOptionUpdateRequest[i].members)
-		if err != nil {
-			return err
-		}
-
-		switch i {
-		case 0:
-			var vv StatusOptionUpdateAllOfName
-			if err := json.Unmarshal(variant, &vv, opts); err != nil {
-				return err
-			}
-
-			v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName = &vv
-		case 1:
-			var vv StatusOptionUpdateAllOfID
-			if err := json.Unmarshal(variant, &vv, opts); err != nil {
-				return err
-			}
-
-			v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID = &vv
-		}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It merges the fields with each alternative of StatusOptionUpdateAllOf that is set;
-// a member both write must have the same value in each.
-func (v *StatusOptionUpdateRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
-	out, err := json.Marshal((*fieldsOfStatusOptionUpdateRequest)(v), jsonOptsTo(enc))
-	if err != nil {
-		return err
-	}
-
-	var set int
-
-	if v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName != nil {
-
-		variant, err := json.Marshal(v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfName, jsonOptsTo(enc))
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID != nil {
-
-		variant, err := json.Marshal(v.StatusOptionUpdateAllOf.StatusOptionUpdateAllOfID, jsonOptsTo(enc))
-		if err != nil {
-			return err
-		}
-
-		if out, err = jsonMerge(out, variant); err != nil {
-			return err
-		}
-
-		set++
-	}
-
-	if set != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of StatusOptionUpdateAllOf set, got %d", set)}
-	}
-
-	return enc.WriteValue(out)
-}
-
 // StatusOptionUpdateRequestArray defines a model
-type StatusOptionUpdateRequestArray []StatusOptionUpdateRequest
+type StatusOptionUpdateRequestArray []StatusOptionUpdate
 
-// StatusPropertyConfigRequest defines a model
-type StatusPropertyConfigRequest struct {
+// StatusPropertyConfig defines a model
+type StatusPropertyConfig struct {
 	// The initial status options. If not provided, defaults are created.
 	Options StatusOptionRequestArray `json:"options,omitzero"`
 }
 
-// StatusPropertyConfigUpdateRequest defines a model
-type StatusPropertyConfigUpdateRequest struct {
+// StatusPropertyConfigUpdate defines a model
+type StatusPropertyConfigUpdate struct {
 	// Status options to add or update. Use group to assign an option to To-do, In progress, or Complete. Existing options keep their current group when group is omitted; new options use To-do when present, or the first existing group otherwise.
 	Options StatusOptionUpdateRequestArray `json:"options,omitzero"`
 }
@@ -25337,6 +25445,9 @@ type StatusValueFilterGroupEquals struct {
 	GroupEquals StatusGroupNames `json:"group_equals"`
 }
 
+// String defines a model
+type String string
+
 // StringOrStringArray defines a model
 // StringOrStringArray is an untagged anyOf union: at least one field is set after unmarshaling.
 type StringOrStringArray struct {
@@ -25392,8 +25503,17 @@ func (v *StringOrStringArray) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
-// StringRequest defines a model
-type StringRequest string
+// SubtaskConfig defines a model
+type SubtaskConfig struct {
+	// Relation property ID used for parent-child nesting.
+	PropertyID string `json:"property_id,omitzero"`
+	// How sub-items are displayed. "show" renders hierarchically with toggles, "hidden" shows parents with a count, "flattened" shows sub-items with a parent indicator, "disabled" turns off sub-item rendering.
+	DisplayMode SubtaskConfigDisplayMode `json:"display_mode,omitzero"`
+	// Which items are included when filtering. "parents" includes parent items only, "parents_and_subitems" includes both, "subitems" includes sub-items only.
+	FilterScope SubtaskConfigFilterScope `json:"filter_scope,omitzero"`
+	// Property ID of the column showing the sub-item expand/collapse toggle.
+	ToggleColumnID string `json:"toggle_column_id,omitzero"`
+}
 
 // How sub-items are displayed. "show" renders hierarchically with toggles, "hidden" shows parents with a count, "flattened" shows sub-items with a parent indicator, "disabled" turns off sub-item rendering.
 type SubtaskConfigDisplayMode string
@@ -25434,18 +25554,6 @@ func (e SubtaskConfigFilterScope) Valid() bool {
 	}
 }
 
-// SubtaskConfigRequest defines a model
-type SubtaskConfigRequest struct {
-	// Relation property ID used for parent-child nesting.
-	PropertyID string `json:"property_id,omitzero"`
-	// How sub-items are displayed. "show" renders hierarchically with toggles, "hidden" shows parents with a count, "flattened" shows sub-items with a parent indicator, "disabled" turns off sub-item rendering.
-	DisplayMode SubtaskConfigDisplayMode `json:"display_mode,omitzero"`
-	// Which items are included when filtering. "parents" includes parent items only, "parents_and_subitems" includes both, "subitems" includes sub-items only.
-	FilterScope SubtaskConfigFilterScope `json:"filter_scope,omitzero"`
-	// Property ID of the column showing the sub-item expand/collapse toggle.
-	ToggleColumnID string `json:"toggle_column_id,omitzero"`
-}
-
 // SubtaskConfigResponse defines a model
 type SubtaskConfigResponse struct {
 	// Relation property ID used for parent-child nesting.
@@ -25465,8 +25573,8 @@ type SyncedBlockBlockObjectResponseSyncedBlock struct {
 
 // SyncedBlockBlockObjectResponseSyncedBlockSyncedFrom defines a model
 type SyncedBlockBlockObjectResponseSyncedBlockSyncedFrom struct {
-	Type    string    `json:"type"`
-	BlockID IDRequest `json:"block_id"`
+	Type    string `json:"type"`
+	BlockID ID     `json:"block_id"`
 }
 
 // TabItemWithSingleLevelOfChildren defines a model
@@ -25509,21 +25617,21 @@ type TableRequestWithTableRowChildren struct {
 
 // TableRow defines a model
 type TableRow struct {
-	TableRow ContentWithTableRowRequest `json:"table_row"`
-	Type     string                     `json:"type,omitzero"`
-	Object   string                     `json:"object,omitzero"`
+	TableRow ContentWithTableRow `json:"table_row"`
+	Type     string              `json:"type,omitzero"`
+	Object   string              `json:"object,omitzero"`
 }
 
-// TableViewConfigRequest defines a model
-type TableViewConfigRequest struct {
+// TableViewConfig defines a model
+type TableViewConfig struct {
 	// The view type. Must be "table".
 	Type string `json:"type"`
 	// Property visibility and display configuration. Pass null to clear.
-	Properties []ViewPropertyConfigRequest `json:"properties,omitzero"`
+	Properties []ViewPropertyConfig `json:"properties,omitzero"`
 	// Group-by configuration for the table. Pass null to remove grouping.
-	GroupBy *GroupByConfigRequest `json:"group_by,omitzero"`
+	GroupBy *GroupByConfig `json:"group_by,omitzero"`
 	// Subtask (sub-item) configuration. Pass null to reset subtask config to defaults (which may show subtasks). Use `{ "display_mode": "disabled" }` to explicitly disable subtasks.
-	Subtasks *SubtaskConfigRequest `json:"subtasks,omitzero"`
+	Subtasks *SubtaskConfig `json:"subtasks,omitzero"`
 	// Whether to wrap cell content in the table.
 	WrapCells *bool `json:"wrap_cells,omitzero"`
 	// Number of columns frozen from the left side of the table.
@@ -25532,8 +25640,8 @@ type TableViewConfigRequest struct {
 	ShowVerticalLines *bool `json:"show_vertical_lines,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether TableViewConfigRequest declares it.
-func (v *TableViewConfigRequest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether TableViewConfig declares it.
+func (v *TableViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -25599,55 +25707,37 @@ type TemplateBlockObjectResponseTemplate struct {
 	RichText RichTexts `json:"rich_text"`
 }
 
-// The date of the template mention.
-type TemplateMentionDateTemplateMentionTemplateMentionDate string
-
-const (
-	TemplateMentionDateTemplateMentionTemplateMentionDateToday TemplateMentionDateTemplateMentionTemplateMentionDate = "today"
-	TemplateMentionDateTemplateMentionTemplateMentionDateNow   TemplateMentionDateTemplateMentionTemplateMentionDate = "now"
-)
-
-// Valid indicates whether the value is a known member of the TemplateMentionDateTemplateMentionTemplateMentionDate enum.
-func (e TemplateMentionDateTemplateMentionTemplateMentionDate) Valid() bool {
-	switch e {
-	case TemplateMentionDateTemplateMentionTemplateMentionDateToday, TemplateMentionDateTemplateMentionTemplateMentionDateNow:
-		return true
-	default:
-		return false
-	}
-}
-
-// TemplateMentionRequest defines a model
-type TemplateMentionRequest struct {
-	Type TemplateMentionRequestType `json:"type,omitzero"`
+// TemplateMention defines a model
+type TemplateMention struct {
+	Type TemplateMentionType `json:"type,omitzero"`
 	// The date of the template mention.
 	TemplateMentionDate TemplateMentionDateTemplateMentionTemplateMentionDate `json:"template_mention_date,omitzero"`
 	// The user of the template mention.
 	TemplateMentionUser string `json:"template_mention_user,omitzero"`
 }
 
-// TemplateMentionRequestType is a value of TemplateMentionRequest's type, naming the members it holds.
-type TemplateMentionRequestType string
+// TemplateMentionType is a value of TemplateMention's type, naming the members it holds.
+type TemplateMentionType string
 
 const (
-	TemplateMentionRequestTypeTemplateMentionDate TemplateMentionRequestType = "template_mention_date"
-	TemplateMentionRequestTypeTemplateMentionUser TemplateMentionRequestType = "template_mention_user"
+	TemplateMentionTypeTemplateMentionDate TemplateMentionType = "template_mention_date"
+	TemplateMentionTypeTemplateMentionUser TemplateMentionType = "template_mention_user"
 )
 
-// Valid indicates whether the value is a known member of the TemplateMentionRequestType enum.
-func (e TemplateMentionRequestType) Valid() bool {
-	_, ok := tagsOfTemplateMentionRequest[string(e)]
+// Valid indicates whether the value is a known member of the TemplateMentionType enum.
+func (e TemplateMentionType) Valid() bool {
+	_, ok := tagsOfTemplateMention[string(e)]
 	return ok
 }
 
-// tagsOfTemplateMentionRequest holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfTemplateMentionRequest = map[string]map[string]jsonTagNeed{
+// tagsOfTemplateMention holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfTemplateMention = map[string]map[string]jsonTagNeed{
 	"template_mention_date": {"template_mention_date": jsonTagRequired},
 	"template_mention_user": {"template_mention_user": jsonTagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
-func (v *TemplateMentionRequest) taggedMembers() []string {
+func (v *TemplateMention) taggedMembers() []string {
 	var set []string
 	if v.TemplateMentionDate != "" {
 		set = append(set, "template_mention_date")
@@ -25661,10 +25751,10 @@ func (v *TemplateMentionRequest) taggedMembers() []string {
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
 // alternative's own, only those of the one type names are set.
-func (v *TemplateMentionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain TemplateMentionRequest
+func (v *TemplateMention) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain TemplateMention
 
-	*v = TemplateMentionRequest{}
+	*v = TemplateMention{}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -25682,28 +25772,46 @@ func (v *TemplateMentionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfTemplateMentionRequest, v.taggedMembers()); ok && v.Type == "" {
-		v.Type = TemplateMentionRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfTemplateMention, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = TemplateMentionType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfTemplateMentionRequest, v.taggedMembers(), present, jsonStrict(dec))
+	return jsonCheckTag("type", string(v.Type), tagsOfTemplateMention, v.taggedMembers(), present, jsonStrict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
 // the value whose member is set.
-func (v *TemplateMentionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain TemplateMentionRequest
+func (v *TemplateMention) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain TemplateMention
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfTemplateMentionRequest, set); ok && out.Type == "" {
-		out.Type = TemplateMentionRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfTemplateMention, set); ok && out.Type == "" {
+		out.Type = TemplateMentionType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfTemplateMentionRequest, set, nil, true); err != nil {
+	if err := jsonCheckTag("type", string(out.Type), tagsOfTemplateMention, set, nil, true); err != nil {
 		return err
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
+}
+
+// The date of the template mention.
+type TemplateMentionDateTemplateMentionTemplateMentionDate string
+
+const (
+	TemplateMentionDateTemplateMentionTemplateMentionDateToday TemplateMentionDateTemplateMentionTemplateMentionDate = "today"
+	TemplateMentionDateTemplateMentionTemplateMentionDateNow   TemplateMentionDateTemplateMentionTemplateMentionDate = "now"
+)
+
+// Valid indicates whether the value is a known member of the TemplateMentionDateTemplateMentionTemplateMentionDate enum.
+func (e TemplateMentionDateTemplateMentionTemplateMentionDate) Valid() bool {
+	switch e {
+	case TemplateMentionDateTemplateMentionTemplateMentionDateToday, TemplateMentionDateTemplateMentionTemplateMentionDateNow:
+		return true
+	default:
+		return false
+	}
 }
 
 // TemplateMentionResponse defines a model
@@ -25793,6 +25901,23 @@ func (v *TemplateMentionResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 // IANA timezone to use when resolving template variables like @now and @today (e.g. 'America/New_York'). Defaults to the authorizing user's timezone for public integrations, or UTC for internal integrations.
 type TemplateTimezone string
 
+// Text defines a model
+type Text string
+
+// TextGroupByConfig defines a model
+type TextGroupByConfig struct {
+	// The property type for grouping.
+	Type TextGroupByConfigType `json:"type"`
+	// Property ID to group by.
+	PropertyID string `json:"property_id"`
+	// How to group text values. "exact" = exact match, "alphabet_prefix" = first letter.
+	GroupBy TextGroupByConfigGroupBy `json:"group_by"`
+	// Sort order for groups.
+	Sort GroupSort `json:"sort"`
+	// Whether to hide groups that have no items.
+	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
+}
+
 // How to group text values. "exact" = exact match, "alphabet_prefix" = first letter.
 type TextGroupByConfigGroupBy string
 
@@ -25809,20 +25934,6 @@ func (e TextGroupByConfigGroupBy) Valid() bool {
 	default:
 		return false
 	}
-}
-
-// TextGroupByConfigRequest defines a model
-type TextGroupByConfigRequest struct {
-	// The property type for grouping.
-	Type TextGroupByConfigType `json:"type"`
-	// Property ID to group by.
-	PropertyID string `json:"property_id"`
-	// How to group text values. "exact" = exact match, "alphabet_prefix" = first letter.
-	GroupBy TextGroupByConfigGroupBy `json:"group_by"`
-	// Sort order for groups.
-	Sort GroupSortRequest `json:"sort"`
-	// Whether to hide groups that have no items.
-	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 }
 
 // TextGroupByConfigResponse defines a model
@@ -26026,17 +26137,6 @@ type TextPropertyFilterStartsWith struct {
 	StartsWith string `json:"starts_with"`
 }
 
-// TextRequest defines a model
-type TextRequest string
-
-// If a rich text object's type value is `text`, then the corresponding text field contains an object including the text content and any inline link.
-type TextRichTextItemRequestText struct {
-	// The actual text content of the text.
-	Content string `json:"content"`
-	// An object with information about any inline link in this text, if included.
-	Link TextRichTextItemTextLinkURL `json:"link,omitzero"`
-}
-
 // If a rich text object's type value is `text`, then the corresponding text field contains an object including the text content and any inline link.
 type TextRichTextItemResponseText struct {
 	// The actual text content of the text.
@@ -26051,17 +26151,25 @@ type TextRichTextItemResponseTextLinkURL struct {
 	URL string `json:"url"`
 }
 
+// If a rich text object's type value is `text`, then the corresponding text field contains an object including the text content and any inline link.
+type TextRichTextItemText struct {
+	// The actual text content of the text.
+	Content string `json:"content"`
+	// An object with information about any inline link in this text, if included.
+	Link TextRichTextItemTextLinkURL `json:"link,omitzero"`
+}
+
 // TextRichTextItemTextLinkURL defines a model
 type TextRichTextItemTextLinkURL struct {
 	// The URL of the link.
 	URL string `json:"url"`
 }
 
-// TimeZoneRequest defines a model
-type TimeZoneRequest string
+// TimeZone defines a model
+type TimeZone string
 
-// TimelineArrowsByRequest defines a model
-type TimelineArrowsByRequest struct {
+// TimelineArrowsBy defines a model
+type TimelineArrowsBy struct {
 	// Relation property ID used for dependency arrows, or null to disable arrows.
 	PropertyID string `json:"property_id,omitzero"`
 }
@@ -26072,8 +26180,8 @@ type TimelineArrowsByResponse struct {
 	PropertyID string `json:"property_id,omitzero"`
 }
 
-// TimelinePreferenceRequest defines a model
-type TimelinePreferenceRequest struct {
+// TimelinePreference defines a model
+type TimelinePreference struct {
 	// Zoom level for the timeline.
 	ZoomLevel TimelinePreferenceZoomLevel `json:"zoom_level"`
 	// Timestamp (ms) to center the timeline view on.
@@ -26112,8 +26220,8 @@ func (e TimelinePreferenceZoomLevel) Valid() bool {
 	}
 }
 
-// TimelineViewConfigRequest defines a model
-type TimelineViewConfigRequest struct {
+// TimelineViewConfig defines a model
+type TimelineViewConfig struct {
 	// The view type. Must be "timeline".
 	Type string `json:"type"`
 	// Property ID of the date property used for the start of timeline items.
@@ -26121,21 +26229,21 @@ type TimelineViewConfigRequest struct {
 	// Property ID of the date property used for the end of timeline items. Pass null to clear.
 	EndDatePropertyID string `json:"end_date_property_id,omitzero"`
 	// Property visibility and display configuration on timeline items. Pass null to clear.
-	Properties []ViewPropertyConfigRequest `json:"properties,omitzero"`
+	Properties []ViewPropertyConfig `json:"properties,omitzero"`
 	// Whether to show the table panel alongside the timeline. Pass null to clear.
 	ShowTable *bool `json:"show_table,omitzero"`
 	// Property configuration for the table panel (when show_table is true). Pass null to clear.
-	TableProperties []ViewPropertyConfigRequest `json:"table_properties,omitzero"`
+	TableProperties []ViewPropertyConfig `json:"table_properties,omitzero"`
 	// Timeline display preferences (zoom level and center position). Pass null to clear.
-	Preference TimelinePreferenceRequest `json:"preference,omitzero"`
+	Preference TimelinePreference `json:"preference,omitzero"`
 	// Configuration for dependency arrows between timeline items. Pass null to clear.
-	ArrowsBy *TimelineArrowsByRequest `json:"arrows_by,omitzero"`
+	ArrowsBy *TimelineArrowsBy `json:"arrows_by,omitzero"`
 	// Whether to color timeline items by a property. Pass null to clear.
 	ColorBy *bool `json:"color_by,omitzero"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether TimelineViewConfigRequest declares it.
-func (v *TimelineViewConfigRequest) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether TimelineViewConfig declares it.
+func (v *TimelineViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
@@ -26407,17 +26515,17 @@ type TranscriptionBlockResponse struct {
 
 // TranscriptionCalendarEventResponse defines a model
 type TranscriptionCalendarEventResponse struct {
-	StartTime time.Time   `json:"start_time"`
-	EndTime   time.Time   `json:"end_time"`
-	EventID   string      `json:"event_id,omitzero"`
-	Attendees []IDRequest `json:"attendees,omitzero"`
+	StartTime time.Time `json:"start_time"`
+	EndTime   time.Time `json:"end_time"`
+	EventID   string    `json:"event_id,omitzero"`
+	Attendees []ID      `json:"attendees,omitzero"`
 }
 
 // TranscriptionChildrenResponse defines a model
 type TranscriptionChildrenResponse struct {
-	SummaryBlockID    IDRequest `json:"summary_block_id,omitzero"`
-	NotesBlockID      IDRequest `json:"notes_block_id,omitzero"`
-	TranscriptBlockID IDRequest `json:"transcript_block_id,omitzero"`
+	SummaryBlockID    ID `json:"summary_block_id,omitzero"`
+	NotesBlockID      ID `json:"notes_block_id,omitzero"`
+	TranscriptBlockID ID `json:"transcript_block_id,omitzero"`
 }
 
 // TranscriptionRecordingResponse defines a model
@@ -27030,16 +27138,16 @@ type UpdateABlockAnyOf30 struct {
 
 // UpdateABlockAudio defines a model
 type UpdateABlockAudio struct {
-	Audio   UpdateMediaContentWithFileAndCaptionRequest `json:"audio"`
-	Type    string                                      `json:"type,omitzero"`
-	InTrash *bool                                       `json:"in_trash,omitzero"`
+	Audio   UpdateMediaContentWithFileAndCaption `json:"audio"`
+	Type    string                               `json:"type,omitzero"`
+	InTrash *bool                                `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockBookmark defines a model
 type UpdateABlockBookmark struct {
-	Bookmark UpdateMediaContentWithURLAndCaptionRequest `json:"bookmark"`
-	Type     string                                     `json:"type,omitzero"`
-	InTrash  *bool                                      `json:"in_trash,omitzero"`
+	Bookmark UpdateMediaContentWithURLAndCaption `json:"bookmark"`
+	Type     string                              `json:"type,omitzero"`
+	InTrash  *bool                               `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockBreadcrumb defines a model
@@ -27051,9 +27159,9 @@ type UpdateABlockBreadcrumb struct {
 
 // UpdateABlockBulletedListItem defines a model
 type UpdateABlockBulletedListItem struct {
-	BulletedListItem ContentWithRichTextAndColorRequest `json:"bulleted_list_item"`
-	Type             string                             `json:"type,omitzero"`
-	InTrash          *bool                              `json:"in_trash,omitzero"`
+	BulletedListItem ContentWithRichTextAndColor `json:"bulleted_list_item"`
+	Type             string                      `json:"type,omitzero"`
+	InTrash          *bool                       `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockCallout defines a model
@@ -27072,9 +27180,9 @@ type UpdateABlockCode struct {
 
 // UpdateABlockCodeCode defines a model
 type UpdateABlockCodeCode struct {
-	RichText []RichTextItemRequest `json:"rich_text,omitzero"`
-	Language LanguageRequest       `json:"language,omitzero"`
-	Caption  []RichTextItemRequest `json:"caption,omitzero"`
+	RichText []RichTextItem `json:"rich_text,omitzero"`
+	Language Language       `json:"language,omitzero"`
+	Caption  []RichTextItem `json:"caption,omitzero"`
 }
 
 // UpdateABlockColumn defines a model
@@ -27107,8 +27215,8 @@ type UpdateABlockEmbed struct {
 // UpdateABlockEmbedEmbed defines a model
 // UpdateABlockEmbedEmbed is an untagged anyOf union: at least one field is set after unmarshaling.
 type UpdateABlockEmbedEmbed struct {
-	UpdateMediaContentWithURLAndCaptionRequest *UpdateMediaContentWithURLAndCaptionRequest
-	UpdateEmbedFileUploadRequest               *UpdateEmbedFileUploadRequest
+	UpdateMediaContentWithURLAndCaption *UpdateMediaContentWithURLAndCaption
+	UpdateEmbedFileUpload               *UpdateEmbedFileUpload
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -27125,9 +27233,9 @@ func (v *UpdateABlockEmbedEmbed) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 	var matched int
 
 	{
-		var vv UpdateMediaContentWithURLAndCaptionRequest
+		var vv UpdateMediaContentWithURLAndCaption
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateMediaContentWithURLAndCaptionRequest = &vv
+			v.UpdateMediaContentWithURLAndCaption = &vv
 			matched++
 		}
 	}
@@ -27136,9 +27244,9 @@ func (v *UpdateABlockEmbedEmbed) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, pinned := []string{"file_upload"}, map[string]string{}
 		if jsonFits(raw, required, pinned) {
-			var vv UpdateEmbedFileUploadRequest
+			var vv UpdateEmbedFileUpload
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.UpdateEmbedFileUploadRequest = &vv
+				v.UpdateEmbedFileUpload = &vv
 				matched++
 			}
 		}
@@ -27154,10 +27262,10 @@ func (v *UpdateABlockEmbedEmbed) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *UpdateABlockEmbedEmbed) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.UpdateMediaContentWithURLAndCaptionRequest != nil:
-		return json.MarshalEncode(enc, v.UpdateMediaContentWithURLAndCaptionRequest, jsonOptsTo(enc))
-	case v.UpdateEmbedFileUploadRequest != nil:
-		return json.MarshalEncode(enc, v.UpdateEmbedFileUploadRequest, jsonOptsTo(enc))
+	case v.UpdateMediaContentWithURLAndCaption != nil:
+		return json.MarshalEncode(enc, v.UpdateMediaContentWithURLAndCaption, jsonOptsTo(enc))
+	case v.UpdateEmbedFileUpload != nil:
+		return json.MarshalEncode(enc, v.UpdateEmbedFileUpload, jsonOptsTo(enc))
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
@@ -27172,151 +27280,58 @@ type UpdateABlockEquation struct {
 
 // UpdateABlockFile defines a model
 type UpdateABlockFile struct {
-	File    UpdateMediaContentWithFileNameAndCaptionRequest `json:"file"`
-	Type    string                                          `json:"type,omitzero"`
-	InTrash *bool                                           `json:"in_trash,omitzero"`
+	File    UpdateMediaContentWithFileNameAndCaption `json:"file"`
+	Type    string                                   `json:"type,omitzero"`
+	InTrash *bool                                    `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockHeading1 defines a model
 type UpdateABlockHeading1 struct {
-	Heading1 HeaderContentWithRichTextAndColorRequest `json:"heading_1"`
-	Type     string                                   `json:"type,omitzero"`
-	InTrash  *bool                                    `json:"in_trash,omitzero"`
+	Heading1 HeaderContentWithRichTextAndColor `json:"heading_1"`
+	Type     string                            `json:"type,omitzero"`
+	InTrash  *bool                             `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockHeading2 defines a model
 type UpdateABlockHeading2 struct {
-	Heading2 HeaderContentWithRichTextAndColorRequest `json:"heading_2"`
-	Type     string                                   `json:"type,omitzero"`
-	InTrash  *bool                                    `json:"in_trash,omitzero"`
+	Heading2 HeaderContentWithRichTextAndColor `json:"heading_2"`
+	Type     string                            `json:"type,omitzero"`
+	InTrash  *bool                             `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockHeading3 defines a model
 type UpdateABlockHeading3 struct {
-	Heading3 HeaderContentWithRichTextAndColorRequest `json:"heading_3"`
-	Type     string                                   `json:"type,omitzero"`
-	InTrash  *bool                                    `json:"in_trash,omitzero"`
+	Heading3 HeaderContentWithRichTextAndColor `json:"heading_3"`
+	Type     string                            `json:"type,omitzero"`
+	InTrash  *bool                             `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockHeading4 defines a model
 type UpdateABlockHeading4 struct {
-	Heading4 HeaderContentWithRichTextAndColorRequest `json:"heading_4"`
-	Type     string                                   `json:"type,omitzero"`
-	InTrash  *bool                                    `json:"in_trash,omitzero"`
+	Heading4 HeaderContentWithRichTextAndColor `json:"heading_4"`
+	Type     string                            `json:"type,omitzero"`
+	InTrash  *bool                             `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockImage defines a model
 type UpdateABlockImage struct {
-	Image   UpdateMediaContentWithFileAndCaptionRequest `json:"image"`
-	Type    string                                      `json:"type,omitzero"`
-	InTrash *bool                                       `json:"in_trash,omitzero"`
+	Image   UpdateMediaContentWithFileAndCaption `json:"image"`
+	Type    string                               `json:"type,omitzero"`
+	InTrash *bool                                `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockLinkToPage defines a model
 type UpdateABlockLinkToPage struct {
-	LinkToPage UpdateABlockLinkToPageLinkToPage `json:"link_to_page"`
-	Type       string                           `json:"type,omitzero"`
-	InTrash    *bool                            `json:"in_trash,omitzero"`
-}
-
-// UpdateABlockLinkToPageLinkToPage defines a model
-type UpdateABlockLinkToPageLinkToPage struct {
-	Type       UpdateABlockLinkToPageLinkToPageType `json:"type,omitzero"`
-	PageID     IDRequest                            `json:"page_id,omitzero"`
-	DatabaseID IDRequest                            `json:"database_id,omitzero"`
-	CommentID  IDRequest                            `json:"comment_id,omitzero"`
-}
-
-// UpdateABlockLinkToPageLinkToPageType is a value of UpdateABlockLinkToPageLinkToPage's type, naming the members it holds.
-type UpdateABlockLinkToPageLinkToPageType string
-
-const (
-	UpdateABlockLinkToPageLinkToPageTypePageID     UpdateABlockLinkToPageLinkToPageType = "page_id"
-	UpdateABlockLinkToPageLinkToPageTypeDatabaseID UpdateABlockLinkToPageLinkToPageType = "database_id"
-	UpdateABlockLinkToPageLinkToPageTypeCommentID  UpdateABlockLinkToPageLinkToPageType = "comment_id"
-)
-
-// Valid indicates whether the value is a known member of the UpdateABlockLinkToPageLinkToPageType enum.
-func (e UpdateABlockLinkToPageLinkToPageType) Valid() bool {
-	_, ok := tagsOfUpdateABlockLinkToPageLinkToPage[string(e)]
-	return ok
-}
-
-// tagsOfUpdateABlockLinkToPageLinkToPage holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfUpdateABlockLinkToPageLinkToPage = map[string]map[string]jsonTagNeed{
-	"page_id":     {"page_id": jsonTagRequired},
-	"database_id": {"database_id": jsonTagRequired},
-	"comment_id":  {"comment_id": jsonTagRequired},
-}
-
-// taggedMembers returns those of the members of an alternative's own that are set.
-func (v *UpdateABlockLinkToPageLinkToPage) taggedMembers() []string {
-	var set []string
-	if v.PageID != "" {
-		set = append(set, "page_id")
-	}
-	if v.DatabaseID != "" {
-		set = append(set, "database_id")
-	}
-	if v.CommentID != "" {
-		set = append(set, "comment_id")
-	}
-
-	return set
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
-func (v *UpdateABlockLinkToPageLinkToPage) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain UpdateABlockLinkToPageLinkToPage
-
-	*v = UpdateABlockLinkToPageLinkToPage{}
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	if err := json.Unmarshal(raw, (*plain)(v), jsonOptsOf(dec)); err != nil {
-		return err
-	}
-
-	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
-	if err != nil {
-		return err
-	}
-
-	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfUpdateABlockLinkToPageLinkToPage, v.taggedMembers()); ok && v.Type == "" {
-		v.Type = UpdateABlockLinkToPageLinkToPageType(tag)
-	}
-
-	return jsonCheckTag("type", string(v.Type), tagsOfUpdateABlockLinkToPageLinkToPage, v.taggedMembers(), present, jsonStrict(dec))
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
-func (v *UpdateABlockLinkToPageLinkToPage) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain UpdateABlockLinkToPageLinkToPage
-
-	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfUpdateABlockLinkToPageLinkToPage, set); ok && out.Type == "" {
-		out.Type = UpdateABlockLinkToPageLinkToPageType(tag)
-	}
-
-	if err := jsonCheckTag("type", string(out.Type), tagsOfUpdateABlockLinkToPageLinkToPage, set, nil, true); err != nil {
-		return err
-	}
-
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
+	LinkToPage BlockObjectLinkToPageLinkToPage `json:"link_to_page"`
+	Type       string                          `json:"type,omitzero"`
+	InTrash    *bool                           `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockNumberedListItem defines a model
 type UpdateABlockNumberedListItem struct {
-	NumberedListItem ContentWithRichTextAndColorRequest `json:"numbered_list_item"`
-	Type             string                             `json:"type,omitzero"`
-	InTrash          *bool                              `json:"in_trash,omitzero"`
+	NumberedListItem ContentWithRichTextAndColor `json:"numbered_list_item"`
+	Type             string                      `json:"type,omitzero"`
+	InTrash          *bool                       `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockParagraph defines a model
@@ -27328,16 +27343,16 @@ type UpdateABlockParagraph struct {
 
 // UpdateABlockPdf defines a model
 type UpdateABlockPdf struct {
-	PDF     UpdateMediaContentWithFileAndCaptionRequest `json:"pdf"`
-	Type    string                                      `json:"type,omitzero"`
-	InTrash *bool                                       `json:"in_trash,omitzero"`
+	PDF     UpdateMediaContentWithFileAndCaption `json:"pdf"`
+	Type    string                               `json:"type,omitzero"`
+	InTrash *bool                                `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockQuote defines a model
 type UpdateABlockQuote struct {
-	Quote   ContentWithRichTextAndColorRequest `json:"quote"`
-	Type    string                             `json:"type,omitzero"`
-	InTrash *bool                              `json:"in_trash,omitzero"`
+	Quote   ContentWithRichTextAndColor `json:"quote"`
+	Type    string                      `json:"type,omitzero"`
+	InTrash *bool                       `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockSyncedBlock defines a model
@@ -27349,13 +27364,7 @@ type UpdateABlockSyncedBlock struct {
 
 // UpdateABlockSyncedBlockSyncedBlock defines a model
 type UpdateABlockSyncedBlockSyncedBlock struct {
-	SyncedFrom UpdateABlockSyncedBlockSyncedBlockSyncedFrom `json:"synced_from"`
-}
-
-// UpdateABlockSyncedBlockSyncedBlockSyncedFrom defines a model
-type UpdateABlockSyncedBlockSyncedBlockSyncedFrom struct {
-	BlockID IDRequest `json:"block_id"`
-	Type    string    `json:"type,omitzero"`
+	SyncedFrom BlockObjectSyncedBlockSyncedBlockSyncedFrom `json:"synced_from"`
 }
 
 // UpdateABlockTab defines a model
@@ -27374,22 +27383,16 @@ type UpdateABlockTable struct {
 
 // UpdateABlockTableOfContents defines a model
 type UpdateABlockTableOfContents struct {
-	TableOfContents UpdateABlockTableOfContentsTableOfContents `json:"table_of_contents"`
-	Type            string                                     `json:"type,omitzero"`
-	InTrash         *bool                                      `json:"in_trash,omitzero"`
-}
-
-// UpdateABlockTableOfContentsTableOfContents defines a model
-type UpdateABlockTableOfContentsTableOfContents struct {
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color APIColor `json:"color,omitzero"`
+	TableOfContents BlockObjectTableOfContentsTableOfContents `json:"table_of_contents"`
+	Type            string                                    `json:"type,omitzero"`
+	InTrash         *bool                                     `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockTableRow defines a model
 type UpdateABlockTableRow struct {
-	TableRow ContentWithTableRowRequest `json:"table_row"`
-	Type     string                     `json:"type,omitzero"`
-	InTrash  *bool                      `json:"in_trash,omitzero"`
+	TableRow ContentWithTableRow `json:"table_row"`
+	Type     string              `json:"type,omitzero"`
+	InTrash  *bool               `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockTableTable defines a model
@@ -27400,9 +27403,9 @@ type UpdateABlockTableTable struct {
 
 // UpdateABlockTemplate defines a model
 type UpdateABlockTemplate struct {
-	Template ContentWithRichTextRequest `json:"template"`
-	Type     string                     `json:"type,omitzero"`
-	InTrash  *bool                      `json:"in_trash,omitzero"`
+	Template ContentWithRichText `json:"template"`
+	Type     string              `json:"type,omitzero"`
+	InTrash  *bool               `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockToDo defines a model
@@ -27414,24 +27417,24 @@ type UpdateABlockToDo struct {
 
 // UpdateABlockToDoToDo defines a model
 type UpdateABlockToDoToDo struct {
-	RichText []RichTextItemRequest `json:"rich_text,omitzero"`
-	Checked  *bool                 `json:"checked,omitzero"`
+	RichText []RichTextItem `json:"rich_text,omitzero"`
+	Checked  *bool          `json:"checked,omitzero"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor `json:"color,omitzero"`
 }
 
 // UpdateABlockToggle defines a model
 type UpdateABlockToggle struct {
-	Toggle  ContentWithRichTextAndColorRequest `json:"toggle"`
-	Type    string                             `json:"type,omitzero"`
-	InTrash *bool                              `json:"in_trash,omitzero"`
+	Toggle  ContentWithRichTextAndColor `json:"toggle"`
+	Type    string                      `json:"type,omitzero"`
+	InTrash *bool                       `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockVideo defines a model
 type UpdateABlockVideo struct {
-	Video   UpdateMediaContentWithFileAndCaptionRequest `json:"video"`
-	Type    string                                      `json:"type,omitzero"`
-	InTrash *bool                                       `json:"in_trash,omitzero"`
+	Video   UpdateMediaContentWithFileAndCaption `json:"video"`
+	Type    string                               `json:"type,omitzero"`
+	InTrash *bool                                `json:"in_trash,omitzero"`
 }
 
 // UpdateAComment defines a model
@@ -27636,21 +27639,21 @@ type UpdateACommentAllOf0Markdown struct {
 // UpdateACommentAllOf0RichText defines a model
 type UpdateACommentAllOf0RichText struct {
 	// An array of rich text objects that represent the updated content of the comment.
-	RichText []RichTextItemRequest `json:"rich_text"`
+	RichText []RichTextItem `json:"rich_text"`
 }
 
 // UpdateADataSource defines a model
 type UpdateADataSource struct {
 	// Title of data source as it appears in Notion.
-	Title []RichTextItemRequest `json:"title,omitzero"`
+	Title []RichTextItem `json:"title,omitzero"`
 	// Data source icon.
-	Icon *PageIconRequest `json:"icon,omitzero"`
+	Icon *PageIcon `json:"icon,omitzero"`
 	// The property schema of the data source. The keys are property names or IDs, and the values are property configuration objects. Properties set to null will be removed.
 	Properties map[string]UpdateADataSourcePropertiesValue `json:"properties,omitzero"`
 	// Whether the data source should be moved to or from the trash. If not provided, the trash status will not be updated.
 	InTrash *bool `json:"in_trash,omitzero"`
 	// The parent of the data source, when moving it to a different database. If not provided, the parent will not be updated.
-	Parent ParentOfDataSourceRequest `json:"parent,omitzero"`
+	Parent ParentOfDataSource `json:"parent,omitzero"`
 }
 
 // UpdateADataSourcePropertiesValue defines a model
@@ -27726,13 +27729,13 @@ type UpdateADataSourcePropertiesValueOneOf0 struct {
 	// The name of the property.
 	Name string `json:"name,omitzero"`
 	// The description of the property.
-	Description    PropertyDescriptionRequest                        `json:"description,omitzero"`
+	Description    PropertyDescription                               `json:"description,omitzero"`
 	Type           UpdateADataSourcePropertiesValueOneOf0Type        `json:"type,omitzero"`
 	Number         *NumberPropertyConfigurationNumber                `json:"number,omitzero"`
 	Formula        *FormulaPropertyConfigurationFormula              `json:"formula,omitzero"`
 	Select         *UpdateADataSourcePropertiesValueOneOfAllOfSelect `json:"select,omitzero"`
 	MultiSelect    *UpdateADataSourcePropertiesValueOneOfAllOfSelect `json:"multi_select,omitzero"`
-	Status         *StatusPropertyConfigUpdateRequest                `json:"status,omitzero"`
+	Status         *StatusPropertyConfigUpdate                       `json:"status,omitzero"`
 	Relation       *RelationPropertyConfigurationRelation            `json:"relation,omitzero"`
 	Rollup         *RollupPropertyConfigurationRollup                `json:"rollup,omitzero"`
 	UniqueID       *UniqueIDPropertyConfigurationUniqueID            `json:"unique_id,omitzero"`
@@ -28224,15 +28227,15 @@ type UpdateDatabase struct {
 	// The parent page or workspace to move the database to. If not provided, the database will not be moved.
 	Parent CreateDatabaseParent `json:"parent,omitzero"`
 	// The updated title of the database, if any. If not provided, the title will not be updated.
-	Title []RichTextItemRequest `json:"title,omitzero"`
+	Title []RichTextItem `json:"title,omitzero"`
 	// The updated description of the database, if any. If not provided, the description will not be updated.
-	Description []RichTextItemRequest `json:"description,omitzero"`
+	Description []RichTextItem `json:"description,omitzero"`
 	// Whether the database should be displayed inline in the parent page. If not provided, the inline status will not be updated.
 	IsInline *bool `json:"is_inline,omitzero"`
 	// The updated icon for the database, if any. If not provided, the icon will not be updated.
-	Icon PageIconRequest `json:"icon,omitzero"`
+	Icon PageIcon `json:"icon,omitzero"`
 	// The updated cover image for the database, if any. If not provided, the cover will not be updated.
-	Cover PageCoverRequest `json:"cover,omitzero"`
+	Cover PageCover `json:"cover,omitzero"`
 	// Whether the database should be moved to or from the trash. If not provided, the trash status will not be updated.
 	InTrash *bool `json:"in_trash,omitzero"`
 	// Whether the database should be locked from editing in the Notion app UI. If not provided, the locked state will not be updated.
@@ -28241,31 +28244,31 @@ type UpdateDatabase struct {
 	ShowDataSourceTitle *bool `json:"show_data_source_title,omitzero"`
 }
 
-// UpdateEmbedFileUploadRequest defines a model
-type UpdateEmbedFileUploadRequest struct {
-	FileUpload FileUploadIDRequest   `json:"file_upload"`
-	Caption    []RichTextItemRequest `json:"caption,omitzero"`
+// UpdateEmbedFileUpload defines a model
+type UpdateEmbedFileUpload struct {
+	FileUpload FileUploadID   `json:"file_upload"`
+	Caption    []RichTextItem `json:"caption,omitzero"`
 }
 
-// UpdateMediaContentWithFileAndCaptionRequest defines a model
-type UpdateMediaContentWithFileAndCaptionRequest struct {
-	Caption    []RichTextItemRequest `json:"caption,omitzero"`
-	External   ExternalFileRequest   `json:"external,omitzero"`
-	FileUpload FileUploadIDRequest   `json:"file_upload,omitzero"`
+// UpdateMediaContentWithFileAndCaption defines a model
+type UpdateMediaContentWithFileAndCaption struct {
+	Caption    []RichTextItem `json:"caption,omitzero"`
+	External   ExternalFile   `json:"external,omitzero"`
+	FileUpload FileUploadID   `json:"file_upload,omitzero"`
 }
 
-// UpdateMediaContentWithFileNameAndCaptionRequest defines a model
-type UpdateMediaContentWithFileNameAndCaptionRequest struct {
-	Caption    []RichTextItemRequest `json:"caption,omitzero"`
-	External   ExternalFileRequest   `json:"external,omitzero"`
-	FileUpload FileUploadIDRequest   `json:"file_upload,omitzero"`
-	Name       StringRequest         `json:"name,omitzero"`
+// UpdateMediaContentWithFileNameAndCaption defines a model
+type UpdateMediaContentWithFileNameAndCaption struct {
+	Caption    []RichTextItem `json:"caption,omitzero"`
+	External   ExternalFile   `json:"external,omitzero"`
+	FileUpload FileUploadID   `json:"file_upload,omitzero"`
+	Name       String         `json:"name,omitzero"`
 }
 
-// UpdateMediaContentWithURLAndCaptionRequest defines a model
-type UpdateMediaContentWithURLAndCaptionRequest struct {
-	URL     string                `json:"url,omitzero"`
-	Caption []RichTextItemRequest `json:"caption,omitzero"`
+// UpdateMediaContentWithURLAndCaption defines a model
+type UpdateMediaContentWithURLAndCaption struct {
+	URL     string         `json:"url,omitzero"`
+	Caption []RichTextItem `json:"caption,omitzero"`
 }
 
 // UpdatePageMarkdown defines a model
@@ -28780,7 +28783,7 @@ type UpdateSessionRequestMessage struct {
 	// The agent to start a session with: a custom agent ID, or `notion_ai` for the personal agent with a personal access token. Required when `session_id` is omitted.
 	AgentID AgentID `json:"agent_id,omitzero"`
 	// An existing session to send this message to. Omit it to start a new session.
-	SessionID     IDRequest                              `json:"session_id,omitzero"`
+	SessionID     ID                                     `json:"session_id,omitzero"`
 	Attachments   UpdateSessionRequestMessageAttachments `json:"attachments,omitzero"`
 	Metadata      map[string]string                      `json:"metadata,omitzero"`
 	PromptContext string                                 `json:"prompt_context,omitzero"`
@@ -28804,7 +28807,7 @@ type UpdateSessionRequestMessageAttachmentsItemFileUpload struct {
 
 // UpdateSessionRequestOneOf1 defines a model
 type UpdateSessionRequestOneOf1 struct {
-	SessionID IDRequest                         `json:"session_id"`
+	SessionID ID                                `json:"session_id"`
 	Actions   UpdateSessionRequestOneOf1Actions `json:"actions"`
 	Metadata  map[string]string                 `json:"metadata,omitzero"`
 }
@@ -28814,19 +28817,19 @@ type UpdateSessionRequestOneOf1Actions []UpdateSessionRequestOneOf1ActionsItem
 
 // UpdateSessionRequestOneOf1ActionsItem defines a model
 type UpdateSessionRequestOneOf1ActionsItem struct {
-	ActionID IDRequest `json:"action_id"`
+	ActionID ID `json:"action_id"`
 	// One of: `approve`, `reject`
 	OptionID SessionRequiredActionsItemOptionsItemID `json:"option_id"`
 }
 
 // UpdateSessionRequestOneOf2 defines a model
 type UpdateSessionRequestOneOf2 struct {
-	SessionID    IDRequest `json:"session_id"`
-	ContinueFrom string    `json:"continue_from"`
+	SessionID    ID     `json:"session_id"`
+	ContinueFrom string `json:"continue_from"`
 }
 
-// UpdateViewRequest defines a model
-type UpdateViewRequest struct {
+// UpdateView defines a model
+type UpdateView struct {
 	// New name for the view.
 	Name string `json:"name,omitzero"`
 	// Filter to apply to the view. Uses the same format as the data source query filter. Pass null to clear the filter.
@@ -28834,9 +28837,9 @@ type UpdateViewRequest struct {
 	// Property sorts to apply to the view. Only property-based sorts are supported. Pass null to clear the sorts.
 	Sorts PropertySorts `json:"sorts,omitzero"`
 	// Quick filters for the view's filter bar. Keys are property names or IDs. Set a key to a filter condition to add/update that quick filter. Set a key to null to remove it. Pass null for the entire field to clear all quick filters. Unmentioned quick filters are preserved.
-	QuickFilters map[string]QuickFilterConditionRequest `json:"quick_filters,omitzero"`
+	QuickFilters map[string]QuickFilterCondition `json:"quick_filters,omitzero"`
 	// View presentation configuration. The type field must match the view type. Individual nullable fields within the configuration can be set to null to clear them.
-	Configuration ViewConfigRequest `json:"configuration,omitzero"`
+	Configuration ViewConfig `json:"configuration,omitzero"`
 }
 
 // UploadFile defines a model
@@ -29195,23 +29198,23 @@ func (v *VerificationPropertyValueResponse) MarshalJSONTo(enc *jsontext.Encoder)
 }
 
 // View configuration, discriminated by the type field.
-// ViewConfigRequest is an untagged oneOf union: exactly one field is set after unmarshaling.
-type ViewConfigRequest struct {
-	TableViewConfigRequest    *TableViewConfigRequest
-	BoardViewConfigRequest    *BoardViewConfigRequest
-	CalendarViewConfigRequest *CalendarViewConfigRequest
-	TimelineViewConfigRequest *TimelineViewConfigRequest
-	GalleryViewConfigRequest  *GalleryViewConfigRequest
-	ListViewConfigRequest     *ListViewConfigRequest
-	MapViewConfigRequest      *MapViewConfigRequest
-	FormViewConfigRequest     *FormViewConfigRequest
-	ChartViewConfigRequest    *ChartViewConfigRequest
+// ViewConfig is an untagged oneOf union: exactly one field is set after unmarshaling.
+type ViewConfig struct {
+	TableViewConfig    *TableViewConfig
+	BoardViewConfig    *BoardViewConfig
+	CalendarViewConfig *CalendarViewConfig
+	TimelineViewConfig *TimelineViewConfig
+	GalleryViewConfig  *GalleryViewConfig
+	ListViewConfig     *ListViewConfig
+	MapViewConfig      *MapViewConfig
+	FormViewConfig     *FormViewConfig
+	ChartViewConfig    *ChartViewConfig
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
 // decodes each further member as it is read. With type first, nothing is read twice.
-func (v *ViewConfigRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = ViewConfigRequest{}
+func (v *ViewConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = ViewConfig{}
 
 	tag, first, dec, err := jsonFirstMember(dec, "type")
 	if err != nil {
@@ -29220,68 +29223,68 @@ func (v *ViewConfigRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	switch tag {
 	case "table":
-		var vv TableViewConfigRequest
+		var vv TableViewConfig
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.TableViewConfigRequest = &vv
+		v.TableViewConfig = &vv
 	case "board":
-		var vv BoardViewConfigRequest
+		var vv BoardViewConfig
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.BoardViewConfigRequest = &vv
+		v.BoardViewConfig = &vv
 	case "calendar":
-		var vv CalendarViewConfigRequest
+		var vv CalendarViewConfig
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.CalendarViewConfigRequest = &vv
+		v.CalendarViewConfig = &vv
 	case "timeline":
-		var vv TimelineViewConfigRequest
+		var vv TimelineViewConfig
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.TimelineViewConfigRequest = &vv
+		v.TimelineViewConfig = &vv
 	case "gallery":
-		var vv GalleryViewConfigRequest
+		var vv GalleryViewConfig
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.GalleryViewConfigRequest = &vv
+		v.GalleryViewConfig = &vv
 	case "list":
-		var vv ListViewConfigRequest
+		var vv ListViewConfig
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.ListViewConfigRequest = &vv
+		v.ListViewConfig = &vv
 	case "map":
-		var vv MapViewConfigRequest
+		var vv MapViewConfig
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.MapViewConfigRequest = &vv
+		v.MapViewConfig = &vv
 	case "form":
-		var vv FormViewConfigRequest
+		var vv FormViewConfig
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.FormViewConfigRequest = &vv
+		v.FormViewConfig = &vv
 	case "chart":
-		var vv ChartViewConfigRequest
+		var vv ChartViewConfig
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.ChartViewConfigRequest = &vv
+		v.ChartViewConfig = &vv
 	default:
 		return jsonUnknownValue("type", tag)
 	}
@@ -29290,31 +29293,31 @@ func (v *ViewConfigRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *ViewConfigRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *ViewConfig) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
 		tag     string
 	)
 
 	switch {
-	case v.TableViewConfigRequest != nil:
-		variant, tag = v.TableViewConfigRequest, "table"
-	case v.BoardViewConfigRequest != nil:
-		variant, tag = v.BoardViewConfigRequest, "board"
-	case v.CalendarViewConfigRequest != nil:
-		variant, tag = v.CalendarViewConfigRequest, "calendar"
-	case v.TimelineViewConfigRequest != nil:
-		variant, tag = v.TimelineViewConfigRequest, "timeline"
-	case v.GalleryViewConfigRequest != nil:
-		variant, tag = v.GalleryViewConfigRequest, "gallery"
-	case v.ListViewConfigRequest != nil:
-		variant, tag = v.ListViewConfigRequest, "list"
-	case v.MapViewConfigRequest != nil:
-		variant, tag = v.MapViewConfigRequest, "map"
-	case v.FormViewConfigRequest != nil:
-		variant, tag = v.FormViewConfigRequest, "form"
-	case v.ChartViewConfigRequest != nil:
-		variant, tag = v.ChartViewConfigRequest, "chart"
+	case v.TableViewConfig != nil:
+		variant, tag = v.TableViewConfig, "table"
+	case v.BoardViewConfig != nil:
+		variant, tag = v.BoardViewConfig, "board"
+	case v.CalendarViewConfig != nil:
+		variant, tag = v.CalendarViewConfig, "calendar"
+	case v.TimelineViewConfig != nil:
+		variant, tag = v.TimelineViewConfig, "timeline"
+	case v.GalleryViewConfig != nil:
+		variant, tag = v.GalleryViewConfig, "gallery"
+	case v.ListViewConfig != nil:
+		variant, tag = v.ListViewConfig, "list"
+	case v.MapViewConfig != nil:
+		variant, tag = v.MapViewConfig, "map"
+	case v.FormViewConfig != nil:
+		variant, tag = v.FormViewConfig, "form"
+	case v.ChartViewConfig != nil:
+		variant, tag = v.ChartViewConfig, "chart"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -29522,34 +29525,18 @@ type ViewList struct {
 	RequestID     uuid.UUID             `json:"request_id,omitzero"`
 }
 
-// ViewPositionEnd defines a model
-type ViewPositionEnd struct {
-	// Position type. "end" places the view as the last tab.
-	Type string `json:"type"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether ViewPositionEnd declares it.
-func (v *ViewPositionEnd) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
 // Position of the new view in the database's view tab bar.
-// ViewPositionRequest is an untagged oneOf union: exactly one field is set after unmarshaling.
-type ViewPositionRequest struct {
-	ViewPositionStart            *ViewPositionStart
-	ViewPositionEnd              *ViewPositionEnd
-	ViewPositionRequestAfterView *ViewPositionRequestAfterView
+// ViewPosition is an untagged oneOf union: exactly one field is set after unmarshaling.
+type ViewPosition struct {
+	ViewPositionStart     *ViewPositionStart
+	ViewPositionEnd       *ViewPositionEnd
+	ViewPositionAfterView *ViewPositionAfterView
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
 // decodes each further member as it is read. With type first, nothing is read twice.
-func (v *ViewPositionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = ViewPositionRequest{}
+func (v *ViewPosition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = ViewPosition{}
 
 	tag, first, dec, err := jsonFirstMember(dec, "type")
 	if err != nil {
@@ -29572,12 +29559,12 @@ func (v *ViewPositionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 		v.ViewPositionEnd = &vv
 	case "after_view":
-		var vv ViewPositionRequestAfterView
+		var vv ViewPositionAfterView
 		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
-		v.ViewPositionRequestAfterView = &vv
+		v.ViewPositionAfterView = &vv
 	default:
 		return jsonUnknownValue("type", tag)
 	}
@@ -29586,7 +29573,7 @@ func (v *ViewPositionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *ViewPositionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *ViewPosition) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
 		tag     string
@@ -29597,8 +29584,8 @@ func (v *ViewPositionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 		variant, tag = v.ViewPositionStart, "start"
 	case v.ViewPositionEnd != nil:
 		variant, tag = v.ViewPositionEnd, "end"
-	case v.ViewPositionRequestAfterView != nil:
-		variant, tag = v.ViewPositionRequestAfterView, "after_view"
+	case v.ViewPositionAfterView != nil:
+		variant, tag = v.ViewPositionAfterView, "after_view"
 	default:
 		return &json.SemanticError{Err: errors.New("no alternative set")}
 	}
@@ -29615,21 +29602,37 @@ func (v *ViewPositionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// ViewPositionRequestAfterView defines a model
-type ViewPositionRequestAfterView struct {
+// ViewPositionAfterView defines a model
+type ViewPositionAfterView struct {
 	// Position type. "after_view" places the new view immediately after the specified view.
 	Type string `json:"type"`
 	// The ID of an existing view in the database. The new view will be placed after this view.
-	ViewID IDRequest `json:"view_id"`
+	ViewID ID `json:"view_id"`
 }
 
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether ViewPositionRequestAfterView declares it.
-func (v *ViewPositionRequestAfterView) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether ViewPositionAfterView declares it.
+func (v *ViewPositionAfterView) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
 	switch name {
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
 	case "view_id":
 		return true, json.UnmarshalDecode(dec, &v.ViewID, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// ViewPositionEnd defines a model
+type ViewPositionEnd struct {
+	// Position type. "end" places the view as the last tab.
+	Type string `json:"type"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether ViewPositionEnd declares it.
+func (v *ViewPositionEnd) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
 	}
 
 	return false, nil
@@ -29649,6 +29652,26 @@ func (v *ViewPositionStart) unmarshalJSONMember(dec *jsontext.Decoder, name stri
 	}
 
 	return false, nil
+}
+
+// ViewPropertyConfig defines a model
+type ViewPropertyConfig struct {
+	// Property ID (stable identifier).
+	PropertyID string `json:"property_id"`
+	// Whether this property is visible in the view.
+	Visible *bool `json:"visible,omitzero"`
+	// Width of the property column in pixels (table view only).
+	Width int `json:"width,omitzero"`
+	// Whether to wrap content in this property cell/card.
+	Wrap *bool `json:"wrap,omitzero"`
+	// How to display status properties (select dropdown or checkbox).
+	StatusShowAs ViewPropertyConfigStatusShowAs `json:"status_show_as,omitzero"`
+	// Property width mode in compact card layouts (board/gallery).
+	CardPropertyWidthMode ViewPropertyConfigCardPropertyWidthMode `json:"card_property_width_mode,omitzero"`
+	// Date display format (date properties only).
+	DateFormat ViewPropertyConfigDateFormat `json:"date_format,omitzero"`
+	// Time display format (date properties only).
+	TimeFormat ViewPropertyConfigTimeFormat `json:"time_format,omitzero"`
 }
 
 // Property width mode in compact card layouts (board/gallery).
@@ -29689,26 +29712,6 @@ func (e ViewPropertyConfigDateFormat) Valid() bool {
 	default:
 		return false
 	}
-}
-
-// ViewPropertyConfigRequest defines a model
-type ViewPropertyConfigRequest struct {
-	// Property ID (stable identifier).
-	PropertyID string `json:"property_id"`
-	// Whether this property is visible in the view.
-	Visible *bool `json:"visible,omitzero"`
-	// Width of the property column in pixels (table view only).
-	Width int `json:"width,omitzero"`
-	// Whether to wrap content in this property cell/card.
-	Wrap *bool `json:"wrap,omitzero"`
-	// How to display status properties (select dropdown or checkbox).
-	StatusShowAs ViewPropertyConfigStatusShowAs `json:"status_show_as,omitzero"`
-	// Property width mode in compact card layouts (board/gallery).
-	CardPropertyWidthMode ViewPropertyConfigCardPropertyWidthMode `json:"card_property_width_mode,omitzero"`
-	// Date display format (date properties only).
-	DateFormat ViewPropertyConfigDateFormat `json:"date_format,omitzero"`
-	// Time display format (date properties only).
-	TimeFormat ViewPropertyConfigTimeFormat `json:"time_format,omitzero"`
 }
 
 // ViewPropertyConfigResponse defines a model
@@ -29979,34 +29982,34 @@ type WebhookViewEntity struct {
 }
 
 // Where to place the new widget in the dashboard. "new_row" creates a new row, "existing_row" adds to an existing row side-by-side with other widgets.
-type WidgetPlacementRequest struct {
+type WidgetPlacement struct {
 	// The 0-based row position to insert the new row at. If omitted, the new row is appended at the end.
-	RowIndex *int                       `json:"row_index,omitzero"`
-	Type     WidgetPlacementRequestType `json:"type"`
+	RowIndex *int                `json:"row_index,omitzero"`
+	Type     WidgetPlacementType `json:"type"`
 }
 
-// WidgetPlacementRequestType is a value of WidgetPlacementRequest's type, naming the members it holds.
-type WidgetPlacementRequestType string
+// WidgetPlacementType is a value of WidgetPlacement's type, naming the members it holds.
+type WidgetPlacementType string
 
 const (
-	WidgetPlacementRequestTypeNewRow      WidgetPlacementRequestType = "new_row"
-	WidgetPlacementRequestTypeExistingRow WidgetPlacementRequestType = "existing_row"
+	WidgetPlacementTypeNewRow      WidgetPlacementType = "new_row"
+	WidgetPlacementTypeExistingRow WidgetPlacementType = "existing_row"
 )
 
-// Valid indicates whether the value is a known member of the WidgetPlacementRequestType enum.
-func (e WidgetPlacementRequestType) Valid() bool {
-	_, ok := tagsOfWidgetPlacementRequest[string(e)]
+// Valid indicates whether the value is a known member of the WidgetPlacementType enum.
+func (e WidgetPlacementType) Valid() bool {
+	_, ok := tagsOfWidgetPlacement[string(e)]
 	return ok
 }
 
-// tagsOfWidgetPlacementRequest holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfWidgetPlacementRequest = map[string]map[string]jsonTagNeed{
+// tagsOfWidgetPlacement holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfWidgetPlacement = map[string]map[string]jsonTagNeed{
 	"new_row":      {},
 	"existing_row": {},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
-func (v *WidgetPlacementRequest) taggedMembers() []string {
+func (v *WidgetPlacement) taggedMembers() []string {
 	var set []string
 
 	return set
@@ -30014,10 +30017,10 @@ func (v *WidgetPlacementRequest) taggedMembers() []string {
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
 // alternative's own, only those of the one type names are set.
-func (v *WidgetPlacementRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain WidgetPlacementRequest
+func (v *WidgetPlacement) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain WidgetPlacement
 
-	*v = WidgetPlacementRequest{}
+	*v = WidgetPlacement{}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -30034,20 +30037,20 @@ func (v *WidgetPlacementRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfWidgetPlacementRequest, v.taggedMembers(), present, jsonStrict(dec))
+	return jsonCheckTag("type", string(v.Type), tagsOfWidgetPlacement, v.taggedMembers(), present, jsonStrict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
 // the value whose member is set.
-func (v *WidgetPlacementRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain WidgetPlacementRequest
+func (v *WidgetPlacement) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain WidgetPlacement
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfWidgetPlacementRequest, set); ok && out.Type == "" {
-		out.Type = WidgetPlacementRequestType(tag)
+	if tag, ok := jsonInferTag(tagsOfWidgetPlacement, set); ok && out.Type == "" {
+		out.Type = WidgetPlacementType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfWidgetPlacementRequest, set, nil, true); err != nil {
+	if err := jsonCheckTag("type", string(out.Type), tagsOfWidgetPlacement, set, nil, true); err != nil {
 		return err
 	}
 

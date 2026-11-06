@@ -1,6 +1,6 @@
 {
 	"coverage": 14.9,
-	"devtoolVersion": "v0.0.0-20261031230451-c45e2a189f56",
+	"devtoolVersion": "v0.0.0-20261106133355-dd31132ee663",
 	"kind": "apilib",
 	"tools": {
 		"golangci-lint": "v2.15.0",

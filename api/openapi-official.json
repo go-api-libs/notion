@@ -385,596 +385,7 @@
                     ]
                   },
                   "properties": {
-                    "type": "object",
-                    "additionalProperties": {
-                      "anyOf": [
-                        {
-                          "title": "Title",
-                          "type": "object",
-                          "properties": {
-                            "title": {
-                              "type": "array",
-                              "maxItems": 100,
-                              "items": {
-                                "$ref": "#/components/schemas/richTextItemRequest"
-                              }
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "title"
-                            }
-                          },
-                          "required": [
-                            "title"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Rich Text",
-                          "type": "object",
-                          "properties": {
-                            "rich_text": {
-                              "type": "array",
-                              "maxItems": 100,
-                              "items": {
-                                "$ref": "#/components/schemas/richTextItemRequest"
-                              }
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "rich_text"
-                            }
-                          },
-                          "required": [
-                            "rich_text"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Number",
-                          "type": "object",
-                          "properties": {
-                            "number": {
-                              "type": [
-                                "number",
-                                "null"
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "number"
-                            }
-                          },
-                          "required": [
-                            "number"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Url",
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "anyOf": [
-                                {
-                                  "$ref": "#/components/schemas/textRequest"
-                                },
-                                {
-                                  "type": "null"
-                                }
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "url"
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Select",
-                          "type": "object",
-                          "properties": {
-                            "select": {
-                              "anyOf": [
-                                {
-                                  "type": "object",
-                                  "properties": {
-                                    "id": {
-                                      "$ref": "#/components/schemas/stringRequest"
-                                    },
-                                    "name": {
-                                      "$ref": "#/components/schemas/textRequest"
-                                    },
-                                    "color": {
-                                      "$ref": "#/components/schemas/selectColor"
-                                    },
-                                    "description": {
-                                      "anyOf": [
-                                        {
-                                          "$ref": "#/components/schemas/textRequest"
-                                        },
-                                        {
-                                          "type": "null"
-                                        }
-                                      ]
-                                    }
-                                  },
-                                  "required": [
-                                    "id"
-                                  ],
-                                  "additionalProperties": false
-                                },
-                                {
-                                  "type": "object",
-                                  "properties": {
-                                    "name": {
-                                      "$ref": "#/components/schemas/textRequest"
-                                    },
-                                    "id": {
-                                      "$ref": "#/components/schemas/stringRequest"
-                                    },
-                                    "color": {
-                                      "$ref": "#/components/schemas/selectColor"
-                                    },
-                                    "description": {
-                                      "anyOf": [
-                                        {
-                                          "$ref": "#/components/schemas/textRequest"
-                                        },
-                                        {
-                                          "type": "null"
-                                        }
-                                      ]
-                                    }
-                                  },
-                                  "required": [
-                                    "name"
-                                  ],
-                                  "additionalProperties": false
-                                },
-                                {
-                                  "type": "null"
-                                }
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "select"
-                            }
-                          },
-                          "required": [
-                            "select"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Multi Select",
-                          "type": "object",
-                          "properties": {
-                            "multi_select": {
-                              "type": "array",
-                              "maxItems": 100,
-                              "items": {
-                                "anyOf": [
-                                  {
-                                    "type": "object",
-                                    "properties": {
-                                      "id": {
-                                        "$ref": "#/components/schemas/stringRequest"
-                                      },
-                                      "name": {
-                                        "$ref": "#/components/schemas/textRequest"
-                                      },
-                                      "color": {
-                                        "$ref": "#/components/schemas/selectColor"
-                                      },
-                                      "description": {
-                                        "anyOf": [
-                                          {
-                                            "$ref": "#/components/schemas/textRequest"
-                                          },
-                                          {
-                                            "type": "null"
-                                          }
-                                        ]
-                                      }
-                                    },
-                                    "required": [
-                                      "id"
-                                    ],
-                                    "additionalProperties": false
-                                  },
-                                  {
-                                    "type": "object",
-                                    "properties": {
-                                      "name": {
-                                        "$ref": "#/components/schemas/textRequest"
-                                      },
-                                      "id": {
-                                        "$ref": "#/components/schemas/stringRequest"
-                                      },
-                                      "color": {
-                                        "$ref": "#/components/schemas/selectColor"
-                                      },
-                                      "description": {
-                                        "anyOf": [
-                                          {
-                                            "$ref": "#/components/schemas/textRequest"
-                                          },
-                                          {
-                                            "type": "null"
-                                          }
-                                        ]
-                                      }
-                                    },
-                                    "required": [
-                                      "name"
-                                    ],
-                                    "additionalProperties": false
-                                  }
-                                ]
-                              }
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "multi_select"
-                            }
-                          },
-                          "required": [
-                            "multi_select"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "People",
-                          "type": "object",
-                          "properties": {
-                            "people": {
-                              "type": "array",
-                              "maxItems": 100,
-                              "items": {
-                                "anyOf": [
-                                  {
-                                    "$ref": "#/components/schemas/partialUserObjectRequest"
-                                  },
-                                  {
-                                    "$ref": "#/components/schemas/groupObjectRequest"
-                                  }
-                                ]
-                              }
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "people"
-                            }
-                          },
-                          "required": [
-                            "people"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Email",
-                          "type": "object",
-                          "properties": {
-                            "email": {
-                              "anyOf": [
-                                {
-                                  "$ref": "#/components/schemas/stringRequest"
-                                },
-                                {
-                                  "type": "null"
-                                }
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "email"
-                            }
-                          },
-                          "required": [
-                            "email"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Phone Number",
-                          "type": "object",
-                          "properties": {
-                            "phone_number": {
-                              "anyOf": [
-                                {
-                                  "$ref": "#/components/schemas/stringRequest"
-                                },
-                                {
-                                  "type": "null"
-                                }
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "phone_number"
-                            }
-                          },
-                          "required": [
-                            "phone_number"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Date",
-                          "type": "object",
-                          "properties": {
-                            "date": {
-                              "anyOf": [
-                                {
-                                  "$ref": "#/components/schemas/dateRequest"
-                                },
-                                {
-                                  "type": "null"
-                                }
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "date"
-                            }
-                          },
-                          "required": [
-                            "date"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Checkbox",
-                          "type": "object",
-                          "properties": {
-                            "checkbox": {
-                              "type": "boolean"
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "checkbox"
-                            }
-                          },
-                          "required": [
-                            "checkbox"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Relation",
-                          "type": "object",
-                          "properties": {
-                            "relation": {
-                              "type": "array",
-                              "maxItems": 100,
-                              "items": {
-                                "$ref": "#/components/schemas/relationItemPropertyValueResponse"
-                              }
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "relation"
-                            }
-                          },
-                          "required": [
-                            "relation"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Files",
-                          "type": "object",
-                          "properties": {
-                            "files": {
-                              "type": "array",
-                              "maxItems": 100,
-                              "items": {
-                                "anyOf": [
-                                  {
-                                    "$ref": "#/components/schemas/internalOrExternalFileWithNameRequest"
-                                  },
-                                  {
-                                    "$ref": "#/components/schemas/fileUploadWithOptionalNameRequest"
-                                  }
-                                ]
-                              }
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "files"
-                            }
-                          },
-                          "required": [
-                            "files"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Status",
-                          "type": "object",
-                          "properties": {
-                            "status": {
-                              "anyOf": [
-                                {
-                                  "type": "object",
-                                  "properties": {
-                                    "id": {
-                                      "$ref": "#/components/schemas/stringRequest"
-                                    },
-                                    "name": {
-                                      "$ref": "#/components/schemas/textRequest"
-                                    },
-                                    "color": {
-                                      "$ref": "#/components/schemas/selectColor"
-                                    },
-                                    "description": {
-                                      "anyOf": [
-                                        {
-                                          "$ref": "#/components/schemas/textRequest"
-                                        },
-                                        {
-                                          "type": "null"
-                                        }
-                                      ]
-                                    }
-                                  },
-                                  "required": [
-                                    "id"
-                                  ],
-                                  "additionalProperties": false
-                                },
-                                {
-                                  "type": "object",
-                                  "properties": {
-                                    "name": {
-                                      "$ref": "#/components/schemas/textRequest"
-                                    },
-                                    "id": {
-                                      "$ref": "#/components/schemas/stringRequest"
-                                    },
-                                    "color": {
-                                      "$ref": "#/components/schemas/selectColor"
-                                    },
-                                    "description": {
-                                      "anyOf": [
-                                        {
-                                          "$ref": "#/components/schemas/textRequest"
-                                        },
-                                        {
-                                          "type": "null"
-                                        }
-                                      ]
-                                    }
-                                  },
-                                  "required": [
-                                    "name"
-                                  ],
-                                  "additionalProperties": false
-                                },
-                                {
-                                  "type": "null"
-                                }
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "status"
-                            }
-                          },
-                          "required": [
-                            "status"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Place",
-                          "type": "object",
-                          "properties": {
-                            "place": {
-                              "type": [
-                                "object",
-                                "null"
-                              ],
-                              "properties": {
-                                "lat": {
-                                  "type": "number"
-                                },
-                                "lon": {
-                                  "type": "number"
-                                },
-                                "name": {
-                                  "type": [
-                                    "string",
-                                    "null"
-                                  ]
-                                },
-                                "address": {
-                                  "type": [
-                                    "string",
-                                    "null"
-                                  ]
-                                },
-                                "aws_place_id": {
-                                  "type": [
-                                    "string",
-                                    "null"
-                                  ]
-                                },
-                                "google_place_id": {
-                                  "type": [
-                                    "string",
-                                    "null"
-                                  ]
-                                }
-                              },
-                              "required": [
-                                "lat",
-                                "lon"
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "place"
-                            }
-                          },
-                          "required": [
-                            "place"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Verification",
-                          "type": "object",
-                          "properties": {
-                            "verification": {
-                              "anyOf": [
-                                {
-                                  "type": "object",
-                                  "properties": {
-                                    "state": {
-                                      "type": "string",
-                                      "const": "verified"
-                                    },
-                                    "date": {
-                                      "$ref": "#/components/schemas/dateRequest"
-                                    }
-                                  },
-                                  "required": [
-                                    "state"
-                                  ]
-                                },
-                                {
-                                  "type": "object",
-                                  "properties": {
-                                    "state": {
-                                      "type": "string",
-                                      "const": "unverified"
-                                    }
-                                  },
-                                  "required": [
-                                    "state"
-                                  ]
-                                }
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "verification"
-                            }
-                          },
-                          "required": [
-                            "verification"
-                          ],
-                          "additionalProperties": false
-                        }
-                      ]
-                    }
+                    "$ref": "#/components/schemas/pagePropertiesRequest"
                   },
                   "icon": {
                     "anyOf": [
@@ -1372,596 +783,7 @@
                 "type": "object",
                 "properties": {
                   "properties": {
-                    "type": "object",
-                    "additionalProperties": {
-                      "anyOf": [
-                        {
-                          "title": "Title",
-                          "type": "object",
-                          "properties": {
-                            "title": {
-                              "type": "array",
-                              "maxItems": 100,
-                              "items": {
-                                "$ref": "#/components/schemas/richTextItemRequest"
-                              }
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "title"
-                            }
-                          },
-                          "required": [
-                            "title"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Rich Text",
-                          "type": "object",
-                          "properties": {
-                            "rich_text": {
-                              "type": "array",
-                              "maxItems": 100,
-                              "items": {
-                                "$ref": "#/components/schemas/richTextItemRequest"
-                              }
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "rich_text"
-                            }
-                          },
-                          "required": [
-                            "rich_text"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Number",
-                          "type": "object",
-                          "properties": {
-                            "number": {
-                              "type": [
-                                "number",
-                                "null"
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "number"
-                            }
-                          },
-                          "required": [
-                            "number"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Url",
-                          "type": "object",
-                          "properties": {
-                            "url": {
-                              "anyOf": [
-                                {
-                                  "$ref": "#/components/schemas/textRequest"
-                                },
-                                {
-                                  "type": "null"
-                                }
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "url"
-                            }
-                          },
-                          "required": [
-                            "url"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Select",
-                          "type": "object",
-                          "properties": {
-                            "select": {
-                              "anyOf": [
-                                {
-                                  "type": "object",
-                                  "properties": {
-                                    "id": {
-                                      "$ref": "#/components/schemas/stringRequest"
-                                    },
-                                    "name": {
-                                      "$ref": "#/components/schemas/textRequest"
-                                    },
-                                    "color": {
-                                      "$ref": "#/components/schemas/selectColor"
-                                    },
-                                    "description": {
-                                      "anyOf": [
-                                        {
-                                          "$ref": "#/components/schemas/textRequest"
-                                        },
-                                        {
-                                          "type": "null"
-                                        }
-                                      ]
-                                    }
-                                  },
-                                  "required": [
-                                    "id"
-                                  ],
-                                  "additionalProperties": false
-                                },
-                                {
-                                  "type": "object",
-                                  "properties": {
-                                    "name": {
-                                      "$ref": "#/components/schemas/textRequest"
-                                    },
-                                    "id": {
-                                      "$ref": "#/components/schemas/stringRequest"
-                                    },
-                                    "color": {
-                                      "$ref": "#/components/schemas/selectColor"
-                                    },
-                                    "description": {
-                                      "anyOf": [
-                                        {
-                                          "$ref": "#/components/schemas/textRequest"
-                                        },
-                                        {
-                                          "type": "null"
-                                        }
-                                      ]
-                                    }
-                                  },
-                                  "required": [
-                                    "name"
-                                  ],
-                                  "additionalProperties": false
-                                },
-                                {
-                                  "type": "null"
-                                }
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "select"
-                            }
-                          },
-                          "required": [
-                            "select"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Multi Select",
-                          "type": "object",
-                          "properties": {
-                            "multi_select": {
-                              "type": "array",
-                              "maxItems": 100,
-                              "items": {
-                                "anyOf": [
-                                  {
-                                    "type": "object",
-                                    "properties": {
-                                      "id": {
-                                        "$ref": "#/components/schemas/stringRequest"
-                                      },
-                                      "name": {
-                                        "$ref": "#/components/schemas/textRequest"
-                                      },
-                                      "color": {
-                                        "$ref": "#/components/schemas/selectColor"
-                                      },
-                                      "description": {
-                                        "anyOf": [
-                                          {
-                                            "$ref": "#/components/schemas/textRequest"
-                                          },
-                                          {
-                                            "type": "null"
-                                          }
-                                        ]
-                                      }
-                                    },
-                                    "required": [
-                                      "id"
-                                    ],
-                                    "additionalProperties": false
-                                  },
-                                  {
-                                    "type": "object",
-                                    "properties": {
-                                      "name": {
-                                        "$ref": "#/components/schemas/textRequest"
-                                      },
-                                      "id": {
-                                        "$ref": "#/components/schemas/stringRequest"
-                                      },
-                                      "color": {
-                                        "$ref": "#/components/schemas/selectColor"
-                                      },
-                                      "description": {
-                                        "anyOf": [
-                                          {
-                                            "$ref": "#/components/schemas/textRequest"
-                                          },
-                                          {
-                                            "type": "null"
-                                          }
-                                        ]
-                                      }
-                                    },
-                                    "required": [
-                                      "name"
-                                    ],
-                                    "additionalProperties": false
-                                  }
-                                ]
-                              }
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "multi_select"
-                            }
-                          },
-                          "required": [
-                            "multi_select"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "People",
-                          "type": "object",
-                          "properties": {
-                            "people": {
-                              "type": "array",
-                              "maxItems": 100,
-                              "items": {
-                                "anyOf": [
-                                  {
-                                    "$ref": "#/components/schemas/partialUserObjectRequest"
-                                  },
-                                  {
-                                    "$ref": "#/components/schemas/groupObjectRequest"
-                                  }
-                                ]
-                              }
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "people"
-                            }
-                          },
-                          "required": [
-                            "people"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Email",
-                          "type": "object",
-                          "properties": {
-                            "email": {
-                              "anyOf": [
-                                {
-                                  "$ref": "#/components/schemas/stringRequest"
-                                },
-                                {
-                                  "type": "null"
-                                }
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "email"
-                            }
-                          },
-                          "required": [
-                            "email"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Phone Number",
-                          "type": "object",
-                          "properties": {
-                            "phone_number": {
-                              "anyOf": [
-                                {
-                                  "$ref": "#/components/schemas/stringRequest"
-                                },
-                                {
-                                  "type": "null"
-                                }
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "phone_number"
-                            }
-                          },
-                          "required": [
-                            "phone_number"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Date",
-                          "type": "object",
-                          "properties": {
-                            "date": {
-                              "anyOf": [
-                                {
-                                  "$ref": "#/components/schemas/dateRequest"
-                                },
-                                {
-                                  "type": "null"
-                                }
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "date"
-                            }
-                          },
-                          "required": [
-                            "date"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Checkbox",
-                          "type": "object",
-                          "properties": {
-                            "checkbox": {
-                              "type": "boolean"
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "checkbox"
-                            }
-                          },
-                          "required": [
-                            "checkbox"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Relation",
-                          "type": "object",
-                          "properties": {
-                            "relation": {
-                              "type": "array",
-                              "maxItems": 100,
-                              "items": {
-                                "$ref": "#/components/schemas/relationItemPropertyValueResponse"
-                              }
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "relation"
-                            }
-                          },
-                          "required": [
-                            "relation"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Files",
-                          "type": "object",
-                          "properties": {
-                            "files": {
-                              "type": "array",
-                              "maxItems": 100,
-                              "items": {
-                                "anyOf": [
-                                  {
-                                    "$ref": "#/components/schemas/internalOrExternalFileWithNameRequest"
-                                  },
-                                  {
-                                    "$ref": "#/components/schemas/fileUploadWithOptionalNameRequest"
-                                  }
-                                ]
-                              }
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "files"
-                            }
-                          },
-                          "required": [
-                            "files"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Status",
-                          "type": "object",
-                          "properties": {
-                            "status": {
-                              "anyOf": [
-                                {
-                                  "type": "object",
-                                  "properties": {
-                                    "id": {
-                                      "$ref": "#/components/schemas/stringRequest"
-                                    },
-                                    "name": {
-                                      "$ref": "#/components/schemas/textRequest"
-                                    },
-                                    "color": {
-                                      "$ref": "#/components/schemas/selectColor"
-                                    },
-                                    "description": {
-                                      "anyOf": [
-                                        {
-                                          "$ref": "#/components/schemas/textRequest"
-                                        },
-                                        {
-                                          "type": "null"
-                                        }
-                                      ]
-                                    }
-                                  },
-                                  "required": [
-                                    "id"
-                                  ],
-                                  "additionalProperties": false
-                                },
-                                {
-                                  "type": "object",
-                                  "properties": {
-                                    "name": {
-                                      "$ref": "#/components/schemas/textRequest"
-                                    },
-                                    "id": {
-                                      "$ref": "#/components/schemas/stringRequest"
-                                    },
-                                    "color": {
-                                      "$ref": "#/components/schemas/selectColor"
-                                    },
-                                    "description": {
-                                      "anyOf": [
-                                        {
-                                          "$ref": "#/components/schemas/textRequest"
-                                        },
-                                        {
-                                          "type": "null"
-                                        }
-                                      ]
-                                    }
-                                  },
-                                  "required": [
-                                    "name"
-                                  ],
-                                  "additionalProperties": false
-                                },
-                                {
-                                  "type": "null"
-                                }
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "status"
-                            }
-                          },
-                          "required": [
-                            "status"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Place",
-                          "type": "object",
-                          "properties": {
-                            "place": {
-                              "type": [
-                                "object",
-                                "null"
-                              ],
-                              "properties": {
-                                "lat": {
-                                  "type": "number"
-                                },
-                                "lon": {
-                                  "type": "number"
-                                },
-                                "name": {
-                                  "type": [
-                                    "string",
-                                    "null"
-                                  ]
-                                },
-                                "address": {
-                                  "type": [
-                                    "string",
-                                    "null"
-                                  ]
-                                },
-                                "aws_place_id": {
-                                  "type": [
-                                    "string",
-                                    "null"
-                                  ]
-                                },
-                                "google_place_id": {
-                                  "type": [
-                                    "string",
-                                    "null"
-                                  ]
-                                }
-                              },
-                              "required": [
-                                "lat",
-                                "lon"
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "place"
-                            }
-                          },
-                          "required": [
-                            "place"
-                          ],
-                          "additionalProperties": false
-                        },
-                        {
-                          "title": "Verification",
-                          "type": "object",
-                          "properties": {
-                            "verification": {
-                              "anyOf": [
-                                {
-                                  "type": "object",
-                                  "properties": {
-                                    "state": {
-                                      "type": "string",
-                                      "const": "verified"
-                                    },
-                                    "date": {
-                                      "$ref": "#/components/schemas/dateRequest"
-                                    }
-                                  },
-                                  "required": [
-                                    "state"
-                                  ]
-                                },
-                                {
-                                  "type": "object",
-                                  "properties": {
-                                    "state": {
-                                      "type": "string",
-                                      "const": "unverified"
-                                    }
-                                  },
-                                  "required": [
-                                    "state"
-                                  ]
-                                }
-                              ]
-                            },
-                            "type": {
-                              "type": "string",
-                              "const": "verification"
-                            }
-                          },
-                          "required": [
-                            "verification"
-                          ],
-                          "additionalProperties": false
-                        }
-                      ]
-                    }
+                    "$ref": "#/components/schemas/pagePropertiesRequest"
                   },
                   "icon": {
                     "anyOf": [
@@ -6456,86 +5278,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "Page Or Data Source",
-                  "type": "object",
-                  "properties": {
-                    "type": {
-                      "type": "string",
-                      "const": "page_or_data_source"
-                    },
-                    "page_or_data_source": {
-                      "$ref": "#/components/schemas/emptyObject"
-                    },
-                    "object": {
-                      "type": "string",
-                      "const": "list"
-                    },
-                    "next_cursor": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
-                    },
-                    "has_more": {
-                      "type": "boolean"
-                    },
-                    "results": {
-                      "type": "array",
-                      "items": {
-                        "anyOf": [
-                          {
-                            "anyOf": [
-                              {
-                                "$ref": "#/components/schemas/pageObjectResponse"
-                              },
-                              {
-                                "$ref": "#/components/schemas/partialPageObjectResponse"
-                              }
-                            ]
-                          },
-                          {
-                            "anyOf": [
-                              {
-                                "$ref": "#/components/schemas/partialDataSourceObjectResponse"
-                              },
-                              {
-                                "$ref": "#/components/schemas/dataSourceObjectResponse"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "request_status": {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "enum": [
-                            "complete",
-                            "incomplete"
-                          ]
-                        },
-                        "incomplete_reason": {
-                          "type": "string",
-                          "enum": [
-                            "query_result_limit_reached"
-                          ]
-                        }
-                      },
-                      "required": [
-                        "type"
-                      ]
-                    }
-                  },
-                  "required": [
-                    "type",
-                    "page_or_data_source",
-                    "object",
-                    "next_cursor",
-                    "has_more",
-                    "results"
-                  ]
+                  "$ref": "#/components/schemas/pageOrDataSourceListResponse"
                 }
               }
             }
@@ -7487,86 +6230,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "title": "Page Or Data Source",
-                  "type": "object",
-                  "properties": {
-                    "type": {
-                      "type": "string",
-                      "const": "page_or_data_source"
-                    },
-                    "page_or_data_source": {
-                      "$ref": "#/components/schemas/emptyObject"
-                    },
-                    "object": {
-                      "type": "string",
-                      "const": "list"
-                    },
-                    "next_cursor": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
-                    },
-                    "has_more": {
-                      "type": "boolean"
-                    },
-                    "results": {
-                      "type": "array",
-                      "items": {
-                        "anyOf": [
-                          {
-                            "anyOf": [
-                              {
-                                "$ref": "#/components/schemas/pageObjectResponse"
-                              },
-                              {
-                                "$ref": "#/components/schemas/partialPageObjectResponse"
-                              }
-                            ]
-                          },
-                          {
-                            "anyOf": [
-                              {
-                                "$ref": "#/components/schemas/partialDataSourceObjectResponse"
-                              },
-                              {
-                                "$ref": "#/components/schemas/dataSourceObjectResponse"
-                              }
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "request_status": {
-                      "type": "object",
-                      "properties": {
-                        "type": {
-                          "type": "string",
-                          "enum": [
-                            "complete",
-                            "incomplete"
-                          ]
-                        },
-                        "incomplete_reason": {
-                          "type": "string",
-                          "enum": [
-                            "query_result_limit_reached"
-                          ]
-                        }
-                      },
-                      "required": [
-                        "type"
-                      ]
-                    }
-                  },
-                  "required": [
-                    "type",
-                    "page_or_data_source",
-                    "object",
-                    "next_cursor",
-                    "has_more",
-                    "results"
-                  ]
+                  "$ref": "#/components/schemas/pageOrDataSourceListResponse"
                 }
               }
             }
@@ -39891,6 +38555,88 @@
         ],
         "additionalProperties": false
       },
+      "pageOrDataSourceListResponse": {
+        "title": "Page Or Data Source",
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "page_or_data_source"
+          },
+          "page_or_data_source": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "object": {
+            "type": "string",
+            "const": "list"
+          },
+          "next_cursor": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/pageObjectResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/partialPageObjectResponse"
+                    }
+                  ]
+                },
+                {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/partialDataSourceObjectResponse"
+                    },
+                    {
+                      "$ref": "#/components/schemas/dataSourceObjectResponse"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "request_status": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "complete",
+                  "incomplete"
+                ]
+              },
+              "incomplete_reason": {
+                "type": "string",
+                "enum": [
+                  "query_result_limit_reached"
+                ]
+              }
+            },
+            "required": [
+              "type"
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "page_or_data_source",
+          "object",
+          "next_cursor",
+          "has_more",
+          "results"
+        ]
+      },
       "pagePositionSchema": {
         "anyOf": [
           {
@@ -39942,6 +38688,598 @@
             ]
           }
         ]
+      },
+      "pagePropertiesRequest": {
+        "type": "object",
+        "additionalProperties": {
+          "anyOf": [
+            {
+              "title": "Title",
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "items": {
+                    "$ref": "#/components/schemas/richTextItemRequest"
+                  }
+                },
+                "type": {
+                  "type": "string",
+                  "const": "title"
+                }
+              },
+              "required": [
+                "title"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "title": "Rich Text",
+              "type": "object",
+              "properties": {
+                "rich_text": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "items": {
+                    "$ref": "#/components/schemas/richTextItemRequest"
+                  }
+                },
+                "type": {
+                  "type": "string",
+                  "const": "rich_text"
+                }
+              },
+              "required": [
+                "rich_text"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "title": "Number",
+              "type": "object",
+              "properties": {
+                "number": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "const": "number"
+                }
+              },
+              "required": [
+                "number"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "title": "Url",
+              "type": "object",
+              "properties": {
+                "url": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/textRequest"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "const": "url"
+                }
+              },
+              "required": [
+                "url"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "title": "Select",
+              "type": "object",
+              "properties": {
+                "select": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "$ref": "#/components/schemas/stringRequest"
+                        },
+                        "name": {
+                          "$ref": "#/components/schemas/textRequest"
+                        },
+                        "color": {
+                          "$ref": "#/components/schemas/selectColor"
+                        },
+                        "description": {
+                          "anyOf": [
+                            {
+                              "$ref": "#/components/schemas/textRequest"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "$ref": "#/components/schemas/textRequest"
+                        },
+                        "id": {
+                          "$ref": "#/components/schemas/stringRequest"
+                        },
+                        "color": {
+                          "$ref": "#/components/schemas/selectColor"
+                        },
+                        "description": {
+                          "anyOf": [
+                            {
+                              "$ref": "#/components/schemas/textRequest"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "name"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "const": "select"
+                }
+              },
+              "required": [
+                "select"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "title": "Multi Select",
+              "type": "object",
+              "properties": {
+                "multi_select": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "$ref": "#/components/schemas/stringRequest"
+                          },
+                          "name": {
+                            "$ref": "#/components/schemas/textRequest"
+                          },
+                          "color": {
+                            "$ref": "#/components/schemas/selectColor"
+                          },
+                          "description": {
+                            "anyOf": [
+                              {
+                                "$ref": "#/components/schemas/textRequest"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "$ref": "#/components/schemas/textRequest"
+                          },
+                          "id": {
+                            "$ref": "#/components/schemas/stringRequest"
+                          },
+                          "color": {
+                            "$ref": "#/components/schemas/selectColor"
+                          },
+                          "description": {
+                            "anyOf": [
+                              {
+                                "$ref": "#/components/schemas/textRequest"
+                              },
+                              {
+                                "type": "null"
+                              }
+                            ]
+                          }
+                        },
+                        "required": [
+                          "name"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  }
+                },
+                "type": {
+                  "type": "string",
+                  "const": "multi_select"
+                }
+              },
+              "required": [
+                "multi_select"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "title": "People",
+              "type": "object",
+              "properties": {
+                "people": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "items": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/partialUserObjectRequest"
+                      },
+                      {
+                        "$ref": "#/components/schemas/groupObjectRequest"
+                      }
+                    ]
+                  }
+                },
+                "type": {
+                  "type": "string",
+                  "const": "people"
+                }
+              },
+              "required": [
+                "people"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "title": "Email",
+              "type": "object",
+              "properties": {
+                "email": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/stringRequest"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "const": "email"
+                }
+              },
+              "required": [
+                "email"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "title": "Phone Number",
+              "type": "object",
+              "properties": {
+                "phone_number": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/stringRequest"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "const": "phone_number"
+                }
+              },
+              "required": [
+                "phone_number"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "title": "Date",
+              "type": "object",
+              "properties": {
+                "date": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/dateRequest"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "const": "date"
+                }
+              },
+              "required": [
+                "date"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "title": "Checkbox",
+              "type": "object",
+              "properties": {
+                "checkbox": {
+                  "type": "boolean"
+                },
+                "type": {
+                  "type": "string",
+                  "const": "checkbox"
+                }
+              },
+              "required": [
+                "checkbox"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "title": "Relation",
+              "type": "object",
+              "properties": {
+                "relation": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "items": {
+                    "$ref": "#/components/schemas/relationItemPropertyValueResponse"
+                  }
+                },
+                "type": {
+                  "type": "string",
+                  "const": "relation"
+                }
+              },
+              "required": [
+                "relation"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "title": "Files",
+              "type": "object",
+              "properties": {
+                "files": {
+                  "type": "array",
+                  "maxItems": 100,
+                  "items": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/components/schemas/internalOrExternalFileWithNameRequest"
+                      },
+                      {
+                        "$ref": "#/components/schemas/fileUploadWithOptionalNameRequest"
+                      }
+                    ]
+                  }
+                },
+                "type": {
+                  "type": "string",
+                  "const": "files"
+                }
+              },
+              "required": [
+                "files"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "title": "Status",
+              "type": "object",
+              "properties": {
+                "status": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "$ref": "#/components/schemas/stringRequest"
+                        },
+                        "name": {
+                          "$ref": "#/components/schemas/textRequest"
+                        },
+                        "color": {
+                          "$ref": "#/components/schemas/selectColor"
+                        },
+                        "description": {
+                          "anyOf": [
+                            {
+                              "$ref": "#/components/schemas/textRequest"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "$ref": "#/components/schemas/textRequest"
+                        },
+                        "id": {
+                          "$ref": "#/components/schemas/stringRequest"
+                        },
+                        "color": {
+                          "$ref": "#/components/schemas/selectColor"
+                        },
+                        "description": {
+                          "anyOf": [
+                            {
+                              "$ref": "#/components/schemas/textRequest"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "name"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "const": "status"
+                }
+              },
+              "required": [
+                "status"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "title": "Place",
+              "type": "object",
+              "properties": {
+                "place": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "lat": {
+                      "type": "number"
+                    },
+                    "lon": {
+                      "type": "number"
+                    },
+                    "name": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "address": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "aws_place_id": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "google_place_id": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "lat",
+                    "lon"
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "const": "place"
+                }
+              },
+              "required": [
+                "place"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "title": "Verification",
+              "type": "object",
+              "properties": {
+                "verification": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "state": {
+                          "type": "string",
+                          "const": "verified"
+                        },
+                        "date": {
+                          "$ref": "#/components/schemas/dateRequest"
+                        }
+                      },
+                      "required": [
+                        "state"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "state": {
+                          "type": "string",
+                          "const": "unverified"
+                        }
+                      },
+                      "required": [
+                        "state"
+                      ]
+                    }
+                  ]
+                },
+                "type": {
+                  "type": "string",
+                  "const": "verification"
+                }
+              },
+              "required": [
+                "verification"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
       },
       "pagePropertiesUpdatedWebhookPayload": {
         "allOf": [
