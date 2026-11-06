@@ -7773,13 +7773,19 @@ type DataSourceObjectResponse struct {
 	URL string `json:"url"`
 	// The public URL of the data source if it is publicly accessible.
 	PublicURL string `json:"public_url"`
-	// Stored sync metadata, included when listing or retrieving data sources.
+	// Sync identity and available health, included when listing or retrieving data sources.
 	SyncMetadata *DataSourceObjectSyncMetadata `json:"sync_metadata,omitzero"`
 	RequestID    uuid.UUID                     `json:"request_id,omitzero"`
 }
 
 // DataSourceObjectSyncMetadata defines a model
 type DataSourceObjectSyncMetadata struct {
+	// Live collection sync health. Null means unavailable, not unhealthy. Missing timestamps are unknown.
+	Health DataSourceObjectSyncMetadataHealth `json:"health,omitzero"`
+	// Notion user who owns the sync credential, included when health is available.
+	OwnerUserID IDResponse `json:"owner_user_id,omitzero"`
+	// Provider resource synced to this data source, when available.
+	Resource string `json:"resource,omitzero"`
 	// Stored identity of an external database sync.
 	ExternalDatabaseSync DataSourceObjectSyncMetadataExternalDatabaseSync `json:"external_database_sync,omitzero"`
 	// The provider of a legacy synced data source: Jira or Salesforce. Values are case-sensitive.
@@ -7835,6 +7841,166 @@ func (e DataSourceObjectSyncMetadataExternalDatabaseSyncProvider) Valid() bool {
 	default:
 		return false
 	}
+}
+
+// Live collection sync health. Null means unavailable, not unhealthy. Missing timestamps are unknown.
+// DataSourceObjectSyncMetadataHealth is an untagged anyOf union: at least one field is set after unmarshaling.
+type DataSourceObjectSyncMetadataHealth struct {
+	DataSourceObjectSyncMetadataHealthAnyOf  *DataSourceObjectSyncMetadataHealthAnyOf
+	DataSourceObjectSyncMetadataHealthAnyOf2 *DataSourceObjectSyncMetadataHealthAnyOf2
+	DataSourceObjectSyncMetadataHealthPaused *DataSourceObjectSyncMetadataHealthPaused
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *DataSourceObjectSyncMetadataHealth) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = DataSourceObjectSyncMetadataHealth{}
+
+	opts := jsonOptsOf(dec)
+	strict := jsonStrict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// a member outside its enum rules an alternative out; leniently, only while another fits
+	for _, enums := range jsonEnumPasses(strict) {
+
+		{
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"checks", "error", "ok", "paused", "stage"}, map[string]string{"ok": "false"}
+			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"stage": {"\"backfilling\"", "\"initializing\"", "\"steady\""}})) {
+				var vv DataSourceObjectSyncMetadataHealthAnyOf
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.DataSourceObjectSyncMetadataHealthAnyOf = &vv
+					matched++
+				}
+			}
+		}
+
+		{
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"checks", "ok", "paused", "stage"}, map[string]string{"ok": "true"}
+			if jsonFits(raw, required, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"stage": {"\"backfilling\"", "\"initializing\"", "\"steady\""}})) {
+				var vv DataSourceObjectSyncMetadataHealthAnyOf2
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.DataSourceObjectSyncMetadataHealthAnyOf2 = &vv
+					matched++
+				}
+			}
+		}
+
+		{
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, pinned := []string{"paused"}, map[string]string{"paused": "true"}
+			if jsonFits(raw, required, pinned) {
+				var vv DataSourceObjectSyncMetadataHealthPaused
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.DataSourceObjectSyncMetadataHealthPaused = &vv
+					matched++
+				}
+			}
+		}
+
+		if matched > 0 {
+			break
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *DataSourceObjectSyncMetadataHealth) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.DataSourceObjectSyncMetadataHealthAnyOf != nil:
+		return json.MarshalEncode(enc, v.DataSourceObjectSyncMetadataHealthAnyOf, jsonOptsTo(enc))
+	case v.DataSourceObjectSyncMetadataHealthAnyOf2 != nil:
+		return json.MarshalEncode(enc, v.DataSourceObjectSyncMetadataHealthAnyOf2, jsonOptsTo(enc))
+	case v.DataSourceObjectSyncMetadataHealthPaused != nil:
+		return json.MarshalEncode(enc, v.DataSourceObjectSyncMetadataHealthPaused, jsonOptsTo(enc))
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
+// DataSourceObjectSyncMetadataHealthAnyOf defines a model
+type DataSourceObjectSyncMetadataHealthAnyOf struct {
+	Checks DataSourceObjectSyncMetadataHealthAnyOfChecks `json:"checks"`
+	Err    DataSourceObjectSyncMetadataHealthAnyOfError  `json:"error"`
+	Ok     bool                                          `json:"ok"`
+	Paused bool                                          `json:"paused"`
+	Stage  DataSourceObjectSyncMetadataHealthAnyOfStage  `json:"stage"`
+}
+
+// DataSourceObjectSyncMetadataHealthAnyOf2 defines a model
+type DataSourceObjectSyncMetadataHealthAnyOf2 struct {
+	Checks DataSourceObjectSyncMetadataHealthAnyOfChecks `json:"checks"`
+	Ok     bool                                          `json:"ok"`
+	Paused bool                                          `json:"paused"`
+	Stage  DataSourceObjectSyncMetadataHealthAnyOfStage  `json:"stage"`
+}
+
+// DataSourceObjectSyncMetadataHealthAnyOfChecks defines a model
+type DataSourceObjectSyncMetadataHealthAnyOfChecks struct {
+	SyncVersionUpdatedAt     string `json:"sync_version_updated_at"`
+	DeltaSyncedThroughAt     string `json:"delta_synced_through_at,omitzero"`
+	LastExecutionSucceededAt string `json:"last_execution_succeeded_at,omitzero"`
+}
+
+// DataSourceObjectSyncMetadataHealthAnyOfError defines a model
+type DataSourceObjectSyncMetadataHealthAnyOfError struct {
+	Code     string                                               `json:"code"`
+	Severity DataSourceObjectSyncMetadataHealthAnyOfErrorSeverity `json:"severity"`
+}
+
+// DataSourceObjectSyncMetadataHealthAnyOfErrorSeverity defines a model
+type DataSourceObjectSyncMetadataHealthAnyOfErrorSeverity string
+
+const (
+	DataSourceObjectSyncMetadataHealthAnyOfErrorSeverityActionRequired DataSourceObjectSyncMetadataHealthAnyOfErrorSeverity = "action_required"
+	DataSourceObjectSyncMetadataHealthAnyOfErrorSeverityDegraded       DataSourceObjectSyncMetadataHealthAnyOfErrorSeverity = "degraded"
+	DataSourceObjectSyncMetadataHealthAnyOfErrorSeverityFailing        DataSourceObjectSyncMetadataHealthAnyOfErrorSeverity = "failing"
+)
+
+// Valid indicates whether the value is a known member of the DataSourceObjectSyncMetadataHealthAnyOfErrorSeverity enum.
+func (e DataSourceObjectSyncMetadataHealthAnyOfErrorSeverity) Valid() bool {
+	switch e {
+	case DataSourceObjectSyncMetadataHealthAnyOfErrorSeverityActionRequired, DataSourceObjectSyncMetadataHealthAnyOfErrorSeverityDegraded, DataSourceObjectSyncMetadataHealthAnyOfErrorSeverityFailing:
+		return true
+	default:
+		return false
+	}
+}
+
+// DataSourceObjectSyncMetadataHealthAnyOfStage defines a model
+type DataSourceObjectSyncMetadataHealthAnyOfStage string
+
+const (
+	DataSourceObjectSyncMetadataHealthAnyOfStageBackfilling  DataSourceObjectSyncMetadataHealthAnyOfStage = "backfilling"
+	DataSourceObjectSyncMetadataHealthAnyOfStageInitializing DataSourceObjectSyncMetadataHealthAnyOfStage = "initializing"
+	DataSourceObjectSyncMetadataHealthAnyOfStageSteady       DataSourceObjectSyncMetadataHealthAnyOfStage = "steady"
+)
+
+// Valid indicates whether the value is a known member of the DataSourceObjectSyncMetadataHealthAnyOfStage enum.
+func (e DataSourceObjectSyncMetadataHealthAnyOfStage) Valid() bool {
+	switch e {
+	case DataSourceObjectSyncMetadataHealthAnyOfStageBackfilling, DataSourceObjectSyncMetadataHealthAnyOfStageInitializing, DataSourceObjectSyncMetadataHealthAnyOfStageSteady:
+		return true
+	default:
+		return false
+	}
+}
+
+// DataSourceObjectSyncMetadataHealthPaused defines a model
+type DataSourceObjectSyncMetadataHealthPaused struct {
+	Paused bool `json:"paused"`
 }
 
 // Stored state for a legacy synced data source. Missing or invalid timestamps are omitted. This is not a live health check.
@@ -7986,7 +8152,7 @@ type DataSourceReferenceResponse struct {
 	ID IDResponse `json:"id"`
 	// The name of the data source.
 	Name string `json:"name"`
-	// Stored sync metadata, included when retrieving a database.
+	// Sync identity and available health, included when retrieving a database.
 	SyncMetadata *DataSourceObjectSyncMetadata `json:"sync_metadata,omitzero"`
 }
 
