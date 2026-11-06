@@ -479,7 +479,7 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID ID) (*R, e
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("users", string(userID))
+	u := c.baseURL.JoinPath("users", uuid.UUID(userID).String())
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -821,8 +821,8 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 	if params != nil {
 		q := make(url.Values, 2)
 
-		if params.StartCursor != "" {
-			q["start_cursor"] = []string{params.StartCursor}
+		if params.StartCursor != uuid.Nil() {
+			q["start_cursor"] = []string{params.StartCursor.String()}
 		}
 
 		if params.PageSize != 0 {
@@ -1555,7 +1555,7 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID ID, 
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("pages", string(pageID))
+	u := c.baseURL.JoinPath("pages", uuid.UUID(pageID).String())
 	if params != nil {
 		q := make(url.Values, 1)
 
@@ -1903,7 +1903,7 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID ID, para
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("pages", string(pageID))
+	u := c.baseURL.JoinPath("pages", uuid.UUID(pageID).String())
 	if params != nil {
 		q := make(url.Values, 1)
 
@@ -2258,7 +2258,7 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID ID, body 
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("pages", string(pageID), "move")
+	u := c.baseURL.JoinPath("pages", uuid.UUID(pageID).String(), "move")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -2603,12 +2603,12 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("pages", string(pageID), "properties", propertyID)
+	u := c.baseURL.JoinPath("pages", uuid.UUID(pageID).String(), "properties", propertyID)
 	if params != nil {
 		q := make(url.Values, 2)
 
-		if params.StartCursor != "" {
-			q["start_cursor"] = []string{params.StartCursor}
+		if params.StartCursor != uuid.Nil() {
+			q["start_cursor"] = []string{params.StartCursor.String()}
 		}
 
 		if params.PageSize != 0 {
@@ -2955,7 +2955,7 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("pages", string(pageID), "markdown")
+	u := c.baseURL.JoinPath("pages", uuid.UUID(pageID).String(), "markdown")
 	if params != nil {
 		q := make(url.Values, 2)
 
@@ -3307,7 +3307,7 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("pages", string(pageID), "markdown")
+	u := c.baseURL.JoinPath("pages", uuid.UUID(pageID).String(), "markdown")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -4021,7 +4021,7 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("blocks", string(blockID))
+	u := c.baseURL.JoinPath("blocks", uuid.UUID(blockID).String())
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -4359,7 +4359,7 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID ID) 
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("blocks", string(blockID))
+	u := c.baseURL.JoinPath("blocks", uuid.UUID(blockID).String())
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -4697,7 +4697,7 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID ID, 
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("blocks", string(blockID))
+	u := c.baseURL.JoinPath("blocks", uuid.UUID(blockID).String())
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -5042,7 +5042,7 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("blocks", string(blockID), "children")
+	u := c.baseURL.JoinPath("blocks", uuid.UUID(blockID).String(), "children")
 	if params != nil {
 		q := make(url.Values, 2)
 
@@ -5394,7 +5394,7 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("blocks", string(blockID), "children")
+	u := c.baseURL.JoinPath("blocks", uuid.UUID(blockID).String(), "children")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -5739,7 +5739,7 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("data_sources", string(dataSourceID))
+	u := c.baseURL.JoinPath("data_sources", uuid.UUID(dataSourceID).String())
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -6077,7 +6077,7 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("data_sources", string(dataSourceID))
+	u := c.baseURL.JoinPath("data_sources", uuid.UUID(dataSourceID).String())
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -6422,7 +6422,7 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("data_sources", string(dataSourceID), "query")
+	u := c.baseURL.JoinPath("data_sources", uuid.UUID(dataSourceID).String(), "query")
 	if params != nil {
 		q := make(url.Values, 1)
 
@@ -7122,7 +7122,7 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("data_sources", string(dataSourceID), "templates")
+	u := c.baseURL.JoinPath("data_sources", uuid.UUID(dataSourceID).String(), "templates")
 	if params != nil {
 		q := make(url.Values, 3)
 
@@ -7130,8 +7130,8 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 			q["name"] = []string{params.Name}
 		}
 
-		if params.StartCursor != "" {
-			q["start_cursor"] = []string{params.StartCursor}
+		if params.StartCursor != uuid.Nil() {
+			q["start_cursor"] = []string{params.StartCursor.String()}
 		}
 
 		if params.PageSize != 0 {
@@ -7478,7 +7478,7 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("databases", string(databaseID))
+	u := c.baseURL.JoinPath("databases", uuid.UUID(databaseID).String())
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -7816,7 +7816,7 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("databases", string(databaseID))
+	u := c.baseURL.JoinPath("databases", uuid.UUID(databaseID).String())
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -8865,10 +8865,10 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 
 	q := make(url.Values, 3)
 
-	q["block_id"] = []string{string(params.BlockID)}
+	q["block_id"] = []string{uuid.UUID(params.BlockID).String()}
 
-	if params.StartCursor != "" {
-		q["start_cursor"] = []string{params.StartCursor}
+	if params.StartCursor != uuid.Nil() {
+		q["start_cursor"] = []string{params.StartCursor.String()}
 	}
 
 	if params.PageSize != 0 {
@@ -9559,7 +9559,7 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("comments", string(commentID))
+	u := c.baseURL.JoinPath("comments", uuid.UUID(commentID).String())
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -9897,7 +9897,7 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("comments", string(commentID))
+	u := c.baseURL.JoinPath("comments", uuid.UUID(commentID).String())
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -10235,7 +10235,7 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("comments", string(commentID))
+	u := c.baseURL.JoinPath("comments", uuid.UUID(commentID).String())
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -10588,8 +10588,8 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 			q["status"] = []string{string(params.Status)}
 		}
 
-		if params.StartCursor != "" {
-			q["start_cursor"] = []string{params.StartCursor}
+		if params.StartCursor != uuid.Nil() {
+			q["start_cursor"] = []string{params.StartCursor.String()}
 		}
 
 		if params.PageSize != 0 {
@@ -11281,7 +11281,7 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("file_uploads", string(fileUploadID), "send")
+	u := c.baseURL.JoinPath("file_uploads", uuid.UUID(fileUploadID).String(), "send")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -11626,7 +11626,7 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("file_uploads", string(fileUploadID), "complete")
+	u := c.baseURL.JoinPath("file_uploads", uuid.UUID(fileUploadID).String(), "complete")
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -11964,7 +11964,7 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("file_uploads", string(fileUploadID))
+	u := c.baseURL.JoinPath("file_uploads", uuid.UUID(fileUploadID).String())
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -12306,8 +12306,8 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 	if params != nil {
 		q := make(url.Values, 3)
 
-		if params.StartCursor != "" {
-			q["start_cursor"] = []string{params.StartCursor}
+		if params.StartCursor != uuid.Nil() {
+			q["start_cursor"] = []string{params.StartCursor.String()}
 		}
 
 		if params.PageSize != 0 {
@@ -12662,16 +12662,16 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 	if params != nil {
 		q := make(url.Values, 4)
 
-		if params.DatabaseID != "" {
-			q["database_id"] = []string{string(params.DatabaseID)}
+		if params.DatabaseID != uuid.Nil() {
+			q["database_id"] = []string{uuid.UUID(params.DatabaseID).String()}
 		}
 
-		if params.DataSourceID != "" {
-			q["data_source_id"] = []string{string(params.DataSourceID)}
+		if params.DataSourceID != uuid.Nil() {
+			q["data_source_id"] = []string{uuid.UUID(params.DataSourceID).String()}
 		}
 
-		if params.StartCursor != "" {
-			q["start_cursor"] = []string{params.StartCursor}
+		if params.StartCursor != uuid.Nil() {
+			q["start_cursor"] = []string{params.StartCursor.String()}
 		}
 
 		if params.PageSize != 0 {
@@ -13363,7 +13363,7 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID ID) 
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("views", string(viewID))
+	u := c.baseURL.JoinPath("views", uuid.UUID(viewID).String())
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -13701,7 +13701,7 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID ID) (*R
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("views", string(viewID))
+	u := c.baseURL.JoinPath("views", uuid.UUID(viewID).String())
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -14039,7 +14039,7 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID ID, bo
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("views", string(viewID))
+	u := c.baseURL.JoinPath("views", uuid.UUID(viewID).String())
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -14384,7 +14384,7 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("views", string(viewID), "queries")
+	u := c.baseURL.JoinPath("views", uuid.UUID(viewID).String(), "queries")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -14729,12 +14729,12 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("views", string(viewID), "queries", string(queryID))
+	u := c.baseURL.JoinPath("views", uuid.UUID(viewID).String(), "queries", uuid.UUID(queryID).String())
 	if params != nil {
 		q := make(url.Values, 2)
 
-		if params.StartCursor != "" {
-			q["start_cursor"] = []string{params.StartCursor}
+		if params.StartCursor != uuid.Nil() {
+			q["start_cursor"] = []string{params.StartCursor.String()}
 		}
 
 		if params.PageSize != 0 {
@@ -15081,7 +15081,7 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("views", string(viewID), "queries", string(queryID))
+	u := c.baseURL.JoinPath("views", uuid.UUID(viewID).String(), "queries", uuid.UUID(queryID).String())
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -18884,8 +18884,8 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 			q["page_size"] = []string{strconv.Itoa(params.PageSize)}
 		}
 
-		if params.StartCursor != "" {
-			q["start_cursor"] = []string{params.StartCursor}
+		if params.StartCursor != uuid.Nil() {
+			q["start_cursor"] = []string{params.StartCursor.String()}
 		}
 
 		u.RawQuery = q.Encode()
@@ -19566,7 +19566,7 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id ID) 
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("ai", "skills", string(id))
+	u := c.baseURL.JoinPath("ai", "skills", uuid.UUID(id).String())
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -20249,7 +20249,7 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("sessions", string(sessionID))
+	u := c.baseURL.JoinPath("sessions", uuid.UUID(sessionID).String())
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -20932,7 +20932,7 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("sessions", string(sessionID), "events", "query")
+	u := c.baseURL.JoinPath("sessions", uuid.UUID(sessionID).String(), "events", "query")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -21277,7 +21277,7 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID I
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("sessions", string(sessionID), "cancel")
+	u := c.baseURL.JoinPath("sessions", uuid.UUID(sessionID).String(), "cancel")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -22153,7 +22153,7 @@ func (c *Client) UploadSkillWithResult[R any](ctx context.Context, id ID, body U
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("ai", "skills", string(id), "upload")
+	u := c.baseURL.JoinPath("ai", "skills", uuid.UUID(id).String(), "upload")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{

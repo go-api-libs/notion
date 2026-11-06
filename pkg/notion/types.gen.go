@@ -40,7 +40,7 @@ var jsonOptsLenient = json.JoinOptions(jsonOpts, json.RejectUnknownMembers(false
 
 // GetUsersParams holds the query parameters for GetUsers.
 type GetUsersParams struct {
-	StartCursor string
+	StartCursor uuid.UUID
 	PageSize    float64
 }
 
@@ -61,7 +61,7 @@ type PatchPageParams struct {
 
 // RetrieveAPagePropertyParams holds the query parameters for RetrieveAPageProperty.
 type RetrieveAPagePropertyParams struct {
-	StartCursor string
+	StartCursor uuid.UUID
 	PageSize    int
 }
 
@@ -85,7 +85,7 @@ type PostDatabaseQueryParams struct {
 // ListDataSourceTemplatesParams holds the query parameters for ListDataSourceTemplates.
 type ListDataSourceTemplatesParams struct {
 	Name        string
-	StartCursor string
+	StartCursor uuid.UUID
 	PageSize    int
 }
 
@@ -97,20 +97,20 @@ type PostSearchParams struct {
 // ListCommentsParams holds the query parameters for ListComments.
 type ListCommentsParams struct {
 	BlockID     ID
-	StartCursor string
+	StartCursor uuid.UUID
 	PageSize    int
 }
 
 // ListFileUploadsParams holds the query parameters for ListFileUploads.
 type ListFileUploadsParams struct {
 	Status      Status
-	StartCursor string
+	StartCursor uuid.UUID
 	PageSize    int
 }
 
 // ListCustomEmojisParams holds the query parameters for ListCustomEmojis.
 type ListCustomEmojisParams struct {
-	StartCursor string
+	StartCursor uuid.UUID
 	PageSize    int
 	Name        string
 }
@@ -119,13 +119,13 @@ type ListCustomEmojisParams struct {
 type ListViewsParams struct {
 	DatabaseID   ID
 	DataSourceID ID
-	StartCursor  string
+	StartCursor  uuid.UUID
 	PageSize     int
 }
 
 // GetViewQueryResultsParams holds the query parameters for GetViewQueryResults.
 type GetViewQueryResultsParams struct {
-	StartCursor string
+	StartCursor uuid.UUID
 	PageSize    int
 }
 
@@ -143,7 +143,7 @@ type GetAgentInsightsParams struct {
 // ListSkillsPluginsParams holds the query parameters for ListSkillsPlugins.
 type ListSkillsPluginsParams struct {
 	PageSize    int
-	StartCursor string
+	StartCursor uuid.UUID
 }
 
 // One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
@@ -207,14 +207,14 @@ func (e APITranscriptionStatus) Valid() bool {
 // Agent defines a model
 type Agent struct {
 	// Always `agent`
-	Object string   `json:"object"`
-	ID     AgentID2 `json:"id"`
+	Object string  `json:"object"`
+	ID     AgentID `json:"id"`
 	// What kind of agent this is: "notion_ai" is the personal agent; "custom_agent" is a standalone agent you chat with; "autofill_custom_agent" fills a database property; "external" runs through an external provider.
-	AgentType          AgentType  `json:"agent_type"`
-	Name               string     `json:"name"`
-	Description        string     `json:"description"`
-	InstructionsPageID IDResponse `json:"instructions_page_id"`
-	Icon               AgentIcon  `json:"icon"`
+	AgentType          AgentType `json:"agent_type"`
+	Name               string    `json:"name"`
+	Description        string    `json:"description"`
+	InstructionsPageID ID        `json:"instructions_page_id"`
+	Icon               AgentIcon `json:"icon"`
 	// The model the agent runs on: auto (Notion selects) or a pinned model.
 	Model AgentModel `json:"model"`
 	// Integrations the agent is connected to (Notion, Slack, Discord, MCP servers, and other connectors), each with an account and per-target permissions.
@@ -1090,9 +1090,9 @@ func (v *AgentConnectionsItemNotionPermissionsItemTargetAgent) unmarshalJSONMemb
 // AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty defines a model
 type AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty struct {
 	// Always `database_property`
-	Type         string `json:"type"`
-	DataSourceID string `json:"data_source_id"`
-	PropertyID   string `json:"property_id"`
+	Type         string    `json:"type"`
+	DataSourceID uuid.UUID `json:"data_source_id"`
+	PropertyID   string    `json:"property_id"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty declares it.
@@ -1500,7 +1500,7 @@ type AgentCreatedByUser struct {
 	// Always `user`
 	Type string `json:"type"`
 	// The ID of the user that created this agent.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 }
 
 // The per-agent credit limit that applies to this agent, null when uncapped, or "hidden" when the caller lacks full access to the agent. This is the effective limit computed at runtime, folding in both the agent's own limit and any workspace-admin default.
@@ -1622,7 +1622,7 @@ func (v *AgentHasUnpublishedChanges) MarshalJSONTo(enc *jsontext.Encoder) error 
 // AgentID defines a model
 // AgentID is an untagged anyOf union: at least one field is set after unmarshaling.
 type AgentID struct {
-	ID     ID
+	ID     *ID
 	String string
 }
 
@@ -1642,7 +1642,7 @@ func (v *AgentID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		var vv ID
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ID = vv
+			v.ID = &vv
 			matched++
 		}
 	}
@@ -1665,63 +1665,8 @@ func (v *AgentID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *AgentID) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.ID != "":
+	case v.ID != nil:
 		return json.MarshalEncode(enc, v.ID, jsonOptsTo(enc))
-	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// AgentID2 defines a model
-// AgentID2 is an untagged anyOf union: at least one field is set after unmarshaling.
-type AgentID2 struct {
-	IDResponse *IDResponse
-	String     string
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *AgentID2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = AgentID2{}
-
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv IDResponse
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.IDResponse = &vv
-			matched++
-		}
-	}
-
-	{
-		var vv string
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.String = vv
-			matched++
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *AgentID2) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.IDResponse != nil:
-		return json.MarshalEncode(enc, v.IDResponse, jsonOptsTo(enc))
 	case v.String != "":
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
@@ -1911,8 +1856,8 @@ func (v *AgentInsightsCreditLimit) MarshalJSONTo(enc *jsontext.Encoder) error {
 // AgentInsightsID defines a model
 // AgentInsightsID is an untagged oneOf union: exactly one field is set after unmarshaling.
 type AgentInsightsID struct {
-	IDResponse *IDResponse
-	String     string
+	ID     *ID
+	String string
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
@@ -1931,9 +1876,9 @@ func (v *AgentInsightsID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv IDResponse
+		var vv ID
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.IDResponse = &vv
+			v.ID = &vv
 			matched++
 		}
 	}
@@ -1957,8 +1902,8 @@ func (v *AgentInsightsID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *AgentInsightsID) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.IDResponse != nil:
-		return json.MarshalEncode(enc, v.IDResponse, jsonOptsTo(enc))
+	case v.ID != nil:
+		return json.MarshalEncode(enc, v.ID, jsonOptsTo(enc))
 	case v.String != "":
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
@@ -2251,13 +2196,13 @@ func (v *AgentListResultsItemNotionAiIcon) MarshalJSONTo(enc *jsontext.Encoder) 
 // AgentListResultsItemOneOf0 defines a model
 type AgentListResultsItemOneOf0 struct {
 	// Always `agent`
-	Object string     `json:"object"`
-	ID     IDResponse `json:"id"`
+	Object string `json:"object"`
+	ID     ID     `json:"id"`
 	// What kind of agent this is: "custom_agent" is a standalone agent you chat with; "autofill_custom_agent" fills a database property.
 	AgentType          AgentListResultsItemOneOf0AgentType `json:"agent_type"`
 	Name               string                              `json:"name"`
 	Description        string                              `json:"description"`
-	InstructionsPageID IDResponse                          `json:"instructions_page_id"`
+	InstructionsPageID ID                                  `json:"instructions_page_id"`
 	Icon               AgentIcon                           `json:"icon"`
 	// The model selection: automatic, or pinned to a public model ID.
 	Model AgentModel `json:"model"`
@@ -2306,7 +2251,7 @@ type AgentListResultsItemOneOf0CreatedByOneOf0 struct {
 	// One of: `user`, `bot`
 	Type SessionCreatedByType `json:"type"`
 	// The ID of the user or bot that created this agent.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 }
 
 // AgentModel defines a model
@@ -2633,7 +2578,7 @@ func (e AgentType) Valid() bool {
 // AgentVersionOneOf defines a model
 type AgentVersionOneOf struct {
 	// The ID of the published artifact.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// The version number.
 	Number float64 `json:"number"`
 	// The ISO 8601 timestamp when this version was published.
@@ -2824,13 +2769,13 @@ type BaseWebhookPayload struct {
 	// ISO 8601 timestamp of when the event occurred. Can be used to order events.
 	Timestamp string `json:"timestamp"`
 	// The ID of the workspace where the event originated.
-	WorkspaceID IDResponse `json:"workspace_id"`
+	WorkspaceID ID `json:"workspace_id"`
 	// The name of the workspace where the event originated.
 	WorkspaceName string `json:"workspace_name"`
 	// The ID of the webhook subscription.
-	SubscriptionID IDResponse `json:"subscription_id"`
+	SubscriptionID ID `json:"subscription_id"`
 	// The ID of the integration the subscription is set up with.
-	IntegrationID IDResponse `json:"integration_id"`
+	IntegrationID ID `json:"integration_id"`
 	// The users or bots that performed the action. Typically an array of length 1; can be more for aggregated events.
 	Authors []BaseWebhookPayloadAuthorsItem `json:"authors"`
 	// The delivery attempt number (1-8) of the current event delivery.
@@ -2863,7 +2808,7 @@ func (e BaseWebhookPayloadAPIVersion) Valid() bool {
 // BaseWebhookPayloadAuthorsItem defines a model
 type BaseWebhookPayloadAuthorsItem struct {
 	// The ID of the user.
-	ID   IDResponse                        `json:"id"`
+	ID   ID                                `json:"id"`
 	Type BaseWebhookPayloadAuthorsItemType `json:"type"`
 }
 
@@ -3237,7 +3182,7 @@ type BlockIDParentForBlockBasedObject struct {
 	// The parent type.
 	Type string `json:"type"`
 	// The ID of the parent block.
-	BlockID IDResponse `json:"block_id"`
+	BlockID ID `json:"block_id"`
 }
 
 // BlockList defines a model
@@ -3681,9 +3626,9 @@ type BlockObjectLinkToPage struct {
 // BlockObjectLinkToPageLinkToPage defines a model
 type BlockObjectLinkToPageLinkToPage struct {
 	Type       BlockObjectLinkToPageLinkToPageType `json:"type,omitzero"`
-	PageID     ID                                  `json:"page_id,omitzero"`
-	DatabaseID ID                                  `json:"database_id,omitzero"`
-	CommentID  ID                                  `json:"comment_id,omitzero"`
+	PageID     *ID                                 `json:"page_id,omitzero"`
+	DatabaseID *ID                                 `json:"database_id,omitzero"`
+	CommentID  *ID                                 `json:"comment_id,omitzero"`
 }
 
 // BlockObjectLinkToPageLinkToPageType is a value of BlockObjectLinkToPageLinkToPage's type, naming the members it holds.
@@ -3711,13 +3656,13 @@ var tagsOfBlockObjectLinkToPageLinkToPage = map[string]map[string]jsonTagNeed{
 // taggedMembers returns those of the members of an alternative's own that are set.
 func (v *BlockObjectLinkToPageLinkToPage) taggedMembers() []string {
 	var set []string
-	if v.PageID != "" {
+	if v.PageID != nil {
 		set = append(set, "page_id")
 	}
-	if v.DatabaseID != "" {
+	if v.DatabaseID != nil {
 		set = append(set, "database_id")
 	}
-	if v.CommentID != "" {
+	if v.CommentID != nil {
 		set = append(set, "comment_id")
 	}
 
@@ -4734,7 +4679,7 @@ func (v *BotInfoResponseOwnerUserUser) MarshalJSONTo(enc *jsontext.Encoder) erro
 // BotInfoResponseOwnerUserUserPerson defines a model
 type BotInfoResponseOwnerUserUserPerson struct {
 	// The ID of the user.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// The user object type name.
 	Object string `json:"object"`
 	// The name of the user.
@@ -5628,9 +5573,9 @@ type CommentCreatedWebhookPayloadData struct {
 	// The parent of the comment (the page or block the comment is attached to).
 	Parent WebhookExternalBlock `json:"parent"`
 	// The ID of the page containing the comment.
-	PageID IDResponse `json:"page_id"`
+	PageID ID `json:"page_id"`
 	// The ID of the discussion containing the comment.
-	DiscussionID IDResponse `json:"discussion_id"`
+	DiscussionID ID `json:"discussion_id"`
 	// The ID of the database property the comment is on, for comments on a page property. Matches the property's `id` in the page object. Omitted for other comments.
 	PropertyID string `json:"property_id,omitzero"`
 }
@@ -5650,7 +5595,7 @@ type CommentDeletedWebhookPayload struct {
 type CommentList struct {
 	// Always `list`
 	Object     string                  `json:"object"`
-	NextCursor IDResponse              `json:"next_cursor"`
+	NextCursor ID                      `json:"next_cursor"`
 	HasMore    bool                    `json:"has_more"`
 	Results    []CommentObjectResponse `json:"results"`
 	// Always `comment`
@@ -5665,11 +5610,11 @@ type CommentObjectResponse struct {
 	// The comment object type name.
 	Object string `json:"object"`
 	// The ID of the comment.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// The parent of the comment.
 	Parent CommentParentResponse `json:"parent"`
 	// The ID of the discussion thread this comment belongs to.
-	DiscussionID IDResponse `json:"discussion_id"`
+	DiscussionID ID `json:"discussion_id"`
 	// The time when the comment was created.
 	CreatedTime time.Time `json:"created_time"`
 	// The time when the comment was last edited.
@@ -5814,9 +5759,9 @@ func (v *CommentOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 type CommentParentResponse struct {
 	Type CommentParentResponseType `json:"type"`
 	// The ID of the parent page.
-	PageID *IDResponse `json:"page_id,omitzero"`
+	PageID *ID `json:"page_id,omitzero"`
 	// The ID of the parent block.
-	BlockID *IDResponse `json:"block_id,omitzero"`
+	BlockID *ID `json:"block_id,omitzero"`
 }
 
 // CommentParentResponseType is a value of CommentParentResponse's type, naming the members it holds.
@@ -6441,9 +6386,9 @@ type CreateACommentAllOf0OneOf3 struct {
 type CreateACommentAllOfOneOfParent struct {
 	Type CreateACommentAllOfOneOfParentType `json:"type,omitzero"`
 	// The ID of the parent page (with or without dashes), for example, 195de9221179449fab8075a27c979105
-	PageID ID `json:"page_id,omitzero"`
+	PageID *ID `json:"page_id,omitzero"`
 	// The ID of the parent block (with or without dashes), for example, 195de9221179449fab8075a27c979105
-	BlockID ID `json:"block_id,omitzero"`
+	BlockID *ID `json:"block_id,omitzero"`
 }
 
 // CreateACommentAllOfOneOfParentType is a value of CreateACommentAllOfOneOfParent's type, naming the members it holds.
@@ -6469,10 +6414,10 @@ var tagsOfCreateACommentAllOfOneOfParent = map[string]map[string]jsonTagNeed{
 // taggedMembers returns those of the members of an alternative's own that are set.
 func (v *CreateACommentAllOfOneOfParent) taggedMembers() []string {
 	var set []string
-	if v.PageID != "" {
+	if v.PageID != nil {
 		set = append(set, "page_id")
 	}
-	if v.BlockID != "" {
+	if v.BlockID != nil {
 		set = append(set, "block_id")
 	}
 
@@ -6994,7 +6939,7 @@ type CreateDatabaseForViewPosition struct {
 type CreateDatabaseParent struct {
 	// The type of parent.
 	Type      CreateDatabaseParentType `json:"type"`
-	PageID    ID                       `json:"page_id,omitzero"`
+	PageID    *ID                      `json:"page_id,omitzero"`
 	Workspace *bool                    `json:"workspace,omitzero"`
 }
 
@@ -7007,7 +6952,7 @@ var tagsOfCreateDatabaseParent = map[string]map[string]jsonTagNeed{
 // taggedMembers returns those of the members of an alternative's own that are set.
 func (v *CreateDatabaseParent) taggedMembers() []string {
 	var set []string
-	if v.PageID != "" {
+	if v.PageID != nil {
 		set = append(set, "page_id")
 	}
 	if v.Workspace != nil {
@@ -7319,15 +7264,7 @@ type CreateMeetingNoteAllOf0OneOf0 struct {
 	// Audio or video source for the meeting note.
 	Source CreateMeetingNoteAllOf0OneOf0Source `json:"source"`
 	// Parent page for the new meeting note.
-	Parent CreateMeetingNoteAllOf0OneOf0Parent `json:"parent"`
-}
-
-// Parent page for the new meeting note.
-type CreateMeetingNoteAllOf0OneOf0Parent struct {
-	// Always "page_id".
-	Type string `json:"type"`
-	// Page ID where the meeting note should be created. Required for file_upload sources.
-	PageID ID `json:"page_id"`
+	Parent PageIDParentForBlockBasedObject `json:"parent"`
 }
 
 // Audio or video source for the meeting note.
@@ -7398,7 +7335,7 @@ type CreateMeetingNoteMeetingNotes struct {
 	// Always "block".
 	Object string `json:"object"`
 	// The ID of the meeting note block.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// Always "meeting_notes".
 	Type string `json:"type"`
 	// Meeting note content fields.
@@ -7488,7 +7425,7 @@ type CreateMeetingNoteOkOneOf0 struct {
 	// Always "block".
 	Object string `json:"object"`
 	// The ID of the meeting note block.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 }
 
 // Optional processing settings.
@@ -7610,8 +7547,8 @@ type CustomEmojiList struct {
 	// Whether there are more results available.
 	HasMore bool `json:"has_more"`
 	// The cursor to use for the next page of results, or null if there are no more results.
-	NextCursor IDResponse `json:"next_cursor"`
-	RequestID  uuid.UUID  `json:"request_id,omitzero"`
+	NextCursor ID        `json:"next_cursor"`
+	RequestID  uuid.UUID `json:"request_id,omitzero"`
 }
 
 // CustomEmojiPageIcon defines a model
@@ -7642,7 +7579,7 @@ type CustomEmojiPageIconCustomEmoji struct {
 // CustomEmojiResponse defines a model
 type CustomEmojiResponse struct {
 	// The ID of the custom emoji.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// The name of the custom emoji.
 	Name string `json:"name"`
 	// The URL of the custom emoji.
@@ -7740,7 +7677,7 @@ type DataSourceObjectResponse struct {
 	// The data source object type name.
 	Object string `json:"object"`
 	// The ID of the data source.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// The title of the data source.
 	Title RichTexts `json:"title"`
 	// The description of the data source.
@@ -7783,7 +7720,7 @@ type DataSourceObjectSyncMetadata struct {
 	// Live collection sync health. Null means unavailable, not unhealthy. Missing timestamps are unknown.
 	Health DataSourceObjectSyncMetadataHealth `json:"health,omitzero"`
 	// Notion user who owns the sync credential, included when health is available.
-	OwnerUserID IDResponse `json:"owner_user_id,omitzero"`
+	OwnerUserID ID `json:"owner_user_id,omitzero"`
 	// Provider resource synced to this data source, when available.
 	Resource string `json:"resource,omitzero"`
 	// Stored identity of an external database sync.
@@ -7791,7 +7728,7 @@ type DataSourceObjectSyncMetadata struct {
 	// The provider of a legacy synced data source: Jira or Salesforce. Values are case-sensitive.
 	ExternalCollectionType DataSourceObjectSyncMetadataExternalCollectionType `json:"external_collection_type,omitzero"`
 	// The stored sync ID when provider details are unavailable. This is not a credential.
-	SyncID IDResponse `json:"sync_id,omitzero"`
+	SyncID ID `json:"sync_id,omitzero"`
 	// Stored state for a legacy synced data source. Missing or invalid timestamps are omitted. This is not a live health check.
 	SyncState DataSourceObjectSyncMetadataSyncState `json:"sync_state,omitzero"`
 	// Opaque, developer-defined collection key for a worker sync. It is not a globally unique ID or a credential. Worker status is not included.
@@ -7819,7 +7756,7 @@ func (e DataSourceObjectSyncMetadataExternalCollectionType) Valid() bool {
 // Stored identity of an external database sync.
 type DataSourceObjectSyncMetadataExternalDatabaseSync struct {
 	// The stored sync ID. This is not a credential.
-	SyncID IDResponse `json:"sync_id"`
+	SyncID ID `json:"sync_id"`
 	// The sync provider: github (GitHub), jira (Jira), or salesforce (Salesforce).
 	Provider DataSourceObjectSyncMetadataExternalDatabaseSyncProvider `json:"provider"`
 }
@@ -8141,15 +8078,15 @@ type DataSourceParentResponse struct {
 	// The parent type.
 	Type string `json:"type"`
 	// The ID of the parent data source.
-	DataSourceID IDResponse `json:"data_source_id"`
+	DataSourceID ID `json:"data_source_id"`
 	// The ID of the data source's parent database.
-	DatabaseID IDResponse `json:"database_id"`
+	DatabaseID ID `json:"database_id"`
 }
 
 // DataSourceReferenceResponse defines a model
 type DataSourceReferenceResponse struct {
 	// The ID of the data source.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// The name of the data source.
 	Name string `json:"name"`
 	// Sync identity and available health, included when retrieving a database.
@@ -8183,7 +8120,7 @@ type DataSourceViewObjectResponse struct {
 	// The object type name.
 	Object string `json:"object"`
 	// The ID of the view.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// The parent database of the view.
 	Parent DatabaseParentResponse `json:"parent"`
 	// The name of the view.
@@ -8197,7 +8134,7 @@ type DataSourceViewObjectResponse struct {
 	// Canonical deep link to the view in Notion.
 	URL string `json:"url"`
 	// The ID of the data source this view is scoped to, or null for dashboard views.
-	DataSourceID string `json:"data_source_id,omitzero"`
+	DataSourceID uuid.UUID `json:"data_source_id,omitzero"`
 	// The user who created the view, or null if not available.
 	CreatedBy PartialUserObjectResponse `json:"created_by,omitzero"`
 	// The user who last edited the view, or null if not available.
@@ -8292,7 +8229,7 @@ type DataSourceViewReferenceResponse struct {
 	// The object type name.
 	Object string `json:"object"`
 	// The ID of the view.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 }
 
 // Database defines a model
@@ -8300,7 +8237,7 @@ type Database struct {
 	// The database object type name.
 	Object string `json:"object"`
 	// The ID of the database.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// The title of the database.
 	Title RichTexts `json:"title"`
 	// The description of the database.
@@ -8446,13 +8383,13 @@ type DatabaseParentResponse struct {
 	// The parent type.
 	Type string `json:"type"`
 	// The ID of the parent database.
-	DatabaseID IDResponse `json:"database_id"`
+	DatabaseID ID `json:"database_id"`
 }
 
 // DatabasePropertyRelationConfigResponse defines a model
 type DatabasePropertyRelationConfigResponse struct {
-	DatabaseID   IDResponse `json:"database_id"`
-	DataSourceID IDResponse `json:"data_source_id"`
+	DatabaseID   ID `json:"database_id"`
+	DataSourceID ID `json:"data_source_id"`
 	// The maximum number of pages each page can relate to, or null when there is no limit. Read-only.
 	Limit          int                                                             `json:"limit,omitzero"`
 	Type           DatabasePropertyRelationConfigResponseType                      `json:"type,omitzero"`
@@ -9176,7 +9113,7 @@ type DateSimplePropertyValue struct {
 
 // DeleteAgentOk defines a model
 type DeleteAgentOk struct {
-	AgentID IDResponse `json:"agent_id"`
+	AgentID ID `json:"agent_id"`
 	// Always "deleted": the agent has been soft-deleted (recoverable).
 	Status string `json:"status"`
 	// ISO 8601 timestamp of when the agent was deleted.
@@ -9188,7 +9125,7 @@ type DeletedViewQueryResponse struct {
 	// The object type.
 	Object string `json:"object"`
 	// The ID of the deleted view query.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// Whether the view query was deleted.
 	Deleted bool `json:"deleted"`
 }
@@ -9443,7 +9380,7 @@ type FileUploadID struct {
 type FileUploadList struct {
 	// Always `list`
 	Object     string                     `json:"object"`
-	NextCursor IDResponse                 `json:"next_cursor"`
+	NextCursor ID                         `json:"next_cursor"`
 	HasMore    bool                       `json:"has_more"`
 	Results    []FileUploadObjectResponse `json:"results"`
 	// Always `file_upload`
@@ -9491,7 +9428,7 @@ func (e FileUploadObjectFileImportResultAllOfErrorType) Valid() bool {
 type FileUploadObjectResponse struct {
 	// Always `file_upload`
 	Object         string                            `json:"object"`
-	ID             IDResponse                        `json:"id"`
+	ID             ID                                `json:"id"`
 	CreatedTime    time.Time                         `json:"created_time"`
 	CreatedBy      FileUploadObjectResponseCreatedBy `json:"created_by"`
 	LastEditedTime time.Time                         `json:"last_edited_time"`
@@ -9510,7 +9447,7 @@ type FileUploadObjectResponse struct {
 
 // FileUploadObjectResponseCreatedBy defines a model
 type FileUploadObjectResponseCreatedBy struct {
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// One of: `person`, `bot`, `agent`
 	Type FileUploadObjectResponseCreatedByType `json:"type"`
 }
@@ -11190,7 +11127,7 @@ func (v *GroupObject) unmarshalJSONMember(dec *jsontext.Decoder, name string) (b
 // GroupObjectResponse defines a model
 type GroupObjectResponse struct {
 	// The ID of the group.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// The group object type name.
 	Object string `json:"object"`
 	// The name of the group.
@@ -11254,15 +11191,12 @@ type HeaderContentWithSingleLevelOfChildren struct {
 }
 
 // ID defines a model
-type ID string
+type ID = uuid.UUID
 
 // IDObject defines a model
 type IDObject struct {
 	ID string `json:"id"`
 }
-
-// IDResponse defines a model
-type IDResponse = uuid.UUID
 
 // A Notion native icon, specified by name and optional color.
 type IconPageIconIcon struct {
@@ -11622,9 +11556,9 @@ type LinkPreviewMention struct {
 // LinkToPageBlockObjectResponseLinkToPage defines a model
 type LinkToPageBlockObjectResponseLinkToPage struct {
 	Type       LinkToPageBlockObjectResponseLinkToPageType `json:"type"`
-	PageID     ID                                          `json:"page_id,omitzero"`
-	DatabaseID ID                                          `json:"database_id,omitzero"`
-	CommentID  ID                                          `json:"comment_id,omitzero"`
+	PageID     *ID                                         `json:"page_id,omitzero"`
+	DatabaseID *ID                                         `json:"database_id,omitzero"`
+	CommentID  *ID                                         `json:"comment_id,omitzero"`
 }
 
 // LinkToPageBlockObjectResponseLinkToPageType is a value of LinkToPageBlockObjectResponseLinkToPage's type, naming the members it holds.
@@ -11652,13 +11586,13 @@ var tagsOfLinkToPageBlockObjectResponseLinkToPage = map[string]map[string]jsonTa
 // taggedMembers returns those of the members of an alternative's own that are set.
 func (v *LinkToPageBlockObjectResponseLinkToPage) taggedMembers() []string {
 	var set []string
-	if v.PageID != "" {
+	if v.PageID != nil {
 		set = append(set, "page_id")
 	}
-	if v.DatabaseID != "" {
+	if v.DatabaseID != nil {
 		set = append(set, "database_id")
 	}
-	if v.CommentID != "" {
+	if v.CommentID != nil {
 		set = append(set, "comment_id")
 	}
 
@@ -11714,7 +11648,7 @@ type ListDataSourceTemplatesOk struct {
 	// Whether there are more templates available beyond this page.
 	HasMore bool `json:"has_more"`
 	// Cursor to use for the next page of results. Null if there are no more results.
-	NextCursor IDResponse `json:"next_cursor"`
+	NextCursor ID `json:"next_cursor"`
 }
 
 // Array of templates available in this data source.
@@ -11723,7 +11657,7 @@ type ListDataSourceTemplatesOkTemplates []ListDataSourceTemplatesOkTemplatesItem
 // ListDataSourceTemplatesOkTemplatesItem defines a model
 type ListDataSourceTemplatesOkTemplatesItem struct {
 	// ID of the template page.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// Name of the template.
 	Name string `json:"name"`
 	// Whether this template is the default template for the data source.
@@ -13199,12 +13133,6 @@ func (v *MentionRichTextItemMention) MarshalJSONTo(enc *jsontext.Encoder) error 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// MentionRichTextItemMentionPage2 defines a model
-type MentionRichTextItemMentionPage2 struct {
-	// The ID of the page in the mention.
-	ID IDResponse `json:"id"`
-}
-
 // Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.
 type MentionRichTextItemResponseMention struct {
 	Type MentionRichTextItemResponseMentionType `json:"type"`
@@ -13217,9 +13145,9 @@ type MentionRichTextItemResponseMention struct {
 	// Details of the link mention.
 	LinkMention *LinkMentionResponse `json:"link_mention,omitzero"`
 	// Details of the page mention.
-	Page *MentionRichTextItemMentionPage2 `json:"page,omitzero"`
+	Page *FileUploadID `json:"page,omitzero"`
 	// Details of the database mention.
-	Database *MentionRichTextItemMentionPage2 `json:"database,omitzero"`
+	Database *FileUploadID `json:"database,omitzero"`
 	// Details of the template mention.
 	TemplateMention *TemplateMentionResponse `json:"template_mention,omitzero"`
 	// The custom emoji details for the icon.
@@ -13341,9 +13269,9 @@ type MovePage struct {
 type MovePageParent struct {
 	Type MovePageParentType `json:"type,omitzero"`
 	// The ID of the parent page (with or without dashes), for example, 195de9221179449fab8075a27c979105
-	PageID ID `json:"page_id,omitzero"`
+	PageID *ID `json:"page_id,omitzero"`
 	// The ID of the parent data source (collection), with or without dashes. For example, f336d0bc-b841-465b-8045-024475c079dd
-	DataSourceID ID `json:"data_source_id,omitzero"`
+	DataSourceID *ID `json:"data_source_id,omitzero"`
 }
 
 // MovePageParentType is a value of MovePageParent's type, naming the members it holds.
@@ -13369,10 +13297,10 @@ var tagsOfMovePageParent = map[string]map[string]jsonTagNeed{
 // taggedMembers returns those of the members of an alternative's own that are set.
 func (v *MovePageParent) taggedMembers() []string {
 	var set []string
-	if v.PageID != "" {
+	if v.PageID != nil {
 		set = append(set, "page_id")
 	}
-	if v.DataSourceID != "" {
+	if v.DataSourceID != nil {
 		set = append(set, "data_source_id")
 	}
 
@@ -13899,7 +13827,7 @@ type Page struct {
 	// The page object type name.
 	Object string `json:"object"`
 	// The ID of the page.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// Date and time when this page was created.
 	CreatedTime time.Time `json:"created_time"`
 	// Date and time when this page was last edited.
@@ -14146,7 +14074,7 @@ type PageIDParentForBlockBasedObject struct {
 	// The parent type.
 	Type string `json:"type"`
 	// The ID of the parent page.
-	PageID IDResponse `json:"page_id"`
+	PageID ID `json:"page_id"`
 }
 
 // PageIcon defines a model
@@ -14365,7 +14293,7 @@ func (v *PageIconResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 type PageList struct {
 	// Always `list`
 	Object     string                      `json:"object"`
-	NextCursor IDResponse                  `json:"next_cursor"`
+	NextCursor ID                          `json:"next_cursor"`
 	HasMore    bool                        `json:"has_more"`
 	Results    []PartialPageObjectResponse `json:"results"`
 	// Always `page`
@@ -14391,13 +14319,13 @@ type PageMarkdownResponse struct {
 	// The type of object, always 'page_markdown'.
 	Object string `json:"object"`
 	// The ID of the page or block.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// The page content as Markdown, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).
 	Markdown string `json:"markdown"`
 	// Whether the content was truncated due to exceeding the record count limit.
 	Truncated bool `json:"truncated"`
 	// Block IDs that could not be loaded (appeared as <unknown> tags in the markdown). Pass these IDs back to this endpoint to fetch their content separately.
-	UnknownBlockIds []IDResponse `json:"unknown_block_ids"`
+	UnknownBlockIds []ID `json:"unknown_block_ids"`
 	// Content warnings from a synchronous update. Returned only when there is at least one warning.
 	Warnings PageMarkdownResponseWarnings `json:"warnings,omitzero"`
 }
@@ -15312,7 +15240,7 @@ type PageReferenceResponse struct {
 	// The object type.
 	Object string `json:"object"`
 	// The object ID.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 }
 
 // PageTemplateDefault defines a model
@@ -15433,15 +15361,15 @@ type ParagraphWithSingleLevelOfChildren struct {
 type ParentForBlockBasedObjectResponse struct {
 	Type ParentForBlockBasedObjectResponseType `json:"type"`
 	// The ID of the parent database.
-	DatabaseID *IDResponse `json:"database_id,omitzero"`
+	DatabaseID *ID `json:"database_id,omitzero"`
 	// The ID of the parent data source.
-	DataSourceID *IDResponse `json:"data_source_id,omitzero"`
+	DataSourceID *ID `json:"data_source_id,omitzero"`
 	// The ID of the parent page.
-	PageID *IDResponse `json:"page_id,omitzero"`
+	PageID *ID `json:"page_id,omitzero"`
 	// The ID of the parent block.
-	BlockID *IDResponse `json:"block_id,omitzero"`
+	BlockID *ID `json:"block_id,omitzero"`
 	// The ID of the parent agent.
-	AgentID *IDResponse `json:"agent_id,omitzero"`
+	AgentID *ID `json:"agent_id,omitzero"`
 	// Always true for workspace parent.
 	Workspace *bool `json:"workspace,omitzero"`
 }
@@ -15552,10 +15480,10 @@ type ParentOfDataSource struct {
 // The parent of the data source. This is typically a database (`database_id`), but for externally synced data sources, can be another data source (`data_source_id`).
 type ParentOfDataSourceResponse struct {
 	// The ID of the parent database.
-	DatabaseID IDResponse                     `json:"database_id"`
+	DatabaseID ID                             `json:"database_id"`
 	Type       ParentOfDataSourceResponseType `json:"type"`
 	// The ID of the parent data source.
-	DataSourceID *IDResponse `json:"data_source_id,omitzero"`
+	DataSourceID *ID `json:"data_source_id,omitzero"`
 }
 
 // ParentOfDataSourceResponseType is a value of ParentOfDataSourceResponse's type, naming the members it holds.
@@ -15634,13 +15562,13 @@ func (v *ParentOfDataSourceResponse) MarshalJSONTo(enc *jsontext.Encoder) error 
 type ParentOfDatabaseResponse struct {
 	Type ParentOfDatabaseResponseType `json:"type"`
 	// The ID of the parent page.
-	PageID *IDResponse `json:"page_id,omitzero"`
+	PageID *ID `json:"page_id,omitzero"`
 	// Always true for workspace parent.
 	Workspace *bool `json:"workspace,omitzero"`
 	// The ID of the parent database.
-	DatabaseID *IDResponse `json:"database_id,omitzero"`
+	DatabaseID *ID `json:"database_id,omitzero"`
 	// The ID of the parent block.
-	BlockID *IDResponse `json:"block_id,omitzero"`
+	BlockID *ID `json:"block_id,omitzero"`
 }
 
 // ParentOfDatabaseResponseType is a value of ParentOfDatabaseResponse's type, naming the members it holds.
@@ -15739,7 +15667,7 @@ type PartialCommentObjectResponse struct {
 	// The comment object type name.
 	Object string `json:"object"`
 	// The ID of the comment.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 }
 
 // PartialDataSourceObjectResponse defines a model
@@ -15747,7 +15675,7 @@ type PartialDataSourceObjectResponse struct {
 	// The data source object type name.
 	Object string `json:"object"`
 	// The ID of the data source.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// The properties schema of the data source.
 	Properties map[string]PropertyConfig `json:"properties"`
 }
@@ -15757,7 +15685,7 @@ type PartialDataSourceViewObjectResponse struct {
 	// The object type name.
 	Object string `json:"object"`
 	// The ID of the view.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// The parent database of the view.
 	Parent DatabaseParentResponse `json:"parent"`
 	// The view type.
@@ -15769,7 +15697,7 @@ type PartialDatabaseObjectResponse struct {
 	// The database object type name.
 	Object string `json:"object"`
 	// The ID of the database.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 }
 
 // PartialPageObjectResponse defines a model
@@ -15777,7 +15705,7 @@ type PartialPageObjectResponse struct {
 	// The page object type name.
 	Object string `json:"object"`
 	// The ID of the page.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 }
 
 // PartialRollupValueResponse defines a model
@@ -15914,7 +15842,7 @@ func (v *PartialUserObject) unmarshalJSONMember(dec *jsontext.Decoder, name stri
 
 // PartialUserObjectResponse defines a model
 type PartialUserObjectResponse struct {
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// Always `user`
 	Object    string                          `json:"object"`
 	Name      string                          `json:"name,omitzero"`
@@ -15958,7 +15886,7 @@ type PatchPageTemplate struct {
 	// IANA timezone to use when resolving template variables like @now and @today (e.g. 'America/New_York'). Defaults to the authorizing user's timezone for public integrations, or UTC for internal integrations.
 	Timezone   TemplateTimezone      `json:"timezone,omitzero"`
 	Type       PatchPageTemplateType `json:"type"`
-	TemplateID ID                    `json:"template_id,omitzero"`
+	TemplateID *ID                   `json:"template_id,omitzero"`
 }
 
 // PatchPageTemplateType is a value of PatchPageTemplate's type, naming the members it holds.
@@ -15984,7 +15912,7 @@ var tagsOfPatchPageTemplate = map[string]map[string]jsonTagNeed{
 // taggedMembers returns those of the members of an alternative's own that are set.
 func (v *PatchPageTemplate) taggedMembers() []string {
 	var set []string
-	if v.TemplateID != "" {
+	if v.TemplateID != nil {
 		set = append(set, "template_id")
 	}
 
@@ -16258,7 +16186,7 @@ func (e PersonGroupByConfigType) Valid() bool {
 // PersonIDOrMe defines a model
 // PersonIDOrMe is an untagged anyOf union: at least one field is set after unmarshaling.
 type PersonIDOrMe struct {
-	ID     ID
+	ID     *ID
 	String string
 }
 
@@ -16278,7 +16206,7 @@ func (v *PersonIDOrMe) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		var vv ID
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ID = vv
+			v.ID = &vv
 			matched++
 		}
 	}
@@ -16301,7 +16229,7 @@ func (v *PersonIDOrMe) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *PersonIDOrMe) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.ID != "":
+	case v.ID != nil:
 		return json.MarshalEncode(enc, v.ID, jsonOptsTo(enc))
 	case v.String != "":
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
@@ -16456,9 +16384,9 @@ type PostPage struct {
 // PostPageParent defines a model
 type PostPageParent struct {
 	Type         PostPageParentType `json:"type,omitzero"`
-	PageID       ID                 `json:"page_id,omitzero"`
-	DatabaseID   ID                 `json:"database_id,omitzero"`
-	DataSourceID ID                 `json:"data_source_id,omitzero"`
+	PageID       *ID                `json:"page_id,omitzero"`
+	DatabaseID   *ID                `json:"database_id,omitzero"`
+	DataSourceID *ID                `json:"data_source_id,omitzero"`
 	Workspace    *bool              `json:"workspace,omitzero"`
 }
 
@@ -16489,13 +16417,13 @@ var tagsOfPostPageParent = map[string]map[string]jsonTagNeed{
 // taggedMembers returns those of the members of an alternative's own that are set.
 func (v *PostPageParent) taggedMembers() []string {
 	var set []string
-	if v.PageID != "" {
+	if v.PageID != nil {
 		set = append(set, "page_id")
 	}
-	if v.DatabaseID != "" {
+	if v.DatabaseID != nil {
 		set = append(set, "database_id")
 	}
-	if v.DataSourceID != "" {
+	if v.DataSourceID != nil {
 		set = append(set, "data_source_id")
 	}
 	if v.Workspace != nil {
@@ -19461,17 +19389,17 @@ type QueryMeetingNotesResultsItemMeetingNotesCalendarEvent struct {
 	// ID of the calendar event, as returned by the calendar tools.
 	EventID string `json:"event_id,omitzero"`
 	// List of attendee user IDs.
-	Attendees []IDResponse `json:"attendees,omitzero"`
+	Attendees []ID `json:"attendees,omitzero"`
 }
 
 // Block IDs for each tab (summary, notes, transcript).
 type QueryMeetingNotesResultsItemMeetingNotesChildren struct {
 	// Block ID of the AI summary tab.
-	SummaryBlockID IDResponse `json:"summary_block_id,omitzero"`
+	SummaryBlockID ID `json:"summary_block_id,omitzero"`
 	// Block ID of the meeting notes tab.
-	NotesBlockID IDResponse `json:"notes_block_id,omitzero"`
+	NotesBlockID ID `json:"notes_block_id,omitzero"`
 	// Block ID of the transcript tab.
-	TranscriptBlockID IDResponse `json:"transcript_block_id,omitzero"`
+	TranscriptBlockID ID `json:"transcript_block_id,omitzero"`
 }
 
 // Start and end times of the actual recording.
@@ -28259,7 +28187,7 @@ type UpdateAgentCreditLimit struct {
 
 // UpdateAgentCreditLimitOk defines a model
 type UpdateAgentCreditLimitOk struct {
-	AgentID IDResponse `json:"agent_id"`
+	AgentID ID `json:"agent_id"`
 	// The agent's editor-set per-agent credit limit; null when no limit applies.
 	CreditLimit *int `json:"credit_limit"`
 	// ISO 8601 timestamp of when the agent was last edited.
@@ -28379,7 +28307,7 @@ type UpdateAgentStatus3 struct {
 
 // UpdateAgentStatusOk defines a model
 type UpdateAgentStatusOk struct {
-	AgentID IDResponse `json:"agent_id"`
+	AgentID ID `json:"agent_id"`
 	// "active" when the agent can run; "disabled" when it is paused (see pause_reason); "deleted" when it has been removed.
 	Status AgentStatus `json:"status"`
 	// Why the agent is paused when status is "disabled" (e.g. "disabled_from_api", "credit_limit"); null when active or deleted.
@@ -29046,7 +28974,7 @@ type UserList struct {
 // UserObjectResponse defines a model
 type UserObjectResponse struct {
 	// The ID of the user.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// The user object type name.
 	Object string `json:"object"`
 	// The name of the user.
@@ -29681,7 +29609,7 @@ type ViewDeletedWebhookPayload struct {
 type ViewList struct {
 	// Always `list`
 	Object     string                            `json:"object"`
-	NextCursor IDResponse                        `json:"next_cursor"`
+	NextCursor ID                                `json:"next_cursor"`
 	HasMore    bool                              `json:"has_more"`
 	Results    []DataSourceViewReferenceResponse `json:"results"`
 	// Always `view`
@@ -29944,9 +29872,9 @@ type ViewQueryResponse struct {
 	// The object type.
 	Object string `json:"object"`
 	// The query ID.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// The view this query was executed against.
-	ViewID IDResponse `json:"view_id"`
+	ViewID ID `json:"view_id"`
 	// When the cached query results expire.
 	ExpiresAt time.Time `json:"expires_at"`
 	// Total number of results in the query.
@@ -29954,7 +29882,7 @@ type ViewQueryResponse struct {
 	// The page results for this page.
 	Results []PageReferenceResponse `json:"results"`
 	// Cursor for the next page of results.
-	NextCursor IDResponse `json:"next_cursor"`
+	NextCursor ID `json:"next_cursor"`
 	// Whether there are more results.
 	HasMore bool `json:"has_more"`
 	// Set to `{ type: 'incomplete', incomplete_reason: 'query_result_limit_reached' }` when the view's underlying data source has more rows matching this query than the server-side pagination depth limit allows.
@@ -30034,13 +29962,13 @@ type WebhookCommentEntity struct {
 	// Always `comment`
 	Type string `json:"type"`
 	// The ID of the comment that triggered the event.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 }
 
 // WebhookDatabaseEventEntity defines a model
 type WebhookDatabaseEventEntity struct {
 	// The ID of the database or data source that triggered the event.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// The type of entity. For linked databases, this is `block`.
 	Type WebhookDatabaseEventEntityType `json:"type"`
 }
@@ -30067,7 +29995,7 @@ func (e WebhookDatabaseEventEntityType) Valid() bool {
 // WebhookExternalBlock defines a model
 type WebhookExternalBlock struct {
 	// The ID of the parent.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// The type of the parent.
 	Type WebhookUpdatedBlockType `json:"type"`
 }
@@ -30077,7 +30005,7 @@ type WebhookFileUploadEntity struct {
 	// Always `file_upload`
 	Type string `json:"type"`
 	// The ID of the file upload that triggered the event.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 }
 
 // WebhookPageEntity defines a model
@@ -30085,17 +30013,17 @@ type WebhookPageEntity struct {
 	// Always `page`
 	Type string `json:"type"`
 	// The ID of the page that triggered the event.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 }
 
 // WebhookParentBlock defines a model
 type WebhookParentBlock struct {
 	// The ID of the parent.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// The type of the parent.
 	Type WebhookParentBlockType `json:"type"`
 	// The data source ID of the parent, if applicable.
-	DataSourceID IDResponse `json:"data_source_id,omitzero"`
+	DataSourceID ID `json:"data_source_id,omitzero"`
 }
 
 // The type of the parent.
@@ -30142,7 +30070,7 @@ func (e WebhookUpdatedBlockType) Valid() bool {
 // WebhookViewEntity defines a model
 type WebhookViewEntity struct {
 	// The ID of the view that triggered the event.
-	ID IDResponse `json:"id"`
+	ID ID `json:"id"`
 	// Always `view`
 	Type string `json:"type"`
 }

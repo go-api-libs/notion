@@ -1017,6 +1017,28 @@ func fixOpenAPI() (*openapi.Document, error) {
 		return nil, err
 	}
 
+	// fix UUIDs
+	if s, ok := doc.Components.Schemas["idRequest"]; ok {
+		s.Format = openapi.FormatUUID
+	}
+
+	edit.WalkSchemas(doc, func(s *openapi.Schema) {
+		if len(s.Properties) == 0 {
+			return
+		}
+
+		s, ok := s.Properties["data_source_id"]
+		if !ok {
+			return
+		}
+
+		if s.Type == openapi.TypeString {
+			s.Format = openapi.FormatUUID
+		} else if len(s.OneOf) > 0 && s.OneOf[0].Type == openapi.TypeString {
+			s.OneOf[0].Format = openapi.FormatUUID
+		}
+	})
+
 	for _, p := range doc.Paths.ByIndex() {
 		for _, op := range p.Operations {
 			for code, override := range map[openapi.StatusCode]string{ //nolint:exhaustive
@@ -1044,6 +1066,12 @@ func fixOpenAPI() (*openapi.Document, error) {
 					override,
 					code.StatusText(),
 				)
+			}
+
+			for _, p := range op.Parameters {
+				if p.Value.Name == "start_cursor" {
+					p.Value.Schema.Format = openapi.FormatUUID
+				}
 			}
 		}
 	}

@@ -979,7 +979,7 @@
             "$ref": "#/components/parameters/block_id"
           },
           {
-            "$ref": "#/components/parameters/start_cursor3"
+            "$ref": "#/components/parameters/start_cursor"
           },
           {
             "$ref": "#/components/parameters/page_size"
@@ -5140,7 +5140,7 @@
             "const": "agent"
           },
           "id": {
-            "$ref": "#/components/schemas/AgentID2"
+            "$ref": "#/components/schemas/AgentID"
           },
           "agent_type": {
             "$ref": "#/components/schemas/AgentType"
@@ -5820,7 +5820,8 @@
             "const": "database_property"
           },
           "data_source_id": {
-            "type": "string"
+            "type": "string",
+            "format": "uuid"
           },
           "property_id": {
             "type": "string"
@@ -6211,7 +6212,7 @@
           },
           "id": {
             "description": "The ID of the user that created this agent.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
@@ -6255,18 +6256,6 @@
         "anyOf": [
           {
             "$ref": "#/components/schemas/ID"
-          },
-          {
-            "description": "Always `notion_ai`",
-            "type": "string",
-            "const": "notion_ai"
-          }
-        ]
-      },
-      "AgentID2": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/idResponse"
           },
           {
             "description": "Always `notion_ai`",
@@ -6416,7 +6405,7 @@
       "AgentInsightsID": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           {
             "description": "Always `notion_ai`",
@@ -6614,7 +6603,7 @@
             "const": "agent"
           },
           "id": {
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "agent_type": {
             "$ref": "#/components/schemas/AgentListResultsItemOneOf0AgentType"
@@ -6730,7 +6719,7 @@
           },
           "id": {
             "description": "The ID of the user or bot that created this agent.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
@@ -6997,7 +6986,7 @@
         "properties": {
           "id": {
             "description": "The ID of the published artifact.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "number": {
             "description": "The version number.",
@@ -7153,7 +7142,7 @@
         "properties": {
           "id": {
             "description": "The ID of the bot.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "type": {
             "description": "Always `bot`",
@@ -7172,7 +7161,7 @@
         "properties": {
           "id": {
             "description": "The ID of the user.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "type": {
             "description": "Always `person`",
@@ -9215,7 +9204,7 @@
         "properties": {
           "id": {
             "description": "The ID of the user.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "object": {
             "description": "The user object type name.",
@@ -9976,11 +9965,11 @@
           },
           "page_id": {
             "description": "The ID of the page containing the comment.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "discussion_id": {
             "description": "The ID of the discussion containing the comment.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "property_id": {
             "description": "The ID of the database property the comment is on, for comments on a page property. Matches the property's `id` in the page object. Omitted for other comments.",
@@ -11026,33 +11015,14 @@
             "$ref": "#/components/schemas/CreateMeetingNoteAllOf0OneOf0Source"
           },
           "parent": {
-            "$ref": "#/components/schemas/CreateMeetingNoteAllOf0OneOf0Parent"
+            "description": "Parent page for the new meeting note.",
+            "$ref": "#/components/schemas/pageIdParentForBlockBasedObject"
           }
         },
         "required": [
           "source",
           "parent"
         ]
-      },
-      "CreateMeetingNoteAllOf0OneOf0Parent": {
-        "description": "Parent page for the new meeting note.",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always \"page_id\".",
-            "type": "string",
-            "const": "page_id"
-          },
-          "page_id": {
-            "description": "Page ID where the meeting note should be created. Required for file_upload sources.",
-            "$ref": "#/components/schemas/ID"
-          }
-        },
-        "required": [
-          "type",
-          "page_id"
-        ],
-        "additionalProperties": false
       },
       "CreateMeetingNoteAllOf0OneOf0Source": {
         "description": "Audio or video source for the meeting note.",
@@ -11148,7 +11118,7 @@
           },
           "id": {
             "description": "The ID of the meeting note block.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "type": {
             "description": "Always \"meeting_notes\".",
@@ -11217,7 +11187,7 @@
           },
           "id": {
             "description": "The ID of the meeting note block.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
@@ -11431,7 +11401,7 @@
           },
           "owner_user_id": {
             "description": "Notion user who owns the sync credential, included when health is available.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "resource": {
             "description": "Provider resource synced to this data source, when available.",
@@ -11445,7 +11415,7 @@
           },
           "sync_id": {
             "description": "The stored sync ID when provider details are unavailable. This is not a credential.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "sync_state": {
             "$ref": "#/components/schemas/DataSourceObjectSyncMetadataSyncState"
@@ -11471,7 +11441,7 @@
         "properties": {
           "sync_id": {
             "description": "The stored sync ID. This is not a credential.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "provider": {
             "$ref": "#/components/schemas/DataSourceObjectSyncMetadataExternalDatabaseSyncProvider"
@@ -11698,6 +11668,19 @@
           }
         ]
       },
+      "DataSourceViewObjectResponseDataSourceID": {
+        "description": "The ID of the data source this view is scoped to, or null for dashboard views.",
+        "oneOf": [
+          {
+            "type": "string",
+            "format": "uuid",
+            "example": "9201f6db-2895-4450-9435-041541a181dd"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "DataSourceViewObjectResponseQuickFilters": {
         "description": "Quick filters pinned to the view's filter bar. Keys are property IDs. Values are filter conditions (same shape as a property filter without the property field). Null when no quick filters are set.",
         "oneOf": [
@@ -11743,7 +11726,7 @@
           },
           "id": {
             "description": "The ID of the database.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "title": {
             "description": "The title of the database.",
@@ -12226,7 +12209,7 @@
         "type": "object",
         "properties": {
           "agent_id": {
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "status": {
             "description": "Always \"deleted\": the agent has been soft-deleted (recoverable).",
@@ -12585,7 +12568,7 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "type": {
             "$ref": "#/components/schemas/FileUploadObjectResponseCreatedByType"
@@ -13317,6 +13300,7 @@
       },
       "ID": {
         "type": "string",
+        "format": "uuid",
         "example": "3ee88fcd-daf4-8170-8b9e-f5270e82e4e6"
       },
       "IconPageIcon": {
@@ -13683,7 +13667,7 @@
         "properties": {
           "id": {
             "description": "ID of the template page.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "name": {
             "description": "Name of the template.",
@@ -14569,19 +14553,6 @@
           "page"
         ]
       },
-      "MentionRichTextItemMentionPage2": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "description": "The ID of the page in the mention.",
-            "$ref": "#/components/schemas/idResponse"
-          }
-        },
-        "required": [
-          "id"
-        ],
-        "additionalProperties": false
-      },
       "MentionRichTextItemMentionTemplateMention": {
         "title": "Template Mention",
         "type": "object",
@@ -14658,7 +14629,7 @@
           },
           "database": {
             "description": "Details of the database mention.",
-            "$ref": "#/components/schemas/MentionRichTextItemMentionPage2"
+            "$ref": "#/components/schemas/FileUploadID"
           }
         },
         "required": [
@@ -14738,7 +14709,7 @@
           },
           "page": {
             "description": "Details of the page mention.",
-            "$ref": "#/components/schemas/MentionRichTextItemMentionPage2"
+            "$ref": "#/components/schemas/FileUploadID"
           }
         },
         "required": [
@@ -15059,7 +15030,7 @@
           },
           "id": {
             "description": "The ID of the page.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "created_time": {
             "description": "Date and time when this page was created.",
@@ -15287,7 +15258,7 @@
       "PageListNextCursor": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           {
             "type": "null"
@@ -18350,7 +18321,7 @@
             "type": "array",
             "maxItems": 100,
             "items": {
-              "$ref": "#/components/schemas/idResponse"
+              "$ref": "#/components/schemas/ID"
             }
           }
         },
@@ -18366,15 +18337,15 @@
         "properties": {
           "summary_block_id": {
             "description": "Block ID of the AI summary tab.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "notes_block_id": {
             "description": "Block ID of the meeting notes tab.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "transcript_block_id": {
             "description": "Block ID of the transcript tab.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "additionalProperties": false
@@ -24275,7 +24246,7 @@
         "type": "object",
         "properties": {
           "agent_id": {
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "credit_limit": {
             "description": "The agent's editor-set per-agent credit limit; null when no limit applies.",
@@ -24347,7 +24318,7 @@
         "type": "object",
         "properties": {
           "agent_id": {
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "status": {
             "description": "\"active\" when the agent can run; \"disabled\" when it is paused (see pause_reason); \"deleted\" when it has been removed.",
@@ -25616,7 +25587,7 @@
           },
           "agent_id": {
             "description": "The ID of the parent agent.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
@@ -25826,7 +25797,7 @@
           },
           "workspace_id": {
             "description": "The ID of the workspace where the event originated.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "workspace_name": {
             "description": "The name of the workspace where the event originated.",
@@ -25834,11 +25805,11 @@
           },
           "subscription_id": {
             "description": "The ID of the webhook subscription.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "integration_id": {
             "description": "The ID of the integration the subscription is set up with.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "authors": {
             "description": "The users or bots that performed the action. Typically an array of length 1; can be more for aggregated events.",
@@ -25886,7 +25857,7 @@
           },
           "block_id": {
             "description": "The ID of the parent block.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
@@ -27142,7 +27113,7 @@
           },
           "id": {
             "description": "The ID of the comment.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "parent": {
             "description": "The parent of the comment.",
@@ -27150,7 +27121,7 @@
           },
           "discussion_id": {
             "description": "The ID of the discussion thread this comment belongs to.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "created_time": {
             "description": "The time when the comment was created.",
@@ -27531,7 +27502,7 @@
         "properties": {
           "id": {
             "description": "The ID of the custom emoji.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "name": {
             "description": "The name of the custom emoji.",
@@ -27744,7 +27715,7 @@
           },
           "id": {
             "description": "The ID of the data source.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "title": {
             "description": "The title of the data source.",
@@ -27860,11 +27831,11 @@
           },
           "data_source_id": {
             "description": "The ID of the parent data source.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "database_id": {
             "description": "The ID of the data source's parent database.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
@@ -27879,7 +27850,7 @@
         "properties": {
           "id": {
             "description": "The ID of the data source.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "name": {
             "description": "The name of the data source.",
@@ -27961,7 +27932,7 @@
           },
           "id": {
             "description": "The ID of the view.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "parent": {
             "description": "The parent database of the view.",
@@ -27994,8 +27965,7 @@
             "example": "https://app.notion.com/p/457d00dcfc3a4ddba42ffe376530bee0?v=cb3265bc5d5e488fbd8a69221c107915"
           },
           "data_source_id": {
-            "description": "The ID of the data source this view is scoped to, or null for dashboard views.",
-            "$ref": "#/components/schemas/PagePublicURL"
+            "$ref": "#/components/schemas/DataSourceViewObjectResponseDataSourceID"
           },
           "created_by": {
             "description": "The user who created the view, or null if not available.",
@@ -28050,7 +28020,7 @@
           },
           "id": {
             "description": "The ID of the view.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
@@ -28177,7 +28147,7 @@
           },
           "database_id": {
             "description": "The ID of the parent database.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
@@ -28234,10 +28204,10 @@
         "type": "object",
         "properties": {
           "database_id": {
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "data_source_id": {
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "limit": {
             "$ref": "#/components/schemas/DatabasePropertyRelationConfigResponseCommonLimit"
@@ -28536,7 +28506,7 @@
           },
           "id": {
             "description": "The ID of the deleted view query.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "deleted": {
             "description": "Whether the view query was deleted.",
@@ -29216,7 +29186,7 @@
             "const": "file_upload"
           },
           "id": {
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "created_time": {
             "type": "string",
@@ -29758,7 +29728,7 @@
         "properties": {
           "id": {
             "description": "The ID of the group.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "object": {
             "description": "The group object type name.",
@@ -30099,11 +30069,6 @@
         "required": [
           "id"
         ]
-      },
-      "idResponse": {
-        "type": "string",
-        "format": "uuid",
-        "example": "3ee88fcd-daf4-8170-8b9e-f5270e82e4e6"
       },
       "imageBlockObjectResponse": {
         "title": "Image",
@@ -31356,7 +31321,7 @@
           },
           "page_id": {
             "description": "The ID of the parent page.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
@@ -31402,7 +31367,7 @@
           },
           "id": {
             "description": "The ID of the page or block.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "markdown": {
             "description": "The page content as Markdown, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).",
@@ -31417,7 +31382,7 @@
             "type": "array",
             "maxItems": 100,
             "items": {
-              "$ref": "#/components/schemas/idResponse"
+              "$ref": "#/components/schemas/ID"
             }
           },
           "warnings": {
@@ -31509,7 +31474,7 @@
           },
           "id": {
             "description": "The object ID.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
@@ -31752,7 +31717,7 @@
           },
           "id": {
             "description": "The ID of the comment.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
@@ -31771,7 +31736,7 @@
           },
           "id": {
             "description": "The ID of the data source.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "properties": {
             "description": "The properties schema of the data source.",
@@ -31798,7 +31763,7 @@
           },
           "id": {
             "description": "The ID of the view.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "parent": {
             "description": "The parent database of the view.",
@@ -31827,7 +31792,7 @@
           },
           "id": {
             "description": "The ID of the database.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
@@ -31846,7 +31811,7 @@
           },
           "id": {
             "description": "The ID of the page.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
@@ -31959,7 +31924,7 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "object": {
             "description": "Always `user`",
@@ -35047,7 +35012,7 @@
         "properties": {
           "id": {
             "description": "The ID of the user.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "object": {
             "description": "The user object type name.",
@@ -35405,11 +35370,11 @@
           },
           "id": {
             "description": "The query ID.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "view_id": {
             "description": "The view this query was executed against.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "expires_at": {
             "description": "When the cached query results expire.",
@@ -35490,7 +35455,7 @@
           },
           "id": {
             "description": "The ID of the comment that triggered the event.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
@@ -35504,7 +35469,7 @@
         "properties": {
           "id": {
             "description": "The ID of the database or data source that triggered the event.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "type": {
             "$ref": "#/components/schemas/WebhookDatabaseEventEntityType"
@@ -35521,7 +35486,7 @@
         "properties": {
           "id": {
             "description": "The ID of the parent.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "type": {
             "description": "The type of the parent.",
@@ -35544,7 +35509,7 @@
           },
           "id": {
             "description": "The ID of the file upload that triggered the event.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
@@ -35563,7 +35528,7 @@
           },
           "id": {
             "description": "The ID of the page that triggered the event.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
@@ -35577,14 +35542,14 @@
         "properties": {
           "id": {
             "description": "The ID of the parent.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "type": {
             "$ref": "#/components/schemas/WebhookParentBlockType"
           },
           "data_source_id": {
             "description": "The data source ID of the parent, if applicable.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
@@ -35598,7 +35563,7 @@
         "properties": {
           "id": {
             "description": "The ID of the view that triggered the event.",
-            "$ref": "#/components/schemas/idResponse"
+            "$ref": "#/components/schemas/ID"
           },
           "type": {
             "description": "Always `view`",
@@ -36855,7 +36820,8 @@
         "name": "start_cursor",
         "in": "query",
         "schema": {
-          "type": "string"
+          "type": "string",
+          "format": "uuid"
         }
       },
       "start_cursor10": {
@@ -36864,17 +36830,10 @@
         "schema": {
           "description": "An opaque cursor returned by the previous page of results.",
           "type": "string",
+          "format": "uuid",
           "minLength": 1,
           "maxLength": 200,
           "pattern": "^[A-Za-z0-9]+$"
-        }
-      },
-      "start_cursor3": {
-        "name": "start_cursor",
-        "in": "query",
-        "schema": {
-          "type": "string",
-          "format": "uuid"
         }
       },
       "start_cursor4": {
@@ -36882,7 +36841,8 @@
         "in": "query",
         "schema": {
           "description": "If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results.",
-          "type": "string"
+          "type": "string",
+          "format": "uuid"
         }
       },
       "start_cursor9": {
@@ -36890,7 +36850,8 @@
         "in": "query",
         "schema": {
           "description": "If supplied, this endpoint will return a page of results starting after the cursor provided.",
-          "type": "string"
+          "type": "string",
+          "format": "uuid"
         }
       },
       "start_time": {

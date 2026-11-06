@@ -6,21 +6,18 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"testing"
+	"uuid"
 )
 
 func TestPostDatabaseQueryAll(t *testing.T) {
-	const (
-		first  = "00000000-0000-0000-0000-000000000001"
-		second = "00000000-0000-0000-0000-000000000002"
-		third  = "00000000-0000-0000-0000-000000000003"
-	)
+	first, second, third := uuid.New(), uuid.New(), uuid.New()
 
-	var cursors []string
+	var cursors []uuid.UUID
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var body struct {
-			StartCursor string `json:"start_cursor"`
-			PageSize    int    `json:"page_size"`
+			StartCursor uuid.UUID `json:"start_cursor"`
+			PageSize    int       `json:"page_size"`
 		}
 		if err := json.UnmarshalRead(r.Body, &body); err != nil {
 			t.Error(err)
@@ -34,10 +31,10 @@ func TestPostDatabaseQueryAll(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 
-		page := func(id string) string { return `{"object":"page","id":"` + id + `"}` }
-		if body.StartCursor == "" {
+		page := func(id uuid.UUID) string { return `{"object":"page","id":"` + id.String() + `"}` }
+		if body.StartCursor == uuid.Nil() {
 			_, _ = w.Write([]byte(`{"object":"list","type":"page_or_data_source","page_or_data_source":{},` +
-				`"results":[` + page(first) + `,` + page(second) + `],"has_more":true,"next_cursor":"` + third + `"}`))
+				`"results":[` + page(first) + `,` + page(second) + `],"has_more":true,"next_cursor":"` + third.String() + `"}`))
 		} else {
 			_, _ = w.Write([]byte(`{"object":"list","type":"page_or_data_source","page_or_data_source":{},` +
 				`"results":[` + page(third) + `],"has_more":false,"next_cursor":null}`))
@@ -55,21 +52,22 @@ func TestPostDatabaseQueryAll(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var ids []string
+	var ids []uuid.UUID
 
-	for r, err := range c.PostDatabaseQueryAll(t.Context(), "data-source", nil, PostDatabaseQuery{}) {
+	dataSourceID := uuid.New()
+	for r, err := range c.PostDatabaseQueryAll(t.Context(), dataSourceID, nil, PostDatabaseQuery{}) {
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		ids = append(ids, r.PageOrPartial.PartialPageObjectResponse.ID.String())
+		ids = append(ids, r.PageOrPartial.PartialPageObjectResponse.ID)
 	}
 
-	if want := []string{first, second, third}; len(ids) != 3 || ids[0] != want[0] || ids[1] != want[1] || ids[2] != want[2] {
+	if want := []uuid.UUID{first, second, third}; len(ids) != 3 || ids[0] != want[0] || ids[1] != want[1] || ids[2] != want[2] {
 		t.Errorf("got %v, want %v", ids, want)
 	}
 
-	if len(cursors) != 2 || cursors[0] != "" || cursors[1] != third {
+	if len(cursors) != 2 || cursors[0] != uuid.Nil() || cursors[1] != third {
 		t.Errorf("sent cursors %q, want none, then %q", cursors, third)
 	}
 }

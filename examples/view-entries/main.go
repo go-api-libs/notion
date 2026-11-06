@@ -10,12 +10,13 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"uuid"
 
 	"github.com/go-api-libs/notion/pkg/notion"
 )
 
 // viewID is the board view of https://app.notion.com/p/fae-tools/457d00dcfc3a4ddba42ffe376530bee0?v=cb3265bc5d5e488fbd8a69221c107915.
-const viewID notion.ID = "cb3265bc-5d5e-488f-bd8a-69221c107915"
+var viewID = uuid.MustParse("cb3265bc-5d5e-488f-bd8a-69221c107915")
 
 func main() {
 	ctx := context.Background()
@@ -46,15 +47,15 @@ func main() {
 // queryOfView returns the data source the view shows, and the query of it that filters and sorts its entries like
 // the view. It stays the same until the view's filter or sorts are edited, so read it once: Notion evaluates relative
 // dates such as "today" with each query.
-func queryOfView(ctx context.Context, c *notion.Client, id notion.ID) (notion.ID, notion.PostDatabaseQuery, error) {
+func queryOfView(ctx context.Context, c *notion.Client, id uuid.UUID) (uuid.UUID, notion.PostDatabaseQuery, error) {
 	v, err := c.RetrieveAView(ctx, id)
 	if err != nil {
-		return "", notion.PostDatabaseQuery{}, err
+		return uuid.Nil(), notion.PostDatabaseQuery{}, err
 	}
 
 	view := v.DataSourceViewObjectResponse
 	if view == nil {
-		return "", notion.PostDatabaseQuery{}, errors.New("no access to the view")
+		return uuid.Nil(), notion.PostDatabaseQuery{}, errors.New("no access to the view")
 	}
 
 	query := notion.PostDatabaseQuery{Sorts: view.Sorts}
@@ -62,5 +63,5 @@ func queryOfView(ctx context.Context, c *notion.Client, id notion.ID) (notion.ID
 		query.Filter = view.Filter.Flatten() // a view may nest its filter deeper than a query allows
 	}
 
-	return notion.ID(view.DataSourceID), query, nil
+	return view.DataSourceID, query, nil
 }
