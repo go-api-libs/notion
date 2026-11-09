@@ -9433,7 +9433,7 @@ type FileUploadObjectResponse struct {
 	CreatedBy      FileUploadObjectResponseCreatedBy `json:"created_by"`
 	LastEditedTime time.Time                         `json:"last_edited_time"`
 	InTrash        bool                              `json:"in_trash"`
-	ExpiryTime     time.Time                         `json:"expiry_time"`
+	ExpiryTime     *time.Time                        `json:"expiry_time"`
 	// One of: `pending`, `uploaded`, `expired`, `failed`
 	Status           Status                                   `json:"status"`
 	Filename         string                                   `json:"filename"`
@@ -10336,8 +10336,8 @@ func (e FormulaPropertyResponseType) Valid() bool {
 var tagsOfFormulaPropertyResponse = map[string]map[string]jsonTagNeed{
 	"string":      {"string": jsonTagRequired},
 	"date":        {"date": jsonTagRequiredOrNull},
-	"number":      {"number": jsonTagRequired},
-	"boolean":     {"boolean": jsonTagRequired},
+	"number":      {"number": jsonTagRequiredOrNull},
+	"boolean":     {"boolean": jsonTagRequiredOrNull},
 	"unsupported": {"unsupported": jsonTagRequired},
 }
 
@@ -11496,11 +11496,11 @@ func (v *LastEditedTimePropertyItemObjectResponse) unmarshalJSONMember(dec *json
 
 // LastVisitedTimePropertyItemObjectResponse defines a model
 type LastVisitedTimePropertyItemObjectResponse struct {
-	Type            string    `json:"type"`
-	LastVisitedTime time.Time `json:"last_visited_time"`
-	Object          string    `json:"object"`
-	ID              string    `json:"id"`
-	RequestID       uuid.UUID `json:"request_id,omitzero"`
+	Type            string     `json:"type"`
+	LastVisitedTime *time.Time `json:"last_visited_time"`
+	Object          string     `json:"object"`
+	ID              string     `json:"id"`
+	RequestID       uuid.UUID  `json:"request_id,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether LastVisitedTimePropertyItemObjectResponse declares it.
@@ -13772,7 +13772,7 @@ type NumberPropertyFilterLessThanOrEqualTo struct {
 // NumberPropertyItemObjectResponse defines a model
 type NumberPropertyItemObjectResponse struct {
 	Type      string    `json:"type"`
-	Number    float64   `json:"number"`
+	Number    *float64  `json:"number"`
 	Object    string    `json:"object"`
 	ID        string    `json:"id"`
 	RequestID uuid.UUID `json:"request_id,omitzero"`
@@ -14325,7 +14325,7 @@ type PageMarkdownResponse struct {
 	// Whether the content was truncated due to exceeding the record count limit.
 	Truncated bool `json:"truncated"`
 	// Block IDs that could not be loaded (appeared as <unknown> tags in the markdown). Pass these IDs back to this endpoint to fetch their content separately.
-	UnknownBlockIds []ID `json:"unknown_block_ids"`
+	UnknownBlockIDs []ID `json:"unknown_block_ids"`
 	// Content warnings from a synchronous update. Returned only when there is at least one warning.
 	Warnings PageMarkdownResponseWarnings `json:"warnings,omitzero"`
 }
@@ -14684,7 +14684,7 @@ func (e PagePropertiesValueType) Valid() bool {
 var tagsOfPagePropertiesValue = map[string]map[string]jsonTagNeed{
 	"title":        {"title": jsonTagRequired},
 	"rich_text":    {"rich_text": jsonTagRequired},
-	"number":       {"number": jsonTagRequired},
+	"number":       {"number": jsonTagRequiredOrNull},
 	"url":          {"url": jsonTagRequiredOrNull},
 	"select":       {"select": jsonTagRequired},
 	"multi_select": {"multi_select": jsonTagRequired},
@@ -22973,7 +22973,7 @@ func (e RollupPropertyItemObjectRollupType) Valid() bool {
 
 // tagsOfRollupPropertyItemObjectRollup holds, for each value of type, the members of its alternative's own, each with how it is needed.
 var tagsOfRollupPropertyItemObjectRollup = map[string]map[string]jsonTagNeed{
-	"number":      {"number": jsonTagRequired},
+	"number":      {"number": jsonTagRequiredOrNull},
 	"date":        {"date": jsonTagRequiredOrNull},
 	"array":       {"array": jsonTagRequired},
 	"unsupported": {"unsupported": jsonTagRequired},
@@ -24222,7 +24222,7 @@ func (v *SessionModelsAuto) unmarshalJSONMember(dec *jsontext.Decoder, name stri
 type SessionModelsPinned struct {
 	// Always `pinned`
 	Type string   `json:"type"`
-	Ids  []string `json:"ids"`
+	IDs  []string `json:"ids"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether SessionModelsPinned declares it.
@@ -24231,7 +24231,7 @@ func (v *SessionModelsPinned) unmarshalJSONMember(dec *jsontext.Decoder, name st
 	case "type":
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
 	case "ids":
-		return true, json.UnmarshalDecode(dec, &v.Ids, jsonOptsOf(dec))
+		return true, json.UnmarshalDecode(dec, &v.IDs, jsonOptsOf(dec))
 	}
 
 	return false, nil
@@ -24965,7 +24965,7 @@ type StatusDatabasePropertyConfigResponseStatusGroupsItem struct {
 	// The color of the status group.
 	Color SelectColor `json:"color"`
 	// The IDs of the status options in this group.
-	OptionIds []string `json:"option_ids"`
+	OptionIDs []string `json:"option_ids"`
 }
 
 // StatusGroupByConfig defines a model
@@ -26709,8 +26709,8 @@ func (v *UniqueIDPropertyItemObjectResponse) unmarshalJSONMember(dec *jsontext.D
 
 // UniqueIDPropertyItemObjectResponseUniqueID defines a model
 type UniqueIDPropertyItemObjectResponseUniqueID struct {
-	Prefix string  `json:"prefix"`
-	Number float64 `json:"number"`
+	Prefix string   `json:"prefix"`
+	Number *float64 `json:"number"`
 }
 
 // UniqueIDPropertyValueResponse defines a model
