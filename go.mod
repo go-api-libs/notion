@@ -8,10 +8,10 @@ require (
 	github.com/MarkRosemaker/errpath v0.0.0-20261107140447-85db0425f9e7
 	github.com/MarkRosemaker/jsonutil v0.0.0-20261107140449-c48d15773b62
 	github.com/MarkRosemaker/openapi v0.0.0-20261108211915-31ba4a6d7900
-	github.com/MarkRosemaker/openapi-codegen v0.0.0-20261108234612-679e9e801174
+	github.com/MarkRosemaker/openapi-codegen v0.0.0-20261109005730-a9a56306b6c0
 	github.com/MarkRosemaker/openapi-compress v0.0.0-20261108230405-60458b267f0f
 	github.com/MarkRosemaker/openapi-edit v0.0.0-20261108230247-ae9812341df5
-	github.com/MarkRosemaker/openapi-enrich v0.0.0-20261109000845-931f3355f2f2
+	github.com/MarkRosemaker/openapi-enrich v0.0.0-20261109005541-ae70fbeb05a3
 	github.com/MarkRosemaker/openapi-flatten v0.0.0-20261108230248-f2fc8e2e5ba0
 	github.com/ettle/strcase v0.2.0
 	github.com/go-api-libs/api v0.0.0-20261107140449-14441b657cf3
