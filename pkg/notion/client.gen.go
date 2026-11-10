@@ -2603,7 +2603,7 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("pages", uuid.UUID(pageID).String(), "properties", propertyID)
+	u := c.baseURL.JoinPath("pages", uuid.UUID(pageID).String(), "properties", url.PathEscape(propertyID))
 	if params != nil {
 		q := make(url.Values, 2)
 
@@ -3683,7 +3683,7 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("async_tasks", taskID)
+	u := c.baseURL.JoinPath("async_tasks", url.PathEscape(taskID))
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -16454,7 +16454,7 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("agents", agentID)
+	u := c.baseURL.JoinPath("agents", url.PathEscape(agentID))
 	if params != nil {
 		q := make(url.Values, 1)
 
@@ -16802,7 +16802,7 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("agents", agentID)
+	u := c.baseURL.JoinPath("agents", url.PathEscape(agentID))
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -17140,7 +17140,7 @@ func (c *Client) UpdateAgentWithResult[R any](ctx context.Context, agentID strin
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("agents", agentID)
+	u := c.baseURL.JoinPath("agents", url.PathEscape(agentID))
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -17485,7 +17485,7 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("agents", agentID, "insights")
+	u := c.baseURL.JoinPath("agents", url.PathEscape(agentID), "insights")
 	if params != nil {
 		q := make(url.Values, 2)
 
@@ -17841,7 +17841,7 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("agents", agentID, "status")
+	u := c.baseURL.JoinPath("agents", url.PathEscape(agentID), "status")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -18186,7 +18186,7 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("agents", agentID, "credit_limit")
+	u := c.baseURL.JoinPath("agents", url.PathEscape(agentID), "credit_limit")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -19228,7 +19228,7 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("ai", "plugins", id)
+	u := c.baseURL.JoinPath("ai", "plugins", url.PathEscape(id))
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
