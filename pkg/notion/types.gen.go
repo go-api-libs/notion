@@ -28980,8 +28980,10 @@ type UserObjectResponse struct {
 	// The name of the user.
 	Name string `json:"name"`
 	// The avatar URL of the user.
-	AvatarURL string                 `json:"avatar_url"`
-	Type      UserObjectResponseType `json:"type"`
+	AvatarURL string `json:"avatar_url"`
+	// The ID of the Custom Agent this bot acts for. Only present when the user is a Custom Agent's bot.
+	AgentID ID                     `json:"agent_id,omitzero"`
+	Type    UserObjectResponseType `json:"type"`
 	// Details about the person, when the `type` of the user is `person`.
 	Person *PersonUserObjectPerson `json:"person,omitzero"`
 	// Details about the bot, when the `type` of the user is `bot`.

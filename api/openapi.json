@@ -35026,6 +35026,10 @@
           "avatar_url": {
             "description": "The avatar URL of the user.",
             "$ref": "#/components/schemas/PagePublicURL"
+          },
+          "agent_id": {
+            "description": "The ID of the Custom Agent this bot acts for. Only present when the user is a Custom Agent's bot.",
+            "$ref": "#/components/schemas/ID"
           }
         },
         "required": [
