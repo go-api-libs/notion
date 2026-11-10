@@ -129,14 +129,6 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 //
 //	GET /users/me
 func (c *Client) GetSelf(ctx context.Context) (*UserObjectResponse, error) {
-	return c.GetSelfWithResult[UserObjectResponse](ctx)
-}
-
-// Retrieve your token's bot user
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /users/me
-func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -167,15 +159,8 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*UserObjectResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out UserObjectResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -184,7 +169,7 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(UserObjectResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -467,14 +452,6 @@ func (c *Client) GetSelfWithResult[R any](ctx context.Context) (*R, error) {
 //
 //	GET /users/{user_id}
 func (c *Client) GetUser(ctx context.Context, userID ID) (*UserObjectResponse, error) {
-	return c.GetUserWithResult[UserObjectResponse](ctx, userID)
-}
-
-// Retrieve a user
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /users/{user_id}
-func (c *Client) GetUserWithResult[R any](ctx context.Context, userID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -505,15 +482,8 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID ID) (*R, e
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*UserObjectResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out UserObjectResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -522,7 +492,7 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID ID) (*R, e
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(UserObjectResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -805,14 +775,6 @@ func (c *Client) GetUserWithResult[R any](ctx context.Context, userID ID) (*R, e
 //
 //	GET /users
 func (c *Client) GetUsers(ctx context.Context, params *GetUsersParams) (*UserList, error) {
-	return c.GetUsersWithResult[UserList](ctx, params)
-}
-
-// List all users
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /users
-func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsersParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -857,15 +819,8 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*UserList); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out UserList
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -874,7 +829,7 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(UserList)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1157,14 +1112,6 @@ func (c *Client) GetUsersWithResult[R any](ctx context.Context, params *GetUsers
 //
 //	POST /pages
 func (c *Client) PostPage(ctx context.Context, params *PostPageParams, body PostPage) (*PageOrPartial, error) {
-	return c.PostPageWithResult[PageOrPartial](ctx, params, body)
-}
-
-// Create a page
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /pages
-func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPageParams, body PostPage) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -1212,15 +1159,8 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*PageOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out PageOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1229,7 +1169,7 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(PageOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1243,15 +1183,8 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 		// Accepted
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*PageOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out PageOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1260,7 +1193,7 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(PageOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1543,14 +1476,6 @@ func (c *Client) PostPageWithResult[R any](ctx context.Context, params *PostPage
 //
 //	GET /pages/{page_id}
 func (c *Client) RetrieveAPage(ctx context.Context, pageID ID, params *RetrieveAPageParams) (*PageOrPartial, error) {
-	return c.RetrieveAPageWithResult[PageOrPartial](ctx, pageID, params)
-}
-
-// Retrieve a page
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /pages/{page_id}
-func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID ID, params *RetrieveAPageParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -1591,15 +1516,8 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID ID, 
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*PageOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out PageOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1608,7 +1526,7 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID ID, 
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(PageOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1891,14 +1809,6 @@ func (c *Client) RetrieveAPageWithResult[R any](ctx context.Context, pageID ID, 
 //
 //	PATCH /pages/{page_id}
 func (c *Client) PatchPage(ctx context.Context, pageID ID, params *PatchPageParams, body PatchPage) (*PageOrPartial, error) {
-	return c.PatchPageWithResult[PageOrPartial](ctx, pageID, params, body)
-}
-
-// Update page
-// You can define a custom result to unmarshal the response into.
-//
-//	PATCH /pages/{page_id}
-func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID ID, params *PatchPageParams, body PatchPage) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -1946,15 +1856,8 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID ID, para
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*PageOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out PageOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -1963,7 +1866,7 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID ID, para
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(PageOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -2246,14 +2149,6 @@ func (c *Client) PatchPageWithResult[R any](ctx context.Context, pageID ID, para
 //
 //	POST /pages/{page_id}/move
 func (c *Client) MovePage(ctx context.Context, pageID ID, body MovePage) (*PageOrPartial, error) {
-	return c.MovePageWithResult[PageOrPartial](ctx, pageID, body)
-}
-
-// Move a page
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /pages/{page_id}/move
-func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID ID, body MovePage) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -2291,15 +2186,8 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID ID, body 
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*PageOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out PageOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -2308,7 +2196,7 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID ID, body 
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(PageOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -2591,14 +2479,6 @@ func (c *Client) MovePageWithResult[R any](ctx context.Context, pageID ID, body 
 //
 //	GET /pages/{page_id}/properties/{property_id}
 func (c *Client) RetrieveAPageProperty(ctx context.Context, pageID ID, propertyID string, params *RetrieveAPagePropertyParams) (*RetrieveAPagePropertyOk, error) {
-	return c.RetrieveAPagePropertyWithResult[RetrieveAPagePropertyOk](ctx, pageID, propertyID, params)
-}
-
-// Retrieve a page property item
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /pages/{page_id}/properties/{property_id}
-func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pageID ID, propertyID string, params *RetrieveAPagePropertyParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -2643,15 +2523,8 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*RetrieveAPagePropertyOk); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out RetrieveAPagePropertyOk
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -2660,7 +2533,7 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(RetrieveAPagePropertyOk)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -2943,14 +2816,6 @@ func (c *Client) RetrieveAPagePropertyWithResult[R any](ctx context.Context, pag
 //
 //	GET /pages/{page_id}/markdown
 func (c *Client) RetrievePageMarkdown(ctx context.Context, pageID ID, params *RetrievePageMarkdownParams) (*PageMarkdownResponse, error) {
-	return c.RetrievePageMarkdownWithResult[PageMarkdownResponse](ctx, pageID, params)
-}
-
-// Retrieve a page as markdown
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /pages/{page_id}/markdown
-func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, pageID ID, params *RetrievePageMarkdownParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -2995,15 +2860,8 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*PageMarkdownResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out PageMarkdownResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -3012,7 +2870,7 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(PageMarkdownResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -3295,14 +3153,6 @@ func (c *Client) RetrievePageMarkdownWithResult[R any](ctx context.Context, page
 //
 //	PATCH /pages/{page_id}/markdown
 func (c *Client) UpdatePageMarkdown(ctx context.Context, pageID ID, body UpdatePageMarkdown) (*PageMarkdownResponse, error) {
-	return c.UpdatePageMarkdownWithResult[PageMarkdownResponse](ctx, pageID, body)
-}
-
-// Update a page's content as markdown
-// You can define a custom result to unmarshal the response into.
-//
-//	PATCH /pages/{page_id}/markdown
-func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID ID, body UpdatePageMarkdown) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -3340,15 +3190,8 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*PageMarkdownResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out PageMarkdownResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -3357,7 +3200,7 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(PageMarkdownResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -3371,15 +3214,8 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 		// Accepted when `allow_async` is true and the update has been queued for background execution.
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*PageMarkdownResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out PageMarkdownResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -3388,7 +3224,7 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(PageMarkdownResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -3671,14 +3507,6 @@ func (c *Client) UpdatePageMarkdownWithResult[R any](ctx context.Context, pageID
 //
 //	GET /async_tasks/{task_id}
 func (c *Client) RetrieveAsyncTask(ctx context.Context, taskID string) (*RetrieveAsyncTaskOk, error) {
-	return c.RetrieveAsyncTaskWithResult[RetrieveAsyncTaskOk](ctx, taskID)
-}
-
-// Retrieve an async task
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /async_tasks/{task_id}
-func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID string) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -3709,15 +3537,8 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*RetrieveAsyncTaskOk); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out RetrieveAsyncTaskOk
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -3726,7 +3547,7 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(RetrieveAsyncTaskOk)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -4009,14 +3830,6 @@ func (c *Client) RetrieveAsyncTaskWithResult[R any](ctx context.Context, taskID 
 //
 //	GET /blocks/{block_id}
 func (c *Client) RetrieveABlock(ctx context.Context, blockID ID) (*BlockOrPartial, error) {
-	return c.RetrieveABlockWithResult[BlockOrPartial](ctx, blockID)
-}
-
-// Retrieve a block
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /blocks/{block_id}
-func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -4047,15 +3860,8 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*BlockOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out BlockOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -4064,7 +3870,7 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(BlockOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -4347,14 +4153,6 @@ func (c *Client) RetrieveABlockWithResult[R any](ctx context.Context, blockID ID
 //
 //	DELETE /blocks/{block_id}
 func (c *Client) DeleteABlock(ctx context.Context, blockID ID) (*BlockOrPartial, error) {
-	return c.DeleteABlockWithResult[BlockOrPartial](ctx, blockID)
-}
-
-// Delete a block
-// You can define a custom result to unmarshal the response into.
-//
-//	DELETE /blocks/{block_id}
-func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -4385,15 +4183,8 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID ID) 
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*BlockOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out BlockOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -4402,7 +4193,7 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID ID) 
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(BlockOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -4685,14 +4476,6 @@ func (c *Client) DeleteABlockWithResult[R any](ctx context.Context, blockID ID) 
 //
 //	PATCH /blocks/{block_id}
 func (c *Client) UpdateABlock(ctx context.Context, blockID ID, body UpdateABlock) (*BlockOrPartial, error) {
-	return c.UpdateABlockWithResult[BlockOrPartial](ctx, blockID, body)
-}
-
-// Update a block
-// You can define a custom result to unmarshal the response into.
-//
-//	PATCH /blocks/{block_id}
-func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID ID, body UpdateABlock) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -4730,15 +4513,8 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID ID, 
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*BlockOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out BlockOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -4747,7 +4523,7 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID ID, 
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(BlockOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -5030,14 +4806,6 @@ func (c *Client) UpdateABlockWithResult[R any](ctx context.Context, blockID ID, 
 //
 //	GET /blocks/{block_id}/children
 func (c *Client) GetBlockChildren(ctx context.Context, blockID ID, params *GetBlockChildrenParams) (*BlockList, error) {
-	return c.GetBlockChildrenWithResult[BlockList](ctx, blockID, params)
-}
-
-// Retrieve block children
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /blocks/{block_id}/children
-func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID ID, params *GetBlockChildrenParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -5082,15 +4850,8 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*BlockList); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out BlockList
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -5099,7 +4860,7 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(BlockList)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -5382,14 +5143,6 @@ func (c *Client) GetBlockChildrenWithResult[R any](ctx context.Context, blockID 
 //
 //	PATCH /blocks/{block_id}/children
 func (c *Client) PatchBlockChildren(ctx context.Context, blockID ID, body PatchBlockChildren) (*BlockList, error) {
-	return c.PatchBlockChildrenWithResult[BlockList](ctx, blockID, body)
-}
-
-// Append block children
-// You can define a custom result to unmarshal the response into.
-//
-//	PATCH /blocks/{block_id}/children
-func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockID ID, body PatchBlockChildren) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -5427,15 +5180,8 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*BlockList); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out BlockList
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -5444,7 +5190,7 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(BlockList)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -5727,14 +5473,6 @@ func (c *Client) PatchBlockChildrenWithResult[R any](ctx context.Context, blockI
 //
 //	GET /data_sources/{data_source_id}
 func (c *Client) RetrieveADataSource(ctx context.Context, dataSourceID ID) (*DataSourceOrPartial, error) {
-	return c.RetrieveADataSourceWithResult[DataSourceOrPartial](ctx, dataSourceID)
-}
-
-// Retrieve a data source
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /data_sources/{data_source_id}
-func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataSourceID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -5765,15 +5503,8 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*DataSourceOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out DataSourceOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -5782,7 +5513,7 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(DataSourceOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -6065,14 +5796,6 @@ func (c *Client) RetrieveADataSourceWithResult[R any](ctx context.Context, dataS
 //
 //	PATCH /data_sources/{data_source_id}
 func (c *Client) UpdateADataSource(ctx context.Context, dataSourceID ID, body UpdateADataSource) (*DataSourceOrPartial, error) {
-	return c.UpdateADataSourceWithResult[DataSourceOrPartial](ctx, dataSourceID, body)
-}
-
-// Update a data source
-// You can define a custom result to unmarshal the response into.
-//
-//	PATCH /data_sources/{data_source_id}
-func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSourceID ID, body UpdateADataSource) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -6110,15 +5833,8 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*DataSourceOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out DataSourceOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -6127,7 +5843,7 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(DataSourceOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -6410,14 +6126,6 @@ func (c *Client) UpdateADataSourceWithResult[R any](ctx context.Context, dataSou
 //
 //	POST /data_sources/{data_source_id}/query
 func (c *Client) PostDatabaseQuery(ctx context.Context, dataSourceID ID, params *PostDatabaseQueryParams, body PostDatabaseQuery) (*PageOrDataSourceList, error) {
-	return c.PostDatabaseQueryWithResult[PageOrDataSourceList](ctx, dataSourceID, params, body)
-}
-
-// Query a data source
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /data_sources/{data_source_id}/query
-func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSourceID ID, params *PostDatabaseQueryParams, body PostDatabaseQuery) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -6465,15 +6173,8 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*PageOrDataSourceList); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out PageOrDataSourceList
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -6482,7 +6183,7 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(PageOrDataSourceList)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -6765,14 +6466,6 @@ func (c *Client) PostDatabaseQueryWithResult[R any](ctx context.Context, dataSou
 //
 //	POST /data_sources
 func (c *Client) CreateADatabase(ctx context.Context, body CreateADatabase) (*DataSourceOrPartial, error) {
-	return c.CreateADatabaseWithResult[DataSourceOrPartial](ctx, body)
-}
-
-// Create a data source
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /data_sources
-func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body CreateADatabase) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -6810,15 +6503,8 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*DataSourceOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out DataSourceOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -6827,7 +6513,7 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(DataSourceOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -7110,14 +6796,6 @@ func (c *Client) CreateADatabaseWithResult[R any](ctx context.Context, body Crea
 //
 //	GET /data_sources/{data_source_id}/templates
 func (c *Client) ListDataSourceTemplates(ctx context.Context, dataSourceID ID, params *ListDataSourceTemplatesParams) (*ListDataSourceTemplatesOk, error) {
-	return c.ListDataSourceTemplatesWithResult[ListDataSourceTemplatesOk](ctx, dataSourceID, params)
-}
-
-// List templates in a data source
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /data_sources/{data_source_id}/templates
-func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, dataSourceID ID, params *ListDataSourceTemplatesParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -7166,15 +6844,8 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*ListDataSourceTemplatesOk); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out ListDataSourceTemplatesOk
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -7183,7 +6854,7 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(ListDataSourceTemplatesOk)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -7466,14 +7137,6 @@ func (c *Client) ListDataSourceTemplatesWithResult[R any](ctx context.Context, d
 //
 //	GET /databases/{database_id}
 func (c *Client) RetrieveDatabase(ctx context.Context, databaseID ID) (*DatabaseOrPartial, error) {
-	return c.RetrieveDatabaseWithResult[DatabaseOrPartial](ctx, databaseID)
-}
-
-// Retrieve a database
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /databases/{database_id}
-func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, databaseID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -7504,15 +7167,8 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*DatabaseOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out DatabaseOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -7521,7 +7177,7 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(DatabaseOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -7804,14 +7460,6 @@ func (c *Client) RetrieveDatabaseWithResult[R any](ctx context.Context, database
 //
 //	PATCH /databases/{database_id}
 func (c *Client) UpdateDatabase(ctx context.Context, databaseID ID, body UpdateDatabase) (*DatabaseOrPartial, error) {
-	return c.UpdateDatabaseWithResult[DatabaseOrPartial](ctx, databaseID, body)
-}
-
-// Update a database
-// You can define a custom result to unmarshal the response into.
-//
-//	PATCH /databases/{database_id}
-func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID ID, body UpdateDatabase) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -7849,15 +7497,8 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*DatabaseOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out DatabaseOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -7866,7 +7507,7 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(DatabaseOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -8149,14 +7790,6 @@ func (c *Client) UpdateDatabaseWithResult[R any](ctx context.Context, databaseID
 //
 //	POST /databases
 func (c *Client) CreateDatabase(ctx context.Context, body CreateDatabase) (*DatabaseOrPartial, error) {
-	return c.CreateDatabaseWithResult[DatabaseOrPartial](ctx, body)
-}
-
-// Create a database
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /databases
-func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body CreateDatabase) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -8194,15 +7827,8 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*DatabaseOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out DatabaseOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -8211,7 +7837,7 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(DatabaseOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -8494,14 +8120,6 @@ func (c *Client) CreateDatabaseWithResult[R any](ctx context.Context, body Creat
 //
 //	POST /search
 func (c *Client) PostSearch(ctx context.Context, params *PostSearchParams, body PostSearch) (*PageOrDataSourceList, error) {
-	return c.PostSearchWithResult[PageOrDataSourceList](ctx, params, body)
-}
-
-// Search by title
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /search
-func (c *Client) PostSearchWithResult[R any](ctx context.Context, params *PostSearchParams, body PostSearch) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -8549,15 +8167,8 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, params *PostSe
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*PageOrDataSourceList); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out PageOrDataSourceList
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -8566,7 +8177,7 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, params *PostSe
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(PageOrDataSourceList)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -8849,14 +8460,6 @@ func (c *Client) PostSearchWithResult[R any](ctx context.Context, params *PostSe
 //
 //	GET /comments
 func (c *Client) ListComments(ctx context.Context, params ListCommentsParams) (*CommentList, error) {
-	return c.ListCommentsWithResult[CommentList](ctx, params)
-}
-
-// List comments
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /comments
-func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListCommentsParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -8902,15 +8505,8 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*CommentList); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out CommentList
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -8919,7 +8515,7 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(CommentList)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -9202,14 +8798,6 @@ func (c *Client) ListCommentsWithResult[R any](ctx context.Context, params ListC
 //
 //	POST /comments
 func (c *Client) CreateAComment(ctx context.Context, body CreateAComment) (*CommentOrPartial, error) {
-	return c.CreateACommentWithResult[CommentOrPartial](ctx, body)
-}
-
-// Create a comment
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /comments
-func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body CreateAComment) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -9247,15 +8835,8 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*CommentOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out CommentOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -9264,7 +8845,7 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(CommentOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -9547,14 +9128,6 @@ func (c *Client) CreateACommentWithResult[R any](ctx context.Context, body Creat
 //
 //	GET /comments/{comment_id}
 func (c *Client) RetrieveComment(ctx context.Context, commentID ID) (*CommentOrPartial, error) {
-	return c.RetrieveCommentWithResult[CommentOrPartial](ctx, commentID)
-}
-
-// Retrieve a comment
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /comments/{comment_id}
-func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -9585,15 +9158,8 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*CommentOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out CommentOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -9602,7 +9168,7 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(CommentOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -9885,14 +9451,6 @@ func (c *Client) RetrieveCommentWithResult[R any](ctx context.Context, commentID
 //
 //	DELETE /comments/{comment_id}
 func (c *Client) DeleteAComment(ctx context.Context, commentID ID) (*CommentOrPartial, error) {
-	return c.DeleteACommentWithResult[CommentOrPartial](ctx, commentID)
-}
-
-// Delete a comment
-// You can define a custom result to unmarshal the response into.
-//
-//	DELETE /comments/{comment_id}
-func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -9923,15 +9481,8 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*CommentOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out CommentOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -9940,7 +9491,7 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(CommentOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -10223,14 +9774,6 @@ func (c *Client) DeleteACommentWithResult[R any](ctx context.Context, commentID 
 //
 //	PATCH /comments/{comment_id}
 func (c *Client) UpdateAComment(ctx context.Context, commentID ID, body UpdateAComment) (*CommentOrPartial, error) {
-	return c.UpdateACommentWithResult[CommentOrPartial](ctx, commentID, body)
-}
-
-// Update a comment
-// You can define a custom result to unmarshal the response into.
-//
-//	PATCH /comments/{comment_id}
-func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID ID, body UpdateAComment) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -10268,15 +9811,8 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*CommentOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out CommentOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -10285,7 +9821,7 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(CommentOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -10568,14 +10104,6 @@ func (c *Client) UpdateACommentWithResult[R any](ctx context.Context, commentID 
 //
 //	GET /file_uploads
 func (c *Client) ListFileUploads(ctx context.Context, params *ListFileUploadsParams) (*FileUploadList, error) {
-	return c.ListFileUploadsWithResult[FileUploadList](ctx, params)
-}
-
-// List file uploads
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /file_uploads
-func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *ListFileUploadsParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -10624,15 +10152,8 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*FileUploadList); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out FileUploadList
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -10641,7 +10162,7 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(FileUploadList)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -10924,14 +10445,6 @@ func (c *Client) ListFileUploadsWithResult[R any](ctx context.Context, params *L
 //
 //	POST /file_uploads
 func (c *Client) CreateFile(ctx context.Context, body CreateFile) (*FileUploadObjectResponse, error) {
-	return c.CreateFileWithResult[FileUploadObjectResponse](ctx, body)
-}
-
-// Create a file upload
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /file_uploads
-func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFile) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -10969,15 +10482,8 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*FileUploadObjectResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out FileUploadObjectResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -10986,7 +10492,7 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(FileUploadObjectResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -11269,14 +10775,6 @@ func (c *Client) CreateFileWithResult[R any](ctx context.Context, body CreateFil
 //
 //	POST /file_uploads/{file_upload_id}/send
 func (c *Client) UploadFile(ctx context.Context, fileUploadID ID, body UploadFile) (*FileUploadObjectResponse, error) {
-	return c.UploadFileWithResult[FileUploadObjectResponse](ctx, fileUploadID, body)
-}
-
-// Upload a file
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /file_uploads/{file_upload_id}/send
-func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID ID, body UploadFile) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -11314,15 +10812,8 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*FileUploadObjectResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out FileUploadObjectResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -11331,7 +10822,7 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(FileUploadObjectResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -11614,14 +11105,6 @@ func (c *Client) UploadFileWithResult[R any](ctx context.Context, fileUploadID I
 //
 //	POST /file_uploads/{file_upload_id}/complete
 func (c *Client) CompleteFileUpload(ctx context.Context, fileUploadID ID) (*FileUploadObjectResponse, error) {
-	return c.CompleteFileUploadWithResult[FileUploadObjectResponse](ctx, fileUploadID)
-}
-
-// Complete a multi-part file upload
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /file_uploads/{file_upload_id}/complete
-func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUploadID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -11652,15 +11135,8 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*FileUploadObjectResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out FileUploadObjectResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -11669,7 +11145,7 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(FileUploadObjectResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -11952,14 +11428,6 @@ func (c *Client) CompleteFileUploadWithResult[R any](ctx context.Context, fileUp
 //
 //	GET /file_uploads/{file_upload_id}
 func (c *Client) RetrieveFileUpload(ctx context.Context, fileUploadID ID) (*FileUploadObjectResponse, error) {
-	return c.RetrieveFileUploadWithResult[FileUploadObjectResponse](ctx, fileUploadID)
-}
-
-// Retrieve a file upload
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /file_uploads/{file_upload_id}
-func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUploadID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -11990,15 +11458,8 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*FileUploadObjectResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out FileUploadObjectResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -12007,7 +11468,7 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(FileUploadObjectResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -12290,14 +11751,6 @@ func (c *Client) RetrieveFileUploadWithResult[R any](ctx context.Context, fileUp
 //
 //	GET /custom_emojis
 func (c *Client) ListCustomEmojis(ctx context.Context, params *ListCustomEmojisParams) (*CustomEmojiList, error) {
-	return c.ListCustomEmojisWithResult[CustomEmojiList](ctx, params)
-}
-
-// List custom emojis
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /custom_emojis
-func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *ListCustomEmojisParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -12346,15 +11799,8 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*CustomEmojiList); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out CustomEmojiList
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -12363,7 +11809,7 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(CustomEmojiList)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -12646,14 +12092,6 @@ func (c *Client) ListCustomEmojisWithResult[R any](ctx context.Context, params *
 //
 //	GET /views
 func (c *Client) ListViews(ctx context.Context, params *ListViewsParams) (*ViewList, error) {
-	return c.ListViewsWithResult[ViewList](ctx, params)
-}
-
-// List views
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /views
-func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListViewsParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -12706,15 +12144,8 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*ViewList); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out ViewList
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -12723,7 +12154,7 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(ViewList)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -13006,14 +12437,6 @@ func (c *Client) ListViewsWithResult[R any](ctx context.Context, params *ListVie
 //
 //	POST /views
 func (c *Client) CreateView(ctx context.Context, body CreateView) (*DataSourceViewOrPartial, error) {
-	return c.CreateViewWithResult[DataSourceViewOrPartial](ctx, body)
-}
-
-// Create a view
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /views
-func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateView) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -13051,15 +12474,8 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*DataSourceViewOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out DataSourceViewOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -13068,7 +12484,7 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(DataSourceViewOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -13351,14 +12767,6 @@ func (c *Client) CreateViewWithResult[R any](ctx context.Context, body CreateVie
 //
 //	GET /views/{view_id}
 func (c *Client) RetrieveAView(ctx context.Context, viewID ID) (*DataSourceViewOrPartial, error) {
-	return c.RetrieveAViewWithResult[DataSourceViewOrPartial](ctx, viewID)
-}
-
-// Retrieve a view
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /views/{view_id}
-func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -13389,15 +12797,8 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID ID) 
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*DataSourceViewOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out DataSourceViewOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -13406,7 +12807,7 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID ID) 
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(DataSourceViewOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -13689,14 +13090,6 @@ func (c *Client) RetrieveAViewWithResult[R any](ctx context.Context, viewID ID) 
 //
 //	DELETE /views/{view_id}
 func (c *Client) DeleteView(ctx context.Context, viewID ID) (*PartialDataSourceViewObjectResponse, error) {
-	return c.DeleteViewWithResult[PartialDataSourceViewObjectResponse](ctx, viewID)
-}
-
-// Delete a view
-// You can define a custom result to unmarshal the response into.
-//
-//	DELETE /views/{view_id}
-func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -13727,15 +13120,8 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID ID) (*R
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*PartialDataSourceViewObjectResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out PartialDataSourceViewObjectResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -13744,7 +13130,7 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID ID) (*R
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(PartialDataSourceViewObjectResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -14027,14 +13413,6 @@ func (c *Client) DeleteViewWithResult[R any](ctx context.Context, viewID ID) (*R
 //
 //	PATCH /views/{view_id}
 func (c *Client) UpdateAView(ctx context.Context, viewID ID, body UpdateView) (*DataSourceViewOrPartial, error) {
-	return c.UpdateAViewWithResult[DataSourceViewOrPartial](ctx, viewID, body)
-}
-
-// Update a view
-// You can define a custom result to unmarshal the response into.
-//
-//	PATCH /views/{view_id}
-func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID ID, body UpdateView) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -14072,15 +13450,8 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID ID, bo
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*DataSourceViewOrPartial); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out DataSourceViewOrPartial
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -14089,7 +13460,7 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID ID, bo
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(DataSourceViewOrPartial)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -14372,14 +13743,6 @@ func (c *Client) UpdateAViewWithResult[R any](ctx context.Context, viewID ID, bo
 //
 //	POST /views/{view_id}/queries
 func (c *Client) CreateViewQuery(ctx context.Context, viewID ID, body CreateViewQuery) (*ViewQueryResponse, error) {
-	return c.CreateViewQueryWithResult[ViewQueryResponse](ctx, viewID, body)
-}
-
-// Create a view query
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /views/{view_id}/queries
-func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID, body CreateViewQuery) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -14417,15 +13780,8 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*ViewQueryResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out ViewQueryResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -14434,7 +13790,7 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(ViewQueryResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -14717,14 +14073,6 @@ func (c *Client) CreateViewQueryWithResult[R any](ctx context.Context, viewID ID
 //
 //	GET /views/{view_id}/queries/{query_id}
 func (c *Client) GetViewQueryResults(ctx context.Context, viewID ID, queryID ID, params *GetViewQueryResultsParams) (*PageList, error) {
-	return c.GetViewQueryResultsWithResult[PageList](ctx, viewID, queryID, params)
-}
-
-// Get view query results
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /views/{view_id}/queries/{query_id}
-func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewID ID, queryID ID, params *GetViewQueryResultsParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -14769,15 +14117,8 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*PageList); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out PageList
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -14786,7 +14127,7 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(PageList)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -15069,14 +14410,6 @@ func (c *Client) GetViewQueryResultsWithResult[R any](ctx context.Context, viewI
 //
 //	DELETE /views/{view_id}/queries/{query_id}
 func (c *Client) DeleteViewQuery(ctx context.Context, viewID ID, queryID ID) (*DeletedViewQueryResponse, error) {
-	return c.DeleteViewQueryWithResult[DeletedViewQueryResponse](ctx, viewID, queryID)
-}
-
-// Delete a view query
-// You can define a custom result to unmarshal the response into.
-//
-//	DELETE /views/{view_id}/queries/{query_id}
-func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID, queryID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -15107,15 +14440,8 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*DeletedViewQueryResponse); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out DeletedViewQueryResponse
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -15124,7 +14450,7 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(DeletedViewQueryResponse)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -15407,14 +14733,6 @@ func (c *Client) DeleteViewQueryWithResult[R any](ctx context.Context, viewID ID
 //
 //	POST /blocks/meeting_notes
 func (c *Client) CreateMeetingNote(ctx context.Context, body CreateMeetingNote) (*CreateMeetingNoteOk, error) {
-	return c.CreateMeetingNoteWithResult[CreateMeetingNoteOk](ctx, body)
-}
-
-// Create a meeting note
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /blocks/meeting_notes
-func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body CreateMeetingNote) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -15452,15 +14770,8 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*CreateMeetingNoteOk); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out CreateMeetingNoteOk
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -15469,7 +14780,7 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(CreateMeetingNoteOk)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -15752,14 +15063,6 @@ func (c *Client) CreateMeetingNoteWithResult[R any](ctx context.Context, body Cr
 //
 //	POST /blocks/meeting_notes/query
 func (c *Client) QueryMeetingNotes(ctx context.Context, body QueryMeetingNotes) (*QueryMeetingNotesOk, error) {
-	return c.QueryMeetingNotesWithResult[QueryMeetingNotesOk](ctx, body)
-}
-
-// Query meeting notes
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /blocks/meeting_notes/query
-func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body QueryMeetingNotes) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -15797,15 +15100,8 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*QueryMeetingNotesOk); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out QueryMeetingNotesOk
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -15814,7 +15110,7 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(QueryMeetingNotesOk)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -16097,14 +15393,6 @@ func (c *Client) QueryMeetingNotesWithResult[R any](ctx context.Context, body Qu
 //
 //	POST /agents/query
 func (c *Client) QueryAgents(ctx context.Context, body QueryAgents) (*AgentList, error) {
-	return c.QueryAgentsWithResult[AgentList](ctx, body)
-}
-
-// Query agents
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /agents/query
-func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAgents) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -16142,15 +15430,8 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*AgentList); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out AgentList
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -16159,7 +15440,7 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(AgentList)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -16442,14 +15723,6 @@ func (c *Client) QueryAgentsWithResult[R any](ctx context.Context, body QueryAge
 //
 //	GET /agents/{agent_id}
 func (c *Client) GetAgent(ctx context.Context, agentID string, params *GetAgentParams) (*Agent, error) {
-	return c.GetAgentWithResult[Agent](ctx, agentID, params)
-}
-
-// Get agent
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /agents/{agent_id}
-func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, params *GetAgentParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -16490,15 +15763,8 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*Agent); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out Agent
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -16507,7 +15773,7 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(Agent)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -16790,14 +16056,6 @@ func (c *Client) GetAgentWithResult[R any](ctx context.Context, agentID string, 
 //
 //	DELETE /agents/{agent_id}
 func (c *Client) DeleteAgent(ctx context.Context, agentID string) (*DeleteAgentOk, error) {
-	return c.DeleteAgentWithResult[DeleteAgentOk](ctx, agentID)
-}
-
-// Delete agent
-// You can define a custom result to unmarshal the response into.
-//
-//	DELETE /agents/{agent_id}
-func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID string) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -16828,15 +16086,8 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*DeleteAgentOk); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out DeleteAgentOk
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -16845,7 +16096,7 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(DeleteAgentOk)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -17128,14 +16379,6 @@ func (c *Client) DeleteAgentWithResult[R any](ctx context.Context, agentID strin
 //
 //	PATCH /agents/{agent_id}
 func (c *Client) UpdateAgent(ctx context.Context, agentID string, body UpdateAgent) (*Agent, error) {
-	return c.UpdateAgentWithResult[Agent](ctx, agentID, body)
-}
-
-// Update agent
-// You can define a custom result to unmarshal the response into.
-//
-//	PATCH /agents/{agent_id}
-func (c *Client) UpdateAgentWithResult[R any](ctx context.Context, agentID string, body UpdateAgent) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -17173,15 +16416,8 @@ func (c *Client) UpdateAgentWithResult[R any](ctx context.Context, agentID strin
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*Agent); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out Agent
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -17190,7 +16426,7 @@ func (c *Client) UpdateAgentWithResult[R any](ctx context.Context, agentID strin
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(Agent)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -17473,14 +16709,6 @@ func (c *Client) UpdateAgentWithResult[R any](ctx context.Context, agentID strin
 //
 //	GET /agents/{agent_id}/insights
 func (c *Client) GetAgentInsights(ctx context.Context, agentID string, params *GetAgentInsightsParams) (*AgentInsights, error) {
-	return c.GetAgentInsightsWithResult[AgentInsights](ctx, agentID, params)
-}
-
-// Get agent insights
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /agents/{agent_id}/insights
-func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID string, params *GetAgentInsightsParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -17525,15 +16753,8 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*AgentInsights); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out AgentInsights
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -17542,7 +16763,7 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(AgentInsights)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -17827,16 +17048,6 @@ func (c *Client) GetAgentInsightsWithResult[R any](ctx context.Context, agentID 
 //
 // Deprecated.
 func (c *Client) UpdateAgentStatus(ctx context.Context, agentID string, body UpdateAgentStatus3) (*UpdateAgentStatusOk, error) {
-	return c.UpdateAgentStatusWithResult[UpdateAgentStatusOk](ctx, agentID, body)
-}
-
-// Update agent status
-// You can define a custom result to unmarshal the response into.
-//
-//	PATCH /agents/{agent_id}/status
-//
-// Deprecated.
-func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID string, body UpdateAgentStatus3) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -17874,15 +17085,8 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*UpdateAgentStatusOk); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out UpdateAgentStatusOk
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -17891,7 +17095,7 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(UpdateAgentStatusOk)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -18174,14 +17378,6 @@ func (c *Client) UpdateAgentStatusWithResult[R any](ctx context.Context, agentID
 //
 //	PATCH /agents/{agent_id}/credit_limit
 func (c *Client) UpdateAgentCreditLimit(ctx context.Context, agentID string, body UpdateAgentCreditLimit) (*UpdateAgentCreditLimitOk, error) {
-	return c.UpdateAgentCreditLimitWithResult[UpdateAgentCreditLimitOk](ctx, agentID, body)
-}
-
-// Update agent credit limit
-// You can define a custom result to unmarshal the response into.
-//
-//	PATCH /agents/{agent_id}/credit_limit
-func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, agentID string, body UpdateAgentCreditLimit) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -18219,15 +17415,8 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*UpdateAgentCreditLimitOk); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out UpdateAgentCreditLimitOk
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -18236,7 +17425,7 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(UpdateAgentCreditLimitOk)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -18519,14 +17708,6 @@ func (c *Client) UpdateAgentCreditLimitWithResult[R any](ctx context.Context, ag
 //
 //	POST /agents/batch
 func (c *Client) AgentBatch(ctx context.Context, body AgentBatch) (*AgentBatch2, error) {
-	return c.AgentBatchWithResult[AgentBatch2](ctx, body)
-}
-
-// Apply many agent operations
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /agents/batch
-func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatch) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -18564,15 +17745,8 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*AgentBatch2); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out AgentBatch2
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -18581,7 +17755,7 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(AgentBatch2)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -18864,14 +18038,6 @@ func (c *Client) AgentBatchWithResult[R any](ctx context.Context, body AgentBatc
 //
 //	GET /ai/plugins
 func (c *Client) ListSkillsPlugins(ctx context.Context, params *ListSkillsPluginsParams) (*PluginList, error) {
-	return c.ListSkillsPluginsWithResult[PluginList](ctx, params)
-}
-
-// List skills plugins
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /ai/plugins
-func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params *ListSkillsPluginsParams) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -18916,15 +18082,8 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*PluginList); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out PluginList
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -18933,7 +18092,7 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(PluginList)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -19216,14 +18375,6 @@ func (c *Client) ListSkillsPluginsWithResult[R any](ctx context.Context, params 
 //
 //	GET /ai/plugins/{id}
 func (c *Client) GetPluginDirectory(ctx context.Context, id string) (*GetPluginDirectoryOk, error) {
-	return c.GetPluginDirectoryWithResult[GetPluginDirectoryOk](ctx, id)
-}
-
-// Get a plugin directory
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /ai/plugins/{id}
-func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id string) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -19254,15 +18405,8 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*GetPluginDirectoryOk); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out GetPluginDirectoryOk
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -19271,7 +18415,7 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(GetPluginDirectoryOk)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -19554,14 +18698,6 @@ func (c *Client) GetPluginDirectoryWithResult[R any](ctx context.Context, id str
 //
 //	GET /ai/skills/{id}
 func (c *Client) GetSkillDirectory(ctx context.Context, id ID) (*GetSkillDirectoryOk, error) {
-	return c.GetSkillDirectoryWithResult[GetSkillDirectoryOk](ctx, id)
-}
-
-// Get a skill directory
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /ai/skills/{id}
-func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -19592,15 +18728,8 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id ID) 
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*GetSkillDirectoryOk); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out GetSkillDirectoryOk
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -19609,7 +18738,7 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id ID) 
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(GetSkillDirectoryOk)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -19892,14 +19021,6 @@ func (c *Client) GetSkillDirectoryWithResult[R any](ctx context.Context, id ID) 
 //
 //	POST /sessions
 func (c *Client) UpdateSession(ctx context.Context, body UpdateSessionRequest) (*CancelSession2, error) {
-	return c.UpdateSessionWithResult[CancelSession2](ctx, body)
-}
-
-// Update a session
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /sessions
-func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body UpdateSessionRequest) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -19937,15 +19058,8 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*CancelSession2); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out CancelSession2
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -19954,7 +19068,7 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(CancelSession2)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -20237,14 +19351,6 @@ func (c *Client) UpdateSessionWithResult[R any](ctx context.Context, body Update
 //
 //	GET /sessions/{session_id}
 func (c *Client) RetrieveSession(ctx context.Context, sessionID ID) (*Session, error) {
-	return c.RetrieveSessionWithResult[Session](ctx, sessionID)
-}
-
-// Retrieve a session
-// You can define a custom result to unmarshal the response into.
-//
-//	GET /sessions/{session_id}
-func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID ID) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -20275,15 +19381,8 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*Session); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out Session
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -20292,7 +19391,7 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(Session)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -20575,14 +19674,6 @@ func (c *Client) RetrieveSessionWithResult[R any](ctx context.Context, sessionID
 //
 //	POST /sessions/query
 func (c *Client) QuerySessions(ctx context.Context, body QuerySessions) (*SessionList, error) {
-	return c.QuerySessionsWithResult[SessionList](ctx, body)
-}
-
-// Query sessions
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /sessions/query
-func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QuerySessions) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -20620,15 +19711,8 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*SessionList); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out SessionList
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -20637,7 +19721,7 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(SessionList)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -20920,14 +20004,6 @@ func (c *Client) QuerySessionsWithResult[R any](ctx context.Context, body QueryS
 //
 //	POST /sessions/{session_id}/events/query
 func (c *Client) QuerySessionEvents(ctx context.Context, sessionID ID, body QuerySessionEvents) (*SessionEventList, error) {
-	return c.QuerySessionEventsWithResult[SessionEventList](ctx, sessionID, body)
-}
-
-// Query session events
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /sessions/{session_id}/events/query
-func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessionID ID, body QuerySessionEvents) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -20965,15 +20041,8 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*SessionEventList); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out SessionEventList
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -20982,7 +20051,7 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(SessionEventList)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -21265,14 +20334,6 @@ func (c *Client) QuerySessionEventsWithResult[R any](ctx context.Context, sessio
 //
 //	POST /sessions/{session_id}/cancel
 func (c *Client) CancelSession(ctx context.Context, sessionID ID, body CancelSession) (*CancelSession2, error) {
-	return c.CancelSessionWithResult[CancelSession2](ctx, sessionID, body)
-}
-
-// Cancel a session
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /sessions/{session_id}/cancel
-func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID ID, body CancelSession) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -21310,15 +20371,8 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID I
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*CancelSession2); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out CancelSession2
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -21327,7 +20381,7 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID I
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(CancelSession2)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -21610,14 +20664,6 @@ func (c *Client) CancelSessionWithResult[R any](ctx context.Context, sessionID I
 //
 //	POST /oauth/token
 func (c *Client) CreateAToken(ctx context.Context, body CreateAToken) (*CreateATokenOk, error) {
-	return c.CreateATokenWithResult[CreateATokenOk](ctx, body)
-}
-
-// Exchange an authorization code for an access and refresh token
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /oauth/token
-func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateAToken) (*R, error) {
 	if c.basic == "" {
 		return nil, errors.New("basic auth NOTION_API_USERNAME / NOTION_API_PASSWORD not provided")
 	}
@@ -21655,15 +20701,8 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*CreateATokenOk); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out CreateATokenOk
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -21672,7 +20711,7 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(CreateATokenOk)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -21787,14 +20826,6 @@ func (c *Client) CreateATokenWithResult[R any](ctx context.Context, body CreateA
 //
 //	POST /oauth/revoke
 func (c *Client) RevokeToken(ctx context.Context, body RevokeToken) (*RevokeTokenOk, error) {
-	return c.RevokeTokenWithResult[RevokeTokenOk](ctx, body)
-}
-
-// Revoke a token
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /oauth/revoke
-func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body RevokeToken) (*R, error) {
 	if c.basic == "" {
 		return nil, errors.New("basic auth NOTION_API_USERNAME / NOTION_API_PASSWORD not provided")
 	}
@@ -21832,15 +20863,8 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body RevokeTo
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*RevokeTokenOk); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out RevokeTokenOk
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -21849,7 +20873,7 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body RevokeTo
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(RevokeTokenOk)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -21964,14 +20988,6 @@ func (c *Client) RevokeTokenWithResult[R any](ctx context.Context, body RevokeTo
 //
 //	POST /oauth/introspect
 func (c *Client) IntrospectToken(ctx context.Context, body RevokeToken) (*IntrospectTokenOk, error) {
-	return c.IntrospectTokenWithResult[IntrospectTokenOk](ctx, body)
-}
-
-// Introspect a token
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /oauth/introspect
-func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body RevokeToken) (*R, error) {
 	if c.basic == "" {
 		return nil, errors.New("basic auth NOTION_API_USERNAME / NOTION_API_PASSWORD not provided")
 	}
@@ -22009,15 +21025,8 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Revo
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*IntrospectTokenOk); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out IntrospectTokenOk
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -22026,7 +21035,7 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Revo
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(IntrospectTokenOk)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -22141,14 +21150,6 @@ func (c *Client) IntrospectTokenWithResult[R any](ctx context.Context, body Revo
 //
 //	POST /ai/skills/{id}/upload
 func (c *Client) UploadSkill(ctx context.Context, id ID, body UploadSkill) (*UploadSkillOk, error) {
-	return c.UploadSkillWithResult[UploadSkillOk](ctx, id, body)
-}
-
-// Upload a skill
-// You can define a custom result to unmarshal the response into.
-//
-//	POST /ai/skills/{id}/upload
-func (c *Client) UploadSkillWithResult[R any](ctx context.Context, id ID, body UploadSkill) (*R, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -22186,15 +21187,8 @@ func (c *Client) UploadSkillWithResult[R any](ctx context.Context, id ID, body U
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out R
-
-			// a type of the caller's own declares only what it needs of the response, so it is decoded leniently
-			opts := jsonOptsLenient
-			if _, ok := any(&out).(*UploadSkillOk); ok {
-				opts = jsonOpts
-			}
-
-			if err := json.UnmarshalRead(rsp.Body, &out, opts); err != nil {
+			var out UploadSkillOk
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if ia == nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
@@ -22203,7 +21197,7 @@ func (c *Client) UploadSkillWithResult[R any](ctx context.Context, id ID, body U
 					return nil, errors.Join(api.WrapDecodingError(rsp, err), kerr)
 				}
 
-				out = *new(R)
+				out = *new(UploadSkillOk)
 				if err := json.Unmarshal(ia.Response.Body, &out, jsonOptsLenient); err != nil {
 					return nil, api.WrapDecodingError(rsp, err)
 				}
