@@ -2483,7 +2483,7 @@ func (c *Client) RetrieveAPageProperty(ctx context.Context, pageID ID, propertyI
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("pages", uuid.UUID(pageID).String(), "properties", url.PathEscape(propertyID))
+	u := c.baseURL.JoinPath("pages", uuid.UUID(pageID).String(), "properties", escapePathSegment(propertyID))
 	if params != nil {
 		q := make(url.Values, 2)
 
@@ -3511,7 +3511,7 @@ func (c *Client) RetrieveAsyncTask(ctx context.Context, taskID string) (*Retriev
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("async_tasks", url.PathEscape(taskID))
+	u := c.baseURL.JoinPath("async_tasks", escapePathSegment(taskID))
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -15727,7 +15727,7 @@ func (c *Client) GetAgent(ctx context.Context, agentID string, params *GetAgentP
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("agents", url.PathEscape(agentID))
+	u := c.baseURL.JoinPath("agents", escapePathSegment(agentID))
 	if params != nil {
 		q := make(url.Values, 1)
 
@@ -16060,7 +16060,7 @@ func (c *Client) DeleteAgent(ctx context.Context, agentID string) (*DeleteAgentO
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("agents", url.PathEscape(agentID))
+	u := c.baseURL.JoinPath("agents", escapePathSegment(agentID))
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -16383,7 +16383,7 @@ func (c *Client) UpdateAgent(ctx context.Context, agentID string, body UpdateAge
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("agents", url.PathEscape(agentID))
+	u := c.baseURL.JoinPath("agents", escapePathSegment(agentID))
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -16713,7 +16713,7 @@ func (c *Client) GetAgentInsights(ctx context.Context, agentID string, params *G
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("agents", url.PathEscape(agentID), "insights")
+	u := c.baseURL.JoinPath("agents", escapePathSegment(agentID), "insights")
 	if params != nil {
 		q := make(url.Values, 2)
 
@@ -17052,7 +17052,7 @@ func (c *Client) UpdateAgentStatus(ctx context.Context, agentID string, body Upd
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("agents", url.PathEscape(agentID), "status")
+	u := c.baseURL.JoinPath("agents", escapePathSegment(agentID), "status")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -17382,7 +17382,7 @@ func (c *Client) UpdateAgentCreditLimit(ctx context.Context, agentID string, bod
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("agents", url.PathEscape(agentID), "credit_limit")
+	u := c.baseURL.JoinPath("agents", escapePathSegment(agentID), "credit_limit")
 	pr, pw := io.Pipe()
 	req := (&http.Request{
 		Header: http.Header{
@@ -18379,7 +18379,7 @@ func (c *Client) GetPluginDirectory(ctx context.Context, id string) (*GetPluginD
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
 
-	u := c.baseURL.JoinPath("ai", "plugins", url.PathEscape(id))
+	u := c.baseURL.JoinPath("ai", "plugins", escapePathSegment(id))
 	req := (&http.Request{
 		Header: http.Header{
 			"Authorization":  []string{c.bearer},
@@ -21473,6 +21473,18 @@ func (c *Client) UploadSkill(ctx context.Context, id ID, body UploadSkill) (*Upl
 		}
 	default:
 		return nil, c.failed(ia, api.NewErrUnknownStatusCode(rsp))
+	}
+}
+
+// escapePathSegment escapes s, a path parameter, as one segment of a path: all but the characters RFC 3986 leaves
+// unreserved, as encodeURIComponent does, and a segment of . or .., so the client does not drop it, nor the segment
+// before it, from the path.
+func escapePathSegment(s string) string {
+	switch s {
+	case ".", "..":
+		return strings.ReplaceAll(s, ".", "%2E")
+	default:
+		return strings.ReplaceAll(url.QueryEscape(s), "+", "%20")
 	}
 }
 

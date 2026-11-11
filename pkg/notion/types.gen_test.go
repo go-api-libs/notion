@@ -1873,6 +1873,11 @@ func TestUnions_RoundTrip(t *testing.T) {
 		roundTrip(t, PropertyItemObjectResponse{StatusPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.StatusPropertyItemObjectResponse != nil })
 	})
 
+	t.Run("PropertyItemObjectResponse/DatePropertyItemObjectResponse", func(t *testing.T) {
+		v := DatePropertyItemObjectResponse{Type: "date", Object: "property_item"}
+		roundTrip(t, PropertyItemObjectResponse{DatePropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.DatePropertyItemObjectResponse != nil })
+	})
+
 	t.Run("PropertyItemObjectResponse/EmailPropertyItemObjectResponse", func(t *testing.T) {
 		v := EmailPropertyItemObjectResponse{Type: "email", Object: "property_item"}
 		roundTrip(t, PropertyItemObjectResponse{EmailPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.EmailPropertyItemObjectResponse != nil })
@@ -2969,6 +2974,11 @@ func TestUnions_RoundTrip(t *testing.T) {
 	t.Run("UserOrPartial/PartialUserObjectResponse", func(t *testing.T) {
 		v := PartialUserObjectResponse{Object: "user"}
 		roundTrip(t, UserOrPartial{PartialUserObjectResponse: &v}, func(u UserOrPartial) bool { return u.PartialUserObjectResponse != nil })
+	})
+
+	t.Run("VerificationPropertyValueResponse/VerificationPropertyResponse", func(t *testing.T) {
+		v := VerificationPropertyResponse{State: "verified"}
+		roundTrip(t, VerificationPropertyValueResponse{VerificationPropertyResponse: &v}, func(u VerificationPropertyValueResponse) bool { return u.VerificationPropertyResponse != nil })
 	})
 
 	t.Run("ViewConfig/TableViewConfig", func(t *testing.T) {
@@ -4377,6 +4387,10 @@ func TestTagged_RoundTrip(t *testing.T) {
 		roundTrip(t, PropertyValue{Type: "unique_id", UniqueID: new(UniqueIDPropertyValueResponse{})}, func(v PropertyValue) bool { return v.Type == "unique_id" })
 	})
 
+	t.Run("PropertyValue/verification", func(t *testing.T) {
+		roundTrip(t, PropertyValue{Type: "verification", Verification: new(VerificationPropertyValueResponse{VerificationPropertyResponse: new(VerificationPropertyResponse{State: "verified"})})}, func(v PropertyValue) bool { return v.Type == "verification" })
+	})
+
 	t.Run("PropertyValue/place", func(t *testing.T) {
 		roundTrip(t, PropertyValue{Type: "place", Place: new(PlacePropertyValueResponse{})}, func(v PropertyValue) bool { return v.Type == "place" })
 	})
@@ -4515,6 +4529,10 @@ func TestTagged_RoundTrip(t *testing.T) {
 
 	t.Run("SimpleOrArrayPropertyValueResponse/unique_id", func(t *testing.T) {
 		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "unique_id", UniqueID: new(UniqueIDPropertyValueResponse{})}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "unique_id" })
+	})
+
+	t.Run("SimpleOrArrayPropertyValueResponse/verification", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "verification", Verification: new(VerificationPropertyValueResponse{VerificationPropertyResponse: new(VerificationPropertyResponse{State: "verified"})})}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "verification" })
 	})
 
 	t.Run("SimpleOrArrayPropertyValueResponse/place", func(t *testing.T) {
