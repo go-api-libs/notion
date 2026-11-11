@@ -5,17 +5,23 @@
 package notion
 
 import (
+	"bytes"
 	"encoding/json/jsontext"
 	"encoding/json/v2"
 	"errors"
 	"io"
 	"io/fs"
+	"maps"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
+	"strconv"
+	"strings"
 	"testing"
+	"time"
 	"uuid"
 
 	"github.com/MarkRosemaker/cassette"
@@ -44426,4 +44432,1413 @@ func TestClient_Params(t *testing.T) {
 			t.Errorf("query %s: got %q, want %q", "page_size", v, "2")
 		}
 	})
+}
+
+func replay(t *testing.T) http.RoundTripper {
+	t.Helper()
+
+	interactions, err := cassette.InteractionsReadFile("../../api/interactions.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	match := cassette.MatchRequest(
+		cassette.CompareHeaders("User-Agent"),
+	)
+
+	rec := cassette.Replay(interactions, cassette.InOrder(), cassette.WithMatcher(func(req *http.Request, ia cassette.Request) error {
+		err := match(req, ia)
+		if err == nil || req.Body == nil {
+			return err
+		}
+
+		sent, rerr := io.ReadAll(req.Body)
+		if rerr != nil {
+			return err
+		}
+
+		req.Body = io.NopCloser(bytes.NewReader(sent))
+
+		var a, b any
+		if json.Unmarshal(ia.Body, &a) != nil || json.Unmarshal(sent, &b) != nil || !jsonSameButTags(a, b) {
+			return err
+		}
+
+		ia.Body = sent
+
+		return match(req, ia)
+	}))
+
+	t.Cleanup(func() {
+		if unused := rec.Unused(); len(unused) > 0 {
+			t.Errorf("%d recorded interactions were never replayed, the first: %s %s", len(unused), unused[0].Request.Method, &unused[0].Request.URL)
+		}
+	})
+
+	return rec
+}
+
+// lastBody passes requests on to next, and keeps the body of the last response, so that a test can compare what a call
+// decoded with what was sent.
+type lastBody struct {
+	next http.RoundTripper
+	body []byte
+}
+
+func (l *lastBody) RoundTrip(req *http.Request) (*http.Response, error) {
+	rsp, err := l.next.RoundTrip(req)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rsp.Body.Close()
+
+	if l.body, err = io.ReadAll(rsp.Body); err != nil {
+		return nil, err
+	}
+
+	rsp.Body = io.NopCloser(bytes.NewReader(l.body))
+
+	return rsp, nil
+}
+
+// decodedAsSent fails unless out, what a call decoded from body, encodes to what body holds. A member one side lacks is
+// fine where the other holds nothing there (null, false, 0, "", [], an object of nothing but such members, or the zero
+// text of a date, a time or a UUID), as an optional value left out is, and so is a tag one side leaves out (see
+// jsonInferredTag); members may come in another order. A value may be written another way, as long as it
+// is the same: a time as the same instant, a UUID with or without dashes, a number as a string of it.
+func decodedAsSent(t *testing.T, op string, out any, body []byte) {
+	t.Helper()
+
+	encoded, err := json.Marshal(out, jsonOpts)
+	if err != nil {
+		t.Fatalf("%s: encoding what was decoded: %v", op, err)
+	}
+
+	var sent, got any
+	if err := json.Unmarshal(body, &sent); err != nil {
+		t.Fatalf("%s: the recorded body: %v", op, err)
+	}
+
+	if err := json.Unmarshal(encoded, &got); err != nil {
+		t.Fatalf("%s: %v", op, err)
+	}
+
+	if at, same := jsonSame(sent, got, ""); !same {
+		t.Errorf("%s: decoded something else than was sent, at %q:\nsent %s\ngot  %s", op, at, body, encoded)
+	}
+}
+
+// jsonSame reports whether the JSON values a and b, decoded into any, hold the same, as decodedAsSent compares them,
+// and where they first differ if not.
+func jsonSame(a, b any, at string) (string, bool) {
+	if jsonEmpty(a) && jsonEmpty(b) || jsonSameInstant(a, b) || jsonSameInstant(b, a) ||
+		jsonSameNumber(a, b) || jsonSameNumber(b, a) {
+		return "", true
+	}
+
+	switch a := a.(type) {
+	case map[string]any:
+		b, ok := b.(map[string]any)
+		if !ok {
+			return at, false
+		}
+
+		names := slices.Sorted(maps.Keys(a))
+		for name := range b {
+			if _, ok := a[name]; !ok {
+				names = append(names, name)
+			}
+		}
+
+		for _, name := range names {
+			if jsonInferredTag(a, b, name) || jsonInferredTag(b, a, name) {
+				continue
+			}
+
+			if where, same := jsonSame(a[name], b[name], at+"/"+name); !same {
+				return where, false
+			}
+		}
+
+		return "", true
+	case []any:
+		b, ok := b.([]any)
+		if !ok || len(a) != len(b) {
+			return at, false
+		}
+
+		for i := range a {
+			if where, same := jsonSame(a[i], b[i], at+"/"+strconv.Itoa(i)); !same {
+				return where, false
+			}
+		}
+
+		return "", true
+	case string:
+		b, ok := b.(string)
+		if !ok {
+			return at, false
+		}
+
+		if a == b {
+			return "", true
+		}
+
+		if ua, ok := jsonUUID(a); ok {
+			if ub, ok := jsonUUID(b); ok {
+				return at, ua == ub
+			}
+		}
+
+		ta, errA := time.Parse(time.RFC3339Nano, a)
+		tb, errB := time.Parse(time.RFC3339Nano, b)
+
+		return at, errA == nil && errB == nil && ta.Equal(tb)
+	default:
+		return at, a == b
+	}
+}
+
+// jsonSameInstant reports whether a is a Unix time, in seconds or milliseconds, and b a date-time of the same instant,
+// as a type that takes either writes one as the other.
+func jsonSameInstant(a, b any) bool {
+	n, ok := a.(float64)
+	if !ok {
+		return false
+	}
+
+	s, ok := b.(string)
+	if !ok {
+		return false
+	}
+
+	ts, err := time.Parse(time.RFC3339Nano, s)
+
+	return err == nil && (float64(ts.Unix()) == n || float64(ts.UnixMilli()) == n)
+}
+
+// jsonSameNumber reports whether a is a number and b a string of the same number, as a string type writes one.
+func jsonSameNumber(a, b any) bool {
+	n, ok := a.(float64)
+	if !ok {
+		return false
+	}
+
+	s, ok := b.(string)
+	if !ok {
+		return false
+	}
+
+	f, err := strconv.ParseFloat(s, 64)
+
+	return err == nil && f == n
+}
+
+// jsonUUID is s, a UUID with or without dashes, as its 32 hex digits in lower case.
+func jsonUUID(s string) (string, bool) {
+	hex := strings.ToLower(strings.ReplaceAll(s, "-", ""))
+	if len(hex) != 32 || len(s) != 32 && len(s) != 36 || strings.Trim(hex, "0123456789abcdef") != "" {
+		return "", false
+	}
+
+	return hex, true
+}
+
+// jsonEmpty reports whether v, a JSON value decoded into any, holds nothing: null, false, 0, "", [], an object whose
+// members hold nothing, or the text a zero date, time or UUID is written as, which is what an empty one decodes into:
+// null read into a struct is written back as its members, empty.
+func jsonEmpty(v any) bool {
+	switch v := v.(type) {
+	case nil:
+		return true
+	case bool:
+		return !v
+	case float64:
+		return v == 0
+	case string:
+		return v == "" || v == "0000-00-00" || v == "0001-01-01T00:00:00Z" || v == "00000000-0000-0000-0000-000000000000"
+	case []any:
+		return len(v) == 0
+	case map[string]any:
+		for _, m := range v {
+			if !jsonEmpty(m) {
+				return false
+			}
+		}
+
+		return true
+	default:
+		return false
+	}
+}
+
+// jsonInferredTag reports whether the object a lacks the member name, which b holds as a tag: the name of a member both
+// hold. A tagged object may leave its tag out, and decoding it infers the tag from the member that is set, which
+// encoding then writes.
+func jsonInferredTag(a, b map[string]any, name string) bool {
+	if _, ok := a[name]; ok {
+		return false
+	}
+
+	tag, ok := b[name].(string)
+	if !ok {
+		return false
+	}
+
+	_, inA := a[tag]
+	_, inB := b[tag]
+
+	return inA && inB
+}
+
+// jsonSameButTags reports whether the JSON values a and b, decoded into any, are the same, but for tags either leaves
+// out (see jsonInferredTag): the request a call sends for one that was recorded without them.
+func jsonSameButTags(a, b any) bool {
+	switch a := a.(type) {
+	case map[string]any:
+		b, ok := b.(map[string]any)
+		if !ok {
+			return false
+		}
+
+		for name := range a {
+			if _, ok := b[name]; !ok && !jsonInferredTag(b, a, name) {
+				return false
+			}
+		}
+
+		for name, vb := range b {
+			va, ok := a[name]
+			if !ok && !jsonInferredTag(a, b, name) || ok && !jsonSameButTags(va, vb) {
+				return false
+			}
+		}
+
+		return true
+	case []any:
+		b, ok := b.([]any)
+		if !ok || len(a) != len(b) {
+			return false
+		}
+
+		for i := range a {
+			if !jsonSameButTags(a[i], b[i]) {
+				return false
+			}
+		}
+
+		return true
+	default:
+		return a == b
+	}
+}
+
+// mustDecodeBody decodes data, the recorded JSON for one request body value
+// (or field of one) an interaction's own literal couldn't be built for, into
+// T so a replayed call still carries the value it was recorded with.
+func mustDecodeBody[T any](t *testing.T, data string) T {
+	t.Helper()
+
+	var v T
+	if err := json.Unmarshal([]byte(data), &v, jsonOpts); err != nil {
+		t.Fatalf("decoding request body fixture: %v", err)
+	}
+
+	return v
+}
+
+func TestClient_Interactions(t *testing.T) {
+	ctx := t.Context()
+	t.Setenv("NOTION_API_TOKEN", "**************************************************")
+
+	t.Setenv("NOTION_API_USERNAME", "user")
+	t.Setenv("NOTION_API_PASSWORD", "pass")
+
+	last := &lastBody{next: replay(t)}
+
+	c, err := NewClient(WithHTTPClient(&http.Client{Transport: last}))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if out, err := c.RetrieveAPage(ctx, uuid.MustParse("3ee88fcd-daf4-8170-8b9e-f5270e82e4e6"), &RetrieveAPageParams{}); err != nil {
+		t.Fatalf("RetrieveAPage: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPage", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("3ee88fcd-daf4-8170-8b9e-f5270e82e4e6"), "title", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.GetBlockChildren(ctx, uuid.MustParse("3ee88fcd-daf4-8170-8b9e-f5270e82e4e6"), &GetBlockChildrenParams{
+		PageSize: 3,
+	}); err != nil {
+		t.Fatalf("GetBlockChildren: %v", err)
+	} else {
+		decodedAsSent(t, "GetBlockChildren", out, last.body)
+	}
+
+	if _, err := c.ListComments(ctx, ListCommentsParams{
+		BlockID: uuid.MustParse("3ee88fcd-daf4-8170-8b9e-f5270e82e4e6"),
+	}); err == nil {
+		t.Fatal("ListComments: expected error")
+	} else if _, ok := errors.AsType[*Error](err); !ok {
+		t.Fatalf("ListComments: got: %T, want: *Error", err)
+	}
+
+	if out, err := c.RetrieveAPage(ctx, uuid.MustParse("3f088fcd-daf4-81f6-a4a8-d17c715bd706"), &RetrieveAPageParams{}); err != nil {
+		t.Fatalf("RetrieveAPage: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPage", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("3f088fcd-daf4-81f6-a4a8-d17c715bd706"), "title", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.GetBlockChildren(ctx, uuid.MustParse("3f088fcd-daf4-81f6-a4a8-d17c715bd706"), &GetBlockChildrenParams{
+		PageSize: 3,
+	}); err != nil {
+		t.Fatalf("GetBlockChildren: %v", err)
+	} else {
+		decodedAsSent(t, "GetBlockChildren", out, last.body)
+	}
+
+	if _, err := c.ListComments(ctx, ListCommentsParams{
+		BlockID: uuid.MustParse("3f088fcd-daf4-81f6-a4a8-d17c715bd706"),
+	}); err == nil {
+		t.Fatal("ListComments: expected error")
+	} else if _, ok := errors.AsType[*Error](err); !ok {
+		t.Fatalf("ListComments: got: %T, want: *Error", err)
+	}
+
+	if out, err := c.RetrieveAView(ctx, uuid.MustParse("cb3265bc-5d5e-488f-bd8a-69221c107915")); err != nil {
+		t.Fatalf("RetrieveAView: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAView", out, last.body)
+	}
+
+	if out, err := c.PostDatabaseQuery(ctx, uuid.MustParse("9201f6db-2895-4450-9435-041541a181dd"), &PostDatabaseQueryParams{}, PostDatabaseQuery{
+		Sorts:    mustDecodeBody[Sorts](t, "[{\"property\":\"mFVH\",\"direction\":\"ascending\"},{\"property\":\"Blch\",\"direction\":\"descending\"},{\"property\":\"kF@C\",\"direction\":\"ascending\"}]"),
+		PageSize: 3,
+		Filter:   mustDecodeBody[Filter](t, "{\"or\":[{\"property\":\"Blch\",\"date\":{\"equals\":\"today\"}},{\"and\":[{\"date\":{\"equals\":\"yesterday\"},\"property\":\"Blch\"},{\"formula\":{\"number\":{\"less_than\":24}},\"property\":\";pl:\"}]},{\"and\":[{\"property\":\"@F<W\",\"select\":{\"does_not_equal\":\"Done\"}},{\"created_time\":{\"on_or_after\":\"2024-04-13\"},\"property\":\"kF@C\"}]}]}"),
+	}); err != nil {
+		t.Fatalf("PostDatabaseQuery: %v", err)
+	} else {
+		decodedAsSent(t, "PostDatabaseQuery", out, last.body)
+	}
+
+	if out, err := c.ListViews(ctx, &ListViewsParams{
+		DatabaseID: uuid.MustParse("457d00dc-fc3a-4ddb-a42f-fe376530bee0"),
+	}); err != nil {
+		t.Fatalf("ListViews: %v", err)
+	} else {
+		decodedAsSent(t, "ListViews", out, last.body)
+	}
+
+	if out, err := c.RetrieveDatabase(ctx, uuid.MustParse("457d00dc-fc3a-4ddb-a42f-fe376530bee0")); err != nil {
+		t.Fatalf("RetrieveDatabase: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveDatabase", out, last.body)
+	}
+
+	if out, err := c.RetrieveADataSource(ctx, uuid.MustParse("9201f6db-2895-4450-9435-041541a181dd")); err != nil {
+		t.Fatalf("RetrieveADataSource: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveADataSource", out, last.body)
+	}
+
+	if out, err := c.ListDataSourceTemplates(ctx, uuid.MustParse("9201f6db-2895-4450-9435-041541a181dd"), &ListDataSourceTemplatesParams{}); err != nil {
+		t.Fatalf("ListDataSourceTemplates: %v", err)
+	} else {
+		decodedAsSent(t, "ListDataSourceTemplates", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("457d00dc-fc3a-4ddb-a42f-fe376530bee0")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.GetSelf(ctx); err != nil {
+		t.Fatalf("GetSelf: %v", err)
+	} else {
+		decodedAsSent(t, "GetSelf", out, last.body)
+	}
+
+	if out, err := c.GetUsers(ctx, &GetUsersParams{
+		PageSize: 3,
+	}); err != nil {
+		t.Fatalf("GetUsers: %v", err)
+	} else {
+		decodedAsSent(t, "GetUsers", out, last.body)
+	}
+
+	if out, err := c.PostSearch(ctx, &PostSearchParams{}, PostSearch{
+		PageSize: new(3.0),
+	}); err != nil {
+		t.Fatalf("PostSearch: %v", err)
+	} else {
+		decodedAsSent(t, "PostSearch", out, last.body)
+	}
+
+	if _, err := c.RetrieveAPage(ctx, uuid.MustParse("00000000-0000-0000-0000-000000000000"), &RetrieveAPageParams{}); err == nil {
+		t.Fatal("RetrieveAPage: expected error")
+	} else if _, ok := errors.AsType[*Error](err); !ok {
+		t.Fatalf("RetrieveAPage: got: %T, want: *Error", err)
+	}
+
+	if out, err := c.PostDatabaseQuery(ctx, uuid.MustParse("9201f6db-2895-4450-9435-041541a181dd"), &PostDatabaseQueryParams{}, PostDatabaseQuery{
+		PageSize: 3,
+	}); err != nil {
+		t.Fatalf("PostDatabaseQuery: %v", err)
+	} else {
+		decodedAsSent(t, "PostDatabaseQuery", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPage(ctx, uuid.MustParse("3f188fcd-daf4-8130-9c71-f72c82d43983"), &RetrieveAPageParams{}); err != nil {
+		t.Fatalf("RetrieveAPage: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPage", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("3f188fcd-daf4-8130-9c71-f72c82d43983"), "title", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.GetBlockChildren(ctx, uuid.MustParse("3f188fcd-daf4-8130-9c71-f72c82d43983"), &GetBlockChildrenParams{
+		PageSize: 3,
+	}); err != nil {
+		t.Fatalf("GetBlockChildren: %v", err)
+	} else {
+		decodedAsSent(t, "GetBlockChildren", out, last.body)
+	}
+
+	if out, err := c.ListComments(ctx, ListCommentsParams{
+		BlockID: uuid.MustParse("3f188fcd-daf4-8130-9c71-f72c82d43983"),
+	}); err != nil {
+		t.Fatalf("ListComments: %v", err)
+	} else {
+		decodedAsSent(t, "ListComments", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPage(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &RetrieveAPageParams{}); err != nil {
+		t.Fatalf("RetrieveAPage: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPage", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), "title", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.GetBlockChildren(ctx, uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"), &GetBlockChildrenParams{
+		PageSize: 3,
+	}); err != nil {
+		t.Fatalf("GetBlockChildren: %v", err)
+	} else {
+		decodedAsSent(t, "GetBlockChildren", out, last.body)
+	}
+
+	if out, err := c.ListComments(ctx, ListCommentsParams{
+		BlockID: uuid.MustParse("96245c8f-1784-44a4-82ad-1941127c3ec3"),
+	}); err != nil {
+		t.Fatalf("ListComments: %v", err)
+	} else {
+		decodedAsSent(t, "ListComments", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("dad588e3-83ec-430a-bcd3-3cc5dc37d7e9")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("8fe3dd1a-c8d8-47ff-b2fb-70b0269c4e9f")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("bb9ff6f9-c230-4688-b15c-15a6648e1c8a")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("7f7a2665-50a6-4a33-9ee7-33a93dd3cbd0")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("80a66dc8-9dab-4e7b-8332-99775aedc559")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("edea19f8-ad2f-4c18-b774-35d64ebcdac3")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("d384b38c-604e-42a2-a65c-0b6cfc6a7932")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("84b218cd-fdf8-44c1-8f5e-6f926026b21a")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("c1c9255f-f1f3-40fb-9bbd-10e80e5e6886")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("80687e03-c8fa-4c9a-a807-2ec66b056d44")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("d05aa478-397e-4954-b694-b7c1c6c78956")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("b7950ba9-e8a0-4b2f-a069-5cafcd6ed6ad")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("0377f15d-c60f-4643-87b9-467e4814fe46")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("12a1a2cc-9ce7-414e-9fd3-db016419174c")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("3b4d96f0-a5e2-4e47-90eb-dbc3f95f936d")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("7e4b229d-b2eb-45df-b272-a07f88b7722e")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("2503b13d-2eda-4f95-af02-785522aa7bb7")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("a6317289-4a7b-480f-9b7c-c45d7c14a96f")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("111ff69f-1d43-448e-aa4c-881b3524ec86")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("a3663617-fef0-4254-8567-8265a5cf7564")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("3a084cf3-fec9-4fbe-bd7e-a09005ce0a72")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("c29edb55-afa1-4461-8efa-4a07aa606a75")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("92e7d630-e1ab-483e-8326-cbdbdb842bbe")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("e9058c70-837e-4fb6-afa7-756e6750430a")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("35c85589-abca-4b5a-8581-4f63492475bb")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("ab902eb8-638c-4c1b-a65c-d6dc9e4e8925")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("dd8d73d5-c6ac-4efe-bacc-1074db22b27b")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("406170b1-e0f0-4317-8c56-f8bb67264663")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("a610b904-c43a-4105-9886-71918e86ad92")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("2633808e-7e36-4f4e-972a-ccd2d3c49004")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPage(ctx, uuid.MustParse("2633808e-7e36-4f4e-972a-ccd2d3c49004"), &RetrieveAPageParams{}); err != nil {
+		t.Fatalf("RetrieveAPage: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPage", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("7a3c647e-4c1e-4c27-bf1d-cfb0105e55ce")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveDatabase(ctx, uuid.MustParse("7a3c647e-4c1e-4c27-bf1d-cfb0105e55ce")); err != nil {
+		t.Fatalf("RetrieveDatabase: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveDatabase", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("40a8cb72-ab5c-42f7-aa4a-f5400ffe7178")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("d6d7291f-eacf-4905-a6d6-3dc988017437")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("4baa0e44-fc5a-4982-a7ee-fcfae459bdab")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("f7bcdc51-3dc1-41c2-926b-fd2d2ec9b581")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("bc0271a5-5ab2-4a14-ad6c-2e2ecf5c40a0")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("c7cbd11f-bd18-49c3-a630-a06db427a31b")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("def131d2-9b50-4b62-b546-a4b000bbeba7")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("90c8107f-4b37-4382-b077-807c830b1f1f")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("a95ecf46-05b6-4dc1-bc61-b79651767c75")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("5f71213c-f1cc-4eb9-8c98-855332ca46ad")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("f435a9bc-ec00-44de-82b9-d1ce933ee623")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("11a88fcd-daf4-8012-a22b-ea2199fd704b")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("a310fbc6-aa14-4c88-bdf4-5bf939b0b69b")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("fed8f526-d79c-4429-9ca9-c6aa55e7044b")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("959fb0ee-847f-4acb-bca6-61a35a8d2ba6")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("e4018970-a733-4168-8e5f-4584245ea2eb")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("80dfcc65-9e23-4f1f-97e9-de9c68eadef0")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("adfd6f37-c3b0-4c2d-bda4-be9c3cfbc682")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("569a1068-c22c-466a-a89b-6b2b443479d5")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("41dea905-c733-4c16-af63-ab0160f4c608")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("18e88fcd-daf4-800c-8864-e9467fd4274a")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("49d7456b-013c-4aec-8f6d-2843aff9b7dc")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("bc6b54d9-b078-4869-ac76-2025d7ded188")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("893ab5b3-e792-480a-8bc2-17d8e5b39025")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveDatabase(ctx, uuid.MustParse("d105edb4-586a-4dcc-aaa6-ea944eb8d864")); err != nil {
+		t.Fatalf("RetrieveDatabase: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveDatabase", out, last.body)
+	}
+
+	if out, err := c.RetrieveADataSource(ctx, uuid.MustParse("d58cc2b8-177b-4ab6-af2e-26cf1c5817b4")); err != nil {
+		t.Fatalf("RetrieveADataSource: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveADataSource", out, last.body)
+	}
+
+	if out, err := c.PostDatabaseQuery(ctx, uuid.MustParse("d58cc2b8-177b-4ab6-af2e-26cf1c5817b4"), &PostDatabaseQueryParams{}, PostDatabaseQuery{
+		PageSize: 3,
+	}); err != nil {
+		t.Fatalf("PostDatabaseQuery: %v", err)
+	} else {
+		decodedAsSent(t, "PostDatabaseQuery", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "CQUf", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "EUgY", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "wtdu", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "JuTz", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "title", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "RYYU", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "C^C:", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "KQH^", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "~FiP", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "~|tN", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "VN:D", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "UtGj", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "TWA;", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "@ft?", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "jWgQ", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "ASTz", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "KXdF", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "XJ=c", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "=uTh", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "z;Wh", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "yUX;", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "`cG^", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "czmt", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "kSwR", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "hiMX", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "uK`G", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "UuqS", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "]MIW", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "NeE`", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "~esH", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "eszR", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("24806928-b2f1-4174-a3f2-73efbc5245a8"), "pt?]", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.ListDataSourceTemplates(ctx, uuid.MustParse("d58cc2b8-177b-4ab6-af2e-26cf1c5817b4"), &ListDataSourceTemplatesParams{}); err != nil {
+		t.Fatalf("ListDataSourceTemplates: %v", err)
+	} else {
+		decodedAsSent(t, "ListDataSourceTemplates", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("0960b64c-81c9-4f19-a873-e8072b083a40")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("edf66def-c7ba-4945-8eac-15a6f77ffc98")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("254fcbee-a657-45be-8c04-49262dd738c7")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("831d5b10-340d-4e51-9f71-e4bf96d3bf7e")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("fc47a7bb-75c2-4c7e-964b-60dda237edf5")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("70c9b2d6-6f0b-404c-837a-16bf97bc82fe")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("a99bffa6-21c1-4bee-81d6-d6491f8b7a11")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("2274aeb3-f64b-47a3-b849-922eebc5a9f1")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("7d4dc32d-a206-4fd9-86e0-099249e0d8d9")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("db2254bd-3e7a-494c-a228-e38a2bc597a5")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("58146c24-ffca-4eec-9dd7-79138327b612")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("6295f354-a432-49f7-ad1e-b211569de18d")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("a2ea33fb-7546-4c05-ba58-44d2dd30184f")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("1550f51e-7c84-4a5f-bd10-011cab603f1b")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("4bdd5bb4-92fc-4fc8-95fc-c4695140095f")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("b61fc0fb-434a-4da0-b815-1ab671de2cf3")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("9487cbba-30d1-4a82-8460-87cfdf3c32c8")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("60128598-7507-4767-90c0-6d40628fca70")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("5beeed9c-85ba-459b-9721-6a7ae5ca0c8c")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("6b9335c3-63eb-47d0-afb5-071bb89b96d9")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveDatabase(ctx, uuid.MustParse("395eb62b-9b4e-45a0-9931-b0d27b2ca59b")); err != nil {
+		t.Fatalf("RetrieveDatabase: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveDatabase", out, last.body)
+	}
+
+	if out, err := c.RetrieveADataSource(ctx, uuid.MustParse("32280d2e-f03f-4683-8338-5163d11cb847")); err != nil {
+		t.Fatalf("RetrieveADataSource: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveADataSource", out, last.body)
+	}
+
+	if out, err := c.PostDatabaseQuery(ctx, uuid.MustParse("32280d2e-f03f-4683-8338-5163d11cb847"), &PostDatabaseQueryParams{}, PostDatabaseQuery{
+		PageSize: 3,
+	}); err != nil {
+		t.Fatalf("PostDatabaseQuery: %v", err)
+	} else {
+		decodedAsSent(t, "PostDatabaseQuery", out, last.body)
+	}
+
+	if out, err := c.ListDataSourceTemplates(ctx, uuid.MustParse("32280d2e-f03f-4683-8338-5163d11cb847"), &ListDataSourceTemplatesParams{}); err != nil {
+		t.Fatalf("ListDataSourceTemplates: %v", err)
+	} else {
+		decodedAsSent(t, "ListDataSourceTemplates", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("b4facbcf-bfe4-4054-9669-9690878315a9")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveDatabase(ctx, uuid.MustParse("caa8455e-cb7e-4351-a6e2-21ecb937f3e9")); err != nil {
+		t.Fatalf("RetrieveDatabase: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveDatabase", out, last.body)
+	}
+
+	if out, err := c.RetrieveADataSource(ctx, uuid.MustParse("12786ec9-98aa-48d1-9597-ea91780085d3")); err != nil {
+		t.Fatalf("RetrieveADataSource: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveADataSource", out, last.body)
+	}
+
+	if out, err := c.PostDatabaseQuery(ctx, uuid.MustParse("12786ec9-98aa-48d1-9597-ea91780085d3"), &PostDatabaseQueryParams{}, PostDatabaseQuery{
+		PageSize: 3,
+	}); err != nil {
+		t.Fatalf("PostDatabaseQuery: %v", err)
+	} else {
+		decodedAsSent(t, "PostDatabaseQuery", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("8f3459fa-242e-4913-89af-e488b5496c99"), "title", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("8f3459fa-242e-4913-89af-e488b5496c99"), "}<_C", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.ListDataSourceTemplates(ctx, uuid.MustParse("12786ec9-98aa-48d1-9597-ea91780085d3"), &ListDataSourceTemplatesParams{}); err != nil {
+		t.Fatalf("ListDataSourceTemplates: %v", err)
+	} else {
+		decodedAsSent(t, "ListDataSourceTemplates", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("3f188fcd-daf4-81e9-ac8e-c038e7e492b8")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("3f188fcd-daf4-812d-a699-f75e71ae3e07")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("3f188fcd-daf4-81b1-8fae-e1cba685a9f3")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveDatabase(ctx, uuid.MustParse("cbfdfb25-9bb5-499e-ad1d-64a11bfe95dd")); err != nil {
+		t.Fatalf("RetrieveDatabase: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveDatabase", out, last.body)
+	}
+
+	if out, err := c.RetrieveADataSource(ctx, uuid.MustParse("c1df42f3-5a67-4995-b51f-7f296e6ab0eb")); err != nil {
+		t.Fatalf("RetrieveADataSource: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveADataSource", out, last.body)
+	}
+
+	if out, err := c.PostDatabaseQuery(ctx, uuid.MustParse("c1df42f3-5a67-4995-b51f-7f296e6ab0eb"), &PostDatabaseQueryParams{}, PostDatabaseQuery{
+		PageSize: 3,
+	}); err != nil {
+		t.Fatalf("PostDatabaseQuery: %v", err)
+	} else {
+		decodedAsSent(t, "PostDatabaseQuery", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("3f188fcd-daf4-8186-9616-e12b8edac605"), "{{=;", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("3f188fcd-daf4-8186-9616-e12b8edac605"), "x=~k", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("3f188fcd-daf4-8186-9616-e12b8edac605"), "klZz", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("3f188fcd-daf4-8186-9616-e12b8edac605"), "IEis", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("3f188fcd-daf4-8186-9616-e12b8edac605"), "title", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("3f188fcd-daf4-8186-9616-e12b8edac605"), "kuJP", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("3f188fcd-daf4-8186-9616-e12b8edac605"), ">we[", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("3f188fcd-daf4-8186-9616-e12b8edac605"), "T|Mj", &RetrieveAPagePropertyParams{}); err != nil {
+		t.Fatalf("RetrieveAPageProperty: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPageProperty", out, last.body)
+	}
+
+	if out, err := c.ListDataSourceTemplates(ctx, uuid.MustParse("c1df42f3-5a67-4995-b51f-7f296e6ab0eb"), &ListDataSourceTemplatesParams{}); err != nil {
+		t.Fatalf("ListDataSourceTemplates: %v", err)
+	} else {
+		decodedAsSent(t, "ListDataSourceTemplates", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("3f188fcd-daf4-81fb-8780-f9b94d9fcaf4")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPage(ctx, uuid.MustParse("3f188fcd-daf4-81fb-8780-f9b94d9fcaf4"), &RetrieveAPageParams{}); err != nil {
+		t.Fatalf("RetrieveAPage: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPage", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("3f188fcd-daf4-80ca-bee7-f43abd257842")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveAPage(ctx, uuid.MustParse("3f188fcd-daf4-8089-bf73-d43c6c0d032c"), &RetrieveAPageParams{}); err != nil {
+		t.Fatalf("RetrieveAPage: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveAPage", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("3f188fcd-daf4-8072-a745-d1e58421c788")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("3f188fcd-daf4-80d2-a980-f5cdc36e2c4a")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
+
+	if out, err := c.RetrieveABlock(ctx, uuid.MustParse("3f188fcd-daf4-80a9-bf66-ebb7455bc622")); err != nil {
+		t.Fatalf("RetrieveABlock: %v", err)
+	} else {
+		decodedAsSent(t, "RetrieveABlock", out, last.body)
+	}
 }

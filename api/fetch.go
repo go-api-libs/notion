@@ -1204,13 +1204,21 @@ func applyPasses(doc *openapi.Document) error {
 }
 
 func generateCode(doc *openapi.Document) error {
+	ias, err := cassette.InteractionsReadFile("api/interactions.json")
+	if err != nil {
+		return err
+	}
+
+	ias = slices.DeleteFunc(ias, func(ia *cassette.Interaction) bool { return ia.Response.StatusCode == 0 })
+
 	return codegen.Generate(codegen.Config{
-		Spec:        doc,
-		PackageName: "notion",
-		OutputDir:   "pkg/notion",
-		Types:       true,
-		Client:      true,
-		ClientTest:  true,
-		Debug:       true,
+		Interactions: ias,
+		Spec:         doc,
+		PackageName:  "notion",
+		OutputDir:    "pkg/notion",
+		Types:        true,
+		Client:       true,
+		ClientTest:   true,
+		Debug:        true,
 	})
 }
