@@ -284,6 +284,7 @@
 - [Examples](https://developers.notion.com/page/examples.md)
 - [Set up Notion for your agent](https://developers.notion.com/prompts/setup.md): Set up Notion as durable, shared context for your agents.
 - [Notion MCP setup prompt changelog](https://developers.notion.com/prompts/setup/changelog.md): See what changed in each version of the Notion MCP setup prompt.
+- [Learn about Notion with your agent](https://developers.notion.com/prompts/welcome.md): Share this page with your agent to learn whether Notion fits your needs and get set up.
 
 ## OpenAPI Specs
 
