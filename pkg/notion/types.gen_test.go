@@ -4,7 +4,11 @@
 
 package notion
 
-import "testing"
+import (
+	"bytes"
+	"encoding/json/v2"
+	"testing"
+)
 
 // TestEnums_Valid checks that every member of an enum is valid, and that a value of its type none is, is not.
 func TestEnums_Valid(t *testing.T) {
@@ -1206,5 +1210,2314 @@ func TestEnums_Valid(t *testing.T) {
 
 	if WebhookUpdatedBlockType("not a member").Valid() {
 		t.Errorf("WebhookUpdatedBlockType(%v): valid, though no member", "not a member")
+	}
+}
+
+// TestUnions_RoundTrip sets each variant of each union in turn, encodes it and decodes it strictly: the union must
+// choose the same variant again, and encode as before.
+func TestUnions_RoundTrip(t *testing.T) {
+	t.Run("AgentConnectionsItem/AgentConnectionsItemOneOf", func(t *testing.T) {
+		v := AgentConnectionsItemOneOf{}
+		v.Type = "asana"
+
+		roundTrip(t, AgentConnectionsItem{AgentConnectionsItemOneOf: &v}, func(u AgentConnectionsItem) bool { return u.AgentConnectionsItemOneOf != nil })
+	})
+
+	t.Run("AgentConnectionsItemDiscordAccount/AgentConnectionsItemDiscordAccountDiscordServer", func(t *testing.T) {
+		v := AgentConnectionsItemDiscordAccountDiscordServer{}
+		v.Type = "discord_server"
+
+		roundTrip(t, AgentConnectionsItemDiscordAccount{AgentConnectionsItemDiscordAccountDiscordServer: &v}, func(u AgentConnectionsItemDiscordAccount) bool {
+			return u.AgentConnectionsItemDiscordAccountDiscordServer != nil
+		})
+	})
+
+	t.Run("AgentConnectionsItemDiscordAccount/String", func(t *testing.T) {
+		v := "sample"
+
+		roundTrip(t, AgentConnectionsItemDiscordAccount{String: v}, func(u AgentConnectionsItemDiscordAccount) bool { return u.String != "" })
+	})
+
+	t.Run("AgentConnectionsItemDiscordPermissionsItemTarget/AgentConnectionsItemDiscordPermissionsItemTargetDiscordChannel", func(t *testing.T) {
+		v := AgentConnectionsItemDiscordPermissionsItemTargetDiscordChannel{}
+		v.Type = "discord_channel"
+
+		roundTrip(t, AgentConnectionsItemDiscordPermissionsItemTarget{AgentConnectionsItemDiscordPermissionsItemTargetDiscordChannel: &v}, func(u AgentConnectionsItemDiscordPermissionsItemTarget) bool {
+			return u.AgentConnectionsItemDiscordPermissionsItemTargetDiscordChannel != nil
+		})
+	})
+
+	t.Run("AgentConnectionsItemDiscordPermissionsItemTarget/AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels", func(t *testing.T) {
+		v := AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels{}
+		v.Type = "discord_all_channels"
+
+		roundTrip(t, AgentConnectionsItemDiscordPermissionsItemTarget{AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels: &v}, func(u AgentConnectionsItemDiscordPermissionsItemTarget) bool {
+			return u.AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels != nil
+		})
+	})
+
+	t.Run("AgentConnectionsItemMcpServerAccount/AgentConnectionsItemMcpServerAccountMcpServer", func(t *testing.T) {
+		v := AgentConnectionsItemMcpServerAccountMcpServer{}
+		v.Type = "mcp_server"
+
+		roundTrip(t, AgentConnectionsItemMcpServerAccount{AgentConnectionsItemMcpServerAccountMcpServer: &v}, func(u AgentConnectionsItemMcpServerAccount) bool {
+			return u.AgentConnectionsItemMcpServerAccountMcpServer != nil
+		})
+	})
+
+	t.Run("AgentConnectionsItemMcpServerAccount/String", func(t *testing.T) {
+		v := "sample"
+
+		roundTrip(t, AgentConnectionsItemMcpServerAccount{String: v}, func(u AgentConnectionsItemMcpServerAccount) bool { return u.String != "" })
+	})
+
+	t.Run("AgentConnectionsItemMcpServerEnabledTools/AgentConnectionsItemMcpServerEnabledToolsOneOf", func(t *testing.T) {
+		v := AgentConnectionsItemMcpServerEnabledToolsOneOf{AgentConnectionsItemMcpServerEnabledToolsOneOfItem{}}
+
+		roundTrip(t, AgentConnectionsItemMcpServerEnabledTools{AgentConnectionsItemMcpServerEnabledToolsOneOf: v}, func(u AgentConnectionsItemMcpServerEnabledTools) bool {
+			return u.AgentConnectionsItemMcpServerEnabledToolsOneOf != nil
+		})
+	})
+
+	t.Run("AgentConnectionsItemMcpServerEnabledTools/String", func(t *testing.T) {
+		v := "sample"
+
+		roundTrip(t, AgentConnectionsItemMcpServerEnabledTools{String: v}, func(u AgentConnectionsItemMcpServerEnabledTools) bool { return u.String != "" })
+	})
+
+	t.Run("AgentConnectionsItemNotionPermissionsItemTarget/AgentConnectionsItemNotionPermissionsItemTargetPage", func(t *testing.T) {
+		v := AgentConnectionsItemNotionPermissionsItemTargetPage{}
+		v.Type = "page"
+
+		roundTrip(t, AgentConnectionsItemNotionPermissionsItemTarget{AgentConnectionsItemNotionPermissionsItemTargetPage: &v}, func(u AgentConnectionsItemNotionPermissionsItemTarget) bool {
+			return u.AgentConnectionsItemNotionPermissionsItemTargetPage != nil
+		})
+	})
+
+	t.Run("AgentConnectionsItemNotionPermissionsItemTarget/AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty", func(t *testing.T) {
+		v := AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty{}
+		v.Type = "database_property"
+
+		roundTrip(t, AgentConnectionsItemNotionPermissionsItemTarget{AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty: &v}, func(u AgentConnectionsItemNotionPermissionsItemTarget) bool {
+			return u.AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty != nil
+		})
+	})
+
+	t.Run("AgentConnectionsItemNotionPermissionsItemTarget/AgentConnectionsItemNotionPermissionsItemTargetAgent", func(t *testing.T) {
+		v := AgentConnectionsItemNotionPermissionsItemTargetAgent{}
+		v.Type = "agent"
+
+		roundTrip(t, AgentConnectionsItemNotionPermissionsItemTarget{AgentConnectionsItemNotionPermissionsItemTargetAgent: &v}, func(u AgentConnectionsItemNotionPermissionsItemTarget) bool {
+			return u.AgentConnectionsItemNotionPermissionsItemTargetAgent != nil
+		})
+	})
+
+	t.Run("AgentConnectionsItemNotionPermissionsItemTarget/AgentConnectionsItemNotionPermissionsItemTargetWorkspace", func(t *testing.T) {
+		v := AgentConnectionsItemNotionPermissionsItemTargetWorkspace{}
+		v.Type = "workspace"
+
+		roundTrip(t, AgentConnectionsItemNotionPermissionsItemTarget{AgentConnectionsItemNotionPermissionsItemTargetWorkspace: &v}, func(u AgentConnectionsItemNotionPermissionsItemTarget) bool {
+			return u.AgentConnectionsItemNotionPermissionsItemTargetWorkspace != nil
+		})
+	})
+
+	t.Run("AgentConnectionsItemNotionPermissionsItemTarget/AgentConnectionsItemNotionPermissionsItemTargetOwnerPrivatePages", func(t *testing.T) {
+		v := AgentConnectionsItemNotionPermissionsItemTargetOwnerPrivatePages{}
+		v.Type = "owner_private_pages"
+
+		roundTrip(t, AgentConnectionsItemNotionPermissionsItemTarget{AgentConnectionsItemNotionPermissionsItemTargetOwnerPrivatePages: &v}, func(u AgentConnectionsItemNotionPermissionsItemTarget) bool {
+			return u.AgentConnectionsItemNotionPermissionsItemTargetOwnerPrivatePages != nil
+		})
+	})
+
+	t.Run("AgentConnectionsItemNotionPermissionsItemTarget/AgentConnectionsItemNotionPermissionsItemTargetWebSearch", func(t *testing.T) {
+		v := AgentConnectionsItemNotionPermissionsItemTargetWebSearch{}
+		v.Type = "web_search"
+
+		roundTrip(t, AgentConnectionsItemNotionPermissionsItemTarget{AgentConnectionsItemNotionPermissionsItemTargetWebSearch: &v}, func(u AgentConnectionsItemNotionPermissionsItemTarget) bool {
+			return u.AgentConnectionsItemNotionPermissionsItemTargetWebSearch != nil
+		})
+	})
+
+	t.Run("AgentConnectionsItemNotionPermissionsItemTarget/AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch", func(t *testing.T) {
+		v := AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch{}
+		v.Type = "notion_help_docs_search"
+
+		roundTrip(t, AgentConnectionsItemNotionPermissionsItemTarget{AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch: &v}, func(u AgentConnectionsItemNotionPermissionsItemTarget) bool {
+			return u.AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch != nil
+		})
+	})
+
+	t.Run("AgentConnectionsItemSlackAccount/AgentConnectionsItemSlackAccountSlackWorkspace", func(t *testing.T) {
+		v := AgentConnectionsItemSlackAccountSlackWorkspace{}
+		v.Type = "slack_workspace"
+
+		roundTrip(t, AgentConnectionsItemSlackAccount{AgentConnectionsItemSlackAccountSlackWorkspace: &v}, func(u AgentConnectionsItemSlackAccount) bool {
+			return u.AgentConnectionsItemSlackAccountSlackWorkspace != nil
+		})
+	})
+
+	t.Run("AgentConnectionsItemSlackAccount/String", func(t *testing.T) {
+		v := "sample"
+
+		roundTrip(t, AgentConnectionsItemSlackAccount{String: v}, func(u AgentConnectionsItemSlackAccount) bool { return u.String != "" })
+	})
+
+	t.Run("AgentConnectionsItemSlackPermissionsItemTarget/AgentConnectionsItemSlackPermissionsItemTargetSlackChannel", func(t *testing.T) {
+		v := AgentConnectionsItemSlackPermissionsItemTargetSlackChannel{}
+		v.Type = "slack_channel"
+
+		roundTrip(t, AgentConnectionsItemSlackPermissionsItemTarget{AgentConnectionsItemSlackPermissionsItemTargetSlackChannel: &v}, func(u AgentConnectionsItemSlackPermissionsItemTarget) bool {
+			return u.AgentConnectionsItemSlackPermissionsItemTargetSlackChannel != nil
+		})
+	})
+
+	t.Run("AgentConnectionsItemSlackPermissionsItemTarget/AgentConnectionsItemSlackPermissionsItemTargetSlackAllPublicChannels", func(t *testing.T) {
+		v := AgentConnectionsItemSlackPermissionsItemTargetSlackAllPublicChannels{}
+		v.Type = "slack_all_public_channels"
+
+		roundTrip(t, AgentConnectionsItemSlackPermissionsItemTarget{AgentConnectionsItemSlackPermissionsItemTargetSlackAllPublicChannels: &v}, func(u AgentConnectionsItemSlackPermissionsItemTarget) bool {
+			return u.AgentConnectionsItemSlackPermissionsItemTargetSlackAllPublicChannels != nil
+		})
+	})
+
+	t.Run("AgentConnectionsItemSlackPermissionsItemTarget/AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels", func(t *testing.T) {
+		v := AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels{}
+		v.Type = "slack_all_channels"
+
+		roundTrip(t, AgentConnectionsItemSlackPermissionsItemTarget{AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels: &v}, func(u AgentConnectionsItemSlackPermissionsItemTarget) bool {
+			return u.AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels != nil
+		})
+	})
+
+	t.Run("AgentCreditLimit/Int", func(t *testing.T) {
+		v := 1
+
+		roundTrip(t, AgentCreditLimit{Int: &v}, func(u AgentCreditLimit) bool { return u.Int != nil })
+	})
+
+	t.Run("AgentCreditLimit/String", func(t *testing.T) {
+		v := "sample"
+
+		roundTrip(t, AgentCreditLimit{String: v}, func(u AgentCreditLimit) bool { return u.String != "" })
+	})
+
+	t.Run("AgentHasUnpublishedChanges/Bool", func(t *testing.T) {
+		v := true
+
+		roundTrip(t, AgentHasUnpublishedChanges{Bool: &v}, func(u AgentHasUnpublishedChanges) bool { return u.Bool != nil })
+	})
+
+	t.Run("AgentHasUnpublishedChanges/String", func(t *testing.T) {
+		v := "sample"
+
+		roundTrip(t, AgentHasUnpublishedChanges{String: v}, func(u AgentHasUnpublishedChanges) bool { return u.String != "" })
+	})
+
+	t.Run("AgentIcon/AgentIconCustomAgentAvatar", func(t *testing.T) {
+		v := AgentIconCustomAgentAvatar{}
+		v.Type = "custom_agent_avatar"
+
+		roundTrip(t, AgentIcon{AgentIconCustomAgentAvatar: &v}, func(u AgentIcon) bool { return u.AgentIconCustomAgentAvatar != nil })
+	})
+
+	t.Run("AgentInsightsCreditLimit/Int", func(t *testing.T) {
+		v := 1
+
+		roundTrip(t, AgentInsightsCreditLimit{Int: &v}, func(u AgentInsightsCreditLimit) bool { return u.Int != nil })
+	})
+
+	t.Run("AgentInsightsCreditLimit/String", func(t *testing.T) {
+		v := "sample"
+
+		roundTrip(t, AgentInsightsCreditLimit{String: v}, func(u AgentInsightsCreditLimit) bool { return u.String != "" })
+	})
+
+	t.Run("AgentModel/AgentModelAuto", func(t *testing.T) {
+		v := AgentModelAuto{}
+		v.Mode = "auto"
+
+		roundTrip(t, AgentModel{AgentModelAuto: &v}, func(u AgentModel) bool { return u.AgentModelAuto != nil })
+	})
+
+	t.Run("AgentModel/AgentModelPinned", func(t *testing.T) {
+		v := AgentModelPinned{}
+		v.Mode = "pinned"
+
+		roundTrip(t, AgentModel{AgentModelPinned: &v}, func(u AgentModel) bool { return u.AgentModelPinned != nil })
+	})
+
+	t.Run("AgentTriggersItemScheduleEnd/AgentTriggersItemScheduleEndDate", func(t *testing.T) {
+		v := AgentTriggersItemScheduleEndDate{}
+		v.Type = "date"
+
+		roundTrip(t, AgentTriggersItemScheduleEnd{AgentTriggersItemScheduleEndDate: &v}, func(u AgentTriggersItemScheduleEnd) bool { return u.AgentTriggersItemScheduleEndDate != nil })
+	})
+
+	t.Run("AgentTriggersItemScheduleEnd/AgentTriggersItemScheduleEndCount", func(t *testing.T) {
+		v := AgentTriggersItemScheduleEndCount{}
+		v.Type = "count"
+
+		roundTrip(t, AgentTriggersItemScheduleEnd{AgentTriggersItemScheduleEndCount: &v}, func(u AgentTriggersItemScheduleEnd) bool { return u.AgentTriggersItemScheduleEndCount != nil })
+	})
+
+	t.Run("AsyncTaskOperation/AsyncTaskOperationRest", func(t *testing.T) {
+		v := AsyncTaskOperationRest{}
+		v.Surface = "rest"
+		v.Name = "POST /v1/pages"
+
+		roundTrip(t, AsyncTaskOperation{AsyncTaskOperationRest: &v}, func(u AsyncTaskOperation) bool { return u.AsyncTaskOperationRest != nil })
+	})
+
+	t.Run("AsyncTaskOperation/AsyncTaskOperationMcp", func(t *testing.T) {
+		v := AsyncTaskOperationMcp{}
+		v.Surface = "mcp"
+		v.Name = "create_pages"
+
+		roundTrip(t, AsyncTaskOperation{AsyncTaskOperationMcp: &v}, func(u AsyncTaskOperation) bool { return u.AsyncTaskOperationMcp != nil })
+	})
+
+	t.Run("BlockObjectEmbed2/MediaContentWithURLAndCaption", func(t *testing.T) {
+		v := MediaContentWithURLAndCaption{}
+
+		roundTrip(t, BlockObjectEmbed2{MediaContentWithURLAndCaption: &v}, func(u BlockObjectEmbed2) bool { return u.MediaContentWithURLAndCaption != nil })
+	})
+
+	t.Run("BlockObjectEmbed2/EmbedFileUpload", func(t *testing.T) {
+		v := EmbedFileUpload{}
+		v.Type = "file_upload"
+
+		roundTrip(t, BlockObjectEmbed2{EmbedFileUpload: &v}, func(u BlockObjectEmbed2) bool { return u.EmbedFileUpload != nil })
+	})
+
+	t.Run("BlockOrPartial/PartialBlockObjectResponse", func(t *testing.T) {
+		v := PartialBlockObjectResponse{}
+		v.Object = "block"
+
+		roundTrip(t, BlockOrPartial{PartialBlockObjectResponse: &v}, func(u BlockOrPartial) bool { return u.PartialBlockObjectResponse != nil })
+	})
+
+	t.Run("BotInfoResponseOwnerUserUser/PartialUserObjectResponse", func(t *testing.T) {
+		v := PartialUserObjectResponse{}
+		v.Object = "user"
+
+		roundTrip(t, BotInfoResponseOwnerUserUser{PartialUserObjectResponse: &v}, func(u BotInfoResponseOwnerUserUser) bool { return u.PartialUserObjectResponse != nil })
+	})
+
+	t.Run("BotUserObjectResponseBot/EmptyObject", func(t *testing.T) {
+		v := EmptyObject{}
+
+		roundTrip(t, BotUserObjectResponseBot{EmptyObject: &v}, func(u BotUserObjectResponseBot) bool { return u.EmptyObject != nil })
+	})
+
+	t.Run("CheckboxPropertyFilter/CheckboxPropertyFilterEquals", func(t *testing.T) {
+		v := CheckboxPropertyFilterEquals{}
+
+		roundTrip(t, CheckboxPropertyFilter{CheckboxPropertyFilterEquals: &v}, func(u CheckboxPropertyFilter) bool { return u.CheckboxPropertyFilterEquals != nil })
+	})
+
+	t.Run("CheckboxPropertyFilter/CheckboxPropertyFilterDoesNotEqual", func(t *testing.T) {
+		v := CheckboxPropertyFilterDoesNotEqual{}
+
+		roundTrip(t, CheckboxPropertyFilter{CheckboxPropertyFilterDoesNotEqual: &v}, func(u CheckboxPropertyFilter) bool { return u.CheckboxPropertyFilterDoesNotEqual != nil })
+	})
+
+	t.Run("CommentOrPartial/PartialCommentObjectResponse", func(t *testing.T) {
+		v := PartialCommentObjectResponse{}
+		v.Object = "comment"
+
+		roundTrip(t, CommentOrPartial{PartialCommentObjectResponse: &v}, func(u CommentOrPartial) bool { return u.PartialCommentObjectResponse != nil })
+	})
+
+	t.Run("CreateACommentAllOf0/CreateACommentAllOf0OneOf2", func(t *testing.T) {
+		v := CreateACommentAllOf0OneOf2{}
+
+		roundTrip(t, CreateACommentAllOf0{CreateACommentAllOf0OneOf2: &v}, func(u CreateACommentAllOf0) bool { return u.CreateACommentAllOf0OneOf2 != nil })
+	})
+
+	t.Run("CreateACommentAllOf0/CreateACommentAllOf0OneOf3", func(t *testing.T) {
+		v := CreateACommentAllOf0OneOf3{}
+
+		roundTrip(t, CreateACommentAllOf0{CreateACommentAllOf0OneOf3: &v}, func(u CreateACommentAllOf0) bool { return u.CreateACommentAllOf0OneOf3 != nil })
+	})
+
+	t.Run("CreateAToken/CreateATokenAuthorizationCode", func(t *testing.T) {
+		v := CreateATokenAuthorizationCode{}
+		v.GrantType = "authorization_code"
+
+		roundTrip(t, CreateAToken{CreateATokenAuthorizationCode: &v}, func(u CreateAToken) bool { return u.CreateATokenAuthorizationCode != nil })
+	})
+
+	t.Run("CreateAToken/CreateATokenRefreshToken", func(t *testing.T) {
+		v := CreateATokenRefreshToken{}
+		v.GrantType = "refresh_token"
+
+		roundTrip(t, CreateAToken{CreateATokenRefreshToken: &v}, func(u CreateAToken) bool { return u.CreateATokenRefreshToken != nil })
+	})
+
+	t.Run("CreateATokenOkOwnerUserUser/PartialUserObjectResponse", func(t *testing.T) {
+		v := PartialUserObjectResponse{}
+		v.Object = "user"
+
+		roundTrip(t, CreateATokenOkOwnerUserUser{PartialUserObjectResponse: &v}, func(u CreateATokenOkOwnerUserUser) bool { return u.PartialUserObjectResponse != nil })
+	})
+
+	t.Run("CreateMeetingNoteAllOf0/CreateMeetingNoteAllOf0Source", func(t *testing.T) {
+		v := CreateMeetingNoteAllOf0Source{}
+
+		roundTrip(t, CreateMeetingNoteAllOf0{CreateMeetingNoteAllOf0Source: &v}, func(u CreateMeetingNoteAllOf0) bool { return u.CreateMeetingNoteAllOf0Source != nil })
+	})
+
+	t.Run("CreateMeetingNoteOk/CreateMeetingNoteOkOneOf0", func(t *testing.T) {
+		v := CreateMeetingNoteOkOneOf0{}
+		v.Object = "block"
+
+		roundTrip(t, CreateMeetingNoteOk{CreateMeetingNoteOkOneOf0: &v}, func(u CreateMeetingNoteOk) bool { return u.CreateMeetingNoteOkOneOf0 != nil })
+	})
+
+	t.Run("CreateMeetingNoteOk/CreateMeetingNoteMeetingNotes", func(t *testing.T) {
+		v := CreateMeetingNoteMeetingNotes{}
+		v.Object = "block"
+		v.Type = "meeting_notes"
+
+		roundTrip(t, CreateMeetingNoteOk{CreateMeetingNoteMeetingNotes: &v}, func(u CreateMeetingNoteOk) bool { return u.CreateMeetingNoteMeetingNotes != nil })
+	})
+
+	t.Run("DataSourceObjectSyncMetadataHealth/DataSourceObjectSyncMetadataHealthAnyOf", func(t *testing.T) {
+		v := DataSourceObjectSyncMetadataHealthAnyOf{}
+		v.Ok = false
+		v.Stage = "backfilling"
+
+		roundTrip(t, DataSourceObjectSyncMetadataHealth{DataSourceObjectSyncMetadataHealthAnyOf: &v}, func(u DataSourceObjectSyncMetadataHealth) bool {
+			return u.DataSourceObjectSyncMetadataHealthAnyOf != nil
+		})
+	})
+
+	t.Run("DataSourceObjectSyncMetadataHealth/DataSourceObjectSyncMetadataHealthAnyOf2", func(t *testing.T) {
+		v := DataSourceObjectSyncMetadataHealthAnyOf2{}
+		v.Ok = true
+		v.Stage = "backfilling"
+
+		roundTrip(t, DataSourceObjectSyncMetadataHealth{DataSourceObjectSyncMetadataHealthAnyOf2: &v}, func(u DataSourceObjectSyncMetadataHealth) bool {
+			return u.DataSourceObjectSyncMetadataHealthAnyOf2 != nil
+		})
+	})
+
+	t.Run("DataSourceObjectSyncMetadataHealth/DataSourceObjectSyncMetadataHealthPaused", func(t *testing.T) {
+		v := DataSourceObjectSyncMetadataHealthPaused{}
+		v.Paused = true
+
+		roundTrip(t, DataSourceObjectSyncMetadataHealth{DataSourceObjectSyncMetadataHealthPaused: &v}, func(u DataSourceObjectSyncMetadataHealth) bool {
+			return u.DataSourceObjectSyncMetadataHealthPaused != nil
+		})
+	})
+
+	t.Run("DataSourceObjectSyncMetadataSyncStateSyncing/Bool", func(t *testing.T) {
+		v := true
+
+		roundTrip(t, DataSourceObjectSyncMetadataSyncStateSyncing{Bool: &v}, func(u DataSourceObjectSyncMetadataSyncStateSyncing) bool { return u.Bool != nil })
+	})
+
+	t.Run("DataSourceObjectSyncMetadataSyncStateSyncing/String", func(t *testing.T) {
+		v := "sample"
+
+		roundTrip(t, DataSourceObjectSyncMetadataSyncStateSyncing{String: v}, func(u DataSourceObjectSyncMetadataSyncStateSyncing) bool { return u.String != "" })
+	})
+
+	t.Run("DataSourceOrPartial/PartialDataSourceObjectResponse", func(t *testing.T) {
+		v := PartialDataSourceObjectResponse{}
+		v.Object = "data_source"
+
+		roundTrip(t, DataSourceOrPartial{PartialDataSourceObjectResponse: &v}, func(u DataSourceOrPartial) bool { return u.PartialDataSourceObjectResponse != nil })
+	})
+
+	t.Run("DataSourceViewOrPartial/PartialDataSourceViewObjectResponse", func(t *testing.T) {
+		v := PartialDataSourceViewObjectResponse{}
+		v.Object = "view"
+		v.Type = "table"
+
+		roundTrip(t, DataSourceViewOrPartial{PartialDataSourceViewObjectResponse: &v}, func(u DataSourceViewOrPartial) bool { return u.PartialDataSourceViewObjectResponse != nil })
+	})
+
+	t.Run("DataSourceViewOrPartial/DataSourceViewObjectResponse", func(t *testing.T) {
+		v := DataSourceViewObjectResponse{}
+		v.Object = "view"
+		v.Type = "table"
+
+		roundTrip(t, DataSourceViewOrPartial{DataSourceViewObjectResponse: &v}, func(u DataSourceViewOrPartial) bool { return u.DataSourceViewObjectResponse != nil })
+	})
+
+	t.Run("DatabaseOrPartial/PartialDatabaseObjectResponse", func(t *testing.T) {
+		v := PartialDatabaseObjectResponse{}
+		v.Object = "database"
+
+		roundTrip(t, DatabaseOrPartial{PartialDatabaseObjectResponse: &v}, func(u DatabaseOrPartial) bool { return u.PartialDatabaseObjectResponse != nil })
+	})
+
+	t.Run("ExistencePropertyFilter/ExistencePropertyFilterIsEmpty", func(t *testing.T) {
+		v := ExistencePropertyFilterIsEmpty{}
+		v.IsEmpty = true
+
+		roundTrip(t, ExistencePropertyFilter{ExistencePropertyFilterIsEmpty: &v}, func(u ExistencePropertyFilter) bool { return u.ExistencePropertyFilterIsEmpty != nil })
+	})
+
+	t.Run("ExistencePropertyFilter/ExistencePropertyFilterIsNotEmpty", func(t *testing.T) {
+		v := ExistencePropertyFilterIsNotEmpty{}
+		v.IsNotEmpty = true
+
+		roundTrip(t, ExistencePropertyFilter{ExistencePropertyFilterIsNotEmpty: &v}, func(u ExistencePropertyFilter) bool { return u.ExistencePropertyFilterIsNotEmpty != nil })
+	})
+
+	t.Run("FormulaGroupByConfigGroupBy/FormulaDateSubGroupBy", func(t *testing.T) {
+		v := FormulaDateSubGroupBy{}
+		v.Type = "date"
+		v.GroupBy = "relative"
+		v.StartDayOfWeek = new(float64(0))
+
+		roundTrip(t, FormulaGroupByConfigGroupBy{FormulaDateSubGroupBy: &v}, func(u FormulaGroupByConfigGroupBy) bool { return u.FormulaDateSubGroupBy != nil })
+	})
+
+	t.Run("FormulaGroupByConfigGroupBy/FormulaTextSubGroupBy", func(t *testing.T) {
+		v := FormulaTextSubGroupBy{}
+		v.Type = "text"
+		v.GroupBy = "exact"
+
+		roundTrip(t, FormulaGroupByConfigGroupBy{FormulaTextSubGroupBy: &v}, func(u FormulaGroupByConfigGroupBy) bool { return u.FormulaTextSubGroupBy != nil })
+	})
+
+	t.Run("FormulaGroupByConfigGroupBy/FormulaNumberSubGroupBy", func(t *testing.T) {
+		v := FormulaNumberSubGroupBy{}
+		v.Type = "number"
+
+		roundTrip(t, FormulaGroupByConfigGroupBy{FormulaNumberSubGroupBy: &v}, func(u FormulaGroupByConfigGroupBy) bool { return u.FormulaNumberSubGroupBy != nil })
+	})
+
+	t.Run("FormulaGroupByConfigGroupBy/FormulaCheckboxSubGroupBy", func(t *testing.T) {
+		v := FormulaCheckboxSubGroupBy{}
+		v.Type = "checkbox"
+
+		roundTrip(t, FormulaGroupByConfigGroupBy{FormulaCheckboxSubGroupBy: &v}, func(u FormulaGroupByConfigGroupBy) bool { return u.FormulaCheckboxSubGroupBy != nil })
+	})
+
+	t.Run("FormulaSubGroupByResponse/FormulaDateSubGroupByResponse", func(t *testing.T) {
+		v := FormulaDateSubGroupByResponse{}
+		v.Type = "date"
+		v.GroupBy = "relative"
+		v.StartDayOfWeek = new(float64(0))
+
+		roundTrip(t, FormulaSubGroupByResponse{FormulaDateSubGroupByResponse: &v}, func(u FormulaSubGroupByResponse) bool { return u.FormulaDateSubGroupByResponse != nil })
+	})
+
+	t.Run("FormulaSubGroupByResponse/FormulaTextSubGroupByResponse", func(t *testing.T) {
+		v := FormulaTextSubGroupByResponse{}
+		v.Type = "text"
+		v.GroupBy = "exact"
+
+		roundTrip(t, FormulaSubGroupByResponse{FormulaTextSubGroupByResponse: &v}, func(u FormulaSubGroupByResponse) bool { return u.FormulaTextSubGroupByResponse != nil })
+	})
+
+	t.Run("FormulaSubGroupByResponse/FormulaNumberSubGroupByResponse", func(t *testing.T) {
+		v := FormulaNumberSubGroupByResponse{}
+		v.Type = "number"
+
+		roundTrip(t, FormulaSubGroupByResponse{FormulaNumberSubGroupByResponse: &v}, func(u FormulaSubGroupByResponse) bool { return u.FormulaNumberSubGroupByResponse != nil })
+	})
+
+	t.Run("FormulaSubGroupByResponse/FormulaCheckboxSubGroupByResponse", func(t *testing.T) {
+		v := FormulaCheckboxSubGroupByResponse{}
+		v.Type = "checkbox"
+
+		roundTrip(t, FormulaSubGroupByResponse{FormulaCheckboxSubGroupByResponse: &v}, func(u FormulaSubGroupByResponse) bool { return u.FormulaCheckboxSubGroupByResponse != nil })
+	})
+
+	t.Run("MeetingNotesPropertyFilterFilter/MeetingNotesPropertyFilterFilterOperator", func(t *testing.T) {
+		v := MeetingNotesPropertyFilterFilterOperator{}
+		v.Operator = "is_empty"
+
+		roundTrip(t, MeetingNotesPropertyFilterFilter{MeetingNotesPropertyFilterFilterOperator: &v}, func(u MeetingNotesPropertyFilterFilter) bool {
+			return u.MeetingNotesPropertyFilterFilterOperator != nil
+		})
+	})
+
+	t.Run("MeetingNotesPropertyFilterFilterOneOf1ValueItem/MeetingNotesPropertyFilterFilterOneOf1ValueItemExact", func(t *testing.T) {
+		v := MeetingNotesPropertyFilterFilterOneOf1ValueItemExact{}
+		v.Type = "exact"
+
+		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf1ValueItem{MeetingNotesPropertyFilterFilterOneOf1ValueItemExact: &v}, func(u MeetingNotesPropertyFilterFilterOneOf1ValueItem) bool {
+			return u.MeetingNotesPropertyFilterFilterOneOf1ValueItemExact != nil
+		})
+	})
+
+	t.Run("MeetingNotesPropertyFilterFilterOneOf1ValueItem/MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative", func(t *testing.T) {
+		v := MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative{}
+		v.Type = "relative"
+		v.Value = "me"
+
+		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf1ValueItem{MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative: &v}, func(u MeetingNotesPropertyFilterFilterOneOf1ValueItem) bool {
+			return u.MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative != nil
+		})
+	})
+
+	t.Run("MeetingNotesPropertyFilterFilterOneOf2Value/MeetingNotesPropertyFilterFilterOneOf2ValueRelative", func(t *testing.T) {
+		v := MeetingNotesPropertyFilterFilterOneOf2ValueRelative{}
+		v.Type = "relative"
+		v.Value = "today"
+
+		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf2Value{MeetingNotesPropertyFilterFilterOneOf2ValueRelative: &v}, func(u MeetingNotesPropertyFilterFilterOneOf2Value) bool {
+			return u.MeetingNotesPropertyFilterFilterOneOf2ValueRelative != nil
+		})
+	})
+
+	t.Run("MeetingNotesPropertyFilterFilterOneOf3Value/MeetingNotesPropertyFilterFilterOneOf3ValueCustom", func(t *testing.T) {
+		v := MeetingNotesPropertyFilterFilterOneOf3ValueCustom{}
+		v.Type = "relative"
+		v.Value = "custom"
+		v.Direction = "past"
+		v.Unit = "year"
+
+		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf3Value{MeetingNotesPropertyFilterFilterOneOf3ValueCustom: &v}, func(u MeetingNotesPropertyFilterFilterOneOf3Value) bool {
+			return u.MeetingNotesPropertyFilterFilterOneOf3ValueCustom != nil
+		})
+	})
+
+	t.Run("MeetingNotesPropertyFilterFilterOneOf3Value/MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding", func(t *testing.T) {
+		v := MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding{}
+		v.Type = "relative"
+		v.Value = "surrounding"
+		v.Unit = "year"
+
+		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf3Value{MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding: &v}, func(u MeetingNotesPropertyFilterFilterOneOf3Value) bool {
+			return u.MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding != nil
+		})
+	})
+
+	t.Run("MeetingNotesPropertyFilterFilterOneOf3Value/MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2", func(t *testing.T) {
+		v := MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2{}
+		v.Type = "relative"
+		v.Value = "this_week"
+
+		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf3Value{MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2: &v}, func(u MeetingNotesPropertyFilterFilterOneOf3Value) bool {
+			return u.MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2 != nil
+		})
+	})
+
+	t.Run("MeetingNotesPropertyFilterFilterOneOf3Value/MeetingNotesPropertyFilterFilterOneOf3ValueExact", func(t *testing.T) {
+		v := MeetingNotesPropertyFilterFilterOneOf3ValueExact{}
+		v.Type = "exact"
+
+		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf3Value{MeetingNotesPropertyFilterFilterOneOf3ValueExact: &v}, func(u MeetingNotesPropertyFilterFilterOneOf3Value) bool {
+			return u.MeetingNotesPropertyFilterFilterOneOf3ValueExact != nil
+		})
+	})
+
+	t.Run("PageOrPartial/PartialPageObjectResponse", func(t *testing.T) {
+		v := PartialPageObjectResponse{}
+		v.Object = "page"
+
+		roundTrip(t, PageOrPartial{PartialPageObjectResponse: &v}, func(u PageOrPartial) bool { return u.PartialPageObjectResponse != nil })
+	})
+
+	t.Run("PagePropertiesValueMultiSelectMultiSelectItem/PagePropertiesValueSelectID", func(t *testing.T) {
+		v := PagePropertiesValueSelectID{}
+		v.Color = "default"
+
+		roundTrip(t, PagePropertiesValueMultiSelectMultiSelectItem{PagePropertiesValueSelectID: &v}, func(u PagePropertiesValueMultiSelectMultiSelectItem) bool {
+			return u.PagePropertiesValueSelectID != nil
+		})
+	})
+
+	t.Run("PagePropertiesValueMultiSelectMultiSelectItem/PagePropertiesValueSelectName", func(t *testing.T) {
+		v := PagePropertiesValueSelectName{}
+		v.Color = "default"
+
+		roundTrip(t, PagePropertiesValueMultiSelectMultiSelectItem{PagePropertiesValueSelectName: &v}, func(u PagePropertiesValueMultiSelectMultiSelectItem) bool {
+			return u.PagePropertiesValueSelectName != nil
+		})
+	})
+
+	t.Run("PagePropertiesValuePeoplePeopleItem/PartialUserObject", func(t *testing.T) {
+		v := PartialUserObject{}
+		v.Object = "user"
+
+		roundTrip(t, PagePropertiesValuePeoplePeopleItem{PartialUserObject: &v}, func(u PagePropertiesValuePeoplePeopleItem) bool { return u.PartialUserObject != nil })
+	})
+
+	t.Run("PagePropertiesValuePeoplePeopleItem/GroupObject", func(t *testing.T) {
+		v := GroupObject{}
+		v.Object = "group"
+
+		roundTrip(t, PagePropertiesValuePeoplePeopleItem{GroupObject: &v}, func(u PagePropertiesValuePeoplePeopleItem) bool { return u.GroupObject != nil })
+	})
+
+	t.Run("PagePropertiesValueSelect2/PagePropertiesValueSelectID", func(t *testing.T) {
+		v := PagePropertiesValueSelectID{}
+		v.Color = "default"
+
+		roundTrip(t, PagePropertiesValueSelect2{PagePropertiesValueSelectID: &v}, func(u PagePropertiesValueSelect2) bool { return u.PagePropertiesValueSelectID != nil })
+	})
+
+	t.Run("PagePropertiesValueSelect2/PagePropertiesValueSelectName", func(t *testing.T) {
+		v := PagePropertiesValueSelectName{}
+		v.Color = "default"
+
+		roundTrip(t, PagePropertiesValueSelect2{PagePropertiesValueSelectName: &v}, func(u PagePropertiesValueSelect2) bool { return u.PagePropertiesValueSelectName != nil })
+	})
+
+	t.Run("PagePropertiesValueVerificationVerification/PagePropertiesValueVerificationVerificationVerified", func(t *testing.T) {
+		v := PagePropertiesValueVerificationVerificationVerified{}
+		v.State = "verified"
+
+		roundTrip(t, PagePropertiesValueVerificationVerification{PagePropertiesValueVerificationVerificationVerified: &v}, func(u PagePropertiesValueVerificationVerification) bool {
+			return u.PagePropertiesValueVerificationVerificationVerified != nil
+		})
+	})
+
+	t.Run("PagePropertiesValueVerificationVerification/PagePropertiesValueVerificationVerificationUnverified", func(t *testing.T) {
+		v := PagePropertiesValueVerificationVerificationUnverified{}
+		v.State = "unverified"
+
+		roundTrip(t, PagePropertiesValueVerificationVerification{PagePropertiesValueVerificationVerificationUnverified: &v}, func(u PagePropertiesValueVerificationVerification) bool {
+			return u.PagePropertiesValueVerificationVerificationUnverified != nil
+		})
+	})
+
+	t.Run("PostPageTemplate/PostPageTemplateNone", func(t *testing.T) {
+		v := PostPageTemplateNone{}
+		v.Type = "none"
+
+		roundTrip(t, PostPageTemplate{PostPageTemplateNone: &v}, func(u PostPageTemplate) bool { return u.PostPageTemplateNone != nil })
+	})
+
+	t.Run("PostPageTemplate/PageTemplateDefault", func(t *testing.T) {
+		v := PageTemplateDefault{}
+		v.Type = "default"
+
+		roundTrip(t, PostPageTemplate{PageTemplateDefault: &v}, func(u PostPageTemplate) bool { return u.PageTemplateDefault != nil })
+	})
+
+	t.Run("PostPageTemplate/PageTemplateID", func(t *testing.T) {
+		v := PageTemplateID{}
+		v.Type = "template_id"
+
+		roundTrip(t, PostPageTemplate{PageTemplateID: &v}, func(u PostPageTemplate) bool { return u.PageTemplateID != nil })
+	})
+
+	t.Run("PostSearchFilter/PostSearchFilterObject", func(t *testing.T) {
+		v := PostSearchFilterObject{}
+		v.Property = "object"
+		v.Value = "page"
+
+		roundTrip(t, PostSearchFilter{PostSearchFilterObject: &v}, func(u PostSearchFilter) bool { return u.PostSearchFilterObject != nil })
+	})
+
+	t.Run("PostSearchFilter/PostSearchFilterInTrash", func(t *testing.T) {
+		v := PostSearchFilterInTrash{}
+
+		roundTrip(t, PostSearchFilter{PostSearchFilterInTrash: &v}, func(u PostSearchFilter) bool { return u.PostSearchFilterInTrash != nil })
+	})
+
+	t.Run("PostSearchSort/PostSearchSortLastEditedTime", func(t *testing.T) {
+		v := PostSearchSortLastEditedTime{}
+		v.Timestamp = "last_edited_time"
+		v.Direction = "ascending"
+
+		roundTrip(t, PostSearchSort{PostSearchSortLastEditedTime: &v}, func(u PostSearchSort) bool { return u.PostSearchSortLastEditedTime != nil })
+	})
+
+	t.Run("PostSearchSort/PostSearchSortRelevance", func(t *testing.T) {
+		v := PostSearchSortRelevance{}
+		v.Property = "relevance"
+
+		roundTrip(t, PostSearchSort{PostSearchSortRelevance: &v}, func(u PostSearchSort) bool { return u.PostSearchSortRelevance != nil })
+	})
+
+	t.Run("PropertyFilterVerification2/VerificationPropertyStatusFilter", func(t *testing.T) {
+		v := VerificationPropertyStatusFilter{}
+		v.Status = "verified"
+
+		roundTrip(t, PropertyFilterVerification2{VerificationPropertyStatusFilter: &v}, func(u PropertyFilterVerification2) bool { return u.VerificationPropertyStatusFilter != nil })
+	})
+
+	t.Run("PropertyFilterVerification2/VerificationPropertyDoesNotEqualFilter", func(t *testing.T) {
+		v := VerificationPropertyDoesNotEqualFilter{}
+		v.DoesNotEqual = "verified"
+
+		roundTrip(t, PropertyFilterVerification2{VerificationPropertyDoesNotEqualFilter: &v}, func(u PropertyFilterVerification2) bool { return u.VerificationPropertyDoesNotEqualFilter != nil })
+	})
+
+	t.Run("PropertyItemObjectResponse/NumberPropertyItemObjectResponse", func(t *testing.T) {
+		v := NumberPropertyItemObjectResponse{}
+		v.Type = "number"
+		v.Object = "property_item"
+
+		roundTrip(t, PropertyItemObjectResponse{NumberPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.NumberPropertyItemObjectResponse != nil })
+	})
+
+	t.Run("PropertyItemObjectResponse/URLPropertyItemObjectResponse", func(t *testing.T) {
+		v := URLPropertyItemObjectResponse{}
+		v.Type = "url"
+		v.Object = "property_item"
+
+		roundTrip(t, PropertyItemObjectResponse{URLPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.URLPropertyItemObjectResponse != nil })
+	})
+
+	t.Run("PropertyItemObjectResponse/SelectPropertyItemObjectResponse", func(t *testing.T) {
+		v := SelectPropertyItemObjectResponse{}
+		v.Type = "select"
+		v.Object = "property_item"
+
+		roundTrip(t, PropertyItemObjectResponse{SelectPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.SelectPropertyItemObjectResponse != nil })
+	})
+
+	t.Run("PropertyItemObjectResponse/MultiSelectPropertyItemObjectResponse", func(t *testing.T) {
+		v := MultiSelectPropertyItemObjectResponse{}
+		v.Type = "multi_select"
+		v.Object = "property_item"
+
+		roundTrip(t, PropertyItemObjectResponse{MultiSelectPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.MultiSelectPropertyItemObjectResponse != nil })
+	})
+
+	t.Run("PropertyItemObjectResponse/StatusPropertyItemObjectResponse", func(t *testing.T) {
+		v := StatusPropertyItemObjectResponse{}
+		v.Type = "status"
+		v.Object = "property_item"
+
+		roundTrip(t, PropertyItemObjectResponse{StatusPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.StatusPropertyItemObjectResponse != nil })
+	})
+
+	t.Run("PropertyItemObjectResponse/EmailPropertyItemObjectResponse", func(t *testing.T) {
+		v := EmailPropertyItemObjectResponse{}
+		v.Type = "email"
+		v.Object = "property_item"
+
+		roundTrip(t, PropertyItemObjectResponse{EmailPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.EmailPropertyItemObjectResponse != nil })
+	})
+
+	t.Run("PropertyItemObjectResponse/PhoneNumberPropertyItemObjectResponse", func(t *testing.T) {
+		v := PhoneNumberPropertyItemObjectResponse{}
+		v.Type = "phone_number"
+		v.Object = "property_item"
+
+		roundTrip(t, PropertyItemObjectResponse{PhoneNumberPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.PhoneNumberPropertyItemObjectResponse != nil })
+	})
+
+	t.Run("PropertyItemObjectResponse/CheckboxPropertyItemObjectResponse", func(t *testing.T) {
+		v := CheckboxPropertyItemObjectResponse{}
+		v.Type = "checkbox"
+		v.Object = "property_item"
+
+		roundTrip(t, PropertyItemObjectResponse{CheckboxPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.CheckboxPropertyItemObjectResponse != nil })
+	})
+
+	t.Run("PropertyItemObjectResponse/FilesPropertyItemObjectResponse", func(t *testing.T) {
+		v := FilesPropertyItemObjectResponse{}
+		v.Type = "files"
+		v.Object = "property_item"
+
+		roundTrip(t, PropertyItemObjectResponse{FilesPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.FilesPropertyItemObjectResponse != nil })
+	})
+
+	t.Run("PropertyItemObjectResponse/CreatedTimePropertyItemObjectResponse", func(t *testing.T) {
+		v := CreatedTimePropertyItemObjectResponse{}
+		v.Type = "created_time"
+		v.Object = "property_item"
+
+		roundTrip(t, PropertyItemObjectResponse{CreatedTimePropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.CreatedTimePropertyItemObjectResponse != nil })
+	})
+
+	t.Run("PropertyItemObjectResponse/LastEditedTimePropertyItemObjectResponse", func(t *testing.T) {
+		v := LastEditedTimePropertyItemObjectResponse{}
+		v.Type = "last_edited_time"
+		v.Object = "property_item"
+
+		roundTrip(t, PropertyItemObjectResponse{LastEditedTimePropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.LastEditedTimePropertyItemObjectResponse != nil })
+	})
+
+	t.Run("PropertyItemObjectResponse/ButtonPropertyItemObjectResponse", func(t *testing.T) {
+		v := ButtonPropertyItemObjectResponse{}
+		v.Type = "button"
+		v.Object = "property_item"
+
+		roundTrip(t, PropertyItemObjectResponse{ButtonPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.ButtonPropertyItemObjectResponse != nil })
+	})
+
+	t.Run("PropertyItemObjectResponse/UniqueIDPropertyItemObjectResponse", func(t *testing.T) {
+		v := UniqueIDPropertyItemObjectResponse{}
+		v.Type = "unique_id"
+		v.Object = "property_item"
+
+		roundTrip(t, PropertyItemObjectResponse{UniqueIDPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.UniqueIDPropertyItemObjectResponse != nil })
+	})
+
+	t.Run("PropertyItemObjectResponse/VerificationPropertyItemObjectResponse", func(t *testing.T) {
+		v := VerificationPropertyItemObjectResponse{}
+		v.Type = "verification"
+		v.Object = "property_item"
+
+		roundTrip(t, PropertyItemObjectResponse{VerificationPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.VerificationPropertyItemObjectResponse != nil })
+	})
+
+	t.Run("PropertyItemObjectResponse/PlacePropertyItemObjectResponse", func(t *testing.T) {
+		v := PlacePropertyItemObjectResponse{}
+		v.Type = "place"
+		v.Object = "property_item"
+
+		roundTrip(t, PropertyItemObjectResponse{PlacePropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.PlacePropertyItemObjectResponse != nil })
+	})
+
+	t.Run("PropertyItemObjectResponse/RelationPropertyItemObjectResponse", func(t *testing.T) {
+		v := RelationPropertyItemObjectResponse{}
+		v.Type = "relation"
+		v.Object = "property_item"
+
+		roundTrip(t, PropertyItemObjectResponse{RelationPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.RelationPropertyItemObjectResponse != nil })
+	})
+
+	t.Run("PropertyItemObjectResponse/LastVisitedTimePropertyItemObjectResponse", func(t *testing.T) {
+		v := LastVisitedTimePropertyItemObjectResponse{}
+		v.Type = "last_visited_time"
+		v.Object = "property_item"
+
+		roundTrip(t, PropertyItemObjectResponse{LastVisitedTimePropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.LastVisitedTimePropertyItemObjectResponse != nil })
+	})
+
+	t.Run("PublicAPIAsyncTaskStatusResultJSONValue/String", func(t *testing.T) {
+		v := "sample"
+
+		roundTrip(t, PublicAPIAsyncTaskStatusResultJSONValue{String: v}, func(u PublicAPIAsyncTaskStatusResultJSONValue) bool { return u.String != "" })
+	})
+
+	t.Run("PublicAPIAsyncTaskStatusResultJSONValue/Float64", func(t *testing.T) {
+		v := 1.5
+
+		roundTrip(t, PublicAPIAsyncTaskStatusResultJSONValue{Float64: &v}, func(u PublicAPIAsyncTaskStatusResultJSONValue) bool { return u.Float64 != nil })
+	})
+
+	t.Run("PublicAPIAsyncTaskStatusResultJSONValue/Bool", func(t *testing.T) {
+		v := true
+
+		roundTrip(t, PublicAPIAsyncTaskStatusResultJSONValue{Bool: &v}, func(u PublicAPIAsyncTaskStatusResultJSONValue) bool { return u.Bool != nil })
+	})
+
+	t.Run("PublicAPICommonErrorAdditionalDataValue/String", func(t *testing.T) {
+		v := "sample"
+
+		roundTrip(t, PublicAPICommonErrorAdditionalDataValue{String: v}, func(u PublicAPICommonErrorAdditionalDataValue) bool { return u.String != "" })
+	})
+
+	t.Run("PublicAPICommonErrorAdditionalDataValue/String2", func(t *testing.T) {
+		v := []string{"sample"}
+
+		roundTrip(t, PublicAPICommonErrorAdditionalDataValue{String2: v}, func(u PublicAPICommonErrorAdditionalDataValue) bool { return u.String2 != nil })
+	})
+
+	t.Run("QueryAgentsFilter/QueryAgentsFilterID", func(t *testing.T) {
+		v := QueryAgentsFilterID{}
+		v.Property = "id"
+
+		roundTrip(t, QueryAgentsFilter{QueryAgentsFilterID: &v}, func(u QueryAgentsFilter) bool { return u.QueryAgentsFilterID != nil })
+	})
+
+	t.Run("QueryAgentsFilter/QueryAgentsFilterAgentType", func(t *testing.T) {
+		v := QueryAgentsFilterAgentType{}
+		v.Property = "agent_type"
+
+		roundTrip(t, QueryAgentsFilter{QueryAgentsFilterAgentType: &v}, func(u QueryAgentsFilter) bool { return u.QueryAgentsFilterAgentType != nil })
+	})
+
+	t.Run("QueryAgentsFilter/QueryAgentsFilterCreatedBy", func(t *testing.T) {
+		v := QueryAgentsFilterCreatedBy{}
+		v.Property = "created_by"
+
+		roundTrip(t, QueryAgentsFilter{QueryAgentsFilterCreatedBy: &v}, func(u QueryAgentsFilter) bool { return u.QueryAgentsFilterCreatedBy != nil })
+	})
+
+	t.Run("QueryAgentsFilter/QueryAgentsFilterCreatedTime", func(t *testing.T) {
+		v := QueryAgentsFilterCreatedTime{}
+		v.Property = "created_time"
+
+		roundTrip(t, QueryAgentsFilter{QueryAgentsFilterCreatedTime: &v}, func(u QueryAgentsFilter) bool { return u.QueryAgentsFilterCreatedTime != nil })
+	})
+
+	t.Run("QueryAgentsFilter/QueryAgentsFilterFavorited", func(t *testing.T) {
+		v := QueryAgentsFilterFavorited{}
+		v.Property = "favorited"
+
+		roundTrip(t, QueryAgentsFilter{QueryAgentsFilterFavorited: &v}, func(u QueryAgentsFilter) bool { return u.QueryAgentsFilterFavorited != nil })
+	})
+
+	t.Run("QueryAgentsFilter/QueryAgentsFilterConnections", func(t *testing.T) {
+		v := QueryAgentsFilterConnections{}
+		v.Property = "connections"
+
+		roundTrip(t, QueryAgentsFilter{QueryAgentsFilterConnections: &v}, func(u QueryAgentsFilter) bool { return u.QueryAgentsFilterConnections != nil })
+	})
+
+	t.Run("QueryAgentsFilter/QueryAgentsFilterStatus", func(t *testing.T) {
+		v := QueryAgentsFilterStatus{}
+		v.Property = "status"
+
+		roundTrip(t, QueryAgentsFilter{QueryAgentsFilterStatus: &v}, func(u QueryAgentsFilter) bool { return u.QueryAgentsFilterStatus != nil })
+	})
+
+	t.Run("QueryAgentsFilter/QueryAgentsFilterModelMode", func(t *testing.T) {
+		v := QueryAgentsFilterModelMode{}
+		v.Property = "model_mode"
+
+		roundTrip(t, QueryAgentsFilter{QueryAgentsFilterModelMode: &v}, func(u QueryAgentsFilter) bool { return u.QueryAgentsFilterModelMode != nil })
+	})
+
+	t.Run("QueryAgentsFilter/QueryAgentsFilterAgentVersion", func(t *testing.T) {
+		v := QueryAgentsFilterAgentVersion{}
+		v.Property = "agent_version"
+
+		roundTrip(t, QueryAgentsFilter{QueryAgentsFilterAgentVersion: &v}, func(u QueryAgentsFilter) bool { return u.QueryAgentsFilterAgentVersion != nil })
+	})
+
+	t.Run("QueryAgentsFilter/QueryAgentsFilterLastRunAt", func(t *testing.T) {
+		v := QueryAgentsFilterLastRunAt{}
+		v.Property = "last_run_at"
+
+		roundTrip(t, QueryAgentsFilter{QueryAgentsFilterLastRunAt: &v}, func(u QueryAgentsFilter) bool { return u.QueryAgentsFilterLastRunAt != nil })
+	})
+
+	t.Run("QueryAgentsFilter/QueryAgentsFilterAnd", func(t *testing.T) {
+		v := QueryAgentsFilterAnd{}
+
+		roundTrip(t, QueryAgentsFilter{QueryAgentsFilterAnd: &v}, func(u QueryAgentsFilter) bool { return u.QueryAgentsFilterAnd != nil })
+	})
+
+	t.Run("QueryAgentsFilter/QueryAgentsFilterOr", func(t *testing.T) {
+		v := QueryAgentsFilterOr{}
+
+		roundTrip(t, QueryAgentsFilter{QueryAgentsFilterOr: &v}, func(u QueryAgentsFilter) bool { return u.QueryAgentsFilterOr != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItem/QueryAgentsFilterID", func(t *testing.T) {
+		v := QueryAgentsFilterID{}
+		v.Property = "id"
+
+		roundTrip(t, QueryAgentsFilterOrItem{QueryAgentsFilterID: &v}, func(u QueryAgentsFilterOrItem) bool { return u.QueryAgentsFilterID != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItem/QueryAgentsFilterAgentType", func(t *testing.T) {
+		v := QueryAgentsFilterAgentType{}
+		v.Property = "agent_type"
+
+		roundTrip(t, QueryAgentsFilterOrItem{QueryAgentsFilterAgentType: &v}, func(u QueryAgentsFilterOrItem) bool { return u.QueryAgentsFilterAgentType != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItem/QueryAgentsFilterCreatedBy", func(t *testing.T) {
+		v := QueryAgentsFilterCreatedBy{}
+		v.Property = "created_by"
+
+		roundTrip(t, QueryAgentsFilterOrItem{QueryAgentsFilterCreatedBy: &v}, func(u QueryAgentsFilterOrItem) bool { return u.QueryAgentsFilterCreatedBy != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItem/QueryAgentsFilterCreatedTime", func(t *testing.T) {
+		v := QueryAgentsFilterCreatedTime{}
+		v.Property = "created_time"
+
+		roundTrip(t, QueryAgentsFilterOrItem{QueryAgentsFilterCreatedTime: &v}, func(u QueryAgentsFilterOrItem) bool { return u.QueryAgentsFilterCreatedTime != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItem/QueryAgentsFilterFavorited", func(t *testing.T) {
+		v := QueryAgentsFilterFavorited{}
+		v.Property = "favorited"
+
+		roundTrip(t, QueryAgentsFilterOrItem{QueryAgentsFilterFavorited: &v}, func(u QueryAgentsFilterOrItem) bool { return u.QueryAgentsFilterFavorited != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItem/QueryAgentsFilterConnections", func(t *testing.T) {
+		v := QueryAgentsFilterConnections{}
+		v.Property = "connections"
+
+		roundTrip(t, QueryAgentsFilterOrItem{QueryAgentsFilterConnections: &v}, func(u QueryAgentsFilterOrItem) bool { return u.QueryAgentsFilterConnections != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItem/QueryAgentsFilterStatus", func(t *testing.T) {
+		v := QueryAgentsFilterStatus{}
+		v.Property = "status"
+
+		roundTrip(t, QueryAgentsFilterOrItem{QueryAgentsFilterStatus: &v}, func(u QueryAgentsFilterOrItem) bool { return u.QueryAgentsFilterStatus != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItem/QueryAgentsFilterModelMode", func(t *testing.T) {
+		v := QueryAgentsFilterModelMode{}
+		v.Property = "model_mode"
+
+		roundTrip(t, QueryAgentsFilterOrItem{QueryAgentsFilterModelMode: &v}, func(u QueryAgentsFilterOrItem) bool { return u.QueryAgentsFilterModelMode != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItem/QueryAgentsFilterAgentVersion", func(t *testing.T) {
+		v := QueryAgentsFilterAgentVersion{}
+		v.Property = "agent_version"
+
+		roundTrip(t, QueryAgentsFilterOrItem{QueryAgentsFilterAgentVersion: &v}, func(u QueryAgentsFilterOrItem) bool { return u.QueryAgentsFilterAgentVersion != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItem/QueryAgentsFilterLastRunAt", func(t *testing.T) {
+		v := QueryAgentsFilterLastRunAt{}
+		v.Property = "last_run_at"
+
+		roundTrip(t, QueryAgentsFilterOrItem{QueryAgentsFilterLastRunAt: &v}, func(u QueryAgentsFilterOrItem) bool { return u.QueryAgentsFilterLastRunAt != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItem/QueryAgentsFilterOrItemAnd", func(t *testing.T) {
+		v := QueryAgentsFilterOrItemAnd{}
+
+		roundTrip(t, QueryAgentsFilterOrItem{QueryAgentsFilterOrItemAnd: &v}, func(u QueryAgentsFilterOrItem) bool { return u.QueryAgentsFilterOrItemAnd != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItem/QueryAgentsFilterOrItemOr", func(t *testing.T) {
+		v := QueryAgentsFilterOrItemOr{}
+
+		roundTrip(t, QueryAgentsFilterOrItem{QueryAgentsFilterOrItemOr: &v}, func(u QueryAgentsFilterOrItem) bool { return u.QueryAgentsFilterOrItemOr != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterID", func(t *testing.T) {
+		v := QueryAgentsFilterID{}
+		v.Property = "id"
+
+		roundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterID: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterID != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterAgentType", func(t *testing.T) {
+		v := QueryAgentsFilterAgentType{}
+		v.Property = "agent_type"
+
+		roundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterAgentType: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterAgentType != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterCreatedBy", func(t *testing.T) {
+		v := QueryAgentsFilterCreatedBy{}
+		v.Property = "created_by"
+
+		roundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterCreatedBy: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterCreatedBy != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterCreatedTime", func(t *testing.T) {
+		v := QueryAgentsFilterCreatedTime{}
+		v.Property = "created_time"
+
+		roundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterCreatedTime: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterCreatedTime != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterFavorited", func(t *testing.T) {
+		v := QueryAgentsFilterFavorited{}
+		v.Property = "favorited"
+
+		roundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterFavorited: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterFavorited != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterConnections", func(t *testing.T) {
+		v := QueryAgentsFilterConnections{}
+		v.Property = "connections"
+
+		roundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterConnections: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterConnections != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterStatus", func(t *testing.T) {
+		v := QueryAgentsFilterStatus{}
+		v.Property = "status"
+
+		roundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterStatus: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterStatus != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterModelMode", func(t *testing.T) {
+		v := QueryAgentsFilterModelMode{}
+		v.Property = "model_mode"
+
+		roundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterModelMode: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterModelMode != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterAgentVersion", func(t *testing.T) {
+		v := QueryAgentsFilterAgentVersion{}
+		v.Property = "agent_version"
+
+		roundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterAgentVersion: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterAgentVersion != nil })
+	})
+
+	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterLastRunAt", func(t *testing.T) {
+		v := QueryAgentsFilterLastRunAt{}
+		v.Property = "last_run_at"
+
+		roundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterLastRunAt: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterLastRunAt != nil })
+	})
+
+	t.Run("QueryMeetingNotesFilterFiltersItem/QueryMeetingNotesFilterFiltersItemOneOf1", func(t *testing.T) {
+		v := QueryMeetingNotesFilterFiltersItemOneOf1{}
+		v.Operator = "and"
+
+		roundTrip(t, QueryMeetingNotesFilterFiltersItem{QueryMeetingNotesFilterFiltersItemOneOf1: &v}, func(u QueryMeetingNotesFilterFiltersItem) bool {
+			return u.QueryMeetingNotesFilterFiltersItemOneOf1 != nil
+		})
+	})
+
+	t.Run("QuerySessionEventsFilter/SessionIDFilter", func(t *testing.T) {
+		v := SessionIDFilter{}
+		v.Property = "id"
+
+		roundTrip(t, QuerySessionEventsFilter{SessionIDFilter: &v}, func(u QuerySessionEventsFilter) bool { return u.SessionIDFilter != nil })
+	})
+
+	t.Run("QuerySessionEventsFilter/QuerySessionEventsFilterType", func(t *testing.T) {
+		v := QuerySessionEventsFilterType{}
+		v.Property = "type"
+
+		roundTrip(t, QuerySessionEventsFilter{QuerySessionEventsFilterType: &v}, func(u QuerySessionEventsFilter) bool { return u.QuerySessionEventsFilterType != nil })
+	})
+
+	t.Run("QuerySessionEventsFilter/QuerySessionEventsFilterSequence", func(t *testing.T) {
+		v := QuerySessionEventsFilterSequence{}
+		v.Property = "sequence"
+
+		roundTrip(t, QuerySessionEventsFilter{QuerySessionEventsFilterSequence: &v}, func(u QuerySessionEventsFilter) bool { return u.QuerySessionEventsFilterSequence != nil })
+	})
+
+	t.Run("QuerySessionEventsFilter/QuerySessionEventsFilterCreatedAt", func(t *testing.T) {
+		v := QuerySessionEventsFilterCreatedAt{}
+		v.Property = "created_at"
+
+		roundTrip(t, QuerySessionEventsFilter{QuerySessionEventsFilterCreatedAt: &v}, func(u QuerySessionEventsFilter) bool { return u.QuerySessionEventsFilterCreatedAt != nil })
+	})
+
+	t.Run("QuerySessionEventsFilter/QuerySessionEventsFilterAnd", func(t *testing.T) {
+		v := QuerySessionEventsFilterAnd{}
+
+		roundTrip(t, QuerySessionEventsFilter{QuerySessionEventsFilterAnd: &v}, func(u QuerySessionEventsFilter) bool { return u.QuerySessionEventsFilterAnd != nil })
+	})
+
+	t.Run("QuerySessionEventsFilter/QuerySessionEventsFilterOr", func(t *testing.T) {
+		v := QuerySessionEventsFilterOr{}
+
+		roundTrip(t, QuerySessionEventsFilter{QuerySessionEventsFilterOr: &v}, func(u QuerySessionEventsFilter) bool { return u.QuerySessionEventsFilterOr != nil })
+	})
+
+	t.Run("QuerySessionEventsFilterOrItem/SessionIDFilter", func(t *testing.T) {
+		v := SessionIDFilter{}
+		v.Property = "id"
+
+		roundTrip(t, QuerySessionEventsFilterOrItem{SessionIDFilter: &v}, func(u QuerySessionEventsFilterOrItem) bool { return u.SessionIDFilter != nil })
+	})
+
+	t.Run("QuerySessionEventsFilterOrItem/QuerySessionEventsFilterType", func(t *testing.T) {
+		v := QuerySessionEventsFilterType{}
+		v.Property = "type"
+
+		roundTrip(t, QuerySessionEventsFilterOrItem{QuerySessionEventsFilterType: &v}, func(u QuerySessionEventsFilterOrItem) bool { return u.QuerySessionEventsFilterType != nil })
+	})
+
+	t.Run("QuerySessionEventsFilterOrItem/QuerySessionEventsFilterSequence", func(t *testing.T) {
+		v := QuerySessionEventsFilterSequence{}
+		v.Property = "sequence"
+
+		roundTrip(t, QuerySessionEventsFilterOrItem{QuerySessionEventsFilterSequence: &v}, func(u QuerySessionEventsFilterOrItem) bool { return u.QuerySessionEventsFilterSequence != nil })
+	})
+
+	t.Run("QuerySessionEventsFilterOrItem/QuerySessionEventsFilterCreatedAt", func(t *testing.T) {
+		v := QuerySessionEventsFilterCreatedAt{}
+		v.Property = "created_at"
+
+		roundTrip(t, QuerySessionEventsFilterOrItem{QuerySessionEventsFilterCreatedAt: &v}, func(u QuerySessionEventsFilterOrItem) bool { return u.QuerySessionEventsFilterCreatedAt != nil })
+	})
+
+	t.Run("QuerySessionEventsFilterOrItem/QuerySessionEventsFilterOrItemAnd", func(t *testing.T) {
+		v := QuerySessionEventsFilterOrItemAnd{}
+
+		roundTrip(t, QuerySessionEventsFilterOrItem{QuerySessionEventsFilterOrItemAnd: &v}, func(u QuerySessionEventsFilterOrItem) bool { return u.QuerySessionEventsFilterOrItemAnd != nil })
+	})
+
+	t.Run("QuerySessionEventsFilterOrItem/QuerySessionEventsFilterOrItemOr", func(t *testing.T) {
+		v := QuerySessionEventsFilterOrItemOr{}
+
+		roundTrip(t, QuerySessionEventsFilterOrItem{QuerySessionEventsFilterOrItemOr: &v}, func(u QuerySessionEventsFilterOrItem) bool { return u.QuerySessionEventsFilterOrItemOr != nil })
+	})
+
+	t.Run("QuerySessionEventsFilterOrItemOrItem/SessionIDFilter", func(t *testing.T) {
+		v := SessionIDFilter{}
+		v.Property = "id"
+
+		roundTrip(t, QuerySessionEventsFilterOrItemOrItem{SessionIDFilter: &v}, func(u QuerySessionEventsFilterOrItemOrItem) bool { return u.SessionIDFilter != nil })
+	})
+
+	t.Run("QuerySessionEventsFilterOrItemOrItem/QuerySessionEventsFilterType", func(t *testing.T) {
+		v := QuerySessionEventsFilterType{}
+		v.Property = "type"
+
+		roundTrip(t, QuerySessionEventsFilterOrItemOrItem{QuerySessionEventsFilterType: &v}, func(u QuerySessionEventsFilterOrItemOrItem) bool { return u.QuerySessionEventsFilterType != nil })
+	})
+
+	t.Run("QuerySessionEventsFilterOrItemOrItem/QuerySessionEventsFilterSequence", func(t *testing.T) {
+		v := QuerySessionEventsFilterSequence{}
+		v.Property = "sequence"
+
+		roundTrip(t, QuerySessionEventsFilterOrItemOrItem{QuerySessionEventsFilterSequence: &v}, func(u QuerySessionEventsFilterOrItemOrItem) bool { return u.QuerySessionEventsFilterSequence != nil })
+	})
+
+	t.Run("QuerySessionEventsFilterOrItemOrItem/QuerySessionEventsFilterCreatedAt", func(t *testing.T) {
+		v := QuerySessionEventsFilterCreatedAt{}
+		v.Property = "created_at"
+
+		roundTrip(t, QuerySessionEventsFilterOrItemOrItem{QuerySessionEventsFilterCreatedAt: &v}, func(u QuerySessionEventsFilterOrItemOrItem) bool { return u.QuerySessionEventsFilterCreatedAt != nil })
+	})
+
+	t.Run("QuerySessionEventsFilterOrItemOrItem/QuerySessionEventsFilterOrItemOrItemAnd", func(t *testing.T) {
+		v := QuerySessionEventsFilterOrItemOrItemAnd{}
+
+		roundTrip(t, QuerySessionEventsFilterOrItemOrItem{QuerySessionEventsFilterOrItemOrItemAnd: &v}, func(u QuerySessionEventsFilterOrItemOrItem) bool {
+			return u.QuerySessionEventsFilterOrItemOrItemAnd != nil
+		})
+	})
+
+	t.Run("QuerySessionEventsFilterOrItemOrItem/QuerySessionEventsFilterOrItemOrItemOr", func(t *testing.T) {
+		v := QuerySessionEventsFilterOrItemOrItemOr{}
+
+		roundTrip(t, QuerySessionEventsFilterOrItemOrItem{QuerySessionEventsFilterOrItemOrItemOr: &v}, func(u QuerySessionEventsFilterOrItemOrItem) bool {
+			return u.QuerySessionEventsFilterOrItemOrItemOr != nil
+		})
+	})
+
+	t.Run("QuerySessionEventsFilterOrItemOrItemOrItem/SessionIDFilter", func(t *testing.T) {
+		v := SessionIDFilter{}
+		v.Property = "id"
+
+		roundTrip(t, QuerySessionEventsFilterOrItemOrItemOrItem{SessionIDFilter: &v}, func(u QuerySessionEventsFilterOrItemOrItemOrItem) bool { return u.SessionIDFilter != nil })
+	})
+
+	t.Run("QuerySessionEventsFilterOrItemOrItemOrItem/QuerySessionEventsFilterType", func(t *testing.T) {
+		v := QuerySessionEventsFilterType{}
+		v.Property = "type"
+
+		roundTrip(t, QuerySessionEventsFilterOrItemOrItemOrItem{QuerySessionEventsFilterType: &v}, func(u QuerySessionEventsFilterOrItemOrItemOrItem) bool { return u.QuerySessionEventsFilterType != nil })
+	})
+
+	t.Run("QuerySessionEventsFilterOrItemOrItemOrItem/QuerySessionEventsFilterSequence", func(t *testing.T) {
+		v := QuerySessionEventsFilterSequence{}
+		v.Property = "sequence"
+
+		roundTrip(t, QuerySessionEventsFilterOrItemOrItemOrItem{QuerySessionEventsFilterSequence: &v}, func(u QuerySessionEventsFilterOrItemOrItemOrItem) bool {
+			return u.QuerySessionEventsFilterSequence != nil
+		})
+	})
+
+	t.Run("QuerySessionEventsFilterOrItemOrItemOrItem/QuerySessionEventsFilterCreatedAt", func(t *testing.T) {
+		v := QuerySessionEventsFilterCreatedAt{}
+		v.Property = "created_at"
+
+		roundTrip(t, QuerySessionEventsFilterOrItemOrItemOrItem{QuerySessionEventsFilterCreatedAt: &v}, func(u QuerySessionEventsFilterOrItemOrItemOrItem) bool {
+			return u.QuerySessionEventsFilterCreatedAt != nil
+		})
+	})
+
+	t.Run("QuerySessionsFilter/SessionIDFilter", func(t *testing.T) {
+		v := SessionIDFilter{}
+		v.Property = "id"
+
+		roundTrip(t, QuerySessionsFilter{SessionIDFilter: &v}, func(u QuerySessionsFilter) bool { return u.SessionIDFilter != nil })
+	})
+
+	t.Run("QuerySessionsFilter/SessionAgentIDFilter", func(t *testing.T) {
+		v := SessionAgentIDFilter{}
+		v.Property = "agent_id"
+
+		roundTrip(t, QuerySessionsFilter{SessionAgentIDFilter: &v}, func(u QuerySessionsFilter) bool { return u.SessionAgentIDFilter != nil })
+	})
+
+	t.Run("QuerySessionsFilter/SessionStatusFilter", func(t *testing.T) {
+		v := SessionStatusFilter{}
+		v.Property = "status"
+
+		roundTrip(t, QuerySessionsFilter{SessionStatusFilter: &v}, func(u QuerySessionsFilter) bool { return u.SessionStatusFilter != nil })
+	})
+
+	t.Run("QuerySessionsFilter/SessionTimestampFilter", func(t *testing.T) {
+		v := SessionTimestampFilter{}
+		v.Property = "created_at"
+
+		roundTrip(t, QuerySessionsFilter{SessionTimestampFilter: &v}, func(u QuerySessionsFilter) bool { return u.SessionTimestampFilter != nil })
+	})
+
+	t.Run("QuerySessionsFilter/QuerySessionsFilterAnd", func(t *testing.T) {
+		v := QuerySessionsFilterAnd{}
+
+		roundTrip(t, QuerySessionsFilter{QuerySessionsFilterAnd: &v}, func(u QuerySessionsFilter) bool { return u.QuerySessionsFilterAnd != nil })
+	})
+
+	t.Run("QuerySessionsFilter/QuerySessionsFilterOr", func(t *testing.T) {
+		v := QuerySessionsFilterOr{}
+
+		roundTrip(t, QuerySessionsFilter{QuerySessionsFilterOr: &v}, func(u QuerySessionsFilter) bool { return u.QuerySessionsFilterOr != nil })
+	})
+
+	t.Run("QuickFilterCondition/EmptyObject", func(t *testing.T) {
+		v := EmptyObject{}
+
+		roundTrip(t, QuickFilterCondition{EmptyObject: &v}, func(u QuickFilterCondition) bool { return u.EmptyObject != nil })
+	})
+
+	t.Run("RetrieveAsyncTaskOk/AgentBatch2", func(t *testing.T) {
+		v := AgentBatch2{}
+		v.Object = "async_task"
+		v.Status = "queued"
+
+		roundTrip(t, RetrieveAsyncTaskOk{AgentBatch2: &v}, func(u RetrieveAsyncTaskOk) bool { return u.AgentBatch2 != nil })
+	})
+
+	t.Run("RetrieveAsyncTaskOk/RetrieveAsyncTaskOkSucceeded", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkSucceeded{}
+		v.Object = "async_task"
+		v.Status = "succeeded"
+
+		roundTrip(t, RetrieveAsyncTaskOk{RetrieveAsyncTaskOkSucceeded: &v}, func(u RetrieveAsyncTaskOk) bool { return u.RetrieveAsyncTaskOkSucceeded != nil })
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorInvalidJSON", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorInvalidJSON{}
+		v.Object = "error"
+		v.Status = 400
+		v.Code = "invalid_json"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorInvalidJSON: &v}, func(u RetrieveAsyncTaskOkFailedError) bool { return u.RetrieveAsyncTaskOkFailedErrorInvalidJSON != nil })
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorInvalidRequestURL", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorInvalidRequestURL{}
+		v.Object = "error"
+		v.Status = 400
+		v.Code = "invalid_request_url"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorInvalidRequestURL: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorInvalidRequestURL != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorInvalidRequest", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorInvalidRequest{}
+		v.Object = "error"
+		v.Status = 400
+		v.Code = "invalid_request"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorInvalidRequest: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorInvalidRequest != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorMissingVersion", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorMissingVersion{}
+		v.Object = "error"
+		v.Status = 400
+		v.Code = "missing_version"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorMissingVersion: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorMissingVersion != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorInvalidBeta", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorInvalidBeta{}
+		v.Object = "error"
+		v.Status = 400
+		v.Code = "invalid_beta"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorInvalidBeta: &v}, func(u RetrieveAsyncTaskOkFailedError) bool { return u.RetrieveAsyncTaskOkFailedErrorInvalidBeta != nil })
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorValidationError", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorValidationError{}
+		v.Object = "error"
+		v.Status = 400
+		v.Code = "validation_error"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorValidationError: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorValidationError != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorUnauthorized", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorUnauthorized{}
+		v.Object = "error"
+		v.Status = 401
+		v.Code = "unauthorized"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorUnauthorized: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorUnauthorized != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorRestrictedResource", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorRestrictedResource{}
+		v.Object = "error"
+		v.Status = 403
+		v.Code = "restricted_resource"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorRestrictedResource: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorRestrictedResource != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorObjectNotFound", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorObjectNotFound{}
+		v.Object = "error"
+		v.Status = 404
+		v.Code = "object_not_found"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorObjectNotFound: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorObjectNotFound != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorDirectoryNotFound", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorDirectoryNotFound{}
+		v.Object = "error"
+		v.Status = 404
+		v.Code = "directory_not_found"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorDirectoryNotFound: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorDirectoryNotFound != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorRateLimited", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorRateLimited{}
+		v.Object = "error"
+		v.Status = 429
+		v.Code = "rate_limited"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorRateLimited: &v}, func(u RetrieveAsyncTaskOkFailedError) bool { return u.RetrieveAsyncTaskOkFailedErrorRateLimited != nil })
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorServiceOverload", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorServiceOverload{}
+		v.Object = "error"
+		v.Status = 529
+		v.Code = "service_overload"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorServiceOverload: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorServiceOverload != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorInternalServerError", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorInternalServerError{}
+		v.Object = "error"
+		v.Status = 500
+		v.Code = "internal_server_error"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorInternalServerError: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorInternalServerError != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorServiceUnavailable", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorServiceUnavailable{}
+		v.Object = "error"
+		v.Status = 503
+		v.Code = "service_unavailable"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorServiceUnavailable: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorServiceUnavailable != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorGatewayTimeout", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorGatewayTimeout{}
+		v.Object = "error"
+		v.Status = 504
+		v.Code = "gateway_timeout"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorGatewayTimeout: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorGatewayTimeout != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorConflictError", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorConflictError{}
+		v.Object = "error"
+		v.Status = 409
+		v.Code = "conflict_error"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorConflictError: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorConflictError != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused{}
+		v.Object = "error"
+		v.Status = 409
+		v.Code = "idempotency_key_reused"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorRowLimitExceeded", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorRowLimitExceeded{}
+		v.Object = "error"
+		v.Status = 406
+		v.Code = "row_limit_exceeded"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorRowLimitExceeded: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorRowLimitExceeded != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed{}
+		v.Object = "error"
+		v.Status = 403
+		v.Code = "status_change_not_allowed"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorAgentDeleted", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorAgentDeleted{}
+		v.Object = "error"
+		v.Status = 409
+		v.Code = "agent_deleted"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorAgentDeleted: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorAgentDeleted != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit{}
+		v.Object = "error"
+		v.Status = 400
+		v.Code = "invalid_credit_limit"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted{}
+		v.Object = "error"
+		v.Status = 403
+		v.Code = "workspace_credits_exhausted"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted != nil
+		})
+	})
+
+	t.Run("RetrieveAsyncTaskOkFailedError/RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached", func(t *testing.T) {
+		v := RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached{}
+		v.Object = "error"
+		v.Status = 403
+		v.Code = "agent_credit_limit_reached"
+
+		roundTrip(t, RetrieveAsyncTaskOkFailedError{RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached: &v}, func(u RetrieveAsyncTaskOkFailedError) bool {
+			return u.RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached != nil
+		})
+	})
+
+	t.Run("RollupPropertyConfigurationRollupAllOf/RollupPropertyConfigurationRollupAllOfOneOf", func(t *testing.T) {
+		v := RollupPropertyConfigurationRollupAllOfOneOf{}
+
+		roundTrip(t, RollupPropertyConfigurationRollupAllOf{RollupPropertyConfigurationRollupAllOfOneOf: &v}, func(u RollupPropertyConfigurationRollupAllOf) bool {
+			return u.RollupPropertyConfigurationRollupAllOfOneOf != nil
+		})
+	})
+
+	t.Run("RollupPropertyConfigurationRollupAllOf/RollupPropertyConfigurationRollupAllOfOneOf2", func(t *testing.T) {
+		v := RollupPropertyConfigurationRollupAllOfOneOf2{}
+
+		roundTrip(t, RollupPropertyConfigurationRollupAllOf{RollupPropertyConfigurationRollupAllOfOneOf2: &v}, func(u RollupPropertyConfigurationRollupAllOf) bool {
+			return u.RollupPropertyConfigurationRollupAllOfOneOf2 != nil
+		})
+	})
+
+	t.Run("RollupPropertyConfigurationRollupAllOf/RollupPropertyConfigurationRollupAllOfOneOf3", func(t *testing.T) {
+		v := RollupPropertyConfigurationRollupAllOfOneOf3{}
+
+		roundTrip(t, RollupPropertyConfigurationRollupAllOf{RollupPropertyConfigurationRollupAllOfOneOf3: &v}, func(u RollupPropertyConfigurationRollupAllOf) bool {
+			return u.RollupPropertyConfigurationRollupAllOfOneOf3 != nil
+		})
+	})
+
+	t.Run("RollupPropertyConfigurationRollupAllOf/RollupPropertyConfigurationRollupAllOfOneOf4", func(t *testing.T) {
+		v := RollupPropertyConfigurationRollupAllOfOneOf4{}
+
+		roundTrip(t, RollupPropertyConfigurationRollupAllOf{RollupPropertyConfigurationRollupAllOfOneOf4: &v}, func(u RollupPropertyConfigurationRollupAllOf) bool {
+			return u.RollupPropertyConfigurationRollupAllOfOneOf4 != nil
+		})
+	})
+
+	t.Run("SessionEventListResultsItem/SessionEventListResultsItemUserMessage", func(t *testing.T) {
+		v := SessionEventListResultsItemUserMessage{}
+		v.Object = "session_event"
+		v.Type = "user.message"
+
+		roundTrip(t, SessionEventListResultsItem{SessionEventListResultsItemUserMessage: &v}, func(u SessionEventListResultsItem) bool { return u.SessionEventListResultsItemUserMessage != nil })
+	})
+
+	t.Run("SessionEventListResultsItem/SessionEventListResultsItemAgentMessage", func(t *testing.T) {
+		v := SessionEventListResultsItemAgentMessage{}
+		v.Object = "session_event"
+		v.Type = "agent.message"
+
+		roundTrip(t, SessionEventListResultsItem{SessionEventListResultsItemAgentMessage: &v}, func(u SessionEventListResultsItem) bool { return u.SessionEventListResultsItemAgentMessage != nil })
+	})
+
+	t.Run("SessionEventListResultsItem/SessionEventListResultsItemAgentThinking", func(t *testing.T) {
+		v := SessionEventListResultsItemAgentThinking{}
+		v.Object = "session_event"
+		v.Type = "agent.thinking"
+
+		roundTrip(t, SessionEventListResultsItem{SessionEventListResultsItemAgentThinking: &v}, func(u SessionEventListResultsItem) bool { return u.SessionEventListResultsItemAgentThinking != nil })
+	})
+
+	t.Run("SessionEventListResultsItem/SessionEventListResultsItemAgentToolUse", func(t *testing.T) {
+		v := SessionEventListResultsItemAgentToolUse{}
+		v.Object = "session_event"
+		v.Type = "agent.tool_use"
+
+		roundTrip(t, SessionEventListResultsItem{SessionEventListResultsItemAgentToolUse: &v}, func(u SessionEventListResultsItem) bool { return u.SessionEventListResultsItemAgentToolUse != nil })
+	})
+
+	t.Run("SessionEventListResultsItem/SessionEventListResultsItemAgentToolResult", func(t *testing.T) {
+		v := SessionEventListResultsItemAgentToolResult{}
+		v.Object = "session_event"
+		v.Type = "agent.tool_result"
+
+		roundTrip(t, SessionEventListResultsItem{SessionEventListResultsItemAgentToolResult: &v}, func(u SessionEventListResultsItem) bool { return u.SessionEventListResultsItemAgentToolResult != nil })
+	})
+
+	t.Run("SessionEventListResultsItem/SessionEventListResultsItemSessionStatus", func(t *testing.T) {
+		v := SessionEventListResultsItemSessionStatus{}
+		v.Object = "session_event"
+		v.Type = "session.status"
+		v.Status = "requires_action"
+
+		roundTrip(t, SessionEventListResultsItem{SessionEventListResultsItemSessionStatus: &v}, func(u SessionEventListResultsItem) bool { return u.SessionEventListResultsItemSessionStatus != nil })
+	})
+
+	t.Run("SessionEventListResultsItemUserMessageContentItem/SessionEventListResultsItemUserMessageContentItemText", func(t *testing.T) {
+		v := SessionEventListResultsItemUserMessageContentItemText{}
+		v.Type = "text"
+
+		roundTrip(t, SessionEventListResultsItemUserMessageContentItem{SessionEventListResultsItemUserMessageContentItemText: &v}, func(u SessionEventListResultsItemUserMessageContentItem) bool {
+			return u.SessionEventListResultsItemUserMessageContentItemText != nil
+		})
+	})
+
+	t.Run("SessionEventListResultsItemUserMessageContentItem/SessionEventListResultsItemUserMessageContentItemFile", func(t *testing.T) {
+		v := SessionEventListResultsItemUserMessageContentItemFile{}
+		v.Type = "file"
+
+		roundTrip(t, SessionEventListResultsItemUserMessageContentItem{SessionEventListResultsItemUserMessageContentItemFile: &v}, func(u SessionEventListResultsItemUserMessageContentItem) bool {
+			return u.SessionEventListResultsItemUserMessageContentItemFile != nil
+		})
+	})
+
+	t.Run("SessionModels/SessionModelsAuto", func(t *testing.T) {
+		v := SessionModelsAuto{}
+		v.Type = "auto"
+
+		roundTrip(t, SessionModels{SessionModelsAuto: &v}, func(u SessionModels) bool { return u.SessionModelsAuto != nil })
+	})
+
+	t.Run("SessionModels/SessionModelsPinned", func(t *testing.T) {
+		v := SessionModelsPinned{}
+		v.Type = "pinned"
+
+		roundTrip(t, SessionModels{SessionModelsPinned: &v}, func(u SessionModels) bool { return u.SessionModelsPinned != nil })
+	})
+
+	t.Run("SessionNestedFilter/SessionIDFilter", func(t *testing.T) {
+		v := SessionIDFilter{}
+		v.Property = "id"
+
+		roundTrip(t, SessionNestedFilter{SessionIDFilter: &v}, func(u SessionNestedFilter) bool { return u.SessionIDFilter != nil })
+	})
+
+	t.Run("SessionNestedFilter/SessionAgentIDFilter", func(t *testing.T) {
+		v := SessionAgentIDFilter{}
+		v.Property = "agent_id"
+
+		roundTrip(t, SessionNestedFilter{SessionAgentIDFilter: &v}, func(u SessionNestedFilter) bool { return u.SessionAgentIDFilter != nil })
+	})
+
+	t.Run("SessionNestedFilter/SessionStatusFilter", func(t *testing.T) {
+		v := SessionStatusFilter{}
+		v.Property = "status"
+
+		roundTrip(t, SessionNestedFilter{SessionStatusFilter: &v}, func(u SessionNestedFilter) bool { return u.SessionStatusFilter != nil })
+	})
+
+	t.Run("SessionNestedFilter/SessionTimestampFilter", func(t *testing.T) {
+		v := SessionTimestampFilter{}
+		v.Property = "created_at"
+
+		roundTrip(t, SessionNestedFilter{SessionTimestampFilter: &v}, func(u SessionNestedFilter) bool { return u.SessionTimestampFilter != nil })
+	})
+
+	t.Run("SessionNestedFilter/SessionNestedFilterAnd", func(t *testing.T) {
+		v := SessionNestedFilterAnd{}
+
+		roundTrip(t, SessionNestedFilter{SessionNestedFilterAnd: &v}, func(u SessionNestedFilter) bool { return u.SessionNestedFilterAnd != nil })
+	})
+
+	t.Run("SessionNestedFilter/SessionNestedFilterOr", func(t *testing.T) {
+		v := SessionNestedFilterOr{}
+
+		roundTrip(t, SessionNestedFilter{SessionNestedFilterOr: &v}, func(u SessionNestedFilter) bool { return u.SessionNestedFilterOr != nil })
+	})
+
+	t.Run("SessionNestedFilterOrItem/SessionIDFilter", func(t *testing.T) {
+		v := SessionIDFilter{}
+		v.Property = "id"
+
+		roundTrip(t, SessionNestedFilterOrItem{SessionIDFilter: &v}, func(u SessionNestedFilterOrItem) bool { return u.SessionIDFilter != nil })
+	})
+
+	t.Run("SessionNestedFilterOrItem/SessionAgentIDFilter", func(t *testing.T) {
+		v := SessionAgentIDFilter{}
+		v.Property = "agent_id"
+
+		roundTrip(t, SessionNestedFilterOrItem{SessionAgentIDFilter: &v}, func(u SessionNestedFilterOrItem) bool { return u.SessionAgentIDFilter != nil })
+	})
+
+	t.Run("SessionNestedFilterOrItem/SessionStatusFilter", func(t *testing.T) {
+		v := SessionStatusFilter{}
+		v.Property = "status"
+
+		roundTrip(t, SessionNestedFilterOrItem{SessionStatusFilter: &v}, func(u SessionNestedFilterOrItem) bool { return u.SessionStatusFilter != nil })
+	})
+
+	t.Run("SessionNestedFilterOrItem/SessionTimestampFilter", func(t *testing.T) {
+		v := SessionTimestampFilter{}
+		v.Property = "created_at"
+
+		roundTrip(t, SessionNestedFilterOrItem{SessionTimestampFilter: &v}, func(u SessionNestedFilterOrItem) bool { return u.SessionTimestampFilter != nil })
+	})
+
+	t.Run("Sort/PropertySort", func(t *testing.T) {
+		v := PropertySort{}
+		v.Direction = "ascending"
+
+		roundTrip(t, Sort{PropertySort: &v}, func(u Sort) bool { return u.PropertySort != nil })
+	})
+
+	t.Run("Sort/TimestampSort", func(t *testing.T) {
+		v := TimestampSort{}
+		v.Timestamp = "created_time"
+		v.Direction = "ascending"
+
+		roundTrip(t, Sort{TimestampSort: &v}, func(u Sort) bool { return u.TimestampSort != nil })
+	})
+
+	t.Run("StatusGroupNames/String", func(t *testing.T) {
+		v := String("sample")
+
+		roundTrip(t, StatusGroupNames{String: v}, func(u StatusGroupNames) bool { return u.String != "" })
+	})
+
+	t.Run("StatusGroupNames/String2", func(t *testing.T) {
+		v := []String{String("sample")}
+
+		roundTrip(t, StatusGroupNames{String2: v}, func(u StatusGroupNames) bool { return u.String2 != nil })
+	})
+
+	t.Run("StatusOptionUpdateAllOf/StatusOptionUpdateAllOfName", func(t *testing.T) {
+		v := StatusOptionUpdateAllOfName{}
+
+		roundTrip(t, StatusOptionUpdateAllOf{StatusOptionUpdateAllOfName: &v}, func(u StatusOptionUpdateAllOf) bool { return u.StatusOptionUpdateAllOfName != nil })
+	})
+
+	t.Run("StatusOptionUpdateAllOf/StatusOptionUpdateAllOfID", func(t *testing.T) {
+		v := StatusOptionUpdateAllOfID{}
+
+		roundTrip(t, StatusOptionUpdateAllOf{StatusOptionUpdateAllOfID: &v}, func(u StatusOptionUpdateAllOf) bool { return u.StatusOptionUpdateAllOfID != nil })
+	})
+
+	t.Run("StringOrStringArray/String", func(t *testing.T) {
+		v := "sample"
+
+		roundTrip(t, StringOrStringArray{String: v}, func(u StringOrStringArray) bool { return u.String != "" })
+	})
+
+	t.Run("StringOrStringArray/String2", func(t *testing.T) {
+		v := []string{"sample"}
+
+		roundTrip(t, StringOrStringArray{String2: v}, func(u StringOrStringArray) bool { return u.String2 != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockBookmark", func(t *testing.T) {
+		v := UpdateABlockBookmark{}
+		v.Type = "bookmark"
+
+		roundTrip(t, UpdateABlock{UpdateABlockBookmark: &v}, func(u UpdateABlock) bool { return u.UpdateABlockBookmark != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockImage", func(t *testing.T) {
+		v := UpdateABlockImage{}
+		v.Type = "image"
+
+		roundTrip(t, UpdateABlock{UpdateABlockImage: &v}, func(u UpdateABlock) bool { return u.UpdateABlockImage != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockVideo", func(t *testing.T) {
+		v := UpdateABlockVideo{}
+		v.Type = "video"
+
+		roundTrip(t, UpdateABlock{UpdateABlockVideo: &v}, func(u UpdateABlock) bool { return u.UpdateABlockVideo != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockPdf", func(t *testing.T) {
+		v := UpdateABlockPdf{}
+		v.Type = "pdf"
+
+		roundTrip(t, UpdateABlock{UpdateABlockPdf: &v}, func(u UpdateABlock) bool { return u.UpdateABlockPdf != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockFile", func(t *testing.T) {
+		v := UpdateABlockFile{}
+		v.Type = "file"
+
+		roundTrip(t, UpdateABlock{UpdateABlockFile: &v}, func(u UpdateABlock) bool { return u.UpdateABlockFile != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockAudio", func(t *testing.T) {
+		v := UpdateABlockAudio{}
+		v.Type = "audio"
+
+		roundTrip(t, UpdateABlock{UpdateABlockAudio: &v}, func(u UpdateABlock) bool { return u.UpdateABlockAudio != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockCode", func(t *testing.T) {
+		v := UpdateABlockCode{}
+		v.Type = "code"
+
+		roundTrip(t, UpdateABlock{UpdateABlockCode: &v}, func(u UpdateABlock) bool { return u.UpdateABlockCode != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockEquation", func(t *testing.T) {
+		v := UpdateABlockEquation{}
+		v.Type = "equation"
+
+		roundTrip(t, UpdateABlock{UpdateABlockEquation: &v}, func(u UpdateABlock) bool { return u.UpdateABlockEquation != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockDivider", func(t *testing.T) {
+		v := UpdateABlockDivider{}
+		v.Type = "divider"
+
+		roundTrip(t, UpdateABlock{UpdateABlockDivider: &v}, func(u UpdateABlock) bool { return u.UpdateABlockDivider != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockBreadcrumb", func(t *testing.T) {
+		v := UpdateABlockBreadcrumb{}
+		v.Type = "breadcrumb"
+
+		roundTrip(t, UpdateABlock{UpdateABlockBreadcrumb: &v}, func(u UpdateABlock) bool { return u.UpdateABlockBreadcrumb != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockTab", func(t *testing.T) {
+		v := UpdateABlockTab{}
+		v.Type = "tab"
+
+		roundTrip(t, UpdateABlock{UpdateABlockTab: &v}, func(u UpdateABlock) bool { return u.UpdateABlockTab != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockTableOfContents", func(t *testing.T) {
+		v := UpdateABlockTableOfContents{}
+		v.Type = "table_of_contents"
+
+		roundTrip(t, UpdateABlock{UpdateABlockTableOfContents: &v}, func(u UpdateABlock) bool { return u.UpdateABlockTableOfContents != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockTableRow", func(t *testing.T) {
+		v := UpdateABlockTableRow{}
+		v.Type = "table_row"
+
+		roundTrip(t, UpdateABlock{UpdateABlockTableRow: &v}, func(u UpdateABlock) bool { return u.UpdateABlockTableRow != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockHeading1", func(t *testing.T) {
+		v := UpdateABlockHeading1{}
+		v.Type = "heading_1"
+
+		roundTrip(t, UpdateABlock{UpdateABlockHeading1: &v}, func(u UpdateABlock) bool { return u.UpdateABlockHeading1 != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockHeading2", func(t *testing.T) {
+		v := UpdateABlockHeading2{}
+		v.Type = "heading_2"
+
+		roundTrip(t, UpdateABlock{UpdateABlockHeading2: &v}, func(u UpdateABlock) bool { return u.UpdateABlockHeading2 != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockHeading3", func(t *testing.T) {
+		v := UpdateABlockHeading3{}
+		v.Type = "heading_3"
+
+		roundTrip(t, UpdateABlock{UpdateABlockHeading3: &v}, func(u UpdateABlock) bool { return u.UpdateABlockHeading3 != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockHeading4", func(t *testing.T) {
+		v := UpdateABlockHeading4{}
+		v.Type = "heading_4"
+
+		roundTrip(t, UpdateABlock{UpdateABlockHeading4: &v}, func(u UpdateABlock) bool { return u.UpdateABlockHeading4 != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockParagraph", func(t *testing.T) {
+		v := UpdateABlockParagraph{}
+		v.Type = "paragraph"
+
+		roundTrip(t, UpdateABlock{UpdateABlockParagraph: &v}, func(u UpdateABlock) bool { return u.UpdateABlockParagraph != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockBulletedListItem", func(t *testing.T) {
+		v := UpdateABlockBulletedListItem{}
+		v.Type = "bulleted_list_item"
+
+		roundTrip(t, UpdateABlock{UpdateABlockBulletedListItem: &v}, func(u UpdateABlock) bool { return u.UpdateABlockBulletedListItem != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockNumberedListItem", func(t *testing.T) {
+		v := UpdateABlockNumberedListItem{}
+		v.Type = "numbered_list_item"
+
+		roundTrip(t, UpdateABlock{UpdateABlockNumberedListItem: &v}, func(u UpdateABlock) bool { return u.UpdateABlockNumberedListItem != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockQuote", func(t *testing.T) {
+		v := UpdateABlockQuote{}
+		v.Type = "quote"
+
+		roundTrip(t, UpdateABlock{UpdateABlockQuote: &v}, func(u UpdateABlock) bool { return u.UpdateABlockQuote != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockToDo", func(t *testing.T) {
+		v := UpdateABlockToDo{}
+		v.Type = "to_do"
+
+		roundTrip(t, UpdateABlock{UpdateABlockToDo: &v}, func(u UpdateABlock) bool { return u.UpdateABlockToDo != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockToggle", func(t *testing.T) {
+		v := UpdateABlockToggle{}
+		v.Type = "toggle"
+
+		roundTrip(t, UpdateABlock{UpdateABlockToggle: &v}, func(u UpdateABlock) bool { return u.UpdateABlockToggle != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockTemplate", func(t *testing.T) {
+		v := UpdateABlockTemplate{}
+		v.Type = "template"
+
+		roundTrip(t, UpdateABlock{UpdateABlockTemplate: &v}, func(u UpdateABlock) bool { return u.UpdateABlockTemplate != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockCallout", func(t *testing.T) {
+		v := UpdateABlockCallout{}
+		v.Type = "callout"
+
+		roundTrip(t, UpdateABlock{UpdateABlockCallout: &v}, func(u UpdateABlock) bool { return u.UpdateABlockCallout != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockSyncedBlock", func(t *testing.T) {
+		v := UpdateABlockSyncedBlock{}
+		v.Type = "synced_block"
+
+		roundTrip(t, UpdateABlock{UpdateABlockSyncedBlock: &v}, func(u UpdateABlock) bool { return u.UpdateABlockSyncedBlock != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockTable", func(t *testing.T) {
+		v := UpdateABlockTable{}
+		v.Type = "table"
+
+		roundTrip(t, UpdateABlock{UpdateABlockTable: &v}, func(u UpdateABlock) bool { return u.UpdateABlockTable != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockColumn", func(t *testing.T) {
+		v := UpdateABlockColumn{}
+		v.Type = "column"
+
+		roundTrip(t, UpdateABlock{UpdateABlockColumn: &v}, func(u UpdateABlock) bool { return u.UpdateABlockColumn != nil })
+	})
+
+	t.Run("UpdateABlock/UpdateABlockAnyOf30", func(t *testing.T) {
+		v := UpdateABlockAnyOf30{}
+
+		roundTrip(t, UpdateABlock{UpdateABlockAnyOf30: &v}, func(u UpdateABlock) bool { return u.UpdateABlockAnyOf30 != nil })
+	})
+
+	t.Run("UpdateABlockEmbedEmbed/UpdateMediaContentWithURLAndCaption", func(t *testing.T) {
+		v := UpdateMediaContentWithURLAndCaption{}
+
+		roundTrip(t, UpdateABlockEmbedEmbed{UpdateMediaContentWithURLAndCaption: &v}, func(u UpdateABlockEmbedEmbed) bool { return u.UpdateMediaContentWithURLAndCaption != nil })
+	})
+
+	t.Run("UpdateABlockEmbedEmbed/UpdateEmbedFileUpload", func(t *testing.T) {
+		v := UpdateEmbedFileUpload{}
+
+		roundTrip(t, UpdateABlockEmbedEmbed{UpdateEmbedFileUpload: &v}, func(u UpdateABlockEmbedEmbed) bool { return u.UpdateEmbedFileUpload != nil })
+	})
+
+	t.Run("UpdateACommentAllOf0/UpdateACommentAllOf0RichText", func(t *testing.T) {
+		v := UpdateACommentAllOf0RichText{}
+
+		roundTrip(t, UpdateACommentAllOf0{UpdateACommentAllOf0RichText: &v}, func(u UpdateACommentAllOf0) bool { return u.UpdateACommentAllOf0RichText != nil })
+	})
+
+	t.Run("UpdateACommentAllOf0/UpdateACommentAllOf0Markdown", func(t *testing.T) {
+		v := UpdateACommentAllOf0Markdown{}
+
+		roundTrip(t, UpdateACommentAllOf0{UpdateACommentAllOf0Markdown: &v}, func(u UpdateACommentAllOf0) bool { return u.UpdateACommentAllOf0Markdown != nil })
+	})
+
+	t.Run("UpdateAgentModel/AgentModelAuto", func(t *testing.T) {
+		v := AgentModelAuto{}
+		v.Mode = "auto"
+
+		roundTrip(t, UpdateAgentModel{AgentModelAuto: &v}, func(u UpdateAgentModel) bool { return u.AgentModelAuto != nil })
+	})
+
+	t.Run("UpdateAgentModel/UpdateAgentModelPinned", func(t *testing.T) {
+		v := UpdateAgentModelPinned{}
+		v.Mode = "pinned"
+
+		roundTrip(t, UpdateAgentModel{UpdateAgentModelPinned: &v}, func(u UpdateAgentModel) bool { return u.UpdateAgentModelPinned != nil })
+	})
+
+	t.Run("UpdatePageMarkdownAcceptedOperation/UpdatePageMarkdownAcceptedOperationRest", func(t *testing.T) {
+		v := UpdatePageMarkdownAcceptedOperationRest{}
+		v.Surface = "rest"
+		v.Name = "PATCH /v1/pages/:page_id/markdown"
+
+		roundTrip(t, UpdatePageMarkdownAcceptedOperation{UpdatePageMarkdownAcceptedOperationRest: &v}, func(u UpdatePageMarkdownAcceptedOperation) bool {
+			return u.UpdatePageMarkdownAcceptedOperationRest != nil
+		})
+	})
+
+	t.Run("UpdatePageMarkdownAcceptedOperation/UpdatePageMarkdownAcceptedOperationMcp", func(t *testing.T) {
+		v := UpdatePageMarkdownAcceptedOperationMcp{}
+		v.Surface = "mcp"
+		v.Name = "create_pages"
+
+		roundTrip(t, UpdatePageMarkdownAcceptedOperation{UpdatePageMarkdownAcceptedOperationMcp: &v}, func(u UpdatePageMarkdownAcceptedOperation) bool {
+			return u.UpdatePageMarkdownAcceptedOperationMcp != nil
+		})
+	})
+
+	t.Run("UpdateSessionRequest/UpdateSessionRequestMessage", func(t *testing.T) {
+		v := UpdateSessionRequestMessage{}
+
+		roundTrip(t, UpdateSessionRequest{UpdateSessionRequestMessage: &v}, func(u UpdateSessionRequest) bool { return u.UpdateSessionRequestMessage != nil })
+	})
+
+	t.Run("UpdateSessionRequest/UpdateSessionRequestOneOf1", func(t *testing.T) {
+		v := UpdateSessionRequestOneOf1{}
+
+		roundTrip(t, UpdateSessionRequest{UpdateSessionRequestOneOf1: &v}, func(u UpdateSessionRequest) bool { return u.UpdateSessionRequestOneOf1 != nil })
+	})
+
+	t.Run("UpdateSessionRequest/UpdateSessionRequestOneOf2", func(t *testing.T) {
+		v := UpdateSessionRequestOneOf2{}
+
+		roundTrip(t, UpdateSessionRequest{UpdateSessionRequestOneOf2: &v}, func(u UpdateSessionRequest) bool { return u.UpdateSessionRequestOneOf2 != nil })
+	})
+
+	t.Run("UserOrPartial/PartialUserObjectResponse", func(t *testing.T) {
+		v := PartialUserObjectResponse{}
+		v.Object = "user"
+
+		roundTrip(t, UserOrPartial{PartialUserObjectResponse: &v}, func(u UserOrPartial) bool { return u.PartialUserObjectResponse != nil })
+	})
+
+	t.Run("ViewConfig/TableViewConfig", func(t *testing.T) {
+		v := TableViewConfig{}
+		v.Type = "table"
+
+		roundTrip(t, ViewConfig{TableViewConfig: &v}, func(u ViewConfig) bool { return u.TableViewConfig != nil })
+	})
+
+	t.Run("ViewConfig/CalendarViewConfig", func(t *testing.T) {
+		v := CalendarViewConfig{}
+		v.Type = "calendar"
+
+		roundTrip(t, ViewConfig{CalendarViewConfig: &v}, func(u ViewConfig) bool { return u.CalendarViewConfig != nil })
+	})
+
+	t.Run("ViewConfig/TimelineViewConfig", func(t *testing.T) {
+		v := TimelineViewConfig{}
+		v.Type = "timeline"
+
+		roundTrip(t, ViewConfig{TimelineViewConfig: &v}, func(u ViewConfig) bool { return u.TimelineViewConfig != nil })
+	})
+
+	t.Run("ViewConfig/GalleryViewConfig", func(t *testing.T) {
+		v := GalleryViewConfig{}
+		v.Type = "gallery"
+
+		roundTrip(t, ViewConfig{GalleryViewConfig: &v}, func(u ViewConfig) bool { return u.GalleryViewConfig != nil })
+	})
+
+	t.Run("ViewConfig/ListViewConfig", func(t *testing.T) {
+		v := ListViewConfig{}
+		v.Type = "list"
+
+		roundTrip(t, ViewConfig{ListViewConfig: &v}, func(u ViewConfig) bool { return u.ListViewConfig != nil })
+	})
+
+	t.Run("ViewConfig/MapViewConfig", func(t *testing.T) {
+		v := MapViewConfig{}
+		v.Type = "map"
+
+		roundTrip(t, ViewConfig{MapViewConfig: &v}, func(u ViewConfig) bool { return u.MapViewConfig != nil })
+	})
+
+	t.Run("ViewConfig/FormViewConfig", func(t *testing.T) {
+		v := FormViewConfig{}
+		v.Type = "form"
+
+		roundTrip(t, ViewConfig{FormViewConfig: &v}, func(u ViewConfig) bool { return u.FormViewConfig != nil })
+	})
+
+	t.Run("ViewConfig/ChartViewConfig", func(t *testing.T) {
+		v := ChartViewConfig{}
+		v.Type = "chart"
+		v.ChartType = "column"
+
+		roundTrip(t, ViewConfig{ChartViewConfig: &v}, func(u ViewConfig) bool { return u.ChartViewConfig != nil })
+	})
+
+	t.Run("ViewConfigResponse/TableViewConfigResponse", func(t *testing.T) {
+		v := TableViewConfigResponse{}
+		v.Type = "table"
+
+		roundTrip(t, ViewConfigResponse{TableViewConfigResponse: &v}, func(u ViewConfigResponse) bool { return u.TableViewConfigResponse != nil })
+	})
+
+	t.Run("ViewConfigResponse/CalendarViewConfigResponse", func(t *testing.T) {
+		v := CalendarViewConfigResponse{}
+		v.Type = "calendar"
+		v.ViewRange = "week"
+
+		roundTrip(t, ViewConfigResponse{CalendarViewConfigResponse: &v}, func(u ViewConfigResponse) bool { return u.CalendarViewConfigResponse != nil })
+	})
+
+	t.Run("ViewConfigResponse/TimelineViewConfigResponse", func(t *testing.T) {
+		v := TimelineViewConfigResponse{}
+		v.Type = "timeline"
+
+		roundTrip(t, ViewConfigResponse{TimelineViewConfigResponse: &v}, func(u ViewConfigResponse) bool { return u.TimelineViewConfigResponse != nil })
+	})
+
+	t.Run("ViewConfigResponse/GalleryViewConfigResponse", func(t *testing.T) {
+		v := GalleryViewConfigResponse{}
+		v.Type = "gallery"
+		v.CoverSize = "small"
+		v.CoverAspect = "contain"
+		v.CardLayout = "list"
+
+		roundTrip(t, ViewConfigResponse{GalleryViewConfigResponse: &v}, func(u ViewConfigResponse) bool { return u.GalleryViewConfigResponse != nil })
+	})
+
+	t.Run("ViewConfigResponse/ListViewConfigResponse", func(t *testing.T) {
+		v := ListViewConfigResponse{}
+		v.Type = "list"
+
+		roundTrip(t, ViewConfigResponse{ListViewConfigResponse: &v}, func(u ViewConfigResponse) bool { return u.ListViewConfigResponse != nil })
+	})
+
+	t.Run("ViewConfigResponse/MapViewConfigResponse", func(t *testing.T) {
+		v := MapViewConfigResponse{}
+		v.Type = "map"
+		v.Height = "small"
+
+		roundTrip(t, ViewConfigResponse{MapViewConfigResponse: &v}, func(u ViewConfigResponse) bool { return u.MapViewConfigResponse != nil })
+	})
+
+	t.Run("ViewConfigResponse/FormViewConfigResponse", func(t *testing.T) {
+		v := FormViewConfigResponse{}
+		v.Type = "form"
+		v.SubmissionPermissions = "none"
+
+		roundTrip(t, ViewConfigResponse{FormViewConfigResponse: &v}, func(u ViewConfigResponse) bool { return u.FormViewConfigResponse != nil })
+	})
+
+	t.Run("ViewConfigResponse/ChartViewConfigResponse", func(t *testing.T) {
+		v := ChartViewConfigResponse{}
+		v.Type = "chart"
+		v.ChartType = "column"
+		v.Sort = "manual"
+		v.ColorTheme = "gray"
+		v.Height = "small"
+		v.LegendPosition = "off"
+		v.AxisLabels = "none"
+		v.GridLines = "none"
+		v.GroupStyle = "normal"
+		v.DonutLabels = "none"
+
+		roundTrip(t, ViewConfigResponse{ChartViewConfigResponse: &v}, func(u ViewConfigResponse) bool { return u.ChartViewConfigResponse != nil })
+	})
+
+	t.Run("ViewConfigResponse/DashboardViewConfigResponse", func(t *testing.T) {
+		v := DashboardViewConfigResponse{}
+		v.Type = "dashboard"
+
+		roundTrip(t, ViewConfigResponse{DashboardViewConfigResponse: &v}, func(u ViewConfigResponse) bool { return u.DashboardViewConfigResponse != nil })
+	})
+
+	t.Run("ViewPosition/ViewPositionStart", func(t *testing.T) {
+		v := ViewPositionStart{}
+		v.Type = "start"
+
+		roundTrip(t, ViewPosition{ViewPositionStart: &v}, func(u ViewPosition) bool { return u.ViewPositionStart != nil })
+	})
+
+	t.Run("ViewPosition/ViewPositionEnd", func(t *testing.T) {
+		v := ViewPositionEnd{}
+		v.Type = "end"
+
+		roundTrip(t, ViewPosition{ViewPositionEnd: &v}, func(u ViewPosition) bool { return u.ViewPositionEnd != nil })
+	})
+
+	t.Run("ViewPosition/ViewPositionAfterView", func(t *testing.T) {
+		v := ViewPositionAfterView{}
+		v.Type = "after_view"
+
+		roundTrip(t, ViewPosition{ViewPositionAfterView: &v}, func(u ViewPosition) bool { return u.ViewPositionAfterView != nil })
+	})
+}
+
+// roundTrip encodes in and decodes it strictly into a new value, which set must report holds the variant in did, and
+// which must encode as in did.
+func roundTrip[T any](t *testing.T, in T, set func(T) bool) {
+	t.Helper()
+
+	raw, err := json.Marshal(&in, jsonOpts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var got T
+	if err := json.Unmarshal(raw, &got, jsonOpts); err != nil {
+		t.Fatalf("%s: %v", raw, err)
+	}
+
+	if !set(got) {
+		t.Fatalf("%s decoded as another variant: %+v", raw, got)
+	}
+
+	again, err := json.Marshal(&got, jsonOpts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !bytes.Equal(again, raw) {
+		t.Errorf("encoded %s, then %s", raw, again)
 	}
 }
