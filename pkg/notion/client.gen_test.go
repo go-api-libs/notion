@@ -44825,9 +44825,9 @@ func TestClient_Interactions(t *testing.T) {
 	}
 
 	if out, err := c.PostDatabaseQuery(ctx, uuid.MustParse("9201f6db-2895-4450-9435-041541a181dd"), &PostDatabaseQueryParams{}, PostDatabaseQuery{
-		Sorts:    mustDecodeBody[Sorts](t, "[{\"property\":\"mFVH\",\"direction\":\"ascending\"},{\"direction\":\"descending\",\"property\":\"Blch\"},{\"property\":\"kF@C\",\"direction\":\"ascending\"}]"),
+		Sorts:    mustDecodeBody[Sorts](t, "[{\"property\":\"mFVH\",\"direction\":\"ascending\"},{\"property\":\"Blch\",\"direction\":\"descending\"},{\"property\":\"kF@C\",\"direction\":\"ascending\"}]"),
 		PageSize: 3,
-		Filter:   mustDecodeBody[Filter](t, "{\"or\":[{\"date\":{\"equals\":\"today\"},\"property\":\"Blch\"},{\"and\":[{\"date\":{\"equals\":\"yesterday\"},\"property\":\"Blch\"},{\"formula\":{\"number\":{\"less_than\":24}},\"property\":\";pl:\"}]},{\"and\":[{\"property\":\"@F<W\",\"select\":{\"does_not_equal\":\"Done\"}},{\"created_time\":{\"on_or_after\":\"2024-04-13\"},\"property\":\"kF@C\"}]}]}"),
+		Filter:   mustDecodeBody[Filter](t, "{\"or\":[{\"property\":\"Blch\",\"date\":{\"equals\":\"today\"}},{\"and\":[{\"date\":{\"equals\":\"yesterday\"},\"property\":\"Blch\"},{\"formula\":{\"number\":{\"less_than\":24}},\"property\":\";pl:\"}]},{\"and\":[{\"property\":\"@F<W\",\"select\":{\"does_not_equal\":\"Done\"}},{\"created_time\":{\"on_or_after\":\"2024-04-13\"},\"property\":\"kF@C\"}]}]}"),
 	}); err != nil {
 		t.Fatalf("PostDatabaseQuery: %v", err)
 	} else {
