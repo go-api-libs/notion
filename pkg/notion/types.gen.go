@@ -26,6 +26,7 @@ var jsonOpts = json.JoinOptions(
 	json.RejectUnknownMembers(true),
 	json.WithMarshalers(json.JoinMarshalers(
 		json.MarshalToFunc(jsonutil.URLMarshal),
+		json.MarshalToFunc(jsonutil.DateMarshalZeroAsNull),
 	)),
 	json.WithUnmarshalers(json.JoinUnmarshalers(
 		json.UnmarshalFromFunc(jsonutil.URLUnmarshal),
@@ -9433,7 +9434,7 @@ type FileUploadObjectResponse struct {
 	CreatedBy      FileUploadObjectResponseCreatedBy `json:"created_by"`
 	LastEditedTime time.Time                         `json:"last_edited_time"`
 	InTrash        bool                              `json:"in_trash"`
-	ExpiryTime     *time.Time                        `json:"expiry_time"`
+	ExpiryTime     time.Time                         `json:"expiry_time"`
 	// One of: `pending`, `uploaded`, `expired`, `failed`
 	Status           Status                                   `json:"status"`
 	Filename         string                                   `json:"filename"`
@@ -11496,11 +11497,11 @@ func (v *LastEditedTimePropertyItemObjectResponse) unmarshalJSONMember(dec *json
 
 // LastVisitedTimePropertyItemObjectResponse defines a model
 type LastVisitedTimePropertyItemObjectResponse struct {
-	Type            string     `json:"type"`
-	LastVisitedTime *time.Time `json:"last_visited_time"`
-	Object          string     `json:"object"`
-	ID              string     `json:"id"`
-	RequestID       uuid.UUID  `json:"request_id,omitzero"`
+	Type            string    `json:"type"`
+	LastVisitedTime time.Time `json:"last_visited_time"`
+	Object          string    `json:"object"`
+	ID              string    `json:"id"`
+	RequestID       uuid.UUID `json:"request_id,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether LastVisitedTimePropertyItemObjectResponse declares it.
