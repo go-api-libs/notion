@@ -8,7 +8,7 @@ require (
 	github.com/MarkRosemaker/errpath v0.0.0-20261109120451-91cd29644c73
 	github.com/MarkRosemaker/jsonutil v0.0.0-20261111050223-68d2dd492e9f
 	github.com/MarkRosemaker/openapi v0.0.0-20261111050345-49f46392a86f
-	github.com/MarkRosemaker/openapi-codegen v0.0.0-20261111051333-a5c430102e6c
+	github.com/MarkRosemaker/openapi-codegen v0.0.0-20261111110828-c7120a4ea98d
 	github.com/MarkRosemaker/openapi-compress v0.0.0-20261111050805-65d14603f013
 	github.com/MarkRosemaker/openapi-edit v0.0.0-20261111050454-33d2b1efa537
 	github.com/MarkRosemaker/openapi-enrich v0.0.0-20261111050720-ea17a7fff3df
