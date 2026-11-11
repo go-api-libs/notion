@@ -9069,11 +9069,11 @@ type DatePropertyFilterThisWeek struct {
 
 // DatePropertyItemObjectResponse defines a model
 type DatePropertyItemObjectResponse struct {
-	Type      string       `json:"type"`
-	Date      DateResponse `json:"date"`
-	Object    string       `json:"object"`
-	ID        string       `json:"id"`
-	RequestID uuid.UUID    `json:"request_id,omitzero"`
+	Type      string        `json:"type"`
+	Date      *DateResponse `json:"date"`
+	Object    string        `json:"object"`
+	ID        string        `json:"id"`
+	RequestID uuid.UUID     `json:"request_id,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether DatePropertyItemObjectResponse declares it.
@@ -9107,8 +9107,8 @@ type DateResponse struct {
 // DateSimplePropertyValue defines a model
 type DateSimplePropertyValue struct {
 	// Always `date`
-	Type string       `json:"type"`
-	Date DateResponse `json:"date"`
+	Type string        `json:"type"`
+	Date *DateResponse `json:"date"`
 }
 
 // DeleteAgentOk defines a model
@@ -29165,7 +29165,7 @@ func (v *VerificationPropertyItemObjectResponse) unmarshalJSONMember(dec *jsonte
 type VerificationPropertyResponse struct {
 	// One of: `verified`, `expired`
 	State      VerificationPropertyResponseState `json:"state"`
-	Date       DateResponse                      `json:"date"`
+	Date       *DateResponse                     `json:"date"`
 	VerifiedBy *UserOrPartial                    `json:"verified_by"`
 }
 
