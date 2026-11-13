@@ -143,18 +143,13 @@ func persistOpenAPI(ctx context.Context) error {
 }
 
 func stripSuffixes(doc *openapi.Document) error {
-	suffixes := []string{"Request"} // , "Response"
-
-	toRename := map[string]string{}
-	for n := range doc.Components.Schemas.ByIndex() {
-		for _, suffix := range suffixes {
-			if before, ok := strings.CutSuffix(n, suffix); ok {
-				toRename[n] = strcase.ToGoPascal(before)
-			}
+	return edit.RenameSchemasFunc(doc, func(n string) string {
+		if before, ok := strings.CutSuffix(n, "Request"); ok {
+			return strcase.ToGoPascal(before)
 		}
-	}
 
-	return edit.RenameSchemas(doc, toRename)
+		return n
+	})
 }
 
 // consolidateErrors replaces the schemas whose names start with any of prefixes, each an allOf of the common error and
@@ -173,8 +168,7 @@ func consolidateErrors(doc *openapi.Document, prefixes []string, name, common, c
 		return fmt.Errorf("no schemas start with any of %q", prefixes)
 	}
 
-	commonSchema, ok := doc.Components.Schemas[common]
-	if !ok {
+	if _, ok := doc.Components.Schemas[common]; !ok {
 		return fmt.Errorf("schema %q not found", common)
 	}
 
@@ -191,12 +185,12 @@ func consolidateErrors(doc *openapi.Document, prefixes []string, name, common, c
 
 	// set one by one, since a map literal leaves their order to chance
 	props := openapi.Schemas{}
-	props.Set("code", &openapi.Schema{Ref: &openapi.SchemaRef{Identifier: schemaRefPrefix + codeName, Value: codeSchema}})
+	props.Set("code", edit.SchemaRef(doc, codeName))
 	props.Set("status", &openapi.Schema{Type: openapi.TypeInteger, Enum: statuses.values})
 
 	first := names[0]
 	doc.Components.Schemas[first].Replace(&openapi.Schema{AllOf: openapi.SchemaList{
-		{Ref: &openapi.SchemaRef{Identifier: schemaRefPrefix + common, Value: commonSchema}},
+		edit.SchemaRef(doc, common),
 		{Type: openapi.TypeObject, Properties: props, Required: []string{"code", "status"}},
 	}})
 
@@ -405,7 +399,7 @@ func nameLists(doc *openapi.Document) {
 
 		name := strcase.ToGoPascal(of) + "List"
 		if same, ok := doc.Components.Schemas[name]; ok && equalJSON(same, s) {
-			s.Replace(&openapi.Schema{Ref: &openapi.SchemaRef{Identifier: schemaRefPrefix + name, Value: same}})
+			s.Replace(edit.SchemaRef(doc, name))
 		} else {
 			moveToComponents(doc, s, name)
 		}
@@ -459,7 +453,7 @@ func setResults(doc *openapi.Document) error {
 		moveToComponents(doc, results.Items, item)
 	}
 
-	results.Replace(&openapi.Schema{Type: openapi.TypeArray, Items: refTo(doc, item)})
+	results.Replace(&openapi.Schema{Type: openapi.TypeArray, Items: edit.SchemaRef(doc, item)})
 
 	return nil
 }
@@ -535,7 +529,7 @@ func moveToComponents(doc *openapi.Document, s *openapi.Schema, name string) (*o
 	moved := new(openapi.Schema)
 	moved.Replace(s)
 	doc.Components.Schemas.Set(name, moved)
-	s.Replace(&openapi.Schema{Ref: &openapi.SchemaRef{Identifier: schemaRefPrefix + name, Value: moved}})
+	s.Replace(edit.SchemaRef(doc, name))
 
 	return moved, name, true
 }
@@ -739,7 +733,7 @@ func allowDateTimes(doc *openapi.Document) error {
 
 			for _, alt := range append(openapi.SchemaList{p}, p.OneOf...) {
 				if alt.Type == openapi.TypeString && alt.Format == openapi.FormatDate {
-					ref := refTo(doc, name)
+					ref := edit.SchemaRef(doc, name)
 					ref.Description = alt.Description
 					alt.Replace(ref)
 
@@ -826,7 +820,7 @@ func addForm(doc *openapi.Document, union, model, like, kind string, member *ope
 		Properties: props, Required: required, AdditionalProperties: m.AdditionalProperties,
 	})
 
-	*alts = append(*alts, refTo(doc, name))
+	*alts = append(*alts, edit.SchemaRef(doc, name))
 
 	return nil
 }
@@ -844,8 +838,8 @@ func addPropertyKinds(doc *openapi.Document) error {
 		union, model, kind string
 		member             *openapi.Schema
 	}{
-		{"PropertyConfig", "lastEditedTimeDatabasePropertyConfigResponse", "place", refTo(doc, "emptyObject")},
-		{"PropertyConfig", "lastEditedTimeDatabasePropertyConfigResponse", "last_visited_time", refTo(doc, "emptyObject")},
+		{"PropertyConfig", "lastEditedTimeDatabasePropertyConfigResponse", "place", edit.SchemaRef(doc, "emptyObject")},
+		{"PropertyConfig", "lastEditedTimeDatabasePropertyConfigResponse", "last_visited_time", edit.SchemaRef(doc, "emptyObject")},
 		{"simplePropertyValueResponse", "lastEditedTimeSimplePropertyValueResponse", "last_visited_time", nullableDateTime()},
 		{"propertyItemObjectResponse", "lastEditedTimePropertyItemObjectResponse", "last_visited_time", nullableDateTime()},
 	} {
@@ -923,7 +917,7 @@ func nameSorts(doc *openapi.Document) error {
 		return errors.New("the query of a data source has no sorts")
 	}
 
-	sorts.Items = refTo(doc, "Sort")
+	sorts.Items = edit.SchemaRef(doc, "Sort")
 
 	if err := extractArrayOf(doc, "Sorts", "Sort"); err != nil {
 		return err
@@ -953,7 +947,7 @@ func nameFilter(doc *openapi.Document) error {
 		return errors.New("the query of a data source has no filter")
 	}
 
-	query.Properties.Set("filter", refTo(doc, "Filter"))
+	query.Properties.Set("filter", edit.SchemaRef(doc, "Filter"))
 
 	if err := edit.RedirectSchemas(doc, map[string]string{
 		"ViewFilter":         "Filter",
@@ -975,7 +969,7 @@ func setFilterForms(doc *openapi.Document) {
 	} {
 		props := openapi.Schemas{}
 		props.Set(c.op, &openapi.Schema{
-			Description: c.description, Type: openapi.TypeArray, MaxItems: new(uint(100)), Items: refTo(doc, "Filter"),
+			Description: c.description, Type: openapi.TypeArray, MaxItems: new(uint(100)), Items: edit.SchemaRef(doc, "Filter"),
 		})
 
 		doc.Components.Schemas.Set(c.name, &openapi.Schema{
@@ -985,7 +979,7 @@ func setFilterForms(doc *openapi.Document) {
 	}
 
 	doc.Components.Schemas["Filter"].OneOf = openapi.SchemaList{
-		refTo(doc, "FilterOr"), refTo(doc, "FilterAnd"), refTo(doc, "propertyFilter"), refTo(doc, "timestampFilter"),
+		edit.SchemaRef(doc, "FilterOr"), edit.SchemaRef(doc, "FilterAnd"), edit.SchemaRef(doc, "propertyFilter"), edit.SchemaRef(doc, "timestampFilter"),
 	}
 }
 
@@ -1004,11 +998,6 @@ func queryBody(doc *openapi.Document) (*openapi.Schema, error) {
 	}
 
 	return mt.Schema, nil
-}
-
-// refTo is a reference to the component schema name.
-func refTo(doc *openapi.Document, name string) *openapi.Schema {
-	return &openapi.Schema{Ref: &openapi.SchemaRef{Identifier: schemaRefPrefix + name, Value: doc.Components.Schemas[name]}}
 }
 
 func fixOpenAPI() (*openapi.Document, error) {
