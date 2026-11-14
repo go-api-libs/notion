@@ -617,7 +617,48 @@ func telling(alts openapi.SchemaList, i int) (string, bool) {
 		return s.Required[0], true
 	}
 
+	// an enum whose values all begin alike, as string_is and string_contains, unlike those of every other alternative
+	for _, prop := range props {
+		if v := enumPrefix(s.Properties[prop]); v != "" && !slices.ContainsFunc(alts, func(other *openapi.Schema) bool {
+			return other != s && enumPrefix(deref(other).Properties[prop]) == v
+		}) {
+			return v, true
+		}
+	}
+
 	return "", false
+}
+
+// enumPrefix is the words, joined by underscores, that every value of p's string enum of two or more begins with, as
+// string of string_is and string_contains, or "" if they share none.
+func enumPrefix(p *openapi.Schema) string {
+	if p == nil || len(deref(p).Enum) < 2 {
+		return ""
+	}
+
+	var prefix []string
+
+	for i, e := range deref(p).Enum {
+		var v string
+		if json.Unmarshal(e, &v) != nil {
+			return ""
+		}
+
+		words := strings.Split(v, "_")
+		if i == 0 {
+			prefix = words
+			continue
+		}
+
+		n := 0
+		for n < len(prefix) && n < len(words) && prefix[n] == words[n] {
+			n++
+		}
+
+		prefix = prefix[:n]
+	}
+
+	return strings.Join(prefix, "_")
 }
 
 // constString is the string p fixes its value to, if it does, as its const or the one value of its enum.

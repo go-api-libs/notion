@@ -18,12 +18,10 @@ property the API returns, but these:
 
 - 40 names end in a number to resolve a clash, such as `PageIcon2` or `QueryAgentsFilterStatus2`. Compress appends
   one when a shortened name is taken, and flatten when a name is (`AgentID6`); keeping the longer name would say more.
-- Components that only make another nullable, such as `PageIcon` or `DateTimeZone`, need no name of their own: codegen
-  makes them pointers. Flatten could leave them inline, and name their branch after them.
-- 175 names hold a position (`…OneOf2…`, `…AllOf1…`), mostly union branches that no const, one-valued enum or single
-  required member tells apart. Those need names picked by hand in `api/fetch.go`.
-- The `ObjectResponse` and `Response` suffixes could go, and the names compress leaves in lower case, such as
-  `numberSimplePropertyValue`, could be in Go's PascalCase like the rest.
+- 55 names hold a position (`…OneOf2…`, `…AllOf0…`), in 14 groups: union branches that no const, one-valued enum,
+  single required member or prefix of an enum's values tells apart, and the union an `allOf` begins with. Those need
+  names picked by hand in `api/fetch.go`.
+- The `ObjectResponse` and `Response` suffixes could go.
 
 ## Recordings
 

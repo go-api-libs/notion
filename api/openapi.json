@@ -13908,10 +13908,10 @@
         "description": "The comparison to apply. Use the arm matching the property's type.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf0"
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterString"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf1"
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterPerson"
           },
           {
             "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf2"
@@ -13923,155 +13923,6 @@
             "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOperator"
           }
         ]
-      },
-      "MeetingNotesPropertyFilterFilterOneOf0": {
-        "type": "object",
-        "properties": {
-          "operator": {
-            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf0Operator"
-          },
-          "value": {
-            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf0Value"
-          }
-        },
-        "required": [
-          "operator",
-          "value"
-        ],
-        "additionalProperties": false
-      },
-      "MeetingNotesPropertyFilterFilterOneOf0Operator": {
-        "description": "How to compare the text.",
-        "type": "string",
-        "enum": [
-          "string_is",
-          "string_is_not",
-          "string_contains",
-          "string_does_not_contain",
-          "string_starts_with",
-          "string_ends_with"
-        ]
-      },
-      "MeetingNotesPropertyFilterFilterOneOf0Value": {
-        "description": "The text to compare against.",
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `exact`",
-            "type": "string",
-            "const": "exact"
-          },
-          "value": {
-            "description": "The literal text the operator compares against.",
-            "type": "string"
-          }
-        },
-        "required": [
-          "type",
-          "value"
-        ],
-        "additionalProperties": false
-      },
-      "MeetingNotesPropertyFilterFilterOneOf1": {
-        "type": "object",
-        "properties": {
-          "operator": {
-            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf1Operator"
-          },
-          "value": {
-            "description": "The people to compare against.",
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf1ValueItem"
-            }
-          }
-        },
-        "required": [
-          "operator",
-          "value"
-        ],
-        "additionalProperties": false
-      },
-      "MeetingNotesPropertyFilterFilterOneOf1Operator": {
-        "description": "Whether the property must contain the people listed.",
-        "type": "string",
-        "enum": [
-          "person_contains",
-          "person_does_not_contain"
-        ]
-      },
-      "MeetingNotesPropertyFilterFilterOneOf1ValueItem": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf1ValueItemExact"
-          },
-          {
-            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative"
-          }
-        ]
-      },
-      "MeetingNotesPropertyFilterFilterOneOf1ValueItemExact": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `exact`",
-            "type": "string",
-            "const": "exact"
-          },
-          "value": {
-            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterOneOf1ValueItemExactValue"
-          }
-        },
-        "required": [
-          "type",
-          "value"
-        ],
-        "additionalProperties": false
-      },
-      "MeetingNotesPropertyFilterFilterOneOf1ValueItemExactValue": {
-        "description": "Pointer to the Notion user to match.",
-        "type": "object",
-        "properties": {
-          "table": {
-            "description": "Always `notion_user`",
-            "type": "string",
-            "const": "notion_user"
-          },
-          "id": {
-            "description": "The user's ID, as a UUID or the `user://<uuid>` form returned by user search.",
-            "type": "string",
-            "examples": [
-              "3f2b25f3-0a52-4a90-8f0d-5a3f0e6c1d2e",
-              "user://3f2b25f3-0a52-4a90-8f0d-5a3f0e6c1d2e"
-            ]
-          }
-        },
-        "required": [
-          "table",
-          "id"
-        ],
-        "additionalProperties": false
-      },
-      "MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "description": "Always `relative`",
-            "type": "string",
-            "const": "relative"
-          },
-          "value": {
-            "description": "Always `me`",
-            "type": "string",
-            "const": "me"
-          }
-        },
-        "required": [
-          "type",
-          "value"
-        ],
-        "additionalProperties": false
       },
       "MeetingNotesPropertyFilterFilterOneOf2": {
         "type": "object",
@@ -14435,6 +14286,155 @@
           "is_empty",
           "is_not_empty"
         ]
+      },
+      "MeetingNotesPropertyFilterFilterPerson": {
+        "type": "object",
+        "properties": {
+          "operator": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterPersonOperator"
+          },
+          "value": {
+            "description": "The people to compare against.",
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterPersonValueItem"
+            }
+          }
+        },
+        "required": [
+          "operator",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterPersonOperator": {
+        "description": "Whether the property must contain the people listed.",
+        "type": "string",
+        "enum": [
+          "person_contains",
+          "person_does_not_contain"
+        ]
+      },
+      "MeetingNotesPropertyFilterFilterPersonValueItem": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterPersonValueItemExact"
+          },
+          {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterPersonValueItemRelative"
+          }
+        ]
+      },
+      "MeetingNotesPropertyFilterFilterPersonValueItemExact": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `exact`",
+            "type": "string",
+            "const": "exact"
+          },
+          "value": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterPersonValueItemExactValue"
+          }
+        },
+        "required": [
+          "type",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterPersonValueItemExactValue": {
+        "description": "Pointer to the Notion user to match.",
+        "type": "object",
+        "properties": {
+          "table": {
+            "description": "Always `notion_user`",
+            "type": "string",
+            "const": "notion_user"
+          },
+          "id": {
+            "description": "The user's ID, as a UUID or the `user://<uuid>` form returned by user search.",
+            "type": "string",
+            "examples": [
+              "3f2b25f3-0a52-4a90-8f0d-5a3f0e6c1d2e",
+              "user://3f2b25f3-0a52-4a90-8f0d-5a3f0e6c1d2e"
+            ]
+          }
+        },
+        "required": [
+          "table",
+          "id"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterPersonValueItemRelative": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `relative`",
+            "type": "string",
+            "const": "relative"
+          },
+          "value": {
+            "description": "Always `me`",
+            "type": "string",
+            "const": "me"
+          }
+        },
+        "required": [
+          "type",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterString": {
+        "type": "object",
+        "properties": {
+          "operator": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterStringOperator"
+          },
+          "value": {
+            "$ref": "#/components/schemas/MeetingNotesPropertyFilterFilterStringValue"
+          }
+        },
+        "required": [
+          "operator",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotesPropertyFilterFilterStringOperator": {
+        "description": "How to compare the text.",
+        "type": "string",
+        "enum": [
+          "string_is",
+          "string_is_not",
+          "string_contains",
+          "string_does_not_contain",
+          "string_starts_with",
+          "string_ends_with"
+        ]
+      },
+      "MeetingNotesPropertyFilterFilterStringValue": {
+        "description": "The text to compare against.",
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `exact`",
+            "type": "string",
+            "const": "exact"
+          },
+          "value": {
+            "description": "The literal text the operator compares against.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "value"
+        ],
+        "additionalProperties": false
       },
       "MeetingNotesPropertyFilterOneOfValueCustomUnit": {
         "description": "One of: `year`, `month`, `week`, `day`",

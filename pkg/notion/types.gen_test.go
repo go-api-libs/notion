@@ -526,26 +526,6 @@ func TestEnums_Valid(t *testing.T) {
 		t.Errorf("MarkdownVersion(%v): valid, though no member", "not a member")
 	}
 
-	for _, v := range []MeetingNotesPropertyFilterFilterOneOf0Operator{MeetingNotesPropertyFilterFilterOneOf0OperatorStringIs, MeetingNotesPropertyFilterFilterOneOf0OperatorStringIsNot, MeetingNotesPropertyFilterFilterOneOf0OperatorStringContains, MeetingNotesPropertyFilterFilterOneOf0OperatorStringDoesNotContain, MeetingNotesPropertyFilterFilterOneOf0OperatorStringStartsWith, MeetingNotesPropertyFilterFilterOneOf0OperatorStringEndsWith} {
-		if !v.Valid() {
-			t.Errorf("MeetingNotesPropertyFilterFilterOneOf0Operator %v: not valid", v)
-		}
-	}
-
-	if MeetingNotesPropertyFilterFilterOneOf0Operator("not a member").Valid() {
-		t.Errorf("MeetingNotesPropertyFilterFilterOneOf0Operator(%v): valid, though no member", "not a member")
-	}
-
-	for _, v := range []MeetingNotesPropertyFilterFilterOneOf1Operator{MeetingNotesPropertyFilterFilterOneOf1OperatorPersonContains, MeetingNotesPropertyFilterFilterOneOf1OperatorPersonDoesNotContain} {
-		if !v.Valid() {
-			t.Errorf("MeetingNotesPropertyFilterFilterOneOf1Operator %v: not valid", v)
-		}
-	}
-
-	if MeetingNotesPropertyFilterFilterOneOf1Operator("not a member").Valid() {
-		t.Errorf("MeetingNotesPropertyFilterFilterOneOf1Operator(%v): valid, though no member", "not a member")
-	}
-
 	for _, v := range []MeetingNotesPropertyFilterFilterOneOf2Operator{MeetingNotesPropertyFilterFilterOneOf2OperatorDateIs, MeetingNotesPropertyFilterFilterOneOf2OperatorDateIsBefore, MeetingNotesPropertyFilterFilterOneOf2OperatorDateIsAfter, MeetingNotesPropertyFilterFilterOneOf2OperatorDateIsOnOrBefore, MeetingNotesPropertyFilterFilterOneOf2OperatorDateIsOnOrAfter} {
 		if !v.Valid() {
 			t.Errorf("MeetingNotesPropertyFilterFilterOneOf2Operator %v: not valid", v)
@@ -594,6 +574,26 @@ func TestEnums_Valid(t *testing.T) {
 
 	if MeetingNotesPropertyFilterFilterOperatorOperator("not a member").Valid() {
 		t.Errorf("MeetingNotesPropertyFilterFilterOperatorOperator(%v): valid, though no member", "not a member")
+	}
+
+	for _, v := range []MeetingNotesPropertyFilterFilterPersonOperator{MeetingNotesPropertyFilterFilterPersonOperatorPersonContains, MeetingNotesPropertyFilterFilterPersonOperatorPersonDoesNotContain} {
+		if !v.Valid() {
+			t.Errorf("MeetingNotesPropertyFilterFilterPersonOperator %v: not valid", v)
+		}
+	}
+
+	if MeetingNotesPropertyFilterFilterPersonOperator("not a member").Valid() {
+		t.Errorf("MeetingNotesPropertyFilterFilterPersonOperator(%v): valid, though no member", "not a member")
+	}
+
+	for _, v := range []MeetingNotesPropertyFilterFilterStringOperator{MeetingNotesPropertyFilterFilterStringOperatorStringIs, MeetingNotesPropertyFilterFilterStringOperatorStringIsNot, MeetingNotesPropertyFilterFilterStringOperatorStringContains, MeetingNotesPropertyFilterFilterStringOperatorStringDoesNotContain, MeetingNotesPropertyFilterFilterStringOperatorStringStartsWith, MeetingNotesPropertyFilterFilterStringOperatorStringEndsWith} {
+		if !v.Valid() {
+			t.Errorf("MeetingNotesPropertyFilterFilterStringOperator %v: not valid", v)
+		}
+	}
+
+	if MeetingNotesPropertyFilterFilterStringOperator("not a member").Valid() {
+		t.Errorf("MeetingNotesPropertyFilterFilterStringOperator(%v): valid, though no member", "not a member")
 	}
 
 	for _, v := range []MeetingNotesPropertyFilterOneOfValueCustomUnit{MeetingNotesPropertyFilterOneOfValueCustomUnitYear, MeetingNotesPropertyFilterOneOfValueCustomUnitMonth, MeetingNotesPropertyFilterOneOfValueCustomUnitWeek, MeetingNotesPropertyFilterOneOfValueCustomUnitDay} {
@@ -1675,20 +1675,6 @@ func TestUnions_RoundTrip(t *testing.T) {
 		})
 	})
 
-	t.Run("MeetingNotesPropertyFilterFilterOneOf1ValueItem/MeetingNotesPropertyFilterFilterOneOf1ValueItemExact", func(t *testing.T) {
-		v := MeetingNotesPropertyFilterFilterOneOf1ValueItemExact{Type: "exact", Value: MeetingNotesPropertyFilterFilterOneOf1ValueItemExactValue{Table: "notion_user"}}
-		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf1ValueItem{MeetingNotesPropertyFilterFilterOneOf1ValueItemExact: &v}, func(u MeetingNotesPropertyFilterFilterOneOf1ValueItem) bool {
-			return u.MeetingNotesPropertyFilterFilterOneOf1ValueItemExact != nil
-		})
-	})
-
-	t.Run("MeetingNotesPropertyFilterFilterOneOf1ValueItem/MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative", func(t *testing.T) {
-		v := MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative{Type: "relative", Value: "me"}
-		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf1ValueItem{MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative: &v}, func(u MeetingNotesPropertyFilterFilterOneOf1ValueItem) bool {
-			return u.MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative != nil
-		})
-	})
-
 	t.Run("MeetingNotesPropertyFilterFilterOneOf2Value/MeetingNotesPropertyFilterFilterOneOf2ValueRelative", func(t *testing.T) {
 		v := MeetingNotesPropertyFilterFilterOneOf2ValueRelative{Type: "relative", Value: "today"}
 		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf2Value{MeetingNotesPropertyFilterFilterOneOf2ValueRelative: &v}, func(u MeetingNotesPropertyFilterFilterOneOf2Value) bool {
@@ -1742,6 +1728,20 @@ func TestUnions_RoundTrip(t *testing.T) {
 		v := MeetingNotesPropertyFilterFilterOneOf3ValueExact{Type: "exact", Value: MeetingNotesPropertyFilterFilterOneOf3ValueExactValue{Type: "daterange"}}
 		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf3Value{MeetingNotesPropertyFilterFilterOneOf3ValueExact: &v}, func(u MeetingNotesPropertyFilterFilterOneOf3Value) bool {
 			return u.MeetingNotesPropertyFilterFilterOneOf3ValueExact != nil
+		})
+	})
+
+	t.Run("MeetingNotesPropertyFilterFilterPersonValueItem/MeetingNotesPropertyFilterFilterPersonValueItemExact", func(t *testing.T) {
+		v := MeetingNotesPropertyFilterFilterPersonValueItemExact{Type: "exact", Value: MeetingNotesPropertyFilterFilterPersonValueItemExactValue{Table: "notion_user"}}
+		roundTrip(t, MeetingNotesPropertyFilterFilterPersonValueItem{MeetingNotesPropertyFilterFilterPersonValueItemExact: &v}, func(u MeetingNotesPropertyFilterFilterPersonValueItem) bool {
+			return u.MeetingNotesPropertyFilterFilterPersonValueItemExact != nil
+		})
+	})
+
+	t.Run("MeetingNotesPropertyFilterFilterPersonValueItem/MeetingNotesPropertyFilterFilterPersonValueItemRelative", func(t *testing.T) {
+		v := MeetingNotesPropertyFilterFilterPersonValueItemRelative{Type: "relative", Value: "me"}
+		roundTrip(t, MeetingNotesPropertyFilterFilterPersonValueItem{MeetingNotesPropertyFilterFilterPersonValueItemRelative: &v}, func(u MeetingNotesPropertyFilterFilterPersonValueItem) bool {
+			return u.MeetingNotesPropertyFilterFilterPersonValueItemRelative != nil
 		})
 	})
 

@@ -12175,8 +12175,8 @@ type MeetingNotesPropertyFilter struct {
 // The comparison to apply. Use the arm matching the property's type.
 // MeetingNotesPropertyFilterFilter is an untagged oneOf union: exactly one field is set after unmarshaling.
 type MeetingNotesPropertyFilterFilter struct {
-	MeetingNotesPropertyFilterFilterOneOf0   *MeetingNotesPropertyFilterFilterOneOf0
-	MeetingNotesPropertyFilterFilterOneOf1   *MeetingNotesPropertyFilterFilterOneOf1
+	MeetingNotesPropertyFilterFilterString   *MeetingNotesPropertyFilterFilterString
+	MeetingNotesPropertyFilterFilterPerson   *MeetingNotesPropertyFilterFilterPerson
 	MeetingNotesPropertyFilterFilterOneOf2   *MeetingNotesPropertyFilterFilterOneOf2
 	MeetingNotesPropertyFilterFilterOneOf3   *MeetingNotesPropertyFilterFilterOneOf3
 	MeetingNotesPropertyFilterFilterOperator *MeetingNotesPropertyFilterFilterOperator
@@ -12204,9 +12204,9 @@ func (v *MeetingNotesPropertyFilterFilter) UnmarshalJSONFrom(dec *jsontext.Decod
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"operator", "value"}, map[string]bool{}, map[string]string{}
 			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"string_is\"", "\"string_is_not\"", "\"string_contains\"", "\"string_does_not_contain\"", "\"string_starts_with\"", "\"string_ends_with\""}})) {
-				var vv MeetingNotesPropertyFilterFilterOneOf0
+				var vv MeetingNotesPropertyFilterFilterString
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.MeetingNotesPropertyFilterFilterOneOf0 = &vv
+					v.MeetingNotesPropertyFilterFilterString = &vv
 					matched++
 				}
 			}
@@ -12217,9 +12217,9 @@ func (v *MeetingNotesPropertyFilterFilter) UnmarshalJSONFrom(dec *jsontext.Decod
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"operator", "value"}, map[string]bool{}, map[string]string{}
 			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"person_contains\"", "\"person_does_not_contain\""}})) {
-				var vv MeetingNotesPropertyFilterFilterOneOf1
+				var vv MeetingNotesPropertyFilterFilterPerson
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.MeetingNotesPropertyFilterFilterOneOf1 = &vv
+					v.MeetingNotesPropertyFilterFilterPerson = &vv
 					matched++
 				}
 			}
@@ -12279,10 +12279,10 @@ func (v *MeetingNotesPropertyFilterFilter) UnmarshalJSONFrom(dec *jsontext.Decod
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *MeetingNotesPropertyFilterFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.MeetingNotesPropertyFilterFilterOneOf0 != nil:
-		return json.MarshalEncode(enc, v.MeetingNotesPropertyFilterFilterOneOf0, jsonOptsTo(enc))
-	case v.MeetingNotesPropertyFilterFilterOneOf1 != nil:
-		return json.MarshalEncode(enc, v.MeetingNotesPropertyFilterFilterOneOf1, jsonOptsTo(enc))
+	case v.MeetingNotesPropertyFilterFilterString != nil:
+		return json.MarshalEncode(enc, v.MeetingNotesPropertyFilterFilterString, jsonOptsTo(enc))
+	case v.MeetingNotesPropertyFilterFilterPerson != nil:
+		return json.MarshalEncode(enc, v.MeetingNotesPropertyFilterFilterPerson, jsonOptsTo(enc))
 	case v.MeetingNotesPropertyFilterFilterOneOf2 != nil:
 		return json.MarshalEncode(enc, v.MeetingNotesPropertyFilterFilterOneOf2, jsonOptsTo(enc))
 	case v.MeetingNotesPropertyFilterFilterOneOf3 != nil:
@@ -12292,185 +12292,6 @@ func (v *MeetingNotesPropertyFilterFilter) MarshalJSONTo(enc *jsontext.Encoder) 
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// MeetingNotesPropertyFilterFilterOneOf0 defines a model
-type MeetingNotesPropertyFilterFilterOneOf0 struct {
-	// How to compare the text.
-	Operator MeetingNotesPropertyFilterFilterOneOf0Operator `json:"operator"`
-	// The text to compare against.
-	Value MeetingNotesPropertyFilterFilterOneOf0Value `json:"value"`
-}
-
-// How to compare the text.
-type MeetingNotesPropertyFilterFilterOneOf0Operator string
-
-const (
-	MeetingNotesPropertyFilterFilterOneOf0OperatorStringIs             MeetingNotesPropertyFilterFilterOneOf0Operator = "string_is"
-	MeetingNotesPropertyFilterFilterOneOf0OperatorStringIsNot          MeetingNotesPropertyFilterFilterOneOf0Operator = "string_is_not"
-	MeetingNotesPropertyFilterFilterOneOf0OperatorStringContains       MeetingNotesPropertyFilterFilterOneOf0Operator = "string_contains"
-	MeetingNotesPropertyFilterFilterOneOf0OperatorStringDoesNotContain MeetingNotesPropertyFilterFilterOneOf0Operator = "string_does_not_contain"
-	MeetingNotesPropertyFilterFilterOneOf0OperatorStringStartsWith     MeetingNotesPropertyFilterFilterOneOf0Operator = "string_starts_with"
-	MeetingNotesPropertyFilterFilterOneOf0OperatorStringEndsWith       MeetingNotesPropertyFilterFilterOneOf0Operator = "string_ends_with"
-)
-
-// Valid indicates whether the value is a known member of the MeetingNotesPropertyFilterFilterOneOf0Operator enum.
-func (e MeetingNotesPropertyFilterFilterOneOf0Operator) Valid() bool {
-	switch e {
-	case MeetingNotesPropertyFilterFilterOneOf0OperatorStringIs, MeetingNotesPropertyFilterFilterOneOf0OperatorStringIsNot, MeetingNotesPropertyFilterFilterOneOf0OperatorStringContains, MeetingNotesPropertyFilterFilterOneOf0OperatorStringDoesNotContain, MeetingNotesPropertyFilterFilterOneOf0OperatorStringStartsWith, MeetingNotesPropertyFilterFilterOneOf0OperatorStringEndsWith:
-		return true
-	default:
-		return false
-	}
-}
-
-// The text to compare against.
-type MeetingNotesPropertyFilterFilterOneOf0Value struct {
-	// Always `exact`
-	Type string `json:"type"`
-	// The literal text the operator compares against.
-	Value string `json:"value"`
-}
-
-// MeetingNotesPropertyFilterFilterOneOf1 defines a model
-type MeetingNotesPropertyFilterFilterOneOf1 struct {
-	// Whether the property must contain the people listed.
-	Operator MeetingNotesPropertyFilterFilterOneOf1Operator `json:"operator"`
-	// The people to compare against.
-	Value []MeetingNotesPropertyFilterFilterOneOf1ValueItem `json:"value"`
-}
-
-// Whether the property must contain the people listed.
-type MeetingNotesPropertyFilterFilterOneOf1Operator string
-
-const (
-	MeetingNotesPropertyFilterFilterOneOf1OperatorPersonContains       MeetingNotesPropertyFilterFilterOneOf1Operator = "person_contains"
-	MeetingNotesPropertyFilterFilterOneOf1OperatorPersonDoesNotContain MeetingNotesPropertyFilterFilterOneOf1Operator = "person_does_not_contain"
-)
-
-// Valid indicates whether the value is a known member of the MeetingNotesPropertyFilterFilterOneOf1Operator enum.
-func (e MeetingNotesPropertyFilterFilterOneOf1Operator) Valid() bool {
-	switch e {
-	case MeetingNotesPropertyFilterFilterOneOf1OperatorPersonContains, MeetingNotesPropertyFilterFilterOneOf1OperatorPersonDoesNotContain:
-		return true
-	default:
-		return false
-	}
-}
-
-// MeetingNotesPropertyFilterFilterOneOf1ValueItem defines a model
-// MeetingNotesPropertyFilterFilterOneOf1ValueItem is an untagged oneOf union: exactly one field is set after unmarshaling.
-type MeetingNotesPropertyFilterFilterOneOf1ValueItem struct {
-	MeetingNotesPropertyFilterFilterOneOf1ValueItemExact    *MeetingNotesPropertyFilterFilterOneOf1ValueItemExact
-	MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative *MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
-func (v *MeetingNotesPropertyFilterFilterOneOf1ValueItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = MeetingNotesPropertyFilterFilterOneOf1ValueItem{}
-
-	tag, first, dec, err := jsonFirstMember(dec, "type")
-	if err != nil {
-		return err
-	}
-
-	switch tag {
-	case "exact":
-		var vv MeetingNotesPropertyFilterFilterOneOf1ValueItemExact
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.MeetingNotesPropertyFilterFilterOneOf1ValueItemExact = &vv
-	case "relative":
-		var vv MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
-			return err
-		}
-
-		v.MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative = &vv
-	default:
-		return jsonUnknownValue("type", tag)
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
-func (v *MeetingNotesPropertyFilterFilterOneOf1ValueItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	var (
-		variant any
-		tag     string
-	)
-
-	switch {
-	case v.MeetingNotesPropertyFilterFilterOneOf1ValueItemExact != nil:
-		variant, tag = v.MeetingNotesPropertyFilterFilterOneOf1ValueItemExact, "exact"
-	case v.MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative != nil:
-		variant, tag = v.MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative, "relative"
-	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
-	}
-
-	out, err := json.Marshal(variant, jsonOptsTo(enc))
-	if err != nil {
-		return err
-	}
-
-	if out, err = jsonFirst(out, "type", tag); err != nil {
-		return err
-	}
-
-	return enc.WriteValue(out)
-}
-
-// MeetingNotesPropertyFilterFilterOneOf1ValueItemExact defines a model
-type MeetingNotesPropertyFilterFilterOneOf1ValueItemExact struct {
-	// Always `exact`
-	Type string `json:"type"`
-	// Pointer to the Notion user to match.
-	Value MeetingNotesPropertyFilterFilterOneOf1ValueItemExactValue `json:"value"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MeetingNotesPropertyFilterFilterOneOf1ValueItemExact declares it.
-func (v *MeetingNotesPropertyFilterFilterOneOf1ValueItemExact) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "value":
-		return true, json.UnmarshalDecode(dec, &v.Value, jsonOptsOf(dec))
-	}
-
-	return false, nil
-}
-
-// Pointer to the Notion user to match.
-type MeetingNotesPropertyFilterFilterOneOf1ValueItemExactValue struct {
-	// Always `notion_user`
-	Table string `json:"table"`
-	// The user's ID, as a UUID or the `user://<uuid>` form returned by user search.
-	ID string `json:"id"`
-}
-
-// MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative defines a model
-type MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative struct {
-	// Always `relative`
-	Type string `json:"type"`
-	// Always `me`
-	Value string `json:"value"`
-}
-
-// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative declares it.
-func (v *MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
-	switch name {
-	case "type":
-		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
-	case "value":
-		return true, json.UnmarshalDecode(dec, &v.Value, jsonOptsOf(dec))
-	}
-
-	return false, nil
 }
 
 // MeetingNotesPropertyFilterFilterOneOf2 defines a model
@@ -12973,6 +12794,185 @@ func (e MeetingNotesPropertyFilterFilterOperatorOperator) Valid() bool {
 	default:
 		return false
 	}
+}
+
+// MeetingNotesPropertyFilterFilterPerson defines a model
+type MeetingNotesPropertyFilterFilterPerson struct {
+	// Whether the property must contain the people listed.
+	Operator MeetingNotesPropertyFilterFilterPersonOperator `json:"operator"`
+	// The people to compare against.
+	Value []MeetingNotesPropertyFilterFilterPersonValueItem `json:"value"`
+}
+
+// Whether the property must contain the people listed.
+type MeetingNotesPropertyFilterFilterPersonOperator string
+
+const (
+	MeetingNotesPropertyFilterFilterPersonOperatorPersonContains       MeetingNotesPropertyFilterFilterPersonOperator = "person_contains"
+	MeetingNotesPropertyFilterFilterPersonOperatorPersonDoesNotContain MeetingNotesPropertyFilterFilterPersonOperator = "person_does_not_contain"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNotesPropertyFilterFilterPersonOperator enum.
+func (e MeetingNotesPropertyFilterFilterPersonOperator) Valid() bool {
+	switch e {
+	case MeetingNotesPropertyFilterFilterPersonOperatorPersonContains, MeetingNotesPropertyFilterFilterPersonOperatorPersonDoesNotContain:
+		return true
+	default:
+		return false
+	}
+}
+
+// MeetingNotesPropertyFilterFilterPersonValueItem defines a model
+// MeetingNotesPropertyFilterFilterPersonValueItem is an untagged oneOf union: exactly one field is set after unmarshaling.
+type MeetingNotesPropertyFilterFilterPersonValueItem struct {
+	MeetingNotesPropertyFilterFilterPersonValueItemExact    *MeetingNotesPropertyFilterFilterPersonValueItemExact
+	MeetingNotesPropertyFilterFilterPersonValueItemRelative *MeetingNotesPropertyFilterFilterPersonValueItemRelative
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
+// decodes each further member as it is read. With type first, nothing is read twice.
+func (v *MeetingNotesPropertyFilterFilterPersonValueItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = MeetingNotesPropertyFilterFilterPersonValueItem{}
+
+	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if err != nil {
+		return err
+	}
+
+	switch tag {
+	case "exact":
+		var vv MeetingNotesPropertyFilterFilterPersonValueItemExact
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.MeetingNotesPropertyFilterFilterPersonValueItemExact = &vv
+	case "relative":
+		var vv MeetingNotesPropertyFilterFilterPersonValueItemRelative
+		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.MeetingNotesPropertyFilterFilterPersonValueItemRelative = &vv
+	default:
+		return jsonUnknownValue("type", tag)
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+func (v *MeetingNotesPropertyFilterFilterPersonValueItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	var (
+		variant any
+		tag     string
+	)
+
+	switch {
+	case v.MeetingNotesPropertyFilterFilterPersonValueItemExact != nil:
+		variant, tag = v.MeetingNotesPropertyFilterFilterPersonValueItemExact, "exact"
+	case v.MeetingNotesPropertyFilterFilterPersonValueItemRelative != nil:
+		variant, tag = v.MeetingNotesPropertyFilterFilterPersonValueItemRelative, "relative"
+	default:
+		return &json.SemanticError{Err: errors.New("no alternative set")}
+	}
+
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
+	if err != nil {
+		return err
+	}
+
+	if out, err = jsonFirst(out, "type", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
+}
+
+// MeetingNotesPropertyFilterFilterPersonValueItemExact defines a model
+type MeetingNotesPropertyFilterFilterPersonValueItemExact struct {
+	// Always `exact`
+	Type string `json:"type"`
+	// Pointer to the Notion user to match.
+	Value MeetingNotesPropertyFilterFilterPersonValueItemExactValue `json:"value"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MeetingNotesPropertyFilterFilterPersonValueItemExact declares it.
+func (v *MeetingNotesPropertyFilterFilterPersonValueItemExact) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "value":
+		return true, json.UnmarshalDecode(dec, &v.Value, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// Pointer to the Notion user to match.
+type MeetingNotesPropertyFilterFilterPersonValueItemExactValue struct {
+	// Always `notion_user`
+	Table string `json:"table"`
+	// The user's ID, as a UUID or the `user://<uuid>` form returned by user search.
+	ID string `json:"id"`
+}
+
+// MeetingNotesPropertyFilterFilterPersonValueItemRelative defines a model
+type MeetingNotesPropertyFilterFilterPersonValueItemRelative struct {
+	// Always `relative`
+	Type string `json:"type"`
+	// Always `me`
+	Value string `json:"value"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MeetingNotesPropertyFilterFilterPersonValueItemRelative declares it.
+func (v *MeetingNotesPropertyFilterFilterPersonValueItemRelative) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "value":
+		return true, json.UnmarshalDecode(dec, &v.Value, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// MeetingNotesPropertyFilterFilterString defines a model
+type MeetingNotesPropertyFilterFilterString struct {
+	// How to compare the text.
+	Operator MeetingNotesPropertyFilterFilterStringOperator `json:"operator"`
+	// The text to compare against.
+	Value MeetingNotesPropertyFilterFilterStringValue `json:"value"`
+}
+
+// How to compare the text.
+type MeetingNotesPropertyFilterFilterStringOperator string
+
+const (
+	MeetingNotesPropertyFilterFilterStringOperatorStringIs             MeetingNotesPropertyFilterFilterStringOperator = "string_is"
+	MeetingNotesPropertyFilterFilterStringOperatorStringIsNot          MeetingNotesPropertyFilterFilterStringOperator = "string_is_not"
+	MeetingNotesPropertyFilterFilterStringOperatorStringContains       MeetingNotesPropertyFilterFilterStringOperator = "string_contains"
+	MeetingNotesPropertyFilterFilterStringOperatorStringDoesNotContain MeetingNotesPropertyFilterFilterStringOperator = "string_does_not_contain"
+	MeetingNotesPropertyFilterFilterStringOperatorStringStartsWith     MeetingNotesPropertyFilterFilterStringOperator = "string_starts_with"
+	MeetingNotesPropertyFilterFilterStringOperatorStringEndsWith       MeetingNotesPropertyFilterFilterStringOperator = "string_ends_with"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNotesPropertyFilterFilterStringOperator enum.
+func (e MeetingNotesPropertyFilterFilterStringOperator) Valid() bool {
+	switch e {
+	case MeetingNotesPropertyFilterFilterStringOperatorStringIs, MeetingNotesPropertyFilterFilterStringOperatorStringIsNot, MeetingNotesPropertyFilterFilterStringOperatorStringContains, MeetingNotesPropertyFilterFilterStringOperatorStringDoesNotContain, MeetingNotesPropertyFilterFilterStringOperatorStringStartsWith, MeetingNotesPropertyFilterFilterStringOperatorStringEndsWith:
+		return true
+	default:
+		return false
+	}
+}
+
+// The text to compare against.
+type MeetingNotesPropertyFilterFilterStringValue struct {
+	// Always `exact`
+	Type string `json:"type"`
+	// The literal text the operator compares against.
+	Value string `json:"value"`
 }
 
 // One of: `year`, `month`, `week`, `day`
