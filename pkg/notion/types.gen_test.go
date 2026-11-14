@@ -395,14 +395,14 @@ func TestEnums_Valid(t *testing.T) {
 		t.Errorf("CreatedByType(%v): valid, though no member", "not a member")
 	}
 
-	for _, v := range []CustomAgentAgentType{CustomAgentAgentTypeCustomAgent, CustomAgentAgentTypeAutofillCustomAgent} {
+	for _, v := range []CustomAgentType{CustomAgentTypeCustomAgent, CustomAgentTypeAutofillCustomAgent} {
 		if !v.Valid() {
-			t.Errorf("CustomAgentAgentType %v: not valid", v)
+			t.Errorf("CustomAgentType %v: not valid", v)
 		}
 	}
 
-	if CustomAgentAgentType("not a member").Valid() {
-		t.Errorf("CustomAgentAgentType(%v): valid, though no member", "not a member")
+	if CustomAgentType("not a member").Valid() {
+		t.Errorf("CustomAgentType(%v): valid, though no member", "not a member")
 	}
 
 	for _, v := range []DashStyle{DashStyleSolid, DashStyleDash} {
@@ -523,6 +523,16 @@ func TestEnums_Valid(t *testing.T) {
 
 	if DonutLabels("not a member").Valid() {
 		t.Errorf("DonutLabels(%v): valid, though no member", "not a member")
+	}
+
+	for _, v := range []EmptyOperator{EmptyOperatorIsEmpty, EmptyOperatorIsNotEmpty} {
+		if !v.Valid() {
+			t.Errorf("EmptyOperator %v: not valid", v)
+		}
+	}
+
+	if EmptyOperator("not a member").Valid() {
+		t.Errorf("EmptyOperator(%v): valid, though no member", "not a member")
 	}
 
 	for _, v := range []ErrorCode{ErrorCodeInvalidJSON, ErrorCodeInvalidRequestURL, ErrorCodeInvalidRequest, ErrorCodeMissingVersion, ErrorCodeInvalidBeta, ErrorCodeValidationError, ErrorCodeInvalidCreditLimit, ErrorCodeUnauthorized, ErrorCodeRestrictedResource, ErrorCodeStatusChangeNotAllowed, ErrorCodeWorkspaceCreditsExhausted, ErrorCodeAgentCreditLimitReached, ErrorCodeObjectNotFound, ErrorCodeDirectoryNotFound, ErrorCodeRowLimitExceeded, ErrorCodeConflictError, ErrorCodeIdempotencyKeyReused, ErrorCodeAgentDeleted, ErrorCodeRateLimited, ErrorCodeInternalServerError, ErrorCodeServiceUnavailable, ErrorCodeGatewayTimeout, ErrorCodeServiceOverload, ErrorCodeInvalidGrant, ErrorCodeUnauthorizedClient, ErrorCodeUnsupportedGrantType, ErrorCodeInvalidScope, ErrorCodeInvalidClient, ErrorCodeTestEnvError} {
@@ -793,16 +803,6 @@ func TestEnums_Valid(t *testing.T) {
 
 	if MediaContentWithFileNameAndCaptionResponseType("not a member").Valid() {
 		t.Errorf("MediaContentWithFileNameAndCaptionResponseType(%v): valid, though no member", "not a member")
-	}
-
-	for _, v := range []MeetingNotesPropertyFilterFilterOperatorOperator{MeetingNotesPropertyFilterFilterOperatorOperatorIsEmpty, MeetingNotesPropertyFilterFilterOperatorOperatorIsNotEmpty} {
-		if !v.Valid() {
-			t.Errorf("MeetingNotesPropertyFilterFilterOperatorOperator %v: not valid", v)
-		}
-	}
-
-	if MeetingNotesPropertyFilterFilterOperatorOperator("not a member").Valid() {
-		t.Errorf("MeetingNotesPropertyFilterFilterOperatorOperator(%v): valid, though no member", "not a member")
 	}
 
 	for _, v := range []MeetingNotesPropertyFilterOneOfValueCustomUnit{MeetingNotesPropertyFilterOneOfValueCustomUnitYear, MeetingNotesPropertyFilterOneOfValueCustomUnitMonth, MeetingNotesPropertyFilterOneOfValueCustomUnitWeek, MeetingNotesPropertyFilterOneOfValueCustomUnitDay} {
@@ -1375,14 +1375,14 @@ func TestEnums_Valid(t *testing.T) {
 		t.Errorf("SessionCreatedByType(%v): valid, though no member", "not a member")
 	}
 
-	for _, v := range []SessionEventListResultsItemSessionStatusStatus{SessionEventListResultsItemSessionStatusStatusRequiresAction, SessionEventListResultsItemSessionStatusStatusCompleted, SessionEventListResultsItemSessionStatusStatusFailed, SessionEventListResultsItemSessionStatusStatusCanceled, SessionEventListResultsItemSessionStatusStatusTerminated} {
+	for _, v := range []SessionEventStatus{SessionEventStatusRequiresAction, SessionEventStatusCompleted, SessionEventStatusFailed, SessionEventStatusCanceled, SessionEventStatusTerminated} {
 		if !v.Valid() {
-			t.Errorf("SessionEventListResultsItemSessionStatusStatus %v: not valid", v)
+			t.Errorf("SessionEventStatus %v: not valid", v)
 		}
 	}
 
-	if SessionEventListResultsItemSessionStatusStatus("not a member").Valid() {
-		t.Errorf("SessionEventListResultsItemSessionStatusStatus(%v): valid, though no member", "not a member")
+	if SessionEventStatus("not a member").Valid() {
+		t.Errorf("SessionEventStatus(%v): valid, though no member", "not a member")
 	}
 
 	for _, v := range []SessionIDFilterProperty{SessionIDFilterPropertyID} {
@@ -1799,6 +1799,56 @@ func TestUnions_RoundTrip(t *testing.T) {
 		apitest.RoundTrip(t, AdditionalDataValue{String2: v}, func(u AdditionalDataValue) bool { return u.String2 != nil }, jsonOpts)
 	})
 
+	t.Run("AgentCondition/QueryAgentsFilterID", func(t *testing.T) {
+		v := QueryAgentsFilterID{Property: "id"}
+		apitest.RoundTrip(t, AgentCondition{QueryAgentsFilterID: &v}, func(u AgentCondition) bool { return u.QueryAgentsFilterID != nil }, jsonOpts)
+	})
+
+	t.Run("AgentCondition/QueryAgentsFilterAgentType", func(t *testing.T) {
+		v := QueryAgentsFilterAgentType{Property: "agent_type"}
+		apitest.RoundTrip(t, AgentCondition{QueryAgentsFilterAgentType: &v}, func(u AgentCondition) bool { return u.QueryAgentsFilterAgentType != nil }, jsonOpts)
+	})
+
+	t.Run("AgentCondition/QueryAgentsFilterCreatedBy", func(t *testing.T) {
+		v := QueryAgentsFilterCreatedBy{Property: "created_by"}
+		apitest.RoundTrip(t, AgentCondition{QueryAgentsFilterCreatedBy: &v}, func(u AgentCondition) bool { return u.QueryAgentsFilterCreatedBy != nil }, jsonOpts)
+	})
+
+	t.Run("AgentCondition/QueryAgentsFilterCreatedTime", func(t *testing.T) {
+		v := QueryAgentsFilterCreatedTime{Property: "created_time"}
+		apitest.RoundTrip(t, AgentCondition{QueryAgentsFilterCreatedTime: &v}, func(u AgentCondition) bool { return u.QueryAgentsFilterCreatedTime != nil }, jsonOpts)
+	})
+
+	t.Run("AgentCondition/QueryAgentsFilterFavorited", func(t *testing.T) {
+		v := QueryAgentsFilterFavorited{Property: "favorited"}
+		apitest.RoundTrip(t, AgentCondition{QueryAgentsFilterFavorited: &v}, func(u AgentCondition) bool { return u.QueryAgentsFilterFavorited != nil }, jsonOpts)
+	})
+
+	t.Run("AgentCondition/QueryAgentsFilterConnections", func(t *testing.T) {
+		v := QueryAgentsFilterConnections{Property: "connections"}
+		apitest.RoundTrip(t, AgentCondition{QueryAgentsFilterConnections: &v}, func(u AgentCondition) bool { return u.QueryAgentsFilterConnections != nil }, jsonOpts)
+	})
+
+	t.Run("AgentCondition/QueryAgentsFilterStatus", func(t *testing.T) {
+		v := QueryAgentsFilterStatus{Property: "status"}
+		apitest.RoundTrip(t, AgentCondition{QueryAgentsFilterStatus: &v}, func(u AgentCondition) bool { return u.QueryAgentsFilterStatus != nil }, jsonOpts)
+	})
+
+	t.Run("AgentCondition/QueryAgentsFilterModelMode", func(t *testing.T) {
+		v := QueryAgentsFilterModelMode{Property: "model_mode"}
+		apitest.RoundTrip(t, AgentCondition{QueryAgentsFilterModelMode: &v}, func(u AgentCondition) bool { return u.QueryAgentsFilterModelMode != nil }, jsonOpts)
+	})
+
+	t.Run("AgentCondition/QueryAgentsFilterAgentVersion", func(t *testing.T) {
+		v := QueryAgentsFilterAgentVersion{Property: "agent_version"}
+		apitest.RoundTrip(t, AgentCondition{QueryAgentsFilterAgentVersion: &v}, func(u AgentCondition) bool { return u.QueryAgentsFilterAgentVersion != nil }, jsonOpts)
+	})
+
+	t.Run("AgentCondition/QueryAgentsFilterLastRunAt", func(t *testing.T) {
+		v := QueryAgentsFilterLastRunAt{Property: "last_run_at"}
+		apitest.RoundTrip(t, AgentCondition{QueryAgentsFilterLastRunAt: &v}, func(u AgentCondition) bool { return u.QueryAgentsFilterLastRunAt != nil }, jsonOpts)
+	})
+
 	t.Run("AgentConnectionsItem/AgentConnectionsItemMcpServer", func(t *testing.T) {
 		v := AgentConnectionsItemMcpServer{Type: "mcp_server", Account: AgentConnectionsItemMcpServerAccount{AgentConnectionsItemMcpServerAccountMcpServer: new(AgentConnectionsItemMcpServerAccountMcpServer{Type: "mcp_server"})}, EnabledTools: AgentConnectionsItemMcpServerEnabledTools{AgentConnectionsItemMcpServerEnabledToolsOneOf: AgentConnectionsItemMcpServerEnabledToolsOneOf{AgentConnectionsItemMcpServerEnabledToolsOneOfItem{}}}}
 		apitest.RoundTrip(t, AgentConnectionsItem{AgentConnectionsItemMcpServer: &v}, func(u AgentConnectionsItem) bool { return u.AgentConnectionsItemMcpServer != nil }, jsonOpts)
@@ -2026,9 +2076,9 @@ func TestUnions_RoundTrip(t *testing.T) {
 		apitest.RoundTrip(t, BlockOrPartial{Block: &v}, func(u BlockOrPartial) bool { return u.Block != nil }, jsonOpts)
 	})
 
-	t.Run("BotInfoResponseOwnerUserUser/PartialUser", func(t *testing.T) {
+	t.Run("BotOwnerUser/PartialUser", func(t *testing.T) {
 		v := PartialUser{Object: "user"}
-		apitest.RoundTrip(t, BotInfoResponseOwnerUserUser{PartialUser: &v}, func(u BotInfoResponseOwnerUserUser) bool { return u.PartialUser != nil }, jsonOpts)
+		apitest.RoundTrip(t, BotOwnerUser{PartialUser: &v}, func(u BotOwnerUser) bool { return u.PartialUser != nil }, jsonOpts)
 	})
 
 	t.Run("BotUserBot/EmptyObject", func(t *testing.T) {
@@ -2037,7 +2087,7 @@ func TestUnions_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("BotUserBot/BotInfo", func(t *testing.T) {
-		v := BotInfo{Owner: BotInfoOwner{Type: "user", User: new(BotInfoResponseOwnerUserUser{PartialUser: new(PartialUser{Object: "user"})})}}
+		v := BotInfo{Owner: BotInfoOwner{Type: "user", User: new(BotOwnerUser{PartialUser: new(PartialUser{Object: "user"})})}}
 		apitest.RoundTrip(t, BotUserBot{BotInfo: &v}, func(u BotUserBot) bool { return u.BotInfo != nil }, jsonOpts)
 	})
 
@@ -2079,11 +2129,6 @@ func TestUnions_RoundTrip(t *testing.T) {
 	t.Run("CreateAToken/CreateATokenRefreshToken", func(t *testing.T) {
 		v := CreateATokenRefreshToken{GrantType: "refresh_token"}
 		apitest.RoundTrip(t, CreateAToken{CreateATokenRefreshToken: &v}, func(u CreateAToken) bool { return u.CreateATokenRefreshToken != nil }, jsonOpts)
-	})
-
-	t.Run("CreateATokenOkOwnerUserUser/PartialUser", func(t *testing.T) {
-		v := PartialUser{Object: "user"}
-		apitest.RoundTrip(t, CreateATokenOkOwnerUserUser{PartialUser: &v}, func(u CreateATokenOkOwnerUserUser) bool { return u.PartialUser != nil }, jsonOpts)
 	})
 
 	t.Run("CreateMeetingNoteOk/MeetingNoteBlock", func(t *testing.T) {
@@ -2256,9 +2301,9 @@ func TestUnions_RoundTrip(t *testing.T) {
 		apitest.RoundTrip(t, MeetingNoteSource{MeetingNoteFromBlock: &v}, func(u MeetingNoteSource) bool { return u.MeetingNoteFromBlock != nil }, jsonOpts)
 	})
 
-	t.Run("MeetingNotesPropertyFilterFilter/MeetingNotesPropertyFilterOperator", func(t *testing.T) {
+	t.Run("MeetingNotesCondition/MeetingNotesPropertyFilterOperator", func(t *testing.T) {
 		v := MeetingNotesPropertyFilterOperator{Operator: "is_empty"}
-		apitest.RoundTrip(t, MeetingNotesPropertyFilterFilter{MeetingNotesPropertyFilterOperator: &v}, func(u MeetingNotesPropertyFilterFilter) bool { return u.MeetingNotesPropertyFilterOperator != nil }, jsonOpts)
+		apitest.RoundTrip(t, MeetingNotesCondition{MeetingNotesPropertyFilterOperator: &v}, func(u MeetingNotesCondition) bool { return u.MeetingNotesPropertyFilterOperator != nil }, jsonOpts)
 	})
 
 	t.Run("NewComment/PageComment", func(t *testing.T) {
@@ -2279,6 +2324,16 @@ func TestUnions_RoundTrip(t *testing.T) {
 	t.Run("NewComment/DiscussionMarkdownComment", func(t *testing.T) {
 		v := DiscussionMarkdownComment{}
 		apitest.RoundTrip(t, NewComment{DiscussionMarkdownComment: &v}, func(u NewComment) bool { return u.DiscussionMarkdownComment != nil }, jsonOpts)
+	})
+
+	t.Run("OptionRef/PagePropertiesValueSelectID", func(t *testing.T) {
+		v := PagePropertiesValueSelectID{Color: "default"}
+		apitest.RoundTrip(t, OptionRef{PagePropertiesValueSelectID: &v}, func(u OptionRef) bool { return u.PagePropertiesValueSelectID != nil }, jsonOpts)
+	})
+
+	t.Run("OptionRef/PagePropertiesValueSelectName", func(t *testing.T) {
+		v := PagePropertiesValueSelectName{Color: "default"}
+		apitest.RoundTrip(t, OptionRef{PagePropertiesValueSelectName: &v}, func(u OptionRef) bool { return u.PagePropertiesValueSelectName != nil }, jsonOpts)
 	})
 
 	t.Run("PageOrPartial/Page", func(t *testing.T) {
@@ -2309,30 +2364,6 @@ func TestUnions_RoundTrip(t *testing.T) {
 	t.Run("PagePropertiesValuePeopleItem/GroupObject", func(t *testing.T) {
 		v := GroupObject{Object: "group"}
 		apitest.RoundTrip(t, PagePropertiesValuePeopleItem{GroupObject: &v}, func(u PagePropertiesValuePeopleItem) bool { return u.GroupObject != nil }, jsonOpts)
-	})
-
-	t.Run("PagePropertiesValueSelectSelect/PagePropertiesValueSelectID", func(t *testing.T) {
-		v := PagePropertiesValueSelectID{Color: "default"}
-		apitest.RoundTrip(t, PagePropertiesValueSelectSelect{PagePropertiesValueSelectID: &v}, func(u PagePropertiesValueSelectSelect) bool { return u.PagePropertiesValueSelectID != nil }, jsonOpts)
-	})
-
-	t.Run("PagePropertiesValueSelectSelect/PagePropertiesValueSelectName", func(t *testing.T) {
-		v := PagePropertiesValueSelectName{Color: "default"}
-		apitest.RoundTrip(t, PagePropertiesValueSelectSelect{PagePropertiesValueSelectName: &v}, func(u PagePropertiesValueSelectSelect) bool { return u.PagePropertiesValueSelectName != nil }, jsonOpts)
-	})
-
-	t.Run("PagePropertiesValueVerificationVerification/PagePropertiesValueVerificationVerified", func(t *testing.T) {
-		v := PagePropertiesValueVerificationVerified{State: "verified"}
-		apitest.RoundTrip(t, PagePropertiesValueVerificationVerification{PagePropertiesValueVerificationVerified: &v}, func(u PagePropertiesValueVerificationVerification) bool {
-			return u.PagePropertiesValueVerificationVerified != nil
-		}, jsonOpts)
-	})
-
-	t.Run("PagePropertiesValueVerificationVerification/PagePropertiesValueVerificationUnverified", func(t *testing.T) {
-		v := PagePropertiesValueVerificationUnverified{State: "unverified"}
-		apitest.RoundTrip(t, PagePropertiesValueVerificationVerification{PagePropertiesValueVerificationUnverified: &v}, func(u PagePropertiesValueVerificationVerification) bool {
-			return u.PagePropertiesValueVerificationUnverified != nil
-		}, jsonOpts)
 	})
 
 	t.Run("PersonFilterValueItem/PersonFilterValueItemExact", func(t *testing.T) {
@@ -2378,18 +2409,6 @@ func TestUnions_RoundTrip(t *testing.T) {
 	t.Run("PostSearchSort/PostSearchSortRelevance", func(t *testing.T) {
 		v := PostSearchSortRelevance{Property: "relevance"}
 		apitest.RoundTrip(t, PostSearchSort{PostSearchSortRelevance: &v}, func(u PostSearchSort) bool { return u.PostSearchSortRelevance != nil }, jsonOpts)
-	})
-
-	t.Run("PropertyFilterVerificationVerification/VerificationPropertyStatusFilter", func(t *testing.T) {
-		v := VerificationPropertyStatusFilter{Status: "verified"}
-		apitest.RoundTrip(t, PropertyFilterVerificationVerification{VerificationPropertyStatusFilter: &v}, func(u PropertyFilterVerificationVerification) bool { return u.VerificationPropertyStatusFilter != nil }, jsonOpts)
-	})
-
-	t.Run("PropertyFilterVerificationVerification/VerificationPropertyDoesNotEqualFilter", func(t *testing.T) {
-		v := VerificationPropertyDoesNotEqualFilter{DoesNotEqual: "verified"}
-		apitest.RoundTrip(t, PropertyFilterVerificationVerification{VerificationPropertyDoesNotEqualFilter: &v}, func(u PropertyFilterVerificationVerification) bool {
-			return u.VerificationPropertyDoesNotEqualFilter != nil
-		}, jsonOpts)
 	})
 
 	t.Run("PropertyItem/NumberPropertyItem", func(t *testing.T) {
@@ -2659,58 +2678,8 @@ func TestUnions_RoundTrip(t *testing.T) {
 		apitest.RoundTrip(t, QueryAgentsFilterOrItem{QueryAgentsFilterOrItemOr: &v}, func(u QueryAgentsFilterOrItem) bool { return u.QueryAgentsFilterOrItemOr != nil }, jsonOpts)
 	})
 
-	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterID", func(t *testing.T) {
-		v := QueryAgentsFilterID{Property: "id"}
-		apitest.RoundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterID: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterID != nil }, jsonOpts)
-	})
-
-	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterAgentType", func(t *testing.T) {
-		v := QueryAgentsFilterAgentType{Property: "agent_type"}
-		apitest.RoundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterAgentType: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterAgentType != nil }, jsonOpts)
-	})
-
-	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterCreatedBy", func(t *testing.T) {
-		v := QueryAgentsFilterCreatedBy{Property: "created_by"}
-		apitest.RoundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterCreatedBy: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterCreatedBy != nil }, jsonOpts)
-	})
-
-	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterCreatedTime", func(t *testing.T) {
-		v := QueryAgentsFilterCreatedTime{Property: "created_time"}
-		apitest.RoundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterCreatedTime: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterCreatedTime != nil }, jsonOpts)
-	})
-
-	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterFavorited", func(t *testing.T) {
-		v := QueryAgentsFilterFavorited{Property: "favorited"}
-		apitest.RoundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterFavorited: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterFavorited != nil }, jsonOpts)
-	})
-
-	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterConnections", func(t *testing.T) {
-		v := QueryAgentsFilterConnections{Property: "connections"}
-		apitest.RoundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterConnections: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterConnections != nil }, jsonOpts)
-	})
-
-	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterStatus", func(t *testing.T) {
-		v := QueryAgentsFilterStatus{Property: "status"}
-		apitest.RoundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterStatus: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterStatus != nil }, jsonOpts)
-	})
-
-	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterModelMode", func(t *testing.T) {
-		v := QueryAgentsFilterModelMode{Property: "model_mode"}
-		apitest.RoundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterModelMode: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterModelMode != nil }, jsonOpts)
-	})
-
-	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterAgentVersion", func(t *testing.T) {
-		v := QueryAgentsFilterAgentVersion{Property: "agent_version"}
-		apitest.RoundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterAgentVersion: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterAgentVersion != nil }, jsonOpts)
-	})
-
-	t.Run("QueryAgentsFilterOrItemOrItem/QueryAgentsFilterLastRunAt", func(t *testing.T) {
-		v := QueryAgentsFilterLastRunAt{Property: "last_run_at"}
-		apitest.RoundTrip(t, QueryAgentsFilterOrItemOrItem{QueryAgentsFilterLastRunAt: &v}, func(u QueryAgentsFilterOrItemOrItem) bool { return u.QueryAgentsFilterLastRunAt != nil }, jsonOpts)
-	})
-
 	t.Run("QueryMeetingNotesFilterFiltersItem/MeetingNotesPropertyFilter", func(t *testing.T) {
-		v := MeetingNotesPropertyFilter{Filter: MeetingNotesPropertyFilterFilter{MeetingNotesPropertyFilterOperator: new(MeetingNotesPropertyFilterOperator{Operator: "is_empty"})}, Property: "title"}
+		v := MeetingNotesPropertyFilter{Filter: MeetingNotesCondition{MeetingNotesPropertyFilterOperator: new(MeetingNotesPropertyFilterOperator{Operator: "is_empty"})}, Property: "title"}
 		apitest.RoundTrip(t, QueryMeetingNotesFilterFiltersItem{MeetingNotesPropertyFilter: &v}, func(u QueryMeetingNotesFilterFiltersItem) bool { return u.MeetingNotesPropertyFilter != nil }, jsonOpts)
 	})
 
@@ -2779,64 +2748,6 @@ func TestUnions_RoundTrip(t *testing.T) {
 		apitest.RoundTrip(t, QuerySessionEventsFilterOrItem{QuerySessionEventsFilterOrItemOr: &v}, func(u QuerySessionEventsFilterOrItem) bool { return u.QuerySessionEventsFilterOrItemOr != nil }, jsonOpts)
 	})
 
-	t.Run("QuerySessionEventsFilterOrItemOrItem/SessionIDFilter", func(t *testing.T) {
-		v := SessionIDFilter{Property: "id"}
-		apitest.RoundTrip(t, QuerySessionEventsFilterOrItemOrItem{SessionIDFilter: &v}, func(u QuerySessionEventsFilterOrItemOrItem) bool { return u.SessionIDFilter != nil }, jsonOpts)
-	})
-
-	t.Run("QuerySessionEventsFilterOrItemOrItem/QuerySessionEventsFilterType", func(t *testing.T) {
-		v := QuerySessionEventsFilterType{Property: "type"}
-		apitest.RoundTrip(t, QuerySessionEventsFilterOrItemOrItem{QuerySessionEventsFilterType: &v}, func(u QuerySessionEventsFilterOrItemOrItem) bool { return u.QuerySessionEventsFilterType != nil }, jsonOpts)
-	})
-
-	t.Run("QuerySessionEventsFilterOrItemOrItem/QuerySessionEventsFilterSequence", func(t *testing.T) {
-		v := QuerySessionEventsFilterSequence{Property: "sequence"}
-		apitest.RoundTrip(t, QuerySessionEventsFilterOrItemOrItem{QuerySessionEventsFilterSequence: &v}, func(u QuerySessionEventsFilterOrItemOrItem) bool { return u.QuerySessionEventsFilterSequence != nil }, jsonOpts)
-	})
-
-	t.Run("QuerySessionEventsFilterOrItemOrItem/QuerySessionEventsFilterCreatedAt", func(t *testing.T) {
-		v := QuerySessionEventsFilterCreatedAt{Property: "created_at"}
-		apitest.RoundTrip(t, QuerySessionEventsFilterOrItemOrItem{QuerySessionEventsFilterCreatedAt: &v}, func(u QuerySessionEventsFilterOrItemOrItem) bool { return u.QuerySessionEventsFilterCreatedAt != nil }, jsonOpts)
-	})
-
-	t.Run("QuerySessionEventsFilterOrItemOrItem/QuerySessionEventsFilterOrItemOrItemAnd", func(t *testing.T) {
-		v := QuerySessionEventsFilterOrItemOrItemAnd{}
-		apitest.RoundTrip(t, QuerySessionEventsFilterOrItemOrItem{QuerySessionEventsFilterOrItemOrItemAnd: &v}, func(u QuerySessionEventsFilterOrItemOrItem) bool {
-			return u.QuerySessionEventsFilterOrItemOrItemAnd != nil
-		}, jsonOpts)
-	})
-
-	t.Run("QuerySessionEventsFilterOrItemOrItem/QuerySessionEventsFilterOrItemOrItemOr", func(t *testing.T) {
-		v := QuerySessionEventsFilterOrItemOrItemOr{}
-		apitest.RoundTrip(t, QuerySessionEventsFilterOrItemOrItem{QuerySessionEventsFilterOrItemOrItemOr: &v}, func(u QuerySessionEventsFilterOrItemOrItem) bool {
-			return u.QuerySessionEventsFilterOrItemOrItemOr != nil
-		}, jsonOpts)
-	})
-
-	t.Run("QuerySessionEventsFilterOrItemOrItemOrItem/SessionIDFilter", func(t *testing.T) {
-		v := SessionIDFilter{Property: "id"}
-		apitest.RoundTrip(t, QuerySessionEventsFilterOrItemOrItemOrItem{SessionIDFilter: &v}, func(u QuerySessionEventsFilterOrItemOrItemOrItem) bool { return u.SessionIDFilter != nil }, jsonOpts)
-	})
-
-	t.Run("QuerySessionEventsFilterOrItemOrItemOrItem/QuerySessionEventsFilterType", func(t *testing.T) {
-		v := QuerySessionEventsFilterType{Property: "type"}
-		apitest.RoundTrip(t, QuerySessionEventsFilterOrItemOrItemOrItem{QuerySessionEventsFilterType: &v}, func(u QuerySessionEventsFilterOrItemOrItemOrItem) bool { return u.QuerySessionEventsFilterType != nil }, jsonOpts)
-	})
-
-	t.Run("QuerySessionEventsFilterOrItemOrItemOrItem/QuerySessionEventsFilterSequence", func(t *testing.T) {
-		v := QuerySessionEventsFilterSequence{Property: "sequence"}
-		apitest.RoundTrip(t, QuerySessionEventsFilterOrItemOrItemOrItem{QuerySessionEventsFilterSequence: &v}, func(u QuerySessionEventsFilterOrItemOrItemOrItem) bool {
-			return u.QuerySessionEventsFilterSequence != nil
-		}, jsonOpts)
-	})
-
-	t.Run("QuerySessionEventsFilterOrItemOrItemOrItem/QuerySessionEventsFilterCreatedAt", func(t *testing.T) {
-		v := QuerySessionEventsFilterCreatedAt{Property: "created_at"}
-		apitest.RoundTrip(t, QuerySessionEventsFilterOrItemOrItemOrItem{QuerySessionEventsFilterCreatedAt: &v}, func(u QuerySessionEventsFilterOrItemOrItemOrItem) bool {
-			return u.QuerySessionEventsFilterCreatedAt != nil
-		}, jsonOpts)
-	})
-
 	t.Run("QuerySessionsFilter/SessionIDFilter", func(t *testing.T) {
 		v := SessionIDFilter{Property: "id"}
 		apitest.RoundTrip(t, QuerySessionsFilter{SessionIDFilter: &v}, func(u QuerySessionsFilter) bool { return u.SessionIDFilter != nil }, jsonOpts)
@@ -2893,7 +2804,7 @@ func TestUnions_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("QuickFilterCondition/QuickFilterConditionVerification", func(t *testing.T) {
-		v := QuickFilterConditionVerification{Verification: PropertyFilterVerificationVerification{VerificationPropertyStatusFilter: new(VerificationPropertyStatusFilter{Status: "verified"})}, Type: "verification"}
+		v := QuickFilterConditionVerification{Verification: VerificationFilter{VerificationPropertyStatusFilter: new(VerificationPropertyStatusFilter{Status: "verified"})}, Type: "verification"}
 		apitest.RoundTrip(t, QuickFilterCondition{QuickFilterConditionVerification: &v}, func(u QuickFilterCondition) bool { return u.QuickFilterConditionVerification != nil }, jsonOpts)
 	})
 
@@ -3112,6 +3023,56 @@ func TestUnions_RoundTrip(t *testing.T) {
 		apitest.RoundTrip(t, RollupSubfilterPropertyFilter{RollupSubfilterPropertyFilterFiles: &v}, func(u RollupSubfilterPropertyFilter) bool { return u.RollupSubfilterPropertyFilterFiles != nil }, jsonOpts)
 	})
 
+	t.Run("SessionEventCondition/SessionIDFilter", func(t *testing.T) {
+		v := SessionIDFilter{Property: "id"}
+		apitest.RoundTrip(t, SessionEventCondition{SessionIDFilter: &v}, func(u SessionEventCondition) bool { return u.SessionIDFilter != nil }, jsonOpts)
+	})
+
+	t.Run("SessionEventCondition/QuerySessionEventsFilterType", func(t *testing.T) {
+		v := QuerySessionEventsFilterType{Property: "type"}
+		apitest.RoundTrip(t, SessionEventCondition{QuerySessionEventsFilterType: &v}, func(u SessionEventCondition) bool { return u.QuerySessionEventsFilterType != nil }, jsonOpts)
+	})
+
+	t.Run("SessionEventCondition/QuerySessionEventsFilterSequence", func(t *testing.T) {
+		v := QuerySessionEventsFilterSequence{Property: "sequence"}
+		apitest.RoundTrip(t, SessionEventCondition{QuerySessionEventsFilterSequence: &v}, func(u SessionEventCondition) bool { return u.QuerySessionEventsFilterSequence != nil }, jsonOpts)
+	})
+
+	t.Run("SessionEventCondition/QuerySessionEventsFilterCreatedAt", func(t *testing.T) {
+		v := QuerySessionEventsFilterCreatedAt{Property: "created_at"}
+		apitest.RoundTrip(t, SessionEventCondition{QuerySessionEventsFilterCreatedAt: &v}, func(u SessionEventCondition) bool { return u.QuerySessionEventsFilterCreatedAt != nil }, jsonOpts)
+	})
+
+	t.Run("SessionEventFilterItem/SessionIDFilter", func(t *testing.T) {
+		v := SessionIDFilter{Property: "id"}
+		apitest.RoundTrip(t, SessionEventFilterItem{SessionIDFilter: &v}, func(u SessionEventFilterItem) bool { return u.SessionIDFilter != nil }, jsonOpts)
+	})
+
+	t.Run("SessionEventFilterItem/QuerySessionEventsFilterType", func(t *testing.T) {
+		v := QuerySessionEventsFilterType{Property: "type"}
+		apitest.RoundTrip(t, SessionEventFilterItem{QuerySessionEventsFilterType: &v}, func(u SessionEventFilterItem) bool { return u.QuerySessionEventsFilterType != nil }, jsonOpts)
+	})
+
+	t.Run("SessionEventFilterItem/QuerySessionEventsFilterSequence", func(t *testing.T) {
+		v := QuerySessionEventsFilterSequence{Property: "sequence"}
+		apitest.RoundTrip(t, SessionEventFilterItem{QuerySessionEventsFilterSequence: &v}, func(u SessionEventFilterItem) bool { return u.QuerySessionEventsFilterSequence != nil }, jsonOpts)
+	})
+
+	t.Run("SessionEventFilterItem/QuerySessionEventsFilterCreatedAt", func(t *testing.T) {
+		v := QuerySessionEventsFilterCreatedAt{Property: "created_at"}
+		apitest.RoundTrip(t, SessionEventFilterItem{QuerySessionEventsFilterCreatedAt: &v}, func(u SessionEventFilterItem) bool { return u.QuerySessionEventsFilterCreatedAt != nil }, jsonOpts)
+	})
+
+	t.Run("SessionEventFilterItem/SessionEventFilterAnd", func(t *testing.T) {
+		v := SessionEventFilterAnd{}
+		apitest.RoundTrip(t, SessionEventFilterItem{SessionEventFilterAnd: &v}, func(u SessionEventFilterItem) bool { return u.SessionEventFilterAnd != nil }, jsonOpts)
+	})
+
+	t.Run("SessionEventFilterItem/SessionEventFilterOr", func(t *testing.T) {
+		v := SessionEventFilterOr{}
+		apitest.RoundTrip(t, SessionEventFilterItem{SessionEventFilterOr: &v}, func(u SessionEventFilterItem) bool { return u.SessionEventFilterOr != nil }, jsonOpts)
+	})
+
 	t.Run("SessionEventListResultsItem/SessionEventListResultsItemUserMessage", func(t *testing.T) {
 		v := SessionEventListResultsItemUserMessage{Object: "session_event", Type: "user.message"}
 		apitest.RoundTrip(t, SessionEventListResultsItem{SessionEventListResultsItemUserMessage: &v}, func(u SessionEventListResultsItem) bool { return u.SessionEventListResultsItemUserMessage != nil }, jsonOpts)
@@ -3299,6 +3260,11 @@ func TestUnions_RoundTrip(t *testing.T) {
 	t.Run("SyncStateSyncing/String", func(t *testing.T) {
 		v := "sample"
 		apitest.RoundTrip(t, SyncStateSyncing{String: v}, func(u SyncStateSyncing) bool { return u.String != "" }, jsonOpts)
+	})
+
+	t.Run("TokenOwnerUser/PartialUser", func(t *testing.T) {
+		v := PartialUser{Object: "user"}
+		apitest.RoundTrip(t, TokenOwnerUser{PartialUser: &v}, func(u TokenOwnerUser) bool { return u.PartialUser != nil }, jsonOpts)
 	})
 
 	t.Run("UpdateABlock/UpdateABlockEmbed", func(t *testing.T) {
@@ -3505,9 +3471,29 @@ func TestUnions_RoundTrip(t *testing.T) {
 		apitest.RoundTrip(t, UserOrPartial{PartialUser: &v}, func(u UserOrPartial) bool { return u.PartialUser != nil }, jsonOpts)
 	})
 
+	t.Run("VerificationFilter/VerificationPropertyStatusFilter", func(t *testing.T) {
+		v := VerificationPropertyStatusFilter{Status: "verified"}
+		apitest.RoundTrip(t, VerificationFilter{VerificationPropertyStatusFilter: &v}, func(u VerificationFilter) bool { return u.VerificationPropertyStatusFilter != nil }, jsonOpts)
+	})
+
+	t.Run("VerificationFilter/VerificationPropertyDoesNotEqualFilter", func(t *testing.T) {
+		v := VerificationPropertyDoesNotEqualFilter{DoesNotEqual: "verified"}
+		apitest.RoundTrip(t, VerificationFilter{VerificationPropertyDoesNotEqualFilter: &v}, func(u VerificationFilter) bool { return u.VerificationPropertyDoesNotEqualFilter != nil }, jsonOpts)
+	})
+
 	t.Run("VerificationPropertyValue/VerificationProperty", func(t *testing.T) {
 		v := VerificationProperty{VerifiedBy: UserOrPartial{PartialUser: new(PartialUser{Object: "user"})}, State: "verified"}
 		apitest.RoundTrip(t, VerificationPropertyValue{VerificationProperty: &v}, func(u VerificationPropertyValue) bool { return u.VerificationProperty != nil }, jsonOpts)
+	})
+
+	t.Run("VerificationValue/PagePropertiesValueVerificationVerified", func(t *testing.T) {
+		v := PagePropertiesValueVerificationVerified{State: "verified"}
+		apitest.RoundTrip(t, VerificationValue{PagePropertiesValueVerificationVerified: &v}, func(u VerificationValue) bool { return u.PagePropertiesValueVerificationVerified != nil }, jsonOpts)
+	})
+
+	t.Run("VerificationValue/PagePropertiesValueVerificationUnverified", func(t *testing.T) {
+		v := PagePropertiesValueVerificationUnverified{State: "unverified"}
+		apitest.RoundTrip(t, VerificationValue{PagePropertiesValueVerificationUnverified: &v}, func(u VerificationValue) bool { return u.PagePropertiesValueVerificationUnverified != nil }, jsonOpts)
 	})
 
 	t.Run("ViewConfig/TableViewConfig", func(t *testing.T) {
@@ -3993,7 +3979,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("BlockObjectRequestWithoutChildren/to_do", func(t *testing.T) {
-		apitest.RoundTrip(t, BlockObjectRequestWithoutChildren{Type: "to_do", ToDo: new(BlockObjectRequestWithoutChildrenToDoToDo{})}, func(v BlockObjectRequestWithoutChildren) bool { return v.Type == "to_do" }, jsonOpts)
+		apitest.RoundTrip(t, BlockObjectRequestWithoutChildren{Type: "to_do", ToDo: new(ToDoGrandchild{})}, func(v BlockObjectRequestWithoutChildren) bool { return v.Type == "to_do" }, jsonOpts)
 	})
 
 	t.Run("BlockObjectRequestWithoutChildren/toggle", func(t *testing.T) {
@@ -4109,7 +4095,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("BlockObjectWithSingleLevelOfChildren/to_do", func(t *testing.T) {
-		apitest.RoundTrip(t, BlockObjectWithSingleLevelOfChildren{Type: "to_do", ToDo: new(BlockObjectWithSingleLevelOfChildrenToDoToDo{})}, func(v BlockObjectWithSingleLevelOfChildren) bool { return v.Type == "to_do" }, jsonOpts)
+		apitest.RoundTrip(t, BlockObjectWithSingleLevelOfChildren{Type: "to_do", ToDo: new(ToDoChild{})}, func(v BlockObjectWithSingleLevelOfChildren) bool { return v.Type == "to_do" }, jsonOpts)
 	})
 
 	t.Run("BlockObjectWithSingleLevelOfChildren/toggle", func(t *testing.T) {
@@ -4117,7 +4103,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("BlockObjectWithSingleLevelOfChildren/template", func(t *testing.T) {
-		apitest.RoundTrip(t, BlockObjectWithSingleLevelOfChildren{Type: "template", Template: new(BlockObjectWithSingleLevelOfChildrenTemplateTemplate{})}, func(v BlockObjectWithSingleLevelOfChildren) bool { return v.Type == "template" }, jsonOpts)
+		apitest.RoundTrip(t, BlockObjectWithSingleLevelOfChildren{Type: "template", Template: new(TemplateChild{})}, func(v BlockObjectWithSingleLevelOfChildren) bool { return v.Type == "template" }, jsonOpts)
 	})
 
 	t.Run("BlockObjectWithSingleLevelOfChildren/callout", func(t *testing.T) {
@@ -4125,11 +4111,11 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("BlockObjectWithSingleLevelOfChildren/synced_block", func(t *testing.T) {
-		apitest.RoundTrip(t, BlockObjectWithSingleLevelOfChildren{Type: "synced_block", SyncedBlock: new(BlockObjectWithSingleLevelOfChildrenSyncedBlockSyncedBlock{})}, func(v BlockObjectWithSingleLevelOfChildren) bool { return v.Type == "synced_block" }, jsonOpts)
+		apitest.RoundTrip(t, BlockObjectWithSingleLevelOfChildren{Type: "synced_block", SyncedBlock: new(SyncedBlockChild{})}, func(v BlockObjectWithSingleLevelOfChildren) bool { return v.Type == "synced_block" }, jsonOpts)
 	})
 
 	t.Run("BotInfoOwner/user", func(t *testing.T) {
-		apitest.RoundTrip(t, BotInfoOwner{Type: "user", User: new(BotInfoResponseOwnerUserUser{PartialUser: new(PartialUser{Object: "user"})})}, func(v BotInfoOwner) bool { return v.Type == "user" }, jsonOpts)
+		apitest.RoundTrip(t, BotInfoOwner{Type: "user", User: new(BotOwnerUser{PartialUser: new(PartialUser{Object: "user"})})}, func(v BotInfoOwner) bool { return v.Type == "user" }, jsonOpts)
 	})
 
 	t.Run("BotInfoOwner/workspace", func(t *testing.T) {
@@ -4173,11 +4159,11 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("CreateACommentDisplayName/custom", func(t *testing.T) {
-		apitest.RoundTrip(t, CreateACommentDisplayName{Type: "custom", Custom: new(CreateACommentDisplayNameCustomCustom{})}, func(v CreateACommentDisplayName) bool { return v.Type == "custom" }, jsonOpts)
+		apitest.RoundTrip(t, CreateACommentDisplayName{Type: "custom", Custom: new(CustomDisplayName{})}, func(v CreateACommentDisplayName) bool { return v.Type == "custom" }, jsonOpts)
 	})
 
 	t.Run("CreateATokenOkOwner/user", func(t *testing.T) {
-		apitest.RoundTrip(t, CreateATokenOkOwner{Type: "user", User: new(CreateATokenOkOwnerUserUser{PartialUser: new(PartialUser{Object: "user"})})}, func(v CreateATokenOkOwner) bool { return v.Type == "user" }, jsonOpts)
+		apitest.RoundTrip(t, CreateATokenOkOwner{Type: "user", User: new(TokenOwnerUser{PartialUser: new(PartialUser{Object: "user"})})}, func(v CreateATokenOkOwner) bool { return v.Type == "user" }, jsonOpts)
 	})
 
 	t.Run("CreateATokenOkOwner/workspace", func(t *testing.T) {
@@ -4433,7 +4419,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PageIcon/icon", func(t *testing.T) {
-		apitest.RoundTrip(t, PageIcon{Type: "icon", Icon: new(IconPageIconIcon{})}, func(v PageIcon) bool { return v.Type == "icon" }, jsonOpts)
+		apitest.RoundTrip(t, PageIcon{Type: "icon", Icon: new(Noticon{})}, func(v PageIcon) bool { return v.Type == "icon" }, jsonOpts)
 	})
 
 	t.Run("PageIconResponse/emoji", func(t *testing.T) {
@@ -4485,7 +4471,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PagePropertiesValue/select", func(t *testing.T) {
-		apitest.RoundTrip(t, PagePropertiesValue{Type: "select", Select: new(PagePropertiesValueSelectSelect{PagePropertiesValueSelectID: new(PagePropertiesValueSelectID{Color: "default"})})}, func(v PagePropertiesValue) bool { return v.Type == "select" }, jsonOpts)
+		apitest.RoundTrip(t, PagePropertiesValue{Type: "select", Select: new(OptionRef{PagePropertiesValueSelectID: new(PagePropertiesValueSelectID{Color: "default"})})}, func(v PagePropertiesValue) bool { return v.Type == "select" }, jsonOpts)
 	})
 
 	t.Run("PagePropertiesValue/multi_select", func(t *testing.T) {
@@ -4517,15 +4503,15 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PagePropertiesValue/status", func(t *testing.T) {
-		apitest.RoundTrip(t, PagePropertiesValue{Type: "status", Status: new(PagePropertiesValueSelectSelect{PagePropertiesValueSelectID: new(PagePropertiesValueSelectID{Color: "default"})})}, func(v PagePropertiesValue) bool { return v.Type == "status" }, jsonOpts)
+		apitest.RoundTrip(t, PagePropertiesValue{Type: "status", Status: new(OptionRef{PagePropertiesValueSelectID: new(PagePropertiesValueSelectID{Color: "default"})})}, func(v PagePropertiesValue) bool { return v.Type == "status" }, jsonOpts)
 	})
 
 	t.Run("PagePropertiesValue/place", func(t *testing.T) {
-		apitest.RoundTrip(t, PagePropertiesValue{Type: "place", Place: new(PagePropertiesValuePlacePlace{})}, func(v PagePropertiesValue) bool { return v.Type == "place" }, jsonOpts)
+		apitest.RoundTrip(t, PagePropertiesValue{Type: "place", Place: new(Place{})}, func(v PagePropertiesValue) bool { return v.Type == "place" }, jsonOpts)
 	})
 
 	t.Run("PagePropertiesValue/verification", func(t *testing.T) {
-		apitest.RoundTrip(t, PagePropertiesValue{Type: "verification", Verification: new(PagePropertiesValueVerificationVerification{PagePropertiesValueVerificationVerified: new(PagePropertiesValueVerificationVerified{State: "verified"})})}, func(v PagePropertiesValue) bool { return v.Type == "verification" }, jsonOpts)
+		apitest.RoundTrip(t, PagePropertiesValue{Type: "verification", Verification: new(VerificationValue{PagePropertiesValueVerificationVerified: new(PagePropertiesValueVerificationVerified{State: "verified"})})}, func(v PagePropertiesValue) bool { return v.Type == "verification" }, jsonOpts)
 	})
 
 	t.Run("PagePropertiesValueFilesItem/file", func(t *testing.T) {
@@ -4837,7 +4823,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PropertyFilter/verification", func(t *testing.T) {
-		apitest.RoundTrip(t, PropertyFilter{Type: "verification", Verification: new(PropertyFilterVerificationVerification{VerificationPropertyStatusFilter: new(VerificationPropertyStatusFilter{Status: "verified"})})}, func(v PropertyFilter) bool { return v.Type == "verification" }, jsonOpts)
+		apitest.RoundTrip(t, PropertyFilter{Type: "verification", Verification: new(VerificationFilter{VerificationPropertyStatusFilter: new(VerificationPropertyStatusFilter{Status: "verified"})})}, func(v PropertyFilter) bool { return v.Type == "verification" }, jsonOpts)
 	})
 
 	t.Run("PropertyItemListResponsePropertyItem/title", func(t *testing.T) {
@@ -5049,7 +5035,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("RelationPropertyConfigurationRelation/dual_property", func(t *testing.T) {
-		apitest.RoundTrip(t, RelationPropertyConfigurationRelation{Type: "dual_property", DualProperty: new(RelationPropertyConfigurationRelationAllOfDualPropertyDualProperty{})}, func(v RelationPropertyConfigurationRelation) bool { return v.Type == "dual_property" }, jsonOpts)
+		apitest.RoundTrip(t, RelationPropertyConfigurationRelation{Type: "dual_property", DualProperty: new(DualPropertyRequest{})}, func(v RelationPropertyConfigurationRelation) bool { return v.Type == "dual_property" }, jsonOpts)
 	})
 
 	t.Run("RichText/text", func(t *testing.T) {

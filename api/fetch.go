@@ -203,6 +203,31 @@ var exactNames = map[string]string{
 	"DatabaseType":         "CreateDatabaseType", // the types a database can be created as
 	"DatabaseDatabaseType": "DatabaseType",
 
+	// what a property value, a filter or an owner holds, named after it, where saying the word once would name what
+	// holds it
+	"AgentListResultsItemOneOf0AgentType":                                "CustomAgentType",
+	"BotInfoResponseOwnerUserUser":                                       "BotOwnerUser",
+	"CreateACommentDisplayNameCustomCustom":                              "CustomDisplayName",
+	"CreateATokenOkOwnerUserUser":                                        "TokenOwnerUser",
+	"CreateATokenOkOwnerUserUserPersonPerson":                            "PersonEmail",
+	"IconPageIconIcon":                                                   "Noticon",
+	"MeetingNotesPropertyFilterFilter":                                   "MeetingNotesCondition",
+	"MeetingNotesPropertyFilterFilterOperatorOperator":                   "EmptyOperator", // is_empty or is_not_empty
+	"PagePropertiesValuePlacePlace":                                      "Place",
+	"PagePropertiesValueSelectSelect":                                    "OptionRef", // a select's or status's option, by id or name
+	"PagePropertiesValueVerificationVerification":                        "VerificationValue",
+	"PropertyFilterVerificationVerification":                             "VerificationFilter",
+	"propertyItemPropertyItemListResponse":                               "PropertyItemList",
+	"QueryAgentsFilterIDID":                                              "StringEquals",
+	"QueryAgentsFilterOrItemOrItem":                                      "AgentCondition",
+	"QueryAgentsFilterStatusStatus":                                      "AgentStatusIn",
+	"QuerySessionEventsFilterOrItemOrItem":                               "SessionEventFilterItem",
+	"QuerySessionEventsFilterOrItemOrItemAnd":                            "SessionEventFilterAnd",
+	"QuerySessionEventsFilterOrItemOrItemOr":                             "SessionEventFilterOr",
+	"QuerySessionEventsFilterOrItemOrItemOrItem":                         "SessionEventCondition",
+	"RelationPropertyConfigurationRelationAllOfDualPropertyDualProperty": "DualPropertyRequest",
+	"SessionEventListResultsItemSessionStatusStatus":                     "SessionEventStatus",
+
 	// upstream's responses, whose names differ from the requests fetch builds only in case, as PageIconResponse holds
 	"contentWithRichTextColorAndIcon": "ContentWithRichTextColorAndIconResponse",
 	"customEmojiPageIcon":             "CustomEmojiPageIconResponse",
@@ -232,6 +257,12 @@ var blockContents = map[string]string{
 	"BlockObjectLinkToPageLinkToPage":           "LinkToPageRequest",
 	"BlockObjectTableOfContentsTableOfContents": "TableOfContentsRequest",
 	"BlockObjectSyncedBlockSyncedBlock":         "SyncedBlockRequest",
+
+	// what a request block's child holds, and what that child's child, which holds none, does
+	"BlockObjectWithSingleLevelOfChildrenSyncedBlockSyncedBlock": "SyncedBlockChild",
+	"BlockObjectWithSingleLevelOfChildrenTemplateTemplate":       "TemplateChild",
+	"BlockObjectWithSingleLevelOfChildrenToDoToDo":               "ToDoChild",
+	"BlockObjectRequestWithoutChildrenToDoToDo":                  "ToDoGrandchild",
 
 	"UpdateABlockCodeCode":               "CodeUpdate",
 	"UpdateABlockColumnColumn":           "ColumnUpdate",
