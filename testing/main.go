@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/json/jsontext"
 	"encoding/json/v2"
@@ -44,24 +43,20 @@ func main() {
 	fmt.Println("Done!")
 }
 
+// run records every call anew: the file holds what this run recorded and nothing else, so that a page the run no
+// longer comes to goes with it.
 func run(ctx context.Context) error {
-	ias, err := cassette.InteractionsReadFile(pathInteractions)
-	if err != nil {
-		return err
-	}
-
-	ias = slices.DeleteFunc(ias, eqTo(&cassette.Interaction{}))
+	rec := cassette.Replay(nil, cassette.RecordMisses(paced{}))
+	recorded := &http.Client{Transport: sign{rec}}
 
 	record := func(r cassette.Request) (*cassette.Interaction, error) {
-		ia, err := do(ctx, r)
-		if err != nil {
-			return nil, fmt.Errorf("%s %s: %w", r.Method, &r.URL, err)
+		if _, _, err := send(ctx, recorded, r); err != nil {
+			return nil, err
 		}
 
-		ias = slices.DeleteFunc(ias, eqTo(ia))
-		ias = append(ias, ia)
+		ias := rec.Interactions()
 
-		return ia, nil
+		return ias[len(ias)-1], nil
 	}
 
 	view, err := record(cassette.Request{
@@ -135,14 +130,39 @@ func run(ctx context.Context) error {
 		}
 	}
 
-	if err := recordExample(ctx, record); err != nil {
+	if err := recordExample(ctx, record, &http.Client{Transport: sign{paced{}}}); err != nil {
 		return fmt.Errorf("example page: %w", err)
 	}
 
+	ias, err := once(ctx, rec.Interactions())
+	if err != nil {
+		return err
+	}
+
 	ias.TrimResponseHeaders()
-	// ias.TrimResponseBodies(3)
 
 	return ias.WriteFile(pathInteractions)
+}
+
+// once is the interactions without those a later one records the same call of, as cassette matches a call to a
+// recording: the last of each call is kept, where it was.
+func once(ctx context.Context, ias cassette.Interactions) (cassette.Interactions, error) {
+	match := cassette.MatchRequest()
+
+	var out cassette.Interactions
+
+	for i, ia := range ias {
+		req, err := ia.Request.Create(ctx)
+		if err != nil {
+			return nil, err
+		}
+
+		if !slices.ContainsFunc(ias[i+1:], func(later *cassette.Interaction) bool { return match(req, later.Request) == nil }) {
+			out = append(out, ia)
+		}
+	}
+
+	return out, nil
 }
 
 func mustParseURL(s string) url.URL {
@@ -224,7 +244,7 @@ func unnest(filter any) any {
 
 // recordExample records the example page, a block of each shape in it and its subpages, and each database in it.
 // Its lists of blocks are walked without being recorded, since a recording keeps only three items of each list.
-func recordExample(ctx context.Context, record func(cassette.Request) (*cassette.Interaction, error)) error {
+func recordExample(ctx context.Context, record func(cassette.Request) (*cassette.Interaction, error), walk *http.Client) error {
 	page := examplePageID.String()
 
 	for _, r := range []cassette.Request{
@@ -238,7 +258,7 @@ func recordExample(ctx context.Context, record func(cassette.Request) (*cassette
 		}
 	}
 
-	w := walker{ctx: ctx, record: record, seen: map[string]bool{}}
+	w := walker{ctx: ctx, record: record, walk: walk, seen: map[string]bool{}}
 
 	return w.children(page)
 }
@@ -247,6 +267,7 @@ func recordExample(ctx context.Context, record func(cassette.Request) (*cassette
 type walker struct {
 	ctx    context.Context
 	record func(cassette.Request) (*cassette.Interaction, error)
+	walk   *http.Client    // what lists the blocks it walks, unrecorded
 	seen   map[string]bool // the shapes recorded
 }
 
@@ -258,13 +279,13 @@ func (w *walker) children(id string) error {
 			url += "&start_cursor=" + cursor
 		}
 
-		ia, err := do(w.ctx, cassette.Request{Method: http.MethodGet, URL: mustParseURL(url)})
+		status, body, err := send(w.ctx, w.walk, cassette.Request{Method: http.MethodGet, URL: mustParseURL(url)})
 		if err != nil {
 			return err
 		}
 
-		if ia.Response.StatusCode != http.StatusOK {
-			return fmt.Errorf("GET %s: %d %s", url, ia.Response.StatusCode, ia.Response.Body)
+		if status != http.StatusOK {
+			return fmt.Errorf("GET %s: %d %s", url, status, body)
 		}
 
 		var list struct {
@@ -272,7 +293,7 @@ func (w *walker) children(id string) error {
 			HasMore    bool             `json:"has_more"`
 			NextCursor string           `json:"next_cursor"`
 		}
-		if err := json.Unmarshal(ia.Response.Body, &list); err != nil {
+		if err := json.Unmarshal(body, &list); err != nil {
 			return fmt.Errorf("decoding children of %s: %w", id, err)
 		}
 
@@ -472,12 +493,55 @@ func get(path string) cassette.Request {
 	}
 }
 
+// send sends r through c, and returns the status and body of the response.
+func send(ctx context.Context, c *http.Client, r cassette.Request) (int, []byte, error) {
+	req, err := r.Create(ctx)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	rsp, err := c.Do(req)
+	if err != nil {
+		return 0, nil, fmt.Errorf("%s %s: %w", r.Method, &r.URL, err)
+	}
+	defer rsp.Body.Close()
+
+	body, err := io.ReadAll(rsp.Body)
+	if err != nil {
+		return 0, nil, fmt.Errorf("%s %s: %w", r.Method, &r.URL, err)
+	}
+
+	return rsp.StatusCode, body, nil
+}
+
+// sign gives each request the credentials and version of the API Notion asks for, before next, the recorder, sees
+// it: a recording keeps the headers a call was made with, the credentials masked.
+type sign struct{ next http.RoundTripper }
+
+// RoundTrip implements [http.RoundTripper].
+func (s sign) RoundTrip(req *http.Request) (*http.Response, error) {
+	req = req.Clone(req.Context())
+	req.Header.Set("Authorization", "Bearer "+os.Getenv("NOTION_API_KEY"))
+	req.Header.Set("Notion-Version", "2026-03-11")
+
+	if req.Body != nil && req.Body != http.NoBody {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	return s.next.RoundTrip(req)
+}
+
 // pace spaces requests out to the three a second Notion allows on average.
 var pace = time.Tick(time.Second / 3)
 
-// do sends r to Notion at the pace it allows, again after the wait it asks for when it limits the rate, and records
-// the interaction.
-func do(ctx context.Context, r cassette.Request) (*cassette.Interaction, error) {
+// paced sends a request to Notion at the pace it allows, and again after the wait it asks for when it limits the
+// rate.
+type paced struct{}
+
+// RoundTrip implements [http.RoundTripper].
+func (paced) RoundTrip(req *http.Request) (*http.Response, error) {
+	ctx := req.Context()
+
 	for {
 		select {
 		case <-pace:
@@ -485,79 +549,24 @@ func do(ctx context.Context, r cassette.Request) (*cassette.Interaction, error) 
 			return nil, ctx.Err()
 		}
 
-		ia, err := send(ctx, r)
-		if err != nil || ia.Response.StatusCode != http.StatusTooManyRequests {
-			return ia, err
+		rsp, err := http.DefaultTransport.RoundTrip(req)
+		if err != nil || rsp.StatusCode != http.StatusTooManyRequests {
+			return rsp, err
 		}
 
-		wait, _ := strconv.Atoi(ia.Response.Headers.Get("Retry-After"))
+		wait, _ := strconv.Atoi(rsp.Header.Get("Retry-After"))
+		rsp.Body.Close() //nolint:errcheck // only its status was read
+
+		if req.GetBody != nil {
+			if req.Body, err = req.GetBody(); err != nil {
+				return nil, err
+			}
+		}
 
 		select {
 		case <-time.After(time.Duration(max(wait, 1)) * time.Second):
 		case <-ctx.Done():
-			return ia, ctx.Err()
+			return nil, ctx.Err()
 		}
 	}
-}
-
-// send sends r to Notion and records the interaction.
-func send(ctx context.Context, r cassette.Request) (*cassette.Interaction, error) {
-	var reqBody io.Reader
-	if len(r.Body) > 0 {
-		reqBody = bytes.NewReader(r.Body)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, r.Method, r.URL.String(), reqBody)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(r.Headers) > 0 {
-		req.Header = r.Headers.Clone()
-	}
-
-	apiKey := os.Getenv("NOTION_API_KEY")
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-	req.Header.Set("Notion-Version", "2026-03-11")
-
-	if reqBody != nil {
-		req.Header.Add("Content-Type", "application/json")
-	}
-
-	r, err = cassette.NewRequest(req)
-	if err != nil {
-		return nil, err
-	}
-
-	ia := &cassette.Interaction{Request: r}
-
-	rsp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return ia, err
-	}
-
-	ia.Response, err = cassette.NewResponse(rsp)
-	if err != nil {
-		return ia, fmt.Errorf("recording response: %w", err)
-	}
-
-	return ia, nil
-}
-
-// eqTo reports whether an interaction is a's: the same request URL and body, so that queries of the same URL are
-// recorded apart.
-func eqTo(a *cassette.Interaction) func(*cassette.Interaction) bool {
-	return func(b *cassette.Interaction) bool {
-		return a.Request.URL == b.Request.URL && bytes.Equal(compact(a.Request.Body), compact(b.Request.Body))
-	}
-}
-
-// compact is body without the whitespace the file of interactions is indented with.
-func compact(body cassette.Body) []byte {
-	v := jsontext.Value(bytes.Clone(body))
-	if v.Compact() != nil {
-		return body
-	}
-
-	return v
 }
