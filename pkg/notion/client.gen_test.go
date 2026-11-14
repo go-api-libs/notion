@@ -44392,34 +44392,6 @@ func TestClient_Interactions(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if out, err := c.RetrieveAPage(ctx, uuid.MustParse("3ee88fcd-daf4-8170-8b9e-f5270e82e4e6"), &RetrieveAPageParams{}); err != nil {
-		t.Fatalf("RetrieveAPage: %v", err)
-	} else {
-		apitest.DecodedAsSent(t, "RetrieveAPage", out, last.Body, jsonOpts)
-	}
-
-	if out, err := c.RetrieveAPageProperty(ctx, uuid.MustParse("3ee88fcd-daf4-8170-8b9e-f5270e82e4e6"), "title", &RetrieveAPagePropertyParams{}); err != nil {
-		t.Fatalf("RetrieveAPageProperty: %v", err)
-	} else {
-		apitest.DecodedAsSent(t, "RetrieveAPageProperty", out, last.Body, jsonOpts)
-	}
-
-	if out, err := c.GetBlockChildren(ctx, uuid.MustParse("3ee88fcd-daf4-8170-8b9e-f5270e82e4e6"), &GetBlockChildrenParams{
-		PageSize: 3,
-	}); err != nil {
-		t.Fatalf("GetBlockChildren: %v", err)
-	} else {
-		apitest.DecodedAsSent(t, "GetBlockChildren", out, last.Body, jsonOpts)
-	}
-
-	if _, err := c.ListComments(ctx, ListCommentsParams{
-		BlockID: uuid.MustParse("3ee88fcd-daf4-8170-8b9e-f5270e82e4e6"),
-	}); err == nil {
-		t.Fatal("ListComments: expected error")
-	} else if _, ok := errors.AsType[*Error](err); !ok {
-		t.Fatalf("ListComments: got: %T, want: *Error", err)
-	}
-
 	if out, err := c.RetrieveAPage(ctx, uuid.MustParse("3f088fcd-daf4-81f6-a4a8-d17c715bd706"), &RetrieveAPageParams{}); err != nil {
 		t.Fatalf("RetrieveAPage: %v", err)
 	} else {
