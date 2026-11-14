@@ -14,12 +14,6 @@ property the API returns, but these:
 - A template mention such as `@today`, which only a database template may hold: none of the example page's databases
   has a template.
 
-## Names in the specification
-
-- 30 names say a word twice, as `PagePropertiesValueSelectSelect` or `QueryAgentsFilterStatusStatus`: what a property
-  value or a filter holds, named after it, where saying the word once would be the name of what holds it. Like a
-  block's content (`blockContents` in `api/fetch.go`), each wants a short name of its own.
-
 ## Recordings
 
 - `api/interactions.json` keeps the page that was once the first entry of the board's data source (`3ee88fcd-…`),
