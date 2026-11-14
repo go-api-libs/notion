@@ -14,7 +14,7 @@ func TestErrorError(t *testing.T) {
 		{
 			&Error{
 				Status: 403, Code: ErrorCodeAgentCreditLimitReached, Message: "Limit reached.",
-				AdditionalData: map[string]PublicAPICommonErrorAdditionalDataValue{
+				AdditionalData: map[string]AdditionalDataValue{
 					"recovery_kind": {String: "none"},
 					"agents":        {String2: []string{"a", "b"}},
 				},

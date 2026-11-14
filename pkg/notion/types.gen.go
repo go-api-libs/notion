@@ -5,20 +5,17 @@
 package notion
 
 import (
-	"bytes"
 	"encoding/json/jsontext"
 	"encoding/json/v2"
 	"errors"
 	"fmt"
-	"maps"
 	"net/url"
-	"slices"
-	"strconv"
 	"time"
 	"uuid"
 
 	"cloud.google.com/go/civil"
 	"github.com/MarkRosemaker/jsonutil"
+	"github.com/go-api-libs/api/union"
 	"github.com/go-api-libs/types"
 )
 
@@ -205,6 +202,173 @@ func (e APITranscriptionStatus) Valid() bool {
 	}
 }
 
+// The Notion API version that was used to render this webhook event's shape.
+type APIVersion string
+
+const (
+	APIVersionTwoZeroTwoTwo0628  APIVersion = "2022-06-28"
+	APIVersionTwoZeroTwoFive0903 APIVersion = "2025-09-03"
+	APIVersionTwoZeroTwoSix0311  APIVersion = "2026-03-11"
+)
+
+// Valid indicates whether the value is a known member of the APIVersion enum.
+func (e APIVersion) Valid() bool {
+	switch e {
+	case APIVersionTwoZeroTwoTwo0628, APIVersionTwoZeroTwoFive0903, APIVersionTwoZeroTwoSix0311:
+		return true
+	default:
+		return false
+	}
+}
+
+// AccessibleByItem defines a model
+type AccessibleByItem struct {
+	// The ID of the user.
+	ID   ID                   `json:"id"`
+	Type AccessibleByItemType `json:"type"`
+}
+
+// AccessibleByItemType is a value of AccessibleByItem's type, naming the members it holds.
+type AccessibleByItemType string
+
+const (
+	AccessibleByItemTypePerson AccessibleByItemType = "person"
+	AccessibleByItemTypeBot    AccessibleByItemType = "bot"
+)
+
+// Valid indicates whether the value is a known member of the AccessibleByItemType enum.
+func (e AccessibleByItemType) Valid() bool {
+	_, ok := tagsOfAccessibleByItem[string(e)]
+	return ok
+}
+
+// tagsOfAccessibleByItem holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfAccessibleByItem = map[string]map[string]union.TagNeed{
+	"person": {},
+	"bot":    {},
+}
+
+// taggedMembers returns those of the members of an alternative's own that are set.
+func (v *AccessibleByItem) taggedMembers() []string {
+	var set []string
+
+	return set
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
+// alternative's own, only those of the one type names are set. Null sets no alternative.
+func (v *AccessibleByItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain AccessibleByItem
+
+	*v = AccessibleByItem{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(raw, (*plain)(v), jsonOptsOf(dec)); err != nil {
+		return err
+	}
+
+	// a member sent as null is there, though its field reads as left out
+	present, err := union.Members(raw)
+	if err != nil {
+		return err
+	}
+
+	return union.CheckTag("type", string(v.Type), tagsOfAccessibleByItem, v.taggedMembers(), present, union.Strict(dec))
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
+// the value whose member is set, or null where none is.
+func (v *AccessibleByItem) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain AccessibleByItem
+
+	out, set := *v, v.taggedMembers()
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfAccessibleByItem, set); ok && out.Type == "" {
+		out.Type = AccessibleByItemType(tag)
+	}
+
+	if err := union.CheckTag("type", string(out.Type), tagsOfAccessibleByItem, set, nil, true); err != nil {
+		return err
+	}
+
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
+}
+
+// AdditionalDataValue defines a model
+// AdditionalDataValue is an untagged oneOf union: exactly one field is set after unmarshaling.
+type AdditionalDataValue struct {
+	String  string
+	String2 []string
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
+func (v *AdditionalDataValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = AdditionalDataValue{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	opts := jsonOptsOf(dec)
+	strict := union.Strict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv string
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.String = vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv []string
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.String2 = vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
+func (v *AdditionalDataValue) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.String != "":
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
+	case v.String2 != nil:
+		return json.MarshalEncode(enc, v.String2, jsonOptsTo(enc))
+	}
+
+	return enc.WriteToken(jsontext.Null)
+}
+
 // Agent defines a model
 type Agent struct {
 	// Always `agent`
@@ -223,10 +387,10 @@ type Agent struct {
 	// "active" when the agent can run; "disabled" when it is paused (see pause_reason); "deleted" when it has been removed.
 	Status AgentStatus `json:"status"`
 	// Why the agent is paused when status is "disabled" (e.g. "credit_limit", "disabled_from_workspace_settings"); null when active.
-	PauseReason  AgentPauseReasonOneOf `json:"pause_reason"`
-	CreatedBy    AgentCreatedByUser    `json:"created_by"`
-	Version      AgentVersionOneOf     `json:"version"`
-	AgentVersion AgentVersionOneOf     `json:"agent_version"`
+	PauseReason  PauseReason        `json:"pause_reason"`
+	CreatedBy    AgentCreatedByUser `json:"created_by"`
+	Version      AgentVersion       `json:"version"`
+	AgentVersion AgentVersion       `json:"agent_version"`
 	// Whether the draft has edits not yet in the published version, or "hidden" when the caller lacks edit access to the agent.
 	HasUnpublishedChanges AgentHasUnpublishedChanges `json:"has_unpublished_changes"`
 	// ISO 8601 timestamp of the agent's most recent run, null if it has never run, or "hidden" when the caller lacks edit access to the agent.
@@ -238,7 +402,7 @@ type Agent struct {
 	// The agent's configured triggers, each with a machine type, an enabled flag, and (for recurrence triggers) a structured schedule.
 	Triggers AgentTriggers `json:"triggers"`
 	// Whether this agent is in the caller's personal favorites, or null when the caller has no personal favorites scope.
-	IsFavorited *bool `json:"is_favorited"`
+	IsFavorited bool `json:"is_favorited"`
 	// Date and time when this agent was created.
 	CreatedTime time.Time `json:"created_time,omitzero"`
 	// Date and time when this agent was last edited.
@@ -297,11 +461,16 @@ type AgentBatchOperationsItem struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member action names the alternative, which then
-// decodes each further member as it is read. With action first, nothing is read twice.
+// decodes each further member as it is read. With action first, nothing is read twice. Null sets no alternative.
 func (v *AgentBatchOperationsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentBatchOperationsItem{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "action")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "action")
 	if err != nil {
 		return err
 	}
@@ -309,33 +478,34 @@ func (v *AgentBatchOperationsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 	switch tag {
 	case "update_status":
 		var vv AgentBatchOperationsItemUpdateStatus
-		if err := jsonMembersFrom(dec, "action", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "action", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentBatchOperationsItemUpdateStatus = &vv
 	case "update_credit_limit":
 		var vv AgentBatchOperationsItemUpdateCreditLimit
-		if err := jsonMembersFrom(dec, "action", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "action", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentBatchOperationsItemUpdateCreditLimit = &vv
 	case "delete":
 		var vv AgentBatchOperationsItemDelete
-		if err := jsonMembersFrom(dec, "action", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "action", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentBatchOperationsItemDelete = &vv
 	default:
-		return jsonUnknownValue("action", tag)
+		return union.UnknownValue("action", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with action first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with action first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *AgentBatchOperationsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -350,7 +520,7 @@ func (v *AgentBatchOperationsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	case v.AgentBatchOperationsItemDelete != nil:
 		variant, tag = v.AgentBatchOperationsItemDelete, "delete"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -358,7 +528,7 @@ func (v *AgentBatchOperationsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	if out, err = jsonFirst(out, "action", tag); err != nil {
+	if out, err = union.First(out, "action", tag); err != nil {
 		return err
 	}
 
@@ -444,12 +614,17 @@ type AgentConnectionsItem struct {
 	AgentConnectionsItemOneOf           *AgentConnectionsItemOneOf
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *AgentConnectionsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentConnectionsItem{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -459,13 +634,13 @@ func (v *AgentConnectionsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		// leniently, more than one may match, and the first does
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"account", "name", "permissions", "type"}, map[string]bool{"account": true}, map[string]string{"type": "\"notion\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv AgentConnectionsItemNotion
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.AgentConnectionsItemNotion = &vv
@@ -478,7 +653,7 @@ func (v *AgentConnectionsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"account", "name", "permissions", "type"}, map[string]bool{"account": true}, map[string]string{"type": "\"slack\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv AgentConnectionsItemSlack
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.AgentConnectionsItemSlack = &vv
@@ -491,7 +666,7 @@ func (v *AgentConnectionsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"account", "name", "permissions", "type"}, map[string]bool{"account": true}, map[string]string{"type": "\"discord\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv AgentConnectionsItemDiscord
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.AgentConnectionsItemDiscord = &vv
@@ -504,7 +679,7 @@ func (v *AgentConnectionsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"account", "enabled_tools", "name", "run_tools_automatically", "type"}, map[string]bool{"account": true, "enabled_tools": true}, map[string]string{"type": "\"mcp_server\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv AgentConnectionsItemMcpServer
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.AgentConnectionsItemMcpServer = &vv
@@ -517,7 +692,7 @@ func (v *AgentConnectionsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"account", "enabled_tools", "name", "run_tools_automatically", "type"}, map[string]bool{"account": true, "enabled_tools": true}, map[string]string{"type": "\"custom_mcp_server\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv AgentConnectionsItemCustomMcpServer
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.AgentConnectionsItemCustomMcpServer = &vv
@@ -530,7 +705,7 @@ func (v *AgentConnectionsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"account", "name", "permissions", "type"}, map[string]bool{"account": true}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"asana\"", "\"box\"", "\"calendar\"", "\"computer\"", "\"confluence\"", "\"cursor\"", "\"feedback\"", "\"files\"", "\"fs\"", "\"github\"", "\"gmail\"", "\"google_calendar\"", "\"google_drive\"", "\"google_drive_oauth\"", "\"gtm\"", "\"helpdocs\"", "\"images\"", "\"jira\"", "\"linear\"", "\"mail\"", "\"marketplace\"", "\"memory\"", "\"microsoft_teams\"", "\"microsoft_teams_oauth\"", "\"outlook\"", "\"salesforce\"", "\"search\"", "\"security\"", "\"sharepoint\"", "\"sharepoint_oauth\"", "\"shopify\"", "\"skills\"", "\"system\"", "\"test\"", "\"web\"", "\"webhooks\"", "\"worker\"", "\"workers\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"type": {"\"asana\"", "\"box\"", "\"calendar\"", "\"computer\"", "\"confluence\"", "\"cursor\"", "\"feedback\"", "\"files\"", "\"fs\"", "\"github\"", "\"gmail\"", "\"google_calendar\"", "\"google_drive\"", "\"google_drive_oauth\"", "\"gtm\"", "\"helpdocs\"", "\"images\"", "\"jira\"", "\"linear\"", "\"mail\"", "\"marketplace\"", "\"memory\"", "\"microsoft_teams\"", "\"microsoft_teams_oauth\"", "\"outlook\"", "\"salesforce\"", "\"search\"", "\"security\"", "\"sharepoint\"", "\"sharepoint_oauth\"", "\"shopify\"", "\"skills\"", "\"system\"", "\"test\"", "\"web\"", "\"webhooks\"", "\"worker\"", "\"workers\""}})) {
 				var vv AgentConnectionsItemOneOf
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.AgentConnectionsItemOneOf = &vv
@@ -551,7 +726,8 @@ func (v *AgentConnectionsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *AgentConnectionsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.AgentConnectionsItemNotion != nil:
@@ -568,7 +744,7 @@ func (v *AgentConnectionsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.AgentConnectionsItemOneOf, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // AgentConnectionsItemCustomMcpServer defines a model
@@ -581,7 +757,7 @@ type AgentConnectionsItemCustomMcpServer struct {
 	// The tools the agent may call, null when all tools are enabled (including any the server adds later), or "hidden" when the caller lacks edit access to the agent.
 	EnabledTools AgentConnectionsItemMcpServerEnabledTools `json:"enabled_tools"`
 	// Whether read / write tool calls run without a confirmation step.
-	RunToolsAutomatically AgentConnectionsItemMcpServerRunToolsAutomatically `json:"run_tools_automatically"`
+	RunToolsAutomatically RunToolsAutomatically `json:"run_tools_automatically"`
 }
 
 // AgentConnectionsItemDiscord defines a model
@@ -601,12 +777,17 @@ type AgentConnectionsItemDiscordAccount struct {
 	String                                          string
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *AgentConnectionsItemDiscordAccount) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentConnectionsItemDiscordAccount{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -619,7 +800,7 @@ func (v *AgentConnectionsItemDiscordAccount) UnmarshalJSONFrom(dec *jsontext.Dec
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"id", "type"}, map[string]bool{}, map[string]string{"type": "\"discord_server\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv AgentConnectionsItemDiscordAccountDiscordServer
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.AgentConnectionsItemDiscordAccountDiscordServer = &vv
@@ -644,7 +825,8 @@ func (v *AgentConnectionsItemDiscordAccount) UnmarshalJSONFrom(dec *jsontext.Dec
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *AgentConnectionsItemDiscordAccount) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.AgentConnectionsItemDiscordAccountDiscordServer != nil:
@@ -653,7 +835,7 @@ func (v *AgentConnectionsItemDiscordAccount) MarshalJSONTo(enc *jsontext.Encoder
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // AgentConnectionsItemDiscordAccountDiscordServer defines a model
@@ -681,11 +863,16 @@ type AgentConnectionsItemDiscordPermissionsItemTarget struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *AgentConnectionsItemDiscordPermissionsItemTarget) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentConnectionsItemDiscordPermissionsItemTarget{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
@@ -693,26 +880,27 @@ func (v *AgentConnectionsItemDiscordPermissionsItemTarget) UnmarshalJSONFrom(dec
 	switch tag {
 	case "discord_channel":
 		var vv AgentConnectionsItemDiscordPermissionsItemTargetDiscordChannel
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentConnectionsItemDiscordPermissionsItemTargetDiscordChannel = &vv
 	case "discord_all_channels":
 		var vv AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels = &vv
 	default:
-		return jsonUnknownValue("type", tag)
+		return union.UnknownValue("type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *AgentConnectionsItemDiscordPermissionsItemTarget) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -725,7 +913,7 @@ func (v *AgentConnectionsItemDiscordPermissionsItemTarget) MarshalJSONTo(enc *js
 	case v.AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels != nil:
 		variant, tag = v.AgentConnectionsItemDiscordPermissionsItemTargetDiscordAllChannels, "discord_all_channels"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -733,7 +921,7 @@ func (v *AgentConnectionsItemDiscordPermissionsItemTarget) MarshalJSONTo(enc *js
 		return err
 	}
 
-	if out, err = jsonFirst(out, "type", tag); err != nil {
+	if out, err = union.First(out, "type", tag); err != nil {
 		return err
 	}
 
@@ -785,7 +973,7 @@ type AgentConnectionsItemMcpServer struct {
 	// The tools the agent may call, null when all tools are enabled (including any the server adds later), or "hidden" when the caller lacks edit access to the agent.
 	EnabledTools AgentConnectionsItemMcpServerEnabledTools `json:"enabled_tools"`
 	// Whether read / write tool calls run without a confirmation step.
-	RunToolsAutomatically AgentConnectionsItemMcpServerRunToolsAutomatically `json:"run_tools_automatically"`
+	RunToolsAutomatically RunToolsAutomatically `json:"run_tools_automatically"`
 }
 
 // The MCP server host, null when none is linked, or "hidden" when the caller lacks edit access to the agent.
@@ -795,12 +983,17 @@ type AgentConnectionsItemMcpServerAccount struct {
 	String                                        string
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *AgentConnectionsItemMcpServerAccount) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentConnectionsItemMcpServerAccount{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -813,7 +1006,7 @@ func (v *AgentConnectionsItemMcpServerAccount) UnmarshalJSONFrom(dec *jsontext.D
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"server_host", "type"}, map[string]bool{}, map[string]string{"type": "\"mcp_server\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv AgentConnectionsItemMcpServerAccountMcpServer
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.AgentConnectionsItemMcpServerAccountMcpServer = &vv
@@ -838,7 +1031,8 @@ func (v *AgentConnectionsItemMcpServerAccount) UnmarshalJSONFrom(dec *jsontext.D
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *AgentConnectionsItemMcpServerAccount) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.AgentConnectionsItemMcpServerAccountMcpServer != nil:
@@ -847,7 +1041,7 @@ func (v *AgentConnectionsItemMcpServerAccount) MarshalJSONTo(enc *jsontext.Encod
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // AgentConnectionsItemMcpServerAccountMcpServer defines a model
@@ -865,12 +1059,17 @@ type AgentConnectionsItemMcpServerEnabledTools struct {
 	String                                         string
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *AgentConnectionsItemMcpServerEnabledTools) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentConnectionsItemMcpServerEnabledTools{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -904,7 +1103,8 @@ func (v *AgentConnectionsItemMcpServerEnabledTools) UnmarshalJSONFrom(dec *jsont
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *AgentConnectionsItemMcpServerEnabledTools) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.AgentConnectionsItemMcpServerEnabledToolsOneOf != nil:
@@ -913,7 +1113,7 @@ func (v *AgentConnectionsItemMcpServerEnabledTools) MarshalJSONTo(enc *jsontext.
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // AgentConnectionsItemMcpServerEnabledToolsOneOf defines a model
@@ -923,14 +1123,6 @@ type AgentConnectionsItemMcpServerEnabledToolsOneOf []AgentConnectionsItemMcpSer
 type AgentConnectionsItemMcpServerEnabledToolsOneOfItem struct {
 	Name  string `json:"name"`
 	Title string `json:"title"`
-}
-
-// Whether read / write tool calls run without a confirmation step.
-type AgentConnectionsItemMcpServerRunToolsAutomatically struct {
-	// Whether read tool calls run without a confirmation step.
-	Read bool `json:"read"`
-	// Whether write tool calls run without a confirmation step.
-	Write bool `json:"write"`
 }
 
 // AgentConnectionsItemNotion defines a model
@@ -965,11 +1157,16 @@ type AgentConnectionsItemNotionPermissionsItemTarget struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *AgentConnectionsItemNotionPermissionsItemTarget) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentConnectionsItemNotionPermissionsItemTarget{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
@@ -977,61 +1174,62 @@ func (v *AgentConnectionsItemNotionPermissionsItemTarget) UnmarshalJSONFrom(dec 
 	switch tag {
 	case "page":
 		var vv AgentConnectionsItemNotionPermissionsItemTargetPage
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentConnectionsItemNotionPermissionsItemTargetPage = &vv
 	case "database_property":
 		var vv AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentConnectionsItemNotionPermissionsItemTargetDatabaseProperty = &vv
 	case "agent":
 		var vv AgentConnectionsItemNotionPermissionsItemTargetAgent
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentConnectionsItemNotionPermissionsItemTargetAgent = &vv
 	case "workspace":
 		var vv AgentConnectionsItemNotionPermissionsItemTargetWorkspace
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentConnectionsItemNotionPermissionsItemTargetWorkspace = &vv
 	case "owner_private_pages":
 		var vv AgentConnectionsItemNotionPermissionsItemTargetOwnerPrivatePages
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentConnectionsItemNotionPermissionsItemTargetOwnerPrivatePages = &vv
 	case "web_search":
 		var vv AgentConnectionsItemNotionPermissionsItemTargetWebSearch
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentConnectionsItemNotionPermissionsItemTargetWebSearch = &vv
 	case "notion_help_docs_search":
 		var vv AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch = &vv
 	default:
-		return jsonUnknownValue("type", tag)
+		return union.UnknownValue("type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *AgentConnectionsItemNotionPermissionsItemTarget) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -1054,7 +1252,7 @@ func (v *AgentConnectionsItemNotionPermissionsItemTarget) MarshalJSONTo(enc *jso
 	case v.AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch != nil:
 		variant, tag = v.AgentConnectionsItemNotionPermissionsItemTargetNotionHelpDocsSearch, "notion_help_docs_search"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -1062,7 +1260,7 @@ func (v *AgentConnectionsItemNotionPermissionsItemTarget) MarshalJSONTo(enc *jso
 		return err
 	}
 
-	if out, err = jsonFirst(out, "type", tag); err != nil {
+	if out, err = union.First(out, "type", tag); err != nil {
 		return err
 	}
 
@@ -1294,12 +1492,17 @@ type AgentConnectionsItemSlackAccount struct {
 	String                                         string
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *AgentConnectionsItemSlackAccount) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentConnectionsItemSlackAccount{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -1312,7 +1515,7 @@ func (v *AgentConnectionsItemSlackAccount) UnmarshalJSONFrom(dec *jsontext.Decod
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"team_id", "type"}, map[string]bool{}, map[string]string{"type": "\"slack_workspace\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv AgentConnectionsItemSlackAccountSlackWorkspace
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.AgentConnectionsItemSlackAccountSlackWorkspace = &vv
@@ -1337,7 +1540,8 @@ func (v *AgentConnectionsItemSlackAccount) UnmarshalJSONFrom(dec *jsontext.Decod
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *AgentConnectionsItemSlackAccount) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.AgentConnectionsItemSlackAccountSlackWorkspace != nil:
@@ -1346,7 +1550,7 @@ func (v *AgentConnectionsItemSlackAccount) MarshalJSONTo(enc *jsontext.Encoder) 
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // AgentConnectionsItemSlackAccountSlackWorkspace defines a model
@@ -1375,11 +1579,16 @@ type AgentConnectionsItemSlackPermissionsItemTarget struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *AgentConnectionsItemSlackPermissionsItemTarget) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentConnectionsItemSlackPermissionsItemTarget{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
@@ -1387,33 +1596,34 @@ func (v *AgentConnectionsItemSlackPermissionsItemTarget) UnmarshalJSONFrom(dec *
 	switch tag {
 	case "slack_channel":
 		var vv AgentConnectionsItemSlackPermissionsItemTargetSlackChannel
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentConnectionsItemSlackPermissionsItemTargetSlackChannel = &vv
 	case "slack_all_public_channels":
 		var vv AgentConnectionsItemSlackPermissionsItemTargetSlackAllPublicChannels
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentConnectionsItemSlackPermissionsItemTargetSlackAllPublicChannels = &vv
 	case "slack_all_channels":
 		var vv AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels = &vv
 	default:
-		return jsonUnknownValue("type", tag)
+		return union.UnknownValue("type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *AgentConnectionsItemSlackPermissionsItemTarget) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -1428,7 +1638,7 @@ func (v *AgentConnectionsItemSlackPermissionsItemTarget) MarshalJSONTo(enc *json
 	case v.AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels != nil:
 		variant, tag = v.AgentConnectionsItemSlackPermissionsItemTargetSlackAllChannels, "slack_all_channels"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -1436,7 +1646,7 @@ func (v *AgentConnectionsItemSlackPermissionsItemTarget) MarshalJSONTo(enc *json
 		return err
 	}
 
-	if out, err = jsonFirst(out, "type", tag); err != nil {
+	if out, err = union.First(out, "type", tag); err != nil {
 		return err
 	}
 
@@ -1519,12 +1729,17 @@ type AgentCreditLimit struct {
 	String string
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *AgentCreditLimit) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentCreditLimit{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -1558,7 +1773,8 @@ func (v *AgentCreditLimit) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *AgentCreditLimit) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.Int != nil:
@@ -1567,7 +1783,7 @@ func (v *AgentCreditLimit) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // Whether the draft has edits not yet in the published version, or "hidden" when the caller lacks edit access to the agent.
@@ -1577,12 +1793,17 @@ type AgentHasUnpublishedChanges struct {
 	String string
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *AgentHasUnpublishedChanges) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentHasUnpublishedChanges{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -1616,7 +1837,8 @@ func (v *AgentHasUnpublishedChanges) UnmarshalJSONFrom(dec *jsontext.Decoder) er
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *AgentHasUnpublishedChanges) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.Bool != nil:
@@ -1625,7 +1847,7 @@ func (v *AgentHasUnpublishedChanges) MarshalJSONTo(enc *jsontext.Encoder) error 
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // AgentID defines a model
@@ -1635,9 +1857,14 @@ type AgentID struct {
 	String string
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *AgentID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentID{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -1671,7 +1898,8 @@ func (v *AgentID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *AgentID) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.ID != nil:
@@ -1680,7 +1908,7 @@ func (v *AgentID) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // AgentIcon defines a model
@@ -1690,12 +1918,17 @@ type AgentIcon struct {
 	AgentIconCustomAgentAvatar *AgentIconCustomAgentAvatar
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *AgentIcon) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentIcon{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -1708,7 +1941,7 @@ func (v *AgentIcon) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"type"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv PageIconResponse
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.PageIconResponse = &vv
@@ -1721,7 +1954,7 @@ func (v *AgentIcon) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"custom_agent_avatar", "type"}, map[string]bool{}, map[string]string{"type": "\"custom_agent_avatar\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv AgentIconCustomAgentAvatar
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.AgentIconCustomAgentAvatar = &vv
@@ -1737,7 +1970,8 @@ func (v *AgentIcon) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *AgentIcon) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PageIconResponse != nil:
@@ -1746,7 +1980,7 @@ func (v *AgentIcon) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.AgentIconCustomAgentAvatar, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // AgentIconCustomAgentAvatar defines a model
@@ -1754,15 +1988,7 @@ type AgentIconCustomAgentAvatar struct {
 	// Type of icon. In this case, a custom agent avatar.
 	Type string `json:"type"`
 	// The static and animated URLs for the agent avatar.
-	CustomAgentAvatar AgentIconCustomAgentAvatarCustomAgentAvatar `json:"custom_agent_avatar"`
-}
-
-// The static and animated URLs for the agent avatar.
-type AgentIconCustomAgentAvatarCustomAgentAvatar struct {
-	// The URL of the static custom agent avatar.
-	StaticURL string `json:"static_url"`
-	// The URL of the animated custom agent avatar.
-	AnimatedURL string `json:"animated_url"`
+	CustomAgentAvatar CustomAgentAvatar `json:"custom_agent_avatar"`
 }
 
 // AgentInsights defines a model
@@ -1774,9 +2000,10 @@ type AgentInsights struct {
 	// One of: `notion_ai`, `custom_agent`, `autofill_custom_agent`
 	AgentType AgentInsightsAgentType `json:"agent_type"`
 	// One of: `active`, `disabled`, `deleted`
-	Status      AgentStatus           `json:"status"`
-	PauseReason AgentPauseReasonOneOf `json:"pause_reason"`
-	CreatedBy   SessionCreatedBy      `json:"created_by"`
+	Status AgentStatus `json:"status"`
+	// One of: `run_limit`, `credit_limit`, `runaway_credit_usage`, `workspace_credit_limit`, `owner_allowance_limit`, `failure_limit`, `mark_session_failed_autopause`, `disabled_from_workspace_settings`, `disabled_from_workspace_settings_but_resumable`, `disabled_from_api`, `disabled_from_agent_settings`, `disabled_due_to_no_members_with_access`, `disabled_due_to_lack_of_editors`, `disabled_by_notion`, `internal_error`, `needs_user_review`, `tool_unavailable`
+	PauseReason PauseReason      `json:"pause_reason"`
+	CreatedBy   SessionCreatedBy `json:"created_by"`
 	// Premium AI credits consumed by this agent within the window. Values of 1 or more are whole credits, and values below 1 have at most two significant figures. Both round down.
 	TotalCreditsUsed float64 `json:"total_credits_used"`
 	// Enforced per-agent credit limit; null when none is configured, and "hidden" when the caller lacks full access to the agent.
@@ -1811,12 +2038,17 @@ type AgentInsightsCreditLimit struct {
 	String string
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *AgentInsightsCreditLimit) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentInsightsCreditLimit{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -1850,7 +2082,8 @@ func (v *AgentInsightsCreditLimit) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *AgentInsightsCreditLimit) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.Int != nil:
@@ -1859,7 +2092,7 @@ func (v *AgentInsightsCreditLimit) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // AgentInsightsID defines a model
@@ -1869,12 +2102,17 @@ type AgentInsightsID struct {
 	String string
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *AgentInsightsID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentInsightsID{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -1908,7 +2146,8 @@ func (v *AgentInsightsID) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *AgentInsightsID) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.ID != nil:
@@ -1917,7 +2156,7 @@ func (v *AgentInsightsID) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // ISO 8601 timestamp of the agent's most recent run, null if it has never run, or "hidden" when the caller lacks edit access to the agent.
@@ -1927,12 +2166,17 @@ type AgentLastRunAt struct {
 	String string
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *AgentLastRunAt) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentLastRunAt{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -1966,7 +2210,8 @@ func (v *AgentLastRunAt) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *AgentLastRunAt) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.Time != nil:
@@ -1975,7 +2220,7 @@ func (v *AgentLastRunAt) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // AgentList defines a model
@@ -1997,12 +2242,17 @@ type AgentListResultsItem struct {
 	NotionAIAgent *NotionAIAgent
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *AgentListResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentListResultsItem{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -2012,13 +2262,13 @@ func (v *AgentListResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		// leniently, more than one may match, and the first does
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"agent_type", "agent_version", "connections", "created_by", "created_time", "credit_limit", "description", "icon", "id", "instructions_page_id", "last_edited_time", "last_run_at", "model", "name", "object", "pause_reason", "status", "triggers"}, map[string]bool{"agent_version": true, "created_by": true, "credit_limit": true, "description": true, "icon": true, "instructions_page_id": true, "last_run_at": true, "pause_reason": true}, map[string]string{"object": "\"agent\""}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"agent_type": {"\"custom_agent\"", "\"autofill_custom_agent\""}, "status": {"\"active\"", "\"disabled\"", "\"deleted\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"agent_type": {"\"custom_agent\"", "\"autofill_custom_agent\""}, "status": {"\"active\"", "\"disabled\"", "\"deleted\""}})) {
 				var vv CustomAgent
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.CustomAgent = &vv
@@ -2031,7 +2281,7 @@ func (v *AgentListResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"agent_type", "agent_version", "connections", "created_by", "created_time", "credit_limit", "description", "icon", "id", "instructions_page_id", "last_edited_time", "last_run_at", "model", "name", "object", "pause_reason", "status", "triggers"}, map[string]bool{"agent_version": true, "created_by": true, "created_time": true, "credit_limit": true, "description": true, "instructions_page_id": true, "last_edited_time": true, "last_run_at": true, "pause_reason": true}, map[string]string{"object": "\"agent\"", "id": "\"notion_ai\"", "agent_type": "\"notion_ai\"", "status": "\"active\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv NotionAIAgent
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.NotionAIAgent = &vv
@@ -2052,7 +2302,8 @@ func (v *AgentListResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *AgentListResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.CustomAgent != nil:
@@ -2061,7 +2312,7 @@ func (v *AgentListResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.NotionAIAgent, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // AgentModel defines a model
@@ -2072,11 +2323,16 @@ type AgentModel struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member mode names the alternative, which then
-// decodes each further member as it is read. With mode first, nothing is read twice.
+// decodes each further member as it is read. With mode first, nothing is read twice. Null sets no alternative.
 func (v *AgentModel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentModel{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "mode")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "mode")
 	if err != nil {
 		return err
 	}
@@ -2084,26 +2340,27 @@ func (v *AgentModel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch tag {
 	case "auto":
 		var vv AgentModelAuto
-		if err := jsonMembersFrom(dec, "mode", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "mode", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentModelAuto = &vv
 	case "pinned":
 		var vv AgentModelPinned
-		if err := jsonMembersFrom(dec, "mode", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "mode", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentModelPinned = &vv
 	default:
-		return jsonUnknownValue("mode", tag)
+		return union.UnknownValue("mode", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with mode first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with mode first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *AgentModel) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -2116,7 +2373,7 @@ func (v *AgentModel) MarshalJSONTo(enc *jsontext.Encoder) error {
 	case v.AgentModelPinned != nil:
 		variant, tag = v.AgentModelPinned, "pinned"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -2124,7 +2381,7 @@ func (v *AgentModel) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	if out, err = jsonFirst(out, "mode", tag); err != nil {
+	if out, err = union.First(out, "mode", tag); err != nil {
 		return err
 	}
 
@@ -2165,39 +2422,6 @@ func (v *AgentModelPinned) unmarshalJSONMember(dec *jsontext.Decoder, name strin
 	}
 
 	return false, nil
-}
-
-// One of: `run_limit`, `credit_limit`, `runaway_credit_usage`, `workspace_credit_limit`, `owner_allowance_limit`, `failure_limit`, `mark_session_failed_autopause`, `disabled_from_workspace_settings`, `disabled_from_workspace_settings_but_resumable`, `disabled_from_api`, `disabled_from_agent_settings`, `disabled_due_to_no_members_with_access`, `disabled_due_to_lack_of_editors`, `disabled_by_notion`, `internal_error`, `needs_user_review`, `tool_unavailable`
-type AgentPauseReasonOneOf string
-
-const (
-	AgentPauseReasonOneOfRunLimit                                  AgentPauseReasonOneOf = "run_limit"
-	AgentPauseReasonOneOfCreditLimit                               AgentPauseReasonOneOf = "credit_limit"
-	AgentPauseReasonOneOfRunawayCreditUsage                        AgentPauseReasonOneOf = "runaway_credit_usage"
-	AgentPauseReasonOneOfWorkspaceCreditLimit                      AgentPauseReasonOneOf = "workspace_credit_limit"
-	AgentPauseReasonOneOfOwnerAllowanceLimit                       AgentPauseReasonOneOf = "owner_allowance_limit"
-	AgentPauseReasonOneOfFailureLimit                              AgentPauseReasonOneOf = "failure_limit"
-	AgentPauseReasonOneOfMarkSessionFailedAutopause                AgentPauseReasonOneOf = "mark_session_failed_autopause"
-	AgentPauseReasonOneOfDisabledFromWorkspaceSettings             AgentPauseReasonOneOf = "disabled_from_workspace_settings"
-	AgentPauseReasonOneOfDisabledFromWorkspaceSettingsButResumable AgentPauseReasonOneOf = "disabled_from_workspace_settings_but_resumable"
-	AgentPauseReasonOneOfDisabledFromAPI                           AgentPauseReasonOneOf = "disabled_from_api"
-	AgentPauseReasonOneOfDisabledFromAgentSettings                 AgentPauseReasonOneOf = "disabled_from_agent_settings"
-	AgentPauseReasonOneOfDisabledDueToNoMembersWithAccess          AgentPauseReasonOneOf = "disabled_due_to_no_members_with_access"
-	AgentPauseReasonOneOfDisabledDueToLackOfEditors                AgentPauseReasonOneOf = "disabled_due_to_lack_of_editors"
-	AgentPauseReasonOneOfDisabledByNotion                          AgentPauseReasonOneOf = "disabled_by_notion"
-	AgentPauseReasonOneOfInternalError                             AgentPauseReasonOneOf = "internal_error"
-	AgentPauseReasonOneOfNeedsUserReview                           AgentPauseReasonOneOf = "needs_user_review"
-	AgentPauseReasonOneOfToolUnavailable                           AgentPauseReasonOneOf = "tool_unavailable"
-)
-
-// Valid indicates whether the value is a known member of the AgentPauseReasonOneOf enum.
-func (e AgentPauseReasonOneOf) Valid() bool {
-	switch e {
-	case AgentPauseReasonOneOfRunLimit, AgentPauseReasonOneOfCreditLimit, AgentPauseReasonOneOfRunawayCreditUsage, AgentPauseReasonOneOfWorkspaceCreditLimit, AgentPauseReasonOneOfOwnerAllowanceLimit, AgentPauseReasonOneOfFailureLimit, AgentPauseReasonOneOfMarkSessionFailedAutopause, AgentPauseReasonOneOfDisabledFromWorkspaceSettings, AgentPauseReasonOneOfDisabledFromWorkspaceSettingsButResumable, AgentPauseReasonOneOfDisabledFromAPI, AgentPauseReasonOneOfDisabledFromAgentSettings, AgentPauseReasonOneOfDisabledDueToNoMembersWithAccess, AgentPauseReasonOneOfDisabledDueToLackOfEditors, AgentPauseReasonOneOfDisabledByNotion, AgentPauseReasonOneOfInternalError, AgentPauseReasonOneOfNeedsUserReview, AgentPauseReasonOneOfToolUnavailable:
-		return true
-	default:
-		return false
-	}
 }
 
 // AgentStatus defines a model
@@ -2272,11 +2496,16 @@ type AgentTriggersItemScheduleEnd struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *AgentTriggersItemScheduleEnd) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AgentTriggersItemScheduleEnd{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
@@ -2284,26 +2513,27 @@ func (v *AgentTriggersItemScheduleEnd) UnmarshalJSONFrom(dec *jsontext.Decoder) 
 	switch tag {
 	case "date":
 		var vv AgentTriggersItemScheduleEndDate
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentTriggersItemScheduleEndDate = &vv
 	case "count":
 		var vv AgentTriggersItemScheduleEndCount
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentTriggersItemScheduleEndCount = &vv
 	default:
-		return jsonUnknownValue("type", tag)
+		return union.UnknownValue("type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *AgentTriggersItemScheduleEnd) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -2316,7 +2546,7 @@ func (v *AgentTriggersItemScheduleEnd) MarshalJSONTo(enc *jsontext.Encoder) erro
 	case v.AgentTriggersItemScheduleEndCount != nil:
 		variant, tag = v.AgentTriggersItemScheduleEndCount, "count"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -2324,7 +2554,7 @@ func (v *AgentTriggersItemScheduleEnd) MarshalJSONTo(enc *jsontext.Encoder) erro
 		return err
 	}
 
-	if out, err = jsonFirst(out, "type", tag); err != nil {
+	if out, err = union.First(out, "type", tag); err != nil {
 		return err
 	}
 
@@ -2391,8 +2621,8 @@ func (e AgentType) Valid() bool {
 	}
 }
 
-// AgentVersionOneOf defines a model
-type AgentVersionOneOf struct {
+// AgentVersion defines a model
+type AgentVersion struct {
 	// The ID of the published artifact.
 	ID ID `json:"id"`
 	// The version number.
@@ -2465,11 +2695,16 @@ type AsyncTaskOperation struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member surface names the alternative, which then
-// decodes each further member as it is read. With surface first, nothing is read twice.
+// decodes each further member as it is read. With surface first, nothing is read twice. Null sets no alternative.
 func (v *AsyncTaskOperation) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = AsyncTaskOperation{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "surface")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "surface")
 	if err != nil {
 		return err
 	}
@@ -2477,26 +2712,27 @@ func (v *AsyncTaskOperation) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch tag {
 	case "rest":
 		var vv AsyncTaskOperationRest
-		if err := jsonMembersFrom(dec, "surface", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "surface", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AsyncTaskOperationRest = &vv
 	case "mcp":
 		var vv AsyncTaskOperationMcp
-		if err := jsonMembersFrom(dec, "surface", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "surface", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AsyncTaskOperationMcp = &vv
 	default:
-		return jsonUnknownValue("surface", tag)
+		return union.UnknownValue("surface", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with surface first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with surface first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *AsyncTaskOperation) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -2509,7 +2745,7 @@ func (v *AsyncTaskOperation) MarshalJSONTo(enc *jsontext.Encoder) error {
 	case v.AsyncTaskOperationMcp != nil:
 		variant, tag = v.AsyncTaskOperationMcp, "mcp"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -2517,7 +2753,7 @@ func (v *AsyncTaskOperation) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	if out, err = jsonFirst(out, "surface", tag); err != nil {
+	if out, err = union.First(out, "surface", tag); err != nil {
 		return err
 	}
 
@@ -2578,6 +2814,26 @@ func (e AsyncTaskRestOperationName) Valid() bool {
 	}
 }
 
+// AxisLabels defines a model
+type AxisLabels string
+
+const (
+	AxisLabelsNone  AxisLabels = "none"
+	AxisLabelsXAxis AxisLabels = "x_axis"
+	AxisLabelsYAxis AxisLabels = "y_axis"
+	AxisLabelsBoth  AxisLabels = "both"
+)
+
+// Valid indicates whether the value is a known member of the AxisLabels enum.
+func (e AxisLabels) Valid() bool {
+	switch e {
+	case AxisLabelsNone, AxisLabelsXAxis, AxisLabelsYAxis, AxisLabelsBoth:
+		return true
+	default:
+		return false
+	}
+}
+
 // BaseWebhookPayload defines a model
 type BaseWebhookPayload struct {
 	// Unique identifier for this webhook event.
@@ -2593,108 +2849,13 @@ type BaseWebhookPayload struct {
 	// The ID of the integration the subscription is set up with.
 	IntegrationID ID `json:"integration_id"`
 	// The users or bots that performed the action. Typically an array of length 1; can be more for aggregated events.
-	Authors []BaseWebhookPayloadAuthorsItem `json:"authors"`
+	Authors []AccessibleByItem `json:"authors"`
 	// The delivery attempt number (1-8) of the current event delivery.
 	AttemptNumber int `json:"attempt_number"`
 	// The Notion API version that was used to render this webhook event's shape.
-	APIVersion BaseWebhookPayloadAPIVersion `json:"api_version"`
+	APIVersion APIVersion `json:"api_version"`
 	// The users or bots who own the bot connection to the `integration_id` and have access to the webhook's `entity`. Only present for public integrations.
-	AccessibleBy []BaseWebhookPayloadAuthorsItem `json:"accessible_by,omitzero"`
-}
-
-// The Notion API version that was used to render this webhook event's shape.
-type BaseWebhookPayloadAPIVersion string
-
-const (
-	BaseWebhookPayloadAPIVersionTwoZeroTwoTwo0628  BaseWebhookPayloadAPIVersion = "2022-06-28"
-	BaseWebhookPayloadAPIVersionTwoZeroTwoFive0903 BaseWebhookPayloadAPIVersion = "2025-09-03"
-	BaseWebhookPayloadAPIVersionTwoZeroTwoSix0311  BaseWebhookPayloadAPIVersion = "2026-03-11"
-)
-
-// Valid indicates whether the value is a known member of the BaseWebhookPayloadAPIVersion enum.
-func (e BaseWebhookPayloadAPIVersion) Valid() bool {
-	switch e {
-	case BaseWebhookPayloadAPIVersionTwoZeroTwoTwo0628, BaseWebhookPayloadAPIVersionTwoZeroTwoFive0903, BaseWebhookPayloadAPIVersionTwoZeroTwoSix0311:
-		return true
-	default:
-		return false
-	}
-}
-
-// BaseWebhookPayloadAuthorsItem defines a model
-type BaseWebhookPayloadAuthorsItem struct {
-	// The ID of the user.
-	ID   ID                                `json:"id"`
-	Type BaseWebhookPayloadAuthorsItemType `json:"type"`
-}
-
-// BaseWebhookPayloadAuthorsItemType is a value of BaseWebhookPayloadAuthorsItem's type, naming the members it holds.
-type BaseWebhookPayloadAuthorsItemType string
-
-const (
-	BaseWebhookPayloadAuthorsItemTypePerson BaseWebhookPayloadAuthorsItemType = "person"
-	BaseWebhookPayloadAuthorsItemTypeBot    BaseWebhookPayloadAuthorsItemType = "bot"
-)
-
-// Valid indicates whether the value is a known member of the BaseWebhookPayloadAuthorsItemType enum.
-func (e BaseWebhookPayloadAuthorsItemType) Valid() bool {
-	_, ok := tagsOfBaseWebhookPayloadAuthorsItem[string(e)]
-	return ok
-}
-
-// tagsOfBaseWebhookPayloadAuthorsItem holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfBaseWebhookPayloadAuthorsItem = map[string]map[string]jsonTagNeed{
-	"person": {},
-	"bot":    {},
-}
-
-// taggedMembers returns those of the members of an alternative's own that are set.
-func (v *BaseWebhookPayloadAuthorsItem) taggedMembers() []string {
-	var set []string
-
-	return set
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
-func (v *BaseWebhookPayloadAuthorsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain BaseWebhookPayloadAuthorsItem
-
-	*v = BaseWebhookPayloadAuthorsItem{}
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	if err := json.Unmarshal(raw, (*plain)(v), jsonOptsOf(dec)); err != nil {
-		return err
-	}
-
-	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
-	if err != nil {
-		return err
-	}
-
-	return jsonCheckTag("type", string(v.Type), tagsOfBaseWebhookPayloadAuthorsItem, v.taggedMembers(), present, jsonStrict(dec))
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
-func (v *BaseWebhookPayloadAuthorsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain BaseWebhookPayloadAuthorsItem
-
-	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfBaseWebhookPayloadAuthorsItem, set); ok && out.Type == "" {
-		out.Type = BaseWebhookPayloadAuthorsItemType(tag)
-	}
-
-	if err := jsonCheckTag("type", string(out.Type), tagsOfBaseWebhookPayloadAuthorsItem, set, nil, true); err != nil {
-		return err
-	}
-
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
+	AccessibleBy []AccessibleByItem `json:"accessible_by,omitzero"`
 }
 
 // Block defines a model
@@ -2797,43 +2958,43 @@ func (e BlockType) Valid() bool {
 }
 
 // tagsOfBlock holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfBlock = map[string]map[string]jsonTagNeed{
-	"paragraph":          {"paragraph": jsonTagRequired},
-	"heading_1":          {"heading_1": jsonTagRequired},
-	"heading_2":          {"heading_2": jsonTagRequired},
-	"heading_3":          {"heading_3": jsonTagRequired},
-	"heading_4":          {"heading_4": jsonTagRequired},
-	"bulleted_list_item": {"bulleted_list_item": jsonTagRequired},
-	"numbered_list_item": {"numbered_list_item": jsonTagRequired},
-	"quote":              {"quote": jsonTagRequired},
-	"to_do":              {"to_do": jsonTagRequired},
-	"toggle":             {"toggle": jsonTagRequired},
-	"template":           {"template": jsonTagRequired},
-	"synced_block":       {"synced_block": jsonTagRequired},
-	"child_page":         {"child_page": jsonTagRequired},
-	"child_database":     {"child_database": jsonTagRequired},
-	"equation":           {"equation": jsonTagRequired},
-	"code":               {"code": jsonTagRequired},
-	"callout":            {"callout": jsonTagRequired},
-	"divider":            {"divider": jsonTagRequired},
-	"breadcrumb":         {"breadcrumb": jsonTagRequired},
-	"table_of_contents":  {"table_of_contents": jsonTagRequired},
-	"tab":                {"tab": jsonTagRequired},
-	"column_list":        {"column_list": jsonTagRequired},
-	"column":             {"column": jsonTagRequired},
-	"link_to_page":       {"link_to_page": jsonTagRequired},
-	"table":              {"table": jsonTagRequired},
-	"table_row":          {"table_row": jsonTagRequired},
-	"meeting_notes":      {"meeting_notes": jsonTagRequired},
-	"embed":              {"embed": jsonTagRequired},
-	"bookmark":           {"bookmark": jsonTagRequired},
-	"image":              {"image": jsonTagRequired},
-	"video":              {"video": jsonTagRequired},
-	"pdf":                {"pdf": jsonTagRequired},
-	"file":               {"file": jsonTagRequired},
-	"audio":              {"audio": jsonTagRequired},
-	"link_preview":       {"link_preview": jsonTagRequired},
-	"unsupported":        {"unsupported": jsonTagRequired},
+var tagsOfBlock = map[string]map[string]union.TagNeed{
+	"paragraph":          {"paragraph": union.TagRequired},
+	"heading_1":          {"heading_1": union.TagRequired},
+	"heading_2":          {"heading_2": union.TagRequired},
+	"heading_3":          {"heading_3": union.TagRequired},
+	"heading_4":          {"heading_4": union.TagRequired},
+	"bulleted_list_item": {"bulleted_list_item": union.TagRequired},
+	"numbered_list_item": {"numbered_list_item": union.TagRequired},
+	"quote":              {"quote": union.TagRequired},
+	"to_do":              {"to_do": union.TagRequired},
+	"toggle":             {"toggle": union.TagRequired},
+	"template":           {"template": union.TagRequired},
+	"synced_block":       {"synced_block": union.TagRequired},
+	"child_page":         {"child_page": union.TagRequired},
+	"child_database":     {"child_database": union.TagRequired},
+	"equation":           {"equation": union.TagRequired},
+	"code":               {"code": union.TagRequired},
+	"callout":            {"callout": union.TagRequired},
+	"divider":            {"divider": union.TagRequired},
+	"breadcrumb":         {"breadcrumb": union.TagRequired},
+	"table_of_contents":  {"table_of_contents": union.TagRequired},
+	"tab":                {"tab": union.TagRequired},
+	"column_list":        {"column_list": union.TagRequired},
+	"column":             {"column": union.TagRequired},
+	"link_to_page":       {"link_to_page": union.TagRequired},
+	"table":              {"table": union.TagRequired},
+	"table_row":          {"table_row": union.TagRequired},
+	"meeting_notes":      {"meeting_notes": union.TagRequired},
+	"embed":              {"embed": union.TagRequired},
+	"bookmark":           {"bookmark": union.TagRequired},
+	"image":              {"image": union.TagRequired},
+	"video":              {"video": union.TagRequired},
+	"pdf":                {"pdf": union.TagRequired},
+	"file":               {"file": union.TagRequired},
+	"audio":              {"audio": union.TagRequired},
+	"link_preview":       {"link_preview": union.TagRequired},
+	"unsupported":        {"unsupported": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -2952,11 +3113,16 @@ func (v *Block) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *Block) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain Block
 
 	*v = Block{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -2968,25 +3134,28 @@ func (v *Block) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfBlock, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfBlock, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *Block) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain Block
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfBlock, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfBlock, set); ok && out.Type == "" {
 		out.Type = BlockType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfBlock, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfBlock, set, nil, true); err != nil {
 		return err
 	}
 
@@ -3039,11 +3208,11 @@ type BlockObject struct {
 	Heading3         *BlockObjectHeading                  `json:"heading_3,omitzero"`
 	Heading4         *BlockObjectHeading                  `json:"heading_4,omitzero"`
 	Paragraph        *ParagraphRequest                    `json:"paragraph,omitzero"`
-	BulletedListItem *BlockObjectQuoteQuote               `json:"bulleted_list_item,omitzero"`
-	NumberedListItem *BlockObjectQuoteQuote               `json:"numbered_list_item,omitzero"`
-	Quote            *BlockObjectQuoteQuote               `json:"quote,omitzero"`
+	BulletedListItem *BulletedListItem                    `json:"bulleted_list_item,omitzero"`
+	NumberedListItem *BulletedListItem                    `json:"numbered_list_item,omitzero"`
+	Quote            *BulletedListItem                    `json:"quote,omitzero"`
 	ToDo             *ToDoRequest                         `json:"to_do,omitzero"`
-	Toggle           *BlockObjectQuoteQuote               `json:"toggle,omitzero"`
+	Toggle           *BulletedListItem                    `json:"toggle,omitzero"`
 	Template         *TemplateRequest                     `json:"template,omitzero"`
 	Callout          *CalloutRequest                      `json:"callout,omitzero"`
 	SyncedBlock      *SyncedBlockRequest                  `json:"synced_block,omitzero"`
@@ -3093,38 +3262,38 @@ func (e BlockObjectType) Valid() bool {
 }
 
 // tagsOfBlockObject holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfBlockObject = map[string]map[string]jsonTagNeed{
-	"embed":              {"embed": jsonTagRequired},
-	"bookmark":           {"bookmark": jsonTagRequired},
-	"image":              {"image": jsonTagRequired},
-	"video":              {"video": jsonTagRequired},
-	"pdf":                {"pdf": jsonTagRequired},
-	"file":               {"file": jsonTagRequired},
-	"audio":              {"audio": jsonTagRequired},
-	"code":               {"code": jsonTagRequired},
-	"equation":           {"equation": jsonTagRequired},
-	"divider":            {"divider": jsonTagRequired},
-	"breadcrumb":         {"breadcrumb": jsonTagRequired},
-	"tab":                {"tab": jsonTagRequired},
-	"table_of_contents":  {"table_of_contents": jsonTagRequired},
-	"link_to_page":       {"link_to_page": jsonTagRequired},
-	"table_row":          {"table_row": jsonTagRequired},
-	"table":              {"table": jsonTagRequired},
-	"column_list":        {"column_list": jsonTagRequired},
-	"column":             {"column": jsonTagRequired},
-	"heading_1":          {"heading_1": jsonTagRequired},
-	"heading_2":          {"heading_2": jsonTagRequired},
-	"heading_3":          {"heading_3": jsonTagRequired},
-	"heading_4":          {"heading_4": jsonTagRequired},
-	"paragraph":          {"paragraph": jsonTagRequired},
-	"bulleted_list_item": {"bulleted_list_item": jsonTagRequired},
-	"numbered_list_item": {"numbered_list_item": jsonTagRequired},
-	"quote":              {"quote": jsonTagRequired},
-	"to_do":              {"to_do": jsonTagRequired},
-	"toggle":             {"toggle": jsonTagRequired},
-	"template":           {"template": jsonTagRequired},
-	"callout":            {"callout": jsonTagRequired},
-	"synced_block":       {"synced_block": jsonTagRequired},
+var tagsOfBlockObject = map[string]map[string]union.TagNeed{
+	"embed":              {"embed": union.TagRequired},
+	"bookmark":           {"bookmark": union.TagRequired},
+	"image":              {"image": union.TagRequired},
+	"video":              {"video": union.TagRequired},
+	"pdf":                {"pdf": union.TagRequired},
+	"file":               {"file": union.TagRequired},
+	"audio":              {"audio": union.TagRequired},
+	"code":               {"code": union.TagRequired},
+	"equation":           {"equation": union.TagRequired},
+	"divider":            {"divider": union.TagRequired},
+	"breadcrumb":         {"breadcrumb": union.TagRequired},
+	"tab":                {"tab": union.TagRequired},
+	"table_of_contents":  {"table_of_contents": union.TagRequired},
+	"link_to_page":       {"link_to_page": union.TagRequired},
+	"table_row":          {"table_row": union.TagRequired},
+	"table":              {"table": union.TagRequired},
+	"column_list":        {"column_list": union.TagRequired},
+	"column":             {"column": union.TagRequired},
+	"heading_1":          {"heading_1": union.TagRequired},
+	"heading_2":          {"heading_2": union.TagRequired},
+	"heading_3":          {"heading_3": union.TagRequired},
+	"heading_4":          {"heading_4": union.TagRequired},
+	"paragraph":          {"paragraph": union.TagRequired},
+	"bulleted_list_item": {"bulleted_list_item": union.TagRequired},
+	"numbered_list_item": {"numbered_list_item": union.TagRequired},
+	"quote":              {"quote": union.TagRequired},
+	"to_do":              {"to_do": union.TagRequired},
+	"toggle":             {"toggle": union.TagRequired},
+	"template":           {"template": union.TagRequired},
+	"callout":            {"callout": union.TagRequired},
+	"synced_block":       {"synced_block": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -3228,11 +3397,16 @@ func (v *BlockObject) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *BlockObject) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain BlockObject
 
 	*v = BlockObject{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -3244,30 +3418,33 @@ func (v *BlockObject) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfBlockObject, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfBlockObject, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = BlockObjectType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfBlockObject, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfBlockObject, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *BlockObject) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain BlockObject
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfBlockObject, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfBlockObject, set); ok && out.Type == "" {
 		out.Type = BlockObjectType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfBlockObject, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfBlockObject, set, nil, true); err != nil {
 		return err
 	}
 
@@ -3367,14 +3544,6 @@ type BlockObjectPdf struct {
 	Object string                         `json:"object,omitzero"`
 }
 
-// BlockObjectQuoteQuote defines a model
-type BlockObjectQuoteQuote struct {
-	RichText []RichTextItem `json:"rich_text"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                               `json:"color,omitzero"`
-	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
-}
-
 // BlockObjectRequestWithoutChildren defines a model
 type BlockObjectRequestWithoutChildren struct {
 	Object           string                                     `json:"object,omitzero"`
@@ -3450,35 +3619,35 @@ func (e BlockObjectRequestWithoutChildrenType) Valid() bool {
 }
 
 // tagsOfBlockObjectRequestWithoutChildren holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfBlockObjectRequestWithoutChildren = map[string]map[string]jsonTagNeed{
-	"embed":              {"embed": jsonTagRequired},
-	"bookmark":           {"bookmark": jsonTagRequired},
-	"image":              {"image": jsonTagRequired},
-	"video":              {"video": jsonTagRequired},
-	"pdf":                {"pdf": jsonTagRequired},
-	"file":               {"file": jsonTagRequired},
-	"audio":              {"audio": jsonTagRequired},
-	"code":               {"code": jsonTagRequired},
-	"equation":           {"equation": jsonTagRequired},
-	"divider":            {"divider": jsonTagRequired},
-	"breadcrumb":         {"breadcrumb": jsonTagRequired},
-	"tab":                {"tab": jsonTagRequired},
-	"table_of_contents":  {"table_of_contents": jsonTagRequired},
-	"link_to_page":       {"link_to_page": jsonTagRequired},
-	"table_row":          {"table_row": jsonTagRequired},
-	"heading_1":          {"heading_1": jsonTagRequired},
-	"heading_2":          {"heading_2": jsonTagRequired},
-	"heading_3":          {"heading_3": jsonTagRequired},
-	"heading_4":          {"heading_4": jsonTagRequired},
-	"paragraph":          {"paragraph": jsonTagRequired},
-	"bulleted_list_item": {"bulleted_list_item": jsonTagRequired},
-	"numbered_list_item": {"numbered_list_item": jsonTagRequired},
-	"quote":              {"quote": jsonTagRequired},
-	"to_do":              {"to_do": jsonTagRequired},
-	"toggle":             {"toggle": jsonTagRequired},
-	"template":           {"template": jsonTagRequired},
-	"callout":            {"callout": jsonTagRequired},
-	"synced_block":       {"synced_block": jsonTagRequired},
+var tagsOfBlockObjectRequestWithoutChildren = map[string]map[string]union.TagNeed{
+	"embed":              {"embed": union.TagRequired},
+	"bookmark":           {"bookmark": union.TagRequired},
+	"image":              {"image": union.TagRequired},
+	"video":              {"video": union.TagRequired},
+	"pdf":                {"pdf": union.TagRequired},
+	"file":               {"file": union.TagRequired},
+	"audio":              {"audio": union.TagRequired},
+	"code":               {"code": union.TagRequired},
+	"equation":           {"equation": union.TagRequired},
+	"divider":            {"divider": union.TagRequired},
+	"breadcrumb":         {"breadcrumb": union.TagRequired},
+	"tab":                {"tab": union.TagRequired},
+	"table_of_contents":  {"table_of_contents": union.TagRequired},
+	"link_to_page":       {"link_to_page": union.TagRequired},
+	"table_row":          {"table_row": union.TagRequired},
+	"heading_1":          {"heading_1": union.TagRequired},
+	"heading_2":          {"heading_2": union.TagRequired},
+	"heading_3":          {"heading_3": union.TagRequired},
+	"heading_4":          {"heading_4": union.TagRequired},
+	"paragraph":          {"paragraph": union.TagRequired},
+	"bulleted_list_item": {"bulleted_list_item": union.TagRequired},
+	"numbered_list_item": {"numbered_list_item": union.TagRequired},
+	"quote":              {"quote": union.TagRequired},
+	"to_do":              {"to_do": union.TagRequired},
+	"toggle":             {"toggle": union.TagRequired},
+	"template":           {"template": union.TagRequired},
+	"callout":            {"callout": union.TagRequired},
+	"synced_block":       {"synced_block": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -3573,11 +3742,16 @@ func (v *BlockObjectRequestWithoutChildren) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *BlockObjectRequestWithoutChildren) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain BlockObjectRequestWithoutChildren
 
 	*v = BlockObjectRequestWithoutChildren{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -3589,30 +3763,33 @@ func (v *BlockObjectRequestWithoutChildren) UnmarshalJSONFrom(dec *jsontext.Deco
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfBlockObjectRequestWithoutChildren, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfBlockObjectRequestWithoutChildren, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = BlockObjectRequestWithoutChildrenType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfBlockObjectRequestWithoutChildren, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfBlockObjectRequestWithoutChildren, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *BlockObjectRequestWithoutChildren) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain BlockObjectRequestWithoutChildren
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfBlockObjectRequestWithoutChildren, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfBlockObjectRequestWithoutChildren, set); ok && out.Type == "" {
 		out.Type = BlockObjectRequestWithoutChildrenType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfBlockObjectRequestWithoutChildren, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfBlockObjectRequestWithoutChildren, set, nil, true); err != nil {
 		return err
 	}
 
@@ -3731,36 +3908,36 @@ func (e BlockObjectWithSingleLevelOfChildrenType) Valid() bool {
 }
 
 // tagsOfBlockObjectWithSingleLevelOfChildren holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfBlockObjectWithSingleLevelOfChildren = map[string]map[string]jsonTagNeed{
-	"embed":              {"embed": jsonTagRequired},
-	"bookmark":           {"bookmark": jsonTagRequired},
-	"image":              {"image": jsonTagRequired},
-	"video":              {"video": jsonTagRequired},
-	"pdf":                {"pdf": jsonTagRequired},
-	"file":               {"file": jsonTagRequired},
-	"audio":              {"audio": jsonTagRequired},
-	"code":               {"code": jsonTagRequired},
-	"equation":           {"equation": jsonTagRequired},
-	"divider":            {"divider": jsonTagRequired},
-	"breadcrumb":         {"breadcrumb": jsonTagRequired},
-	"tab":                {"tab": jsonTagRequired},
-	"table_of_contents":  {"table_of_contents": jsonTagRequired},
-	"link_to_page":       {"link_to_page": jsonTagRequired},
-	"table_row":          {"table_row": jsonTagRequired},
-	"heading_1":          {"heading_1": jsonTagRequired},
-	"heading_2":          {"heading_2": jsonTagRequired},
-	"heading_3":          {"heading_3": jsonTagRequired},
-	"heading_4":          {"heading_4": jsonTagRequired},
-	"paragraph":          {"paragraph": jsonTagRequired},
-	"bulleted_list_item": {"bulleted_list_item": jsonTagRequired},
-	"numbered_list_item": {"numbered_list_item": jsonTagRequired},
-	"quote":              {"quote": jsonTagRequired},
-	"table":              {"table": jsonTagRequired},
-	"to_do":              {"to_do": jsonTagRequired},
-	"toggle":             {"toggle": jsonTagRequired},
-	"template":           {"template": jsonTagRequired},
-	"callout":            {"callout": jsonTagRequired},
-	"synced_block":       {"synced_block": jsonTagRequired},
+var tagsOfBlockObjectWithSingleLevelOfChildren = map[string]map[string]union.TagNeed{
+	"embed":              {"embed": union.TagRequired},
+	"bookmark":           {"bookmark": union.TagRequired},
+	"image":              {"image": union.TagRequired},
+	"video":              {"video": union.TagRequired},
+	"pdf":                {"pdf": union.TagRequired},
+	"file":               {"file": union.TagRequired},
+	"audio":              {"audio": union.TagRequired},
+	"code":               {"code": union.TagRequired},
+	"equation":           {"equation": union.TagRequired},
+	"divider":            {"divider": union.TagRequired},
+	"breadcrumb":         {"breadcrumb": union.TagRequired},
+	"tab":                {"tab": union.TagRequired},
+	"table_of_contents":  {"table_of_contents": union.TagRequired},
+	"link_to_page":       {"link_to_page": union.TagRequired},
+	"table_row":          {"table_row": union.TagRequired},
+	"heading_1":          {"heading_1": union.TagRequired},
+	"heading_2":          {"heading_2": union.TagRequired},
+	"heading_3":          {"heading_3": union.TagRequired},
+	"heading_4":          {"heading_4": union.TagRequired},
+	"paragraph":          {"paragraph": union.TagRequired},
+	"bulleted_list_item": {"bulleted_list_item": union.TagRequired},
+	"numbered_list_item": {"numbered_list_item": union.TagRequired},
+	"quote":              {"quote": union.TagRequired},
+	"table":              {"table": union.TagRequired},
+	"to_do":              {"to_do": union.TagRequired},
+	"toggle":             {"toggle": union.TagRequired},
+	"template":           {"template": union.TagRequired},
+	"callout":            {"callout": union.TagRequired},
+	"synced_block":       {"synced_block": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -3858,11 +4035,16 @@ func (v *BlockObjectWithSingleLevelOfChildren) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *BlockObjectWithSingleLevelOfChildren) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain BlockObjectWithSingleLevelOfChildren
 
 	*v = BlockObjectWithSingleLevelOfChildren{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -3874,30 +4056,33 @@ func (v *BlockObjectWithSingleLevelOfChildren) UnmarshalJSONFrom(dec *jsontext.D
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfBlockObjectWithSingleLevelOfChildren, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfBlockObjectWithSingleLevelOfChildren, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = BlockObjectWithSingleLevelOfChildrenType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfBlockObjectWithSingleLevelOfChildren, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfBlockObjectWithSingleLevelOfChildren, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *BlockObjectWithSingleLevelOfChildren) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain BlockObjectWithSingleLevelOfChildren
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfBlockObjectWithSingleLevelOfChildren, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfBlockObjectWithSingleLevelOfChildren, set); ok && out.Type == "" {
 		out.Type = BlockObjectWithSingleLevelOfChildrenType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfBlockObjectWithSingleLevelOfChildren, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfBlockObjectWithSingleLevelOfChildren, set, nil, true); err != nil {
 		return err
 	}
 
@@ -3932,9 +4117,14 @@ type BlockOrPartial struct {
 	Block        *Block
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *BlockOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = BlockOrPartial{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -3948,7 +4138,7 @@ func (v *BlockOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"id", "object"}, map[string]bool{}, map[string]string{"object": "\"block\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv PartialBlock
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.PartialBlock = &vv
@@ -3960,7 +4150,7 @@ func (v *BlockOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"created_by", "created_time", "has_children", "id", "in_trash", "last_edited_by", "last_edited_time", "object", "parent", "type"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv Block
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.Block = &vv
@@ -3976,7 +4166,8 @@ func (v *BlockOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *BlockOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PartialBlock != nil:
@@ -3985,7 +4176,7 @@ func (v *BlockOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.Block, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // BlockTrashUpdate defines a model
@@ -4000,17 +4191,17 @@ type BoardViewConfig struct {
 	// Group-by configuration for board columns.
 	GroupBy GroupByConfig `json:"group_by"`
 	// Secondary group-by configuration for sub-grouping within columns. Pass null to remove sub-grouping.
-	SubGroupBy *GroupByConfig `json:"sub_group_by,omitzero"`
+	SubGroupBy GroupByConfig `json:"sub_group_by,omitzero"`
 	// Property visibility and display configuration on cards. Pass null to clear.
 	Properties []ViewPropertyConfig `json:"properties,omitzero"`
 	// Cover image configuration for cards. Pass null to clear.
 	Cover CoverConfig `json:"cover,omitzero"`
 	// Size of the cover image on cards. Pass null to clear.
-	CoverSize BoardViewConfigCoverSizeOneOf `json:"cover_size,omitzero"`
+	CoverSize CoverSize `json:"cover_size,omitzero"`
 	// Aspect ratio mode for cover images. "contain" fits the image, "cover" fills the area. Pass null to clear.
-	CoverAspect BoardViewConfigCoverAspectOneOf `json:"cover_aspect,omitzero"`
+	CoverAspect CoverAspect `json:"cover_aspect,omitzero"`
 	// Card layout mode. "list" shows full cards, "compact" shows condensed cards. Pass null to clear.
-	CardLayout BoardViewConfigCardLayoutOneOf `json:"card_layout,omitzero"`
+	CardLayout CardLayout `json:"card_layout,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether BoardViewConfig declares it.
@@ -4037,61 +4228,6 @@ func (v *BoardViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string
 	return false, nil
 }
 
-// BoardViewConfigCardLayoutOneOf defines a model
-type BoardViewConfigCardLayoutOneOf string
-
-const (
-	BoardViewConfigCardLayoutOneOfList    BoardViewConfigCardLayoutOneOf = "list"
-	BoardViewConfigCardLayoutOneOfCompact BoardViewConfigCardLayoutOneOf = "compact"
-)
-
-// Valid indicates whether the value is a known member of the BoardViewConfigCardLayoutOneOf enum.
-func (e BoardViewConfigCardLayoutOneOf) Valid() bool {
-	switch e {
-	case BoardViewConfigCardLayoutOneOfList, BoardViewConfigCardLayoutOneOfCompact:
-		return true
-	default:
-		return false
-	}
-}
-
-// BoardViewConfigCoverAspectOneOf defines a model
-type BoardViewConfigCoverAspectOneOf string
-
-const (
-	BoardViewConfigCoverAspectOneOfContain BoardViewConfigCoverAspectOneOf = "contain"
-	BoardViewConfigCoverAspectOneOfCover   BoardViewConfigCoverAspectOneOf = "cover"
-)
-
-// Valid indicates whether the value is a known member of the BoardViewConfigCoverAspectOneOf enum.
-func (e BoardViewConfigCoverAspectOneOf) Valid() bool {
-	switch e {
-	case BoardViewConfigCoverAspectOneOfContain, BoardViewConfigCoverAspectOneOfCover:
-		return true
-	default:
-		return false
-	}
-}
-
-// BoardViewConfigCoverSizeOneOf defines a model
-type BoardViewConfigCoverSizeOneOf string
-
-const (
-	BoardViewConfigCoverSizeOneOfSmall  BoardViewConfigCoverSizeOneOf = "small"
-	BoardViewConfigCoverSizeOneOfMedium BoardViewConfigCoverSizeOneOf = "medium"
-	BoardViewConfigCoverSizeOneOfLarge  BoardViewConfigCoverSizeOneOf = "large"
-)
-
-// Valid indicates whether the value is a known member of the BoardViewConfigCoverSizeOneOf enum.
-func (e BoardViewConfigCoverSizeOneOf) Valid() bool {
-	switch e {
-	case BoardViewConfigCoverSizeOneOfSmall, BoardViewConfigCoverSizeOneOfMedium, BoardViewConfigCoverSizeOneOfLarge:
-		return true
-	default:
-		return false
-	}
-}
-
 // BoardViewConfigResponse defines a model
 type BoardViewConfigResponse struct {
 	// The view configuration type.
@@ -4105,11 +4241,11 @@ type BoardViewConfigResponse struct {
 	// Card cover/preview image configuration.
 	Cover CoverConfigResponse `json:"cover,omitzero"`
 	// Cover image size.
-	CoverSize BoardViewConfigCoverSizeOneOf `json:"cover_size,omitzero"`
+	CoverSize CoverSize `json:"cover_size,omitzero"`
 	// Cover image aspect ratio.
-	CoverAspect BoardViewConfigCoverAspectOneOf `json:"cover_aspect,omitzero"`
+	CoverAspect CoverAspect `json:"cover_aspect,omitzero"`
 	// Card layout mode (list shows all properties, compact shows inline).
-	CardLayout BoardViewConfigCardLayoutOneOf `json:"card_layout,omitzero"`
+	CardLayout CardLayout `json:"card_layout,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether BoardViewConfigResponse declares it.
@@ -4143,7 +4279,7 @@ type BotInfo struct {
 	// The ID of the bot's workspace.
 	WorkspaceID string `json:"workspace_id"`
 	// Limits and restrictions that apply to the bot's workspace
-	WorkspaceLimits BotInfoWorkspaceLimits `json:"workspace_limits"`
+	WorkspaceLimits WorkspaceLimits `json:"workspace_limits"`
 	// The name of the bot's workspace.
 	WorkspaceName string `json:"workspace_name"`
 }
@@ -4172,9 +4308,9 @@ func (e BotInfoOwnerType) Valid() bool {
 }
 
 // tagsOfBotInfoOwner holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfBotInfoOwner = map[string]map[string]jsonTagNeed{
-	"user":      {"user": jsonTagRequired},
-	"workspace": {"workspace": jsonTagRequired},
+var tagsOfBotInfoOwner = map[string]map[string]union.TagNeed{
+	"user":      {"user": union.TagRequired},
+	"workspace": {"workspace": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -4191,11 +4327,16 @@ func (v *BotInfoOwner) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *BotInfoOwner) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain BotInfoOwner
 
 	*v = BotInfoOwner{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -4207,25 +4348,28 @@ func (v *BotInfoOwner) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfBotInfoOwner, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfBotInfoOwner, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *BotInfoOwner) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain BotInfoOwner
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfBotInfoOwner, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfBotInfoOwner, set); ok && out.Type == "" {
 		out.Type = BotInfoOwnerType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfBotInfoOwner, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfBotInfoOwner, set, nil, true); err != nil {
 		return err
 	}
 
@@ -4255,12 +4399,17 @@ type BotInfoResponseOwnerUserUser struct {
 	PartialUser                    *PartialUser
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *BotInfoResponseOwnerUserUser) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = BotInfoResponseOwnerUserUser{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -4273,7 +4422,7 @@ func (v *BotInfoResponseOwnerUserUser) UnmarshalJSONFrom(dec *jsontext.Decoder) 
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"avatar_url", "id", "name", "object", "person", "type"}, map[string]bool{"avatar_url": true, "name": true}, map[string]string{"object": "\"user\"", "type": "\"person\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv BotInfoResponseOwnerUserPerson
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.BotInfoResponseOwnerUserPerson = &vv
@@ -4286,7 +4435,7 @@ func (v *BotInfoResponseOwnerUserUser) UnmarshalJSONFrom(dec *jsontext.Decoder) 
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"id", "object"}, map[string]bool{}, map[string]string{"object": "\"user\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv PartialUser
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.PartialUser = &vv
@@ -4302,7 +4451,8 @@ func (v *BotInfoResponseOwnerUserUser) UnmarshalJSONFrom(dec *jsontext.Decoder) 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *BotInfoResponseOwnerUserUser) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.BotInfoResponseOwnerUserPerson != nil:
@@ -4311,13 +4461,7 @@ func (v *BotInfoResponseOwnerUserUser) MarshalJSONTo(enc *jsontext.Encoder) erro
 		return json.MarshalEncode(enc, v.PartialUser, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// Limits and restrictions that apply to the bot's workspace
-type BotInfoWorkspaceLimits struct {
-	// The maximum allowable size of a file upload, in bytes
-	MaxFileUploadSizeInBytes int `json:"max_file_upload_size_in_bytes"`
+	return enc.WriteToken(jsontext.Null)
 }
 
 // Details about the bot, when the `type` of the user is `bot`.
@@ -4327,12 +4471,17 @@ type BotUserBot struct {
 	BotInfo     *BotInfo
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *BotUserBot) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = BotUserBot{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -4354,7 +4503,7 @@ func (v *BotUserBot) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"owner", "workspace_id", "workspace_limits", "workspace_name"}, map[string]bool{"workspace_name": true}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv BotInfo
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.BotInfo = &vv
@@ -4370,7 +4519,8 @@ func (v *BotUserBot) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *BotUserBot) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.EmptyObject != nil:
@@ -4379,7 +4529,15 @@ func (v *BotUserBot) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.BotInfo, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
+}
+
+// BulletedListItem defines a model
+type BulletedListItem struct {
+	RichText []RichTextItem `json:"rich_text"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color    APIColor                               `json:"color,omitzero"`
+	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
 }
 
 // ButtonPropertyItem defines a model
@@ -4406,6 +4564,18 @@ func (v *ButtonPropertyItem) unmarshalJSONMember(dec *jsontext.Decoder, name str
 	return false, nil
 }
 
+// Calendar event metadata associated with this meeting note.
+type CalendarEvent struct {
+	// ISO-8601 start time of the calendar event.
+	StartTime string `json:"start_time"`
+	// ISO-8601 end time of the calendar event.
+	EndTime string `json:"end_time"`
+	// ID of the calendar event, as returned by the calendar tools.
+	EventID string `json:"event_id,omitzero"`
+	// List of attendee user IDs.
+	Attendees []ID `json:"attendees,omitzero"`
+}
+
 // CalendarViewConfig defines a model
 type CalendarViewConfig struct {
 	// The view type. Must be "calendar".
@@ -4415,7 +4585,7 @@ type CalendarViewConfig struct {
 	// Property visibility and display configuration on calendar cards. Pass null to clear.
 	Properties []ViewPropertyConfig `json:"properties,omitzero"`
 	// Default calendar range. "week" shows a week view, "month" shows a month view. Pass null to clear.
-	ViewRange CalendarViewConfigViewRangeOneOf `json:"view_range,omitzero"`
+	ViewRange ViewRange `json:"view_range,omitzero"`
 	// Whether to show weekend days. Pass null to clear.
 	ShowWeekends *bool `json:"show_weekends,omitzero"`
 }
@@ -4449,7 +4619,7 @@ type CalendarViewConfigResponse struct {
 	// Properties to display on calendar event cards.
 	Properties []ViewPropertyConfigResponse `json:"properties,omitzero"`
 	// Calendar view range.
-	ViewRange CalendarViewConfigViewRangeOneOf `json:"view_range,omitzero"`
+	ViewRange ViewRange `json:"view_range,omitzero"`
 	// Whether to show weekend days.
 	ShowWeekends *bool `json:"show_weekends,omitzero"`
 }
@@ -4474,30 +4644,12 @@ func (v *CalendarViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, 
 	return false, nil
 }
 
-// CalendarViewConfigViewRangeOneOf defines a model
-type CalendarViewConfigViewRangeOneOf string
-
-const (
-	CalendarViewConfigViewRangeOneOfWeek  CalendarViewConfigViewRangeOneOf = "week"
-	CalendarViewConfigViewRangeOneOfMonth CalendarViewConfigViewRangeOneOf = "month"
-)
-
-// Valid indicates whether the value is a known member of the CalendarViewConfigViewRangeOneOf enum.
-func (e CalendarViewConfigViewRangeOneOf) Valid() bool {
-	switch e {
-	case CalendarViewConfigViewRangeOneOfWeek, CalendarViewConfigViewRangeOneOfMonth:
-		return true
-	default:
-		return false
-	}
-}
-
 // Callout defines a model
 type Callout struct {
 	RichText RichTexts `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color APIColor          `json:"color"`
-	Icon  *PageIconResponse `json:"icon"`
+	Color APIColor         `json:"color"`
+	Icon  PageIconResponse `json:"icon"`
 }
 
 // CalloutRequest defines a model
@@ -4523,15 +4675,48 @@ type CancelSessionOk struct {
 	AgentID string `json:"agent_id"`
 	Title   string `json:"title"`
 	// One of: `queued`, `in_progress`, `requires_action`, `completed`, `failed`, `canceled`, `terminated`
-	Status          SessionStatus                `json:"status"`
-	CreatedAt       time.Time                    `json:"created_at"`
-	UpdatedAt       time.Time                    `json:"updated_at"`
-	RequiredActions CancelSessionRequiredActions `json:"required_actions,omitzero"`
-	Err             SessionError                 `json:"error,omitzero"`
+	Status          SessionStatus   `json:"status"`
+	CreatedAt       time.Time       `json:"created_at"`
+	UpdatedAt       time.Time       `json:"updated_at"`
+	RequiredActions RequiredActions `json:"required_actions,omitzero"`
+	Err             SessionError    `json:"error,omitzero"`
 }
 
-// CancelSessionRequiredActions defines a model
-type CancelSessionRequiredActions []SessionRequiredActionsItem
+// CardLayout defines a model
+type CardLayout string
+
+const (
+	CardLayoutList    CardLayout = "list"
+	CardLayoutCompact CardLayout = "compact"
+)
+
+// Valid indicates whether the value is a known member of the CardLayout enum.
+func (e CardLayout) Valid() bool {
+	switch e {
+	case CardLayoutList, CardLayoutCompact:
+		return true
+	default:
+		return false
+	}
+}
+
+// Property width mode in compact card layouts (board/gallery).
+type CardPropertyWidthMode string
+
+const (
+	CardPropertyWidthModeFullLine CardPropertyWidthMode = "full_line"
+	CardPropertyWidthModeInline   CardPropertyWidthMode = "inline"
+)
+
+// Valid indicates whether the value is a known member of the CardPropertyWidthMode enum.
+func (e CardPropertyWidthMode) Valid() bool {
+	switch e {
+	case CardPropertyWidthModeFullLine, CardPropertyWidthModeInline:
+		return true
+	default:
+		return false
+	}
+}
 
 // ChartAggregation defines a model
 type ChartAggregation struct {
@@ -4594,27 +4779,9 @@ type ChartReferenceLine struct {
 	// Color of the reference line.
 	Color NoticonColor `json:"color"`
 	// Line style: "solid" for a continuous line, "dash" for a dashed line.
-	DashStyle ChartReferenceLineDashStyle `json:"dash_style"`
+	DashStyle DashStyle `json:"dash_style"`
 	// Unique identifier for the reference line. Auto-generated if omitted.
 	ID string `json:"id,omitzero"`
-}
-
-// Line style: "solid" for a continuous line, "dash" for a dashed line.
-type ChartReferenceLineDashStyle string
-
-const (
-	ChartReferenceLineDashStyleSolid ChartReferenceLineDashStyle = "solid"
-	ChartReferenceLineDashStyleDash  ChartReferenceLineDashStyle = "dash"
-)
-
-// Valid indicates whether the value is a known member of the ChartReferenceLineDashStyle enum.
-func (e ChartReferenceLineDashStyle) Valid() bool {
-	switch e {
-	case ChartReferenceLineDashStyleSolid, ChartReferenceLineDashStyleDash:
-		return true
-	default:
-		return false
-	}
 }
 
 // ChartReferenceLineResponse defines a model
@@ -4628,7 +4795,28 @@ type ChartReferenceLineResponse struct {
 	// Color of the reference line.
 	Color NoticonColor `json:"color"`
 	// Line style: "solid" for a continuous line, "dash" for a dashed line.
-	DashStyle ChartReferenceLineDashStyle `json:"dash_style"`
+	DashStyle DashStyle `json:"dash_style"`
+}
+
+// ChartType defines a model
+type ChartType string
+
+const (
+	ChartTypeColumn ChartType = "column"
+	ChartTypeBar    ChartType = "bar"
+	ChartTypeLine   ChartType = "line"
+	ChartTypeDonut  ChartType = "donut"
+	ChartTypeNumber ChartType = "number"
+)
+
+// Valid indicates whether the value is a known member of the ChartType enum.
+func (e ChartType) Valid() bool {
+	switch e {
+	case ChartTypeColumn, ChartTypeBar, ChartTypeLine, ChartTypeDonut, ChartTypeNumber:
+		return true
+	default:
+		return false
+	}
 }
 
 // ChartViewConfig defines a model
@@ -4636,9 +4824,9 @@ type ChartViewConfig struct {
 	// The view type. Must be "chart".
 	Type string `json:"type"`
 	// The chart type.
-	ChartType ChartViewConfigChartType `json:"chart_type"`
+	ChartType ChartType `json:"chart_type"`
 	// X-axis grouping configuration for grouped data mode. Pass null to clear.
-	XAxis *GroupByConfig `json:"x_axis,omitzero"`
+	XAxis GroupByConfig `json:"x_axis,omitzero"`
 	// Y-axis aggregation for grouped data mode. Pass null to clear.
 	YAxis ChartAggregation `json:"y_axis,omitzero"`
 	// Property ID for x-axis values in results mode. Pass null to clear.
@@ -4648,21 +4836,21 @@ type ChartViewConfig struct {
 	// Aggregation for number charts. Pass null to clear.
 	Value ChartAggregation `json:"value,omitzero"`
 	// Sort order for chart data. Pass null to clear.
-	Sort ChartViewConfigSortOneOf `json:"sort,omitzero"`
+	Sort ChartViewConfigSort `json:"sort,omitzero"`
 	// Color theme. Pass null to clear.
-	ColorTheme ChartViewConfigColorThemeOneOf `json:"color_theme,omitzero"`
+	ColorTheme ColorTheme `json:"color_theme,omitzero"`
 	// Chart height. Pass null to clear.
-	Height MapViewConfigHeightOneOf `json:"height,omitzero"`
+	Height MapViewConfigHeight `json:"height,omitzero"`
 	// Whether to hide groups with no data. Pass null to clear.
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 	// Legend position. Pass null to clear.
-	LegendPosition ChartViewConfigLegendPositionOneOf `json:"legend_position,omitzero"`
+	LegendPosition LegendPosition `json:"legend_position,omitzero"`
 	// Whether to show data labels. Pass null to clear.
 	ShowDataLabels *bool `json:"show_data_labels,omitzero"`
 	// Which axis labels to show. Pass null to clear.
-	AxisLabels ChartViewConfigAxisLabelsOneOf `json:"axis_labels,omitzero"`
+	AxisLabels AxisLabels `json:"axis_labels,omitzero"`
 	// Which grid lines to show. Pass null to clear.
-	GridLines ChartViewConfigGridLinesOneOf `json:"grid_lines,omitzero"`
+	GridLines GridLines `json:"grid_lines,omitzero"`
 	// Cumulative values (line only). Pass null to clear.
 	Cumulative *bool `json:"cumulative,omitzero"`
 	// Smooth line curves (line only). Pass null to clear.
@@ -4670,17 +4858,17 @@ type ChartViewConfig struct {
 	// Hide area fill (line only). Pass null to clear.
 	HideLineFillArea *bool `json:"hide_line_fill_area,omitzero"`
 	// Grouped/stacked bar display style. Pass null to clear.
-	GroupStyle ChartViewConfigGroupStyleOneOf `json:"group_style,omitzero"`
+	GroupStyle GroupStyle `json:"group_style,omitzero"`
 	// Custom y-axis minimum. Pass null to clear.
 	YAxisMin *float64 `json:"y_axis_min,omitzero"`
 	// Custom y-axis maximum. Pass null to clear.
 	YAxisMax *float64 `json:"y_axis_max,omitzero"`
 	// Donut slice labels. Pass null to clear.
-	DonutLabels ChartViewConfigDonutLabelsOneOf `json:"donut_labels,omitzero"`
+	DonutLabels DonutLabels `json:"donut_labels,omitzero"`
 	// Hide title (number only). Pass null to clear.
 	HideTitle *bool `json:"hide_title,omitzero"`
 	// Stack-by grouping for stacked/grouped bar charts. Pass null to clear.
-	StackBy *GroupByConfig `json:"stack_by,omitzero"`
+	StackBy GroupByConfig `json:"stack_by,omitzero"`
 	// Reference lines on the chart. Pass null to clear.
 	ReferenceLines []ChartReferenceLine `json:"reference_lines,omitzero"`
 	// Chart caption text. Pass null to clear.
@@ -4751,160 +4939,14 @@ func (v *ChartViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string
 	return false, nil
 }
 
-// ChartViewConfigAxisLabelsOneOf defines a model
-type ChartViewConfigAxisLabelsOneOf string
-
-const (
-	ChartViewConfigAxisLabelsOneOfNone  ChartViewConfigAxisLabelsOneOf = "none"
-	ChartViewConfigAxisLabelsOneOfXAxis ChartViewConfigAxisLabelsOneOf = "x_axis"
-	ChartViewConfigAxisLabelsOneOfYAxis ChartViewConfigAxisLabelsOneOf = "y_axis"
-	ChartViewConfigAxisLabelsOneOfBoth  ChartViewConfigAxisLabelsOneOf = "both"
-)
-
-// Valid indicates whether the value is a known member of the ChartViewConfigAxisLabelsOneOf enum.
-func (e ChartViewConfigAxisLabelsOneOf) Valid() bool {
-	switch e {
-	case ChartViewConfigAxisLabelsOneOfNone, ChartViewConfigAxisLabelsOneOfXAxis, ChartViewConfigAxisLabelsOneOfYAxis, ChartViewConfigAxisLabelsOneOfBoth:
-		return true
-	default:
-		return false
-	}
-}
-
-// ChartViewConfigChartType defines a model
-type ChartViewConfigChartType string
-
-const (
-	ChartViewConfigChartTypeColumn ChartViewConfigChartType = "column"
-	ChartViewConfigChartTypeBar    ChartViewConfigChartType = "bar"
-	ChartViewConfigChartTypeLine   ChartViewConfigChartType = "line"
-	ChartViewConfigChartTypeDonut  ChartViewConfigChartType = "donut"
-	ChartViewConfigChartTypeNumber ChartViewConfigChartType = "number"
-)
-
-// Valid indicates whether the value is a known member of the ChartViewConfigChartType enum.
-func (e ChartViewConfigChartType) Valid() bool {
-	switch e {
-	case ChartViewConfigChartTypeColumn, ChartViewConfigChartTypeBar, ChartViewConfigChartTypeLine, ChartViewConfigChartTypeDonut, ChartViewConfigChartTypeNumber:
-		return true
-	default:
-		return false
-	}
-}
-
-// ChartViewConfigColorThemeOneOf defines a model
-type ChartViewConfigColorThemeOneOf string
-
-const (
-	ChartViewConfigColorThemeOneOfGray     ChartViewConfigColorThemeOneOf = "gray"
-	ChartViewConfigColorThemeOneOfBlue     ChartViewConfigColorThemeOneOf = "blue"
-	ChartViewConfigColorThemeOneOfYellow   ChartViewConfigColorThemeOneOf = "yellow"
-	ChartViewConfigColorThemeOneOfGreen    ChartViewConfigColorThemeOneOf = "green"
-	ChartViewConfigColorThemeOneOfPurple   ChartViewConfigColorThemeOneOf = "purple"
-	ChartViewConfigColorThemeOneOfTeal     ChartViewConfigColorThemeOneOf = "teal"
-	ChartViewConfigColorThemeOneOfOrange   ChartViewConfigColorThemeOneOf = "orange"
-	ChartViewConfigColorThemeOneOfPink     ChartViewConfigColorThemeOneOf = "pink"
-	ChartViewConfigColorThemeOneOfRed      ChartViewConfigColorThemeOneOf = "red"
-	ChartViewConfigColorThemeOneOfAuto     ChartViewConfigColorThemeOneOf = "auto"
-	ChartViewConfigColorThemeOneOfColorful ChartViewConfigColorThemeOneOf = "colorful"
-)
-
-// Valid indicates whether the value is a known member of the ChartViewConfigColorThemeOneOf enum.
-func (e ChartViewConfigColorThemeOneOf) Valid() bool {
-	switch e {
-	case ChartViewConfigColorThemeOneOfGray, ChartViewConfigColorThemeOneOfBlue, ChartViewConfigColorThemeOneOfYellow, ChartViewConfigColorThemeOneOfGreen, ChartViewConfigColorThemeOneOfPurple, ChartViewConfigColorThemeOneOfTeal, ChartViewConfigColorThemeOneOfOrange, ChartViewConfigColorThemeOneOfPink, ChartViewConfigColorThemeOneOfRed, ChartViewConfigColorThemeOneOfAuto, ChartViewConfigColorThemeOneOfColorful:
-		return true
-	default:
-		return false
-	}
-}
-
-// ChartViewConfigDonutLabelsOneOf defines a model
-type ChartViewConfigDonutLabelsOneOf string
-
-const (
-	ChartViewConfigDonutLabelsOneOfNone         ChartViewConfigDonutLabelsOneOf = "none"
-	ChartViewConfigDonutLabelsOneOfValue        ChartViewConfigDonutLabelsOneOf = "value"
-	ChartViewConfigDonutLabelsOneOfName         ChartViewConfigDonutLabelsOneOf = "name"
-	ChartViewConfigDonutLabelsOneOfNameAndValue ChartViewConfigDonutLabelsOneOf = "name_and_value"
-)
-
-// Valid indicates whether the value is a known member of the ChartViewConfigDonutLabelsOneOf enum.
-func (e ChartViewConfigDonutLabelsOneOf) Valid() bool {
-	switch e {
-	case ChartViewConfigDonutLabelsOneOfNone, ChartViewConfigDonutLabelsOneOfValue, ChartViewConfigDonutLabelsOneOfName, ChartViewConfigDonutLabelsOneOfNameAndValue:
-		return true
-	default:
-		return false
-	}
-}
-
-// ChartViewConfigGridLinesOneOf defines a model
-type ChartViewConfigGridLinesOneOf string
-
-const (
-	ChartViewConfigGridLinesOneOfNone       ChartViewConfigGridLinesOneOf = "none"
-	ChartViewConfigGridLinesOneOfHorizontal ChartViewConfigGridLinesOneOf = "horizontal"
-	ChartViewConfigGridLinesOneOfVertical   ChartViewConfigGridLinesOneOf = "vertical"
-	ChartViewConfigGridLinesOneOfBoth       ChartViewConfigGridLinesOneOf = "both"
-)
-
-// Valid indicates whether the value is a known member of the ChartViewConfigGridLinesOneOf enum.
-func (e ChartViewConfigGridLinesOneOf) Valid() bool {
-	switch e {
-	case ChartViewConfigGridLinesOneOfNone, ChartViewConfigGridLinesOneOfHorizontal, ChartViewConfigGridLinesOneOfVertical, ChartViewConfigGridLinesOneOfBoth:
-		return true
-	default:
-		return false
-	}
-}
-
-// ChartViewConfigGroupStyleOneOf defines a model
-type ChartViewConfigGroupStyleOneOf string
-
-const (
-	ChartViewConfigGroupStyleOneOfNormal     ChartViewConfigGroupStyleOneOf = "normal"
-	ChartViewConfigGroupStyleOneOfPercent    ChartViewConfigGroupStyleOneOf = "percent"
-	ChartViewConfigGroupStyleOneOfSideBySide ChartViewConfigGroupStyleOneOf = "side_by_side"
-)
-
-// Valid indicates whether the value is a known member of the ChartViewConfigGroupStyleOneOf enum.
-func (e ChartViewConfigGroupStyleOneOf) Valid() bool {
-	switch e {
-	case ChartViewConfigGroupStyleOneOfNormal, ChartViewConfigGroupStyleOneOfPercent, ChartViewConfigGroupStyleOneOfSideBySide:
-		return true
-	default:
-		return false
-	}
-}
-
-// ChartViewConfigLegendPositionOneOf defines a model
-type ChartViewConfigLegendPositionOneOf string
-
-const (
-	ChartViewConfigLegendPositionOneOfOff    ChartViewConfigLegendPositionOneOf = "off"
-	ChartViewConfigLegendPositionOneOfBottom ChartViewConfigLegendPositionOneOf = "bottom"
-	ChartViewConfigLegendPositionOneOfSide   ChartViewConfigLegendPositionOneOf = "side"
-)
-
-// Valid indicates whether the value is a known member of the ChartViewConfigLegendPositionOneOf enum.
-func (e ChartViewConfigLegendPositionOneOf) Valid() bool {
-	switch e {
-	case ChartViewConfigLegendPositionOneOfOff, ChartViewConfigLegendPositionOneOfBottom, ChartViewConfigLegendPositionOneOfSide:
-		return true
-	default:
-		return false
-	}
-}
-
 // ChartViewConfigResponse defines a model
 type ChartViewConfigResponse struct {
 	// The view configuration type.
 	Type string `json:"type"`
 	// The chart type: column (vertical bars), bar (horizontal bars), line, donut, or number (single value display).
-	ChartType ChartViewConfigChartType `json:"chart_type"`
+	ChartType ChartType `json:"chart_type"`
 	// X-axis grouping configuration for column/bar/line/donut charts using grouped data. Null when using results (raw property values) mode.
-	XAxis *GroupByConfigResponse `json:"x_axis,omitzero"`
+	XAxis GroupByConfigResponse `json:"x_axis,omitzero"`
 	// Y-axis aggregation for column/bar/line/donut charts using grouped data. Null when using results mode.
 	YAxis ChartAggregationResponse `json:"y_axis,omitzero"`
 	// Property ID for the x-axis name values when using results (raw property values) mode.
@@ -4914,21 +4956,21 @@ type ChartViewConfigResponse struct {
 	// Aggregation configuration for number charts (single value display).
 	Value ChartAggregationResponse `json:"value,omitzero"`
 	// Sort order for chart data.
-	Sort ChartViewConfigSortOneOf `json:"sort,omitzero"`
+	Sort ChartViewConfigSort `json:"sort,omitzero"`
 	// Color theme for the chart.
-	ColorTheme ChartViewConfigColorThemeOneOf `json:"color_theme,omitzero"`
+	ColorTheme ColorTheme `json:"color_theme,omitzero"`
 	// Chart height.
-	Height MapViewConfigHeightOneOf `json:"height,omitzero"`
+	Height MapViewConfigHeight `json:"height,omitzero"`
 	// Whether to hide groups with no data on the x-axis.
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 	// Legend display position. "off" hides the legend.
-	LegendPosition ChartViewConfigLegendPositionOneOf `json:"legend_position,omitzero"`
+	LegendPosition LegendPosition `json:"legend_position,omitzero"`
 	// Whether to show data value labels on chart elements.
 	ShowDataLabels *bool `json:"show_data_labels,omitzero"`
 	// Which axis labels to display.
-	AxisLabels ChartViewConfigAxisLabelsOneOf `json:"axis_labels,omitzero"`
+	AxisLabels AxisLabels `json:"axis_labels,omitzero"`
 	// Which grid lines to display.
-	GridLines ChartViewConfigGridLinesOneOf `json:"grid_lines,omitzero"`
+	GridLines GridLines `json:"grid_lines,omitzero"`
 	// Whether to show cumulative values (line charts only).
 	Cumulative *bool `json:"cumulative,omitzero"`
 	// Whether to use smooth curves (line charts only).
@@ -4936,17 +4978,17 @@ type ChartViewConfigResponse struct {
 	// Whether to hide the shaded area under the line (line charts only).
 	HideLineFillArea *bool `json:"hide_line_fill_area,omitzero"`
 	// How grouped/stacked bars are displayed. "normal" stacks values, "percent" normalizes to 100%, "side_by_side" places bars next to each other.
-	GroupStyle ChartViewConfigGroupStyleOneOf `json:"group_style,omitzero"`
+	GroupStyle GroupStyle `json:"group_style,omitzero"`
 	// Custom minimum value for the y-axis. Null clears the override.
 	YAxisMin *float64 `json:"y_axis_min,omitzero"`
 	// Custom maximum value for the y-axis. Null clears the override.
 	YAxisMax *float64 `json:"y_axis_max,omitzero"`
 	// What to display on donut chart slices.
-	DonutLabels ChartViewConfigDonutLabelsOneOf `json:"donut_labels,omitzero"`
+	DonutLabels DonutLabels `json:"donut_labels,omitzero"`
 	// Whether to hide the title label (number charts only).
 	HideTitle *bool `json:"hide_title,omitzero"`
 	// Stack-by grouping configuration for stacked/grouped bar charts (column/bar/line only). Null when not stacked.
-	StackBy *GroupByConfigResponse `json:"stack_by,omitzero"`
+	StackBy GroupByConfigResponse `json:"stack_by,omitzero"`
 	// Reference lines drawn on the chart. Null when no reference lines are configured.
 	ReferenceLines []ChartReferenceLineResponse `json:"reference_lines,omitzero"`
 	// Text caption displayed below the chart. Null when no caption is shown.
@@ -5017,21 +5059,21 @@ func (v *ChartViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, nam
 	return false, nil
 }
 
-// ChartViewConfigSortOneOf defines a model
-type ChartViewConfigSortOneOf string
+// ChartViewConfigSort defines a model
+type ChartViewConfigSort string
 
 const (
-	ChartViewConfigSortOneOfManual      ChartViewConfigSortOneOf = "manual"
-	ChartViewConfigSortOneOfXAscending  ChartViewConfigSortOneOf = "x_ascending"
-	ChartViewConfigSortOneOfXDescending ChartViewConfigSortOneOf = "x_descending"
-	ChartViewConfigSortOneOfYAscending  ChartViewConfigSortOneOf = "y_ascending"
-	ChartViewConfigSortOneOfYDescending ChartViewConfigSortOneOf = "y_descending"
+	ChartViewConfigSortManual      ChartViewConfigSort = "manual"
+	ChartViewConfigSortXAscending  ChartViewConfigSort = "x_ascending"
+	ChartViewConfigSortXDescending ChartViewConfigSort = "x_descending"
+	ChartViewConfigSortYAscending  ChartViewConfigSort = "y_ascending"
+	ChartViewConfigSortYDescending ChartViewConfigSort = "y_descending"
 )
 
-// Valid indicates whether the value is a known member of the ChartViewConfigSortOneOf enum.
-func (e ChartViewConfigSortOneOf) Valid() bool {
+// Valid indicates whether the value is a known member of the ChartViewConfigSort enum.
+func (e ChartViewConfigSort) Valid() bool {
 	switch e {
-	case ChartViewConfigSortOneOfManual, ChartViewConfigSortOneOfXAscending, ChartViewConfigSortOneOfXDescending, ChartViewConfigSortOneOfYAscending, ChartViewConfigSortOneOfYDescending:
+	case ChartViewConfigSortManual, ChartViewConfigSortXAscending, ChartViewConfigSortXDescending, ChartViewConfigSortYAscending, ChartViewConfigSortYDescending:
 		return true
 	default:
 		return false
@@ -5078,9 +5120,14 @@ type CheckboxPropertyFilter struct {
 	CheckboxPropertyFilterDoesNotEqual *CheckboxPropertyFilterDoesNotEqual
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *CheckboxPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = CheckboxPropertyFilter{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -5094,7 +5141,7 @@ func (v *CheckboxPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"equals"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv CheckboxPropertyFilterEquals
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.CheckboxPropertyFilterEquals = &vv
@@ -5106,7 +5153,7 @@ func (v *CheckboxPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"does_not_equal"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv CheckboxPropertyFilterDoesNotEqual
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.CheckboxPropertyFilterDoesNotEqual = &vv
@@ -5122,7 +5169,8 @@ func (v *CheckboxPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *CheckboxPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.CheckboxPropertyFilterEquals != nil:
@@ -5131,7 +5179,7 @@ func (v *CheckboxPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.CheckboxPropertyFilterDoesNotEqual, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // CheckboxPropertyFilterDoesNotEqual defines a model
@@ -5192,6 +5240,33 @@ type CodeUpdate struct {
 	Caption  []RichTextItem `json:"caption,omitzero"`
 }
 
+// ColorTheme defines a model
+type ColorTheme string
+
+const (
+	ColorThemeGray     ColorTheme = "gray"
+	ColorThemeBlue     ColorTheme = "blue"
+	ColorThemeYellow   ColorTheme = "yellow"
+	ColorThemeGreen    ColorTheme = "green"
+	ColorThemePurple   ColorTheme = "purple"
+	ColorThemeTeal     ColorTheme = "teal"
+	ColorThemeOrange   ColorTheme = "orange"
+	ColorThemePink     ColorTheme = "pink"
+	ColorThemeRed      ColorTheme = "red"
+	ColorThemeAuto     ColorTheme = "auto"
+	ColorThemeColorful ColorTheme = "colorful"
+)
+
+// Valid indicates whether the value is a known member of the ColorTheme enum.
+func (e ColorTheme) Valid() bool {
+	switch e {
+	case ColorThemeGray, ColorThemeBlue, ColorThemeYellow, ColorThemeGreen, ColorThemePurple, ColorThemeTeal, ColorThemeOrange, ColorThemePink, ColorThemeRed, ColorThemeAuto, ColorThemeColorful:
+		return true
+	default:
+		return false
+	}
+}
+
 // Column defines a model
 type Column struct {
 	// Ratio between 0 and 1 of the width of this column relative to all columns in the list. If not provided, uses an equal width.
@@ -5235,7 +5310,7 @@ type Comment struct {
 	// The rich text content of the comment.
 	RichText RichTexts `json:"rich_text"`
 	// The display name of the comment.
-	DisplayName CommentDisplayName `json:"display_name"`
+	DisplayName DisplayName `json:"display_name"`
 	// Whether this comment's original content was deleted.
 	OriginalContentDeleted bool `json:"original_content_deleted"`
 	// Whether any file attachments on this comment are still uploading. Pending files are not listed in `attachments` yet. A `comment.updated` webhook is sent when each upload finishes.
@@ -5311,32 +5386,6 @@ type CommentDeletedWebhookPayload struct {
 	Data CommentCreatedWebhookPayloadData `json:"data"`
 }
 
-// The display name of the comment.
-type CommentDisplayName struct {
-	// One of: `custom`, `user`, `integration`
-	Type         CommentDisplayNameType `json:"type"`
-	ResolvedName string                 `json:"resolved_name"`
-}
-
-// One of: `custom`, `user`, `integration`
-type CommentDisplayNameType string
-
-const (
-	CommentDisplayNameTypeCustom      CommentDisplayNameType = "custom"
-	CommentDisplayNameTypeUser        CommentDisplayNameType = "user"
-	CommentDisplayNameTypeIntegration CommentDisplayNameType = "integration"
-)
-
-// Valid indicates whether the value is a known member of the CommentDisplayNameType enum.
-func (e CommentDisplayNameType) Valid() bool {
-	switch e {
-	case CommentDisplayNameTypeCustom, CommentDisplayNameTypeUser, CommentDisplayNameTypeIntegration:
-		return true
-	default:
-		return false
-	}
-}
-
 // CommentList defines a model
 type CommentList struct {
 	// Always `list`
@@ -5345,10 +5394,10 @@ type CommentList struct {
 	HasMore    bool      `json:"has_more"`
 	Results    []Comment `json:"results"`
 	// Always `comment`
-	Type          string        `json:"type"`
-	Comment       EmptyObject   `json:"comment"`
-	RequestStatus RequestStatus `json:"request_status,omitzero"`
-	RequestID     uuid.UUID     `json:"request_id,omitzero"`
+	Type          string                `json:"type"`
+	Comment       EmptyObject           `json:"comment"`
+	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
+	RequestID     uuid.UUID             `json:"request_id,omitzero"`
 }
 
 // CommentOrPartial defines a model
@@ -5358,9 +5407,14 @@ type CommentOrPartial struct {
 	Comment        *Comment
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *CommentOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = CommentOrPartial{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -5374,7 +5428,7 @@ func (v *CommentOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"id", "object"}, map[string]bool{}, map[string]string{"object": "\"comment\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv PartialComment
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.PartialComment = &vv
@@ -5386,7 +5440,7 @@ func (v *CommentOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"created_by", "created_time", "discussion_id", "display_name", "has_pending_attachments", "id", "last_edited_time", "object", "original_content_deleted", "parent", "rich_text"}, map[string]bool{}, map[string]string{"object": "\"comment\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv Comment
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.Comment = &vv
@@ -5402,7 +5456,8 @@ func (v *CommentOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *CommentOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PartialComment != nil:
@@ -5411,7 +5466,7 @@ func (v *CommentOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.Comment, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // CommentParent defines a model
@@ -5438,9 +5493,9 @@ func (e CommentParentType) Valid() bool {
 }
 
 // tagsOfCommentParent holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfCommentParent = map[string]map[string]jsonTagNeed{
-	"page_id":  {"page_id": jsonTagRequired},
-	"block_id": {"block_id": jsonTagRequired},
+var tagsOfCommentParent = map[string]map[string]union.TagNeed{
+	"page_id":  {"page_id": union.TagRequired},
+	"block_id": {"block_id": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -5457,11 +5512,16 @@ func (v *CommentParent) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *CommentParent) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain CommentParent
 
 	*v = CommentParent{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -5473,25 +5533,28 @@ func (v *CommentParent) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfCommentParent, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfCommentParent, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *CommentParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain CommentParent
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfCommentParent, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfCommentParent, set); ok && out.Type == "" {
 		out.Type = CommentParentType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfCommentParent, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfCommentParent, set, nil, true); err != nil {
 		return err
 	}
 
@@ -5505,12 +5568,17 @@ type CommentUpdate struct {
 	CommentUpdateMarkdown *CommentUpdateMarkdown
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *CommentUpdate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = CommentUpdate{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -5523,7 +5591,7 @@ func (v *CommentUpdate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"rich_text"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv CommentUpdateRichText
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.CommentUpdateRichText = &vv
@@ -5536,7 +5604,7 @@ func (v *CommentUpdate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"markdown"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv CommentUpdateMarkdown
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.CommentUpdateMarkdown = &vv
@@ -5552,7 +5620,8 @@ func (v *CommentUpdate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *CommentUpdate) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.CommentUpdateRichText != nil:
@@ -5561,7 +5630,7 @@ func (v *CommentUpdate) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.CommentUpdateMarkdown, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // CommentUpdateMarkdown defines a model
@@ -5609,8 +5678,8 @@ func (e ContentPositionSchemaType) Valid() bool {
 }
 
 // tagsOfContentPositionSchema holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfContentPositionSchema = map[string]map[string]jsonTagNeed{
-	"after_block": {"after_block": jsonTagRequired},
+var tagsOfContentPositionSchema = map[string]map[string]union.TagNeed{
+	"after_block": {"after_block": union.TagRequired},
 	"start":       {},
 	"end":         {},
 }
@@ -5626,11 +5695,16 @@ func (v *ContentPositionSchema) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *ContentPositionSchema) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain ContentPositionSchema
 
 	*v = ContentPositionSchema{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -5642,29 +5716,45 @@ func (v *ContentPositionSchema) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfContentPositionSchema, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfContentPositionSchema, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *ContentPositionSchema) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain ContentPositionSchema
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfContentPositionSchema, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfContentPositionSchema, set); ok && out.Type == "" {
 		out.Type = ContentPositionSchemaType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfContentPositionSchema, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfContentPositionSchema, set, nil, true); err != nil {
 		return err
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
+}
+
+// An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content). Operations that match are applied, and each one that matches nothing is reported in "warnings". The call fails only when no operation that changes content matches.
+type ContentUpdates []ContentUpdatesItem
+
+// ContentUpdatesItem defines a model
+type ContentUpdatesItem struct {
+	// The existing content string to find and replace. Must exactly match the page content.
+	OldStr string `json:"old_str"`
+	// The new content string to replace old_str with.
+	NewStr string `json:"new_str"`
+	// If true, replaces all occurrences of old_str. If false (default), the operation fails if there are multiple matches.
+	ReplaceAllMatches *bool `json:"replace_all_matches,omitzero"`
 }
 
 // ContentWithExpression defines a model
@@ -5742,6 +5832,24 @@ type ContentWithTableRowResponse struct {
 	Cells []RichTexts `json:"cells"`
 }
 
+// CoverAspect defines a model
+type CoverAspect string
+
+const (
+	CoverAspectContain CoverAspect = "contain"
+	CoverAspectCover   CoverAspect = "cover"
+)
+
+// Valid indicates whether the value is a known member of the CoverAspect enum.
+func (e CoverAspect) Valid() bool {
+	switch e {
+	case CoverAspectContain, CoverAspectCover:
+		return true
+	default:
+		return false
+	}
+}
+
 // CoverConfig defines a model
 type CoverConfig struct {
 	// Source of the cover image.
@@ -5797,6 +5905,25 @@ func (e CoverConfigType) Valid() bool {
 	}
 }
 
+// CoverSize defines a model
+type CoverSize string
+
+const (
+	CoverSizeSmall  CoverSize = "small"
+	CoverSizeMedium CoverSize = "medium"
+	CoverSizeLarge  CoverSize = "large"
+)
+
+// Valid indicates whether the value is a known member of the CoverSize enum.
+func (e CoverSize) Valid() bool {
+	switch e {
+	case CoverSizeSmall, CoverSizeMedium, CoverSizeLarge:
+		return true
+	default:
+		return false
+	}
+}
+
 // CreateAComment defines a model
 type CreateAComment struct {
 	// An array of files to attach to the comment. Maximum of 3 allowed.
@@ -5815,37 +5942,37 @@ type fieldsOfCreateAComment CreateAComment
 var membersOfCreateAComment = map[string]bool{"attachments": true, "display_name": true, "markdown_version": true}
 
 // variantsOfCreateAComment are the alternatives its union is decoded as, in order.
-var variantsOfCreateAComment = []jsonVariant{
+var variantsOfCreateAComment = []union.Variant{
 	{
-		value:    "",
-		members:  map[string]bool{"parent": true, "rich_text": true},
-		required: []string{"parent", "rich_text"},
-		pinned:   map[string]string{},
+		Value:    "",
+		Members:  map[string]bool{"parent": true, "rich_text": true},
+		Required: []string{"parent", "rich_text"},
+		Pinned:   map[string]string{},
 	},
 	{
-		value:    "",
-		members:  map[string]bool{"markdown": true, "parent": true},
-		required: []string{"markdown", "parent"},
-		pinned:   map[string]string{},
+		Value:    "",
+		Members:  map[string]bool{"markdown": true, "parent": true},
+		Required: []string{"markdown", "parent"},
+		Pinned:   map[string]string{},
 	},
 	{
-		value:    "",
-		members:  map[string]bool{"discussion_id": true, "rich_text": true},
-		required: []string{"discussion_id", "rich_text"},
-		pinned:   map[string]string{},
+		Value:    "",
+		Members:  map[string]bool{"discussion_id": true, "rich_text": true},
+		Required: []string{"discussion_id", "rich_text"},
+		Pinned:   map[string]string{},
 	},
 	{
-		value:    "",
-		members:  map[string]bool{"discussion_id": true, "markdown": true},
-		required: []string{"discussion_id", "markdown"},
-		pinned:   map[string]string{},
+		Value:    "",
+		Members:  map[string]bool{"discussion_id": true, "markdown": true},
+		Required: []string{"discussion_id", "markdown"},
+		Pinned:   map[string]string{},
 	},
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of NewComment each
 // decode the members they declare, and a member neither declares is an error.
 func (v *CreateAComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
+	opts, strict := jsonOptsOf(dec), union.Strict(dec)
 
 	*v = CreateAComment{}
 
@@ -5854,12 +5981,12 @@ func (v *CreateAComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		return err
 	}
 
-	chosen, err := jsonChooseVariants(raw, "", variantsOfCreateAComment, membersOfCreateAComment, true, strict)
+	chosen, err := union.ChooseVariants(raw, "", variantsOfCreateAComment, membersOfCreateAComment, true, strict)
 	if err != nil {
 		return err
 	}
 
-	fields, err := jsonSelect(raw, membersOfCreateAComment)
+	fields, err := union.Select(raw, membersOfCreateAComment)
 	if err != nil {
 		return err
 	}
@@ -5869,7 +5996,7 @@ func (v *CreateAComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	for _, i := range chosen {
-		variant, err := jsonSelect(raw, variantsOfCreateAComment[i].members)
+		variant, err := union.Select(raw, variantsOfCreateAComment[i].Members)
 		if err != nil {
 			return err
 		}
@@ -5926,7 +6053,7 @@ func (v *CreateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 			return err
 		}
 
-		if out, err = jsonMerge(out, variant); err != nil {
+		if out, err = union.Merge(out, variant); err != nil {
 			return err
 		}
 
@@ -5940,7 +6067,7 @@ func (v *CreateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 			return err
 		}
 
-		if out, err = jsonMerge(out, variant); err != nil {
+		if out, err = union.Merge(out, variant); err != nil {
 			return err
 		}
 
@@ -5954,7 +6081,7 @@ func (v *CreateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 			return err
 		}
 
-		if out, err = jsonMerge(out, variant); err != nil {
+		if out, err = union.Merge(out, variant); err != nil {
 			return err
 		}
 
@@ -5968,7 +6095,7 @@ func (v *CreateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 			return err
 		}
 
-		if out, err = jsonMerge(out, variant); err != nil {
+		if out, err = union.Merge(out, variant); err != nil {
 			return err
 		}
 
@@ -6006,9 +6133,9 @@ func (e CreateACommentAllOfOneOfParentType) Valid() bool {
 }
 
 // tagsOfCreateACommentAllOfOneOfParent holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfCreateACommentAllOfOneOfParent = map[string]map[string]jsonTagNeed{
-	"page_id":  {"page_id": jsonTagRequired},
-	"block_id": {"block_id": jsonTagRequired},
+var tagsOfCreateACommentAllOfOneOfParent = map[string]map[string]union.TagNeed{
+	"page_id":  {"page_id": union.TagRequired},
+	"block_id": {"block_id": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -6025,11 +6152,16 @@ func (v *CreateACommentAllOfOneOfParent) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *CreateACommentAllOfOneOfParent) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain CreateACommentAllOfOneOfParent
 
 	*v = CreateACommentAllOfOneOfParent{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -6041,30 +6173,33 @@ func (v *CreateACommentAllOfOneOfParent) UnmarshalJSONFrom(dec *jsontext.Decoder
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfCreateACommentAllOfOneOfParent, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfCreateACommentAllOfOneOfParent, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = CreateACommentAllOfOneOfParentType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfCreateACommentAllOfOneOfParent, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfCreateACommentAllOfOneOfParent, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *CreateACommentAllOfOneOfParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain CreateACommentAllOfOneOfParent
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfCreateACommentAllOfOneOfParent, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfCreateACommentAllOfOneOfParent, set); ok && out.Type == "" {
 		out.Type = CreateACommentAllOfOneOfParentType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfCreateACommentAllOfOneOfParent, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfCreateACommentAllOfOneOfParent, set, nil, true); err != nil {
 		return err
 	}
 
@@ -6104,10 +6239,10 @@ func (e CreateACommentDisplayNameType) Valid() bool {
 }
 
 // tagsOfCreateACommentDisplayName holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfCreateACommentDisplayName = map[string]map[string]jsonTagNeed{
+var tagsOfCreateACommentDisplayName = map[string]map[string]union.TagNeed{
 	"integration": {},
 	"user":        {},
-	"custom":      {"custom": jsonTagRequired},
+	"custom":      {"custom": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -6121,11 +6256,16 @@ func (v *CreateACommentDisplayName) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *CreateACommentDisplayName) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain CreateACommentDisplayName
 
 	*v = CreateACommentDisplayName{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -6137,25 +6277,28 @@ func (v *CreateACommentDisplayName) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfCreateACommentDisplayName, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfCreateACommentDisplayName, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *CreateACommentDisplayName) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain CreateACommentDisplayName
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfCreateACommentDisplayName, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfCreateACommentDisplayName, set); ok && out.Type == "" {
 		out.Type = CreateACommentDisplayNameType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfCreateACommentDisplayName, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfCreateACommentDisplayName, set, nil, true); err != nil {
 		return err
 	}
 
@@ -6177,7 +6320,7 @@ type CreateADatabase struct {
 	// Title of data source as it appears in Notion.
 	Title []RichTextItem `json:"title,omitzero"`
 	// Page icon.
-	Icon *PageIcon `json:"icon,omitzero"`
+	Icon PageIcon `json:"icon,omitzero"`
 }
 
 // CreateAToken defines a model
@@ -6188,11 +6331,16 @@ type CreateAToken struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member grant_type names the alternative, which then
-// decodes each further member as it is read. With grant_type first, nothing is read twice.
+// decodes each further member as it is read. With grant_type first, nothing is read twice. Null sets no alternative.
 func (v *CreateAToken) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = CreateAToken{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "grant_type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "grant_type")
 	if err != nil {
 		return err
 	}
@@ -6200,26 +6348,27 @@ func (v *CreateAToken) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch tag {
 	case "authorization_code":
 		var vv CreateATokenAuthorizationCode
-		if err := jsonMembersFrom(dec, "grant_type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "grant_type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.CreateATokenAuthorizationCode = &vv
 	case "refresh_token":
 		var vv CreateATokenRefreshToken
-		if err := jsonMembersFrom(dec, "grant_type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "grant_type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.CreateATokenRefreshToken = &vv
 	default:
-		return jsonUnknownValue("grant_type", tag)
+		return union.UnknownValue("grant_type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with grant_type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with grant_type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *CreateAToken) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -6232,7 +6381,7 @@ func (v *CreateAToken) MarshalJSONTo(enc *jsontext.Encoder) error {
 	case v.CreateATokenRefreshToken != nil:
 		variant, tag = v.CreateATokenRefreshToken, "refresh_token"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -6240,7 +6389,7 @@ func (v *CreateAToken) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	if out, err = jsonFirst(out, "grant_type", tag); err != nil {
+	if out, err = union.First(out, "grant_type", tag); err != nil {
 		return err
 	}
 
@@ -6249,10 +6398,10 @@ func (v *CreateAToken) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 // CreateATokenAuthorizationCode defines a model
 type CreateATokenAuthorizationCode struct {
-	GrantType       string                                       `json:"grant_type"`
-	Code            string                                       `json:"code"`
-	RedirectURI     string                                       `json:"redirect_uri,omitzero"`
-	ExternalAccount CreateATokenAuthorizationCodeExternalAccount `json:"external_account,omitzero"`
+	GrantType       string          `json:"grant_type"`
+	Code            string          `json:"code"`
+	RedirectURI     string          `json:"redirect_uri,omitzero"`
+	ExternalAccount ExternalAccount `json:"external_account,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether CreateATokenAuthorizationCode declares it.
@@ -6269,12 +6418,6 @@ func (v *CreateATokenAuthorizationCode) unmarshalJSONMember(dec *jsontext.Decode
 	}
 
 	return false, nil
-}
-
-// CreateATokenAuthorizationCodeExternalAccount defines a model
-type CreateATokenAuthorizationCodeExternalAccount struct {
-	Key  string `json:"key"`
-	Name string `json:"name"`
 }
 
 // CreateATokenOk defines a model
@@ -6314,9 +6457,9 @@ func (e CreateATokenOkOwnerType) Valid() bool {
 }
 
 // tagsOfCreateATokenOkOwner holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfCreateATokenOkOwner = map[string]map[string]jsonTagNeed{
-	"user":      {"user": jsonTagRequired},
-	"workspace": {"workspace": jsonTagRequired},
+var tagsOfCreateATokenOkOwner = map[string]map[string]union.TagNeed{
+	"user":      {"user": union.TagRequired},
+	"workspace": {"workspace": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -6333,11 +6476,16 @@ func (v *CreateATokenOkOwner) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *CreateATokenOkOwner) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain CreateATokenOkOwner
 
 	*v = CreateATokenOkOwner{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -6349,25 +6497,28 @@ func (v *CreateATokenOkOwner) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfCreateATokenOkOwner, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfCreateATokenOkOwner, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *CreateATokenOkOwner) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain CreateATokenOkOwner
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfCreateATokenOkOwner, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfCreateATokenOkOwner, set); ok && out.Type == "" {
 		out.Type = CreateATokenOkOwnerType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfCreateATokenOkOwner, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfCreateATokenOkOwner, set, nil, true); err != nil {
 		return err
 	}
 
@@ -6391,9 +6542,14 @@ type CreateATokenOkOwnerUserUser struct {
 	PartialUser                   *PartialUser
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *CreateATokenOkOwnerUserUser) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = CreateATokenOkOwnerUserUser{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -6407,7 +6563,7 @@ func (v *CreateATokenOkOwnerUserUser) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"avatar_url", "id", "name", "object", "person", "type"}, map[string]bool{"avatar_url": true, "name": true}, map[string]string{"type": "\"person\"", "object": "\"user\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv CreateATokenOkOwnerUserPerson
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.CreateATokenOkOwnerUserPerson = &vv
@@ -6419,7 +6575,7 @@ func (v *CreateATokenOkOwnerUserUser) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"id", "object"}, map[string]bool{}, map[string]string{"object": "\"user\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv PartialUser
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.PartialUser = &vv
@@ -6435,7 +6591,8 @@ func (v *CreateATokenOkOwnerUserUser) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *CreateATokenOkOwnerUserUser) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.CreateATokenOkOwnerUserPerson != nil:
@@ -6444,7 +6601,7 @@ func (v *CreateATokenOkOwnerUserUser) MarshalJSONTo(enc *jsontext.Encoder) error
 		return json.MarshalEncode(enc, v.PartialUser, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // CreateATokenOkOwnerUserUserPersonPerson defines a model
@@ -6530,9 +6687,9 @@ type CreateDatabaseParent struct {
 }
 
 // tagsOfCreateDatabaseParent holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfCreateDatabaseParent = map[string]map[string]jsonTagNeed{
-	"page_id":   {"page_id": jsonTagRequired},
-	"workspace": {"workspace": jsonTagRequired},
+var tagsOfCreateDatabaseParent = map[string]map[string]union.TagNeed{
+	"page_id":   {"page_id": union.TagRequired},
+	"workspace": {"workspace": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -6549,11 +6706,16 @@ func (v *CreateDatabaseParent) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *CreateDatabaseParent) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain CreateDatabaseParent
 
 	*v = CreateDatabaseParent{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -6565,25 +6727,28 @@ func (v *CreateDatabaseParent) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfCreateDatabaseParent, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfCreateDatabaseParent, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *CreateDatabaseParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain CreateDatabaseParent
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfCreateDatabaseParent, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfCreateDatabaseParent, set); ok && out.Type == "" {
 		out.Type = CreateDatabaseParentType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfCreateDatabaseParent, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfCreateDatabaseParent, set, nil, true); err != nil {
 		return err
 	}
 
@@ -6686,25 +6851,25 @@ type fieldsOfCreateMeetingNote CreateMeetingNote
 var membersOfCreateMeetingNote = map[string]bool{"language": true, "options": true, "title": true}
 
 // variantsOfCreateMeetingNote are the alternatives its union is decoded as, in order.
-var variantsOfCreateMeetingNote = []jsonVariant{
+var variantsOfCreateMeetingNote = []union.Variant{
 	{
-		value:    "",
-		members:  map[string]bool{"parent": true, "source": true},
-		required: []string{"parent", "source"},
-		pinned:   map[string]string{},
+		Value:    "",
+		Members:  map[string]bool{"parent": true, "source": true},
+		Required: []string{"parent", "source"},
+		Pinned:   map[string]string{},
 	},
 	{
-		value:    "",
-		members:  map[string]bool{"parent": true, "source": true},
-		required: []string{"source"},
-		pinned:   map[string]string{},
+		Value:    "",
+		Members:  map[string]bool{"parent": true, "source": true},
+		Required: []string{"source"},
+		Pinned:   map[string]string{},
 	},
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of MeetingNoteSource each
 // decode the members they declare, and a member neither declares is an error.
 func (v *CreateMeetingNote) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
+	opts, strict := jsonOptsOf(dec), union.Strict(dec)
 
 	*v = CreateMeetingNote{}
 
@@ -6713,12 +6878,12 @@ func (v *CreateMeetingNote) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		return err
 	}
 
-	chosen, err := jsonChooseVariants(raw, "", variantsOfCreateMeetingNote, membersOfCreateMeetingNote, true, strict)
+	chosen, err := union.ChooseVariants(raw, "", variantsOfCreateMeetingNote, membersOfCreateMeetingNote, true, strict)
 	if err != nil {
 		return err
 	}
 
-	fields, err := jsonSelect(raw, membersOfCreateMeetingNote)
+	fields, err := union.Select(raw, membersOfCreateMeetingNote)
 	if err != nil {
 		return err
 	}
@@ -6728,7 +6893,7 @@ func (v *CreateMeetingNote) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	for _, i := range chosen {
-		variant, err := jsonSelect(raw, variantsOfCreateMeetingNote[i].members)
+		variant, err := union.Select(raw, variantsOfCreateMeetingNote[i].Members)
 		if err != nil {
 			return err
 		}
@@ -6771,7 +6936,7 @@ func (v *CreateMeetingNote) MarshalJSONTo(enc *jsontext.Encoder) error {
 			return err
 		}
 
-		if out, err = jsonMerge(out, variant); err != nil {
+		if out, err = union.Merge(out, variant); err != nil {
 			return err
 		}
 
@@ -6785,7 +6950,7 @@ func (v *CreateMeetingNote) MarshalJSONTo(enc *jsontext.Encoder) error {
 			return err
 		}
 
-		if out, err = jsonMerge(out, variant); err != nil {
+		if out, err = union.Merge(out, variant); err != nil {
 			return err
 		}
 
@@ -6847,7 +7012,7 @@ type CreateMeetingNoteMeetingNotes struct {
 	// Always "meeting_notes".
 	Type string `json:"type"`
 	// Meeting note content fields.
-	MeetingNotes QueryMeetingNotesResultsItemMeetingNotes `json:"meeting_notes"`
+	MeetingNotes MeetingNotes `json:"meeting_notes"`
 	// ISO-8601 timestamp when this meeting note was created.
 	CreatedTime string `json:"created_time"`
 	// ISO-8601 timestamp when this meeting note was last edited.
@@ -6869,12 +7034,17 @@ type CreateMeetingNoteOk struct {
 	CreateMeetingNoteMeetingNotes *CreateMeetingNoteMeetingNotes
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *CreateMeetingNoteOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = CreateMeetingNoteOk{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -6887,7 +7057,7 @@ func (v *CreateMeetingNoteOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"id", "object"}, map[string]bool{}, map[string]string{"object": "\"block\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv MeetingNoteBlock
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.MeetingNoteBlock = &vv
@@ -6900,7 +7070,7 @@ func (v *CreateMeetingNoteOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"created_by", "created_time", "has_children", "id", "in_trash", "last_edited_by", "last_edited_time", "meeting_notes", "object", "type"}, map[string]bool{}, map[string]string{"object": "\"block\"", "type": "\"meeting_notes\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv CreateMeetingNoteMeetingNotes
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.CreateMeetingNoteMeetingNotes = &vv
@@ -6916,7 +7086,8 @@ func (v *CreateMeetingNoteOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *CreateMeetingNoteOk) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.MeetingNoteBlock != nil:
@@ -6925,7 +7096,7 @@ func (v *CreateMeetingNoteOk) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.CreateMeetingNoteMeetingNotes, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // Optional processing settings.
@@ -6968,6 +7139,13 @@ type CreateViewQuery struct {
 	PageSize int `json:"page_size,omitzero"`
 }
 
+// CreatedBy defines a model
+type CreatedBy struct {
+	ID ID `json:"id"`
+	// One of: `person`, `bot`, `agent`
+	Type CreatedByType `json:"type"`
+}
+
 // CreatedByPropertyConfiguration defines a model
 type CreatedByPropertyConfiguration struct {
 	// Always `created_by`
@@ -7000,6 +7178,25 @@ func (v *CreatedByPropertyItem) unmarshalJSONMember(dec *jsontext.Decoder, name 
 	}
 
 	return false, nil
+}
+
+// One of: `person`, `bot`, `agent`
+type CreatedByType string
+
+const (
+	CreatedByTypePerson CreatedByType = "person"
+	CreatedByTypeBot    CreatedByType = "bot"
+	CreatedByTypeAgent  CreatedByType = "agent"
+)
+
+// Valid indicates whether the value is a known member of the CreatedByType enum.
+func (e CreatedByType) Valid() bool {
+	switch e {
+	case CreatedByTypePerson, CreatedByTypeBot, CreatedByTypeAgent:
+		return true
+	default:
+		return false
+	}
 }
 
 // CreatedTimePropertyConfiguration defines a model
@@ -7054,9 +7251,9 @@ type CustomAgent struct {
 	// "active" when the agent can run; "disabled" when it is paused (see pause_reason); "deleted" when it has been removed.
 	Status AgentStatus `json:"status"`
 	// Why the agent is paused when status is "disabled" (e.g. "credit_limit", "disabled_from_workspace_settings"); null when active.
-	PauseReason  AgentPauseReasonOneOf `json:"pause_reason"`
-	CreatedBy    AgentCreator          `json:"created_by"`
-	AgentVersion AgentVersionOneOf     `json:"agent_version"`
+	PauseReason  PauseReason  `json:"pause_reason"`
+	CreatedBy    AgentCreator `json:"created_by"`
+	AgentVersion AgentVersion `json:"agent_version"`
 	// Date and time when this agent was created.
 	CreatedTime time.Time `json:"created_time"`
 	// Date and time when this agent was last edited.
@@ -7089,14 +7286,22 @@ func (e CustomAgentAgentType) Valid() bool {
 	}
 }
 
+// The static and animated URLs for the agent avatar.
+type CustomAgentAvatar struct {
+	// The URL of the static custom agent avatar.
+	StaticURL string `json:"static_url"`
+	// The URL of the animated custom agent avatar.
+	AnimatedURL string `json:"animated_url"`
+}
+
 // CustomEmoji defines a model
 type CustomEmoji struct {
 	// The ID of the custom emoji.
 	ID ID `json:"id"`
 	// The name of the custom emoji.
-	Name string `json:"name"`
+	Name string `json:"name,omitzero"`
 	// The URL of the custom emoji.
-	URL string `json:"url"`
+	URL string `json:"url,omitzero"`
 }
 
 // CustomEmojiList defines a model
@@ -7106,7 +7311,7 @@ type CustomEmojiList struct {
 	// Always `custom_emoji`
 	Type string `json:"type"`
 	// The list of custom emojis.
-	Results []CustomEmoji `json:"results"`
+	Results []CustomEmojiResponse `json:"results"`
 	// Whether there are more results available.
 	HasMore bool `json:"has_more"`
 	// The cursor to use for the next page of results, or null if there are no more results.
@@ -7119,7 +7324,7 @@ type CustomEmojiPageIcon struct {
 	// Always `custom_emoji`
 	Type string `json:"type,omitzero"`
 	// Details of the custom emoji mention.
-	CustomEmoji CustomEmojiPageIconResponseCustomEmoji `json:"custom_emoji"`
+	CustomEmoji CustomEmoji `json:"custom_emoji"`
 }
 
 // CustomEmojiPageIconResponse defines a model
@@ -7127,17 +7332,35 @@ type CustomEmojiPageIconResponse struct {
 	// Type of icon. In this case, a custom emoji.
 	Type string `json:"type"`
 	// The custom emoji details for the icon.
-	CustomEmoji CustomEmoji `json:"custom_emoji"`
+	CustomEmoji CustomEmojiResponse `json:"custom_emoji"`
 }
 
-// CustomEmojiPageIconResponseCustomEmoji defines a model
-type CustomEmojiPageIconResponseCustomEmoji struct {
+// CustomEmojiResponse defines a model
+type CustomEmojiResponse struct {
 	// The ID of the custom emoji.
 	ID ID `json:"id"`
 	// The name of the custom emoji.
-	Name string `json:"name,omitzero"`
+	Name string `json:"name"`
 	// The URL of the custom emoji.
-	URL string `json:"url,omitzero"`
+	URL string `json:"url"`
+}
+
+// Line style: "solid" for a continuous line, "dash" for a dashed line.
+type DashStyle string
+
+const (
+	DashStyleSolid DashStyle = "solid"
+	DashStyleDash  DashStyle = "dash"
+)
+
+// Valid indicates whether the value is a known member of the DashStyle enum.
+func (e DashStyle) Valid() bool {
+	switch e {
+	case DashStyleSolid, DashStyleDash:
+		return true
+	default:
+		return false
+	}
 }
 
 // DashboardRow defines a model
@@ -7199,7 +7422,7 @@ type DataSource struct {
 	// Whether the data source is inline.
 	IsInline bool `json:"is_inline"`
 	// The type of typed database this data source belongs to, or `null` for a regular data source.
-	DatabaseType DatabaseTypeOneOf `json:"database_type"`
+	DatabaseType DatabaseType `json:"database_type"`
 	// Whether the data source is in the trash.
 	InTrash bool `json:"in_trash"`
 	// The time when the data source was created.
@@ -7213,16 +7436,16 @@ type DataSource struct {
 	// The properties schema of the data source.
 	Properties map[string]PropertyConfig `json:"properties"`
 	// The icon of the data source.
-	Icon *PageIconResponse `json:"icon"`
+	Icon PageIconResponse `json:"icon"`
 	// The cover of the data source.
-	Cover *PageCoverResponse `json:"cover"`
+	Cover PageCoverResponse `json:"cover"`
 	// The URL of the data source.
 	URL string `json:"url"`
 	// The public URL of the data source if it is publicly accessible.
 	PublicURL string `json:"public_url"`
 	// Sync identity and available health, included when listing or retrieving data sources.
-	SyncMetadata *DataSourceObjectSyncMetadata `json:"sync_metadata,omitzero"`
-	RequestID    uuid.UUID                     `json:"request_id,omitzero"`
+	SyncMetadata *SyncMetadata `json:"sync_metadata,omitzero"`
+	RequestID    uuid.UUID     `json:"request_id,omitzero"`
 }
 
 // DataSourceContentUpdatedWebhookPayload defines a model
@@ -7269,228 +7492,6 @@ type DataSourceMovedWebhookPayload struct {
 	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
-// DataSourceObjectSyncMetadata defines a model
-type DataSourceObjectSyncMetadata struct {
-	// Live collection sync health. Null means unavailable, not unhealthy. Missing timestamps are unknown.
-	Health DataSourceObjectSyncMetadataHealth `json:"health,omitzero"`
-	// Notion user who owns the sync credential, included when health is available.
-	OwnerUserID ID `json:"owner_user_id,omitzero"`
-	// Provider resource synced to this data source, when available.
-	Resource string `json:"resource,omitzero"`
-	// Stored identity of an external database sync.
-	ExternalDatabaseSync DataSourceObjectSyncMetadataExternalDatabaseSync `json:"external_database_sync,omitzero"`
-	// The provider of a legacy synced data source: Jira or Salesforce. Values are case-sensitive.
-	ExternalCollectionType DataSourceObjectSyncMetadataExternalCollectionType `json:"external_collection_type,omitzero"`
-	// The stored sync ID when provider details are unavailable. This is not a credential.
-	SyncID ID `json:"sync_id,omitzero"`
-	// Stored state for a legacy synced data source. Missing or invalid timestamps are omitted. This is not a live health check.
-	SyncState DataSourceObjectSyncMetadataSyncState `json:"sync_state,omitzero"`
-	// Opaque, developer-defined collection key for a worker sync. It is not a globally unique ID or a credential. Worker status is not included.
-	SyncedCollectionKey string `json:"synced_collection_key,omitzero"`
-}
-
-// The provider of a legacy synced data source: Jira or Salesforce. Values are case-sensitive.
-type DataSourceObjectSyncMetadataExternalCollectionType string
-
-const (
-	DataSourceObjectSyncMetadataExternalCollectionTypeJira       DataSourceObjectSyncMetadataExternalCollectionType = "Jira"
-	DataSourceObjectSyncMetadataExternalCollectionTypeSalesforce DataSourceObjectSyncMetadataExternalCollectionType = "Salesforce"
-)
-
-// Valid indicates whether the value is a known member of the DataSourceObjectSyncMetadataExternalCollectionType enum.
-func (e DataSourceObjectSyncMetadataExternalCollectionType) Valid() bool {
-	switch e {
-	case DataSourceObjectSyncMetadataExternalCollectionTypeJira, DataSourceObjectSyncMetadataExternalCollectionTypeSalesforce:
-		return true
-	default:
-		return false
-	}
-}
-
-// Stored identity of an external database sync.
-type DataSourceObjectSyncMetadataExternalDatabaseSync struct {
-	// The stored sync ID. This is not a credential.
-	SyncID ID `json:"sync_id"`
-	// The sync provider: github (GitHub), jira (Jira), or salesforce (Salesforce).
-	Provider DataSourceObjectSyncMetadataExternalDatabaseSyncProvider `json:"provider"`
-}
-
-// The sync provider: github (GitHub), jira (Jira), or salesforce (Salesforce).
-type DataSourceObjectSyncMetadataExternalDatabaseSyncProvider string
-
-const (
-	DataSourceObjectSyncMetadataExternalDatabaseSyncProviderGithub     DataSourceObjectSyncMetadataExternalDatabaseSyncProvider = "github"
-	DataSourceObjectSyncMetadataExternalDatabaseSyncProviderJira       DataSourceObjectSyncMetadataExternalDatabaseSyncProvider = "jira"
-	DataSourceObjectSyncMetadataExternalDatabaseSyncProviderSalesforce DataSourceObjectSyncMetadataExternalDatabaseSyncProvider = "salesforce"
-)
-
-// Valid indicates whether the value is a known member of the DataSourceObjectSyncMetadataExternalDatabaseSyncProvider enum.
-func (e DataSourceObjectSyncMetadataExternalDatabaseSyncProvider) Valid() bool {
-	switch e {
-	case DataSourceObjectSyncMetadataExternalDatabaseSyncProviderGithub, DataSourceObjectSyncMetadataExternalDatabaseSyncProviderJira, DataSourceObjectSyncMetadataExternalDatabaseSyncProviderSalesforce:
-		return true
-	default:
-		return false
-	}
-}
-
-// Live collection sync health. Null means unavailable, not unhealthy. Missing timestamps are unknown.
-// DataSourceObjectSyncMetadataHealth is an untagged anyOf union: at least one field is set after unmarshaling.
-type DataSourceObjectSyncMetadataHealth struct {
-	SyncHealthFailing *SyncHealthFailing
-	SyncHealthOK      *SyncHealthOK
-	SyncHealthPaused  *SyncHealthPaused
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *DataSourceObjectSyncMetadataHealth) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = DataSourceObjectSyncMetadataHealth{}
-
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
-
-		{
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, nullable, pinned := []string{"checks", "error", "ok", "paused", "stage"}, map[string]bool{}, map[string]string{"ok": "false"}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"stage": {"\"backfilling\"", "\"initializing\"", "\"steady\""}})) {
-				var vv SyncHealthFailing
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.SyncHealthFailing = &vv
-					matched++
-				}
-			}
-		}
-
-		{
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, nullable, pinned := []string{"checks", "ok", "paused", "stage"}, map[string]bool{}, map[string]string{"ok": "true"}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"stage": {"\"backfilling\"", "\"initializing\"", "\"steady\""}})) {
-				var vv SyncHealthOK
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.SyncHealthOK = &vv
-					matched++
-				}
-			}
-		}
-
-		{
-			// decoding checks neither the members the alternative requires nor those it pins to one value
-			required, nullable, pinned := []string{"paused"}, map[string]bool{}, map[string]string{"paused": "true"}
-			if jsonFits(raw, required, nullable, pinned) {
-				var vv SyncHealthPaused
-				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.SyncHealthPaused = &vv
-					matched++
-				}
-			}
-		}
-
-		if matched > 0 {
-			break
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *DataSourceObjectSyncMetadataHealth) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.SyncHealthFailing != nil:
-		return json.MarshalEncode(enc, v.SyncHealthFailing, jsonOptsTo(enc))
-	case v.SyncHealthOK != nil:
-		return json.MarshalEncode(enc, v.SyncHealthOK, jsonOptsTo(enc))
-	case v.SyncHealthPaused != nil:
-		return json.MarshalEncode(enc, v.SyncHealthPaused, jsonOptsTo(enc))
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// Stored state for a legacy synced data source. Missing or invalid timestamps are omitted. This is not a live health check.
-type DataSourceObjectSyncMetadataSyncState struct {
-	// Stored legacy sync state: true means syncing, false means not syncing, and row_limit_exceeded means the row limit stopped syncing. False does not guarantee a successful sync.
-	Syncing DataSourceObjectSyncMetadataSyncStateSyncing `json:"syncing"`
-	// Stored legacy sync update time in UTC ISO 8601 format. This does not guarantee that all source changes have been imported.
-	LastSyncedAt time.Time `json:"last_synced_at,omitzero"`
-	// Stored legacy sync checkpoint time in UTC ISO 8601 format.
-	LastSyncCheckpointAt time.Time `json:"last_sync_checkpoint_at,omitzero"`
-	// Stored legacy sync heartbeat time in UTC ISO 8601 format.
-	LastSyncHeartbeatAt time.Time `json:"last_sync_heartbeat_at,omitzero"`
-}
-
-// Stored legacy sync state: true means syncing, false means not syncing, and row_limit_exceeded means the row limit stopped syncing. False does not guarantee a successful sync.
-// DataSourceObjectSyncMetadataSyncStateSyncing is an untagged oneOf union: exactly one field is set after unmarshaling.
-type DataSourceObjectSyncMetadataSyncStateSyncing struct {
-	Bool   *bool
-	String string
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *DataSourceObjectSyncMetadataSyncStateSyncing) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = DataSourceObjectSyncMetadataSyncStateSyncing{}
-
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv bool
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.Bool = &vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv string
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.String = vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *DataSourceObjectSyncMetadataSyncStateSyncing) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.Bool != nil:
-		return json.MarshalEncode(enc, v.Bool, jsonOptsTo(enc))
-	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
 // DataSourceOrPartial defines a model
 // DataSourceOrPartial is an untagged anyOf union: at least one field is set after unmarshaling.
 type DataSourceOrPartial struct {
@@ -7498,9 +7499,14 @@ type DataSourceOrPartial struct {
 	DataSource        *DataSource
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *DataSourceOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = DataSourceOrPartial{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -7514,7 +7520,7 @@ func (v *DataSourceOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"id", "object", "properties"}, map[string]bool{}, map[string]string{"object": "\"data_source\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv PartialDataSource
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.PartialDataSource = &vv
@@ -7526,7 +7532,7 @@ func (v *DataSourceOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"cover", "created_by", "created_time", "database_parent", "database_type", "description", "icon", "id", "in_trash", "is_inline", "last_edited_by", "last_edited_time", "object", "parent", "properties", "public_url", "title", "url"}, map[string]bool{"cover": true, "database_type": true, "icon": true, "public_url": true}, map[string]string{"object": "\"data_source\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv DataSource
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.DataSource = &vv
@@ -7542,7 +7548,8 @@ func (v *DataSourceOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *DataSourceOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PartialDataSource != nil:
@@ -7551,7 +7558,7 @@ func (v *DataSourceOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.DataSource, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // DataSourceParent defines a model
@@ -7571,7 +7578,7 @@ type DataSourceReference struct {
 	// The name of the data source.
 	Name string `json:"name"`
 	// Sync identity and available health, included when retrieving a database.
-	SyncMetadata *DataSourceObjectSyncMetadata `json:"sync_metadata,omitzero"`
+	SyncMetadata *SyncMetadata `json:"sync_metadata,omitzero"`
 }
 
 // DataSourceSchemaUpdatedWebhookPayload defines a model
@@ -7621,13 +7628,13 @@ type DataSourceView struct {
 	// The user who last edited the view, or null if not available.
 	LastEditedBy PartialUser `json:"last_edited_by,omitzero"`
 	// The filter applied to this view (same shape as data source query filter).
-	Filter *Filter `json:"filter,omitzero"`
+	Filter Filter `json:"filter,omitzero"`
 	// The sorts applied to this view (same shape as data source query sorts).
 	Sorts Sorts `json:"sorts,omitzero"`
 	// Quick filters pinned to the view's filter bar. Keys are property IDs. Values are filter conditions (same shape as a property filter without the property field). Null when no quick filters are set.
 	QuickFilters map[string]QuickFilterConditionResponse `json:"quick_filters,omitzero"`
 	// View presentation configuration.
-	Configuration *ViewConfigResponse `json:"configuration,omitzero"`
+	Configuration ViewConfigResponse `json:"configuration,omitzero"`
 	// For dashboard widget views, the ID of the parent dashboard view. Only present when this view is a widget inside a dashboard.
 	DashboardViewID string    `json:"dashboard_view_id,omitzero"`
 	RequestID       uuid.UUID `json:"request_id,omitzero"`
@@ -7640,12 +7647,17 @@ type DataSourceViewOrPartial struct {
 	DataSourceView        *DataSourceView
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *DataSourceViewOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = DataSourceViewOrPartial{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -7655,12 +7667,12 @@ func (v *DataSourceViewOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		{
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"id", "object", "parent", "type"}, map[string]bool{}, map[string]string{"object": "\"view\""}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"table\"", "\"board\"", "\"list\"", "\"calendar\"", "\"timeline\"", "\"gallery\"", "\"form\"", "\"chart\"", "\"map\"", "\"dashboard\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"type": {"\"table\"", "\"board\"", "\"list\"", "\"calendar\"", "\"timeline\"", "\"gallery\"", "\"form\"", "\"chart\"", "\"map\"", "\"dashboard\""}})) {
 				var vv PartialDataSourceView
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.PartialDataSourceView = &vv
@@ -7672,7 +7684,7 @@ func (v *DataSourceViewOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 		{
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"created_time", "id", "last_edited_time", "name", "object", "parent", "type", "url"}, map[string]bool{}, map[string]string{"object": "\"view\""}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"table\"", "\"board\"", "\"list\"", "\"calendar\"", "\"timeline\"", "\"gallery\"", "\"form\"", "\"chart\"", "\"map\"", "\"dashboard\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"type": {"\"table\"", "\"board\"", "\"list\"", "\"calendar\"", "\"timeline\"", "\"gallery\"", "\"form\"", "\"chart\"", "\"map\"", "\"dashboard\""}})) {
 				var vv DataSourceView
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.DataSourceView = &vv
@@ -7693,7 +7705,8 @@ func (v *DataSourceViewOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *DataSourceViewOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PartialDataSourceView != nil:
@@ -7702,7 +7715,7 @@ func (v *DataSourceViewOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.DataSourceView, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // DataSourceViewReference defines a model
@@ -7728,7 +7741,7 @@ type Database struct {
 	// Whether the database is inline.
 	IsInline bool `json:"is_inline"`
 	// The type of typed database, such as `tasks`, `projects`, or `skills`, or `null` for a regular database. Create a database accepts `tasks`, `projects`, and `skills`.
-	DatabaseType DatabaseTypeOneOf `json:"database_type"`
+	DatabaseType DatabaseType `json:"database_type"`
 	// Whether the database is in the trash.
 	InTrash bool `json:"in_trash"`
 	// Whether the database is locked from editing in the Notion app UI.
@@ -7742,9 +7755,9 @@ type Database struct {
 	// The data sources of the database.
 	DataSources []DataSourceReference `json:"data_sources"`
 	// The icon of the database.
-	Icon *PageIconResponse `json:"icon"`
+	Icon PageIconResponse `json:"icon"`
 	// The cover of the database.
-	Cover *PageCoverResponse `json:"cover"`
+	Cover PageCoverResponse `json:"cover"`
 	// The URL of the database.
 	URL string `json:"url"`
 	// The public URL of the database if it is publicly accessible.
@@ -7803,9 +7816,14 @@ type DatabaseOrPartial struct {
 	Database        *Database
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *DatabaseOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = DatabaseOrPartial{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -7819,7 +7837,7 @@ func (v *DatabaseOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"id", "object"}, map[string]bool{}, map[string]string{"object": "\"database\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv PartialDatabase
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.PartialDatabase = &vv
@@ -7831,7 +7849,7 @@ func (v *DatabaseOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"cover", "created_time", "data_sources", "database_type", "description", "icon", "id", "in_trash", "is_inline", "is_locked", "last_edited_time", "object", "parent", "public_url", "title", "url"}, map[string]bool{"cover": true, "database_type": true, "icon": true, "public_url": true}, map[string]string{"object": "\"database\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv Database
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.Database = &vv
@@ -7847,7 +7865,8 @@ func (v *DatabaseOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *DatabaseOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PartialDatabase != nil:
@@ -7856,7 +7875,7 @@ func (v *DatabaseOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.Database, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // DatabaseParent defines a model
@@ -7872,10 +7891,10 @@ type DatabasePropertyRelationConfig struct {
 	DatabaseID   ID `json:"database_id"`
 	DataSourceID ID `json:"data_source_id"`
 	// The maximum number of pages each page can relate to, or null when there is no limit. Read-only.
-	Limit          int                                                     `json:"limit,omitzero"`
-	Type           DatabasePropertyRelationConfigType                      `json:"type,omitzero"`
-	SingleProperty *EmptyObject                                            `json:"single_property,omitzero"`
-	DualProperty   *DualPropertyDatabasePropertyRelationConfigDualProperty `json:"dual_property,omitzero"`
+	Limit          int                                `json:"limit,omitzero"`
+	Type           DatabasePropertyRelationConfigType `json:"type,omitzero"`
+	SingleProperty *EmptyObject                       `json:"single_property,omitzero"`
+	DualProperty   *DualProperty                      `json:"dual_property,omitzero"`
 }
 
 // DatabasePropertyRelationConfigType is a value of DatabasePropertyRelationConfig's type, naming the members it holds.
@@ -7893,9 +7912,9 @@ func (e DatabasePropertyRelationConfigType) Valid() bool {
 }
 
 // tagsOfDatabasePropertyRelationConfig holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfDatabasePropertyRelationConfig = map[string]map[string]jsonTagNeed{
-	"single_property": {"single_property": jsonTagRequired},
-	"dual_property":   {"dual_property": jsonTagRequired},
+var tagsOfDatabasePropertyRelationConfig = map[string]map[string]union.TagNeed{
+	"single_property": {"single_property": union.TagRequired},
+	"dual_property":   {"dual_property": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -7912,11 +7931,16 @@ func (v *DatabasePropertyRelationConfig) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *DatabasePropertyRelationConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain DatabasePropertyRelationConfig
 
 	*v = DatabasePropertyRelationConfig{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -7928,52 +7952,37 @@ func (v *DatabasePropertyRelationConfig) UnmarshalJSONFrom(dec *jsontext.Decoder
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfDatabasePropertyRelationConfig, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfDatabasePropertyRelationConfig, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = DatabasePropertyRelationConfigType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfDatabasePropertyRelationConfig, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfDatabasePropertyRelationConfig, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *DatabasePropertyRelationConfig) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain DatabasePropertyRelationConfig
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfDatabasePropertyRelationConfig, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfDatabasePropertyRelationConfig, set); ok && out.Type == "" {
 		out.Type = DatabasePropertyRelationConfigType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfDatabasePropertyRelationConfig, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfDatabasePropertyRelationConfig, set, nil, true); err != nil {
 		return err
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
-}
-
-// DatabaseQueryResultType defines a model
-type DatabaseQueryResultType string
-
-const (
-	DatabaseQueryResultTypePage       DatabaseQueryResultType = "page"
-	DatabaseQueryResultTypeDataSource DatabaseQueryResultType = "data_source"
-)
-
-// Valid indicates whether the value is a known member of the DatabaseQueryResultType enum.
-func (e DatabaseQueryResultType) Valid() bool {
-	switch e {
-	case DatabaseQueryResultTypePage, DatabaseQueryResultTypeDataSource:
-		return true
-	default:
-		return false
-	}
 }
 
 // DatabaseSchemaUpdatedWebhookPayload defines a model
@@ -7992,60 +8001,28 @@ type DatabaseSchemaUpdatedWebhookPayloadData struct {
 	// The parent of the database whose schema was updated.
 	Parent WebhookParentBlock `json:"parent"`
 	// The database properties that were created, updated, or deleted.
-	UpdatedProperties DatabaseSchemaUpdatedWebhookPayloadDataUpdatedProperties `json:"updated_properties,omitzero"`
-}
-
-// The database properties that were created, updated, or deleted.
-type DatabaseSchemaUpdatedWebhookPayloadDataUpdatedProperties []DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItem
-
-// DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItem defines a model
-type DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItem struct {
-	// The ID of the database property that changed.
-	ID string `json:"id"`
-	// The name of the database property, or `null` if deleted.
-	Name string `json:"name"`
-	// The action taken on the property.
-	Action DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemAction `json:"action"`
-}
-
-// The action taken on the property.
-type DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemAction string
-
-const (
-	DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemActionCreated DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemAction = "created"
-	DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemActionUpdated DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemAction = "updated"
-	DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemActionDeleted DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemAction = "deleted"
-)
-
-// Valid indicates whether the value is a known member of the DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemAction enum.
-func (e DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemAction) Valid() bool {
-	switch e {
-	case DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemActionCreated, DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemActionUpdated, DatabaseSchemaUpdatedWebhookPayloadDataUpdatedPropertiesItemActionDeleted:
-		return true
-	default:
-		return false
-	}
+	UpdatedProperties UpdatedProperties `json:"updated_properties,omitzero"`
 }
 
 // One of: `tasks`, `projects`, `sprints`, `docs`, `wiki`, `meetings`, `meeting_notes`, `skills`, `github_prs`
-type DatabaseTypeOneOf string
+type DatabaseType string
 
 const (
-	DatabaseTypeOneOfTasks        DatabaseTypeOneOf = "tasks"
-	DatabaseTypeOneOfProjects     DatabaseTypeOneOf = "projects"
-	DatabaseTypeOneOfSprints      DatabaseTypeOneOf = "sprints"
-	DatabaseTypeOneOfDocs         DatabaseTypeOneOf = "docs"
-	DatabaseTypeOneOfWiki         DatabaseTypeOneOf = "wiki"
-	DatabaseTypeOneOfMeetings     DatabaseTypeOneOf = "meetings"
-	DatabaseTypeOneOfMeetingNotes DatabaseTypeOneOf = "meeting_notes"
-	DatabaseTypeOneOfSkills       DatabaseTypeOneOf = "skills"
-	DatabaseTypeOneOfGithubPrs    DatabaseTypeOneOf = "github_prs"
+	DatabaseTypeTasks        DatabaseType = "tasks"
+	DatabaseTypeProjects     DatabaseType = "projects"
+	DatabaseTypeSprints      DatabaseType = "sprints"
+	DatabaseTypeDocs         DatabaseType = "docs"
+	DatabaseTypeWiki         DatabaseType = "wiki"
+	DatabaseTypeMeetings     DatabaseType = "meetings"
+	DatabaseTypeMeetingNotes DatabaseType = "meeting_notes"
+	DatabaseTypeSkills       DatabaseType = "skills"
+	DatabaseTypeGithubPrs    DatabaseType = "github_prs"
 )
 
-// Valid indicates whether the value is a known member of the DatabaseTypeOneOf enum.
-func (e DatabaseTypeOneOf) Valid() bool {
+// Valid indicates whether the value is a known member of the DatabaseType enum.
+func (e DatabaseType) Valid() bool {
 	switch e {
-	case DatabaseTypeOneOfTasks, DatabaseTypeOneOfProjects, DatabaseTypeOneOfSprints, DatabaseTypeOneOfDocs, DatabaseTypeOneOfWiki, DatabaseTypeOneOfMeetings, DatabaseTypeOneOfMeetingNotes, DatabaseTypeOneOfSkills, DatabaseTypeOneOfGithubPrs:
+	case DatabaseTypeTasks, DatabaseTypeProjects, DatabaseTypeSprints, DatabaseTypeDocs, DatabaseTypeWiki, DatabaseTypeMeetings, DatabaseTypeMeetingNotes, DatabaseTypeSkills, DatabaseTypeGithubPrs:
 		return true
 	default:
 		return false
@@ -8068,7 +8045,7 @@ type Date struct {
 	// The start date of the date object.
 	Start DateOrDateTime `json:"start"`
 	// The end date of the date object, if any.
-	End *DateOrDateTime `json:"end,omitzero"`
+	End DateOrDateTime `json:"end,omitzero"`
 	// The time zone of the date object, if any. E.g. America/Los_Angeles, Europe/London, etc.
 	TimeZone TimeZone `json:"time_zone,omitzero"`
 }
@@ -8112,11 +8089,16 @@ type DateFilterValue struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *DateFilterValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = DateFilterValue{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
@@ -8124,26 +8106,27 @@ func (v *DateFilterValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch tag {
 	case "relative":
 		var vv DateFilterValueRelative
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.DateFilterValueRelative = &vv
 	case "exact":
 		var vv DateFilterValueExact
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.DateFilterValueExact = &vv
 	default:
-		return jsonUnknownValue("type", tag)
+		return union.UnknownValue("type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *DateFilterValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -8156,7 +8139,7 @@ func (v *DateFilterValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	case v.DateFilterValueExact != nil:
 		variant, tag = v.DateFilterValueExact, "exact"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -8164,7 +8147,7 @@ func (v *DateFilterValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	if out, err = jsonFirst(out, "type", tag); err != nil {
+	if out, err = union.First(out, "type", tag); err != nil {
 		return err
 	}
 
@@ -8199,11 +8182,16 @@ type DateFilterValueExactValue struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *DateFilterValueExactValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = DateFilterValueExactValue{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
@@ -8211,26 +8199,27 @@ func (v *DateFilterValueExactValue) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 	switch tag {
 	case "date":
 		var vv DateFilterValueExactValueDate
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.DateFilterValueExactValueDate = &vv
 	case "datetime":
 		var vv DateFilterValueExactValueDatetime
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.DateFilterValueExactValueDatetime = &vv
 	default:
-		return jsonUnknownValue("type", tag)
+		return union.UnknownValue("type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *DateFilterValueExactValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -8243,7 +8232,7 @@ func (v *DateFilterValueExactValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	case v.DateFilterValueExactValueDatetime != nil:
 		variant, tag = v.DateFilterValueExactValueDatetime, "datetime"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -8251,7 +8240,7 @@ func (v *DateFilterValueExactValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	if out, err = jsonFirst(out, "type", tag); err != nil {
+	if out, err = union.First(out, "type", tag); err != nil {
 		return err
 	}
 
@@ -8326,6 +8315,28 @@ func (v *DateFilterValueRelative) unmarshalJSONMember(dec *jsontext.Decoder, nam
 	return false, nil
 }
 
+// DateFormat defines a model
+type DateFormat string
+
+const (
+	DateFormatFull         DateFormat = "full"
+	DateFormatShort        DateFormat = "short"
+	DateFormatMonthDayYear DateFormat = "month_day_year"
+	DateFormatDayMonthYear DateFormat = "day_month_year"
+	DateFormatYearMonthDay DateFormat = "year_month_day"
+	DateFormatRelative     DateFormat = "relative"
+)
+
+// Valid indicates whether the value is a known member of the DateFormat enum.
+func (e DateFormat) Valid() bool {
+	switch e {
+	case DateFormatFull, DateFormatShort, DateFormatMonthDayYear, DateFormatDayMonthYear, DateFormatYearMonthDay, DateFormatRelative:
+		return true
+	default:
+		return false
+	}
+}
+
 // DateGroupByConfig defines a model
 type DateGroupByConfig struct {
 	// The property type for grouping.
@@ -8333,34 +8344,13 @@ type DateGroupByConfig struct {
 	// Property ID to group by.
 	PropertyID string `json:"property_id"`
 	// Granularity for date grouping.
-	GroupBy DateGroupByConfigGroupBy `json:"group_by"`
+	GroupBy GroupBy `json:"group_by"`
 	// Sort order for groups.
 	Sort GroupSort `json:"sort"`
 	// Whether to hide groups that have no items.
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 	// Start day of week for week grouping (0 = Sunday, 1 = Monday).
 	StartDayOfWeek *float64 `json:"start_day_of_week,omitzero"`
-}
-
-// Granularity for date grouping.
-type DateGroupByConfigGroupBy string
-
-const (
-	DateGroupByConfigGroupByRelative DateGroupByConfigGroupBy = "relative"
-	DateGroupByConfigGroupByDay      DateGroupByConfigGroupBy = "day"
-	DateGroupByConfigGroupByWeek     DateGroupByConfigGroupBy = "week"
-	DateGroupByConfigGroupByMonth    DateGroupByConfigGroupBy = "month"
-	DateGroupByConfigGroupByYear     DateGroupByConfigGroupBy = "year"
-)
-
-// Valid indicates whether the value is a known member of the DateGroupByConfigGroupBy enum.
-func (e DateGroupByConfigGroupBy) Valid() bool {
-	switch e {
-	case DateGroupByConfigGroupByRelative, DateGroupByConfigGroupByDay, DateGroupByConfigGroupByWeek, DateGroupByConfigGroupByMonth, DateGroupByConfigGroupByYear:
-		return true
-	default:
-		return false
-	}
 }
 
 // DateGroupByConfigResponse defines a model
@@ -8370,7 +8360,7 @@ type DateGroupByConfigResponse struct {
 	// Property ID to group by.
 	PropertyID string `json:"property_id"`
 	// Granularity for date grouping.
-	GroupBy DateGroupByConfigGroupBy `json:"group_by"`
+	GroupBy GroupBy `json:"group_by"`
 	// Sort order for groups (no manual sort for dates).
 	Sort GroupSortResponse `json:"sort"`
 	// Property name (convenience field).
@@ -8407,9 +8397,14 @@ type DateOrDateTime struct {
 	Time *time.Time
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *DateOrDateTime) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = DateOrDateTime{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -8443,7 +8438,8 @@ func (v *DateOrDateTime) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *DateOrDateTime) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.Date != nil:
@@ -8452,7 +8448,7 @@ func (v *DateOrDateTime) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.Time, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // DateOrRelativeDate defines a model
@@ -8462,9 +8458,14 @@ type DateOrRelativeDate struct {
 	RelativeDateValue RelativeDateValue
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *DateOrRelativeDate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = DateOrRelativeDate{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -8498,7 +8499,8 @@ func (v *DateOrRelativeDate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *DateOrRelativeDate) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.Date != nil:
@@ -8507,7 +8509,7 @@ func (v *DateOrRelativeDate) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.RelativeDateValue, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // DatePropertyConfiguration defines a model
@@ -8535,9 +8537,14 @@ type DatePropertyFilter struct {
 	ExistencePropertyFilter      *ExistencePropertyFilter
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *DatePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = DatePropertyFilter{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -8551,7 +8558,7 @@ func (v *DatePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"equals"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv DatePropertyFilterEquals
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.DatePropertyFilterEquals = &vv
@@ -8563,7 +8570,7 @@ func (v *DatePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"before"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv DatePropertyFilterBefore
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.DatePropertyFilterBefore = &vv
@@ -8575,7 +8582,7 @@ func (v *DatePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"after"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv DatePropertyFilterAfter
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.DatePropertyFilterAfter = &vv
@@ -8587,7 +8594,7 @@ func (v *DatePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"on_or_before"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv DatePropertyFilterOnOrBefore
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.DatePropertyFilterOnOrBefore = &vv
@@ -8599,7 +8606,7 @@ func (v *DatePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"on_or_after"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv DatePropertyFilterOnOrAfter
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.DatePropertyFilterOnOrAfter = &vv
@@ -8611,7 +8618,7 @@ func (v *DatePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"this_week"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv DatePropertyFilterThisWeek
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.DatePropertyFilterThisWeek = &vv
@@ -8623,7 +8630,7 @@ func (v *DatePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"past_week"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv DatePropertyFilterPastWeek
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.DatePropertyFilterPastWeek = &vv
@@ -8635,7 +8642,7 @@ func (v *DatePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"past_month"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv DatePropertyFilterPastMonth
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.DatePropertyFilterPastMonth = &vv
@@ -8647,7 +8654,7 @@ func (v *DatePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"past_year"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv DatePropertyFilterPastYear
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.DatePropertyFilterPastYear = &vv
@@ -8659,7 +8666,7 @@ func (v *DatePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"next_week"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv DatePropertyFilterNextWeek
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.DatePropertyFilterNextWeek = &vv
@@ -8671,7 +8678,7 @@ func (v *DatePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"next_month"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv DatePropertyFilterNextMonth
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.DatePropertyFilterNextMonth = &vv
@@ -8683,7 +8690,7 @@ func (v *DatePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"next_year"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv DatePropertyFilterNextYear
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.DatePropertyFilterNextYear = &vv
@@ -8707,7 +8714,8 @@ func (v *DatePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *DatePropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.DatePropertyFilterEquals != nil:
@@ -8738,7 +8746,7 @@ func (v *DatePropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // DatePropertyFilterAfter defines a model
@@ -8896,12 +8904,17 @@ type DateRangeFilterValue struct {
 	DateRangeFilterValueExact       *DateRangeFilterValueExact
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *DateRangeFilterValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = DateRangeFilterValue{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -8911,13 +8924,13 @@ func (v *DateRangeFilterValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		// leniently, more than one may match, and the first does
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"count", "direction", "type", "unit", "value"}, map[string]bool{}, map[string]string{"type": "\"relative\"", "value": "\"custom\""}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"direction": {"\"past\"", "\"future\""}, "unit": {"\"year\"", "\"month\"", "\"week\"", "\"day\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"direction": {"\"past\"", "\"future\""}, "unit": {"\"year\"", "\"month\"", "\"week\"", "\"day\""}})) {
 				var vv DateRangeFilterValueCustom
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.DateRangeFilterValueCustom = &vv
@@ -8930,7 +8943,7 @@ func (v *DateRangeFilterValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"type", "unit", "value"}, map[string]bool{}, map[string]string{"type": "\"relative\"", "value": "\"surrounding\""}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"unit": {"\"year\"", "\"month\"", "\"week\"", "\"day\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"unit": {"\"year\"", "\"month\"", "\"week\"", "\"day\""}})) {
 				var vv DateRangeFilterValueSurrounding
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.DateRangeFilterValueSurrounding = &vv
@@ -8943,7 +8956,7 @@ func (v *DateRangeFilterValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"type", "value"}, map[string]bool{}, map[string]string{"type": "\"relative\""}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"value": {"\"this_week\"", "\"the_past_week\"", "\"the_past_month\"", "\"the_past_year\"", "\"the_next_week\"", "\"the_next_month\"", "\"the_next_year\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"value": {"\"this_week\"", "\"the_past_week\"", "\"the_past_month\"", "\"the_past_year\"", "\"the_next_week\"", "\"the_next_month\"", "\"the_next_year\""}})) {
 				var vv DateRangeFilterRelative
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.DateRangeFilterRelative = &vv
@@ -8956,7 +8969,7 @@ func (v *DateRangeFilterValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"type", "value"}, map[string]bool{}, map[string]string{"type": "\"exact\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv DateRangeFilterValueExact
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.DateRangeFilterValueExact = &vv
@@ -8977,7 +8990,8 @@ func (v *DateRangeFilterValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *DateRangeFilterValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.DateRangeFilterValueCustom != nil:
@@ -8990,7 +9004,7 @@ func (v *DateRangeFilterValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.DateRangeFilterValueExact, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // DateRangeFilterValueCustom defines a model
@@ -9058,7 +9072,7 @@ type DateResponse struct {
 	// The start date of the date object.
 	Start DateOrDateTime `json:"start"`
 	// The end date of the date object, if any.
-	End *DateOrDateTime `json:"end"`
+	End DateOrDateTime `json:"end"`
 	// The time zone of the date object.
 	TimeZone TimeZone `json:"time_zone"`
 }
@@ -9105,8 +9119,74 @@ type DiscussionMarkdownComment struct {
 	Markdown string `json:"markdown"`
 }
 
-// DualPropertyDatabasePropertyRelationConfigDualProperty defines a model
-type DualPropertyDatabasePropertyRelationConfigDualProperty struct {
+// How sub-items are displayed. "show" renders hierarchically with toggles, "hidden" shows parents with a count, "flattened" shows sub-items with a parent indicator, "disabled" turns off sub-item rendering.
+type DisplayMode string
+
+const (
+	DisplayModeShow      DisplayMode = "show"
+	DisplayModeHidden    DisplayMode = "hidden"
+	DisplayModeFlattened DisplayMode = "flattened"
+	DisplayModeDisabled  DisplayMode = "disabled"
+)
+
+// Valid indicates whether the value is a known member of the DisplayMode enum.
+func (e DisplayMode) Valid() bool {
+	switch e {
+	case DisplayModeShow, DisplayModeHidden, DisplayModeFlattened, DisplayModeDisabled:
+		return true
+	default:
+		return false
+	}
+}
+
+// The display name of the comment.
+type DisplayName struct {
+	// One of: `custom`, `user`, `integration`
+	Type         DisplayNameType `json:"type"`
+	ResolvedName string          `json:"resolved_name"`
+}
+
+// One of: `custom`, `user`, `integration`
+type DisplayNameType string
+
+const (
+	DisplayNameTypeCustom      DisplayNameType = "custom"
+	DisplayNameTypeUser        DisplayNameType = "user"
+	DisplayNameTypeIntegration DisplayNameType = "integration"
+)
+
+// Valid indicates whether the value is a known member of the DisplayNameType enum.
+func (e DisplayNameType) Valid() bool {
+	switch e {
+	case DisplayNameTypeCustom, DisplayNameTypeUser, DisplayNameTypeIntegration:
+		return true
+	default:
+		return false
+	}
+}
+
+// DonutLabels defines a model
+type DonutLabels string
+
+const (
+	DonutLabelsNone         DonutLabels = "none"
+	DonutLabelsValue        DonutLabels = "value"
+	DonutLabelsName         DonutLabels = "name"
+	DonutLabelsNameAndValue DonutLabels = "name_and_value"
+)
+
+// Valid indicates whether the value is a known member of the DonutLabels enum.
+func (e DonutLabels) Valid() bool {
+	switch e {
+	case DonutLabelsNone, DonutLabelsValue, DonutLabelsName, DonutLabelsNameAndValue:
+		return true
+	default:
+		return false
+	}
+}
+
+// DualProperty defines a model
+type DualProperty struct {
 	SyncedPropertyID   string `json:"synced_property_id"`
 	SyncedPropertyName string `json:"synced_property_name"`
 }
@@ -9152,9 +9232,14 @@ type Embed struct {
 	EmbedFileUpload               *EmbedFileUpload
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *Embed) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = Embed{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -9168,7 +9253,7 @@ func (v *Embed) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"url"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv MediaContentWithURLAndCaption
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.MediaContentWithURLAndCaption = &vv
@@ -9180,7 +9265,7 @@ func (v *Embed) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"file_upload"}, map[string]bool{}, map[string]string{"type": "\"file_upload\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv EmbedFileUpload
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.EmbedFileUpload = &vv
@@ -9196,7 +9281,8 @@ func (v *Embed) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *Embed) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.MediaContentWithURLAndCaption != nil:
@@ -9205,7 +9291,7 @@ func (v *Embed) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.EmbedFileUpload, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // EmbedFileUpload defines a model
@@ -9222,9 +9308,14 @@ type EmbedUpdate struct {
 	UpdateEmbedFileUpload               *UpdateEmbedFileUpload
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *EmbedUpdate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = EmbedUpdate{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -9246,7 +9337,7 @@ func (v *EmbedUpdate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"file_upload"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateEmbedFileUpload
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateEmbedFileUpload = &vv
@@ -9262,7 +9353,8 @@ func (v *EmbedUpdate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *EmbedUpdate) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.UpdateMediaContentWithURLAndCaption != nil:
@@ -9271,7 +9363,7 @@ func (v *EmbedUpdate) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.UpdateEmbedFileUpload, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // Emoji defines a model
@@ -9282,12 +9374,12 @@ type EmptyObject struct{}
 
 // Error defines a model
 type Error struct {
-	Object         string                                             `json:"object"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
-	RequestID      uuid.UUID                                          `json:"request_id,omitzero"`
-	Code           ErrorCode                                          `json:"code"`
-	Status         int                                                `json:"status"`
+	Object         string                         `json:"object"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
+	RequestID      uuid.UUID                      `json:"request_id,omitzero"`
+	Code           ErrorCode                      `json:"code"`
+	Status         int                            `json:"status"`
 }
 
 // ErrorCode defines a model
@@ -9335,6 +9427,37 @@ func (e ErrorCode) Valid() bool {
 	}
 }
 
+// EventType defines a model
+type EventType struct {
+	Equals EventTypeEquals `json:"equals,omitzero"`
+	In     EventTypeIn     `json:"in,omitzero"`
+}
+
+// EventTypeEquals defines a model
+type EventTypeEquals string
+
+const (
+	EventTypeEqualsUserDotMessage     EventTypeEquals = "user.message"
+	EventTypeEqualsAgentDotMessage    EventTypeEquals = "agent.message"
+	EventTypeEqualsAgentDotThinking   EventTypeEquals = "agent.thinking"
+	EventTypeEqualsAgentDotToolUse    EventTypeEquals = "agent.tool_use"
+	EventTypeEqualsAgentDotToolResult EventTypeEquals = "agent.tool_result"
+	EventTypeEqualsSessionDotStatus   EventTypeEquals = "session.status"
+)
+
+// Valid indicates whether the value is a known member of the EventTypeEquals enum.
+func (e EventTypeEquals) Valid() bool {
+	switch e {
+	case EventTypeEqualsUserDotMessage, EventTypeEqualsAgentDotMessage, EventTypeEqualsAgentDotThinking, EventTypeEqualsAgentDotToolUse, EventTypeEqualsAgentDotToolResult, EventTypeEqualsSessionDotStatus:
+		return true
+	default:
+		return false
+	}
+}
+
+// EventTypeIn defines a model
+type EventTypeIn []EventTypeEquals
+
 // ExistencePropertyFilter defines a model
 // ExistencePropertyFilter is an untagged anyOf union: at least one field is set after unmarshaling.
 type ExistencePropertyFilter struct {
@@ -9342,9 +9465,14 @@ type ExistencePropertyFilter struct {
 	ExistencePropertyFilterIsNotEmpty *ExistencePropertyFilterIsNotEmpty
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *ExistencePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = ExistencePropertyFilter{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -9358,7 +9486,7 @@ func (v *ExistencePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"is_empty"}, map[string]bool{}, map[string]string{"is_empty": "true"}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv ExistencePropertyFilterIsEmpty
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.ExistencePropertyFilterIsEmpty = &vv
@@ -9370,7 +9498,7 @@ func (v *ExistencePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"is_not_empty"}, map[string]bool{}, map[string]string{"is_not_empty": "true"}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv ExistencePropertyFilterIsNotEmpty
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.ExistencePropertyFilterIsNotEmpty = &vv
@@ -9386,7 +9514,8 @@ func (v *ExistencePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *ExistencePropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.ExistencePropertyFilterIsEmpty != nil:
@@ -9395,7 +9524,7 @@ func (v *ExistencePropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.ExistencePropertyFilterIsNotEmpty, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // ExistencePropertyFilterIsEmpty defines a model
@@ -9412,6 +9541,57 @@ type ExistencePropertyFilterIsNotEmpty struct {
 type ExpressionObject struct {
 	// A KaTeX compatible string.
 	Expression string `json:"expression"`
+}
+
+// ExternalAccount defines a model
+type ExternalAccount struct {
+	Key  string `json:"key"`
+	Name string `json:"name"`
+}
+
+// The provider of a legacy synced data source: Jira or Salesforce. Values are case-sensitive.
+type ExternalCollectionType string
+
+const (
+	ExternalCollectionTypeJira       ExternalCollectionType = "Jira"
+	ExternalCollectionTypeSalesforce ExternalCollectionType = "Salesforce"
+)
+
+// Valid indicates whether the value is a known member of the ExternalCollectionType enum.
+func (e ExternalCollectionType) Valid() bool {
+	switch e {
+	case ExternalCollectionTypeJira, ExternalCollectionTypeSalesforce:
+		return true
+	default:
+		return false
+	}
+}
+
+// Stored identity of an external database sync.
+type ExternalDatabaseSync struct {
+	// The stored sync ID. This is not a credential.
+	SyncID ID `json:"sync_id"`
+	// The sync provider: github (GitHub), jira (Jira), or salesforce (Salesforce).
+	Provider ExternalDatabaseSyncProvider `json:"provider"`
+}
+
+// The sync provider: github (GitHub), jira (Jira), or salesforce (Salesforce).
+type ExternalDatabaseSyncProvider string
+
+const (
+	ExternalDatabaseSyncProviderGithub     ExternalDatabaseSyncProvider = "github"
+	ExternalDatabaseSyncProviderJira       ExternalDatabaseSyncProvider = "jira"
+	ExternalDatabaseSyncProviderSalesforce ExternalDatabaseSyncProvider = "salesforce"
+)
+
+// Valid indicates whether the value is a known member of the ExternalDatabaseSyncProvider enum.
+func (e ExternalDatabaseSyncProvider) Valid() bool {
+	switch e {
+	case ExternalDatabaseSyncProviderGithub, ExternalDatabaseSyncProviderJira, ExternalDatabaseSyncProviderSalesforce:
+		return true
+	default:
+		return false
+	}
 }
 
 // ExternalFile defines a model
@@ -9435,6 +9615,100 @@ type ExternalPageIconResponse struct {
 	External LinkPreviewMention `json:"external"`
 }
 
+// FileImportResult defines a model
+type FileImportResult struct {
+	// The time the file was imported into Notion. ISO 8601 format.
+	ImportedTime time.Time            `json:"imported_time"`
+	Type         FileImportResultType `json:"type"`
+	// Empty object for success type.
+	Success *EmptyObject `json:"success,omitzero"`
+	// Details about the error that occurred during file import.
+	Err *FileUploadObjectFileImportResultAllOfError `json:"error,omitzero"`
+}
+
+// FileImportResultType is a value of FileImportResult's type, naming the members it holds.
+type FileImportResultType string
+
+const (
+	FileImportResultTypeSuccess FileImportResultType = "success"
+	FileImportResultTypeError   FileImportResultType = "error"
+)
+
+// Valid indicates whether the value is a known member of the FileImportResultType enum.
+func (e FileImportResultType) Valid() bool {
+	_, ok := tagsOfFileImportResult[string(e)]
+	return ok
+}
+
+// tagsOfFileImportResult holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfFileImportResult = map[string]map[string]union.TagNeed{
+	"success": {"success": union.TagRequired},
+	"error":   {"error": union.TagRequired},
+}
+
+// taggedMembers returns those of the members of an alternative's own that are set.
+func (v *FileImportResult) taggedMembers() []string {
+	var set []string
+	if v.Success != nil {
+		set = append(set, "success")
+	}
+	if v.Err != nil {
+		set = append(set, "error")
+	}
+
+	return set
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
+// alternative's own, only those of the one type names are set. Null sets no alternative.
+func (v *FileImportResult) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain FileImportResult
+
+	*v = FileImportResult{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(raw, (*plain)(v), jsonOptsOf(dec)); err != nil {
+		return err
+	}
+
+	// a member sent as null is there, though its field reads as left out
+	present, err := union.Members(raw)
+	if err != nil {
+		return err
+	}
+
+	return union.CheckTag("type", string(v.Type), tagsOfFileImportResult, v.taggedMembers(), present, union.Strict(dec))
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
+// the value whose member is set, or null where none is.
+func (v *FileImportResult) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain FileImportResult
+
+	out, set := *v, v.taggedMembers()
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfFileImportResult, set); ok && out.Type == "" {
+		out.Type = FileImportResultType(tag)
+	}
+
+	if err := union.CheckTag("type", string(out.Type), tagsOfFileImportResult, set, nil, true); err != nil {
+		return err
+	}
+
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
+}
+
 // FilePageIcon defines a model
 type FilePageIcon struct {
 	// Type of icon. In this case, a file.
@@ -9446,22 +9720,22 @@ type FilePageIcon struct {
 // FileUpload defines a model
 type FileUpload struct {
 	// Always `file_upload`
-	Object         string              `json:"object"`
-	ID             ID                  `json:"id"`
-	CreatedTime    time.Time           `json:"created_time"`
-	CreatedBy      FileUploadCreatedBy `json:"created_by"`
-	LastEditedTime time.Time           `json:"last_edited_time"`
-	InTrash        bool                `json:"in_trash"`
-	ExpiryTime     time.Time           `json:"expiry_time"`
+	Object         string    `json:"object"`
+	ID             ID        `json:"id"`
+	CreatedTime    time.Time `json:"created_time"`
+	CreatedBy      CreatedBy `json:"created_by"`
+	LastEditedTime time.Time `json:"last_edited_time"`
+	InTrash        bool      `json:"in_trash"`
+	ExpiryTime     time.Time `json:"expiry_time"`
 	// One of: `pending`, `uploaded`, `expired`, `failed`
-	Status           Status                     `json:"status"`
-	Filename         string                     `json:"filename"`
-	ContentType      string                     `json:"content_type"`
-	ContentLength    *int                       `json:"content_length"`
-	UploadURL        string                     `json:"upload_url,omitzero"`
-	CompleteURL      string                     `json:"complete_url,omitzero"`
-	FileImportResult FileUploadFileImportResult `json:"file_import_result,omitzero"`
-	NumberOfParts    FileUploadNumberOfParts    `json:"number_of_parts,omitzero"`
+	Status           Status           `json:"status"`
+	Filename         string           `json:"filename"`
+	ContentType      string           `json:"content_type"`
+	ContentLength    int              `json:"content_length"`
+	UploadURL        string           `json:"upload_url,omitzero"`
+	CompleteURL      string           `json:"complete_url,omitzero"`
+	FileImportResult FileImportResult `json:"file_import_result,omitzero"`
+	NumberOfParts    NumberOfParts    `json:"number_of_parts,omitzero"`
 }
 
 // FileUploadCompletedWebhookPayload defines a model
@@ -9471,32 +9745,6 @@ type FileUploadCompletedWebhookPayload struct {
 	Type string `json:"type"`
 	// The object that triggered the event.
 	Entity WebhookFileUploadEntity `json:"entity"`
-}
-
-// FileUploadCreatedBy defines a model
-type FileUploadCreatedBy struct {
-	ID ID `json:"id"`
-	// One of: `person`, `bot`, `agent`
-	Type FileUploadCreatedByType `json:"type"`
-}
-
-// One of: `person`, `bot`, `agent`
-type FileUploadCreatedByType string
-
-const (
-	FileUploadCreatedByTypePerson FileUploadCreatedByType = "person"
-	FileUploadCreatedByTypeBot    FileUploadCreatedByType = "bot"
-	FileUploadCreatedByTypeAgent  FileUploadCreatedByType = "agent"
-)
-
-// Valid indicates whether the value is a known member of the FileUploadCreatedByType enum.
-func (e FileUploadCreatedByType) Valid() bool {
-	switch e {
-	case FileUploadCreatedByTypePerson, FileUploadCreatedByTypeBot, FileUploadCreatedByTypeAgent:
-		return true
-	default:
-		return false
-	}
 }
 
 // FileUploadCreatedWebhookPayload defines a model
@@ -9560,9 +9808,9 @@ func (e FileUploadFailedWebhookPayloadDataFileImportResultType) Valid() bool {
 }
 
 // tagsOfFileUploadFailedWebhookPayloadDataFileImportResult holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfFileUploadFailedWebhookPayloadDataFileImportResult = map[string]map[string]jsonTagNeed{
-	"success": {"success": jsonTagRequired},
-	"error":   {"error": jsonTagRequired},
+var tagsOfFileUploadFailedWebhookPayloadDataFileImportResult = map[string]map[string]union.TagNeed{
+	"success": {"success": union.TagRequired},
+	"error":   {"error": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -9579,12 +9827,17 @@ func (v *FileUploadFailedWebhookPayloadDataFileImportResult) taggedMembers() []s
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *FileUploadFailedWebhookPayloadDataFileImportResult) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain FileUploadFailedWebhookPayloadDataFileImportResult
 
 	*v = FileUploadFailedWebhookPayloadDataFileImportResult{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	raw, err := dec.ReadValue()
 	if err != nil {
 		return err
@@ -9595,111 +9848,28 @@ func (v *FileUploadFailedWebhookPayloadDataFileImportResult) UnmarshalJSONFrom(d
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfFileUploadFailedWebhookPayloadDataFileImportResult, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfFileUploadFailedWebhookPayloadDataFileImportResult, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *FileUploadFailedWebhookPayloadDataFileImportResult) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain FileUploadFailedWebhookPayloadDataFileImportResult
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfFileUploadFailedWebhookPayloadDataFileImportResult, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfFileUploadFailedWebhookPayloadDataFileImportResult, set); ok && out.Type == "" {
 		out.Type = FileUploadFailedWebhookPayloadDataFileImportResultType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfFileUploadFailedWebhookPayloadDataFileImportResult, set, nil, true); err != nil {
-		return err
-	}
-
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
-}
-
-// FileUploadFileImportResult defines a model
-type FileUploadFileImportResult struct {
-	// The time the file was imported into Notion. ISO 8601 format.
-	ImportedTime time.Time                      `json:"imported_time"`
-	Type         FileUploadFileImportResultType `json:"type"`
-	// Empty object for success type.
-	Success *EmptyObject `json:"success,omitzero"`
-	// Details about the error that occurred during file import.
-	Err *FileUploadObjectFileImportResultAllOfError `json:"error,omitzero"`
-}
-
-// FileUploadFileImportResultType is a value of FileUploadFileImportResult's type, naming the members it holds.
-type FileUploadFileImportResultType string
-
-const (
-	FileUploadFileImportResultTypeSuccess FileUploadFileImportResultType = "success"
-	FileUploadFileImportResultTypeError   FileUploadFileImportResultType = "error"
-)
-
-// Valid indicates whether the value is a known member of the FileUploadFileImportResultType enum.
-func (e FileUploadFileImportResultType) Valid() bool {
-	_, ok := tagsOfFileUploadFileImportResult[string(e)]
-	return ok
-}
-
-// tagsOfFileUploadFileImportResult holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfFileUploadFileImportResult = map[string]map[string]jsonTagNeed{
-	"success": {"success": jsonTagRequired},
-	"error":   {"error": jsonTagRequired},
-}
-
-// taggedMembers returns those of the members of an alternative's own that are set.
-func (v *FileUploadFileImportResult) taggedMembers() []string {
-	var set []string
-	if v.Success != nil {
-		set = append(set, "success")
-	}
-	if v.Err != nil {
-		set = append(set, "error")
-	}
-
-	return set
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
-func (v *FileUploadFileImportResult) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain FileUploadFileImportResult
-
-	*v = FileUploadFileImportResult{}
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	if err := json.Unmarshal(raw, (*plain)(v), jsonOptsOf(dec)); err != nil {
-		return err
-	}
-
-	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
-	if err != nil {
-		return err
-	}
-
-	return jsonCheckTag("type", string(v.Type), tagsOfFileUploadFileImportResult, v.taggedMembers(), present, jsonStrict(dec))
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
-func (v *FileUploadFileImportResult) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain FileUploadFileImportResult
-
-	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfFileUploadFileImportResult, set); ok && out.Type == "" {
-		out.Type = FileUploadFileImportResultType(tag)
-	}
-
-	if err := jsonCheckTag("type", string(out.Type), tagsOfFileUploadFileImportResult, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfFileUploadFailedWebhookPayloadDataFileImportResult, set, nil, true); err != nil {
 		return err
 	}
 
@@ -9720,16 +9890,10 @@ type FileUploadList struct {
 	HasMore    bool         `json:"has_more"`
 	Results    []FileUpload `json:"results"`
 	// Always `file_upload`
-	Type          string        `json:"type"`
-	FileUpload    EmptyObject   `json:"file_upload"`
-	RequestStatus RequestStatus `json:"request_status,omitzero"`
-	RequestID     uuid.UUID     `json:"request_id,omitzero"`
-}
-
-// FileUploadNumberOfParts defines a model
-type FileUploadNumberOfParts struct {
-	Total int `json:"total"`
-	Sent  int `json:"sent"`
+	Type          string                `json:"type"`
+	FileUpload    EmptyObject           `json:"file_upload"`
+	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
+	RequestID     uuid.UUID             `json:"request_id,omitzero"`
 }
 
 // FileUploadObjectFileImportResultAllOfError defines a model
@@ -9743,7 +9907,7 @@ type FileUploadObjectFileImportResultAllOfError struct {
 	// The parameter related to the error, if applicable. Null if not applicable.
 	Parameter string `json:"parameter"`
 	// The HTTP status code associated with the error, if available. Null if not applicable.
-	StatusCode *int `json:"status_code"`
+	StatusCode int `json:"status_code"`
 }
 
 // FileUploadObjectFileImportResultAllOfErrorType defines a model
@@ -9817,12 +9981,17 @@ type Filter struct {
 	TimestampFilter *TimestampFilter
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *Filter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = Filter{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -9835,7 +10004,7 @@ func (v *Filter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"or"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv FilterOr
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.FilterOr = &vv
@@ -9848,7 +10017,7 @@ func (v *Filter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"and"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv FilterAnd
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.FilterAnd = &vv
@@ -9861,7 +10030,7 @@ func (v *Filter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"property"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv PropertyFilter
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.PropertyFilter = &vv
@@ -9886,7 +10055,8 @@ func (v *Filter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *Filter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.FilterOr != nil:
@@ -9899,7 +10069,7 @@ func (v *Filter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.TimestampFilter, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // FilterAnd defines a model
@@ -9922,6 +10092,25 @@ type FilterOr struct {
 	Or []Filter `json:"or"`
 }
 
+// Which items are included when filtering. "parents" includes parent items only, "parents_and_subitems" includes both, "subitems" includes sub-items only.
+type FilterScope string
+
+const (
+	FilterScopeParents            FilterScope = "parents"
+	FilterScopeParentsAndSubitems FilterScope = "parents_and_subitems"
+	FilterScopeSubitems           FilterScope = "subitems"
+)
+
+// Valid indicates whether the value is a known member of the FilterScope enum.
+func (e FilterScope) Valid() bool {
+	switch e {
+	case FilterScopeParents, FilterScopeParentsAndSubitems, FilterScopeSubitems:
+		return true
+	default:
+		return false
+	}
+}
+
 // FormViewConfig defines a model
 type FormViewConfig struct {
 	// The view type. Must be "form".
@@ -9931,7 +10120,7 @@ type FormViewConfig struct {
 	// Whether anonymous (non-logged-in) submissions are allowed. Pass null to clear.
 	AnonymousSubmissions *bool `json:"anonymous_submissions,omitzero"`
 	// Permission level granted to the submitter on the created page after form submission. Pass null to clear.
-	SubmissionPermissions FormViewConfigSubmissionPermissionsOneOf `json:"submission_permissions,omitzero"`
+	SubmissionPermissions SubmissionPermissions `json:"submission_permissions,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether FormViewConfig declares it.
@@ -9959,7 +10148,7 @@ type FormViewConfigResponse struct {
 	// Whether anonymous (non-logged-in) submissions are allowed.
 	AnonymousSubmissions *bool `json:"anonymous_submissions,omitzero"`
 	// Permission level granted to the submitter on the created page after form submission.
-	SubmissionPermissions FormViewConfigSubmissionPermissionsOneOf `json:"submission_permissions,omitzero"`
+	SubmissionPermissions SubmissionPermissions `json:"submission_permissions,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether FormViewConfigResponse declares it.
@@ -9976,27 +10165,6 @@ func (v *FormViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name
 	}
 
 	return false, nil
-}
-
-// FormViewConfigSubmissionPermissionsOneOf defines a model
-type FormViewConfigSubmissionPermissionsOneOf string
-
-const (
-	FormViewConfigSubmissionPermissionsOneOfNone         FormViewConfigSubmissionPermissionsOneOf = "none"
-	FormViewConfigSubmissionPermissionsOneOfCommentOnly  FormViewConfigSubmissionPermissionsOneOf = "comment_only"
-	FormViewConfigSubmissionPermissionsOneOfReader       FormViewConfigSubmissionPermissionsOneOf = "reader"
-	FormViewConfigSubmissionPermissionsOneOfReadAndWrite FormViewConfigSubmissionPermissionsOneOf = "read_and_write"
-	FormViewConfigSubmissionPermissionsOneOfEditor       FormViewConfigSubmissionPermissionsOneOf = "editor"
-)
-
-// Valid indicates whether the value is a known member of the FormViewConfigSubmissionPermissionsOneOf enum.
-func (e FormViewConfigSubmissionPermissionsOneOf) Valid() bool {
-	switch e {
-	case FormViewConfigSubmissionPermissionsOneOfNone, FormViewConfigSubmissionPermissionsOneOfCommentOnly, FormViewConfigSubmissionPermissionsOneOfReader, FormViewConfigSubmissionPermissionsOneOfReadAndWrite, FormViewConfigSubmissionPermissionsOneOfEditor:
-		return true
-	default:
-		return false
-	}
 }
 
 // FormulaCheckboxSubGroupBy defines a model
@@ -10044,7 +10212,7 @@ type FormulaDateSubGroupBy struct {
 	// The formula result type for grouping.
 	Type string `json:"type"`
 	// Granularity for date grouping.
-	GroupBy DateGroupByConfigGroupBy `json:"group_by"`
+	GroupBy GroupBy `json:"group_by"`
 	// Sort order for groups.
 	Sort GroupSort `json:"sort"`
 	// Start day of week for week grouping (0 = Sunday, 1 = Monday).
@@ -10072,7 +10240,7 @@ type FormulaDateSubGroupByResponse struct {
 	// The formula result type for grouping.
 	Type string `json:"type"`
 	// Granularity for date grouping.
-	GroupBy DateGroupByConfigGroupBy `json:"group_by"`
+	GroupBy GroupBy `json:"group_by"`
 	// Sort order for groups.
 	Sort GroupSortResponse `json:"sort"`
 	// Start day of week for week grouping (0 = Sunday, 1 = Monday).
@@ -10117,11 +10285,16 @@ type FormulaGroupByConfigGroupBy struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *FormulaGroupByConfigGroupBy) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = FormulaGroupByConfigGroupBy{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
@@ -10129,40 +10302,41 @@ func (v *FormulaGroupByConfigGroupBy) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 	switch tag {
 	case "date":
 		var vv FormulaDateSubGroupBy
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.FormulaDateSubGroupBy = &vv
 	case "text":
 		var vv FormulaTextSubGroupBy
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.FormulaTextSubGroupBy = &vv
 	case "number":
 		var vv FormulaNumberSubGroupBy
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.FormulaNumberSubGroupBy = &vv
 	case "checkbox":
 		var vv FormulaCheckboxSubGroupBy
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.FormulaCheckboxSubGroupBy = &vv
 	default:
-		return jsonUnknownValue("type", tag)
+		return union.UnknownValue("type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *FormulaGroupByConfigGroupBy) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -10179,7 +10353,7 @@ func (v *FormulaGroupByConfigGroupBy) MarshalJSONTo(enc *jsontext.Encoder) error
 	case v.FormulaCheckboxSubGroupBy != nil:
 		variant, tag = v.FormulaCheckboxSubGroupBy, "checkbox"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -10187,7 +10361,7 @@ func (v *FormulaGroupByConfigGroupBy) MarshalJSONTo(enc *jsontext.Encoder) error
 		return err
 	}
 
-	if out, err = jsonFirst(out, "type", tag); err != nil {
+	if out, err = union.First(out, "type", tag); err != nil {
 		return err
 	}
 
@@ -10300,12 +10474,12 @@ func (e FormulaPropertyType) Valid() bool {
 }
 
 // tagsOfFormulaProperty holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfFormulaProperty = map[string]map[string]jsonTagNeed{
-	"string":      {"string": jsonTagRequired},
-	"date":        {"date": jsonTagRequiredOrNull},
-	"number":      {"number": jsonTagRequiredOrNull},
-	"boolean":     {"boolean": jsonTagRequiredOrNull},
-	"unsupported": {"unsupported": jsonTagRequired},
+var tagsOfFormulaProperty = map[string]map[string]union.TagNeed{
+	"string":      {"string": union.TagRequiredOrNull},
+	"date":        {"date": union.TagRequiredOrNull},
+	"number":      {"number": union.TagRequiredOrNull},
+	"boolean":     {"boolean": union.TagRequiredOrNull},
+	"unsupported": {"unsupported": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -10331,11 +10505,16 @@ func (v *FormulaProperty) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *FormulaProperty) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain FormulaProperty
 
 	*v = FormulaProperty{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -10347,25 +10526,28 @@ func (v *FormulaProperty) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfFormulaProperty, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfFormulaProperty, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *FormulaProperty) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain FormulaProperty
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfFormulaProperty, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfFormulaProperty, set); ok && out.Type == "" {
 		out.Type = FormulaPropertyType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfFormulaProperty, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfFormulaProperty, set, nil, true); err != nil {
 		return err
 	}
 
@@ -10393,9 +10575,14 @@ type FormulaPropertyFilter struct {
 	RollupPropertyFilterDate      *RollupPropertyFilterDate
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *FormulaPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = FormulaPropertyFilter{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -10409,7 +10596,7 @@ func (v *FormulaPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"string"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv FormulaPropertyFilterString
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.FormulaPropertyFilterString = &vv
@@ -10421,7 +10608,7 @@ func (v *FormulaPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"checkbox"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv FormulaPropertyFilterCheckbox
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.FormulaPropertyFilterCheckbox = &vv
@@ -10433,7 +10620,7 @@ func (v *FormulaPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"number"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupPropertyFilterNumber
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupPropertyFilterNumber = &vv
@@ -10445,7 +10632,7 @@ func (v *FormulaPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"date"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupPropertyFilterDate
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupPropertyFilterDate = &vv
@@ -10461,7 +10648,8 @@ func (v *FormulaPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *FormulaPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.FormulaPropertyFilterString != nil:
@@ -10474,7 +10662,7 @@ func (v *FormulaPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.RollupPropertyFilterDate, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // FormulaPropertyFilterCheckbox defines a model
@@ -10542,12 +10730,12 @@ func (e FormulaPropertyValueType) Valid() bool {
 }
 
 // tagsOfFormulaPropertyValue holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfFormulaPropertyValue = map[string]map[string]jsonTagNeed{
-	"boolean":     {"boolean": jsonTagRequiredOrNull},
-	"date":        {"date": jsonTagRequiredOrNull},
-	"number":      {"number": jsonTagRequiredOrNull},
-	"string":      {"string": jsonTagRequiredOrNull},
-	"unsupported": {"unsupported": jsonTagRequired},
+var tagsOfFormulaPropertyValue = map[string]map[string]union.TagNeed{
+	"boolean":     {"boolean": union.TagRequiredOrNull},
+	"date":        {"date": union.TagRequiredOrNull},
+	"number":      {"number": union.TagRequiredOrNull},
+	"string":      {"string": union.TagRequiredOrNull},
+	"unsupported": {"unsupported": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -10573,11 +10761,16 @@ func (v *FormulaPropertyValue) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *FormulaPropertyValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain FormulaPropertyValue
 
 	*v = FormulaPropertyValue{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -10589,25 +10782,28 @@ func (v *FormulaPropertyValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfFormulaPropertyValue, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfFormulaPropertyValue, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *FormulaPropertyValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain FormulaPropertyValue
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfFormulaPropertyValue, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfFormulaPropertyValue, set); ok && out.Type == "" {
 		out.Type = FormulaPropertyValueType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfFormulaPropertyValue, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfFormulaPropertyValue, set, nil, true); err != nil {
 		return err
 	}
 
@@ -10624,11 +10820,16 @@ type FormulaSubGroupBy struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *FormulaSubGroupBy) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = FormulaSubGroupBy{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
@@ -10636,40 +10837,41 @@ func (v *FormulaSubGroupBy) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch tag {
 	case "date":
 		var vv FormulaDateSubGroupByResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.FormulaDateSubGroupByResponse = &vv
 	case "text":
 		var vv FormulaTextSubGroupByResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.FormulaTextSubGroupByResponse = &vv
 	case "number":
 		var vv FormulaNumberSubGroupByResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.FormulaNumberSubGroupByResponse = &vv
 	case "checkbox":
 		var vv FormulaCheckboxSubGroupByResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.FormulaCheckboxSubGroupByResponse = &vv
 	default:
-		return jsonUnknownValue("type", tag)
+		return union.UnknownValue("type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *FormulaSubGroupBy) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -10686,7 +10888,7 @@ func (v *FormulaSubGroupBy) MarshalJSONTo(enc *jsontext.Encoder) error {
 	case v.FormulaCheckboxSubGroupByResponse != nil:
 		variant, tag = v.FormulaCheckboxSubGroupByResponse, "checkbox"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -10694,7 +10896,7 @@ func (v *FormulaSubGroupBy) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	if out, err = jsonFirst(out, "type", tag); err != nil {
+	if out, err = union.First(out, "type", tag); err != nil {
 		return err
 	}
 
@@ -10758,11 +10960,11 @@ type GalleryViewConfig struct {
 	// Cover image configuration for cards. Pass null to clear.
 	Cover CoverConfig `json:"cover,omitzero"`
 	// Size of the cover image on cards. Pass null to clear.
-	CoverSize BoardViewConfigCoverSizeOneOf `json:"cover_size,omitzero"`
+	CoverSize CoverSize `json:"cover_size,omitzero"`
 	// Aspect ratio mode for cover images. "contain" fits the image, "cover" fills the area. Pass null to clear.
-	CoverAspect BoardViewConfigCoverAspectOneOf `json:"cover_aspect,omitzero"`
+	CoverAspect CoverAspect `json:"cover_aspect,omitzero"`
 	// Card layout mode. "list" shows full cards, "compact" shows condensed cards. Pass null to clear.
-	CardLayout BoardViewConfigCardLayoutOneOf `json:"card_layout,omitzero"`
+	CardLayout CardLayout `json:"card_layout,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether GalleryViewConfig declares it.
@@ -10794,11 +10996,11 @@ type GalleryViewConfigResponse struct {
 	// Card cover/preview image configuration.
 	Cover CoverConfigResponse `json:"cover,omitzero"`
 	// Cover image size.
-	CoverSize BoardViewConfigCoverSizeOneOf `json:"cover_size,omitzero"`
+	CoverSize CoverSize `json:"cover_size,omitzero"`
 	// Cover image aspect ratio.
-	CoverAspect BoardViewConfigCoverAspectOneOf `json:"cover_aspect,omitzero"`
+	CoverAspect CoverAspect `json:"cover_aspect,omitzero"`
 	// Card layout mode (list shows all properties, compact shows inline).
-	CardLayout BoardViewConfigCardLayoutOneOf `json:"card_layout,omitzero"`
+	CardLayout CardLayout `json:"card_layout,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether GalleryViewConfigResponse declares it.
@@ -10840,6 +11042,26 @@ type GetSkillDirectoryOk struct {
 	URL string `json:"url"`
 }
 
+// GridLines defines a model
+type GridLines string
+
+const (
+	GridLinesNone       GridLines = "none"
+	GridLinesHorizontal GridLines = "horizontal"
+	GridLinesVertical   GridLines = "vertical"
+	GridLinesBoth       GridLines = "both"
+)
+
+// Valid indicates whether the value is a known member of the GridLines enum.
+func (e GridLines) Valid() bool {
+	switch e {
+	case GridLinesNone, GridLinesHorizontal, GridLinesVertical, GridLinesBoth:
+		return true
+	default:
+		return false
+	}
+}
+
 // Group defines a model
 type Group struct {
 	// The ID of the group.
@@ -10848,6 +11070,27 @@ type Group struct {
 	Object string `json:"object"`
 	// The name of the group.
 	Name string `json:"name"`
+}
+
+// Granularity for date grouping.
+type GroupBy string
+
+const (
+	GroupByRelative GroupBy = "relative"
+	GroupByDay      GroupBy = "day"
+	GroupByWeek     GroupBy = "week"
+	GroupByMonth    GroupBy = "month"
+	GroupByYear     GroupBy = "year"
+)
+
+// Valid indicates whether the value is a known member of the GroupBy enum.
+func (e GroupBy) Valid() bool {
+	switch e {
+	case GroupByRelative, GroupByDay, GroupByWeek, GroupByMonth, GroupByYear:
+		return true
+	default:
+		return false
+	}
 }
 
 // Group-by configuration based on property type.
@@ -10864,12 +11107,17 @@ type GroupByConfig struct {
 	FormulaGroupByConfig  *FormulaGroupByConfig
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *GroupByConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = GroupByConfig{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -10879,13 +11127,13 @@ func (v *GroupByConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		// leniently, more than one may match, and the first does
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property_id", "sort", "type"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"select\"", "\"multi_select\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"type": {"\"select\"", "\"multi_select\""}})) {
 				var vv SelectGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.SelectGroupByConfig = &vv
@@ -10898,7 +11146,7 @@ func (v *GroupByConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]bool{}, map[string]string{"type": "\"status\""}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"group_by": {"\"group\"", "\"option\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"group_by": {"\"group\"", "\"option\""}})) {
 				var vv StatusGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.StatusGroupByConfig = &vv
@@ -10911,7 +11159,7 @@ func (v *GroupByConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property_id", "sort", "type"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"person\"", "\"created_by\"", "\"last_edited_by\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"type": {"\"person\"", "\"created_by\"", "\"last_edited_by\""}})) {
 				var vv PersonGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.PersonGroupByConfig = &vv
@@ -10924,7 +11172,7 @@ func (v *GroupByConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property_id", "sort", "type"}, map[string]bool{}, map[string]string{"type": "\"relation\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv RelationGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.RelationGroupByConfig = &vv
@@ -10937,7 +11185,7 @@ func (v *GroupByConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"date\"", "\"created_time\"", "\"last_edited_time\""}, "group_by": {"\"relative\"", "\"day\"", "\"week\"", "\"month\"", "\"year\""}, "start_day_of_week": {"0", "1"}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"type": {"\"date\"", "\"created_time\"", "\"last_edited_time\""}, "group_by": {"\"relative\"", "\"day\"", "\"week\"", "\"month\"", "\"year\""}, "start_day_of_week": {"0", "1"}})) {
 				var vv DateGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.DateGroupByConfig = &vv
@@ -10950,7 +11198,7 @@ func (v *GroupByConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"text\"", "\"title\"", "\"url\"", "\"email\"", "\"phone_number\""}, "group_by": {"\"exact\"", "\"alphabet_prefix\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"type": {"\"text\"", "\"title\"", "\"url\"", "\"email\"", "\"phone_number\""}, "group_by": {"\"exact\"", "\"alphabet_prefix\""}})) {
 				var vv TextGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.TextGroupByConfig = &vv
@@ -10963,7 +11211,7 @@ func (v *GroupByConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property_id", "sort", "type"}, map[string]bool{}, map[string]string{"type": "\"number\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv NumberGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.NumberGroupByConfig = &vv
@@ -10976,7 +11224,7 @@ func (v *GroupByConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property_id", "sort", "type"}, map[string]bool{}, map[string]string{"type": "\"checkbox\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv CheckboxGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.CheckboxGroupByConfig = &vv
@@ -10989,7 +11237,7 @@ func (v *GroupByConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"group_by", "property_id", "type"}, map[string]bool{}, map[string]string{"type": "\"formula\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv FormulaGroupByConfig
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.FormulaGroupByConfig = &vv
@@ -11010,7 +11258,8 @@ func (v *GroupByConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *GroupByConfig) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.SelectGroupByConfig != nil:
@@ -11033,7 +11282,7 @@ func (v *GroupByConfig) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.FormulaGroupByConfig, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // Group-by configuration based on property type.
@@ -11050,12 +11299,17 @@ type GroupByConfigResponse struct {
 	FormulaGroupByConfigResponse  *FormulaGroupByConfigResponse
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = GroupByConfigResponse{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -11065,13 +11319,13 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		// leniently, more than one may match, and the first does
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property_id", "sort", "type"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"select\"", "\"multi_select\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"type": {"\"select\"", "\"multi_select\""}})) {
 				var vv SelectGroupByConfigResponse
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.SelectGroupByConfigResponse = &vv
@@ -11084,7 +11338,7 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]bool{}, map[string]string{"type": "\"status\""}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"group_by": {"\"group\"", "\"option\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"group_by": {"\"group\"", "\"option\""}})) {
 				var vv StatusGroupByConfigResponse
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.StatusGroupByConfigResponse = &vv
@@ -11097,7 +11351,7 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property_id", "sort", "type"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"person\"", "\"created_by\"", "\"last_edited_by\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"type": {"\"person\"", "\"created_by\"", "\"last_edited_by\""}})) {
 				var vv PersonGroupByConfigResponse
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.PersonGroupByConfigResponse = &vv
@@ -11110,7 +11364,7 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property_id", "sort", "type"}, map[string]bool{}, map[string]string{"type": "\"relation\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv RelationGroupByConfigResponse
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.RelationGroupByConfigResponse = &vv
@@ -11123,7 +11377,7 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"date\"", "\"created_time\"", "\"last_edited_time\""}, "group_by": {"\"relative\"", "\"day\"", "\"week\"", "\"month\"", "\"year\""}, "start_day_of_week": {"0", "1"}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"type": {"\"date\"", "\"created_time\"", "\"last_edited_time\""}, "group_by": {"\"relative\"", "\"day\"", "\"week\"", "\"month\"", "\"year\""}, "start_day_of_week": {"0", "1"}})) {
 				var vv DateGroupByConfigResponse
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.DateGroupByConfigResponse = &vv
@@ -11136,7 +11390,7 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"group_by", "property_id", "sort", "type"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"type": {"\"text\"", "\"title\"", "\"url\"", "\"email\"", "\"phone_number\""}, "group_by": {"\"exact\"", "\"alphabet_prefix\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"type": {"\"text\"", "\"title\"", "\"url\"", "\"email\"", "\"phone_number\""}, "group_by": {"\"exact\"", "\"alphabet_prefix\""}})) {
 				var vv TextGroupByConfigResponse
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.TextGroupByConfigResponse = &vv
@@ -11149,7 +11403,7 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property_id", "sort", "type"}, map[string]bool{}, map[string]string{"type": "\"number\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv NumberGroupByConfigResponse
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.NumberGroupByConfigResponse = &vv
@@ -11162,7 +11416,7 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property_id", "sort", "type"}, map[string]bool{}, map[string]string{"type": "\"checkbox\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv CheckboxGroupByConfigResponse
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.CheckboxGroupByConfigResponse = &vv
@@ -11175,7 +11429,7 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"group_by", "property_id", "type"}, map[string]bool{}, map[string]string{"type": "\"formula\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv FormulaGroupByConfigResponse
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.FormulaGroupByConfigResponse = &vv
@@ -11196,7 +11450,8 @@ func (v *GroupByConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *GroupByConfigResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.SelectGroupByConfigResponse != nil:
@@ -11219,7 +11474,7 @@ func (v *GroupByConfigResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.FormulaGroupByConfigResponse, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // GroupObject defines a model
@@ -11274,6 +11529,25 @@ func (e GroupSortType) Valid() bool {
 	}
 }
 
+// GroupStyle defines a model
+type GroupStyle string
+
+const (
+	GroupStyleNormal     GroupStyle = "normal"
+	GroupStylePercent    GroupStyle = "percent"
+	GroupStyleSideBySide GroupStyle = "side_by_side"
+)
+
+// Valid indicates whether the value is a known member of the GroupStyle enum.
+func (e GroupStyle) Valid() bool {
+	switch e {
+	case GroupStyleNormal, GroupStylePercent, GroupStyleSideBySide:
+		return true
+	default:
+		return false
+	}
+}
+
 // HeaderContentWithRichTextAndColor defines a model
 type HeaderContentWithRichTextAndColor struct {
 	RichText []RichTextItem `json:"rich_text"`
@@ -11316,6 +11590,23 @@ type IconPageIconIcon struct {
 	Color NoticonColor `json:"color,omitzero"`
 }
 
+// IncompleteReason defines a model
+type IncompleteReason string
+
+const (
+	IncompleteReasonQueryResultLimitReached IncompleteReason = "query_result_limit_reached"
+)
+
+// Valid indicates whether the value is a known member of the IncompleteReason enum.
+func (e IncompleteReason) Valid() bool {
+	switch e {
+	case IncompleteReasonQueryResultLimitReached:
+		return true
+	default:
+		return false
+	}
+}
+
 // InitialDataSource defines a model
 type InitialDataSource struct {
 	// Property schema for the initial data source, if you'd like to create one.
@@ -11352,7 +11643,7 @@ func (e InsertContentPositionType) Valid() bool {
 }
 
 // tagsOfInsertContentPosition holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfInsertContentPosition = map[string]map[string]jsonTagNeed{
+var tagsOfInsertContentPosition = map[string]map[string]union.TagNeed{
 	"start": {},
 	"end":   {},
 }
@@ -11365,11 +11656,16 @@ func (v *InsertContentPosition) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *InsertContentPosition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain InsertContentPosition
 
 	*v = InsertContentPosition{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -11381,25 +11677,28 @@ func (v *InsertContentPosition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfInsertContentPosition, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfInsertContentPosition, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *InsertContentPosition) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain InsertContentPosition
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfInsertContentPosition, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfInsertContentPosition, set); ok && out.Type == "" {
 		out.Type = InsertContentPositionType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfInsertContentPosition, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfInsertContentPosition, set, nil, true); err != nil {
 		return err
 	}
 
@@ -11446,9 +11745,9 @@ func (e InternalOrExternalFileWithNameResponseType) Valid() bool {
 }
 
 // tagsOfInternalOrExternalFileWithNameResponse holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfInternalOrExternalFileWithNameResponse = map[string]map[string]jsonTagNeed{
-	"file":     {"file": jsonTagRequired},
-	"external": {"external": jsonTagRequired},
+var tagsOfInternalOrExternalFileWithNameResponse = map[string]map[string]union.TagNeed{
+	"file":     {"file": union.TagRequired},
+	"external": {"external": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -11465,11 +11764,16 @@ func (v *InternalOrExternalFileWithNameResponse) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *InternalOrExternalFileWithNameResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain InternalOrExternalFileWithNameResponse
 
 	*v = InternalOrExternalFileWithNameResponse{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -11481,25 +11785,28 @@ func (v *InternalOrExternalFileWithNameResponse) UnmarshalJSONFrom(dec *jsontext
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfInternalOrExternalFileWithNameResponse, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfInternalOrExternalFileWithNameResponse, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *InternalOrExternalFileWithNameResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain InternalOrExternalFileWithNameResponse
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfInternalOrExternalFileWithNameResponse, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfInternalOrExternalFileWithNameResponse, set); ok && out.Type == "" {
 		out.Type = InternalOrExternalFileWithNameResponseType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfInternalOrExternalFileWithNameResponse, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfInternalOrExternalFileWithNameResponse, set, nil, true); err != nil {
 		return err
 	}
 
@@ -11715,6 +12022,25 @@ func (v *LastVisitedTimePropertyItem) unmarshalJSONMember(dec *jsontext.Decoder,
 	return false, nil
 }
 
+// LegendPosition defines a model
+type LegendPosition string
+
+const (
+	LegendPositionOff    LegendPosition = "off"
+	LegendPositionBottom LegendPosition = "bottom"
+	LegendPositionSide   LegendPosition = "side"
+)
+
+// Valid indicates whether the value is a known member of the LegendPosition enum.
+func (e LegendPosition) Valid() bool {
+	switch e {
+	case LegendPositionOff, LegendPositionBottom, LegendPositionSide:
+		return true
+	default:
+		return false
+	}
+}
+
 // LinkMention defines a model
 type LinkMention struct {
 	// The href of the link mention.
@@ -11772,10 +12098,10 @@ func (e LinkToPageType) Valid() bool {
 }
 
 // tagsOfLinkToPage holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfLinkToPage = map[string]map[string]jsonTagNeed{
-	"page_id":     {"page_id": jsonTagRequired},
-	"database_id": {"database_id": jsonTagRequired},
-	"comment_id":  {"comment_id": jsonTagRequired},
+var tagsOfLinkToPage = map[string]map[string]union.TagNeed{
+	"page_id":     {"page_id": union.TagRequired},
+	"database_id": {"database_id": union.TagRequired},
+	"comment_id":  {"comment_id": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -11795,11 +12121,16 @@ func (v *LinkToPage) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *LinkToPage) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain LinkToPage
 
 	*v = LinkToPage{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -11811,25 +12142,28 @@ func (v *LinkToPage) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfLinkToPage, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfLinkToPage, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *LinkToPage) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain LinkToPage
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfLinkToPage, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfLinkToPage, set); ok && out.Type == "" {
 		out.Type = LinkToPageType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfLinkToPage, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfLinkToPage, set, nil, true); err != nil {
 		return err
 	}
 
@@ -11860,10 +12194,10 @@ func (e LinkToPageRequestType) Valid() bool {
 }
 
 // tagsOfLinkToPageRequest holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfLinkToPageRequest = map[string]map[string]jsonTagNeed{
-	"page_id":     {"page_id": jsonTagRequired},
-	"database_id": {"database_id": jsonTagRequired},
-	"comment_id":  {"comment_id": jsonTagRequired},
+var tagsOfLinkToPageRequest = map[string]map[string]union.TagNeed{
+	"page_id":     {"page_id": union.TagRequired},
+	"database_id": {"database_id": union.TagRequired},
+	"comment_id":  {"comment_id": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -11883,11 +12217,16 @@ func (v *LinkToPageRequest) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *LinkToPageRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain LinkToPageRequest
 
 	*v = LinkToPageRequest{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -11899,30 +12238,33 @@ func (v *LinkToPageRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfLinkToPageRequest, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfLinkToPageRequest, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = LinkToPageRequestType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfLinkToPageRequest, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfLinkToPageRequest, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *LinkToPageRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain LinkToPageRequest
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfLinkToPageRequest, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfLinkToPageRequest, set); ok && out.Type == "" {
 		out.Type = LinkToPageRequestType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfLinkToPageRequest, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfLinkToPageRequest, set, nil, true); err != nil {
 		return err
 	}
 
@@ -11997,7 +12339,7 @@ type MapViewConfig struct {
 	// The view type. Must be "map".
 	Type string `json:"type"`
 	// Map display height. Pass null to clear.
-	Height MapViewConfigHeightOneOf `json:"height,omitzero"`
+	Height MapViewConfigHeight `json:"height,omitzero"`
 	// Property ID of the location property used to position items on the map. Pass null to clear.
 	MapBy string `json:"map_by,omitzero"`
 	// Property visibility and display configuration on map pin cards. Pass null to clear.
@@ -12020,20 +12362,20 @@ func (v *MapViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string) 
 	return false, nil
 }
 
-// MapViewConfigHeightOneOf defines a model
-type MapViewConfigHeightOneOf string
+// MapViewConfigHeight defines a model
+type MapViewConfigHeight string
 
 const (
-	MapViewConfigHeightOneOfSmall      MapViewConfigHeightOneOf = "small"
-	MapViewConfigHeightOneOfMedium     MapViewConfigHeightOneOf = "medium"
-	MapViewConfigHeightOneOfLarge      MapViewConfigHeightOneOf = "large"
-	MapViewConfigHeightOneOfExtraLarge MapViewConfigHeightOneOf = "extra_large"
+	MapViewConfigHeightSmall      MapViewConfigHeight = "small"
+	MapViewConfigHeightMedium     MapViewConfigHeight = "medium"
+	MapViewConfigHeightLarge      MapViewConfigHeight = "large"
+	MapViewConfigHeightExtraLarge MapViewConfigHeight = "extra_large"
 )
 
-// Valid indicates whether the value is a known member of the MapViewConfigHeightOneOf enum.
-func (e MapViewConfigHeightOneOf) Valid() bool {
+// Valid indicates whether the value is a known member of the MapViewConfigHeight enum.
+func (e MapViewConfigHeight) Valid() bool {
 	switch e {
-	case MapViewConfigHeightOneOfSmall, MapViewConfigHeightOneOfMedium, MapViewConfigHeightOneOfLarge, MapViewConfigHeightOneOfExtraLarge:
+	case MapViewConfigHeightSmall, MapViewConfigHeightMedium, MapViewConfigHeightLarge, MapViewConfigHeightExtraLarge:
 		return true
 	default:
 		return false
@@ -12045,7 +12387,7 @@ type MapViewConfigResponse struct {
 	// The view configuration type.
 	Type string `json:"type"`
 	// Map display height.
-	Height MapViewConfigHeightOneOf `json:"height,omitzero"`
+	Height MapViewConfigHeight `json:"height,omitzero"`
 	// Property ID of the location property used to position items on the map.
 	MapBy string `json:"map_by,omitzero"`
 	// Map-by property name (convenience field).
@@ -12090,6 +12432,11 @@ func (e MarkdownVersion) Valid() bool {
 	}
 }
 
+// McpServer defines a model
+type McpServer struct {
+	Contains string `json:"contains"`
+}
+
 // MediaContentWithFileAndCaption defines a model
 type MediaContentWithFileAndCaption struct {
 	Caption    []RichTextItem                     `json:"caption,omitzero"`
@@ -12113,9 +12460,9 @@ func (e MediaContentWithFileAndCaptionType) Valid() bool {
 }
 
 // tagsOfMediaContentWithFileAndCaption holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfMediaContentWithFileAndCaption = map[string]map[string]jsonTagNeed{
-	"external":    {"external": jsonTagRequired},
-	"file_upload": {"file_upload": jsonTagRequired},
+var tagsOfMediaContentWithFileAndCaption = map[string]map[string]union.TagNeed{
+	"external":    {"external": union.TagRequired},
+	"file_upload": {"file_upload": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -12132,11 +12479,16 @@ func (v *MediaContentWithFileAndCaption) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *MediaContentWithFileAndCaption) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain MediaContentWithFileAndCaption
 
 	*v = MediaContentWithFileAndCaption{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -12148,30 +12500,33 @@ func (v *MediaContentWithFileAndCaption) UnmarshalJSONFrom(dec *jsontext.Decoder
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfMediaContentWithFileAndCaption, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfMediaContentWithFileAndCaption, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = MediaContentWithFileAndCaptionType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfMediaContentWithFileAndCaption, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfMediaContentWithFileAndCaption, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *MediaContentWithFileAndCaption) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain MediaContentWithFileAndCaption
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfMediaContentWithFileAndCaption, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfMediaContentWithFileAndCaption, set); ok && out.Type == "" {
 		out.Type = MediaContentWithFileAndCaptionType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfMediaContentWithFileAndCaption, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfMediaContentWithFileAndCaption, set, nil, true); err != nil {
 		return err
 	}
 
@@ -12201,9 +12556,9 @@ func (e MediaContentWithFileAndCaptionResponseType) Valid() bool {
 }
 
 // tagsOfMediaContentWithFileAndCaptionResponse holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfMediaContentWithFileAndCaptionResponse = map[string]map[string]jsonTagNeed{
-	"external": {"external": jsonTagRequired},
-	"file":     {"file": jsonTagRequired},
+var tagsOfMediaContentWithFileAndCaptionResponse = map[string]map[string]union.TagNeed{
+	"external": {"external": union.TagRequired},
+	"file":     {"file": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -12220,11 +12575,16 @@ func (v *MediaContentWithFileAndCaptionResponse) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *MediaContentWithFileAndCaptionResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain MediaContentWithFileAndCaptionResponse
 
 	*v = MediaContentWithFileAndCaptionResponse{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -12236,25 +12596,28 @@ func (v *MediaContentWithFileAndCaptionResponse) UnmarshalJSONFrom(dec *jsontext
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfMediaContentWithFileAndCaptionResponse, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfMediaContentWithFileAndCaptionResponse, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *MediaContentWithFileAndCaptionResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain MediaContentWithFileAndCaptionResponse
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfMediaContentWithFileAndCaptionResponse, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfMediaContentWithFileAndCaptionResponse, set); ok && out.Type == "" {
 		out.Type = MediaContentWithFileAndCaptionResponseType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfMediaContentWithFileAndCaptionResponse, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfMediaContentWithFileAndCaptionResponse, set, nil, true); err != nil {
 		return err
 	}
 
@@ -12285,9 +12648,9 @@ func (e MediaContentWithFileNameAndCaptionType) Valid() bool {
 }
 
 // tagsOfMediaContentWithFileNameAndCaption holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfMediaContentWithFileNameAndCaption = map[string]map[string]jsonTagNeed{
-	"external":    {"external": jsonTagRequired},
-	"file_upload": {"file_upload": jsonTagRequired},
+var tagsOfMediaContentWithFileNameAndCaption = map[string]map[string]union.TagNeed{
+	"external":    {"external": union.TagRequired},
+	"file_upload": {"file_upload": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -12304,11 +12667,16 @@ func (v *MediaContentWithFileNameAndCaption) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *MediaContentWithFileNameAndCaption) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain MediaContentWithFileNameAndCaption
 
 	*v = MediaContentWithFileNameAndCaption{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -12320,30 +12688,33 @@ func (v *MediaContentWithFileNameAndCaption) UnmarshalJSONFrom(dec *jsontext.Dec
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfMediaContentWithFileNameAndCaption, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfMediaContentWithFileNameAndCaption, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = MediaContentWithFileNameAndCaptionType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfMediaContentWithFileNameAndCaption, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfMediaContentWithFileNameAndCaption, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *MediaContentWithFileNameAndCaption) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain MediaContentWithFileNameAndCaption
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfMediaContentWithFileNameAndCaption, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfMediaContentWithFileNameAndCaption, set); ok && out.Type == "" {
 		out.Type = MediaContentWithFileNameAndCaptionType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfMediaContentWithFileNameAndCaption, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfMediaContentWithFileNameAndCaption, set, nil, true); err != nil {
 		return err
 	}
 
@@ -12374,9 +12745,9 @@ func (e MediaContentWithFileNameAndCaptionResponseType) Valid() bool {
 }
 
 // tagsOfMediaContentWithFileNameAndCaptionResponse holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfMediaContentWithFileNameAndCaptionResponse = map[string]map[string]jsonTagNeed{
-	"external": {"external": jsonTagRequired},
-	"file":     {"file": jsonTagRequired},
+var tagsOfMediaContentWithFileNameAndCaptionResponse = map[string]map[string]union.TagNeed{
+	"external": {"external": union.TagRequired},
+	"file":     {"file": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -12393,11 +12764,16 @@ func (v *MediaContentWithFileNameAndCaptionResponse) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *MediaContentWithFileNameAndCaptionResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain MediaContentWithFileNameAndCaptionResponse
 
 	*v = MediaContentWithFileNameAndCaptionResponse{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -12409,25 +12785,28 @@ func (v *MediaContentWithFileNameAndCaptionResponse) UnmarshalJSONFrom(dec *json
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfMediaContentWithFileNameAndCaptionResponse, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfMediaContentWithFileNameAndCaptionResponse, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *MediaContentWithFileNameAndCaptionResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain MediaContentWithFileNameAndCaptionResponse
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfMediaContentWithFileNameAndCaptionResponse, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfMediaContentWithFileNameAndCaptionResponse, set); ok && out.Type == "" {
 		out.Type = MediaContentWithFileNameAndCaptionResponseType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfMediaContentWithFileNameAndCaptionResponse, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfMediaContentWithFileNameAndCaptionResponse, set, nil, true); err != nil {
 		return err
 	}
 
@@ -12498,12 +12877,17 @@ type MeetingNoteSource struct {
 	MeetingNoteFromBlock *MeetingNoteFromBlock
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *MeetingNoteSource) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = MeetingNoteSource{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -12516,7 +12900,7 @@ func (v *MeetingNoteSource) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"parent", "source"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv MeetingNoteInPage
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.MeetingNoteInPage = &vv
@@ -12529,7 +12913,7 @@ func (v *MeetingNoteSource) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"source"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv MeetingNoteFromBlock
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.MeetingNoteFromBlock = &vv
@@ -12545,7 +12929,8 @@ func (v *MeetingNoteSource) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *MeetingNoteSource) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.MeetingNoteInPage != nil:
@@ -12554,7 +12939,33 @@ func (v *MeetingNoteSource) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.MeetingNoteFromBlock, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
+}
+
+// Meeting note content fields.
+type MeetingNotes struct {
+	// Whether this is a full-page meeting note.
+	IsFullPage bool `json:"is_full_page"`
+	// Title of the meeting note as rich text.
+	Title RichTexts `json:"title,omitzero"`
+	// Current processing status of the meeting note transcription.
+	Status APITranscriptionStatus `json:"status,omitzero"`
+	// Block IDs for each tab (summary, notes, transcript).
+	Children *MeetingNotesChildren `json:"children,omitzero"`
+	// Calendar event metadata associated with this meeting note.
+	CalendarEvent CalendarEvent `json:"calendar_event,omitzero"`
+	// Start and end times of the actual recording.
+	Recording *MeetingNotesRecording `json:"recording,omitzero"`
+}
+
+// Block IDs for each tab (summary, notes, transcript).
+type MeetingNotesChildren struct {
+	// Block ID of the AI summary tab.
+	SummaryBlockID ID `json:"summary_block_id,omitzero"`
+	// Block ID of the meeting notes tab.
+	NotesBlockID ID `json:"notes_block_id,omitzero"`
+	// Block ID of the transcript tab.
+	TranscriptBlockID ID `json:"transcript_block_id,omitzero"`
 }
 
 // MeetingNotesPropertyFilter defines a model
@@ -12575,12 +12986,17 @@ type MeetingNotesPropertyFilterFilter struct {
 	MeetingNotesPropertyFilterOperator *MeetingNotesPropertyFilterOperator
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *MeetingNotesPropertyFilterFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = MeetingNotesPropertyFilterFilter{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -12590,13 +13006,13 @@ func (v *MeetingNotesPropertyFilterFilter) UnmarshalJSONFrom(dec *jsontext.Decod
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		// leniently, more than one may match, and the first does
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"operator", "value"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"string_is\"", "\"string_is_not\"", "\"string_contains\"", "\"string_does_not_contain\"", "\"string_starts_with\"", "\"string_ends_with\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"operator": {"\"string_is\"", "\"string_is_not\"", "\"string_contains\"", "\"string_does_not_contain\"", "\"string_starts_with\"", "\"string_ends_with\""}})) {
 				var vv TextFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.TextFilter = &vv
@@ -12609,7 +13025,7 @@ func (v *MeetingNotesPropertyFilterFilter) UnmarshalJSONFrom(dec *jsontext.Decod
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"operator", "value"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"person_contains\"", "\"person_does_not_contain\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"operator": {"\"person_contains\"", "\"person_does_not_contain\""}})) {
 				var vv PersonFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.PersonFilter = &vv
@@ -12622,7 +13038,7 @@ func (v *MeetingNotesPropertyFilterFilter) UnmarshalJSONFrom(dec *jsontext.Decod
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"operator", "value"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"date_is\"", "\"date_is_before\"", "\"date_is_after\"", "\"date_is_on_or_before\"", "\"date_is_on_or_after\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"operator": {"\"date_is\"", "\"date_is_before\"", "\"date_is_after\"", "\"date_is_on_or_before\"", "\"date_is_on_or_after\""}})) {
 				var vv DateFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.DateFilter = &vv
@@ -12635,7 +13051,7 @@ func (v *MeetingNotesPropertyFilterFilter) UnmarshalJSONFrom(dec *jsontext.Decod
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"operator", "value"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"date_is_within\"", "\"date_is_relative_to\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"operator": {"\"date_is_within\"", "\"date_is_relative_to\""}})) {
 				var vv DateRangeFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.DateRangeFilter = &vv
@@ -12648,7 +13064,7 @@ func (v *MeetingNotesPropertyFilterFilter) UnmarshalJSONFrom(dec *jsontext.Decod
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"operator"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"is_empty\"", "\"is_not_empty\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"operator": {"\"is_empty\"", "\"is_not_empty\""}})) {
 				var vv MeetingNotesPropertyFilterOperator
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.MeetingNotesPropertyFilterOperator = &vv
@@ -12669,7 +13085,8 @@ func (v *MeetingNotesPropertyFilterFilter) UnmarshalJSONFrom(dec *jsontext.Decod
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *MeetingNotesPropertyFilterFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.TextFilter != nil:
@@ -12684,7 +13101,7 @@ func (v *MeetingNotesPropertyFilterFilter) MarshalJSONTo(enc *jsontext.Encoder) 
 		return json.MarshalEncode(enc, v.MeetingNotesPropertyFilterOperator, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // Whether the property must be empty or set.
@@ -12754,6 +13171,14 @@ func (e MeetingNotesPropertyFilterProperty) Valid() bool {
 	}
 }
 
+// Start and end times of the actual recording.
+type MeetingNotesRecording struct {
+	// ISO-8601 timestamp when the recording started.
+	StartTime string `json:"start_time,omitzero"`
+	// ISO-8601 timestamp when the recording ended.
+	EndTime string `json:"end_time,omitzero"`
+}
+
 // Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.
 type MentionRichTextItemMention struct {
 	Type MentionRichTextItemMentionType `json:"type,omitzero"`
@@ -12768,7 +13193,7 @@ type MentionRichTextItemMention struct {
 	// Details of the template mention.
 	TemplateMention *TemplateMention `json:"template_mention,omitzero"`
 	// Details of the custom emoji mention.
-	CustomEmoji *CustomEmojiPageIconResponseCustomEmoji `json:"custom_emoji,omitzero"`
+	CustomEmoji *CustomEmoji `json:"custom_emoji,omitzero"`
 }
 
 // MentionRichTextItemMentionType is a value of MentionRichTextItemMention's type, naming the members it holds.
@@ -12790,13 +13215,13 @@ func (e MentionRichTextItemMentionType) Valid() bool {
 }
 
 // tagsOfMentionRichTextItemMention holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfMentionRichTextItemMention = map[string]map[string]jsonTagNeed{
-	"user":             {"user": jsonTagRequired},
-	"date":             {"date": jsonTagRequired},
-	"page":             {"page": jsonTagRequired},
-	"database":         {"database": jsonTagRequired},
-	"template_mention": {"template_mention": jsonTagRequired},
-	"custom_emoji":     {"custom_emoji": jsonTagRequired},
+var tagsOfMentionRichTextItemMention = map[string]map[string]union.TagNeed{
+	"user":             {"user": union.TagRequired},
+	"date":             {"date": union.TagRequired},
+	"page":             {"page": union.TagRequired},
+	"database":         {"database": union.TagRequired},
+	"template_mention": {"template_mention": union.TagRequired},
+	"custom_emoji":     {"custom_emoji": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -12825,11 +13250,16 @@ func (v *MentionRichTextItemMention) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *MentionRichTextItemMention) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain MentionRichTextItemMention
 
 	*v = MentionRichTextItemMention{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -12841,30 +13271,33 @@ func (v *MentionRichTextItemMention) UnmarshalJSONFrom(dec *jsontext.Decoder) er
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfMentionRichTextItemMention, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfMentionRichTextItemMention, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = MentionRichTextItemMentionType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfMentionRichTextItemMention, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfMentionRichTextItemMention, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *MentionRichTextItemMention) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain MentionRichTextItemMention
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfMentionRichTextItemMention, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfMentionRichTextItemMention, set); ok && out.Type == "" {
 		out.Type = MentionRichTextItemMentionType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfMentionRichTextItemMention, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfMentionRichTextItemMention, set, nil, true); err != nil {
 		return err
 	}
 
@@ -12889,7 +13322,7 @@ type MentionRichTextItemResponseMention struct {
 	// Details of the template mention.
 	TemplateMention *TemplateMentionResponse `json:"template_mention,omitzero"`
 	// The custom emoji details for the icon.
-	CustomEmoji *CustomEmoji `json:"custom_emoji,omitzero"`
+	CustomEmoji *CustomEmojiResponse `json:"custom_emoji,omitzero"`
 }
 
 // MentionRichTextItemResponseMentionType is a value of MentionRichTextItemResponseMention's type, naming the members it holds.
@@ -12913,15 +13346,15 @@ func (e MentionRichTextItemResponseMentionType) Valid() bool {
 }
 
 // tagsOfMentionRichTextItemResponseMention holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfMentionRichTextItemResponseMention = map[string]map[string]jsonTagNeed{
-	"user":             {"user": jsonTagRequired},
-	"date":             {"date": jsonTagRequired},
-	"link_preview":     {"link_preview": jsonTagRequired},
-	"link_mention":     {"link_mention": jsonTagRequired},
-	"page":             {"page": jsonTagRequired},
-	"database":         {"database": jsonTagRequired},
-	"template_mention": {"template_mention": jsonTagRequired},
-	"custom_emoji":     {"custom_emoji": jsonTagRequired},
+var tagsOfMentionRichTextItemResponseMention = map[string]map[string]union.TagNeed{
+	"user":             {"user": union.TagRequired},
+	"date":             {"date": union.TagRequired},
+	"link_preview":     {"link_preview": union.TagRequired},
+	"link_mention":     {"link_mention": union.TagRequired},
+	"page":             {"page": union.TagRequired},
+	"database":         {"database": union.TagRequired},
+	"template_mention": {"template_mention": union.TagRequired},
+	"custom_emoji":     {"custom_emoji": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -12956,11 +13389,16 @@ func (v *MentionRichTextItemResponseMention) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *MentionRichTextItemResponseMention) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain MentionRichTextItemResponseMention
 
 	*v = MentionRichTextItemResponseMention{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -12972,25 +13410,28 @@ func (v *MentionRichTextItemResponseMention) UnmarshalJSONFrom(dec *jsontext.Dec
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfMentionRichTextItemResponseMention, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfMentionRichTextItemResponseMention, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *MentionRichTextItemResponseMention) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain MentionRichTextItemResponseMention
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfMentionRichTextItemResponseMention, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfMentionRichTextItemResponseMention, set); ok && out.Type == "" {
 		out.Type = MentionRichTextItemResponseMentionType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfMentionRichTextItemResponseMention, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfMentionRichTextItemResponseMention, set, nil, true); err != nil {
 		return err
 	}
 
@@ -13027,9 +13468,9 @@ func (e MovePageParentType) Valid() bool {
 }
 
 // tagsOfMovePageParent holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfMovePageParent = map[string]map[string]jsonTagNeed{
-	"page_id":        {"page_id": jsonTagRequired},
-	"data_source_id": {"data_source_id": jsonTagRequired},
+var tagsOfMovePageParent = map[string]map[string]union.TagNeed{
+	"page_id":        {"page_id": union.TagRequired},
+	"data_source_id": {"data_source_id": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -13046,11 +13487,16 @@ func (v *MovePageParent) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *MovePageParent) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain MovePageParent
 
 	*v = MovePageParent{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -13062,30 +13508,33 @@ func (v *MovePageParent) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfMovePageParent, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfMovePageParent, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = MovePageParentType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfMovePageParent, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfMovePageParent, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *MovePageParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain MovePageParent
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfMovePageParent, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfMovePageParent, set); ok && out.Type == "" {
 		out.Type = MovePageParentType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfMovePageParent, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfMovePageParent, set, nil, true); err != nil {
 		return err
 	}
 
@@ -13098,90 +13547,6 @@ type MovePageParentPageID struct {
 	PageID ID `json:"page_id"`
 	// Always `page_id`
 	Type string `json:"type,omitzero"`
-}
-
-// MultiSelectPropertyFilter defines a model
-// MultiSelectPropertyFilter is an untagged anyOf union: at least one field is set after unmarshaling.
-type MultiSelectPropertyFilter struct {
-	MultiSelectPropertyFilterContains       *MultiSelectPropertyFilterContains
-	MultiSelectPropertyFilterDoesNotContain *MultiSelectPropertyFilterDoesNotContain
-	ExistencePropertyFilter                 *ExistencePropertyFilter
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *MultiSelectPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = MultiSelectPropertyFilter{}
-
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		// decoding checks neither the members the alternative requires nor those it pins to one value
-		required, nullable, pinned := []string{"contains"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
-			var vv MultiSelectPropertyFilterContains
-			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.MultiSelectPropertyFilterContains = &vv
-				matched++
-			}
-		}
-	}
-
-	{
-		// decoding checks neither the members the alternative requires nor those it pins to one value
-		required, nullable, pinned := []string{"does_not_contain"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
-			var vv MultiSelectPropertyFilterDoesNotContain
-			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.MultiSelectPropertyFilterDoesNotContain = &vv
-				matched++
-			}
-		}
-	}
-
-	{
-		var vv ExistencePropertyFilter
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.ExistencePropertyFilter = &vv
-			matched++
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *MultiSelectPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.MultiSelectPropertyFilterContains != nil:
-		return json.MarshalEncode(enc, v.MultiSelectPropertyFilterContains, jsonOptsTo(enc))
-	case v.MultiSelectPropertyFilterDoesNotContain != nil:
-		return json.MarshalEncode(enc, v.MultiSelectPropertyFilterDoesNotContain, jsonOptsTo(enc))
-	case v.ExistencePropertyFilter != nil:
-		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOptsTo(enc))
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// MultiSelectPropertyFilterContains defines a model
-type MultiSelectPropertyFilterContains struct {
-	Contains StringOrStringArray `json:"contains"`
-}
-
-// MultiSelectPropertyFilterDoesNotContain defines a model
-type MultiSelectPropertyFilterDoesNotContain struct {
-	DoesNotContain StringOrStringArray `json:"does_not_contain"`
 }
 
 // MultiSelectPropertyItem defines a model
@@ -13220,12 +13585,17 @@ type NewComment struct {
 	DiscussionMarkdownComment *DiscussionMarkdownComment
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *NewComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = NewComment{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -13238,7 +13608,7 @@ func (v *NewComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"parent", "rich_text"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv PageComment
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.PageComment = &vv
@@ -13251,7 +13621,7 @@ func (v *NewComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"markdown", "parent"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv PageMarkdownComment
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.PageMarkdownComment = &vv
@@ -13264,7 +13634,7 @@ func (v *NewComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"discussion_id", "rich_text"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv DiscussionComment
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.DiscussionComment = &vv
@@ -13277,7 +13647,7 @@ func (v *NewComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"discussion_id", "markdown"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv DiscussionMarkdownComment
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.DiscussionMarkdownComment = &vv
@@ -13293,7 +13663,8 @@ func (v *NewComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *NewComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PageComment != nil:
@@ -13306,7 +13677,7 @@ func (v *NewComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.DiscussionMarkdownComment, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // NonTerminalAsyncTaskStatus defines a model
@@ -13401,11 +13772,11 @@ type NotionAIAgentIcon struct {
 	// The external URL for the icon.
 	External *LinkPreviewMention `json:"external,omitzero"`
 	// The custom emoji details for the icon.
-	CustomEmoji *CustomEmoji `json:"custom_emoji,omitzero"`
+	CustomEmoji *CustomEmojiResponse `json:"custom_emoji,omitzero"`
 	// The Notion native icon, specified by name and color.
 	Icon *NoticonIcon `json:"icon,omitzero"`
 	// The static and animated URLs for the agent avatar.
-	CustomAgentAvatar *AgentIconCustomAgentAvatarCustomAgentAvatar `json:"custom_agent_avatar,omitzero"`
+	CustomAgentAvatar *CustomAgentAvatar `json:"custom_agent_avatar,omitzero"`
 }
 
 // NotionAIAgentIconType is a value of NotionAIAgentIcon's type, naming the members it holds.
@@ -13427,13 +13798,13 @@ func (e NotionAIAgentIconType) Valid() bool {
 }
 
 // tagsOfNotionAIAgentIcon holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfNotionAIAgentIcon = map[string]map[string]jsonTagNeed{
-	"emoji":               {"emoji": jsonTagRequired},
-	"file":                {"file": jsonTagRequired},
-	"external":            {"external": jsonTagRequired},
-	"custom_emoji":        {"custom_emoji": jsonTagRequired},
-	"icon":                {"icon": jsonTagRequired},
-	"custom_agent_avatar": {"custom_agent_avatar": jsonTagRequired},
+var tagsOfNotionAIAgentIcon = map[string]map[string]union.TagNeed{
+	"emoji":               {"emoji": union.TagRequired},
+	"file":                {"file": union.TagRequired},
+	"external":            {"external": union.TagRequired},
+	"custom_emoji":        {"custom_emoji": union.TagRequired},
+	"icon":                {"icon": union.TagRequired},
+	"custom_agent_avatar": {"custom_agent_avatar": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -13462,11 +13833,16 @@ func (v *NotionAIAgentIcon) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *NotionAIAgentIcon) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain NotionAIAgentIcon
 
 	*v = NotionAIAgentIcon{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -13478,25 +13854,28 @@ func (v *NotionAIAgentIcon) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfNotionAIAgentIcon, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfNotionAIAgentIcon, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *NotionAIAgentIcon) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain NotionAIAgentIcon
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfNotionAIAgentIcon, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfNotionAIAgentIcon, set); ok && out.Type == "" {
 		out.Type = NotionAIAgentIconType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfNotionAIAgentIcon, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfNotionAIAgentIcon, set, nil, true); err != nil {
 		return err
 	}
 
@@ -13567,6 +13946,12 @@ type NumberGroupByConfigResponse struct {
 	RangeSize int `json:"range_size,omitzero"`
 }
 
+// NumberOfParts defines a model
+type NumberOfParts struct {
+	Total int `json:"total"`
+	Sent  int `json:"sent"`
+}
+
 // NumberPropertyConfiguration defines a model
 type NumberPropertyConfiguration struct {
 	// Always `number`
@@ -13591,9 +13976,14 @@ type NumberPropertyFilter struct {
 	ExistencePropertyFilter                  *ExistencePropertyFilter
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *NumberPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = NumberPropertyFilter{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -13607,7 +13997,7 @@ func (v *NumberPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"equals"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv NumberPropertyFilterEquals
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.NumberPropertyFilterEquals = &vv
@@ -13619,7 +14009,7 @@ func (v *NumberPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"does_not_equal"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv NumberPropertyFilterDoesNotEqual
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.NumberPropertyFilterDoesNotEqual = &vv
@@ -13631,7 +14021,7 @@ func (v *NumberPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"greater_than"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv NumberPropertyFilterGreaterThan
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.NumberPropertyFilterGreaterThan = &vv
@@ -13643,7 +14033,7 @@ func (v *NumberPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"less_than"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv NumberPropertyFilterLessThan
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.NumberPropertyFilterLessThan = &vv
@@ -13655,7 +14045,7 @@ func (v *NumberPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"greater_than_or_equal_to"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv NumberPropertyFilterGreaterThanOrEqualTo
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.NumberPropertyFilterGreaterThanOrEqualTo = &vv
@@ -13667,7 +14057,7 @@ func (v *NumberPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"less_than_or_equal_to"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv NumberPropertyFilterLessThanOrEqualTo
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.NumberPropertyFilterLessThanOrEqualTo = &vv
@@ -13691,7 +14081,8 @@ func (v *NumberPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *NumberPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.NumberPropertyFilterEquals != nil:
@@ -13710,7 +14101,7 @@ func (v *NumberPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // NumberPropertyFilterDoesNotEqual defines a model
@@ -13746,7 +14137,7 @@ type NumberPropertyFilterLessThanOrEqualTo struct {
 // NumberPropertyItem defines a model
 type NumberPropertyItem struct {
 	Type      string    `json:"type"`
-	Number    *float64  `json:"number"`
+	Number    float64   `json:"number"`
 	Object    string    `json:"object"`
 	ID        string    `json:"id"`
 	RequestID uuid.UUID `json:"request_id,omitzero"`
@@ -13773,8 +14164,8 @@ func (v *NumberPropertyItem) unmarshalJSONMember(dec *jsontext.Decoder, name str
 // NumberSimplePropertyValue defines a model
 type NumberSimplePropertyValue struct {
 	// Always `number`
-	Type   string   `json:"type"`
-	Number *float64 `json:"number"`
+	Type   string  `json:"type"`
+	Number float64 `json:"number"`
 }
 
 // NumberedListFormat defines a model
@@ -13790,6 +14181,24 @@ const (
 func (e NumberedListFormat) Valid() bool {
 	switch e {
 	case NumberedListFormatNumbers, NumberedListFormatLetters, NumberedListFormatRoman:
+		return true
+	default:
+		return false
+	}
+}
+
+// One of: `approve`, `reject`
+type OptionID string
+
+const (
+	OptionIDApprove OptionID = "approve"
+	OptionIDReject  OptionID = "reject"
+)
+
+// Valid indicates whether the value is a known member of the OptionID enum.
+func (e OptionID) Valid() bool {
+	switch e {
+	case OptionIDApprove, OptionIDReject:
 		return true
 	default:
 		return false
@@ -13821,9 +14230,9 @@ type Page struct {
 	// Property values of this page.
 	Properties map[string]PropertyValue `json:"properties"`
 	// Page icon.
-	Icon *PageIconResponse `json:"icon"`
+	Icon PageIconResponse `json:"icon"`
 	// Page cover image.
-	Cover *PageCoverResponse `json:"cover"`
+	Cover PageCoverResponse `json:"cover"`
 	// User who created the page.
 	CreatedBy PartialUser `json:"created_by"`
 	// User who last edited the page.
@@ -13882,9 +14291,9 @@ func (e PageCoverType) Valid() bool {
 }
 
 // tagsOfPageCover holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPageCover = map[string]map[string]jsonTagNeed{
-	"file_upload": {"file_upload": jsonTagRequired},
-	"external":    {"external": jsonTagRequired},
+var tagsOfPageCover = map[string]map[string]union.TagNeed{
+	"file_upload": {"file_upload": union.TagRequired},
+	"external":    {"external": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -13901,11 +14310,16 @@ func (v *PageCover) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *PageCover) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain PageCover
 
 	*v = PageCover{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -13917,30 +14331,33 @@ func (v *PageCover) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfPageCover, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfPageCover, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = PageCoverType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPageCover, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfPageCover, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *PageCover) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain PageCover
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPageCover, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfPageCover, set); ok && out.Type == "" {
 		out.Type = PageCoverType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPageCover, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfPageCover, set, nil, true); err != nil {
 		return err
 	}
 
@@ -13971,9 +14388,9 @@ func (e PageCoverResponseType) Valid() bool {
 }
 
 // tagsOfPageCoverResponse holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPageCoverResponse = map[string]map[string]jsonTagNeed{
-	"file":     {"file": jsonTagRequired},
-	"external": {"external": jsonTagRequired},
+var tagsOfPageCoverResponse = map[string]map[string]union.TagNeed{
+	"file":     {"file": union.TagRequired},
+	"external": {"external": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -13990,11 +14407,16 @@ func (v *PageCoverResponse) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *PageCoverResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain PageCoverResponse
 
 	*v = PageCoverResponse{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -14006,25 +14428,28 @@ func (v *PageCoverResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPageCoverResponse, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfPageCoverResponse, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *PageCoverResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain PageCoverResponse
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPageCoverResponse, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfPageCoverResponse, set); ok && out.Type == "" {
 		out.Type = PageCoverResponseType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPageCoverResponse, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfPageCoverResponse, set, nil, true); err != nil {
 		return err
 	}
 
@@ -14071,7 +14496,7 @@ type PageIcon struct {
 	// External URL for the cover.
 	External *TextRichTextItemTextLinkURL `json:"external,omitzero"`
 	// Details of the custom emoji mention.
-	CustomEmoji *CustomEmojiPageIconResponseCustomEmoji `json:"custom_emoji,omitzero"`
+	CustomEmoji *CustomEmoji `json:"custom_emoji,omitzero"`
 	// A Notion native icon, specified by name and optional color.
 	Icon *IconPageIconIcon `json:"icon,omitzero"`
 }
@@ -14094,12 +14519,12 @@ func (e PageIconType) Valid() bool {
 }
 
 // tagsOfPageIcon holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPageIcon = map[string]map[string]jsonTagNeed{
-	"file_upload":  {"file_upload": jsonTagRequired},
-	"emoji":        {"emoji": jsonTagRequired},
-	"external":     {"external": jsonTagRequired},
-	"custom_emoji": {"custom_emoji": jsonTagRequired},
-	"icon":         {"icon": jsonTagRequired},
+var tagsOfPageIcon = map[string]map[string]union.TagNeed{
+	"file_upload":  {"file_upload": union.TagRequired},
+	"emoji":        {"emoji": union.TagRequired},
+	"external":     {"external": union.TagRequired},
+	"custom_emoji": {"custom_emoji": union.TagRequired},
+	"icon":         {"icon": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -14125,11 +14550,16 @@ func (v *PageIcon) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *PageIcon) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain PageIcon
 
 	*v = PageIcon{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -14141,30 +14571,33 @@ func (v *PageIcon) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfPageIcon, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfPageIcon, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = PageIconType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPageIcon, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfPageIcon, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *PageIcon) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain PageIcon
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPageIcon, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfPageIcon, set); ok && out.Type == "" {
 		out.Type = PageIconType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPageIcon, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfPageIcon, set, nil, true); err != nil {
 		return err
 	}
 
@@ -14181,7 +14614,7 @@ type PageIconResponse struct {
 	// The external URL for the icon.
 	External *LinkPreviewMention `json:"external,omitzero"`
 	// The custom emoji details for the icon.
-	CustomEmoji *CustomEmoji `json:"custom_emoji,omitzero"`
+	CustomEmoji *CustomEmojiResponse `json:"custom_emoji,omitzero"`
 	// The Notion native icon, specified by name and color.
 	Icon *NoticonIcon `json:"icon,omitzero"`
 }
@@ -14204,12 +14637,12 @@ func (e PageIconResponseType) Valid() bool {
 }
 
 // tagsOfPageIconResponse holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPageIconResponse = map[string]map[string]jsonTagNeed{
-	"emoji":        {"emoji": jsonTagRequired},
-	"file":         {"file": jsonTagRequired},
-	"external":     {"external": jsonTagRequired},
-	"custom_emoji": {"custom_emoji": jsonTagRequired},
-	"icon":         {"icon": jsonTagRequired},
+var tagsOfPageIconResponse = map[string]map[string]union.TagNeed{
+	"emoji":        {"emoji": union.TagRequired},
+	"file":         {"file": union.TagRequired},
+	"external":     {"external": union.TagRequired},
+	"custom_emoji": {"custom_emoji": union.TagRequired},
+	"icon":         {"icon": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -14235,11 +14668,16 @@ func (v *PageIconResponse) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *PageIconResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain PageIconResponse
 
 	*v = PageIconResponse{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -14251,25 +14689,28 @@ func (v *PageIconResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPageIconResponse, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfPageIconResponse, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *PageIconResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain PageIconResponse
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPageIconResponse, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfPageIconResponse, set); ok && out.Type == "" {
 		out.Type = PageIconResponseType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPageIconResponse, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfPageIconResponse, set, nil, true); err != nil {
 		return err
 	}
 
@@ -14284,10 +14725,10 @@ type PageList struct {
 	HasMore    bool          `json:"has_more"`
 	Results    []PartialPage `json:"results"`
 	// Always `page`
-	Type          string        `json:"type"`
-	Page          EmptyObject   `json:"page"`
-	RequestStatus RequestStatus `json:"request_status,omitzero"`
-	RequestID     uuid.UUID     `json:"request_id,omitzero"`
+	Type          string                `json:"type"`
+	Page          EmptyObject           `json:"page"`
+	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
+	RequestID     uuid.UUID             `json:"request_id,omitzero"`
 }
 
 // PageLockedWebhookPayload defines a model
@@ -14360,9 +14801,14 @@ type PageOrDataSource struct {
 	DataSourceOrPartial *DataSourceOrPartial
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *PageOrDataSource) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PageOrDataSource{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -14396,7 +14842,8 @@ func (v *PageOrDataSource) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *PageOrDataSource) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PageOrPartial != nil:
@@ -14405,42 +14852,19 @@ func (v *PageOrDataSource) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.DataSourceOrPartial, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // PageOrDataSourceList defines a model
 type PageOrDataSourceList struct {
-	Type             string                            `json:"type"`
-	PageOrDataSource EmptyObject                       `json:"page_or_data_source"`
-	Object           string                            `json:"object"`
-	NextCursor       string                            `json:"next_cursor"`
-	HasMore          bool                              `json:"has_more"`
-	Results          []PageOrDataSource                `json:"results"`
-	RequestStatus    PageOrDataSourceListRequestStatus `json:"request_status,omitzero"`
-	RequestID        uuid.UUID                         `json:"request_id,omitzero"`
-}
-
-// PageOrDataSourceListRequestStatus defines a model
-type PageOrDataSourceListRequestStatus struct {
-	Type             StatusType                                        `json:"type"`
-	IncompleteReason PageOrDataSourceListRequestStatusIncompleteReason `json:"incomplete_reason,omitzero"`
-}
-
-// PageOrDataSourceListRequestStatusIncompleteReason defines a model
-type PageOrDataSourceListRequestStatusIncompleteReason string
-
-const (
-	PageOrDataSourceListRequestStatusIncompleteReasonQueryResultLimitReached PageOrDataSourceListRequestStatusIncompleteReason = "query_result_limit_reached"
-)
-
-// Valid indicates whether the value is a known member of the PageOrDataSourceListRequestStatusIncompleteReason enum.
-func (e PageOrDataSourceListRequestStatusIncompleteReason) Valid() bool {
-	switch e {
-	case PageOrDataSourceListRequestStatusIncompleteReasonQueryResultLimitReached:
-		return true
-	default:
-		return false
-	}
+	Type             string             `json:"type"`
+	PageOrDataSource EmptyObject        `json:"page_or_data_source"`
+	Object           string             `json:"object"`
+	NextCursor       string             `json:"next_cursor"`
+	HasMore          bool               `json:"has_more"`
+	Results          []PageOrDataSource `json:"results"`
+	RequestStatus    RequestStatus      `json:"request_status,omitzero"`
+	RequestID        uuid.UUID          `json:"request_id,omitzero"`
 }
 
 // PageOrPartial defines a model
@@ -14450,9 +14874,14 @@ type PageOrPartial struct {
 	PartialPage *PartialPage
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *PageOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PageOrPartial{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -14466,7 +14895,7 @@ func (v *PageOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"cover", "created_by", "created_time", "icon", "id", "in_trash", "is_archived", "is_locked", "last_edited_by", "last_edited_time", "object", "parent", "properties", "public_url", "url"}, map[string]bool{"cover": true, "icon": true, "public_url": true}, map[string]string{"object": "\"page\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv Page
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.Page = &vv
@@ -14478,7 +14907,7 @@ func (v *PageOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"id", "object"}, map[string]bool{}, map[string]string{"object": "\"page\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv PartialPage
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.PartialPage = &vv
@@ -14494,7 +14923,8 @@ func (v *PageOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *PageOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.Page != nil:
@@ -14503,7 +14933,7 @@ func (v *PageOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.PartialPage, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // PageParentDatabaseID defines a model
@@ -14540,8 +14970,8 @@ func (e PagePositionSchemaType) Valid() bool {
 }
 
 // tagsOfPagePositionSchema holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPagePositionSchema = map[string]map[string]jsonTagNeed{
-	"after_block": {"after_block": jsonTagRequired},
+var tagsOfPagePositionSchema = map[string]map[string]union.TagNeed{
+	"after_block": {"after_block": union.TagRequired},
 	"page_start":  {},
 	"page_end":    {},
 }
@@ -14557,11 +14987,16 @@ func (v *PagePositionSchema) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *PagePositionSchema) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain PagePositionSchema
 
 	*v = PagePositionSchema{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -14573,25 +15008,28 @@ func (v *PagePositionSchema) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPagePositionSchema, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfPagePositionSchema, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *PagePositionSchema) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain PagePositionSchema
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPagePositionSchema, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfPagePositionSchema, set); ok && out.Type == "" {
 		out.Type = PagePositionSchemaType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPagePositionSchema, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfPagePositionSchema, set, nil, true); err != nil {
 		return err
 	}
 
@@ -14676,23 +15114,23 @@ func (e PagePropertiesValueType) Valid() bool {
 }
 
 // tagsOfPagePropertiesValue holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPagePropertiesValue = map[string]map[string]jsonTagNeed{
-	"title":        {"title": jsonTagRequired},
-	"rich_text":    {"rich_text": jsonTagRequired},
-	"number":       {"number": jsonTagRequiredOrNull},
-	"url":          {"url": jsonTagRequiredOrNull},
-	"select":       {"select": jsonTagRequired},
-	"multi_select": {"multi_select": jsonTagRequired},
-	"people":       {"people": jsonTagRequired},
-	"email":        {"email": jsonTagRequiredOrNull},
-	"phone_number": {"phone_number": jsonTagRequiredOrNull},
-	"date":         {"date": jsonTagRequiredOrNull},
-	"checkbox":     {"checkbox": jsonTagRequired},
-	"relation":     {"relation": jsonTagRequired},
-	"files":        {"files": jsonTagRequired},
-	"status":       {"status": jsonTagRequired},
-	"place":        {"place": jsonTagRequired},
-	"verification": {"verification": jsonTagRequired},
+var tagsOfPagePropertiesValue = map[string]map[string]union.TagNeed{
+	"title":        {"title": union.TagRequired},
+	"rich_text":    {"rich_text": union.TagRequired},
+	"number":       {"number": union.TagRequiredOrNull},
+	"url":          {"url": union.TagRequiredOrNull},
+	"select":       {"select": union.TagRequiredOrNull},
+	"multi_select": {"multi_select": union.TagRequired},
+	"people":       {"people": union.TagRequired},
+	"email":        {"email": union.TagRequiredOrNull},
+	"phone_number": {"phone_number": union.TagRequiredOrNull},
+	"date":         {"date": union.TagRequiredOrNull},
+	"checkbox":     {"checkbox": union.TagRequired},
+	"relation":     {"relation": union.TagRequired},
+	"files":        {"files": union.TagRequired},
+	"status":       {"status": union.TagRequiredOrNull},
+	"place":        {"place": union.TagRequiredOrNull},
+	"verification": {"verification": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -14751,11 +15189,16 @@ func (v *PagePropertiesValue) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *PagePropertiesValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain PagePropertiesValue
 
 	*v = PagePropertiesValue{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -14767,30 +15210,33 @@ func (v *PagePropertiesValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfPagePropertiesValue, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfPagePropertiesValue, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = PagePropertiesValueType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPagePropertiesValue, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfPagePropertiesValue, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *PagePropertiesValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain PagePropertiesValue
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPagePropertiesValue, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfPagePropertiesValue, set); ok && out.Type == "" {
 		out.Type = PagePropertiesValueType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPagePropertiesValue, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfPagePropertiesValue, set, nil, true); err != nil {
 		return err
 	}
 
@@ -14822,10 +15268,10 @@ func (e PagePropertiesValueFilesItemType) Valid() bool {
 }
 
 // tagsOfPagePropertiesValueFilesItem holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPagePropertiesValueFilesItem = map[string]map[string]jsonTagNeed{
-	"file":        {"file": jsonTagRequired},
-	"external":    {"external": jsonTagRequired},
-	"file_upload": {"file_upload": jsonTagRequired},
+var tagsOfPagePropertiesValueFilesItem = map[string]map[string]union.TagNeed{
+	"file":        {"file": union.TagRequired},
+	"external":    {"external": union.TagRequired},
+	"file_upload": {"file_upload": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -14845,11 +15291,16 @@ func (v *PagePropertiesValueFilesItem) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *PagePropertiesValueFilesItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain PagePropertiesValueFilesItem
 
 	*v = PagePropertiesValueFilesItem{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -14861,30 +15312,33 @@ func (v *PagePropertiesValueFilesItem) UnmarshalJSONFrom(dec *jsontext.Decoder) 
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfPagePropertiesValueFilesItem, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfPagePropertiesValueFilesItem, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = PagePropertiesValueFilesItemType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPagePropertiesValueFilesItem, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfPagePropertiesValueFilesItem, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *PagePropertiesValueFilesItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain PagePropertiesValueFilesItem
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPagePropertiesValueFilesItem, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfPagePropertiesValueFilesItem, set); ok && out.Type == "" {
 		out.Type = PagePropertiesValueFilesItemType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPagePropertiesValueFilesItem, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfPagePropertiesValueFilesItem, set, nil, true); err != nil {
 		return err
 	}
 
@@ -14898,12 +15352,17 @@ type PagePropertiesValueMultiSelectItem struct {
 	PagePropertiesValueSelectName *PagePropertiesValueSelectName
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *PagePropertiesValueMultiSelectItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PagePropertiesValueMultiSelectItem{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -14913,12 +15372,12 @@ func (v *PagePropertiesValueMultiSelectItem) UnmarshalJSONFrom(dec *jsontext.Dec
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		{
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"id"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"color": {"\"default\"", "\"gray\"", "\"brown\"", "\"orange\"", "\"yellow\"", "\"green\"", "\"blue\"", "\"purple\"", "\"pink\"", "\"red\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"color": {"\"default\"", "\"gray\"", "\"brown\"", "\"orange\"", "\"yellow\"", "\"green\"", "\"blue\"", "\"purple\"", "\"pink\"", "\"red\""}})) {
 				var vv PagePropertiesValueSelectID
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.PagePropertiesValueSelectID = &vv
@@ -14930,7 +15389,7 @@ func (v *PagePropertiesValueMultiSelectItem) UnmarshalJSONFrom(dec *jsontext.Dec
 		{
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"name"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"color": {"\"default\"", "\"gray\"", "\"brown\"", "\"orange\"", "\"yellow\"", "\"green\"", "\"blue\"", "\"purple\"", "\"pink\"", "\"red\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"color": {"\"default\"", "\"gray\"", "\"brown\"", "\"orange\"", "\"yellow\"", "\"green\"", "\"blue\"", "\"purple\"", "\"pink\"", "\"red\""}})) {
 				var vv PagePropertiesValueSelectName
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.PagePropertiesValueSelectName = &vv
@@ -14951,7 +15410,8 @@ func (v *PagePropertiesValueMultiSelectItem) UnmarshalJSONFrom(dec *jsontext.Dec
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *PagePropertiesValueMultiSelectItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PagePropertiesValueSelectID != nil:
@@ -14960,7 +15420,7 @@ func (v *PagePropertiesValueMultiSelectItem) MarshalJSONTo(enc *jsontext.Encoder
 		return json.MarshalEncode(enc, v.PagePropertiesValueSelectName, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // PagePropertiesValuePeopleItem defines a model
@@ -14971,11 +15431,16 @@ type PagePropertiesValuePeopleItem struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member object names the alternative, which then
-// decodes each further member as it is read. With object first, nothing is read twice.
+// decodes each further member as it is read. With object first, nothing is read twice. Null sets no alternative.
 func (v *PagePropertiesValuePeopleItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PagePropertiesValuePeopleItem{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "object")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "object")
 	if err != nil {
 		return err
 	}
@@ -14983,26 +15448,27 @@ func (v *PagePropertiesValuePeopleItem) UnmarshalJSONFrom(dec *jsontext.Decoder)
 	switch tag {
 	case "user":
 		var vv PartialUserObject
-		if err := jsonMembersFrom(dec, "object", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "object", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.PartialUserObject = &vv
 	case "group":
 		var vv GroupObject
-		if err := jsonMembersFrom(dec, "object", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "object", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.GroupObject = &vv
 	default:
-		return jsonUnknownValue("object", tag)
+		return union.UnknownValue("object", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with object first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with object first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *PagePropertiesValuePeopleItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -15015,7 +15481,7 @@ func (v *PagePropertiesValuePeopleItem) MarshalJSONTo(enc *jsontext.Encoder) err
 	case v.GroupObject != nil:
 		variant, tag = v.GroupObject, "group"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -15023,7 +15489,7 @@ func (v *PagePropertiesValuePeopleItem) MarshalJSONTo(enc *jsontext.Encoder) err
 		return err
 	}
 
-	if out, err = jsonFirst(out, "object", tag); err != nil {
+	if out, err = union.First(out, "object", tag); err != nil {
 		return err
 	}
 
@@ -15065,12 +15531,17 @@ type PagePropertiesValueSelectSelect struct {
 	PagePropertiesValueSelectName *PagePropertiesValueSelectName
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *PagePropertiesValueSelectSelect) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PagePropertiesValueSelectSelect{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -15080,12 +15551,12 @@ func (v *PagePropertiesValueSelectSelect) UnmarshalJSONFrom(dec *jsontext.Decode
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		{
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"id"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"color": {"\"default\"", "\"gray\"", "\"brown\"", "\"orange\"", "\"yellow\"", "\"green\"", "\"blue\"", "\"purple\"", "\"pink\"", "\"red\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"color": {"\"default\"", "\"gray\"", "\"brown\"", "\"orange\"", "\"yellow\"", "\"green\"", "\"blue\"", "\"purple\"", "\"pink\"", "\"red\""}})) {
 				var vv PagePropertiesValueSelectID
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.PagePropertiesValueSelectID = &vv
@@ -15097,7 +15568,7 @@ func (v *PagePropertiesValueSelectSelect) UnmarshalJSONFrom(dec *jsontext.Decode
 		{
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"name"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"color": {"\"default\"", "\"gray\"", "\"brown\"", "\"orange\"", "\"yellow\"", "\"green\"", "\"blue\"", "\"purple\"", "\"pink\"", "\"red\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"color": {"\"default\"", "\"gray\"", "\"brown\"", "\"orange\"", "\"yellow\"", "\"green\"", "\"blue\"", "\"purple\"", "\"pink\"", "\"red\""}})) {
 				var vv PagePropertiesValueSelectName
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.PagePropertiesValueSelectName = &vv
@@ -15118,7 +15589,8 @@ func (v *PagePropertiesValueSelectSelect) UnmarshalJSONFrom(dec *jsontext.Decode
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *PagePropertiesValueSelectSelect) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PagePropertiesValueSelectID != nil:
@@ -15127,7 +15599,7 @@ func (v *PagePropertiesValueSelectSelect) MarshalJSONTo(enc *jsontext.Encoder) e
 		return json.MarshalEncode(enc, v.PagePropertiesValueSelectName, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // PagePropertiesValueVerificationUnverified defines a model
@@ -15153,11 +15625,16 @@ type PagePropertiesValueVerificationVerification struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member state names the alternative, which then
-// decodes each further member as it is read. With state first, nothing is read twice.
+// decodes each further member as it is read. With state first, nothing is read twice. Null sets no alternative.
 func (v *PagePropertiesValueVerificationVerification) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PagePropertiesValueVerificationVerification{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "state")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "state")
 	if err != nil {
 		return err
 	}
@@ -15165,26 +15642,27 @@ func (v *PagePropertiesValueVerificationVerification) UnmarshalJSONFrom(dec *jso
 	switch tag {
 	case "verified":
 		var vv PagePropertiesValueVerificationVerified
-		if err := jsonMembersFrom(dec, "state", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "state", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.PagePropertiesValueVerificationVerified = &vv
 	case "unverified":
 		var vv PagePropertiesValueVerificationUnverified
-		if err := jsonMembersFrom(dec, "state", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "state", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.PagePropertiesValueVerificationUnverified = &vv
 	default:
-		return jsonUnknownValue("state", tag)
+		return union.UnknownValue("state", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with state first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with state first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *PagePropertiesValueVerificationVerification) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -15197,7 +15675,7 @@ func (v *PagePropertiesValueVerificationVerification) MarshalJSONTo(enc *jsontex
 	case v.PagePropertiesValueVerificationUnverified != nil:
 		variant, tag = v.PagePropertiesValueVerificationUnverified, "unverified"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -15205,7 +15683,7 @@ func (v *PagePropertiesValueVerificationVerification) MarshalJSONTo(enc *jsontex
 		return err
 	}
 
-	if out, err = jsonFirst(out, "state", tag); err != nil {
+	if out, err = union.First(out, "state", tag); err != nil {
 		return err
 	}
 
@@ -15347,8 +15825,8 @@ func (e PageWriteNotificationsSchemaMode) Valid() bool {
 type Paragraph struct {
 	RichText RichTexts `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color APIColor          `json:"color"`
-	Icon  *PageIconResponse `json:"icon"`
+	Color APIColor         `json:"color"`
+	Icon  PageIconResponse `json:"icon"`
 }
 
 // ParagraphRequest defines a model
@@ -15405,13 +15883,13 @@ func (e ParentForBlockBasedType) Valid() bool {
 }
 
 // tagsOfParentForBlockBased holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfParentForBlockBased = map[string]map[string]jsonTagNeed{
-	"database_id":    {"database_id": jsonTagRequired},
-	"data_source_id": {"data_source_id": jsonTagRequired, "database_id": jsonTagRequired},
-	"page_id":        {"page_id": jsonTagRequired},
-	"block_id":       {"block_id": jsonTagRequired},
-	"agent_id":       {"agent_id": jsonTagRequired},
-	"workspace":      {"workspace": jsonTagRequired},
+var tagsOfParentForBlockBased = map[string]map[string]union.TagNeed{
+	"database_id":    {"database_id": union.TagRequired},
+	"data_source_id": {"data_source_id": union.TagRequired, "database_id": union.TagRequired},
+	"page_id":        {"page_id": union.TagRequired},
+	"block_id":       {"block_id": union.TagRequired},
+	"agent_id":       {"agent_id": union.TagRequired},
+	"workspace":      {"workspace": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -15440,11 +15918,16 @@ func (v *ParentForBlockBased) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *ParentForBlockBased) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain ParentForBlockBased
 
 	*v = ParentForBlockBased{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -15456,25 +15939,28 @@ func (v *ParentForBlockBased) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfParentForBlockBased, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfParentForBlockBased, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *ParentForBlockBased) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain ParentForBlockBased
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfParentForBlockBased, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfParentForBlockBased, set); ok && out.Type == "" {
 		out.Type = ParentForBlockBasedType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfParentForBlockBased, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfParentForBlockBased, set, nil, true); err != nil {
 		return err
 	}
 
@@ -15513,9 +15999,9 @@ func (e ParentOfDataSourceResponseType) Valid() bool {
 }
 
 // tagsOfParentOfDataSourceResponse holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfParentOfDataSourceResponse = map[string]map[string]jsonTagNeed{
+var tagsOfParentOfDataSourceResponse = map[string]map[string]union.TagNeed{
 	"database_id":    {},
-	"data_source_id": {"data_source_id": jsonTagRequired},
+	"data_source_id": {"data_source_id": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -15529,11 +16015,16 @@ func (v *ParentOfDataSourceResponse) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *ParentOfDataSourceResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain ParentOfDataSourceResponse
 
 	*v = ParentOfDataSourceResponse{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -15545,25 +16036,28 @@ func (v *ParentOfDataSourceResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) er
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfParentOfDataSourceResponse, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfParentOfDataSourceResponse, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *ParentOfDataSourceResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain ParentOfDataSourceResponse
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfParentOfDataSourceResponse, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfParentOfDataSourceResponse, set); ok && out.Type == "" {
 		out.Type = ParentOfDataSourceResponseType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfParentOfDataSourceResponse, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfParentOfDataSourceResponse, set, nil, true); err != nil {
 		return err
 	}
 
@@ -15600,11 +16094,11 @@ func (e ParentOfDatabaseType) Valid() bool {
 }
 
 // tagsOfParentOfDatabase holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfParentOfDatabase = map[string]map[string]jsonTagNeed{
-	"page_id":     {"page_id": jsonTagRequired},
-	"workspace":   {"workspace": jsonTagRequired},
-	"database_id": {"database_id": jsonTagRequired},
-	"block_id":    {"block_id": jsonTagRequired},
+var tagsOfParentOfDatabase = map[string]map[string]union.TagNeed{
+	"page_id":     {"page_id": union.TagRequired},
+	"workspace":   {"workspace": union.TagRequired},
+	"database_id": {"database_id": union.TagRequired},
+	"block_id":    {"block_id": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -15627,11 +16121,16 @@ func (v *ParentOfDatabase) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *ParentOfDatabase) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain ParentOfDatabase
 
 	*v = ParentOfDatabase{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -15643,25 +16142,28 @@ func (v *ParentOfDatabase) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfParentOfDatabase, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfParentOfDatabase, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *ParentOfDatabase) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain ParentOfDatabase
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfParentOfDatabase, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfParentOfDatabase, set); ok && out.Type == "" {
 		out.Type = ParentOfDatabaseType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfParentOfDatabase, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfParentOfDatabase, set, nil, true); err != nil {
 		return err
 	}
 
@@ -15748,11 +16250,11 @@ func (e PartialRollupValueType) Valid() bool {
 }
 
 // tagsOfPartialRollupValue holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPartialRollupValue = map[string]map[string]jsonTagNeed{
-	"number":      {"number": jsonTagRequiredOrNull},
-	"date":        {"date": jsonTagRequiredOrNull},
-	"array":       {"array": jsonTagRequired},
-	"unsupported": {"unsupported": jsonTagRequired},
+var tagsOfPartialRollupValue = map[string]map[string]union.TagNeed{
+	"number":      {"number": union.TagRequiredOrNull},
+	"date":        {"date": union.TagRequiredOrNull},
+	"array":       {"array": union.TagRequired},
+	"unsupported": {"unsupported": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -15775,11 +16277,16 @@ func (v *PartialRollupValue) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *PartialRollupValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain PartialRollupValue
 
 	*v = PartialRollupValue{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -15791,25 +16298,28 @@ func (v *PartialRollupValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPartialRollupValue, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfPartialRollupValue, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *PartialRollupValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain PartialRollupValue
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPartialRollupValue, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfPartialRollupValue, set); ok && out.Type == "" {
 		out.Type = PartialRollupValueType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPartialRollupValue, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfPartialRollupValue, set, nil, true); err != nil {
 		return err
 	}
 
@@ -15880,8 +16390,8 @@ type PatchBlockChildren struct {
 // PatchPage defines a model
 type PatchPage struct {
 	Properties PageProperties `json:"properties,omitzero"`
-	Icon       *PageIcon      `json:"icon,omitzero"`
-	Cover      *PageCover     `json:"cover,omitzero"`
+	Icon       PageIcon       `json:"icon,omitzero"`
+	Cover      PageCover      `json:"cover,omitzero"`
 	// Whether the page should be locked from editing in the Notion app UI. If not provided, the locked state will not be updated.
 	IsLocked *bool             `json:"is_locked,omitzero"`
 	Template PatchPageTemplate `json:"template,omitzero"`
@@ -15916,9 +16426,9 @@ func (e PatchPageTemplateType) Valid() bool {
 }
 
 // tagsOfPatchPageTemplate holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPatchPageTemplate = map[string]map[string]jsonTagNeed{
+var tagsOfPatchPageTemplate = map[string]map[string]union.TagNeed{
 	"default":     {},
-	"template_id": {"template_id": jsonTagRequired},
+	"template_id": {"template_id": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -15932,11 +16442,16 @@ func (v *PatchPageTemplate) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *PatchPageTemplate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain PatchPageTemplate
 
 	*v = PatchPageTemplate{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -15948,29 +16463,65 @@ func (v *PatchPageTemplate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPatchPageTemplate, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfPatchPageTemplate, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *PatchPageTemplate) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain PatchPageTemplate
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPatchPageTemplate, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfPatchPageTemplate, set); ok && out.Type == "" {
 		out.Type = PatchPageTemplateType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPatchPageTemplate, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfPatchPageTemplate, set, nil, true); err != nil {
 		return err
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
+}
+
+// One of: `run_limit`, `credit_limit`, `runaway_credit_usage`, `workspace_credit_limit`, `owner_allowance_limit`, `failure_limit`, `mark_session_failed_autopause`, `disabled_from_workspace_settings`, `disabled_from_workspace_settings_but_resumable`, `disabled_from_api`, `disabled_from_agent_settings`, `disabled_due_to_no_members_with_access`, `disabled_due_to_lack_of_editors`, `disabled_by_notion`, `internal_error`, `needs_user_review`, `tool_unavailable`
+type PauseReason string
+
+const (
+	PauseReasonRunLimit                                  PauseReason = "run_limit"
+	PauseReasonCreditLimit                               PauseReason = "credit_limit"
+	PauseReasonRunawayCreditUsage                        PauseReason = "runaway_credit_usage"
+	PauseReasonWorkspaceCreditLimit                      PauseReason = "workspace_credit_limit"
+	PauseReasonOwnerAllowanceLimit                       PauseReason = "owner_allowance_limit"
+	PauseReasonFailureLimit                              PauseReason = "failure_limit"
+	PauseReasonMarkSessionFailedAutopause                PauseReason = "mark_session_failed_autopause"
+	PauseReasonDisabledFromWorkspaceSettings             PauseReason = "disabled_from_workspace_settings"
+	PauseReasonDisabledFromWorkspaceSettingsButResumable PauseReason = "disabled_from_workspace_settings_but_resumable"
+	PauseReasonDisabledFromAPI                           PauseReason = "disabled_from_api"
+	PauseReasonDisabledFromAgentSettings                 PauseReason = "disabled_from_agent_settings"
+	PauseReasonDisabledDueToNoMembersWithAccess          PauseReason = "disabled_due_to_no_members_with_access"
+	PauseReasonDisabledDueToLackOfEditors                PauseReason = "disabled_due_to_lack_of_editors"
+	PauseReasonDisabledByNotion                          PauseReason = "disabled_by_notion"
+	PauseReasonInternalError                             PauseReason = "internal_error"
+	PauseReasonNeedsUserReview                           PauseReason = "needs_user_review"
+	PauseReasonToolUnavailable                           PauseReason = "tool_unavailable"
+)
+
+// Valid indicates whether the value is a known member of the PauseReason enum.
+func (e PauseReason) Valid() bool {
+	switch e {
+	case PauseReasonRunLimit, PauseReasonCreditLimit, PauseReasonRunawayCreditUsage, PauseReasonWorkspaceCreditLimit, PauseReasonOwnerAllowanceLimit, PauseReasonFailureLimit, PauseReasonMarkSessionFailedAutopause, PauseReasonDisabledFromWorkspaceSettings, PauseReasonDisabledFromWorkspaceSettingsButResumable, PauseReasonDisabledFromAPI, PauseReasonDisabledFromAgentSettings, PauseReasonDisabledDueToNoMembersWithAccess, PauseReasonDisabledDueToLackOfEditors, PauseReasonDisabledByNotion, PauseReasonInternalError, PauseReasonNeedsUserReview, PauseReasonToolUnavailable:
+		return true
+	default:
+		return false
+	}
 }
 
 // PeopleArrayBasedPropertyValuePeopleItem defines a model
@@ -15980,12 +16531,17 @@ type PeopleArrayBasedPropertyValuePeopleItem struct {
 	Group         *Group
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *PeopleArrayBasedPropertyValuePeopleItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PeopleArrayBasedPropertyValuePeopleItem{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -16007,7 +16563,7 @@ func (v *PeopleArrayBasedPropertyValuePeopleItem) UnmarshalJSONFrom(dec *jsontex
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"id", "name", "object"}, map[string]bool{"name": true}, map[string]string{"object": "\"group\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv Group
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.Group = &vv
@@ -16023,7 +16579,8 @@ func (v *PeopleArrayBasedPropertyValuePeopleItem) UnmarshalJSONFrom(dec *jsontex
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *PeopleArrayBasedPropertyValuePeopleItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.UserOrPartial != nil:
@@ -16032,7 +16589,7 @@ func (v *PeopleArrayBasedPropertyValuePeopleItem) MarshalJSONTo(enc *jsontext.En
 		return json.MarshalEncode(enc, v.Group, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // PeoplePropertyConfiguration defines a model
@@ -16050,9 +16607,14 @@ type PeoplePropertyFilter struct {
 	ExistencePropertyFilter            *ExistencePropertyFilter
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *PeoplePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PeoplePropertyFilter{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -16066,7 +16628,7 @@ func (v *PeoplePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"contains"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv PeoplePropertyFilterContains
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.PeoplePropertyFilterContains = &vv
@@ -16078,7 +16640,7 @@ func (v *PeoplePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"does_not_contain"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv PeoplePropertyFilterDoesNotContain
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.PeoplePropertyFilterDoesNotContain = &vv
@@ -16102,7 +16664,8 @@ func (v *PeoplePropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *PeoplePropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PeoplePropertyFilterContains != nil:
@@ -16113,7 +16676,7 @@ func (v *PeoplePropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // PeoplePropertyFilterContains defines a model
@@ -16184,11 +16747,16 @@ type PersonFilterValueItem struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *PersonFilterValueItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PersonFilterValueItem{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
@@ -16196,26 +16764,27 @@ func (v *PersonFilterValueItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch tag {
 	case "exact":
 		var vv PersonFilterValueItemExact
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.PersonFilterValueItemExact = &vv
 	case "relative":
 		var vv PersonFilterValueItemRelative
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.PersonFilterValueItemRelative = &vv
 	default:
-		return jsonUnknownValue("type", tag)
+		return union.UnknownValue("type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *PersonFilterValueItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -16228,7 +16797,7 @@ func (v *PersonFilterValueItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	case v.PersonFilterValueItemRelative != nil:
 		variant, tag = v.PersonFilterValueItemRelative, "relative"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -16236,7 +16805,7 @@ func (v *PersonFilterValueItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	if out, err = jsonFirst(out, "type", tag); err != nil {
+	if out, err = union.First(out, "type", tag); err != nil {
 		return err
 	}
 
@@ -16343,9 +16912,14 @@ type PersonIDOrMe struct {
 	String string
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *PersonIDOrMe) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PersonIDOrMe{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -16379,7 +16953,8 @@ func (v *PersonIDOrMe) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *PersonIDOrMe) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.ID != nil:
@@ -16388,7 +16963,7 @@ func (v *PersonIDOrMe) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // PersonUserObjectPerson defines a model
@@ -16509,7 +17084,7 @@ type PostDatabaseQuery struct {
 	// Whether to return archived pages. When omitted or false, returns non-archived pages. When true, returns archived pages.
 	IsArchived *bool `json:"is_archived,omitzero"`
 	// Optionally filter the results to only include pages or data sources. Regular, non-wiki databases only support page children. The default behavior is no result type filtering, in other words, returning both pages and data sources for wikis.
-	ResultType DatabaseQueryResultType `json:"result_type,omitzero"`
+	ResultType ResultType `json:"result_type,omitzero"`
 	// A filter of a data source's entries: by a property or a timestamp, or by any or all of other filters.
 	Filter Filter `json:"filter,omitzero"`
 }
@@ -16518,8 +17093,8 @@ type PostDatabaseQuery struct {
 type PostPage struct {
 	Parent     PostPageParent `json:"parent,omitzero"`
 	Properties PageProperties `json:"properties,omitzero"`
-	Icon       *PageIcon      `json:"icon,omitzero"`
-	Cover      *PageCover     `json:"cover,omitzero"`
+	Icon       PageIcon       `json:"icon,omitzero"`
+	Cover      PageCover      `json:"cover,omitzero"`
 	Content    []BlockObject  `json:"content,omitzero"`
 	Children   []BlockObject  `json:"children,omitzero"`
 	// Page content as Markdown, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions). Mutually exclusive with content/children.
@@ -16560,11 +17135,11 @@ func (e PostPageParentType) Valid() bool {
 }
 
 // tagsOfPostPageParent holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPostPageParent = map[string]map[string]jsonTagNeed{
-	"page_id":        {"page_id": jsonTagRequired},
-	"database_id":    {"database_id": jsonTagRequired},
-	"data_source_id": {"data_source_id": jsonTagRequired},
-	"workspace":      {"workspace": jsonTagRequired},
+var tagsOfPostPageParent = map[string]map[string]union.TagNeed{
+	"page_id":        {"page_id": union.TagRequired},
+	"database_id":    {"database_id": union.TagRequired},
+	"data_source_id": {"data_source_id": union.TagRequired},
+	"workspace":      {"workspace": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -16587,11 +17162,16 @@ func (v *PostPageParent) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *PostPageParent) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain PostPageParent
 
 	*v = PostPageParent{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -16603,30 +17183,33 @@ func (v *PostPageParent) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfPostPageParent, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfPostPageParent, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = PostPageParentType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPostPageParent, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfPostPageParent, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *PostPageParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain PostPageParent
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPostPageParent, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfPostPageParent, set); ok && out.Type == "" {
 		out.Type = PostPageParentType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPostPageParent, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfPostPageParent, set, nil, true); err != nil {
 		return err
 	}
 
@@ -16642,11 +17225,16 @@ type PostPageTemplate struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *PostPageTemplate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PostPageTemplate{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
@@ -16654,33 +17242,34 @@ func (v *PostPageTemplate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch tag {
 	case "none":
 		var vv PostPageTemplateNone
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.PostPageTemplateNone = &vv
 	case "default":
 		var vv PageTemplateDefault
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.PageTemplateDefault = &vv
 	case "template_id":
 		var vv PageTemplateID
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.PageTemplateID = &vv
 	default:
-		return jsonUnknownValue("type", tag)
+		return union.UnknownValue("type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *PostPageTemplate) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -16695,7 +17284,7 @@ func (v *PostPageTemplate) MarshalJSONTo(enc *jsontext.Encoder) error {
 	case v.PageTemplateID != nil:
 		variant, tag = v.PageTemplateID, "template_id"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -16703,7 +17292,7 @@ func (v *PostPageTemplate) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	if out, err = jsonFirst(out, "type", tag); err != nil {
+	if out, err = union.First(out, "type", tag); err != nil {
 		return err
 	}
 
@@ -16741,12 +17330,17 @@ type PostSearchFilter struct {
 	PostSearchFilterInTrash *PostSearchFilterInTrash
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *PostSearchFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PostSearchFilter{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -16756,12 +17350,12 @@ func (v *PostSearchFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		{
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property", "value"}, map[string]bool{}, map[string]string{"property": "\"object\""}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"value": {"\"page\"", "\"data_source\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"value": {"\"page\"", "\"data_source\""}})) {
 				var vv PostSearchFilterObject
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.PostSearchFilterObject = &vv
@@ -16773,7 +17367,7 @@ func (v *PostSearchFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		{
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"in_trash"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv PostSearchFilterInTrash
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.PostSearchFilterInTrash = &vv
@@ -16794,7 +17388,8 @@ func (v *PostSearchFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *PostSearchFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PostSearchFilterObject != nil:
@@ -16803,7 +17398,7 @@ func (v *PostSearchFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.PostSearchFilterInTrash, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // PostSearchFilterInTrash defines a model
@@ -16814,7 +17409,7 @@ type PostSearchFilterInTrash struct {
 // PostSearchFilterObject defines a model
 type PostSearchFilterObject struct {
 	Property PostSearchFilterObjectProperty `json:"property"`
-	Value    DatabaseQueryResultType        `json:"value"`
+	Value    ResultType                     `json:"value"`
 	InTrash  *bool                          `json:"in_trash,omitzero"`
 }
 
@@ -16842,12 +17437,17 @@ type PostSearchSort struct {
 	PostSearchSortRelevance      *PostSearchSortRelevance
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *PostSearchSort) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PostSearchSort{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -16857,12 +17457,12 @@ func (v *PostSearchSort) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		{
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"direction", "timestamp"}, map[string]bool{}, map[string]string{"timestamp": "\"last_edited_time\""}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"direction": {"\"ascending\"", "\"descending\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"direction": {"\"ascending\"", "\"descending\""}})) {
 				var vv PostSearchSortLastEditedTime
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.PostSearchSortLastEditedTime = &vv
@@ -16874,7 +17474,7 @@ func (v *PostSearchSort) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		{
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property"}, map[string]bool{}, map[string]string{"property": "\"relevance\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv PostSearchSortRelevance
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.PostSearchSortRelevance = &vv
@@ -16895,7 +17495,8 @@ func (v *PostSearchSort) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *PostSearchSort) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PostSearchSortLastEditedTime != nil:
@@ -16904,7 +17505,7 @@ func (v *PostSearchSort) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.PostSearchSortRelevance, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // PostSearchSortLastEditedTime defines a model
@@ -16959,31 +17560,31 @@ type PropertyConfig struct {
 	// The name of the property.
 	Name string `json:"name"`
 	// The description of the property.
-	Description     PropertyDescription                     `json:"description"`
-	Type            PropertyConfigType                      `json:"type"`
-	Number          *NumberDatabasePropertyConfigNumber     `json:"number,omitzero"`
-	Formula         *ContentWithExpression                  `json:"formula,omitzero"`
-	Select          *SelectDatabasePropertyConfigSelect     `json:"select,omitzero"`
-	MultiSelect     *SelectDatabasePropertyConfigSelect     `json:"multi_select,omitzero"`
-	Status          *StatusDatabasePropertyConfigStatus     `json:"status,omitzero"`
-	Relation        *DatabasePropertyRelationConfig         `json:"relation,omitzero"`
-	Rollup          *RollupDatabasePropertyConfigRollup     `json:"rollup,omitzero"`
-	UniqueID        *UniqueIDDatabasePropertyConfigUniqueID `json:"unique_id,omitzero"`
-	Title           *EmptyObject                            `json:"title,omitzero"`
-	RichText        *EmptyObject                            `json:"rich_text,omitzero"`
-	URL             *EmptyObject                            `json:"url,omitzero"`
-	People          *EmptyObject                            `json:"people,omitzero"`
-	Files           *EmptyObject                            `json:"files,omitzero"`
-	Email           *EmptyObject                            `json:"email,omitzero"`
-	PhoneNumber     *EmptyObject                            `json:"phone_number,omitzero"`
-	Date            *EmptyObject                            `json:"date,omitzero"`
-	Checkbox        *EmptyObject                            `json:"checkbox,omitzero"`
-	CreatedBy       *EmptyObject                            `json:"created_by,omitzero"`
-	CreatedTime     *EmptyObject                            `json:"created_time,omitzero"`
-	LastEditedBy    *EmptyObject                            `json:"last_edited_by,omitzero"`
-	LastEditedTime  *EmptyObject                            `json:"last_edited_time,omitzero"`
-	Place           *EmptyObject                            `json:"place,omitzero"`
-	LastVisitedTime *EmptyObject                            `json:"last_visited_time,omitzero"`
+	Description     PropertyDescription                 `json:"description"`
+	Type            PropertyConfigType                  `json:"type"`
+	Number          *NumberDatabasePropertyConfigNumber `json:"number,omitzero"`
+	Formula         *ContentWithExpression              `json:"formula,omitzero"`
+	Select          *SelectOptions                      `json:"select,omitzero"`
+	MultiSelect     *SelectOptions                      `json:"multi_select,omitzero"`
+	Status          *StatusDatabasePropertyConfigStatus `json:"status,omitzero"`
+	Relation        *DatabasePropertyRelationConfig     `json:"relation,omitzero"`
+	Rollup          *RollupDatabasePropertyConfigRollup `json:"rollup,omitzero"`
+	UniqueID        *UniqueID                           `json:"unique_id,omitzero"`
+	Title           *EmptyObject                        `json:"title,omitzero"`
+	RichText        *EmptyObject                        `json:"rich_text,omitzero"`
+	URL             *EmptyObject                        `json:"url,omitzero"`
+	People          *EmptyObject                        `json:"people,omitzero"`
+	Files           *EmptyObject                        `json:"files,omitzero"`
+	Email           *EmptyObject                        `json:"email,omitzero"`
+	PhoneNumber     *EmptyObject                        `json:"phone_number,omitzero"`
+	Date            *EmptyObject                        `json:"date,omitzero"`
+	Checkbox        *EmptyObject                        `json:"checkbox,omitzero"`
+	CreatedBy       *EmptyObject                        `json:"created_by,omitzero"`
+	CreatedTime     *EmptyObject                        `json:"created_time,omitzero"`
+	LastEditedBy    *EmptyObject                        `json:"last_edited_by,omitzero"`
+	LastEditedTime  *EmptyObject                        `json:"last_edited_time,omitzero"`
+	Place           *EmptyObject                        `json:"place,omitzero"`
+	LastVisitedTime *EmptyObject                        `json:"last_visited_time,omitzero"`
 }
 
 // PropertyConfigType is a value of PropertyConfig's type, naming the members it holds.
@@ -17022,30 +17623,30 @@ func (e PropertyConfigType) Valid() bool {
 }
 
 // tagsOfPropertyConfig holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPropertyConfig = map[string]map[string]jsonTagNeed{
-	"number":            {"number": jsonTagRequired},
-	"formula":           {"formula": jsonTagRequired},
-	"select":            {"select": jsonTagRequired},
-	"multi_select":      {"multi_select": jsonTagRequired},
-	"status":            {"status": jsonTagRequired},
-	"relation":          {"relation": jsonTagRequired},
-	"rollup":            {"rollup": jsonTagRequired},
-	"unique_id":         {"unique_id": jsonTagRequired},
-	"title":             {"title": jsonTagRequired},
-	"rich_text":         {"rich_text": jsonTagRequired},
-	"url":               {"url": jsonTagRequired},
-	"people":            {"people": jsonTagRequired},
-	"files":             {"files": jsonTagRequired},
-	"email":             {"email": jsonTagRequired},
-	"phone_number":      {"phone_number": jsonTagRequired},
-	"date":              {"date": jsonTagRequired},
-	"checkbox":          {"checkbox": jsonTagRequired},
-	"created_by":        {"created_by": jsonTagRequired},
-	"created_time":      {"created_time": jsonTagRequired},
-	"last_edited_by":    {"last_edited_by": jsonTagRequired},
-	"last_edited_time":  {"last_edited_time": jsonTagRequired},
-	"place":             {"place": jsonTagRequired},
-	"last_visited_time": {"last_visited_time": jsonTagRequired},
+var tagsOfPropertyConfig = map[string]map[string]union.TagNeed{
+	"number":            {"number": union.TagRequired},
+	"formula":           {"formula": union.TagRequired},
+	"select":            {"select": union.TagRequired},
+	"multi_select":      {"multi_select": union.TagRequired},
+	"status":            {"status": union.TagRequired},
+	"relation":          {"relation": union.TagRequired},
+	"rollup":            {"rollup": union.TagRequired},
+	"unique_id":         {"unique_id": union.TagRequired},
+	"title":             {"title": union.TagRequired},
+	"rich_text":         {"rich_text": union.TagRequired},
+	"url":               {"url": union.TagRequired},
+	"people":            {"people": union.TagRequired},
+	"files":             {"files": union.TagRequired},
+	"email":             {"email": union.TagRequired},
+	"phone_number":      {"phone_number": union.TagRequired},
+	"date":              {"date": union.TagRequired},
+	"checkbox":          {"checkbox": union.TagRequired},
+	"created_by":        {"created_by": union.TagRequired},
+	"created_time":      {"created_time": union.TagRequired},
+	"last_edited_by":    {"last_edited_by": union.TagRequired},
+	"last_edited_time":  {"last_edited_time": union.TagRequired},
+	"place":             {"place": union.TagRequired},
+	"last_visited_time": {"last_visited_time": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -17125,11 +17726,16 @@ func (v *PropertyConfig) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *PropertyConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain PropertyConfig
 
 	*v = PropertyConfig{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -17141,25 +17747,28 @@ func (v *PropertyConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPropertyConfig, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfPropertyConfig, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *PropertyConfig) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain PropertyConfig
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPropertyConfig, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfPropertyConfig, set); ok && out.Type == "" {
 		out.Type = PropertyConfigType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPropertyConfig, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfPropertyConfig, set, nil, true); err != nil {
 		return err
 	}
 
@@ -17238,33 +17847,33 @@ func (e PropertyConfigurationType) Valid() bool {
 }
 
 // tagsOfPropertyConfiguration holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPropertyConfiguration = map[string]map[string]jsonTagNeed{
-	"number":            {"number": jsonTagRequired},
-	"formula":           {"formula": jsonTagRequired},
-	"select":            {"select": jsonTagRequired},
-	"multi_select":      {"multi_select": jsonTagRequired},
-	"status":            {"status": jsonTagRequired},
-	"relation":          {"relation": jsonTagRequired},
-	"rollup":            {"rollup": jsonTagRequired},
-	"unique_id":         {"unique_id": jsonTagRequired},
-	"title":             {"title": jsonTagRequired},
-	"rich_text":         {"rich_text": jsonTagRequired},
-	"url":               {"url": jsonTagRequired},
-	"people":            {"people": jsonTagRequired},
-	"files":             {"files": jsonTagRequired},
-	"email":             {"email": jsonTagRequired},
-	"phone_number":      {"phone_number": jsonTagRequired},
-	"date":              {"date": jsonTagRequired},
-	"checkbox":          {"checkbox": jsonTagRequired},
-	"created_by":        {"created_by": jsonTagRequired},
-	"created_time":      {"created_time": jsonTagRequired},
-	"last_edited_by":    {"last_edited_by": jsonTagRequired},
-	"last_edited_time":  {"last_edited_time": jsonTagRequired},
-	"button":            {"button": jsonTagRequired},
-	"location":          {"location": jsonTagRequired},
-	"verification":      {"verification": jsonTagRequired},
-	"last_visited_time": {"last_visited_time": jsonTagRequired},
-	"place":             {"place": jsonTagRequired},
+var tagsOfPropertyConfiguration = map[string]map[string]union.TagNeed{
+	"number":            {"number": union.TagRequired},
+	"formula":           {"formula": union.TagRequired},
+	"select":            {"select": union.TagRequired},
+	"multi_select":      {"multi_select": union.TagRequired},
+	"status":            {"status": union.TagRequired},
+	"relation":          {"relation": union.TagRequired},
+	"rollup":            {"rollup": union.TagRequired},
+	"unique_id":         {"unique_id": union.TagRequired},
+	"title":             {"title": union.TagRequired},
+	"rich_text":         {"rich_text": union.TagRequired},
+	"url":               {"url": union.TagRequired},
+	"people":            {"people": union.TagRequired},
+	"files":             {"files": union.TagRequired},
+	"email":             {"email": union.TagRequired},
+	"phone_number":      {"phone_number": union.TagRequired},
+	"date":              {"date": union.TagRequired},
+	"checkbox":          {"checkbox": union.TagRequired},
+	"created_by":        {"created_by": union.TagRequired},
+	"created_time":      {"created_time": union.TagRequired},
+	"last_edited_by":    {"last_edited_by": union.TagRequired},
+	"last_edited_time":  {"last_edited_time": union.TagRequired},
+	"button":            {"button": union.TagRequired},
+	"location":          {"location": union.TagRequired},
+	"verification":      {"verification": union.TagRequired},
+	"last_visited_time": {"last_visited_time": union.TagRequired},
+	"place":             {"place": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -17353,11 +17962,16 @@ func (v *PropertyConfiguration) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *PropertyConfiguration) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain PropertyConfiguration
 
 	*v = PropertyConfiguration{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -17369,30 +17983,33 @@ func (v *PropertyConfiguration) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfPropertyConfiguration, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfPropertyConfiguration, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = PropertyConfigurationType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPropertyConfiguration, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfPropertyConfiguration, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *PropertyConfiguration) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain PropertyConfiguration
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPropertyConfiguration, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfPropertyConfiguration, set); ok && out.Type == "" {
 		out.Type = PropertyConfigurationType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPropertyConfiguration, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfPropertyConfiguration, set, nil, true); err != nil {
 		return err
 	}
 
@@ -17411,7 +18028,7 @@ type PropertyFilter struct {
 	Number         *NumberPropertyFilter                   `json:"number,omitzero"`
 	Checkbox       *CheckboxPropertyFilter                 `json:"checkbox,omitzero"`
 	Select         *SelectPropertyFilter                   `json:"select,omitzero"`
-	MultiSelect    *MultiSelectPropertyFilter              `json:"multi_select,omitzero"`
+	MultiSelect    *SelectOptionsPropertyFilter            `json:"multi_select,omitzero"`
 	Status         *StatusPropertyFilter                   `json:"status,omitzero"`
 	Date           *DatePropertyFilter                     `json:"date,omitzero"`
 	People         *PeoplePropertyFilter                   `json:"people,omitzero"`
@@ -17465,29 +18082,29 @@ func (e PropertyFilterType) Valid() bool {
 }
 
 // tagsOfPropertyFilter holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPropertyFilter = map[string]map[string]jsonTagNeed{
-	"title":            {"title": jsonTagRequired},
-	"rich_text":        {"rich_text": jsonTagRequired},
-	"number":           {"number": jsonTagRequired},
-	"checkbox":         {"checkbox": jsonTagRequired},
-	"select":           {"select": jsonTagRequired},
-	"multi_select":     {"multi_select": jsonTagRequired},
-	"status":           {"status": jsonTagRequired},
-	"date":             {"date": jsonTagRequired},
-	"people":           {"people": jsonTagRequired},
-	"files":            {"files": jsonTagRequired},
-	"url":              {"url": jsonTagRequired},
-	"email":            {"email": jsonTagRequired},
-	"phone_number":     {"phone_number": jsonTagRequired},
-	"relation":         {"relation": jsonTagRequired},
-	"created_by":       {"created_by": jsonTagRequired},
-	"created_time":     {"created_time": jsonTagRequired},
-	"last_edited_by":   {"last_edited_by": jsonTagRequired},
-	"last_edited_time": {"last_edited_time": jsonTagRequired},
-	"formula":          {"formula": jsonTagRequired},
-	"unique_id":        {"unique_id": jsonTagRequired},
-	"rollup":           {"rollup": jsonTagRequired},
-	"verification":     {"verification": jsonTagRequired},
+var tagsOfPropertyFilter = map[string]map[string]union.TagNeed{
+	"title":            {"title": union.TagRequired},
+	"rich_text":        {"rich_text": union.TagRequired},
+	"number":           {"number": union.TagRequired},
+	"checkbox":         {"checkbox": union.TagRequired},
+	"select":           {"select": union.TagRequired},
+	"multi_select":     {"multi_select": union.TagRequired},
+	"status":           {"status": union.TagRequired},
+	"date":             {"date": union.TagRequired},
+	"people":           {"people": union.TagRequired},
+	"files":            {"files": union.TagRequired},
+	"url":              {"url": union.TagRequired},
+	"email":            {"email": union.TagRequired},
+	"phone_number":     {"phone_number": union.TagRequired},
+	"relation":         {"relation": union.TagRequired},
+	"created_by":       {"created_by": union.TagRequired},
+	"created_time":     {"created_time": union.TagRequired},
+	"last_edited_by":   {"last_edited_by": union.TagRequired},
+	"last_edited_time": {"last_edited_time": union.TagRequired},
+	"formula":          {"formula": union.TagRequired},
+	"unique_id":        {"unique_id": union.TagRequired},
+	"rollup":           {"rollup": union.TagRequired},
+	"verification":     {"verification": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -17564,11 +18181,16 @@ func (v *PropertyFilter) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *PropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain PropertyFilter
 
 	*v = PropertyFilter{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -17580,30 +18202,33 @@ func (v *PropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfPropertyFilter, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfPropertyFilter, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = PropertyFilterType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPropertyFilter, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfPropertyFilter, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *PropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain PropertyFilter
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPropertyFilter, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfPropertyFilter, set); ok && out.Type == "" {
 		out.Type = PropertyFilterType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPropertyFilter, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfPropertyFilter, set, nil, true); err != nil {
 		return err
 	}
 
@@ -17617,12 +18242,17 @@ type PropertyFilterVerificationVerification struct {
 	VerificationPropertyDoesNotEqualFilter *VerificationPropertyDoesNotEqualFilter
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *PropertyFilterVerificationVerification) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PropertyFilterVerificationVerification{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -17632,12 +18262,12 @@ func (v *PropertyFilterVerificationVerification) UnmarshalJSONFrom(dec *jsontext
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		{
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"status"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"status": {"\"verified\"", "\"expired\"", "\"none\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"status": {"\"verified\"", "\"expired\"", "\"none\""}})) {
 				var vv VerificationPropertyStatusFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.VerificationPropertyStatusFilter = &vv
@@ -17649,7 +18279,7 @@ func (v *PropertyFilterVerificationVerification) UnmarshalJSONFrom(dec *jsontext
 		{
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"does_not_equal"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"does_not_equal": {"\"verified\"", "\"expired\"", "\"none\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"does_not_equal": {"\"verified\"", "\"expired\"", "\"none\""}})) {
 				var vv VerificationPropertyDoesNotEqualFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.VerificationPropertyDoesNotEqualFilter = &vv
@@ -17670,7 +18300,8 @@ func (v *PropertyFilterVerificationVerification) UnmarshalJSONFrom(dec *jsontext
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *PropertyFilterVerificationVerification) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.VerificationPropertyStatusFilter != nil:
@@ -17679,7 +18310,7 @@ func (v *PropertyFilterVerificationVerification) MarshalJSONTo(enc *jsontext.Enc
 		return json.MarshalEncode(enc, v.VerificationPropertyDoesNotEqualFilter, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // PropertyItem defines a model
@@ -17713,11 +18344,16 @@ type PropertyItem struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *PropertyItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PropertyItem{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
@@ -17725,187 +18361,188 @@ func (v *PropertyItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch tag {
 	case "number":
 		var vv NumberPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.NumberPropertyItem = &vv
 	case "url":
 		var vv URLPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.URLPropertyItem = &vv
 	case "select":
 		var vv SelectPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.SelectPropertyItem = &vv
 	case "multi_select":
 		var vv MultiSelectPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.MultiSelectPropertyItem = &vv
 	case "status":
 		var vv StatusPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.StatusPropertyItem = &vv
 	case "date":
 		var vv DatePropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.DatePropertyItem = &vv
 	case "email":
 		var vv EmailPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.EmailPropertyItem = &vv
 	case "phone_number":
 		var vv PhoneNumberPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.PhoneNumberPropertyItem = &vv
 	case "checkbox":
 		var vv CheckboxPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.CheckboxPropertyItem = &vv
 	case "files":
 		var vv FilesPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.FilesPropertyItem = &vv
 	case "created_by":
 		var vv CreatedByPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.CreatedByPropertyItem = &vv
 	case "created_time":
 		var vv CreatedTimePropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.CreatedTimePropertyItem = &vv
 	case "last_edited_by":
 		var vv LastEditedByPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.LastEditedByPropertyItem = &vv
 	case "last_edited_time":
 		var vv LastEditedTimePropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.LastEditedTimePropertyItem = &vv
 	case "formula":
 		var vv FormulaPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.FormulaPropertyItem = &vv
 	case "button":
 		var vv ButtonPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.ButtonPropertyItem = &vv
 	case "unique_id":
 		var vv UniqueIDPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.UniqueIDPropertyItem = &vv
 	case "verification":
 		var vv VerificationPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.VerificationPropertyItem = &vv
 	case "place":
 		var vv PlacePropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.PlacePropertyItem = &vv
 	case "title":
 		var vv TitlePropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.TitlePropertyItem = &vv
 	case "rich_text":
 		var vv RichTextPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RichTextPropertyItem = &vv
 	case "people":
 		var vv PeoplePropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.PeoplePropertyItem = &vv
 	case "relation":
 		var vv RelationPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RelationPropertyItem = &vv
 	case "rollup":
 		var vv RollupPropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RollupPropertyItem = &vv
 	case "last_visited_time":
 		var vv LastVisitedTimePropertyItem
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.LastVisitedTimePropertyItem = &vv
 	default:
-		return jsonUnknownValue("type", tag)
+		return union.UnknownValue("type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *PropertyItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -17964,7 +18601,7 @@ func (v *PropertyItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	case v.LastVisitedTimePropertyItem != nil:
 		variant, tag = v.LastVisitedTimePropertyItem, "last_visited_time"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -17972,7 +18609,7 @@ func (v *PropertyItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	if out, err = jsonFirst(out, "type", tag); err != nil {
+	if out, err = union.First(out, "type", tag); err != nil {
 		return err
 	}
 
@@ -18009,12 +18646,12 @@ func (e PropertyItemListResponsePropertyItemType) Valid() bool {
 }
 
 // tagsOfPropertyItemListResponsePropertyItem holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPropertyItemListResponsePropertyItem = map[string]map[string]jsonTagNeed{
-	"title":     {"title": jsonTagRequired},
-	"rich_text": {"rich_text": jsonTagRequired},
-	"people":    {"people": jsonTagRequired},
-	"relation":  {"relation": jsonTagRequired},
-	"rollup":    {"rollup": jsonTagRequired},
+var tagsOfPropertyItemListResponsePropertyItem = map[string]map[string]union.TagNeed{
+	"title":     {"title": union.TagRequired},
+	"rich_text": {"rich_text": union.TagRequired},
+	"people":    {"people": union.TagRequired},
+	"relation":  {"relation": union.TagRequired},
+	"rollup":    {"rollup": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -18040,11 +18677,16 @@ func (v *PropertyItemListResponsePropertyItem) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *PropertyItemListResponsePropertyItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain PropertyItemListResponsePropertyItem
 
 	*v = PropertyItemListResponsePropertyItem{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -18056,25 +18698,28 @@ func (v *PropertyItemListResponsePropertyItem) UnmarshalJSONFrom(dec *jsontext.D
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPropertyItemListResponsePropertyItem, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfPropertyItemListResponsePropertyItem, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *PropertyItemListResponsePropertyItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain PropertyItemListResponsePropertyItem
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPropertyItemListResponsePropertyItem, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfPropertyItemListResponsePropertyItem, set); ok && out.Type == "" {
 		out.Type = PropertyItemListResponsePropertyItemType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPropertyItemListResponsePropertyItem, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfPropertyItemListResponsePropertyItem, set, nil, true); err != nil {
 		return err
 	}
 
@@ -18175,29 +18820,29 @@ func (e PropertyUpdateType) Valid() bool {
 }
 
 // tagsOfPropertyUpdate holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPropertyUpdate = map[string]map[string]jsonTagNeed{
-	"number":           {"number": jsonTagRequired},
-	"formula":          {"formula": jsonTagRequired},
-	"select":           {"select": jsonTagRequired},
-	"multi_select":     {"multi_select": jsonTagRequired},
-	"status":           {"status": jsonTagRequired},
-	"relation":         {"relation": jsonTagRequired},
-	"rollup":           {"rollup": jsonTagRequired},
-	"unique_id":        {"unique_id": jsonTagRequired},
-	"title":            {"title": jsonTagRequired},
-	"rich_text":        {"rich_text": jsonTagRequired},
-	"url":              {"url": jsonTagRequired},
-	"people":           {"people": jsonTagRequired},
-	"files":            {"files": jsonTagRequired},
-	"email":            {"email": jsonTagRequired},
-	"phone_number":     {"phone_number": jsonTagRequired},
-	"date":             {"date": jsonTagRequired},
-	"checkbox":         {"checkbox": jsonTagRequired},
-	"created_by":       {"created_by": jsonTagRequired},
-	"created_time":     {"created_time": jsonTagRequired},
-	"last_edited_by":   {"last_edited_by": jsonTagRequired},
-	"last_edited_time": {"last_edited_time": jsonTagRequired},
-	"place":            {"place": jsonTagRequired},
+var tagsOfPropertyUpdate = map[string]map[string]union.TagNeed{
+	"number":           {"number": union.TagRequired},
+	"formula":          {"formula": union.TagRequired},
+	"select":           {"select": union.TagRequired},
+	"multi_select":     {"multi_select": union.TagRequired},
+	"status":           {"status": union.TagRequired},
+	"relation":         {"relation": union.TagRequired},
+	"rollup":           {"rollup": union.TagRequired},
+	"unique_id":        {"unique_id": union.TagRequired},
+	"title":            {"title": union.TagRequired},
+	"rich_text":        {"rich_text": union.TagRequired},
+	"url":              {"url": union.TagRequired},
+	"people":           {"people": union.TagRequired},
+	"files":            {"files": union.TagRequired},
+	"email":            {"email": union.TagRequired},
+	"phone_number":     {"phone_number": union.TagRequired},
+	"date":             {"date": union.TagRequired},
+	"checkbox":         {"checkbox": union.TagRequired},
+	"created_by":       {"created_by": union.TagRequired},
+	"created_time":     {"created_time": union.TagRequired},
+	"last_edited_by":   {"last_edited_by": union.TagRequired},
+	"last_edited_time": {"last_edited_time": union.TagRequired},
+	"place":            {"place": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -18274,11 +18919,16 @@ func (v *PropertyUpdate) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *PropertyUpdate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain PropertyUpdate
 
 	*v = PropertyUpdate{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -18290,30 +18940,33 @@ func (v *PropertyUpdate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfPropertyUpdate, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfPropertyUpdate, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = PropertyUpdateType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPropertyUpdate, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfPropertyUpdate, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *PropertyUpdate) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain PropertyUpdate
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPropertyUpdate, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfPropertyUpdate, set); ok && out.Type == "" {
 		out.Type = PropertyUpdateType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPropertyUpdate, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfPropertyUpdate, set, nil, true); err != nil {
 		return err
 	}
 
@@ -18390,32 +19043,32 @@ func (e PropertyValueType) Valid() bool {
 }
 
 // tagsOfPropertyValue holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfPropertyValue = map[string]map[string]jsonTagNeed{
-	"number":            {"number": jsonTagRequiredOrNull},
-	"url":               {"url": jsonTagRequiredOrNull},
-	"select":            {"select": jsonTagRequiredOrNull},
-	"multi_select":      {"multi_select": jsonTagRequired},
-	"status":            {"status": jsonTagRequiredOrNull},
-	"date":              {"date": jsonTagRequiredOrNull},
-	"email":             {"email": jsonTagRequiredOrNull},
-	"phone_number":      {"phone_number": jsonTagRequiredOrNull},
-	"checkbox":          {"checkbox": jsonTagRequired},
-	"files":             {"files": jsonTagRequired},
-	"created_by":        {"created_by": jsonTagRequired},
-	"created_time":      {"created_time": jsonTagRequired},
-	"last_edited_by":    {"last_edited_by": jsonTagRequired},
-	"last_edited_time":  {"last_edited_time": jsonTagRequired},
-	"formula":           {"formula": jsonTagRequired},
-	"button":            {"button": jsonTagRequired},
-	"unique_id":         {"unique_id": jsonTagRequired},
-	"verification":      {"verification": jsonTagRequiredOrNull},
-	"place":             {"place": jsonTagRequiredOrNull},
-	"last_visited_time": {"last_visited_time": jsonTagRequiredOrNull},
-	"title":             {"title": jsonTagRequired},
-	"rich_text":         {"rich_text": jsonTagRequired},
-	"people":            {"people": jsonTagRequired},
-	"relation":          {"has_more": jsonTagOptional, "relation": jsonTagRequired},
-	"rollup":            {"rollup": jsonTagRequired},
+var tagsOfPropertyValue = map[string]map[string]union.TagNeed{
+	"number":            {"number": union.TagRequiredOrNull},
+	"url":               {"url": union.TagRequiredOrNull},
+	"select":            {"select": union.TagRequiredOrNull},
+	"multi_select":      {"multi_select": union.TagRequired},
+	"status":            {"status": union.TagRequiredOrNull},
+	"date":              {"date": union.TagRequiredOrNull},
+	"email":             {"email": union.TagRequiredOrNull},
+	"phone_number":      {"phone_number": union.TagRequiredOrNull},
+	"checkbox":          {"checkbox": union.TagRequired},
+	"files":             {"files": union.TagRequired},
+	"created_by":        {"created_by": union.TagRequired},
+	"created_time":      {"created_time": union.TagRequired},
+	"last_edited_by":    {"last_edited_by": union.TagRequired},
+	"last_edited_time":  {"last_edited_time": union.TagRequired},
+	"formula":           {"formula": union.TagRequired},
+	"button":            {"button": union.TagRequired},
+	"unique_id":         {"unique_id": union.TagRequired},
+	"verification":      {"verification": union.TagRequiredOrNull},
+	"place":             {"place": union.TagRequiredOrNull},
+	"last_visited_time": {"last_visited_time": union.TagRequiredOrNull},
+	"title":             {"title": union.TagRequired},
+	"rich_text":         {"rich_text": union.TagRequired},
+	"people":            {"people": union.TagRequired},
+	"relation":          {"has_more": union.TagOptional, "relation": union.TagRequired},
+	"rollup":            {"rollup": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -18504,11 +19157,16 @@ func (v *PropertyValue) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *PropertyValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain PropertyValue
 
 	*v = PropertyValue{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -18520,25 +19178,28 @@ func (v *PropertyValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfPropertyValue, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfPropertyValue, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *PropertyValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain PropertyValue
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfPropertyValue, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfPropertyValue, set); ok && out.Type == "" {
 		out.Type = PropertyValueType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfPropertyValue, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfPropertyValue, set, nil, true); err != nil {
 		return err
 	}
 
@@ -18555,12 +19216,17 @@ type PublicAPIAsyncTaskStatusResultJSONValue struct {
 	MapOfPublicAPIAsyncTaskStatusResultJSONValue map[string]PublicAPIAsyncTaskStatusResultJSONValue
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *PublicAPIAsyncTaskStatusResultJSONValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = PublicAPIAsyncTaskStatusResultJSONValue{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -18621,7 +19287,8 @@ func (v *PublicAPIAsyncTaskStatusResultJSONValue) UnmarshalJSONFrom(dec *jsontex
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *PublicAPIAsyncTaskStatusResultJSONValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.String != "":
@@ -18636,65 +19303,7 @@ func (v *PublicAPIAsyncTaskStatusResultJSONValue) MarshalJSONTo(enc *jsontext.En
 		return json.MarshalEncode(enc, v.MapOfPublicAPIAsyncTaskStatusResultJSONValue, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// PublicAPICommonErrorAdditionalDataValue defines a model
-// PublicAPICommonErrorAdditionalDataValue is an untagged oneOf union: exactly one field is set after unmarshaling.
-type PublicAPICommonErrorAdditionalDataValue struct {
-	String  string
-	String2 []string
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *PublicAPICommonErrorAdditionalDataValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = PublicAPICommonErrorAdditionalDataValue{}
-
-	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv string
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.String = vv
-			matched++
-		}
-	}
-
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
-		var vv []string
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.String2 = vv
-			matched++
-		}
-	}
-
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *PublicAPICommonErrorAdditionalDataValue) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.String != "":
-		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
-	case v.String2 != nil:
-		return json.MarshalEncode(enc, v.String2, jsonOptsTo(enc))
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // QueryAgents defines a model
@@ -18732,12 +19341,17 @@ type QueryAgentsFilter struct {
 	QueryAgentsFilterOr           *QueryAgentsFilterOr
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *QueryAgentsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = QueryAgentsFilter{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -18750,7 +19364,7 @@ func (v *QueryAgentsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"id", "property"}, map[string]bool{}, map[string]string{"property": "\"id\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterID
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterID = &vv
@@ -18763,7 +19377,7 @@ func (v *QueryAgentsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"property", "string"}, map[string]bool{}, map[string]string{"property": "\"agent_type\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterAgentType
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterAgentType = &vv
@@ -18776,7 +19390,7 @@ func (v *QueryAgentsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"people", "property"}, map[string]bool{}, map[string]string{"property": "\"created_by\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterCreatedBy
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterCreatedBy = &vv
@@ -18789,7 +19403,7 @@ func (v *QueryAgentsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"date", "property"}, map[string]bool{}, map[string]string{"property": "\"created_time\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterCreatedTime
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterCreatedTime = &vv
@@ -18802,7 +19416,7 @@ func (v *QueryAgentsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"checkbox", "property"}, map[string]bool{}, map[string]string{"property": "\"favorited\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterFavorited
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterFavorited = &vv
@@ -18815,7 +19429,7 @@ func (v *QueryAgentsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"mcp_server", "property"}, map[string]bool{}, map[string]string{"property": "\"connections\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterConnections
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterConnections = &vv
@@ -18828,7 +19442,7 @@ func (v *QueryAgentsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"property", "status"}, map[string]bool{}, map[string]string{"property": "\"status\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterStatus
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterStatus = &vv
@@ -18841,7 +19455,7 @@ func (v *QueryAgentsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"property", "select"}, map[string]bool{}, map[string]string{"property": "\"model_mode\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterModelMode
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterModelMode = &vv
@@ -18854,7 +19468,7 @@ func (v *QueryAgentsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"number", "property"}, map[string]bool{}, map[string]string{"property": "\"agent_version\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterAgentVersion
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterAgentVersion = &vv
@@ -18867,7 +19481,7 @@ func (v *QueryAgentsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"date", "property"}, map[string]bool{}, map[string]string{"property": "\"last_run_at\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterLastRunAt
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterLastRunAt = &vv
@@ -18880,7 +19494,7 @@ func (v *QueryAgentsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"and"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterAnd
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterAnd = &vv
@@ -18893,7 +19507,7 @@ func (v *QueryAgentsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"or"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterOr
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterOr = &vv
@@ -18909,7 +19523,8 @@ func (v *QueryAgentsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *QueryAgentsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.QueryAgentsFilterID != nil:
@@ -18938,7 +19553,7 @@ func (v *QueryAgentsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.QueryAgentsFilterOr, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // QueryAgentsFilterAgentType defines a model
@@ -18994,8 +19609,8 @@ type QueryAgentsFilterAnd struct {
 
 // QueryAgentsFilterConnections defines a model
 type QueryAgentsFilterConnections struct {
-	Property  string                           `json:"property"`
-	McpServer QueryAgentsFilterCreatedByPeople `json:"mcp_server"`
+	Property  string    `json:"property"`
+	McpServer McpServer `json:"mcp_server"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterConnections declares it.
@@ -19012,8 +19627,8 @@ func (v *QueryAgentsFilterConnections) unmarshalJSONMember(dec *jsontext.Decoder
 
 // QueryAgentsFilterCreatedBy defines a model
 type QueryAgentsFilterCreatedBy struct {
-	Property string                           `json:"property"`
-	People   QueryAgentsFilterCreatedByPeople `json:"people"`
+	Property string    `json:"property"`
+	People   McpServer `json:"people"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterCreatedBy declares it.
@@ -19026,11 +19641,6 @@ func (v *QueryAgentsFilterCreatedBy) unmarshalJSONMember(dec *jsontext.Decoder, 
 	}
 
 	return false, nil
-}
-
-// QueryAgentsFilterCreatedByPeople defines a model
-type QueryAgentsFilterCreatedByPeople struct {
-	Contains string `json:"contains"`
 }
 
 // QueryAgentsFilterCreatedTime defines a model
@@ -19185,12 +19795,17 @@ type QueryAgentsFilterOrItem struct {
 	QueryAgentsFilterOrItemOr     *QueryAgentsFilterOrItemOr
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *QueryAgentsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = QueryAgentsFilterOrItem{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -19203,7 +19818,7 @@ func (v *QueryAgentsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"id", "property"}, map[string]bool{}, map[string]string{"property": "\"id\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterID
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterID = &vv
@@ -19216,7 +19831,7 @@ func (v *QueryAgentsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"property", "string"}, map[string]bool{}, map[string]string{"property": "\"agent_type\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterAgentType
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterAgentType = &vv
@@ -19229,7 +19844,7 @@ func (v *QueryAgentsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"people", "property"}, map[string]bool{}, map[string]string{"property": "\"created_by\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterCreatedBy
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterCreatedBy = &vv
@@ -19242,7 +19857,7 @@ func (v *QueryAgentsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"date", "property"}, map[string]bool{}, map[string]string{"property": "\"created_time\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterCreatedTime
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterCreatedTime = &vv
@@ -19255,7 +19870,7 @@ func (v *QueryAgentsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"checkbox", "property"}, map[string]bool{}, map[string]string{"property": "\"favorited\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterFavorited
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterFavorited = &vv
@@ -19268,7 +19883,7 @@ func (v *QueryAgentsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"mcp_server", "property"}, map[string]bool{}, map[string]string{"property": "\"connections\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterConnections
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterConnections = &vv
@@ -19281,7 +19896,7 @@ func (v *QueryAgentsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"property", "status"}, map[string]bool{}, map[string]string{"property": "\"status\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterStatus
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterStatus = &vv
@@ -19294,7 +19909,7 @@ func (v *QueryAgentsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"property", "select"}, map[string]bool{}, map[string]string{"property": "\"model_mode\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterModelMode
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterModelMode = &vv
@@ -19307,7 +19922,7 @@ func (v *QueryAgentsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"number", "property"}, map[string]bool{}, map[string]string{"property": "\"agent_version\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterAgentVersion
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterAgentVersion = &vv
@@ -19320,7 +19935,7 @@ func (v *QueryAgentsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"date", "property"}, map[string]bool{}, map[string]string{"property": "\"last_run_at\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterLastRunAt
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterLastRunAt = &vv
@@ -19333,7 +19948,7 @@ func (v *QueryAgentsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"and"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterOrItemAnd
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterOrItemAnd = &vv
@@ -19346,7 +19961,7 @@ func (v *QueryAgentsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"or"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QueryAgentsFilterOrItemOr
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QueryAgentsFilterOrItemOr = &vv
@@ -19362,7 +19977,8 @@ func (v *QueryAgentsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *QueryAgentsFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.QueryAgentsFilterID != nil:
@@ -19391,7 +20007,7 @@ func (v *QueryAgentsFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.QueryAgentsFilterOrItemOr, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // QueryAgentsFilterOrItemAnd defines a model
@@ -19420,11 +20036,16 @@ type QueryAgentsFilterOrItemOrItem struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member property names the alternative, which then
-// decodes each further member as it is read. With property first, nothing is read twice.
+// decodes each further member as it is read. With property first, nothing is read twice. Null sets no alternative.
 func (v *QueryAgentsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = QueryAgentsFilterOrItemOrItem{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "property")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "property")
 	if err != nil {
 		return err
 	}
@@ -19432,82 +20053,83 @@ func (v *QueryAgentsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder)
 	switch tag {
 	case "id":
 		var vv QueryAgentsFilterID
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.QueryAgentsFilterID = &vv
 	case "agent_type":
 		var vv QueryAgentsFilterAgentType
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.QueryAgentsFilterAgentType = &vv
 	case "created_by":
 		var vv QueryAgentsFilterCreatedBy
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.QueryAgentsFilterCreatedBy = &vv
 	case "created_time":
 		var vv QueryAgentsFilterCreatedTime
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.QueryAgentsFilterCreatedTime = &vv
 	case "favorited":
 		var vv QueryAgentsFilterFavorited
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.QueryAgentsFilterFavorited = &vv
 	case "connections":
 		var vv QueryAgentsFilterConnections
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.QueryAgentsFilterConnections = &vv
 	case "status":
 		var vv QueryAgentsFilterStatus
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.QueryAgentsFilterStatus = &vv
 	case "model_mode":
 		var vv QueryAgentsFilterModelMode
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.QueryAgentsFilterModelMode = &vv
 	case "agent_version":
 		var vv QueryAgentsFilterAgentVersion
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.QueryAgentsFilterAgentVersion = &vv
 	case "last_run_at":
 		var vv QueryAgentsFilterLastRunAt
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.QueryAgentsFilterLastRunAt = &vv
 	default:
-		return jsonUnknownValue("property", tag)
+		return union.UnknownValue("property", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with property first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with property first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *QueryAgentsFilterOrItemOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -19536,7 +20158,7 @@ func (v *QueryAgentsFilterOrItemOrItem) MarshalJSONTo(enc *jsontext.Encoder) err
 	case v.QueryAgentsFilterLastRunAt != nil:
 		variant, tag = v.QueryAgentsFilterLastRunAt, "last_run_at"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -19544,7 +20166,7 @@ func (v *QueryAgentsFilterOrItemOrItem) MarshalJSONTo(enc *jsontext.Encoder) err
 		return err
 	}
 
-	if out, err = jsonFirst(out, "property", tag); err != nil {
+	if out, err = union.First(out, "property", tag); err != nil {
 		return err
 	}
 
@@ -19631,12 +20253,17 @@ type QueryMeetingNotesFilterFiltersItem struct {
 	FilterGroup                *FilterGroup
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *QueryMeetingNotesFilterFiltersItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = QueryMeetingNotesFilterFiltersItem{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -19646,13 +20273,13 @@ func (v *QueryMeetingNotesFilterFiltersItem) UnmarshalJSONFrom(dec *jsontext.Dec
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		// leniently, more than one may match, and the first does
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"filter", "property"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"property": {"\"title\"", "\"attendees\"", "\"created_time\"", "\"created_by\"", "\"last_edited_time\"", "\"last_edited_by\"", "\"notion://meeting_notes/attendees\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"property": {"\"title\"", "\"attendees\"", "\"created_time\"", "\"created_by\"", "\"last_edited_time\"", "\"last_edited_by\"", "\"notion://meeting_notes/attendees\""}})) {
 				var vv MeetingNotesPropertyFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.MeetingNotesPropertyFilter = &vv
@@ -19665,7 +20292,7 @@ func (v *QueryMeetingNotesFilterFiltersItem) UnmarshalJSONFrom(dec *jsontext.Dec
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"filters", "operator"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"operator": {"\"and\"", "\"or\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"operator": {"\"and\"", "\"or\""}})) {
 				var vv FilterGroup
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.FilterGroup = &vv
@@ -19686,7 +20313,8 @@ func (v *QueryMeetingNotesFilterFiltersItem) UnmarshalJSONFrom(dec *jsontext.Dec
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *QueryMeetingNotesFilterFiltersItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.MeetingNotesPropertyFilter != nil:
@@ -19695,7 +20323,7 @@ func (v *QueryMeetingNotesFilterFiltersItem) MarshalJSONTo(enc *jsontext.Encoder
 		return json.MarshalEncode(enc, v.FilterGroup, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // QueryMeetingNotesFilterOperator defines a model
@@ -19726,52 +20354,6 @@ type QueryMeetingNotesOk struct {
 
 // Meeting note block objects.
 type QueryMeetingNotesOkResults []CreateMeetingNoteMeetingNotes
-
-// Meeting note content fields.
-type QueryMeetingNotesResultsItemMeetingNotes struct {
-	// Whether this is a full-page meeting note.
-	IsFullPage bool `json:"is_full_page"`
-	// Title of the meeting note as rich text.
-	Title RichTexts `json:"title,omitzero"`
-	// Current processing status of the meeting note transcription.
-	Status APITranscriptionStatus `json:"status,omitzero"`
-	// Block IDs for each tab (summary, notes, transcript).
-	Children *QueryMeetingNotesResultsItemMeetingNotesChildren `json:"children,omitzero"`
-	// Calendar event metadata associated with this meeting note.
-	CalendarEvent QueryMeetingNotesResultsItemMeetingNotesCalendarEvent `json:"calendar_event,omitzero"`
-	// Start and end times of the actual recording.
-	Recording *QueryMeetingNotesResultsItemMeetingNotesRecording `json:"recording,omitzero"`
-}
-
-// Calendar event metadata associated with this meeting note.
-type QueryMeetingNotesResultsItemMeetingNotesCalendarEvent struct {
-	// ISO-8601 start time of the calendar event.
-	StartTime string `json:"start_time"`
-	// ISO-8601 end time of the calendar event.
-	EndTime string `json:"end_time"`
-	// ID of the calendar event, as returned by the calendar tools.
-	EventID string `json:"event_id,omitzero"`
-	// List of attendee user IDs.
-	Attendees []ID `json:"attendees,omitzero"`
-}
-
-// Block IDs for each tab (summary, notes, transcript).
-type QueryMeetingNotesResultsItemMeetingNotesChildren struct {
-	// Block ID of the AI summary tab.
-	SummaryBlockID ID `json:"summary_block_id,omitzero"`
-	// Block ID of the meeting notes tab.
-	NotesBlockID ID `json:"notes_block_id,omitzero"`
-	// Block ID of the transcript tab.
-	TranscriptBlockID ID `json:"transcript_block_id,omitzero"`
-}
-
-// Start and end times of the actual recording.
-type QueryMeetingNotesResultsItemMeetingNotesRecording struct {
-	// ISO-8601 timestamp when the recording started.
-	StartTime string `json:"start_time,omitzero"`
-	// ISO-8601 timestamp when the recording ended.
-	EndTime string `json:"end_time,omitzero"`
-}
 
 // Optional sort order for the results. Each entry specifies a property name and direction.
 type QueryMeetingNotesSort []QueryMeetingNotesSortItem
@@ -19829,12 +20411,17 @@ type QuerySessionEventsFilter struct {
 	QuerySessionEventsFilterOr        *QuerySessionEventsFilterOr
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *QuerySessionEventsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = QuerySessionEventsFilter{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -19847,7 +20434,7 @@ func (v *QuerySessionEventsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"property", "string"}, map[string]bool{}, map[string]string{"property": "\"id\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv SessionIDFilter
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.SessionIDFilter = &vv
@@ -19860,7 +20447,7 @@ func (v *QuerySessionEventsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"event_type", "property"}, map[string]bool{}, map[string]string{"property": "\"type\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuerySessionEventsFilterType
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuerySessionEventsFilterType = &vv
@@ -19873,7 +20460,7 @@ func (v *QuerySessionEventsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"number", "property"}, map[string]bool{}, map[string]string{"property": "\"sequence\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuerySessionEventsFilterSequence
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuerySessionEventsFilterSequence = &vv
@@ -19886,7 +20473,7 @@ func (v *QuerySessionEventsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"property", "timestamp"}, map[string]bool{}, map[string]string{"property": "\"created_at\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuerySessionEventsFilterCreatedAt
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuerySessionEventsFilterCreatedAt = &vv
@@ -19899,7 +20486,7 @@ func (v *QuerySessionEventsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"and"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuerySessionEventsFilterAnd
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuerySessionEventsFilterAnd = &vv
@@ -19912,7 +20499,7 @@ func (v *QuerySessionEventsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"or"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuerySessionEventsFilterOr
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuerySessionEventsFilterOr = &vv
@@ -19928,7 +20515,8 @@ func (v *QuerySessionEventsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) erro
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *QuerySessionEventsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.SessionIDFilter != nil:
@@ -19945,7 +20533,7 @@ func (v *QuerySessionEventsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOr, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // QuerySessionEventsFilterAnd defines a model
@@ -20013,12 +20601,17 @@ type QuerySessionEventsFilterOrItem struct {
 	QuerySessionEventsFilterOrItemOr  *QuerySessionEventsFilterOrItemOr
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *QuerySessionEventsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = QuerySessionEventsFilterOrItem{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -20031,7 +20624,7 @@ func (v *QuerySessionEventsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"property", "string"}, map[string]bool{}, map[string]string{"property": "\"id\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv SessionIDFilter
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.SessionIDFilter = &vv
@@ -20044,7 +20637,7 @@ func (v *QuerySessionEventsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"event_type", "property"}, map[string]bool{}, map[string]string{"property": "\"type\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuerySessionEventsFilterType
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuerySessionEventsFilterType = &vv
@@ -20057,7 +20650,7 @@ func (v *QuerySessionEventsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"number", "property"}, map[string]bool{}, map[string]string{"property": "\"sequence\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuerySessionEventsFilterSequence
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuerySessionEventsFilterSequence = &vv
@@ -20070,7 +20663,7 @@ func (v *QuerySessionEventsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"property", "timestamp"}, map[string]bool{}, map[string]string{"property": "\"created_at\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuerySessionEventsFilterCreatedAt
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuerySessionEventsFilterCreatedAt = &vv
@@ -20083,7 +20676,7 @@ func (v *QuerySessionEventsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"and"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuerySessionEventsFilterOrItemAnd
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuerySessionEventsFilterOrItemAnd = &vv
@@ -20096,7 +20689,7 @@ func (v *QuerySessionEventsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"or"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuerySessionEventsFilterOrItemOr
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuerySessionEventsFilterOrItemOr = &vv
@@ -20112,7 +20705,8 @@ func (v *QuerySessionEventsFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *QuerySessionEventsFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.SessionIDFilter != nil:
@@ -20129,7 +20723,7 @@ func (v *QuerySessionEventsFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) er
 		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOrItemOr, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // QuerySessionEventsFilterOrItemAnd defines a model
@@ -20153,12 +20747,17 @@ type QuerySessionEventsFilterOrItemOrItem struct {
 	QuerySessionEventsFilterOrItemOrItemOr  *QuerySessionEventsFilterOrItemOrItemOr
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *QuerySessionEventsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = QuerySessionEventsFilterOrItemOrItem{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -20171,7 +20770,7 @@ func (v *QuerySessionEventsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.D
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"property", "string"}, map[string]bool{}, map[string]string{"property": "\"id\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv SessionIDFilter
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.SessionIDFilter = &vv
@@ -20184,7 +20783,7 @@ func (v *QuerySessionEventsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.D
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"event_type", "property"}, map[string]bool{}, map[string]string{"property": "\"type\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuerySessionEventsFilterType
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuerySessionEventsFilterType = &vv
@@ -20197,7 +20796,7 @@ func (v *QuerySessionEventsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.D
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"number", "property"}, map[string]bool{}, map[string]string{"property": "\"sequence\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuerySessionEventsFilterSequence
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuerySessionEventsFilterSequence = &vv
@@ -20210,7 +20809,7 @@ func (v *QuerySessionEventsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.D
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"property", "timestamp"}, map[string]bool{}, map[string]string{"property": "\"created_at\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuerySessionEventsFilterCreatedAt
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuerySessionEventsFilterCreatedAt = &vv
@@ -20223,7 +20822,7 @@ func (v *QuerySessionEventsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.D
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"and"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuerySessionEventsFilterOrItemOrItemAnd
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuerySessionEventsFilterOrItemOrItemAnd = &vv
@@ -20236,7 +20835,7 @@ func (v *QuerySessionEventsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.D
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"or"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuerySessionEventsFilterOrItemOrItemOr
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuerySessionEventsFilterOrItemOrItemOr = &vv
@@ -20252,7 +20851,8 @@ func (v *QuerySessionEventsFilterOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.D
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *QuerySessionEventsFilterOrItemOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.SessionIDFilter != nil:
@@ -20269,7 +20869,7 @@ func (v *QuerySessionEventsFilterOrItemOrItem) MarshalJSONTo(enc *jsontext.Encod
 		return json.MarshalEncode(enc, v.QuerySessionEventsFilterOrItemOrItemOr, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // QuerySessionEventsFilterOrItemOrItemAnd defines a model
@@ -20292,11 +20892,16 @@ type QuerySessionEventsFilterOrItemOrItemOrItem struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member property names the alternative, which then
-// decodes each further member as it is read. With property first, nothing is read twice.
+// decodes each further member as it is read. With property first, nothing is read twice. Null sets no alternative.
 func (v *QuerySessionEventsFilterOrItemOrItemOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = QuerySessionEventsFilterOrItemOrItemOrItem{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "property")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "property")
 	if err != nil {
 		return err
 	}
@@ -20304,40 +20909,41 @@ func (v *QuerySessionEventsFilterOrItemOrItemOrItem) UnmarshalJSONFrom(dec *json
 	switch tag {
 	case "id":
 		var vv SessionIDFilter
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.SessionIDFilter = &vv
 	case "type":
 		var vv QuerySessionEventsFilterType
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.QuerySessionEventsFilterType = &vv
 	case "sequence":
 		var vv QuerySessionEventsFilterSequence
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.QuerySessionEventsFilterSequence = &vv
 	case "created_at":
 		var vv QuerySessionEventsFilterCreatedAt
-		if err := jsonMembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "property", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.QuerySessionEventsFilterCreatedAt = &vv
 	default:
-		return jsonUnknownValue("property", tag)
+		return union.UnknownValue("property", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with property first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with property first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *QuerySessionEventsFilterOrItemOrItemOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -20354,7 +20960,7 @@ func (v *QuerySessionEventsFilterOrItemOrItemOrItem) MarshalJSONTo(enc *jsontext
 	case v.QuerySessionEventsFilterCreatedAt != nil:
 		variant, tag = v.QuerySessionEventsFilterCreatedAt, "created_at"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -20362,7 +20968,7 @@ func (v *QuerySessionEventsFilterOrItemOrItemOrItem) MarshalJSONTo(enc *jsontext
 		return err
 	}
 
-	if out, err = jsonFirst(out, "property", tag); err != nil {
+	if out, err = union.First(out, "property", tag); err != nil {
 		return err
 	}
 
@@ -20414,8 +21020,8 @@ func (e QuerySessionEventsFilterSequenceProperty) Valid() bool {
 
 // QuerySessionEventsFilterType defines a model
 type QuerySessionEventsFilterType struct {
-	Property  QuerySessionEventsFilterTypeProperty  `json:"property"`
-	EventType QuerySessionEventsFilterTypeEventType `json:"event_type"`
+	Property  QuerySessionEventsFilterTypeProperty `json:"property"`
+	EventType EventType                            `json:"event_type"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether QuerySessionEventsFilterType declares it.
@@ -20429,37 +21035,6 @@ func (v *QuerySessionEventsFilterType) unmarshalJSONMember(dec *jsontext.Decoder
 
 	return false, nil
 }
-
-// QuerySessionEventsFilterTypeEventType defines a model
-type QuerySessionEventsFilterTypeEventType struct {
-	Equals QuerySessionEventsFilterTypeEventTypeEquals `json:"equals,omitzero"`
-	In     QuerySessionEventsFilterTypeEventTypeIn     `json:"in,omitzero"`
-}
-
-// QuerySessionEventsFilterTypeEventTypeEquals defines a model
-type QuerySessionEventsFilterTypeEventTypeEquals string
-
-const (
-	QuerySessionEventsFilterTypeEventTypeEqualsUserDotMessage     QuerySessionEventsFilterTypeEventTypeEquals = "user.message"
-	QuerySessionEventsFilterTypeEventTypeEqualsAgentDotMessage    QuerySessionEventsFilterTypeEventTypeEquals = "agent.message"
-	QuerySessionEventsFilterTypeEventTypeEqualsAgentDotThinking   QuerySessionEventsFilterTypeEventTypeEquals = "agent.thinking"
-	QuerySessionEventsFilterTypeEventTypeEqualsAgentDotToolUse    QuerySessionEventsFilterTypeEventTypeEquals = "agent.tool_use"
-	QuerySessionEventsFilterTypeEventTypeEqualsAgentDotToolResult QuerySessionEventsFilterTypeEventTypeEquals = "agent.tool_result"
-	QuerySessionEventsFilterTypeEventTypeEqualsSessionDotStatus   QuerySessionEventsFilterTypeEventTypeEquals = "session.status"
-)
-
-// Valid indicates whether the value is a known member of the QuerySessionEventsFilterTypeEventTypeEquals enum.
-func (e QuerySessionEventsFilterTypeEventTypeEquals) Valid() bool {
-	switch e {
-	case QuerySessionEventsFilterTypeEventTypeEqualsUserDotMessage, QuerySessionEventsFilterTypeEventTypeEqualsAgentDotMessage, QuerySessionEventsFilterTypeEventTypeEqualsAgentDotThinking, QuerySessionEventsFilterTypeEventTypeEqualsAgentDotToolUse, QuerySessionEventsFilterTypeEventTypeEqualsAgentDotToolResult, QuerySessionEventsFilterTypeEventTypeEqualsSessionDotStatus:
-		return true
-	default:
-		return false
-	}
-}
-
-// QuerySessionEventsFilterTypeEventTypeIn defines a model
-type QuerySessionEventsFilterTypeEventTypeIn []QuerySessionEventsFilterTypeEventTypeEquals
 
 // QuerySessionEventsFilterTypeProperty defines a model
 type QuerySessionEventsFilterTypeProperty string
@@ -20532,12 +21107,17 @@ type QuerySessionsFilter struct {
 	QuerySessionsFilterOr  *QuerySessionsFilterOr
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *QuerySessionsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = QuerySessionsFilter{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -20547,13 +21127,13 @@ func (v *QuerySessionsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		// leniently, more than one may match, and the first does
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property", "string"}, map[string]bool{}, map[string]string{"property": "\"id\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv SessionIDFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.SessionIDFilter = &vv
@@ -20566,7 +21146,7 @@ func (v *QuerySessionsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property", "string"}, map[string]bool{}, map[string]string{"property": "\"agent_id\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv SessionAgentIDFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.SessionAgentIDFilter = &vv
@@ -20579,7 +21159,7 @@ func (v *QuerySessionsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property", "status"}, map[string]bool{}, map[string]string{"property": "\"status\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv SessionStatusFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.SessionStatusFilter = &vv
@@ -20592,7 +21172,7 @@ func (v *QuerySessionsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property", "timestamp"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"property": {"\"created_at\"", "\"updated_at\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"property": {"\"created_at\"", "\"updated_at\""}})) {
 				var vv SessionTimestampFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.SessionTimestampFilter = &vv
@@ -20605,7 +21185,7 @@ func (v *QuerySessionsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"and"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv QuerySessionsFilterAnd
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.QuerySessionsFilterAnd = &vv
@@ -20618,7 +21198,7 @@ func (v *QuerySessionsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"or"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv QuerySessionsFilterOr
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.QuerySessionsFilterOr = &vv
@@ -20639,7 +21219,8 @@ func (v *QuerySessionsFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *QuerySessionsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.SessionIDFilter != nil:
@@ -20656,7 +21237,7 @@ func (v *QuerySessionsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.QuerySessionsFilterOr, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // QuerySessionsFilterAnd defines a model
@@ -20728,9 +21309,14 @@ type QuickFilterCondition struct {
 	QuickFilterConditionVerification   *QuickFilterConditionVerification
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = QuickFilterCondition{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -20752,7 +21338,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"title"}, map[string]bool{}, map[string]string{"type": "\"title\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionTitle
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionTitle = &vv
@@ -20764,7 +21350,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"rich_text"}, map[string]bool{}, map[string]string{"type": "\"rich_text\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionRichText
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionRichText = &vv
@@ -20776,7 +21362,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"number"}, map[string]bool{}, map[string]string{"type": "\"number\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionNumber
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionNumber = &vv
@@ -20788,7 +21374,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"checkbox"}, map[string]bool{}, map[string]string{"type": "\"checkbox\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionCheckbox
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionCheckbox = &vv
@@ -20800,7 +21386,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"select"}, map[string]bool{}, map[string]string{"type": "\"select\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionSelect
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionSelect = &vv
@@ -20812,7 +21398,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"multi_select"}, map[string]bool{}, map[string]string{"type": "\"multi_select\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionMultiSelect
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionMultiSelect = &vv
@@ -20824,7 +21410,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"status"}, map[string]bool{}, map[string]string{"type": "\"status\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionStatus
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionStatus = &vv
@@ -20836,7 +21422,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"date"}, map[string]bool{}, map[string]string{"type": "\"date\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionDate
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionDate = &vv
@@ -20848,7 +21434,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"people"}, map[string]bool{}, map[string]string{"type": "\"people\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionPeople
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionPeople = &vv
@@ -20860,7 +21446,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"files"}, map[string]bool{}, map[string]string{"type": "\"files\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionFiles
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionFiles = &vv
@@ -20872,7 +21458,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"url"}, map[string]bool{}, map[string]string{"type": "\"url\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionURL
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionURL = &vv
@@ -20884,7 +21470,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"email"}, map[string]bool{}, map[string]string{"type": "\"email\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionEmail
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionEmail = &vv
@@ -20896,7 +21482,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"phone_number"}, map[string]bool{}, map[string]string{"type": "\"phone_number\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionPhoneNumber
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionPhoneNumber = &vv
@@ -20908,7 +21494,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"relation"}, map[string]bool{}, map[string]string{"type": "\"relation\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionRelation
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionRelation = &vv
@@ -20920,7 +21506,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"created_by"}, map[string]bool{}, map[string]string{"type": "\"created_by\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionCreatedBy
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionCreatedBy = &vv
@@ -20932,7 +21518,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"created_time"}, map[string]bool{}, map[string]string{"type": "\"created_time\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionCreatedTime
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionCreatedTime = &vv
@@ -20944,7 +21530,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"last_edited_by"}, map[string]bool{}, map[string]string{"type": "\"last_edited_by\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionLastEditedBy
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionLastEditedBy = &vv
@@ -20956,7 +21542,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"last_edited_time"}, map[string]bool{}, map[string]string{"type": "\"last_edited_time\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionLastEditedTime
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionLastEditedTime = &vv
@@ -20968,7 +21554,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"formula"}, map[string]bool{}, map[string]string{"type": "\"formula\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionFormula
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionFormula = &vv
@@ -20980,7 +21566,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"unique_id"}, map[string]bool{}, map[string]string{"type": "\"unique_id\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionUniqueID
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionUniqueID = &vv
@@ -20992,7 +21578,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"rollup"}, map[string]bool{}, map[string]string{"type": "\"rollup\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionRollup
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionRollup = &vv
@@ -21004,7 +21590,7 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"verification"}, map[string]bool{}, map[string]string{"type": "\"verification\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv QuickFilterConditionVerification
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.QuickFilterConditionVerification = &vv
@@ -21020,7 +21606,8 @@ func (v *QuickFilterCondition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *QuickFilterCondition) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.EmptyObject != nil:
@@ -21071,7 +21658,7 @@ func (v *QuickFilterCondition) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.QuickFilterConditionVerification, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // QuickFilterConditionCheckbox defines a model
@@ -21130,8 +21717,8 @@ type QuickFilterConditionLastEditedTime struct {
 
 // QuickFilterConditionMultiSelect defines a model
 type QuickFilterConditionMultiSelect struct {
-	MultiSelect MultiSelectPropertyFilter `json:"multi_select"`
-	Type        string                    `json:"type,omitzero"`
+	MultiSelect SelectOptionsPropertyFilter `json:"multi_select"`
+	Type        string                      `json:"type,omitzero"`
 }
 
 // QuickFilterConditionNumber defines a model
@@ -21271,9 +21858,9 @@ func (e RelationPropertyConfigurationRelationType) Valid() bool {
 }
 
 // tagsOfRelationPropertyConfigurationRelation holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfRelationPropertyConfigurationRelation = map[string]map[string]jsonTagNeed{
-	"single_property": {"single_property": jsonTagRequired},
-	"dual_property":   {"dual_property": jsonTagRequired},
+var tagsOfRelationPropertyConfigurationRelation = map[string]map[string]union.TagNeed{
+	"single_property": {"single_property": union.TagRequired},
+	"dual_property":   {"dual_property": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -21290,11 +21877,16 @@ func (v *RelationPropertyConfigurationRelation) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *RelationPropertyConfigurationRelation) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain RelationPropertyConfigurationRelation
 
 	*v = RelationPropertyConfigurationRelation{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -21306,30 +21898,33 @@ func (v *RelationPropertyConfigurationRelation) UnmarshalJSONFrom(dec *jsontext.
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfRelationPropertyConfigurationRelation, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfRelationPropertyConfigurationRelation, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = RelationPropertyConfigurationRelationType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfRelationPropertyConfigurationRelation, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfRelationPropertyConfigurationRelation, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *RelationPropertyConfigurationRelation) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain RelationPropertyConfigurationRelation
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfRelationPropertyConfigurationRelation, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfRelationPropertyConfigurationRelation, set); ok && out.Type == "" {
 		out.Type = RelationPropertyConfigurationRelationType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfRelationPropertyConfigurationRelation, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfRelationPropertyConfigurationRelation, set, nil, true); err != nil {
 		return err
 	}
 
@@ -21350,9 +21945,14 @@ type RelationPropertyFilter struct {
 	ExistencePropertyFilter              *ExistencePropertyFilter
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *RelationPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = RelationPropertyFilter{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -21366,7 +21966,7 @@ func (v *RelationPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"contains"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RelationPropertyFilterContains
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RelationPropertyFilterContains = &vv
@@ -21378,7 +21978,7 @@ func (v *RelationPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"does_not_contain"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RelationPropertyFilterDoesNotContain
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RelationPropertyFilterDoesNotContain = &vv
@@ -21402,7 +22002,8 @@ func (v *RelationPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *RelationPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.RelationPropertyFilterContains != nil:
@@ -21413,7 +22014,7 @@ func (v *RelationPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // RelationPropertyFilterContains defines a model
@@ -21498,10 +22099,54 @@ type ReplaceContentRange struct {
 
 // RequestStatus defines a model
 type RequestStatus struct {
+	Type             StatusType       `json:"type"`
+	IncompleteReason IncompleteReason `json:"incomplete_reason,omitzero"`
+}
+
+// RequestStatusResponse defines a model
+type RequestStatusResponse struct {
 	// Whether the result set is complete or incomplete. `incomplete` means the response does not include all rows that match the query parameters (e.g. due to a server-side pagination depth limit).
 	Type StatusType `json:"type"`
 	// Why the result set is incomplete. Only present when `type` is `incomplete`.
 	IncompleteReason string `json:"incomplete_reason,omitzero"`
+}
+
+// RequiredActions defines a model
+type RequiredActions []RequiredActionsItem
+
+// RequiredActionsItem defines a model
+type RequiredActionsItem struct {
+	ActionID string                     `json:"action_id"`
+	Title    string                     `json:"title"`
+	Options  RequiredActionsItemOptions `json:"options"`
+}
+
+// RequiredActionsItemOptions defines a model
+type RequiredActionsItemOptions []RequiredActionsItemOptionsItem
+
+// RequiredActionsItemOptionsItem defines a model
+type RequiredActionsItemOptionsItem struct {
+	// One of: `approve`, `reject`
+	ID    OptionID `json:"id"`
+	Label string   `json:"label"`
+}
+
+// ResultType defines a model
+type ResultType string
+
+const (
+	ResultTypePage       ResultType = "page"
+	ResultTypeDataSource ResultType = "data_source"
+)
+
+// Valid indicates whether the value is a known member of the ResultType enum.
+func (e ResultType) Valid() bool {
+	switch e {
+	case ResultTypePage, ResultTypeDataSource:
+		return true
+	default:
+		return false
+	}
 }
 
 // RetrieveAPagePropertyOk defines a model
@@ -21511,9 +22156,14 @@ type RetrieveAPagePropertyOk struct {
 	PropertyItemPropertyItemList *PropertyItemPropertyItemList
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *RetrieveAPagePropertyOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = RetrieveAPagePropertyOk{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -21547,7 +22197,8 @@ func (v *RetrieveAPagePropertyOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *RetrieveAPagePropertyOk) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PropertyItem != nil:
@@ -21556,7 +22207,7 @@ func (v *RetrieveAPagePropertyOk) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.PropertyItemPropertyItemList, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // RetrieveAsyncTaskOk defines a model
@@ -21567,12 +22218,17 @@ type RetrieveAsyncTaskOk struct {
 	RetrieveAsyncTaskOkFailed    *RetrieveAsyncTaskOkFailed
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *RetrieveAsyncTaskOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = RetrieveAsyncTaskOk{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -21582,13 +22238,13 @@ func (v *RetrieveAsyncTaskOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		// leniently, more than one may match, and the first does
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"created_time", "id", "object", "operation", "poll_after_seconds", "status", "status_url"}, map[string]bool{}, map[string]string{"object": "\"async_task\""}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"status": {"\"queued\"", "\"running\"", "\"retrying\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"status": {"\"queued\"", "\"running\"", "\"retrying\""}})) {
 				var vv AgentBatchOk
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.AgentBatchOk = &vv
@@ -21601,7 +22257,7 @@ func (v *RetrieveAsyncTaskOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"created_time", "id", "object", "operation", "result", "status", "status_url"}, map[string]bool{}, map[string]string{"object": "\"async_task\"", "status": "\"succeeded\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv RetrieveAsyncTaskOkSucceeded
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.RetrieveAsyncTaskOkSucceeded = &vv
@@ -21614,7 +22270,7 @@ func (v *RetrieveAsyncTaskOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"created_time", "error", "id", "object", "operation", "status", "status_url"}, map[string]bool{}, map[string]string{"object": "\"async_task\"", "status": "\"failed\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv RetrieveAsyncTaskOkFailed
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.RetrieveAsyncTaskOkFailed = &vv
@@ -21635,7 +22291,8 @@ func (v *RetrieveAsyncTaskOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *RetrieveAsyncTaskOk) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.AgentBatchOk != nil:
@@ -21646,7 +22303,7 @@ func (v *RetrieveAsyncTaskOk) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.RetrieveAsyncTaskOkFailed, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // RetrieveAsyncTaskOkFailed defines a model
@@ -21689,11 +22346,16 @@ type RetrieveAsyncTaskOkFailedError struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member code names the alternative, which then
-// decodes each further member as it is read. With code first, nothing is read twice.
+// decodes each further member as it is read. With code first, nothing is read twice. Null sets no alternative.
 func (v *RetrieveAsyncTaskOkFailedError) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = RetrieveAsyncTaskOkFailedError{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "code")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "code")
 	if err != nil {
 		return err
 	}
@@ -21701,173 +22363,174 @@ func (v *RetrieveAsyncTaskOkFailedError) UnmarshalJSONFrom(dec *jsontext.Decoder
 	switch tag {
 	case "invalid_json":
 		var vv RetrieveAsyncTaskOkFailedErrorInvalidJSON
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorInvalidJSON = &vv
 	case "invalid_request_url":
 		var vv RetrieveAsyncTaskOkFailedErrorInvalidRequestURL
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorInvalidRequestURL = &vv
 	case "invalid_request":
 		var vv RetrieveAsyncTaskOkFailedErrorInvalidRequest
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorInvalidRequest = &vv
 	case "missing_version":
 		var vv RetrieveAsyncTaskOkFailedErrorMissingVersion
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorMissingVersion = &vv
 	case "invalid_beta":
 		var vv RetrieveAsyncTaskOkFailedErrorInvalidBeta
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorInvalidBeta = &vv
 	case "validation_error":
 		var vv RetrieveAsyncTaskOkFailedErrorValidationError
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorValidationError = &vv
 	case "unauthorized":
 		var vv RetrieveAsyncTaskOkFailedErrorUnauthorized
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorUnauthorized = &vv
 	case "restricted_resource":
 		var vv RetrieveAsyncTaskOkFailedErrorRestrictedResource
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorRestrictedResource = &vv
 	case "object_not_found":
 		var vv RetrieveAsyncTaskOkFailedErrorObjectNotFound
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorObjectNotFound = &vv
 	case "directory_not_found":
 		var vv RetrieveAsyncTaskOkFailedErrorDirectoryNotFound
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorDirectoryNotFound = &vv
 	case "rate_limited":
 		var vv RetrieveAsyncTaskOkFailedErrorRateLimited
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorRateLimited = &vv
 	case "service_overload":
 		var vv RetrieveAsyncTaskOkFailedErrorServiceOverload
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorServiceOverload = &vv
 	case "internal_server_error":
 		var vv RetrieveAsyncTaskOkFailedErrorInternalServerError
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorInternalServerError = &vv
 	case "service_unavailable":
 		var vv RetrieveAsyncTaskOkFailedErrorServiceUnavailable
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorServiceUnavailable = &vv
 	case "gateway_timeout":
 		var vv RetrieveAsyncTaskOkFailedErrorGatewayTimeout
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorGatewayTimeout = &vv
 	case "conflict_error":
 		var vv RetrieveAsyncTaskOkFailedErrorConflictError
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorConflictError = &vv
 	case "idempotency_key_reused":
 		var vv RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused = &vv
 	case "row_limit_exceeded":
 		var vv RetrieveAsyncTaskOkFailedErrorRowLimitExceeded
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorRowLimitExceeded = &vv
 	case "status_change_not_allowed":
 		var vv RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed = &vv
 	case "agent_deleted":
 		var vv RetrieveAsyncTaskOkFailedErrorAgentDeleted
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorAgentDeleted = &vv
 	case "invalid_credit_limit":
 		var vv RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit = &vv
 	case "workspace_credits_exhausted":
 		var vv RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted = &vv
 	case "agent_credit_limit_reached":
 		var vv RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached
-		if err := jsonMembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "code", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached = &vv
 	default:
-		return jsonUnknownValue("code", tag)
+		return union.UnknownValue("code", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with code first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with code first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *RetrieveAsyncTaskOkFailedError) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -21922,7 +22585,7 @@ func (v *RetrieveAsyncTaskOkFailedError) MarshalJSONTo(enc *jsontext.Encoder) er
 	case v.RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached != nil:
 		variant, tag = v.RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached, "agent_credit_limit_reached"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -21930,7 +22593,7 @@ func (v *RetrieveAsyncTaskOkFailedError) MarshalJSONTo(enc *jsontext.Encoder) er
 		return err
 	}
 
-	if out, err = jsonFirst(out, "code", tag); err != nil {
+	if out, err = union.First(out, "code", tag); err != nil {
 		return err
 	}
 
@@ -21939,11 +22602,11 @@ func (v *RetrieveAsyncTaskOkFailedError) MarshalJSONTo(enc *jsontext.Encoder) er
 
 // RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached defines a model
 type RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached declares it.
@@ -21966,11 +22629,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorAgentCreditLimitReached) unmarshalJSONMem
 
 // RetrieveAsyncTaskOkFailedErrorAgentDeleted defines a model
 type RetrieveAsyncTaskOkFailedErrorAgentDeleted struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorAgentDeleted declares it.
@@ -21993,11 +22656,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorAgentDeleted) unmarshalJSONMember(dec *js
 
 // RetrieveAsyncTaskOkFailedErrorConflictError defines a model
 type RetrieveAsyncTaskOkFailedErrorConflictError struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorConflictError declares it.
@@ -22020,11 +22683,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorConflictError) unmarshalJSONMember(dec *j
 
 // RetrieveAsyncTaskOkFailedErrorDirectoryNotFound defines a model
 type RetrieveAsyncTaskOkFailedErrorDirectoryNotFound struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorDirectoryNotFound declares it.
@@ -22047,11 +22710,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorDirectoryNotFound) unmarshalJSONMember(de
 
 // RetrieveAsyncTaskOkFailedErrorGatewayTimeout defines a model
 type RetrieveAsyncTaskOkFailedErrorGatewayTimeout struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorGatewayTimeout declares it.
@@ -22074,11 +22737,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorGatewayTimeout) unmarshalJSONMember(dec *
 
 // RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused defines a model
 type RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused declares it.
@@ -22101,11 +22764,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorIdempotencyKeyReused) unmarshalJSONMember
 
 // RetrieveAsyncTaskOkFailedErrorInternalServerError defines a model
 type RetrieveAsyncTaskOkFailedErrorInternalServerError struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorInternalServerError declares it.
@@ -22128,11 +22791,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorInternalServerError) unmarshalJSONMember(
 
 // RetrieveAsyncTaskOkFailedErrorInvalidBeta defines a model
 type RetrieveAsyncTaskOkFailedErrorInvalidBeta struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorInvalidBeta declares it.
@@ -22155,11 +22818,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorInvalidBeta) unmarshalJSONMember(dec *jso
 
 // RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit defines a model
 type RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit declares it.
@@ -22182,11 +22845,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorInvalidCreditLimit) unmarshalJSONMember(d
 
 // RetrieveAsyncTaskOkFailedErrorInvalidJSON defines a model
 type RetrieveAsyncTaskOkFailedErrorInvalidJSON struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorInvalidJSON declares it.
@@ -22209,11 +22872,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorInvalidJSON) unmarshalJSONMember(dec *jso
 
 // RetrieveAsyncTaskOkFailedErrorInvalidRequest defines a model
 type RetrieveAsyncTaskOkFailedErrorInvalidRequest struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorInvalidRequest declares it.
@@ -22236,11 +22899,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorInvalidRequest) unmarshalJSONMember(dec *
 
 // RetrieveAsyncTaskOkFailedErrorInvalidRequestURL defines a model
 type RetrieveAsyncTaskOkFailedErrorInvalidRequestURL struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorInvalidRequestURL declares it.
@@ -22263,11 +22926,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorInvalidRequestURL) unmarshalJSONMember(de
 
 // RetrieveAsyncTaskOkFailedErrorMissingVersion defines a model
 type RetrieveAsyncTaskOkFailedErrorMissingVersion struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorMissingVersion declares it.
@@ -22290,11 +22953,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorMissingVersion) unmarshalJSONMember(dec *
 
 // RetrieveAsyncTaskOkFailedErrorObjectNotFound defines a model
 type RetrieveAsyncTaskOkFailedErrorObjectNotFound struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorObjectNotFound declares it.
@@ -22317,11 +22980,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorObjectNotFound) unmarshalJSONMember(dec *
 
 // RetrieveAsyncTaskOkFailedErrorRateLimited defines a model
 type RetrieveAsyncTaskOkFailedErrorRateLimited struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorRateLimited declares it.
@@ -22344,11 +23007,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorRateLimited) unmarshalJSONMember(dec *jso
 
 // RetrieveAsyncTaskOkFailedErrorRestrictedResource defines a model
 type RetrieveAsyncTaskOkFailedErrorRestrictedResource struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorRestrictedResource declares it.
@@ -22371,11 +23034,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorRestrictedResource) unmarshalJSONMember(d
 
 // RetrieveAsyncTaskOkFailedErrorRowLimitExceeded defines a model
 type RetrieveAsyncTaskOkFailedErrorRowLimitExceeded struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorRowLimitExceeded declares it.
@@ -22398,11 +23061,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorRowLimitExceeded) unmarshalJSONMember(dec
 
 // RetrieveAsyncTaskOkFailedErrorServiceOverload defines a model
 type RetrieveAsyncTaskOkFailedErrorServiceOverload struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorServiceOverload declares it.
@@ -22425,11 +23088,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorServiceOverload) unmarshalJSONMember(dec 
 
 // RetrieveAsyncTaskOkFailedErrorServiceUnavailable defines a model
 type RetrieveAsyncTaskOkFailedErrorServiceUnavailable struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorServiceUnavailable declares it.
@@ -22452,11 +23115,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorServiceUnavailable) unmarshalJSONMember(d
 
 // RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed defines a model
 type RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed declares it.
@@ -22479,11 +23142,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorStatusChangeNotAllowed) unmarshalJSONMemb
 
 // RetrieveAsyncTaskOkFailedErrorUnauthorized defines a model
 type RetrieveAsyncTaskOkFailedErrorUnauthorized struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorUnauthorized declares it.
@@ -22506,11 +23169,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorUnauthorized) unmarshalJSONMember(dec *js
 
 // RetrieveAsyncTaskOkFailedErrorValidationError defines a model
 type RetrieveAsyncTaskOkFailedErrorValidationError struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorValidationError declares it.
@@ -22533,11 +23196,11 @@ func (v *RetrieveAsyncTaskOkFailedErrorValidationError) unmarshalJSONMember(dec 
 
 // RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted defines a model
 type RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted struct {
-	Object         string                                             `json:"object"`
-	Status         int                                                `json:"status"`
-	Code           string                                             `json:"code"`
-	Message        string                                             `json:"message"`
-	AdditionalData map[string]PublicAPICommonErrorAdditionalDataValue `json:"additional_data,omitzero"`
+	Object         string                         `json:"object"`
+	Status         int                            `json:"status"`
+	Code           string                         `json:"code"`
+	Message        string                         `json:"message"`
+	AdditionalData map[string]AdditionalDataValue `json:"additional_data,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether RetrieveAsyncTaskOkFailedErrorWorkspaceCreditsExhausted declares it.
@@ -22612,10 +23275,10 @@ func (e RichTextType) Valid() bool {
 }
 
 // tagsOfRichText holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfRichText = map[string]map[string]jsonTagNeed{
-	"text":     {"text": jsonTagRequired},
-	"mention":  {"mention": jsonTagRequired},
-	"equation": {"equation": jsonTagRequired},
+var tagsOfRichText = map[string]map[string]union.TagNeed{
+	"text":     {"text": union.TagRequired},
+	"mention":  {"mention": union.TagRequired},
+	"equation": {"equation": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -22635,11 +23298,16 @@ func (v *RichText) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *RichText) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain RichText
 
 	*v = RichText{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -22651,25 +23319,28 @@ func (v *RichText) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfRichText, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfRichText, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *RichText) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain RichText
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfRichText, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfRichText, set); ok && out.Type == "" {
 		out.Type = RichTextType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfRichText, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfRichText, set, nil, true); err != nil {
 		return err
 	}
 
@@ -22705,10 +23376,10 @@ func (e RichTextItemType) Valid() bool {
 }
 
 // tagsOfRichTextItem holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfRichTextItem = map[string]map[string]jsonTagNeed{
-	"text":     {"text": jsonTagRequired},
-	"mention":  {"mention": jsonTagRequired},
-	"equation": {"equation": jsonTagRequired},
+var tagsOfRichTextItem = map[string]map[string]union.TagNeed{
+	"text":     {"text": union.TagRequired},
+	"mention":  {"mention": union.TagRequired},
+	"equation": {"equation": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -22728,11 +23399,16 @@ func (v *RichTextItem) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *RichTextItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain RichTextItem
 
 	*v = RichTextItem{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -22744,30 +23420,33 @@ func (v *RichTextItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfRichTextItem, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfRichTextItem, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = RichTextItemType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfRichTextItem, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfRichTextItem, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *RichTextItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain RichTextItem
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfRichTextItem, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfRichTextItem, set); ok && out.Type == "" {
 		out.Type = RichTextItemType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfRichTextItem, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfRichTextItem, set, nil, true); err != nil {
 		return err
 	}
 
@@ -22903,37 +23582,37 @@ type fieldsOfRollupPropertyConfigurationRollup RollupPropertyConfigurationRollup
 var membersOfRollupPropertyConfigurationRollup = map[string]bool{"function": true}
 
 // variantsOfRollupPropertyConfigurationRollup are the alternatives its union is decoded as, in order.
-var variantsOfRollupPropertyConfigurationRollup = []jsonVariant{
+var variantsOfRollupPropertyConfigurationRollup = []union.Variant{
 	{
-		value:    "",
-		members:  map[string]bool{"relation_property_name": true, "rollup_property_name": true},
-		required: []string{"relation_property_name", "rollup_property_name"},
-		pinned:   map[string]string{},
+		Value:    "",
+		Members:  map[string]bool{"relation_property_name": true, "rollup_property_name": true},
+		Required: []string{"relation_property_name", "rollup_property_name"},
+		Pinned:   map[string]string{},
 	},
 	{
-		value:    "",
-		members:  map[string]bool{"relation_property_id": true, "rollup_property_name": true},
-		required: []string{"relation_property_id", "rollup_property_name"},
-		pinned:   map[string]string{},
+		Value:    "",
+		Members:  map[string]bool{"relation_property_id": true, "rollup_property_name": true},
+		Required: []string{"relation_property_id", "rollup_property_name"},
+		Pinned:   map[string]string{},
 	},
 	{
-		value:    "",
-		members:  map[string]bool{"relation_property_name": true, "rollup_property_id": true},
-		required: []string{"relation_property_name", "rollup_property_id"},
-		pinned:   map[string]string{},
+		Value:    "",
+		Members:  map[string]bool{"relation_property_name": true, "rollup_property_id": true},
+		Required: []string{"relation_property_name", "rollup_property_id"},
+		Pinned:   map[string]string{},
 	},
 	{
-		value:    "",
-		members:  map[string]bool{"relation_property_id": true, "rollup_property_id": true},
-		required: []string{"relation_property_id", "rollup_property_id"},
-		pinned:   map[string]string{},
+		Value:    "",
+		Members:  map[string]bool{"relation_property_id": true, "rollup_property_id": true},
+		Required: []string{"relation_property_id", "rollup_property_id"},
+		Pinned:   map[string]string{},
 	},
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of RollupPropertyConfigurationRollupAllOf each
 // decode the members they declare, and a member neither declares is an error.
 func (v *RollupPropertyConfigurationRollup) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
+	opts, strict := jsonOptsOf(dec), union.Strict(dec)
 
 	*v = RollupPropertyConfigurationRollup{}
 
@@ -22942,12 +23621,12 @@ func (v *RollupPropertyConfigurationRollup) UnmarshalJSONFrom(dec *jsontext.Deco
 		return err
 	}
 
-	chosen, err := jsonChooseVariants(raw, "", variantsOfRollupPropertyConfigurationRollup, membersOfRollupPropertyConfigurationRollup, true, strict)
+	chosen, err := union.ChooseVariants(raw, "", variantsOfRollupPropertyConfigurationRollup, membersOfRollupPropertyConfigurationRollup, true, strict)
 	if err != nil {
 		return err
 	}
 
-	fields, err := jsonSelect(raw, membersOfRollupPropertyConfigurationRollup)
+	fields, err := union.Select(raw, membersOfRollupPropertyConfigurationRollup)
 	if err != nil {
 		return err
 	}
@@ -22957,7 +23636,7 @@ func (v *RollupPropertyConfigurationRollup) UnmarshalJSONFrom(dec *jsontext.Deco
 	}
 
 	for _, i := range chosen {
-		variant, err := jsonSelect(raw, variantsOfRollupPropertyConfigurationRollup[i].members)
+		variant, err := union.Select(raw, variantsOfRollupPropertyConfigurationRollup[i].Members)
 		if err != nil {
 			return err
 		}
@@ -23014,7 +23693,7 @@ func (v *RollupPropertyConfigurationRollup) MarshalJSONTo(enc *jsontext.Encoder)
 			return err
 		}
 
-		if out, err = jsonMerge(out, variant); err != nil {
+		if out, err = union.Merge(out, variant); err != nil {
 			return err
 		}
 
@@ -23028,7 +23707,7 @@ func (v *RollupPropertyConfigurationRollup) MarshalJSONTo(enc *jsontext.Encoder)
 			return err
 		}
 
-		if out, err = jsonMerge(out, variant); err != nil {
+		if out, err = union.Merge(out, variant); err != nil {
 			return err
 		}
 
@@ -23042,7 +23721,7 @@ func (v *RollupPropertyConfigurationRollup) MarshalJSONTo(enc *jsontext.Encoder)
 			return err
 		}
 
-		if out, err = jsonMerge(out, variant); err != nil {
+		if out, err = union.Merge(out, variant); err != nil {
 			return err
 		}
 
@@ -23056,7 +23735,7 @@ func (v *RollupPropertyConfigurationRollup) MarshalJSONTo(enc *jsontext.Encoder)
 			return err
 		}
 
-		if out, err = jsonMerge(out, variant); err != nil {
+		if out, err = union.Merge(out, variant); err != nil {
 			return err
 		}
 
@@ -23079,12 +23758,17 @@ type RollupPropertyConfigurationRollupAllOf struct {
 	RollupByIDs        *RollupByIDs
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *RollupPropertyConfigurationRollupAllOf) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = RollupPropertyConfigurationRollupAllOf{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -23097,7 +23781,7 @@ func (v *RollupPropertyConfigurationRollupAllOf) UnmarshalJSONFrom(dec *jsontext
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"relation_property_name", "rollup_property_name"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupByNames
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupByNames = &vv
@@ -23110,7 +23794,7 @@ func (v *RollupPropertyConfigurationRollupAllOf) UnmarshalJSONFrom(dec *jsontext
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"relation_property_id", "rollup_property_name"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupByRelationID
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupByRelationID = &vv
@@ -23123,7 +23807,7 @@ func (v *RollupPropertyConfigurationRollupAllOf) UnmarshalJSONFrom(dec *jsontext
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"relation_property_name", "rollup_property_id"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupByRollupID
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupByRollupID = &vv
@@ -23136,7 +23820,7 @@ func (v *RollupPropertyConfigurationRollupAllOf) UnmarshalJSONFrom(dec *jsontext
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"relation_property_id", "rollup_property_id"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupByIDs
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupByIDs = &vv
@@ -23152,7 +23836,8 @@ func (v *RollupPropertyConfigurationRollupAllOf) UnmarshalJSONFrom(dec *jsontext
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *RollupPropertyConfigurationRollupAllOf) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.RollupByNames != nil:
@@ -23165,7 +23850,7 @@ func (v *RollupPropertyConfigurationRollupAllOf) MarshalJSONTo(enc *jsontext.Enc
 		return json.MarshalEncode(enc, v.RollupByIDs, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // RollupPropertyFilter defines a model
@@ -23178,9 +23863,14 @@ type RollupPropertyFilter struct {
 	RollupPropertyFilterNumber *RollupPropertyFilterNumber
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *RollupPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = RollupPropertyFilter{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -23194,7 +23884,7 @@ func (v *RollupPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"any"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupPropertyFilterAny
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupPropertyFilterAny = &vv
@@ -23206,7 +23896,7 @@ func (v *RollupPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"none"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupPropertyFilterNone
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupPropertyFilterNone = &vv
@@ -23218,7 +23908,7 @@ func (v *RollupPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"every"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupPropertyFilterEvery
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupPropertyFilterEvery = &vv
@@ -23230,7 +23920,7 @@ func (v *RollupPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"date"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupPropertyFilterDate
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupPropertyFilterDate = &vv
@@ -23242,7 +23932,7 @@ func (v *RollupPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"number"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupPropertyFilterNumber
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupPropertyFilterNumber = &vv
@@ -23258,7 +23948,8 @@ func (v *RollupPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *RollupPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.RollupPropertyFilterAny != nil:
@@ -23273,7 +23964,7 @@ func (v *RollupPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.RollupPropertyFilterNumber, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // RollupPropertyFilterAny defines a model
@@ -23354,12 +24045,12 @@ func (e RollupPropertyItemObjectRollupType) Valid() bool {
 }
 
 // tagsOfRollupPropertyItemObjectRollup holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfRollupPropertyItemObjectRollup = map[string]map[string]jsonTagNeed{
-	"number":      {"number": jsonTagRequiredOrNull},
-	"date":        {"date": jsonTagRequiredOrNull},
-	"array":       {"array": jsonTagRequired},
-	"unsupported": {"unsupported": jsonTagRequired},
-	"incomplete":  {"incomplete": jsonTagRequired},
+var tagsOfRollupPropertyItemObjectRollup = map[string]map[string]union.TagNeed{
+	"number":      {"number": union.TagRequiredOrNull},
+	"date":        {"date": union.TagRequiredOrNull},
+	"array":       {"array": union.TagRequired},
+	"unsupported": {"unsupported": union.TagRequired},
+	"incomplete":  {"incomplete": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -23385,11 +24076,16 @@ func (v *RollupPropertyItemObjectRollup) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *RollupPropertyItemObjectRollup) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain RollupPropertyItemObjectRollup
 
 	*v = RollupPropertyItemObjectRollup{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -23401,25 +24097,28 @@ func (v *RollupPropertyItemObjectRollup) UnmarshalJSONFrom(dec *jsontext.Decoder
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfRollupPropertyItemObjectRollup, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfRollupPropertyItemObjectRollup, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *RollupPropertyItemObjectRollup) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain RollupPropertyItemObjectRollup
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfRollupPropertyItemObjectRollup, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfRollupPropertyItemObjectRollup, set); ok && out.Type == "" {
 		out.Type = RollupPropertyItemObjectRollupType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfRollupPropertyItemObjectRollup, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfRollupPropertyItemObjectRollup, set, nil, true); err != nil {
 		return err
 	}
 
@@ -23441,9 +24140,14 @@ type RollupSubfilterPropertyFilter struct {
 	RollupSubfilterPropertyFilterStatus      *RollupSubfilterPropertyFilterStatus
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *RollupSubfilterPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = RollupSubfilterPropertyFilter{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -23457,7 +24161,7 @@ func (v *RollupSubfilterPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder)
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"rich_text"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupSubfilterPropertyFilterRichText
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupSubfilterPropertyFilterRichText = &vv
@@ -23469,7 +24173,7 @@ func (v *RollupSubfilterPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder)
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"number"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupPropertyFilterNumber
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupPropertyFilterNumber = &vv
@@ -23481,7 +24185,7 @@ func (v *RollupSubfilterPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder)
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"checkbox"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv FormulaPropertyFilterCheckbox
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.FormulaPropertyFilterCheckbox = &vv
@@ -23493,7 +24197,7 @@ func (v *RollupSubfilterPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder)
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"select"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupSubfilterPropertyFilterSelect
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupSubfilterPropertyFilterSelect = &vv
@@ -23505,7 +24209,7 @@ func (v *RollupSubfilterPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder)
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"multi_select"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupSubfilterPropertyFilterMultiSelect
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupSubfilterPropertyFilterMultiSelect = &vv
@@ -23517,7 +24221,7 @@ func (v *RollupSubfilterPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder)
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"relation"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupSubfilterPropertyFilterRelation
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupSubfilterPropertyFilterRelation = &vv
@@ -23529,7 +24233,7 @@ func (v *RollupSubfilterPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder)
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"date"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupPropertyFilterDate
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupPropertyFilterDate = &vv
@@ -23541,7 +24245,7 @@ func (v *RollupSubfilterPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder)
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"people"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupSubfilterPropertyFilterPeople
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupSubfilterPropertyFilterPeople = &vv
@@ -23553,7 +24257,7 @@ func (v *RollupSubfilterPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder)
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"files"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupSubfilterPropertyFilterFiles
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupSubfilterPropertyFilterFiles = &vv
@@ -23565,7 +24269,7 @@ func (v *RollupSubfilterPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder)
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"status"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv RollupSubfilterPropertyFilterStatus
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.RollupSubfilterPropertyFilterStatus = &vv
@@ -23581,7 +24285,8 @@ func (v *RollupSubfilterPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder)
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *RollupSubfilterPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.RollupSubfilterPropertyFilterRichText != nil:
@@ -23606,7 +24311,7 @@ func (v *RollupSubfilterPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) err
 		return json.MarshalEncode(enc, v.RollupSubfilterPropertyFilterStatus, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // RollupSubfilterPropertyFilterFiles defines a model
@@ -23616,7 +24321,7 @@ type RollupSubfilterPropertyFilterFiles struct {
 
 // RollupSubfilterPropertyFilterMultiSelect defines a model
 type RollupSubfilterPropertyFilterMultiSelect struct {
-	MultiSelect MultiSelectPropertyFilter `json:"multi_select"`
+	MultiSelect SelectOptionsPropertyFilter `json:"multi_select"`
 }
 
 // RollupSubfilterPropertyFilterPeople defines a model
@@ -23644,6 +24349,14 @@ type RollupSubfilterPropertyFilterStatus struct {
 	Status StatusPropertyFilter `json:"status"`
 }
 
+// Whether read / write tool calls run without a confirmation step.
+type RunToolsAutomatically struct {
+	// Whether read tool calls run without a confirmation step.
+	Read bool `json:"read"`
+	// Whether write tool calls run without a confirmation step.
+	Write bool `json:"write"`
+}
+
 // One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
 type SelectColor string
 
@@ -23668,11 +24381,6 @@ func (e SelectColor) Valid() bool {
 	default:
 		return false
 	}
-}
-
-// SelectDatabasePropertyConfigSelect defines a model
-type SelectDatabasePropertyConfigSelect struct {
-	Options []SelectProperty `json:"options"`
 }
 
 // SelectGroupByConfig defines a model
@@ -23719,6 +24427,101 @@ func (e SelectGroupByConfigType) Valid() bool {
 	}
 }
 
+// SelectOptions defines a model
+type SelectOptions struct {
+	Options []SelectProperty `json:"options"`
+}
+
+// SelectOptionsPropertyFilter defines a model
+// SelectOptionsPropertyFilter is an untagged anyOf union: at least one field is set after unmarshaling.
+type SelectOptionsPropertyFilter struct {
+	SelectOptionsPropertyFilterContains       *SelectOptionsPropertyFilterContains
+	SelectOptionsPropertyFilterDoesNotContain *SelectOptionsPropertyFilterDoesNotContain
+	ExistencePropertyFilter                   *ExistencePropertyFilter
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
+func (v *SelectOptionsPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = SelectOptionsPropertyFilter{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, nullable, pinned := []string{"contains"}, map[string]bool{}, map[string]string{}
+		if union.Fits(raw, required, nullable, pinned) {
+			var vv SelectOptionsPropertyFilterContains
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.SelectOptionsPropertyFilterContains = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, nullable, pinned := []string{"does_not_contain"}, map[string]bool{}, map[string]string{}
+		if union.Fits(raw, required, nullable, pinned) {
+			var vv SelectOptionsPropertyFilterDoesNotContain
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.SelectOptionsPropertyFilterDoesNotContain = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		var vv ExistencePropertyFilter
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.ExistencePropertyFilter = &vv
+			matched++
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
+func (v *SelectOptionsPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.SelectOptionsPropertyFilterContains != nil:
+		return json.MarshalEncode(enc, v.SelectOptionsPropertyFilterContains, jsonOptsTo(enc))
+	case v.SelectOptionsPropertyFilterDoesNotContain != nil:
+		return json.MarshalEncode(enc, v.SelectOptionsPropertyFilterDoesNotContain, jsonOptsTo(enc))
+	case v.ExistencePropertyFilter != nil:
+		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOptsTo(enc))
+	}
+
+	return enc.WriteToken(jsontext.Null)
+}
+
+// SelectOptionsPropertyFilterContains defines a model
+type SelectOptionsPropertyFilterContains struct {
+	Contains StringOrStringArray `json:"contains"`
+}
+
+// SelectOptionsPropertyFilterDoesNotContain defines a model
+type SelectOptionsPropertyFilterDoesNotContain struct {
+	DoesNotContain StringOrStringArray `json:"does_not_contain"`
+}
+
 // SelectProperty defines a model
 type SelectProperty struct {
 	// The ID of the status option.
@@ -23755,9 +24558,14 @@ type SelectPropertyFilter struct {
 	ExistencePropertyFilter       *ExistencePropertyFilter
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *SelectPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = SelectPropertyFilter{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -23771,7 +24579,7 @@ func (v *SelectPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"equals"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv StatusValueFilterEquals
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.StatusValueFilterEquals = &vv
@@ -23783,7 +24591,7 @@ func (v *SelectPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"does_not_equal"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv StatusValueFilterDoesNotEqual
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.StatusValueFilterDoesNotEqual = &vv
@@ -23807,7 +24615,8 @@ func (v *SelectPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *SelectPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.StatusValueFilterEquals != nil:
@@ -23818,7 +24627,7 @@ func (v *SelectPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // SelectPropertyItem defines a model
@@ -23856,19 +24665,19 @@ type Session struct {
 	AgentID string `json:"agent_id"`
 	Title   string `json:"title"`
 	// One of: `queued`, `in_progress`, `requires_action`, `completed`, `failed`, `canceled`, `terminated`
-	Status          SessionStatus            `json:"status"`
-	CreatedAt       time.Time                `json:"created_at"`
-	UpdatedAt       time.Time                `json:"updated_at"`
-	CreatedBy       SessionCreatedBy         `json:"created_by"`
-	AgentVersion    SessionAgentVersionOneOf `json:"agent_version"`
-	Models          SessionModels            `json:"models"`
-	RequiredActions SessionRequiredActions   `json:"required_actions,omitzero"`
-	Err             SessionError             `json:"error,omitzero"`
-	TriggerType     string                   `json:"trigger_type,omitzero"`
-	TypeLabels      []string                 `json:"type_labels,omitzero"`
-	ChatUserEmails  []string                 `json:"chat_user_emails,omitzero"`
-	ToolTypes       []string                 `json:"tool_types,omitzero"`
-	ToolCallCount   *int                     `json:"tool_call_count,omitzero"`
+	Status          SessionStatus          `json:"status"`
+	CreatedAt       time.Time              `json:"created_at"`
+	UpdatedAt       time.Time              `json:"updated_at"`
+	CreatedBy       SessionCreatedBy       `json:"created_by"`
+	AgentVersion    SessionAgentVersion    `json:"agent_version"`
+	Models          SessionModels          `json:"models"`
+	RequiredActions SessionRequiredActions `json:"required_actions,omitzero"`
+	Err             SessionError           `json:"error,omitzero"`
+	TriggerType     string                 `json:"trigger_type,omitzero"`
+	TypeLabels      []string               `json:"type_labels,omitzero"`
+	ChatUserEmails  []string               `json:"chat_user_emails,omitzero"`
+	ToolTypes       []string               `json:"tool_types,omitzero"`
+	ToolCallCount   *int                   `json:"tool_call_count,omitzero"`
 	// Premium AI credits this session consumed. Reported with at most two decimal places, rounded down.
 	CreditsUsed   *float64 `json:"credits_used,omitzero"`
 	RunsCompleted *int     `json:"runs_completed,omitzero"`
@@ -23900,8 +24709,8 @@ func (e SessionAgentIDFilterProperty) Valid() bool {
 	}
 }
 
-// SessionAgentVersionOneOf defines a model
-type SessionAgentVersionOneOf struct {
+// SessionAgentVersion defines a model
+type SessionAgentVersion struct {
 	ID          string    `json:"id"`
 	Number      int       `json:"number"`
 	PublishedAt time.Time `json:"published_at"`
@@ -23921,7 +24730,7 @@ type SessionAnswerActions []SessionAnswerActionsItem
 type SessionAnswerActionsItem struct {
 	ActionID ID `json:"action_id"`
 	// One of: `approve`, `reject`
-	OptionID SessionRequiredActionsItemOptionsItemID `json:"option_id"`
+	OptionID OptionID `json:"option_id"`
 }
 
 // SessionContinuation defines a model
@@ -23987,11 +24796,16 @@ type SessionEventListResultsItem struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *SessionEventListResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = SessionEventListResultsItem{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
@@ -23999,54 +24813,55 @@ func (v *SessionEventListResultsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 	switch tag {
 	case "user.message":
 		var vv SessionEventListResultsItemUserMessage
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.SessionEventListResultsItemUserMessage = &vv
 	case "agent.message":
 		var vv SessionEventListResultsItemAgentMessage
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.SessionEventListResultsItemAgentMessage = &vv
 	case "agent.thinking":
 		var vv SessionEventListResultsItemAgentThinking
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.SessionEventListResultsItemAgentThinking = &vv
 	case "agent.tool_use":
 		var vv SessionEventListResultsItemAgentToolUse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.SessionEventListResultsItemAgentToolUse = &vv
 	case "agent.tool_result":
 		var vv SessionEventListResultsItemAgentToolResult
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.SessionEventListResultsItemAgentToolResult = &vv
 	case "session.status":
 		var vv SessionEventListResultsItemSessionStatus
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.SessionEventListResultsItemSessionStatus = &vv
 	default:
-		return jsonUnknownValue("type", tag)
+		return union.UnknownValue("type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *SessionEventListResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -24067,7 +24882,7 @@ func (v *SessionEventListResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error
 	case v.SessionEventListResultsItemSessionStatus != nil:
 		variant, tag = v.SessionEventListResultsItemSessionStatus, "session.status"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -24075,7 +24890,7 @@ func (v *SessionEventListResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error
 		return err
 	}
 
-	if out, err = jsonFirst(out, "type", tag); err != nil {
+	if out, err = union.First(out, "type", tag); err != nil {
 		return err
 	}
 
@@ -24354,11 +25169,16 @@ type SessionEventListResultsItemUserMessageContentItem struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *SessionEventListResultsItemUserMessageContentItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = SessionEventListResultsItemUserMessageContentItem{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
@@ -24366,26 +25186,27 @@ func (v *SessionEventListResultsItemUserMessageContentItem) UnmarshalJSONFrom(de
 	switch tag {
 	case "text":
 		var vv SessionEventListResultsItemUserMessageContentItemText
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.SessionEventListResultsItemUserMessageContentItemText = &vv
 	case "file":
 		var vv SessionEventListResultsItemUserMessageContentItemFile
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.SessionEventListResultsItemUserMessageContentItemFile = &vv
 	default:
-		return jsonUnknownValue("type", tag)
+		return union.UnknownValue("type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *SessionEventListResultsItemUserMessageContentItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -24398,7 +25219,7 @@ func (v *SessionEventListResultsItemUserMessageContentItem) MarshalJSONTo(enc *j
 	case v.SessionEventListResultsItemUserMessageContentItemFile != nil:
 		variant, tag = v.SessionEventListResultsItemUserMessageContentItemFile, "file"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -24406,7 +25227,7 @@ func (v *SessionEventListResultsItemUserMessageContentItem) MarshalJSONTo(enc *j
 		return err
 	}
 
-	if out, err = jsonFirst(out, "type", tag); err != nil {
+	if out, err = union.First(out, "type", tag); err != nil {
 		return err
 	}
 
@@ -24524,19 +25345,19 @@ type SessionListResultsItem struct {
 	AgentID string `json:"agent_id"`
 	Title   string `json:"title"`
 	// One of: `queued`, `in_progress`, `requires_action`, `completed`, `failed`, `canceled`, `terminated`
-	Status          SessionStatus            `json:"status"`
-	CreatedBy       SessionCreatedBy         `json:"created_by"`
-	AgentVersion    SessionAgentVersionOneOf `json:"agent_version"`
-	Models          SessionModels            `json:"models"`
-	CreatedAt       time.Time                `json:"created_at"`
-	UpdatedAt       time.Time                `json:"updated_at"`
-	RequiredActions SessionRequiredActions   `json:"required_actions,omitzero"`
-	Err             SessionError             `json:"error,omitzero"`
-	TriggerType     string                   `json:"trigger_type,omitzero"`
-	TypeLabels      []string                 `json:"type_labels,omitzero"`
-	ChatUserEmails  []string                 `json:"chat_user_emails,omitzero"`
-	ToolTypes       []string                 `json:"tool_types,omitzero"`
-	ToolCallCount   *int                     `json:"tool_call_count,omitzero"`
+	Status          SessionStatus          `json:"status"`
+	CreatedBy       SessionCreatedBy       `json:"created_by"`
+	AgentVersion    SessionAgentVersion    `json:"agent_version"`
+	Models          SessionModels          `json:"models"`
+	CreatedAt       time.Time              `json:"created_at"`
+	UpdatedAt       time.Time              `json:"updated_at"`
+	RequiredActions SessionRequiredActions `json:"required_actions,omitzero"`
+	Err             SessionError           `json:"error,omitzero"`
+	TriggerType     string                 `json:"trigger_type,omitzero"`
+	TypeLabels      []string               `json:"type_labels,omitzero"`
+	ChatUserEmails  []string               `json:"chat_user_emails,omitzero"`
+	ToolTypes       []string               `json:"tool_types,omitzero"`
+	ToolCallCount   *int                   `json:"tool_call_count,omitzero"`
 	// Premium AI credits this session consumed. Reported with at most two decimal places, rounded down.
 	CreditsUsed   *float64 `json:"credits_used,omitzero"`
 	RunsCompleted *int     `json:"runs_completed,omitzero"`
@@ -24579,11 +25400,16 @@ type SessionModels struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *SessionModels) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = SessionModels{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
@@ -24591,26 +25417,27 @@ func (v *SessionModels) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch tag {
 	case "auto":
 		var vv SessionModelsAuto
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.SessionModelsAuto = &vv
 	case "pinned":
 		var vv SessionModelsPinned
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.SessionModelsPinned = &vv
 	default:
-		return jsonUnknownValue("type", tag)
+		return union.UnknownValue("type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *SessionModels) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -24623,7 +25450,7 @@ func (v *SessionModels) MarshalJSONTo(enc *jsontext.Encoder) error {
 	case v.SessionModelsPinned != nil:
 		variant, tag = v.SessionModelsPinned, "pinned"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -24631,7 +25458,7 @@ func (v *SessionModels) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	if out, err = jsonFirst(out, "type", tag); err != nil {
+	if out, err = union.First(out, "type", tag); err != nil {
 		return err
 	}
 
@@ -24684,12 +25511,17 @@ type SessionNestedFilter struct {
 	SessionNestedFilterOr  *SessionNestedFilterOr
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *SessionNestedFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = SessionNestedFilter{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -24699,13 +25531,13 @@ func (v *SessionNestedFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		// leniently, more than one may match, and the first does
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property", "string"}, map[string]bool{}, map[string]string{"property": "\"id\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv SessionIDFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.SessionIDFilter = &vv
@@ -24718,7 +25550,7 @@ func (v *SessionNestedFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property", "string"}, map[string]bool{}, map[string]string{"property": "\"agent_id\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv SessionAgentIDFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.SessionAgentIDFilter = &vv
@@ -24731,7 +25563,7 @@ func (v *SessionNestedFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property", "status"}, map[string]bool{}, map[string]string{"property": "\"status\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv SessionStatusFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.SessionStatusFilter = &vv
@@ -24744,7 +25576,7 @@ func (v *SessionNestedFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property", "timestamp"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"property": {"\"created_at\"", "\"updated_at\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"property": {"\"created_at\"", "\"updated_at\""}})) {
 				var vv SessionTimestampFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.SessionTimestampFilter = &vv
@@ -24757,7 +25589,7 @@ func (v *SessionNestedFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"and"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv SessionNestedFilterAnd
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.SessionNestedFilterAnd = &vv
@@ -24770,7 +25602,7 @@ func (v *SessionNestedFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"or"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv SessionNestedFilterOr
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.SessionNestedFilterOr = &vv
@@ -24791,7 +25623,8 @@ func (v *SessionNestedFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *SessionNestedFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.SessionIDFilter != nil:
@@ -24808,7 +25641,7 @@ func (v *SessionNestedFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.SessionNestedFilterOr, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // SessionNestedFilterAnd defines a model
@@ -24832,12 +25665,17 @@ type SessionNestedFilterOrItem struct {
 	SessionTimestampFilter *SessionTimestampFilter
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *SessionNestedFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = SessionNestedFilterOrItem{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -24847,13 +25685,13 @@ func (v *SessionNestedFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		// leniently, more than one may match, and the first does
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property", "string"}, map[string]bool{}, map[string]string{"property": "\"id\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv SessionIDFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.SessionIDFilter = &vv
@@ -24866,7 +25704,7 @@ func (v *SessionNestedFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property", "string"}, map[string]bool{}, map[string]string{"property": "\"agent_id\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv SessionAgentIDFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.SessionAgentIDFilter = &vv
@@ -24879,7 +25717,7 @@ func (v *SessionNestedFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property", "status"}, map[string]bool{}, map[string]string{"property": "\"status\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv SessionStatusFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.SessionStatusFilter = &vv
@@ -24892,7 +25730,7 @@ func (v *SessionNestedFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"property", "timestamp"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"property": {"\"created_at\"", "\"updated_at\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"property": {"\"created_at\"", "\"updated_at\""}})) {
 				var vv SessionTimestampFilter
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.SessionTimestampFilter = &vv
@@ -24913,7 +25751,8 @@ func (v *SessionNestedFilterOrItem) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *SessionNestedFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.SessionIDFilter != nil:
@@ -24926,46 +25765,11 @@ func (v *SessionNestedFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.SessionTimestampFilter, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // SessionRequiredActions defines a model
-type SessionRequiredActions []SessionRequiredActionsItem
-
-// SessionRequiredActionsItem defines a model
-type SessionRequiredActionsItem struct {
-	ActionID string                            `json:"action_id"`
-	Title    string                            `json:"title"`
-	Options  SessionRequiredActionsItemOptions `json:"options"`
-}
-
-// SessionRequiredActionsItemOptions defines a model
-type SessionRequiredActionsItemOptions []SessionRequiredActionsItemOptionsItem
-
-// SessionRequiredActionsItemOptionsItem defines a model
-type SessionRequiredActionsItemOptionsItem struct {
-	// One of: `approve`, `reject`
-	ID    SessionRequiredActionsItemOptionsItemID `json:"id"`
-	Label string                                  `json:"label"`
-}
-
-// One of: `approve`, `reject`
-type SessionRequiredActionsItemOptionsItemID string
-
-const (
-	SessionRequiredActionsItemOptionsItemIDApprove SessionRequiredActionsItemOptionsItemID = "approve"
-	SessionRequiredActionsItemOptionsItemIDReject  SessionRequiredActionsItemOptionsItemID = "reject"
-)
-
-// Valid indicates whether the value is a known member of the SessionRequiredActionsItemOptionsItemID enum.
-func (e SessionRequiredActionsItemOptionsItemID) Valid() bool {
-	switch e {
-	case SessionRequiredActionsItemOptionsItemIDApprove, SessionRequiredActionsItemOptionsItemIDReject:
-		return true
-	default:
-		return false
-	}
-}
+type SessionRequiredActions []RequiredActionsItem
 
 // SessionStatus defines a model
 type SessionStatus string
@@ -25113,31 +25917,31 @@ func (e SimpleOrArrayPropertyValueType) Valid() bool {
 }
 
 // tagsOfSimpleOrArrayPropertyValue holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfSimpleOrArrayPropertyValue = map[string]map[string]jsonTagNeed{
-	"number":            {"number": jsonTagRequiredOrNull},
-	"url":               {"url": jsonTagRequiredOrNull},
-	"select":            {"select": jsonTagRequiredOrNull},
-	"multi_select":      {"multi_select": jsonTagRequired},
-	"status":            {"status": jsonTagRequiredOrNull},
-	"date":              {"date": jsonTagRequiredOrNull},
-	"email":             {"email": jsonTagRequiredOrNull},
-	"phone_number":      {"phone_number": jsonTagRequiredOrNull},
-	"checkbox":          {"checkbox": jsonTagRequired},
-	"files":             {"files": jsonTagRequired},
-	"created_by":        {"created_by": jsonTagRequired},
-	"created_time":      {"created_time": jsonTagRequired},
-	"last_edited_by":    {"last_edited_by": jsonTagRequired},
-	"last_edited_time":  {"last_edited_time": jsonTagRequired},
-	"formula":           {"formula": jsonTagRequired},
-	"button":            {"button": jsonTagRequired},
-	"unique_id":         {"unique_id": jsonTagRequired},
-	"verification":      {"verification": jsonTagRequiredOrNull},
-	"place":             {"place": jsonTagRequiredOrNull},
-	"last_visited_time": {"last_visited_time": jsonTagRequiredOrNull},
-	"title":             {"title": jsonTagRequired},
-	"rich_text":         {"rich_text": jsonTagRequired},
-	"people":            {"people": jsonTagRequired},
-	"relation":          {"has_more": jsonTagOptional, "relation": jsonTagRequired},
+var tagsOfSimpleOrArrayPropertyValue = map[string]map[string]union.TagNeed{
+	"number":            {"number": union.TagRequiredOrNull},
+	"url":               {"url": union.TagRequiredOrNull},
+	"select":            {"select": union.TagRequiredOrNull},
+	"multi_select":      {"multi_select": union.TagRequired},
+	"status":            {"status": union.TagRequiredOrNull},
+	"date":              {"date": union.TagRequiredOrNull},
+	"email":             {"email": union.TagRequiredOrNull},
+	"phone_number":      {"phone_number": union.TagRequiredOrNull},
+	"checkbox":          {"checkbox": union.TagRequired},
+	"files":             {"files": union.TagRequired},
+	"created_by":        {"created_by": union.TagRequired},
+	"created_time":      {"created_time": union.TagRequired},
+	"last_edited_by":    {"last_edited_by": union.TagRequired},
+	"last_edited_time":  {"last_edited_time": union.TagRequired},
+	"formula":           {"formula": union.TagRequired},
+	"button":            {"button": union.TagRequired},
+	"unique_id":         {"unique_id": union.TagRequired},
+	"verification":      {"verification": union.TagRequiredOrNull},
+	"place":             {"place": union.TagRequiredOrNull},
+	"last_visited_time": {"last_visited_time": union.TagRequiredOrNull},
+	"title":             {"title": union.TagRequired},
+	"rich_text":         {"rich_text": union.TagRequired},
+	"people":            {"people": union.TagRequired},
+	"relation":          {"has_more": union.TagOptional, "relation": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -25223,11 +26027,16 @@ func (v *SimpleOrArrayPropertyValue) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *SimpleOrArrayPropertyValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain SimpleOrArrayPropertyValue
 
 	*v = SimpleOrArrayPropertyValue{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -25239,25 +26048,28 @@ func (v *SimpleOrArrayPropertyValue) UnmarshalJSONFrom(dec *jsontext.Decoder) er
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfSimpleOrArrayPropertyValue, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfSimpleOrArrayPropertyValue, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *SimpleOrArrayPropertyValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain SimpleOrArrayPropertyValue
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfSimpleOrArrayPropertyValue, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfSimpleOrArrayPropertyValue, set); ok && out.Type == "" {
 		out.Type = SimpleOrArrayPropertyValueType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfSimpleOrArrayPropertyValue, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfSimpleOrArrayPropertyValue, set, nil, true); err != nil {
 		return err
 	}
 
@@ -25271,12 +26083,17 @@ type Sort struct {
 	TimestampSort *TimestampSort
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *Sort) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = Sort{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -25286,13 +26103,13 @@ func (v *Sort) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		// leniently, more than one may match, and the first does
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"direction", "property"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"direction": {"\"ascending\"", "\"descending\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"direction": {"\"ascending\"", "\"descending\""}})) {
 				var vv PropertySort
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.PropertySort = &vv
@@ -25305,7 +26122,7 @@ func (v *Sort) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"direction", "timestamp"}, map[string]bool{}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"timestamp": {"\"created_time\"", "\"last_edited_time\""}, "direction": {"\"ascending\"", "\"descending\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"timestamp": {"\"created_time\"", "\"last_edited_time\""}, "direction": {"\"ascending\"", "\"descending\""}})) {
 				var vv TimestampSort
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.TimestampSort = &vv
@@ -25326,7 +26143,8 @@ func (v *Sort) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *Sort) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PropertySort != nil:
@@ -25335,7 +26153,7 @@ func (v *Sort) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.TimestampSort, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // SortDirection defines a model
@@ -25459,9 +26277,14 @@ type StatusGroupNames struct {
 	String2 []String
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *StatusGroupNames) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = StatusGroupNames{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -25495,7 +26318,8 @@ func (v *StatusGroupNames) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *StatusGroupNames) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.String != "":
@@ -25504,7 +26328,7 @@ func (v *StatusGroupNames) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.String2, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // StatusOption defines a model
@@ -25556,25 +26380,25 @@ type fieldsOfStatusOptionUpdate StatusOptionUpdate
 var membersOfStatusOptionUpdate = map[string]bool{"color": true, "description": true, "group": true}
 
 // variantsOfStatusOptionUpdate are the alternatives its union is decoded as, in order.
-var variantsOfStatusOptionUpdate = []jsonVariant{
+var variantsOfStatusOptionUpdate = []union.Variant{
 	{
-		value:    "",
-		members:  map[string]bool{"id": true, "name": true},
-		required: []string{"name"},
-		pinned:   map[string]string{},
+		Value:    "",
+		Members:  map[string]bool{"id": true, "name": true},
+		Required: []string{"name"},
+		Pinned:   map[string]string{},
 	},
 	{
-		value:    "",
-		members:  map[string]bool{"id": true, "name": true},
-		required: []string{"id"},
-		pinned:   map[string]string{},
+		Value:    "",
+		Members:  map[string]bool{"id": true, "name": true},
+		Required: []string{"id"},
+		Pinned:   map[string]string{},
 	},
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of StatusOptionUpdateAllOf each
 // decode the members they declare, and a member neither declares is an error.
 func (v *StatusOptionUpdate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
+	opts, strict := jsonOptsOf(dec), union.Strict(dec)
 
 	*v = StatusOptionUpdate{}
 
@@ -25583,12 +26407,12 @@ func (v *StatusOptionUpdate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		return err
 	}
 
-	chosen, err := jsonChooseVariants(raw, "", variantsOfStatusOptionUpdate, membersOfStatusOptionUpdate, true, strict)
+	chosen, err := union.ChooseVariants(raw, "", variantsOfStatusOptionUpdate, membersOfStatusOptionUpdate, true, strict)
 	if err != nil {
 		return err
 	}
 
-	fields, err := jsonSelect(raw, membersOfStatusOptionUpdate)
+	fields, err := union.Select(raw, membersOfStatusOptionUpdate)
 	if err != nil {
 		return err
 	}
@@ -25598,7 +26422,7 @@ func (v *StatusOptionUpdate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	for _, i := range chosen {
-		variant, err := jsonSelect(raw, variantsOfStatusOptionUpdate[i].members)
+		variant, err := union.Select(raw, variantsOfStatusOptionUpdate[i].Members)
 		if err != nil {
 			return err
 		}
@@ -25641,7 +26465,7 @@ func (v *StatusOptionUpdate) MarshalJSONTo(enc *jsontext.Encoder) error {
 			return err
 		}
 
-		if out, err = jsonMerge(out, variant); err != nil {
+		if out, err = union.Merge(out, variant); err != nil {
 			return err
 		}
 
@@ -25655,7 +26479,7 @@ func (v *StatusOptionUpdate) MarshalJSONTo(enc *jsontext.Encoder) error {
 			return err
 		}
 
-		if out, err = jsonMerge(out, variant); err != nil {
+		if out, err = union.Merge(out, variant); err != nil {
 			return err
 		}
 
@@ -25676,12 +26500,17 @@ type StatusOptionUpdateAllOf struct {
 	StatusOptionUpdateAllOfID   *StatusOptionUpdateAllOfID
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *StatusOptionUpdateAllOf) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = StatusOptionUpdateAllOf{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -25694,7 +26523,7 @@ func (v *StatusOptionUpdateAllOf) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"name"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv StatusOptionUpdateAllOfName
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.StatusOptionUpdateAllOfName = &vv
@@ -25707,7 +26536,7 @@ func (v *StatusOptionUpdateAllOf) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"id"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv StatusOptionUpdateAllOfID
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.StatusOptionUpdateAllOfID = &vv
@@ -25723,7 +26552,8 @@ func (v *StatusOptionUpdateAllOf) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *StatusOptionUpdateAllOf) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.StatusOptionUpdateAllOfName != nil:
@@ -25732,7 +26562,7 @@ func (v *StatusOptionUpdateAllOf) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.StatusOptionUpdateAllOfID, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // StatusOptionUpdateAllOfID defines a model
@@ -25769,9 +26599,14 @@ type StatusPropertyFilter struct {
 	ExistencePropertyFilter *ExistencePropertyFilter
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *StatusPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = StatusPropertyFilter{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -25805,7 +26640,8 @@ func (v *StatusPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *StatusPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.StatusValueFilter != nil:
@@ -25814,7 +26650,7 @@ func (v *StatusPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // StatusPropertyItem defines a model
@@ -25844,6 +26680,24 @@ func (v *StatusPropertyItem) unmarshalJSONMember(dec *jsontext.Decoder, name str
 	return false, nil
 }
 
+// StatusShowAs defines a model
+type StatusShowAs string
+
+const (
+	StatusShowAsSelect   StatusShowAs = "select"
+	StatusShowAsCheckbox StatusShowAs = "checkbox"
+)
+
+// Valid indicates whether the value is a known member of the StatusShowAs enum.
+func (e StatusShowAs) Valid() bool {
+	switch e {
+	case StatusShowAsSelect, StatusShowAsCheckbox:
+		return true
+	default:
+		return false
+	}
+}
+
 // StatusType defines a model
 type StatusType string
 
@@ -25871,9 +26725,14 @@ type StatusValueFilter struct {
 	StatusValueFilterGroupDoesNotEqual *StatusValueFilterGroupDoesNotEqual
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *StatusValueFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = StatusValueFilter{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -25887,7 +26746,7 @@ func (v *StatusValueFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"equals"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv StatusValueFilterEquals
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.StatusValueFilterEquals = &vv
@@ -25899,7 +26758,7 @@ func (v *StatusValueFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"does_not_equal"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv StatusValueFilterDoesNotEqual
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.StatusValueFilterDoesNotEqual = &vv
@@ -25911,7 +26770,7 @@ func (v *StatusValueFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"group_equals"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv StatusValueFilterGroupEquals
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.StatusValueFilterGroupEquals = &vv
@@ -25923,7 +26782,7 @@ func (v *StatusValueFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"group_does_not_equal"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv StatusValueFilterGroupDoesNotEqual
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.StatusValueFilterGroupDoesNotEqual = &vv
@@ -25939,7 +26798,8 @@ func (v *StatusValueFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *StatusValueFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.StatusValueFilterEquals != nil:
@@ -25952,7 +26812,7 @@ func (v *StatusValueFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.StatusValueFilterGroupDoesNotEqual, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // StatusValueFilterDoesNotEqual defines a model
@@ -25985,9 +26845,14 @@ type StringOrStringArray struct {
 	String2 []string
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *StringOrStringArray) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = StringOrStringArray{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -26021,7 +26886,8 @@ func (v *StringOrStringArray) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *StringOrStringArray) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.String != "":
@@ -26030,7 +26896,28 @@ func (v *StringOrStringArray) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.String2, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
+}
+
+// SubmissionPermissions defines a model
+type SubmissionPermissions string
+
+const (
+	SubmissionPermissionsNone         SubmissionPermissions = "none"
+	SubmissionPermissionsCommentOnly  SubmissionPermissions = "comment_only"
+	SubmissionPermissionsReader       SubmissionPermissions = "reader"
+	SubmissionPermissionsReadAndWrite SubmissionPermissions = "read_and_write"
+	SubmissionPermissionsEditor       SubmissionPermissions = "editor"
+)
+
+// Valid indicates whether the value is a known member of the SubmissionPermissions enum.
+func (e SubmissionPermissions) Valid() bool {
+	switch e {
+	case SubmissionPermissionsNone, SubmissionPermissionsCommentOnly, SubmissionPermissionsReader, SubmissionPermissionsReadAndWrite, SubmissionPermissionsEditor:
+		return true
+	default:
+		return false
+	}
 }
 
 // SubtaskConfig defines a model
@@ -26038,50 +26925,11 @@ type SubtaskConfig struct {
 	// Relation property ID used for parent-child nesting.
 	PropertyID string `json:"property_id,omitzero"`
 	// How sub-items are displayed. "show" renders hierarchically with toggles, "hidden" shows parents with a count, "flattened" shows sub-items with a parent indicator, "disabled" turns off sub-item rendering.
-	DisplayMode SubtaskConfigDisplayMode `json:"display_mode,omitzero"`
+	DisplayMode DisplayMode `json:"display_mode,omitzero"`
 	// Which items are included when filtering. "parents" includes parent items only, "parents_and_subitems" includes both, "subitems" includes sub-items only.
-	FilterScope SubtaskConfigFilterScope `json:"filter_scope,omitzero"`
+	FilterScope FilterScope `json:"filter_scope,omitzero"`
 	// Property ID of the column showing the sub-item expand/collapse toggle.
 	ToggleColumnID string `json:"toggle_column_id,omitzero"`
-}
-
-// How sub-items are displayed. "show" renders hierarchically with toggles, "hidden" shows parents with a count, "flattened" shows sub-items with a parent indicator, "disabled" turns off sub-item rendering.
-type SubtaskConfigDisplayMode string
-
-const (
-	SubtaskConfigDisplayModeShow      SubtaskConfigDisplayMode = "show"
-	SubtaskConfigDisplayModeHidden    SubtaskConfigDisplayMode = "hidden"
-	SubtaskConfigDisplayModeFlattened SubtaskConfigDisplayMode = "flattened"
-	SubtaskConfigDisplayModeDisabled  SubtaskConfigDisplayMode = "disabled"
-)
-
-// Valid indicates whether the value is a known member of the SubtaskConfigDisplayMode enum.
-func (e SubtaskConfigDisplayMode) Valid() bool {
-	switch e {
-	case SubtaskConfigDisplayModeShow, SubtaskConfigDisplayModeHidden, SubtaskConfigDisplayModeFlattened, SubtaskConfigDisplayModeDisabled:
-		return true
-	default:
-		return false
-	}
-}
-
-// Which items are included when filtering. "parents" includes parent items only, "parents_and_subitems" includes both, "subitems" includes sub-items only.
-type SubtaskConfigFilterScope string
-
-const (
-	SubtaskConfigFilterScopeParents            SubtaskConfigFilterScope = "parents"
-	SubtaskConfigFilterScopeParentsAndSubitems SubtaskConfigFilterScope = "parents_and_subitems"
-	SubtaskConfigFilterScopeSubitems           SubtaskConfigFilterScope = "subitems"
-)
-
-// Valid indicates whether the value is a known member of the SubtaskConfigFilterScope enum.
-func (e SubtaskConfigFilterScope) Valid() bool {
-	switch e {
-	case SubtaskConfigFilterScopeParents, SubtaskConfigFilterScopeParentsAndSubitems, SubtaskConfigFilterScopeSubitems:
-		return true
-	default:
-		return false
-	}
 }
 
 // SubtaskConfigResponse defines a model
@@ -26089,9 +26937,9 @@ type SubtaskConfigResponse struct {
 	// Relation property ID used for parent-child nesting.
 	PropertyID string `json:"property_id,omitzero"`
 	// How sub-items are displayed. "show" renders hierarchically with toggles, "hidden" shows parents with a count, "flattened" shows sub-items with a parent indicator, "disabled" turns off sub-item rendering.
-	DisplayMode SubtaskConfigDisplayMode `json:"display_mode,omitzero"`
+	DisplayMode DisplayMode `json:"display_mode,omitzero"`
 	// Which items are included when filtering. "parents" includes parent items only, "parents_and_subitems" includes both, "subitems" includes sub-items only.
-	FilterScope SubtaskConfigFilterScope `json:"filter_scope,omitzero"`
+	FilterScope FilterScope `json:"filter_scope,omitzero"`
 	// Property ID of the column showing the sub-item expand/collapse toggle.
 	ToggleColumnID string `json:"toggle_column_id,omitzero"`
 }
@@ -26169,9 +27017,198 @@ func (e SyncHealthStage) Valid() bool {
 	}
 }
 
+// SyncMetadata defines a model
+type SyncMetadata struct {
+	// Live collection sync health. Null means unavailable, not unhealthy. Missing timestamps are unknown.
+	Health SyncMetadataHealth `json:"health,omitzero"`
+	// Notion user who owns the sync credential, included when health is available.
+	OwnerUserID ID `json:"owner_user_id,omitzero"`
+	// Provider resource synced to this data source, when available.
+	Resource string `json:"resource,omitzero"`
+	// Stored identity of an external database sync.
+	ExternalDatabaseSync ExternalDatabaseSync `json:"external_database_sync,omitzero"`
+	// The provider of a legacy synced data source: Jira or Salesforce. Values are case-sensitive.
+	ExternalCollectionType ExternalCollectionType `json:"external_collection_type,omitzero"`
+	// The stored sync ID when provider details are unavailable. This is not a credential.
+	SyncID ID `json:"sync_id,omitzero"`
+	// Stored state for a legacy synced data source. Missing or invalid timestamps are omitted. This is not a live health check.
+	SyncState SyncState `json:"sync_state,omitzero"`
+	// Opaque, developer-defined collection key for a worker sync. It is not a globally unique ID or a credential. Worker status is not included.
+	SyncedCollectionKey string `json:"synced_collection_key,omitzero"`
+}
+
+// Live collection sync health. Null means unavailable, not unhealthy. Missing timestamps are unknown.
+// SyncMetadataHealth is an untagged anyOf union: at least one field is set after unmarshaling.
+type SyncMetadataHealth struct {
+	SyncHealthFailing *SyncHealthFailing
+	SyncHealthOK      *SyncHealthOK
+	SyncHealthPaused  *SyncHealthPaused
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
+func (v *SyncMetadataHealth) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = SyncMetadataHealth{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	opts := jsonOptsOf(dec)
+	strict := union.Strict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// a member outside its enum rules an alternative out; leniently, only while another fits
+	for _, enums := range union.EnumPasses(strict) {
+
+		{
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, nullable, pinned := []string{"checks", "error", "ok", "paused", "stage"}, map[string]bool{}, map[string]string{"ok": "false"}
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"stage": {"\"backfilling\"", "\"initializing\"", "\"steady\""}})) {
+				var vv SyncHealthFailing
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.SyncHealthFailing = &vv
+					matched++
+				}
+			}
+		}
+
+		{
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, nullable, pinned := []string{"checks", "ok", "paused", "stage"}, map[string]bool{}, map[string]string{"ok": "true"}
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"stage": {"\"backfilling\"", "\"initializing\"", "\"steady\""}})) {
+				var vv SyncHealthOK
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.SyncHealthOK = &vv
+					matched++
+				}
+			}
+		}
+
+		{
+			// decoding checks neither the members the alternative requires nor those it pins to one value
+			required, nullable, pinned := []string{"paused"}, map[string]bool{}, map[string]string{"paused": "true"}
+			if union.Fits(raw, required, nullable, pinned) {
+				var vv SyncHealthPaused
+				if err := json.Unmarshal(raw, &vv, opts); err == nil {
+					v.SyncHealthPaused = &vv
+					matched++
+				}
+			}
+		}
+
+		if matched > 0 {
+			break
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
+func (v *SyncMetadataHealth) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.SyncHealthFailing != nil:
+		return json.MarshalEncode(enc, v.SyncHealthFailing, jsonOptsTo(enc))
+	case v.SyncHealthOK != nil:
+		return json.MarshalEncode(enc, v.SyncHealthOK, jsonOptsTo(enc))
+	case v.SyncHealthPaused != nil:
+		return json.MarshalEncode(enc, v.SyncHealthPaused, jsonOptsTo(enc))
+	}
+
+	return enc.WriteToken(jsontext.Null)
+}
+
+// Stored state for a legacy synced data source. Missing or invalid timestamps are omitted. This is not a live health check.
+type SyncState struct {
+	// Stored legacy sync state: true means syncing, false means not syncing, and row_limit_exceeded means the row limit stopped syncing. False does not guarantee a successful sync.
+	Syncing SyncStateSyncing `json:"syncing"`
+	// Stored legacy sync update time in UTC ISO 8601 format. This does not guarantee that all source changes have been imported.
+	LastSyncedAt time.Time `json:"last_synced_at,omitzero"`
+	// Stored legacy sync checkpoint time in UTC ISO 8601 format.
+	LastSyncCheckpointAt time.Time `json:"last_sync_checkpoint_at,omitzero"`
+	// Stored legacy sync heartbeat time in UTC ISO 8601 format.
+	LastSyncHeartbeatAt time.Time `json:"last_sync_heartbeat_at,omitzero"`
+}
+
+// Stored legacy sync state: true means syncing, false means not syncing, and row_limit_exceeded means the row limit stopped syncing. False does not guarantee a successful sync.
+// SyncStateSyncing is an untagged oneOf union: exactly one field is set after unmarshaling.
+type SyncStateSyncing struct {
+	Bool   *bool
+	String string
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
+func (v *SyncStateSyncing) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = SyncStateSyncing{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	opts := jsonOptsOf(dec)
+	strict := union.Strict(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv bool
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.Bool = &vv
+			matched++
+		}
+	}
+
+	// leniently, more than one may match, and the first does
+	if strict || matched == 0 {
+		var vv string
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.String = vv
+			matched++
+		}
+	}
+
+	if matched != 1 {
+		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
+func (v *SyncStateSyncing) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.Bool != nil:
+		return json.MarshalEncode(enc, v.Bool, jsonOptsTo(enc))
+	case v.String != "":
+		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
+	}
+
+	return enc.WriteToken(jsontext.Null)
+}
+
 // SyncedBlock defines a model
 type SyncedBlock struct {
-	SyncedFrom SyncedBlockSyncedFrom `json:"synced_from"`
+	SyncedFrom SyncedFrom `json:"synced_from"`
 }
 
 // SyncedBlockRequest defines a model
@@ -26180,15 +27217,15 @@ type SyncedBlockRequest struct {
 	Children   []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
 }
 
-// SyncedBlockSyncedFrom defines a model
-type SyncedBlockSyncedFrom struct {
-	Type    string `json:"type"`
-	BlockID ID     `json:"block_id"`
-}
-
 // SyncedBlockUpdate defines a model
 type SyncedBlockUpdate struct {
 	SyncedFrom BlockObjectSyncedBlockSyncedFrom `json:"synced_from"`
+}
+
+// SyncedFrom defines a model
+type SyncedFrom struct {
+	Type    string `json:"type"`
+	BlockID ID     `json:"block_id"`
 }
 
 // TabItemWithSingleLevelOfChildren defines a model
@@ -26255,7 +27292,7 @@ type TableViewConfig struct {
 	// Property visibility and display configuration. Pass null to clear.
 	Properties []ViewPropertyConfig `json:"properties,omitzero"`
 	// Group-by configuration for the table. Pass null to remove grouping.
-	GroupBy *GroupByConfig `json:"group_by,omitzero"`
+	GroupBy GroupByConfig `json:"group_by,omitzero"`
 	// Subtask (sub-item) configuration. Pass null to reset subtask config to defaults (which may show subtasks). Use `{ "display_mode": "disabled" }` to explicitly disable subtasks.
 	Subtasks *SubtaskConfig `json:"subtasks,omitzero"`
 	// Whether to wrap cell content in the table.
@@ -26337,7 +27374,7 @@ type Template struct {
 type TemplateMention struct {
 	Type TemplateMentionType `json:"type,omitzero"`
 	// The date of the template mention.
-	TemplateMentionDate TemplateMentionDateTemplateMentionDate `json:"template_mention_date,omitzero"`
+	TemplateMentionDate TemplateMentionDate `json:"template_mention_date,omitzero"`
 	// The user of the template mention.
 	TemplateMentionUser string `json:"template_mention_user,omitzero"`
 }
@@ -26357,9 +27394,9 @@ func (e TemplateMentionType) Valid() bool {
 }
 
 // tagsOfTemplateMention holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfTemplateMention = map[string]map[string]jsonTagNeed{
-	"template_mention_date": {"template_mention_date": jsonTagRequired},
-	"template_mention_user": {"template_mention_user": jsonTagRequired},
+var tagsOfTemplateMention = map[string]map[string]union.TagNeed{
+	"template_mention_date": {"template_mention_date": union.TagRequired},
+	"template_mention_user": {"template_mention_user": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -26376,11 +27413,16 @@ func (v *TemplateMention) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *TemplateMention) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain TemplateMention
 
 	*v = TemplateMention{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -26392,30 +27434,33 @@ func (v *TemplateMention) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
 	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfTemplateMention, v.taggedMembers()); ok && v.Type == "" {
+	if tag, ok := union.InferTag(tagsOfTemplateMention, v.taggedMembers()); ok && v.Type == "" {
 		v.Type = TemplateMentionType(tag)
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfTemplateMention, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfTemplateMention, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *TemplateMention) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain TemplateMention
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfTemplateMention, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfTemplateMention, set); ok && out.Type == "" {
 		out.Type = TemplateMentionType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfTemplateMention, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfTemplateMention, set, nil, true); err != nil {
 		return err
 	}
 
@@ -26423,17 +27468,17 @@ func (v *TemplateMention) MarshalJSONTo(enc *jsontext.Encoder) error {
 }
 
 // The date of the template mention.
-type TemplateMentionDateTemplateMentionDate string
+type TemplateMentionDate string
 
 const (
-	TemplateMentionDateTemplateMentionDateToday TemplateMentionDateTemplateMentionDate = "today"
-	TemplateMentionDateTemplateMentionDateNow   TemplateMentionDateTemplateMentionDate = "now"
+	TemplateMentionDateToday TemplateMentionDate = "today"
+	TemplateMentionDateNow   TemplateMentionDate = "now"
 )
 
-// Valid indicates whether the value is a known member of the TemplateMentionDateTemplateMentionDate enum.
-func (e TemplateMentionDateTemplateMentionDate) Valid() bool {
+// Valid indicates whether the value is a known member of the TemplateMentionDate enum.
+func (e TemplateMentionDate) Valid() bool {
 	switch e {
-	case TemplateMentionDateTemplateMentionDateToday, TemplateMentionDateTemplateMentionDateNow:
+	case TemplateMentionDateToday, TemplateMentionDateNow:
 		return true
 	default:
 		return false
@@ -26444,7 +27489,7 @@ func (e TemplateMentionDateTemplateMentionDate) Valid() bool {
 type TemplateMentionResponse struct {
 	Type TemplateMentionResponseType `json:"type"`
 	// The date of the template mention.
-	TemplateMentionDate TemplateMentionDateTemplateMentionDate `json:"template_mention_date,omitzero"`
+	TemplateMentionDate TemplateMentionDate `json:"template_mention_date,omitzero"`
 	// The user of the template mention.
 	TemplateMentionUser string `json:"template_mention_user,omitzero"`
 }
@@ -26464,9 +27509,9 @@ func (e TemplateMentionResponseType) Valid() bool {
 }
 
 // tagsOfTemplateMentionResponse holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfTemplateMentionResponse = map[string]map[string]jsonTagNeed{
-	"template_mention_date": {"template_mention_date": jsonTagRequired},
-	"template_mention_user": {"template_mention_user": jsonTagRequired},
+var tagsOfTemplateMentionResponse = map[string]map[string]union.TagNeed{
+	"template_mention_date": {"template_mention_date": union.TagRequired},
+	"template_mention_user": {"template_mention_user": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -26483,11 +27528,16 @@ func (v *TemplateMentionResponse) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *TemplateMentionResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain TemplateMentionResponse
 
 	*v = TemplateMentionResponse{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -26499,25 +27549,28 @@ func (v *TemplateMentionResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfTemplateMentionResponse, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfTemplateMentionResponse, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *TemplateMentionResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain TemplateMentionResponse
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfTemplateMentionResponse, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfTemplateMentionResponse, set); ok && out.Type == "" {
 		out.Type = TemplateMentionResponseType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfTemplateMentionResponse, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfTemplateMentionResponse, set, nil, true); err != nil {
 		return err
 	}
 
@@ -26655,9 +27708,14 @@ type TextPropertyFilter struct {
 	ExistencePropertyFilter          *ExistencePropertyFilter
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *TextPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = TextPropertyFilter{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -26671,7 +27729,7 @@ func (v *TextPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"equals"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv TextPropertyFilterEquals
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.TextPropertyFilterEquals = &vv
@@ -26683,7 +27741,7 @@ func (v *TextPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"does_not_equal"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv TextPropertyFilterDoesNotEqual
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.TextPropertyFilterDoesNotEqual = &vv
@@ -26695,7 +27753,7 @@ func (v *TextPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"contains"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv TextPropertyFilterContains
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.TextPropertyFilterContains = &vv
@@ -26707,7 +27765,7 @@ func (v *TextPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"does_not_contain"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv TextPropertyFilterDoesNotContain
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.TextPropertyFilterDoesNotContain = &vv
@@ -26719,7 +27777,7 @@ func (v *TextPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"starts_with"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv TextPropertyFilterStartsWith
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.TextPropertyFilterStartsWith = &vv
@@ -26731,7 +27789,7 @@ func (v *TextPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"ends_with"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv TextPropertyFilterEndsWith
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.TextPropertyFilterEndsWith = &vv
@@ -26755,7 +27813,8 @@ func (v *TextPropertyFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *TextPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.TextPropertyFilterEquals != nil:
@@ -26774,7 +27833,7 @@ func (v *TextPropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.ExistencePropertyFilter, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // TextPropertyFilterContains defines a model
@@ -26835,6 +27894,25 @@ type TextRichTextItemTextLinkURL struct {
 	URL string `json:"url"`
 }
 
+// TimeFormat defines a model
+type TimeFormat string
+
+const (
+	TimeFormatOneTwoHour  TimeFormat = "12_hour"
+	TimeFormatTwoFourHour TimeFormat = "24_hour"
+	TimeFormatHidden      TimeFormat = "hidden"
+)
+
+// Valid indicates whether the value is a known member of the TimeFormat enum.
+func (e TimeFormat) Valid() bool {
+	switch e {
+	case TimeFormatOneTwoHour, TimeFormatTwoFourHour, TimeFormatHidden:
+		return true
+	default:
+		return false
+	}
+}
+
 // TimeZone defines a model
 type TimeZone string
 
@@ -26853,7 +27931,7 @@ type TimelineArrowsByResponse struct {
 // TimelinePreference defines a model
 type TimelinePreference struct {
 	// Zoom level for the timeline.
-	ZoomLevel TimelinePreferenceZoomLevel `json:"zoom_level"`
+	ZoomLevel ZoomLevel `json:"zoom_level"`
 	// Timestamp (ms) to center the timeline view on.
 	CenterTimestamp *int `json:"center_timestamp,omitzero"`
 }
@@ -26861,33 +27939,9 @@ type TimelinePreference struct {
 // TimelinePreferenceResponse defines a model
 type TimelinePreferenceResponse struct {
 	// Zoom level for the timeline.
-	ZoomLevel TimelinePreferenceZoomLevel `json:"zoom_level"`
+	ZoomLevel ZoomLevel `json:"zoom_level"`
 	// Center timestamp for the timeline view (Unix timestamp in ms).
 	CenterTimestamp *int `json:"center_timestamp,omitzero"`
-}
-
-// Zoom level for the timeline.
-type TimelinePreferenceZoomLevel string
-
-const (
-	TimelinePreferenceZoomLevelHours     TimelinePreferenceZoomLevel = "hours"
-	TimelinePreferenceZoomLevelDay       TimelinePreferenceZoomLevel = "day"
-	TimelinePreferenceZoomLevelWeek      TimelinePreferenceZoomLevel = "week"
-	TimelinePreferenceZoomLevelBiWeek    TimelinePreferenceZoomLevel = "bi_week"
-	TimelinePreferenceZoomLevelMonth     TimelinePreferenceZoomLevel = "month"
-	TimelinePreferenceZoomLevelQuarter   TimelinePreferenceZoomLevel = "quarter"
-	TimelinePreferenceZoomLevelYear      TimelinePreferenceZoomLevel = "year"
-	TimelinePreferenceZoomLevelFiveYears TimelinePreferenceZoomLevel = "5_years"
-)
-
-// Valid indicates whether the value is a known member of the TimelinePreferenceZoomLevel enum.
-func (e TimelinePreferenceZoomLevel) Valid() bool {
-	switch e {
-	case TimelinePreferenceZoomLevelHours, TimelinePreferenceZoomLevelDay, TimelinePreferenceZoomLevelWeek, TimelinePreferenceZoomLevelBiWeek, TimelinePreferenceZoomLevelMonth, TimelinePreferenceZoomLevelQuarter, TimelinePreferenceZoomLevelYear, TimelinePreferenceZoomLevelFiveYears:
-		return true
-	default:
-		return false
-	}
 }
 
 // TimelineViewConfig defines a model
@@ -27023,11 +28077,16 @@ type TimestampFilter struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member timestamp names the alternative, which then
-// decodes each further member as it is read. With timestamp first, nothing is read twice.
+// decodes each further member as it is read. With timestamp first, nothing is read twice. Null sets no alternative.
 func (v *TimestampFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = TimestampFilter{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "timestamp")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "timestamp")
 	if err != nil {
 		return err
 	}
@@ -27035,26 +28094,27 @@ func (v *TimestampFilter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch tag {
 	case "created_time":
 		var vv TimestampCreatedTimeFilter
-		if err := jsonMembersFrom(dec, "timestamp", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "timestamp", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.TimestampCreatedTimeFilter = &vv
 	case "last_edited_time":
 		var vv TimestampLastEditedTimeFilter
-		if err := jsonMembersFrom(dec, "timestamp", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "timestamp", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.TimestampLastEditedTimeFilter = &vv
 	default:
-		return jsonUnknownValue("timestamp", tag)
+		return union.UnknownValue("timestamp", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with timestamp first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with timestamp first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *TimestampFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -27067,7 +28127,7 @@ func (v *TimestampFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	case v.TimestampLastEditedTimeFilter != nil:
 		variant, tag = v.TimestampLastEditedTimeFilter, "last_edited_time"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -27075,7 +28135,7 @@ func (v *TimestampFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	if out, err = jsonFirst(out, "timestamp", tag); err != nil {
+	if out, err = union.First(out, "timestamp", tag); err != nil {
 		return err
 	}
 
@@ -27255,8 +28315,8 @@ func (v *URLPropertyItem) unmarshalJSONMember(dec *jsontext.Decoder, name string
 	return false, nil
 }
 
-// UniqueIDDatabasePropertyConfigUniqueID defines a model
-type UniqueIDDatabasePropertyConfigUniqueID struct {
+// UniqueID defines a model
+type UniqueID struct {
 	// The prefix for the unique ID.
 	Prefix string `json:"prefix"`
 }
@@ -27302,14 +28362,14 @@ func (v *UniqueIDPropertyItem) unmarshalJSONMember(dec *jsontext.Decoder, name s
 
 // UniqueIDPropertyItemUniqueID defines a model
 type UniqueIDPropertyItemUniqueID struct {
-	Prefix string   `json:"prefix"`
-	Number *float64 `json:"number"`
+	Prefix string  `json:"prefix"`
+	Number float64 `json:"number"`
 }
 
 // UniqueIDPropertyValue defines a model
 type UniqueIDPropertyValue struct {
-	Prefix string   `json:"prefix"`
-	Number *float64 `json:"number"`
+	Prefix string  `json:"prefix"`
+	Number float64 `json:"number"`
 }
 
 // UnsupportedBlockUnsupported defines a model
@@ -27361,9 +28421,14 @@ type UpdateABlock struct {
 	BlockTrashUpdate             *BlockTrashUpdate
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = UpdateABlock{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -27377,7 +28442,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"embed"}, map[string]bool{}, map[string]string{"type": "\"embed\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockEmbed
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockEmbed = &vv
@@ -27389,7 +28454,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"bookmark"}, map[string]bool{}, map[string]string{"type": "\"bookmark\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockBookmark
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockBookmark = &vv
@@ -27401,7 +28466,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"image"}, map[string]bool{}, map[string]string{"type": "\"image\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockImage
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockImage = &vv
@@ -27413,7 +28478,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"video"}, map[string]bool{}, map[string]string{"type": "\"video\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockVideo
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockVideo = &vv
@@ -27425,7 +28490,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"pdf"}, map[string]bool{}, map[string]string{"type": "\"pdf\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockPdf
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockPdf = &vv
@@ -27437,7 +28502,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"file"}, map[string]bool{}, map[string]string{"type": "\"file\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockFile
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockFile = &vv
@@ -27449,7 +28514,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"audio"}, map[string]bool{}, map[string]string{"type": "\"audio\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockAudio
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockAudio = &vv
@@ -27461,7 +28526,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"code"}, map[string]bool{}, map[string]string{"type": "\"code\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockCode
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockCode = &vv
@@ -27473,7 +28538,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"equation"}, map[string]bool{}, map[string]string{"type": "\"equation\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockEquation
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockEquation = &vv
@@ -27485,7 +28550,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"divider"}, map[string]bool{}, map[string]string{"type": "\"divider\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockDivider
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockDivider = &vv
@@ -27497,7 +28562,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"breadcrumb"}, map[string]bool{}, map[string]string{"type": "\"breadcrumb\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockBreadcrumb
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockBreadcrumb = &vv
@@ -27509,7 +28574,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"tab"}, map[string]bool{}, map[string]string{"type": "\"tab\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockTab
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockTab = &vv
@@ -27521,7 +28586,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"table_of_contents"}, map[string]bool{}, map[string]string{"type": "\"table_of_contents\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockTableOfContents
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockTableOfContents = &vv
@@ -27533,7 +28598,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"link_to_page"}, map[string]bool{}, map[string]string{"type": "\"link_to_page\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockLinkToPage
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockLinkToPage = &vv
@@ -27545,7 +28610,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"table_row"}, map[string]bool{}, map[string]string{"type": "\"table_row\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockTableRow
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockTableRow = &vv
@@ -27557,7 +28622,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"heading_1"}, map[string]bool{}, map[string]string{"type": "\"heading_1\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockHeading1
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockHeading1 = &vv
@@ -27569,7 +28634,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"heading_2"}, map[string]bool{}, map[string]string{"type": "\"heading_2\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockHeading2
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockHeading2 = &vv
@@ -27581,7 +28646,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"heading_3"}, map[string]bool{}, map[string]string{"type": "\"heading_3\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockHeading3
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockHeading3 = &vv
@@ -27593,7 +28658,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"heading_4"}, map[string]bool{}, map[string]string{"type": "\"heading_4\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockHeading4
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockHeading4 = &vv
@@ -27605,7 +28670,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"paragraph"}, map[string]bool{}, map[string]string{"type": "\"paragraph\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockParagraph
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockParagraph = &vv
@@ -27617,7 +28682,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"bulleted_list_item"}, map[string]bool{}, map[string]string{"type": "\"bulleted_list_item\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockBulletedListItem
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockBulletedListItem = &vv
@@ -27629,7 +28694,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"numbered_list_item"}, map[string]bool{}, map[string]string{"type": "\"numbered_list_item\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockNumberedListItem
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockNumberedListItem = &vv
@@ -27641,7 +28706,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"quote"}, map[string]bool{}, map[string]string{"type": "\"quote\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockQuote
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockQuote = &vv
@@ -27653,7 +28718,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"to_do"}, map[string]bool{}, map[string]string{"type": "\"to_do\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockToDo
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockToDo = &vv
@@ -27665,7 +28730,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"toggle"}, map[string]bool{}, map[string]string{"type": "\"toggle\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockToggle
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockToggle = &vv
@@ -27677,7 +28742,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"template"}, map[string]bool{}, map[string]string{"type": "\"template\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockTemplate
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockTemplate = &vv
@@ -27689,7 +28754,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"callout"}, map[string]bool{}, map[string]string{"type": "\"callout\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockCallout
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockCallout = &vv
@@ -27701,7 +28766,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"synced_block"}, map[string]bool{}, map[string]string{"type": "\"synced_block\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockSyncedBlock
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockSyncedBlock = &vv
@@ -27713,7 +28778,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"table"}, map[string]bool{}, map[string]string{"type": "\"table\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockTable
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockTable = &vv
@@ -27725,7 +28790,7 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"column"}, map[string]bool{}, map[string]string{"type": "\"column\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv UpdateABlockColumn
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.UpdateABlockColumn = &vv
@@ -27749,7 +28814,8 @@ func (v *UpdateABlock) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *UpdateABlock) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.UpdateABlockEmbed != nil:
@@ -27816,7 +28882,7 @@ func (v *UpdateABlock) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.BlockTrashUpdate, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // UpdateABlockAudio defines a model
@@ -28043,25 +29109,25 @@ type fieldsOfUpdateAComment UpdateAComment
 var membersOfUpdateAComment = map[string]bool{"markdown_version": true}
 
 // variantsOfUpdateAComment are the alternatives its union is decoded as, in order.
-var variantsOfUpdateAComment = []jsonVariant{
+var variantsOfUpdateAComment = []union.Variant{
 	{
-		value:    "",
-		members:  map[string]bool{"rich_text": true},
-		required: []string{"rich_text"},
-		pinned:   map[string]string{},
+		Value:    "",
+		Members:  map[string]bool{"rich_text": true},
+		Required: []string{"rich_text"},
+		Pinned:   map[string]string{},
 	},
 	{
-		value:    "",
-		members:  map[string]bool{"markdown": true},
-		required: []string{"markdown"},
-		pinned:   map[string]string{},
+		Value:    "",
+		Members:  map[string]bool{"markdown": true},
+		Required: []string{"markdown"},
+		Pinned:   map[string]string{},
 	},
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of CommentUpdate each
 // decode the members they declare, and a member neither declares is an error.
 func (v *UpdateAComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
+	opts, strict := jsonOptsOf(dec), union.Strict(dec)
 
 	*v = UpdateAComment{}
 
@@ -28070,12 +29136,12 @@ func (v *UpdateAComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		return err
 	}
 
-	chosen, err := jsonChooseVariants(raw, "", variantsOfUpdateAComment, membersOfUpdateAComment, true, strict)
+	chosen, err := union.ChooseVariants(raw, "", variantsOfUpdateAComment, membersOfUpdateAComment, true, strict)
 	if err != nil {
 		return err
 	}
 
-	fields, err := jsonSelect(raw, membersOfUpdateAComment)
+	fields, err := union.Select(raw, membersOfUpdateAComment)
 	if err != nil {
 		return err
 	}
@@ -28085,7 +29151,7 @@ func (v *UpdateAComment) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	for _, i := range chosen {
-		variant, err := jsonSelect(raw, variantsOfUpdateAComment[i].members)
+		variant, err := union.Select(raw, variantsOfUpdateAComment[i].Members)
 		if err != nil {
 			return err
 		}
@@ -28128,7 +29194,7 @@ func (v *UpdateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 			return err
 		}
 
-		if out, err = jsonMerge(out, variant); err != nil {
+		if out, err = union.Merge(out, variant); err != nil {
 			return err
 		}
 
@@ -28142,7 +29208,7 @@ func (v *UpdateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 			return err
 		}
 
-		if out, err = jsonMerge(out, variant); err != nil {
+		if out, err = union.Merge(out, variant); err != nil {
 			return err
 		}
 
@@ -28161,7 +29227,7 @@ type UpdateADataSource struct {
 	// Title of data source as it appears in Notion.
 	Title []RichTextItem `json:"title,omitzero"`
 	// Data source icon.
-	Icon *PageIcon `json:"icon,omitzero"`
+	Icon PageIcon `json:"icon,omitzero"`
 	// The property schema of the data source. The keys are property names or IDs, and the values are property configuration objects. Properties set to null will be removed.
 	Properties map[string]UpdateADataSourcePropertiesValue `json:"properties,omitzero"`
 	// Whether the data source should be moved to or from the trash. If not provided, the trash status will not be updated.
@@ -28177,12 +29243,17 @@ type UpdateADataSourcePropertiesValue struct {
 	PropertyRename *PropertyRename
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *UpdateADataSourcePropertiesValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = UpdateADataSourcePropertiesValue{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -28204,7 +29275,7 @@ func (v *UpdateADataSourcePropertiesValue) UnmarshalJSONFrom(dec *jsontext.Decod
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"name"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv PropertyRename
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.PropertyRename = &vv
@@ -28220,7 +29291,8 @@ func (v *UpdateADataSourcePropertiesValue) UnmarshalJSONFrom(dec *jsontext.Decod
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *UpdateADataSourcePropertiesValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PropertyUpdate != nil:
@@ -28229,7 +29301,7 @@ func (v *UpdateADataSourcePropertiesValue) MarshalJSONTo(enc *jsontext.Encoder) 
 		return json.MarshalEncode(enc, v.PropertyRename, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // UpdateADataSourcePropertiesValueOneOfAllOfSelect defines a model
@@ -28255,25 +29327,25 @@ type fieldsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem UpdateA
 var membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem = map[string]bool{"color": true, "description": true}
 
 // variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem are the alternatives its union is decoded as, in order.
-var variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem = []jsonVariant{
+var variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem = []union.Variant{
 	{
-		value:    "",
-		members:  map[string]bool{"id": true, "name": true},
-		required: []string{"name"},
-		pinned:   map[string]string{},
+		Value:    "",
+		Members:  map[string]bool{"id": true, "name": true},
+		Required: []string{"name"},
+		Pinned:   map[string]string{},
 	},
 	{
-		value:    "",
-		members:  map[string]bool{"id": true, "name": true},
-		required: []string{"id"},
-		pinned:   map[string]string{},
+		Value:    "",
+		Members:  map[string]bool{"id": true, "name": true},
+		Required: []string{"id"},
+		Pinned:   map[string]string{},
 	},
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. The fields and the chosen alternative of StatusOptionUpdateAllOf each
 // decode the members they declare, and a member neither declares is an error.
 func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	opts, strict := jsonOptsOf(dec), jsonStrict(dec)
+	opts, strict := jsonOptsOf(dec), union.Strict(dec)
 
 	*v = UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem{}
 
@@ -28282,12 +29354,12 @@ func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem) UnmarshalJ
 		return err
 	}
 
-	chosen, err := jsonChooseVariants(raw, "", variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem, membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem, true, strict)
+	chosen, err := union.ChooseVariants(raw, "", variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem, membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem, true, strict)
 	if err != nil {
 		return err
 	}
 
-	fields, err := jsonSelect(raw, membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem)
+	fields, err := union.Select(raw, membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem)
 	if err != nil {
 		return err
 	}
@@ -28297,7 +29369,7 @@ func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem) UnmarshalJ
 	}
 
 	for _, i := range chosen {
-		variant, err := jsonSelect(raw, variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem[i].members)
+		variant, err := union.Select(raw, variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem[i].Members)
 		if err != nil {
 			return err
 		}
@@ -28340,7 +29412,7 @@ func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem) MarshalJSO
 			return err
 		}
 
-		if out, err = jsonMerge(out, variant); err != nil {
+		if out, err = union.Merge(out, variant); err != nil {
 			return err
 		}
 
@@ -28354,7 +29426,7 @@ func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem) MarshalJSO
 			return err
 		}
 
-		if out, err = jsonMerge(out, variant); err != nil {
+		if out, err = union.Merge(out, variant); err != nil {
 			return err
 		}
 
@@ -28385,14 +29457,14 @@ type UpdateAgent struct {
 // UpdateAgentCreditLimit defines a model
 type UpdateAgentCreditLimit struct {
 	// The per-agent credit limit as a non-negative integer, or null to clear the limit.
-	CreditLimit *int `json:"credit_limit"`
+	CreditLimit int `json:"credit_limit"`
 }
 
 // UpdateAgentCreditLimitOk defines a model
 type UpdateAgentCreditLimitOk struct {
 	AgentID ID `json:"agent_id"`
 	// The agent's editor-set per-agent credit limit; null when no limit applies.
-	CreditLimit *int `json:"credit_limit"`
+	CreditLimit int `json:"credit_limit"`
 	// ISO 8601 timestamp of when the agent was last edited.
 	LastEditedTime string `json:"last_edited_time"`
 }
@@ -28405,11 +29477,16 @@ type UpdateAgentModel struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member mode names the alternative, which then
-// decodes each further member as it is read. With mode first, nothing is read twice.
+// decodes each further member as it is read. With mode first, nothing is read twice. Null sets no alternative.
 func (v *UpdateAgentModel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = UpdateAgentModel{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "mode")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "mode")
 	if err != nil {
 		return err
 	}
@@ -28417,26 +29494,27 @@ func (v *UpdateAgentModel) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch tag {
 	case "auto":
 		var vv AgentModelAuto
-		if err := jsonMembersFrom(dec, "mode", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "mode", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.AgentModelAuto = &vv
 	case "pinned":
 		var vv UpdateAgentModelPinned
-		if err := jsonMembersFrom(dec, "mode", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "mode", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.UpdateAgentModelPinned = &vv
 	default:
-		return jsonUnknownValue("mode", tag)
+		return union.UnknownValue("mode", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with mode first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with mode first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *UpdateAgentModel) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -28449,7 +29527,7 @@ func (v *UpdateAgentModel) MarshalJSONTo(enc *jsontext.Encoder) error {
 	case v.UpdateAgentModelPinned != nil:
 		variant, tag = v.UpdateAgentModelPinned, "pinned"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -28457,7 +29535,7 @@ func (v *UpdateAgentModel) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	if out, err = jsonFirst(out, "mode", tag); err != nil {
+	if out, err = union.First(out, "mode", tag); err != nil {
 		return err
 	}
 
@@ -28508,7 +29586,7 @@ type UpdateAgentStatusOk struct {
 	// "active" when the agent can run; "disabled" when it is paused (see pause_reason); "deleted" when it has been removed.
 	Status AgentStatus `json:"status"`
 	// Why the agent is paused when status is "disabled" (e.g. "disabled_from_api", "credit_limit"); null when active or deleted.
-	PauseReason AgentPauseReasonOneOf `json:"pause_reason"`
+	PauseReason PauseReason `json:"pause_reason"`
 	// ISO 8601 timestamp of when the agent was last edited.
 	LastEditedTime string `json:"last_edited_time"`
 }
@@ -28516,22 +29594,9 @@ type UpdateAgentStatusOk struct {
 // Update specific content using search-and-replace operations.
 type UpdateContent struct {
 	// An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content). Operations that match are applied, and each one that matches nothing is reported in "warnings". The call fails only when no operation that changes content matches.
-	ContentUpdates UpdateContentContentUpdates `json:"content_updates"`
+	ContentUpdates ContentUpdates `json:"content_updates"`
 	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
 	AllowDeletingContent *bool `json:"allow_deleting_content,omitzero"`
-}
-
-// An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content). Operations that match are applied, and each one that matches nothing is reported in "warnings". The call fails only when no operation that changes content matches.
-type UpdateContentContentUpdates []UpdateContentContentUpdatesItem
-
-// UpdateContentContentUpdatesItem defines a model
-type UpdateContentContentUpdatesItem struct {
-	// The existing content string to find and replace. Must exactly match the page content.
-	OldStr string `json:"old_str"`
-	// The new content string to replace old_str with.
-	NewStr string `json:"new_str"`
-	// If true, replaces all occurrences of old_str. If false (default), the operation fails if there are multiple matches.
-	ReplaceAllMatches *bool `json:"replace_all_matches,omitzero"`
 }
 
 // UpdateDatabase defines a model
@@ -28617,11 +29682,11 @@ func (e UpdatePageMarkdownType) Valid() bool {
 }
 
 // tagsOfUpdatePageMarkdown holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfUpdatePageMarkdown = map[string]map[string]jsonTagNeed{
-	"insert_content":        {"insert_content": jsonTagRequired},
-	"replace_content_range": {"replace_content_range": jsonTagRequired},
-	"update_content":        {"update_content": jsonTagRequired},
-	"replace_content":       {"replace_content": jsonTagRequired},
+var tagsOfUpdatePageMarkdown = map[string]map[string]union.TagNeed{
+	"insert_content":        {"insert_content": union.TagRequired},
+	"replace_content_range": {"replace_content_range": union.TagRequired},
+	"update_content":        {"update_content": union.TagRequired},
+	"replace_content":       {"replace_content": union.TagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -28644,11 +29709,16 @@ func (v *UpdatePageMarkdown) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *UpdatePageMarkdown) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain UpdatePageMarkdown
 
 	*v = UpdatePageMarkdown{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -28660,25 +29730,28 @@ func (v *UpdatePageMarkdown) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfUpdatePageMarkdown, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfUpdatePageMarkdown, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *UpdatePageMarkdown) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain UpdatePageMarkdown
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfUpdatePageMarkdown, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfUpdatePageMarkdown, set); ok && out.Type == "" {
 		out.Type = UpdatePageMarkdownType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfUpdatePageMarkdown, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfUpdatePageMarkdown, set, nil, true); err != nil {
 		return err
 	}
 
@@ -28721,11 +29794,16 @@ type UpdatePageMarkdownAcceptedOperation struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member name names the alternative, which then
-// decodes each further member as it is read. With name first, nothing is read twice.
+// decodes each further member as it is read. With name first, nothing is read twice. Null sets no alternative.
 func (v *UpdatePageMarkdownAcceptedOperation) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = UpdatePageMarkdownAcceptedOperation{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "name")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "name")
 	if err != nil {
 		return err
 	}
@@ -28733,26 +29811,27 @@ func (v *UpdatePageMarkdownAcceptedOperation) UnmarshalJSONFrom(dec *jsontext.De
 	switch tag {
 	case "PATCH /v1/pages/:page_id/markdown":
 		var vv UpdatePageMarkdownAcceptedOperationRest
-		if err := jsonMembersFrom(dec, "name", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "name", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.UpdatePageMarkdownAcceptedOperationRest = &vv
 	case "create_pages":
 		var vv UpdatePageMarkdownAcceptedOperationMcp
-		if err := jsonMembersFrom(dec, "name", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "name", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.UpdatePageMarkdownAcceptedOperationMcp = &vv
 	default:
-		return jsonUnknownValue("name", tag)
+		return union.UnknownValue("name", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with name first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with name first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *UpdatePageMarkdownAcceptedOperation) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -28765,7 +29844,7 @@ func (v *UpdatePageMarkdownAcceptedOperation) MarshalJSONTo(enc *jsontext.Encode
 	case v.UpdatePageMarkdownAcceptedOperationMcp != nil:
 		variant, tag = v.UpdatePageMarkdownAcceptedOperationMcp, "create_pages"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -28773,7 +29852,7 @@ func (v *UpdatePageMarkdownAcceptedOperation) MarshalJSONTo(enc *jsontext.Encode
 		return err
 	}
 
-	if out, err = jsonFirst(out, "name", tag); err != nil {
+	if out, err = union.First(out, "name", tag); err != nil {
 		return err
 	}
 
@@ -28892,12 +29971,17 @@ type UpdateSessionRequest struct {
 	SessionContinuation *SessionContinuation
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *UpdateSessionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = UpdateSessionRequest{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -28910,7 +29994,7 @@ func (v *UpdateSessionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"message"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv SessionMessage
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.SessionMessage = &vv
@@ -28923,7 +30007,7 @@ func (v *UpdateSessionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"actions", "session_id"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv SessionAnswer
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.SessionAnswer = &vv
@@ -28936,7 +30020,7 @@ func (v *UpdateSessionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	if strict || matched == 0 {
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"continue_from", "session_id"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv SessionContinuation
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.SessionContinuation = &vv
@@ -28952,7 +30036,8 @@ func (v *UpdateSessionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *UpdateSessionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.SessionMessage != nil:
@@ -28963,7 +30048,7 @@ func (v *UpdateSessionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.SessionContinuation, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // UpdateView defines a model
@@ -28971,13 +30056,68 @@ type UpdateView struct {
 	// New name for the view.
 	Name string `json:"name,omitzero"`
 	// Filter to apply to the view. Uses the same format as the data source query filter. Pass null to clear the filter.
-	Filter *Filter `json:"filter,omitzero"`
+	Filter Filter `json:"filter,omitzero"`
 	// Property sorts to apply to the view. Only property-based sorts are supported. Pass null to clear the sorts.
 	Sorts PropertySorts `json:"sorts,omitzero"`
 	// Quick filters for the view's filter bar. Keys are property names or IDs. Set a key to a filter condition to add/update that quick filter. Set a key to null to remove it. Pass null for the entire field to clear all quick filters. Unmentioned quick filters are preserved.
 	QuickFilters map[string]QuickFilterCondition `json:"quick_filters,omitzero"`
 	// View presentation configuration. The type field must match the view type. Individual nullable fields within the configuration can be set to null to clear them.
 	Configuration ViewConfig `json:"configuration,omitzero"`
+}
+
+// The fields of the view that were updated.
+type UpdatedFields []UpdatedFieldsItem
+
+// One of: `name`, `filter`, `sorts`, `configuration`
+type UpdatedFieldsItem string
+
+const (
+	UpdatedFieldsItemName          UpdatedFieldsItem = "name"
+	UpdatedFieldsItemFilter        UpdatedFieldsItem = "filter"
+	UpdatedFieldsItemSorts         UpdatedFieldsItem = "sorts"
+	UpdatedFieldsItemConfiguration UpdatedFieldsItem = "configuration"
+)
+
+// Valid indicates whether the value is a known member of the UpdatedFieldsItem enum.
+func (e UpdatedFieldsItem) Valid() bool {
+	switch e {
+	case UpdatedFieldsItemName, UpdatedFieldsItemFilter, UpdatedFieldsItemSorts, UpdatedFieldsItemConfiguration:
+		return true
+	default:
+		return false
+	}
+}
+
+// The database properties that were created, updated, or deleted.
+type UpdatedProperties []UpdatedPropertiesItem
+
+// UpdatedPropertiesItem defines a model
+type UpdatedPropertiesItem struct {
+	// The ID of the database property that changed.
+	ID string `json:"id"`
+	// The name of the database property, or `null` if deleted.
+	Name string `json:"name"`
+	// The action taken on the property.
+	Action UpdatedPropertiesItemAction `json:"action"`
+}
+
+// The action taken on the property.
+type UpdatedPropertiesItemAction string
+
+const (
+	UpdatedPropertiesItemActionCreated UpdatedPropertiesItemAction = "created"
+	UpdatedPropertiesItemActionUpdated UpdatedPropertiesItemAction = "updated"
+	UpdatedPropertiesItemActionDeleted UpdatedPropertiesItemAction = "deleted"
+)
+
+// Valid indicates whether the value is a known member of the UpdatedPropertiesItemAction enum.
+func (e UpdatedPropertiesItemAction) Valid() bool {
+	switch e {
+	case UpdatedPropertiesItemActionCreated, UpdatedPropertiesItemActionUpdated, UpdatedPropertiesItemActionDeleted:
+		return true
+	default:
+		return false
+	}
 }
 
 // UploadFile defines a model
@@ -29039,9 +30179,9 @@ func (e UserType) Valid() bool {
 }
 
 // tagsOfUser holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfUser = map[string]map[string]jsonTagNeed{
-	"person": {"person": jsonTagRequired},
-	"bot":    {"bot": jsonTagRequired, "request_id": jsonTagOptional},
+var tagsOfUser = map[string]map[string]union.TagNeed{
+	"person": {"person": union.TagRequired},
+	"bot":    {"bot": union.TagRequired, "request_id": union.TagOptional},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
@@ -29061,11 +30201,16 @@ func (v *User) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *User) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain User
 
 	*v = User{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -29077,25 +30222,28 @@ func (v *User) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfUser, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfUser, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *User) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain User
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfUser, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfUser, set); ok && out.Type == "" {
 		out.Type = UserType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfUser, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfUser, set, nil, true); err != nil {
 		return err
 	}
 
@@ -29120,9 +30268,14 @@ type UserOrPartial struct {
 	User        *User
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *UserOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = UserOrPartial{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	opts := jsonOptsOf(dec)
 
@@ -29136,7 +30289,7 @@ func (v *UserOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"id", "object"}, map[string]bool{}, map[string]string{"object": "\"user\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv PartialUser
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.PartialUser = &vv
@@ -29148,7 +30301,7 @@ func (v *UserOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"avatar_url", "id", "name", "object", "type"}, map[string]bool{"avatar_url": true, "name": true}, map[string]string{"object": "\"user\""}
-		if jsonFits(raw, required, nullable, pinned) {
+		if union.Fits(raw, required, nullable, pinned) {
 			var vv User
 			if err := json.Unmarshal(raw, &vv, opts); err == nil {
 				v.User = &vv
@@ -29164,7 +30317,8 @@ func (v *UserOrPartial) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *UserOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PartialUser != nil:
@@ -29173,7 +30327,7 @@ func (v *UserOrPartial) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.User, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
 }
 
 // VerificationProperty defines a model
@@ -29181,20 +30335,20 @@ type VerificationProperty struct {
 	// One of: `verified`, `expired`
 	State      VerificationPropertyState `json:"state"`
 	Date       *DateResponse             `json:"date"`
-	VerifiedBy *UserOrPartial            `json:"verified_by"`
+	VerifiedBy UserOrPartial             `json:"verified_by"`
 }
 
 // VerificationPropertyDoesNotEqualFilter defines a model
 type VerificationPropertyDoesNotEqualFilter struct {
-	DoesNotEqual VerificationPropertyStatusFilterStatus `json:"does_not_equal"`
+	DoesNotEqual VerificationStatus `json:"does_not_equal"`
 }
 
 // VerificationPropertyItem defines a model
 type VerificationPropertyItem struct {
-	Type         string                     `json:"type"`
-	Verification *VerificationPropertyValue `json:"verification"`
-	Object       string                     `json:"object"`
-	ID           string                     `json:"id"`
+	Type         string                    `json:"type"`
+	Verification VerificationPropertyValue `json:"verification"`
+	Object       string                    `json:"object"`
+	ID           string                    `json:"id"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether VerificationPropertyItem declares it.
@@ -29233,26 +30387,7 @@ func (e VerificationPropertyState) Valid() bool {
 
 // VerificationPropertyStatusFilter defines a model
 type VerificationPropertyStatusFilter struct {
-	Status VerificationPropertyStatusFilterStatus `json:"status"`
-}
-
-// VerificationPropertyStatusFilterStatus defines a model
-type VerificationPropertyStatusFilterStatus string
-
-const (
-	VerificationPropertyStatusFilterStatusVerified VerificationPropertyStatusFilterStatus = "verified"
-	VerificationPropertyStatusFilterStatusExpired  VerificationPropertyStatusFilterStatus = "expired"
-	VerificationPropertyStatusFilterStatusNone     VerificationPropertyStatusFilterStatus = "none"
-)
-
-// Valid indicates whether the value is a known member of the VerificationPropertyStatusFilterStatus enum.
-func (e VerificationPropertyStatusFilterStatus) Valid() bool {
-	switch e {
-	case VerificationPropertyStatusFilterStatusVerified, VerificationPropertyStatusFilterStatusExpired, VerificationPropertyStatusFilterStatusNone:
-		return true
-	default:
-		return false
-	}
+	Status VerificationStatus `json:"status"`
 }
 
 // VerificationPropertyUnverified defines a model
@@ -29270,12 +30405,17 @@ type VerificationPropertyValue struct {
 	VerificationProperty           *VerificationProperty
 }
 
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
 func (v *VerificationPropertyValue) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = VerificationPropertyValue{}
 
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
 	opts := jsonOptsOf(dec)
-	strict := jsonStrict(dec)
+	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -29285,13 +30425,13 @@ func (v *VerificationPropertyValue) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 	var matched int
 
 	// a member outside its enum rules an alternative out; leniently, only while another fits
-	for _, enums := range jsonEnumPasses(strict) {
+	for _, enums := range union.EnumPasses(strict) {
 
 		// leniently, more than one may match, and the first does
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"date", "state", "verified_by"}, map[string]bool{"date": true, "verified_by": true}, map[string]string{"state": "\"unverified\""}
-			if jsonFits(raw, required, nullable, pinned) {
+			if union.Fits(raw, required, nullable, pinned) {
 				var vv VerificationPropertyUnverified
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.VerificationPropertyUnverified = &vv
@@ -29304,7 +30444,7 @@ func (v *VerificationPropertyValue) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 		if strict || matched == 0 {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"date", "state", "verified_by"}, map[string]bool{"date": true, "verified_by": true}, map[string]string{}
-			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"state": {"\"verified\"", "\"expired\""}})) {
+			if union.Fits(raw, required, nullable, pinned) && (!enums || union.EnumsFit(raw, map[string][]string{"state": {"\"verified\"", "\"expired\""}})) {
 				var vv VerificationProperty
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
 					v.VerificationProperty = &vv
@@ -29325,7 +30465,8 @@ func (v *VerificationPropertyValue) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
+// where none is set.
 func (v *VerificationPropertyValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.VerificationPropertyUnverified != nil:
@@ -29334,7 +30475,26 @@ func (v *VerificationPropertyValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return json.MarshalEncode(enc, v.VerificationProperty, jsonOptsTo(enc))
 	}
 
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	return enc.WriteToken(jsontext.Null)
+}
+
+// VerificationStatus defines a model
+type VerificationStatus string
+
+const (
+	VerificationStatusVerified VerificationStatus = "verified"
+	VerificationStatusExpired  VerificationStatus = "expired"
+	VerificationStatusNone     VerificationStatus = "none"
+)
+
+// Valid indicates whether the value is a known member of the VerificationStatus enum.
+func (e VerificationStatus) Valid() bool {
+	switch e {
+	case VerificationStatusVerified, VerificationStatusExpired, VerificationStatusNone:
+		return true
+	default:
+		return false
+	}
 }
 
 // View configuration, discriminated by the type field.
@@ -29352,11 +30512,16 @@ type ViewConfig struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *ViewConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = ViewConfig{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
@@ -29364,75 +30529,76 @@ func (v *ViewConfig) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch tag {
 	case "table":
 		var vv TableViewConfig
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.TableViewConfig = &vv
 	case "board":
 		var vv BoardViewConfig
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.BoardViewConfig = &vv
 	case "calendar":
 		var vv CalendarViewConfig
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.CalendarViewConfig = &vv
 	case "timeline":
 		var vv TimelineViewConfig
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.TimelineViewConfig = &vv
 	case "gallery":
 		var vv GalleryViewConfig
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.GalleryViewConfig = &vv
 	case "list":
 		var vv ListViewConfig
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.ListViewConfig = &vv
 	case "map":
 		var vv MapViewConfig
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.MapViewConfig = &vv
 	case "form":
 		var vv FormViewConfig
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.FormViewConfig = &vv
 	case "chart":
 		var vv ChartViewConfig
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.ChartViewConfig = &vv
 	default:
-		return jsonUnknownValue("type", tag)
+		return union.UnknownValue("type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *ViewConfig) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -29459,7 +30625,7 @@ func (v *ViewConfig) MarshalJSONTo(enc *jsontext.Encoder) error {
 	case v.ChartViewConfig != nil:
 		variant, tag = v.ChartViewConfig, "chart"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -29467,7 +30633,7 @@ func (v *ViewConfig) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	if out, err = jsonFirst(out, "type", tag); err != nil {
+	if out, err = union.First(out, "type", tag); err != nil {
 		return err
 	}
 
@@ -29490,11 +30656,16 @@ type ViewConfigResponse struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *ViewConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = ViewConfigResponse{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
@@ -29502,82 +30673,83 @@ func (v *ViewConfigResponse) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch tag {
 	case "table":
 		var vv TableViewConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.TableViewConfigResponse = &vv
 	case "board":
 		var vv BoardViewConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.BoardViewConfigResponse = &vv
 	case "calendar":
 		var vv CalendarViewConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.CalendarViewConfigResponse = &vv
 	case "timeline":
 		var vv TimelineViewConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.TimelineViewConfigResponse = &vv
 	case "gallery":
 		var vv GalleryViewConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.GalleryViewConfigResponse = &vv
 	case "list":
 		var vv ListViewConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.ListViewConfigResponse = &vv
 	case "map":
 		var vv MapViewConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.MapViewConfigResponse = &vv
 	case "form":
 		var vv FormViewConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.FormViewConfigResponse = &vv
 	case "chart":
 		var vv ChartViewConfigResponse
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.ChartViewConfigResponse = &vv
 	case "dashboard":
 		var vv DashboardViewConfig
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.DashboardViewConfig = &vv
 	default:
-		return jsonUnknownValue("type", tag)
+		return union.UnknownValue("type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *ViewConfigResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -29606,7 +30778,7 @@ func (v *ViewConfigResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	case v.DashboardViewConfig != nil:
 		variant, tag = v.DashboardViewConfig, "dashboard"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -29614,7 +30786,7 @@ func (v *ViewConfigResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	if out, err = jsonFirst(out, "type", tag); err != nil {
+	if out, err = union.First(out, "type", tag); err != nil {
 		return err
 	}
 
@@ -29659,10 +30831,10 @@ type ViewList struct {
 	HasMore    bool                      `json:"has_more"`
 	Results    []DataSourceViewReference `json:"results"`
 	// Always `view`
-	Type          string        `json:"type"`
-	View          EmptyObject   `json:"view"`
-	RequestStatus RequestStatus `json:"request_status,omitzero"`
-	RequestID     uuid.UUID     `json:"request_id,omitzero"`
+	Type          string                `json:"type"`
+	View          EmptyObject           `json:"view"`
+	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
+	RequestID     uuid.UUID             `json:"request_id,omitzero"`
 }
 
 // Position of the new view in the database's view tab bar.
@@ -29674,11 +30846,16 @@ type ViewPosition struct {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
-// decodes each further member as it is read. With type first, nothing is read twice.
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *ViewPosition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	*v = ViewPosition{}
 
-	tag, first, dec, err := jsonFirstMember(dec, "type")
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
@@ -29686,33 +30863,34 @@ func (v *ViewPosition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch tag {
 	case "start":
 		var vv ViewPositionStart
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.ViewPositionStart = &vv
 	case "end":
 		var vv ViewPositionEnd
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.ViewPositionEnd = &vv
 	case "after_view":
 		var vv ViewPositionAfterView
-		if err := jsonMembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
 			return err
 		}
 
 		v.ViewPositionAfterView = &vv
 	default:
-		return jsonUnknownValue("type", tag)
+		return union.UnknownValue("type", tag)
 	}
 
 	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *ViewPosition) MarshalJSONTo(enc *jsontext.Encoder) error {
 	var (
 		variant any
@@ -29727,7 +30905,7 @@ func (v *ViewPosition) MarshalJSONTo(enc *jsontext.Encoder) error {
 	case v.ViewPositionAfterView != nil:
 		variant, tag = v.ViewPositionAfterView, "after_view"
 	default:
-		return &json.SemanticError{Err: errors.New("no alternative set")}
+		return enc.WriteToken(jsontext.Null)
 	}
 
 	out, err := json.Marshal(variant, jsonOptsTo(enc))
@@ -29735,7 +30913,7 @@ func (v *ViewPosition) MarshalJSONTo(enc *jsontext.Encoder) error {
 		return err
 	}
 
-	if out, err = jsonFirst(out, "type", tag); err != nil {
+	if out, err = union.First(out, "type", tag); err != nil {
 		return err
 	}
 
@@ -29805,53 +30983,13 @@ type ViewPropertyConfig struct {
 	// Whether to wrap content in this property cell/card.
 	Wrap *bool `json:"wrap,omitzero"`
 	// How to display status properties (select dropdown or checkbox).
-	StatusShowAs ViewPropertyConfigStatusShowAs `json:"status_show_as,omitzero"`
+	StatusShowAs StatusShowAs `json:"status_show_as,omitzero"`
 	// Property width mode in compact card layouts (board/gallery).
-	CardPropertyWidthMode ViewPropertyConfigCardPropertyWidthMode `json:"card_property_width_mode,omitzero"`
+	CardPropertyWidthMode CardPropertyWidthMode `json:"card_property_width_mode,omitzero"`
 	// Date display format (date properties only).
-	DateFormat ViewPropertyConfigDateFormat `json:"date_format,omitzero"`
+	DateFormat DateFormat `json:"date_format,omitzero"`
 	// Time display format (date properties only).
-	TimeFormat ViewPropertyConfigTimeFormat `json:"time_format,omitzero"`
-}
-
-// Property width mode in compact card layouts (board/gallery).
-type ViewPropertyConfigCardPropertyWidthMode string
-
-const (
-	ViewPropertyConfigCardPropertyWidthModeFullLine ViewPropertyConfigCardPropertyWidthMode = "full_line"
-	ViewPropertyConfigCardPropertyWidthModeInline   ViewPropertyConfigCardPropertyWidthMode = "inline"
-)
-
-// Valid indicates whether the value is a known member of the ViewPropertyConfigCardPropertyWidthMode enum.
-func (e ViewPropertyConfigCardPropertyWidthMode) Valid() bool {
-	switch e {
-	case ViewPropertyConfigCardPropertyWidthModeFullLine, ViewPropertyConfigCardPropertyWidthModeInline:
-		return true
-	default:
-		return false
-	}
-}
-
-// ViewPropertyConfigDateFormat defines a model
-type ViewPropertyConfigDateFormat string
-
-const (
-	ViewPropertyConfigDateFormatFull         ViewPropertyConfigDateFormat = "full"
-	ViewPropertyConfigDateFormatShort        ViewPropertyConfigDateFormat = "short"
-	ViewPropertyConfigDateFormatMonthDayYear ViewPropertyConfigDateFormat = "month_day_year"
-	ViewPropertyConfigDateFormatDayMonthYear ViewPropertyConfigDateFormat = "day_month_year"
-	ViewPropertyConfigDateFormatYearMonthDay ViewPropertyConfigDateFormat = "year_month_day"
-	ViewPropertyConfigDateFormatRelative     ViewPropertyConfigDateFormat = "relative"
-)
-
-// Valid indicates whether the value is a known member of the ViewPropertyConfigDateFormat enum.
-func (e ViewPropertyConfigDateFormat) Valid() bool {
-	switch e {
-	case ViewPropertyConfigDateFormatFull, ViewPropertyConfigDateFormatShort, ViewPropertyConfigDateFormatMonthDayYear, ViewPropertyConfigDateFormatDayMonthYear, ViewPropertyConfigDateFormatYearMonthDay, ViewPropertyConfigDateFormatRelative:
-		return true
-	default:
-		return false
-	}
+	TimeFormat TimeFormat `json:"time_format,omitzero"`
 }
 
 // ViewPropertyConfigResponse defines a model
@@ -29867,50 +31005,13 @@ type ViewPropertyConfigResponse struct {
 	// Whether to wrap content in this property cell/card.
 	Wrap *bool `json:"wrap,omitzero"`
 	// How to display status properties (as select dropdown or checkbox).
-	StatusShowAs ViewPropertyConfigStatusShowAs `json:"status_show_as,omitzero"`
+	StatusShowAs StatusShowAs `json:"status_show_as,omitzero"`
 	// Property width mode in compact card layouts (board/gallery).
-	CardPropertyWidthMode ViewPropertyConfigCardPropertyWidthMode `json:"card_property_width_mode,omitzero"`
+	CardPropertyWidthMode CardPropertyWidthMode `json:"card_property_width_mode,omitzero"`
 	// Date display format (date properties only). "full" = localized full date, "short" = month and day, "month_day_year" = MM/DD/YYYY, "day_month_year" = DD/MM/YYYY, "year_month_day" = YYYY/MM/DD, "relative" = relative dates.
-	DateFormat ViewPropertyConfigDateFormat `json:"date_format,omitzero"`
+	DateFormat DateFormat `json:"date_format,omitzero"`
 	// Time display format (date properties only). "12_hour" = 12-hour clock with AM/PM, "24_hour" = 24-hour clock, "hidden" = hide time.
-	TimeFormat ViewPropertyConfigTimeFormat `json:"time_format,omitzero"`
-}
-
-// ViewPropertyConfigStatusShowAs defines a model
-type ViewPropertyConfigStatusShowAs string
-
-const (
-	ViewPropertyConfigStatusShowAsSelect   ViewPropertyConfigStatusShowAs = "select"
-	ViewPropertyConfigStatusShowAsCheckbox ViewPropertyConfigStatusShowAs = "checkbox"
-)
-
-// Valid indicates whether the value is a known member of the ViewPropertyConfigStatusShowAs enum.
-func (e ViewPropertyConfigStatusShowAs) Valid() bool {
-	switch e {
-	case ViewPropertyConfigStatusShowAsSelect, ViewPropertyConfigStatusShowAsCheckbox:
-		return true
-	default:
-		return false
-	}
-}
-
-// ViewPropertyConfigTimeFormat defines a model
-type ViewPropertyConfigTimeFormat string
-
-const (
-	ViewPropertyConfigTimeFormatOneTwoHour  ViewPropertyConfigTimeFormat = "12_hour"
-	ViewPropertyConfigTimeFormatTwoFourHour ViewPropertyConfigTimeFormat = "24_hour"
-	ViewPropertyConfigTimeFormatHidden      ViewPropertyConfigTimeFormat = "hidden"
-)
-
-// Valid indicates whether the value is a known member of the ViewPropertyConfigTimeFormat enum.
-func (e ViewPropertyConfigTimeFormat) Valid() bool {
-	switch e {
-	case ViewPropertyConfigTimeFormatOneTwoHour, ViewPropertyConfigTimeFormatTwoFourHour, ViewPropertyConfigTimeFormatHidden:
-		return true
-	default:
-		return false
-	}
+	TimeFormat TimeFormat `json:"time_format,omitzero"`
 }
 
 // ViewQuery defines a model
@@ -29932,7 +31033,25 @@ type ViewQuery struct {
 	// Whether there are more results.
 	HasMore bool `json:"has_more"`
 	// Set to `{ type: 'incomplete', incomplete_reason: 'query_result_limit_reached' }` when the view's underlying data source has more rows matching this query than the server-side pagination depth limit allows.
-	RequestStatus RequestStatus `json:"request_status,omitzero"`
+	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
+}
+
+// ViewRange defines a model
+type ViewRange string
+
+const (
+	ViewRangeWeek  ViewRange = "week"
+	ViewRangeMonth ViewRange = "month"
+)
+
+// Valid indicates whether the value is a known member of the ViewRange enum.
+func (e ViewRange) Valid() bool {
+	switch e {
+	case ViewRangeWeek, ViewRangeMonth:
+		return true
+	default:
+		return false
+	}
 }
 
 // ViewType defines a model
@@ -29977,30 +31096,7 @@ type ViewUpdatedWebhookPayloadData struct {
 	// The parent of the updated view.
 	Parent WebhookParentBlock `json:"parent"`
 	// The fields of the view that were updated.
-	UpdatedFields ViewUpdatedWebhookPayloadDataUpdatedFields `json:"updated_fields"`
-}
-
-// The fields of the view that were updated.
-type ViewUpdatedWebhookPayloadDataUpdatedFields []ViewUpdatedWebhookPayloadDataUpdatedFieldsItem
-
-// One of: `name`, `filter`, `sorts`, `configuration`
-type ViewUpdatedWebhookPayloadDataUpdatedFieldsItem string
-
-const (
-	ViewUpdatedWebhookPayloadDataUpdatedFieldsItemName          ViewUpdatedWebhookPayloadDataUpdatedFieldsItem = "name"
-	ViewUpdatedWebhookPayloadDataUpdatedFieldsItemFilter        ViewUpdatedWebhookPayloadDataUpdatedFieldsItem = "filter"
-	ViewUpdatedWebhookPayloadDataUpdatedFieldsItemSorts         ViewUpdatedWebhookPayloadDataUpdatedFieldsItem = "sorts"
-	ViewUpdatedWebhookPayloadDataUpdatedFieldsItemConfiguration ViewUpdatedWebhookPayloadDataUpdatedFieldsItem = "configuration"
-)
-
-// Valid indicates whether the value is a known member of the ViewUpdatedWebhookPayloadDataUpdatedFieldsItem enum.
-func (e ViewUpdatedWebhookPayloadDataUpdatedFieldsItem) Valid() bool {
-	switch e {
-	case ViewUpdatedWebhookPayloadDataUpdatedFieldsItemName, ViewUpdatedWebhookPayloadDataUpdatedFieldsItemFilter, ViewUpdatedWebhookPayloadDataUpdatedFieldsItemSorts, ViewUpdatedWebhookPayloadDataUpdatedFieldsItemConfiguration:
-		return true
-	default:
-		return false
-	}
+	UpdatedFields UpdatedFields `json:"updated_fields"`
 }
 
 // WebhookCommentEntity defines a model
@@ -30143,7 +31239,7 @@ func (e WidgetPlacementType) Valid() bool {
 }
 
 // tagsOfWidgetPlacement holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfWidgetPlacement = map[string]map[string]jsonTagNeed{
+var tagsOfWidgetPlacement = map[string]map[string]union.TagNeed{
 	"new_row":      {},
 	"existing_row": {},
 }
@@ -30156,11 +31252,16 @@ func (v *WidgetPlacement) taggedMembers() []string {
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
+// alternative's own, only those of the one type names are set. Null sets no alternative.
 func (v *WidgetPlacement) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	type plain WidgetPlacement
 
 	*v = WidgetPlacement{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -30172,29 +31273,38 @@ func (v *WidgetPlacement) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
+	present, err := union.Members(raw)
 	if err != nil {
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfWidgetPlacement, v.taggedMembers(), present, jsonStrict(dec))
+	return union.CheckTag("type", string(v.Type), tagsOfWidgetPlacement, v.taggedMembers(), present, union.Strict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
+// the value whose member is set, or null where none is.
 func (v *WidgetPlacement) MarshalJSONTo(enc *jsontext.Encoder) error {
 	type plain WidgetPlacement
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfWidgetPlacement, set); ok && out.Type == "" {
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfWidgetPlacement, set); ok && out.Type == "" {
 		out.Type = WidgetPlacementType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfWidgetPlacement, set, nil, true); err != nil {
+	if err := union.CheckTag("type", string(out.Type), tagsOfWidgetPlacement, set, nil, true); err != nil {
 		return err
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
+}
+
+// Limits and restrictions that apply to the bot's workspace
+type WorkspaceLimits struct {
+	// The maximum allowable size of a file upload, in bytes
+	MaxFileUploadSizeInBytes int `json:"max_file_upload_size_in_bytes"`
 }
 
 // WorkspaceParentForBlockBasedObject defines a model
@@ -30205,15 +31315,33 @@ type WorkspaceParentForBlockBasedObject struct {
 	Workspace bool `json:"workspace"`
 }
 
-// jsonStrict reports whether dec rejects members the specification does not know, as it does unless told otherwise.
-func jsonStrict(dec *jsontext.Decoder) bool {
-	v, ok := json.GetOption(dec.Options(), json.RejectUnknownMembers)
-	return v || !ok
+// Zoom level for the timeline.
+type ZoomLevel string
+
+const (
+	ZoomLevelHours     ZoomLevel = "hours"
+	ZoomLevelDay       ZoomLevel = "day"
+	ZoomLevelWeek      ZoomLevel = "week"
+	ZoomLevelBiWeek    ZoomLevel = "bi_week"
+	ZoomLevelMonth     ZoomLevel = "month"
+	ZoomLevelQuarter   ZoomLevel = "quarter"
+	ZoomLevelYear      ZoomLevel = "year"
+	ZoomLevelFiveYears ZoomLevel = "5_years"
+)
+
+// Valid indicates whether the value is a known member of the ZoomLevel enum.
+func (e ZoomLevel) Valid() bool {
+	switch e {
+	case ZoomLevelHours, ZoomLevelDay, ZoomLevelWeek, ZoomLevelBiWeek, ZoomLevelMonth, ZoomLevelQuarter, ZoomLevelYear, ZoomLevelFiveYears:
+		return true
+	default:
+		return false
+	}
 }
 
 // jsonOptsOf is jsonOpts, or jsonOptsLenient where dec accepts members the specification does not know.
 func jsonOptsOf(dec *jsontext.Decoder) json.Options {
-	if jsonStrict(dec) {
+	if union.Strict(dec) {
 		return jsonOpts
 	}
 
@@ -30224,734 +31352,4 @@ func jsonOptsOf(dec *jsontext.Decoder) json.Options {
 // request or a response does not carry, so that what a type encodes itself passes them on.
 func jsonOptsTo(enc *jsontext.Encoder) json.Options {
 	return json.JoinOptions(jsonOpts, enc.Options())
-}
-
-// jsonUnknownName reports a member no part of the type declares, as encoding/json reports one of a struct.
-func jsonUnknownName(name string) error {
-	return &json.SemanticError{JSONKind: jsontext.KindString, Err: fmt.Errorf("%w %q", json.ErrUnknownName, name)}
-}
-
-// jsonMissing reports a member the type needs and the object lacks.
-func jsonMissing(name string) error {
-	return &json.SemanticError{JSONKind: jsontext.KindBeginObject, Err: fmt.Errorf("missing object member name %q", name)}
-}
-
-// jsonUnknownValue reports a value of the discriminator that names no alternative.
-func jsonUnknownValue(name, value string) error {
-	return &json.SemanticError{JSONKind: jsontext.KindString, JSONValue: jsontext.Value(strconv.Quote(value)), Err: fmt.Errorf("unknown value of %q", name)}
-}
-
-// jsonFirstMember reads the opening of a JSON object and its member name, which must have a string value. It returns
-// the string, the value as written, and the decoder to read the object's further members from: dec itself when name
-// comes first, the fast way, and otherwise one over the object read whole, with name moved to the front.
-func jsonFirstMember(dec *jsontext.Decoder, name string) (string, jsontext.Value, *jsontext.Decoder, error) {
-	if tok, err := dec.ReadToken(); err != nil {
-		return "", nil, nil, err
-	} else if tok.Kind() != jsontext.KindBeginObject {
-		return "", nil, nil, &json.SemanticError{JSONKind: tok.Kind(), Err: errors.New("want an object")}
-	}
-
-	if dec.PeekKind() == jsontext.KindEndObject {
-		return "", nil, nil, jsonMissing(name)
-	}
-
-	tok, err := dec.ReadToken()
-	if err != nil {
-		return "", nil, nil, err
-	}
-
-	if got := tok.String(); got != name {
-		// read the rest of the object, and start again with name first
-		var buf bytes.Buffer
-		enc := jsontext.NewEncoder(&buf)
-		if err := enc.WriteToken(jsontext.BeginObject); err != nil {
-			return "", nil, nil, err
-		}
-
-		if err := enc.WriteToken(jsontext.String(got)); err != nil {
-			return "", nil, nil, err
-		}
-
-		for dec.PeekKind() != jsontext.KindEndObject {
-			val, err := dec.ReadValue()
-			if err != nil {
-				return "", nil, nil, err
-			}
-
-			if err := enc.WriteValue(val); err != nil {
-				return "", nil, nil, err
-			}
-
-			if dec.PeekKind() == jsontext.KindEndObject {
-				break
-			}
-
-			tok, err := dec.ReadToken()
-			if err != nil {
-				return "", nil, nil, err
-			}
-
-			if err := enc.WriteToken(tok); err != nil {
-				return "", nil, nil, err
-			}
-		}
-
-		if _, err := dec.ReadToken(); err != nil { // the end of the object
-			return "", nil, nil, err
-		}
-
-		if err := enc.WriteToken(jsontext.EndObject); err != nil {
-			return "", nil, nil, err
-		}
-
-		ordered, err := jsonFirst(buf.Bytes(), name, "")
-		if err != nil {
-			return "", nil, nil, err
-		}
-
-		return jsonFirstMember(jsontext.NewDecoder(bytes.NewReader(ordered), dec.Options()), name)
-	}
-
-	val, err := dec.ReadValue()
-	if err != nil {
-		return "", nil, nil, err
-	}
-
-	var tag string
-	if err := json.Unmarshal(val, &tag); err != nil {
-		return "", nil, nil, &json.SemanticError{JSONKind: val.Kind(), Err: fmt.Errorf("member %q is not a string", name)}
-	}
-
-	return tag, val.Clone(), dec, nil
-}
-
-// jsonMembersFrom decodes the first member, already read, and every further member of the object dec is in, each
-// into the field decode declares for it; a member it does not declare is an error, unless dec is lenient.
-func jsonMembersFrom(dec *jsontext.Decoder, firstName string, first jsontext.Value, decode func(*jsontext.Decoder, string) (bool, error)) error {
-	strict := jsonStrict(dec)
-
-	if ok, err := decode(jsontext.NewDecoder(bytes.NewReader(first), dec.Options()), firstName); err != nil {
-		return err
-	} else if !ok && strict {
-		return jsonUnknownName(firstName)
-	}
-
-	for dec.PeekKind() != jsontext.KindEndObject {
-		tok, err := dec.ReadToken()
-		if err != nil {
-			return err
-		}
-
-		name := tok.String() // a token is void once the decoder reads on
-
-		if ok, err := decode(dec, name); err != nil {
-			return err
-		} else if !ok && strict {
-			return jsonUnknownName(name)
-		} else if !ok {
-			if err := dec.SkipValue(); err != nil {
-				return err
-			}
-		}
-	}
-
-	_, err := dec.ReadToken()
-	return err
-}
-
-// jsonPart is one of the parts an object decodes into: the members it declares and how it decodes one of them.
-type jsonPart struct {
-	members map[string]bool
-	decode  func(*jsontext.Decoder, string) (bool, error)
-}
-
-// jsonPartsFrom is jsonMembersFrom for an object that several parts declare members of. A member one part declares
-// decodes straight from dec; one several declare is read once and decoded into each.
-func jsonPartsFrom(dec *jsontext.Decoder, firstName string, first jsontext.Value, parts []jsonPart) error {
-	member := func(name string, val jsontext.Value) error {
-		var declaring []jsonPart
-		for _, p := range parts {
-			if p.members[name] {
-				declaring = append(declaring, p)
-			}
-		}
-
-		switch {
-		case len(declaring) > 0:
-		case jsonStrict(dec):
-			return jsonUnknownName(name)
-		case val == nil:
-			return dec.SkipValue()
-		default:
-			return nil
-		}
-
-		if val == nil && len(declaring) == 1 {
-			_, err := declaring[0].decode(dec, name)
-			return err
-		}
-
-		if val == nil {
-			v, err := dec.ReadValue()
-			if err != nil {
-				return err
-			}
-
-			val = v.Clone()
-		}
-
-		for _, p := range declaring {
-			if _, err := p.decode(jsontext.NewDecoder(bytes.NewReader(val), dec.Options()), name); err != nil {
-				return err
-			}
-		}
-
-		return nil
-	}
-
-	if err := member(firstName, first); err != nil {
-		return err
-	}
-
-	for dec.PeekKind() != jsontext.KindEndObject {
-		tok, err := dec.ReadToken()
-		if err != nil {
-			return err
-		}
-
-		if err := member(tok.String(), nil); err != nil {
-			return err
-		}
-	}
-
-	_, err := dec.ReadToken()
-	return err
-}
-
-// jsonFirst returns the JSON object raw with its member name first, as decoding by a discriminator wants it. If value
-// is known, the member must have it, and is written in if raw lacks it or leaves it empty. raw is returned as it is if
-// all is in order.
-func jsonFirst(raw jsontext.Value, name, value string) (jsontext.Value, error) {
-	dec := jsontext.NewDecoder(bytes.NewReader(raw))
-	if _, err := dec.ReadToken(); err != nil {
-		return nil, err
-	}
-
-	if dec.PeekKind() != jsontext.KindEndObject {
-		tok, err := dec.ReadToken()
-		if err != nil {
-			return nil, err
-		}
-
-		if tok.String() == name {
-			if value == "" {
-				return raw, nil
-			}
-
-			val, err := dec.ReadToken()
-			if err != nil {
-				return nil, err
-			}
-
-			switch got := val.String(); got {
-			case value:
-				return raw, nil
-			case "": // left for the union to fill in, below
-			default:
-				return nil, &json.SemanticError{Err: fmt.Errorf("member %q is %q, want %q", name, got, value)}
-			}
-		}
-	}
-
-	names, err := jsonMembers(raw)
-	if err != nil {
-		return nil, err
-	}
-
-	var first jsontext.Value
-	switch {
-	case slices.Contains(names, name):
-		if first, err = jsonSelect(raw, map[string]bool{name: true}); err != nil {
-			return nil, err
-		}
-
-		if value == "" {
-			break
-		}
-
-		got, err := jsonMemberString(first, name)
-		switch {
-		case err != nil:
-			return nil, err
-		case got == "": // left empty: the union knows what it holds
-			rest := make(map[string]bool, len(names))
-			for _, n := range names {
-				rest[n] = n != name
-			}
-
-			if raw, err = jsonSelect(raw, rest); err != nil {
-				return nil, err
-			}
-
-			if first, err = json.Marshal(map[string]string{name: value}); err != nil {
-				return nil, err
-			}
-		case got != value:
-			return nil, &json.SemanticError{Err: fmt.Errorf("member %q is %q, want %q", name, got, value)}
-		}
-	case value != "":
-		member, err := json.Marshal(map[string]string{name: value})
-		if err != nil {
-			return nil, err
-		}
-
-		first = member
-	default:
-		return nil, jsonMissing(name)
-	}
-
-	return jsonMerge(first, raw)
-}
-
-// jsonMemberString returns the string value of the member name of the JSON object raw, reading no further than it.
-func jsonMemberString(raw jsontext.Value, name string) (string, error) {
-	dec := jsontext.NewDecoder(bytes.NewReader(raw))
-	if tok, err := dec.ReadToken(); err != nil {
-		return "", err
-	} else if tok.Kind() != jsontext.KindBeginObject {
-		return "", &json.SemanticError{JSONKind: tok.Kind(), Err: errors.New("want an object")}
-	}
-
-	for dec.PeekKind() != jsontext.KindEndObject {
-		tok, err := dec.ReadToken()
-		if err != nil {
-			return "", err
-		}
-
-		if tok.String() != name {
-			if err := dec.SkipValue(); err != nil {
-				return "", err
-			}
-
-			continue
-		}
-
-		val, err := dec.ReadToken()
-		if err != nil {
-			return "", err
-		}
-
-		if val.Kind() != jsontext.KindString {
-			return "", &json.SemanticError{JSONKind: val.Kind(), Err: fmt.Errorf("member %q is not a string", name)}
-		}
-
-		return val.String(), nil
-	}
-
-	return "", jsonMissing(name)
-}
-
-// jsonMembers returns the names of the members of the JSON object raw, in order.
-func jsonMembers(raw jsontext.Value) ([]string, error) {
-	dec := jsontext.NewDecoder(bytes.NewReader(raw))
-	if tok, err := dec.ReadToken(); err != nil {
-		return nil, err
-	} else if tok.Kind() != jsontext.KindBeginObject {
-		return nil, &json.SemanticError{JSONKind: tok.Kind(), Err: errors.New("want an object")}
-	}
-
-	var names []string
-	for dec.PeekKind() != jsontext.KindEndObject {
-		tok, err := dec.ReadToken()
-		if err != nil {
-			return nil, err
-		}
-
-		names = append(names, tok.String())
-
-		if err := dec.SkipValue(); err != nil {
-			return nil, err
-		}
-	}
-
-	return names, nil
-}
-
-// jsonSelect returns the JSON object raw with only the members keep holds.
-func jsonSelect(raw jsontext.Value, keep map[string]bool) (jsontext.Value, error) {
-	dec := jsontext.NewDecoder(bytes.NewReader(raw))
-	if _, err := dec.ReadToken(); err != nil {
-		return nil, err
-	}
-
-	var buf bytes.Buffer
-	enc := jsontext.NewEncoder(&buf)
-	if err := enc.WriteToken(jsontext.BeginObject); err != nil {
-		return nil, err
-	}
-
-	for dec.PeekKind() != jsontext.KindEndObject {
-		tok, err := dec.ReadToken()
-		if err != nil {
-			return nil, err
-		}
-
-		name := tok.String() // a token is void once the decoder reads on
-
-		val, err := dec.ReadValue()
-		if err != nil {
-			return nil, err
-		}
-
-		if !keep[name] {
-			continue
-		}
-
-		if err := enc.WriteToken(jsontext.String(name)); err != nil {
-			return nil, err
-		}
-
-		if err := enc.WriteValue(val); err != nil {
-			return nil, err
-		}
-	}
-
-	if err := enc.WriteToken(jsontext.EndObject); err != nil {
-		return nil, err
-	}
-
-	return bytes.TrimSpace(buf.Bytes()), nil
-}
-
-// jsonMerge returns the members of the JSON objects a and b in one object. A member both hold must have the same
-// value in each.
-func jsonMerge(a, b jsontext.Value) (jsontext.Value, error) {
-	var buf bytes.Buffer
-	enc := jsontext.NewEncoder(&buf)
-	if err := enc.WriteToken(jsontext.BeginObject); err != nil {
-		return nil, err
-	}
-
-	written := map[string]jsontext.Value{}
-	for _, raw := range []jsontext.Value{a, b} {
-		dec := jsontext.NewDecoder(bytes.NewReader(raw))
-		if _, err := dec.ReadToken(); err != nil {
-			return nil, err
-		}
-
-		for dec.PeekKind() != jsontext.KindEndObject {
-			tok, err := dec.ReadToken()
-			if err != nil {
-				return nil, err
-			}
-
-			name := tok.String() // a token is void once the decoder reads on
-
-			val, err := dec.ReadValue()
-			if err != nil {
-				return nil, err
-			}
-			if prev, ok := written[name]; ok {
-				if err := prev.Canonicalize(); err != nil {
-					return nil, err
-				}
-
-				cur := val.Clone()
-				if err := cur.Canonicalize(); err != nil {
-					return nil, err
-				}
-
-				if !bytes.Equal(prev, cur) {
-					return nil, &json.SemanticError{Err: fmt.Errorf("member %q is %s in one part and %s in another", name, prev, cur)}
-				}
-
-				continue
-			}
-
-			written[name] = val.Clone()
-
-			if err := enc.WriteToken(jsontext.String(name)); err != nil {
-				return nil, err
-			}
-
-			if err := enc.WriteValue(val); err != nil {
-				return nil, err
-			}
-		}
-	}
-
-	if err := enc.WriteToken(jsontext.EndObject); err != nil {
-		return nil, err
-	}
-
-	return bytes.TrimSpace(buf.Bytes()), nil
-}
-
-// jsonVariant is an alternative of a union: its value of the discriminator, the members it declares and those it
-// requires.
-type jsonVariant struct {
-	value    string
-	members  map[string]bool
-	required []string
-	// nullable are the members of required that may be null
-	nullable map[string]bool
-	// pinned are the members it allows one value for, written as compact JSON
-	pinned map[string]string
-	// enums are the members it allows the values of an enum for, written so
-	enums map[string][]string
-}
-
-// jsonEnumsFit reports whether each member of the JSON object raw that enums names has one of the values it allows,
-// written as compact JSON.
-func jsonEnumsFit(raw jsontext.Value, enums map[string][]string) bool {
-	if len(enums) == 0 {
-		return true
-	}
-
-	dec := jsontext.NewDecoder(bytes.NewReader(raw))
-	if tok, err := dec.ReadToken(); err != nil || tok.Kind() != jsontext.KindBeginObject {
-		return false
-	}
-
-	for dec.PeekKind() != jsontext.KindEndObject {
-		tok, err := dec.ReadToken()
-		if err != nil {
-			return false
-		}
-
-		name := tok.String()
-
-		val, err := dec.ReadValue()
-		if err != nil {
-			return false
-		}
-
-		if allowed, ok := enums[name]; ok {
-			got := val.Clone()
-			if err := got.Compact(); err != nil || !slices.Contains(allowed, string(got)) {
-				return false
-			}
-		}
-	}
-
-	return true
-}
-
-// jsonEnumPasses are whether to check enums in each attempt at choosing an alternative: strict, always; leniently,
-// first, then not, should no alternative fit, as an API may add a value to an enum.
-func jsonEnumPasses(strict bool) []bool {
-	if strict {
-		return []bool{true}
-	}
-
-	return []bool{true, false}
-}
-
-// jsonFits reports whether the JSON value raw has the members required, and those of pinned it has with the value
-// each pins, written as compact JSON. A member that is null is there only where nullable allows it to be. Any value
-// fits where nothing is required or pinned.
-func jsonFits(raw jsontext.Value, required []string, nullable map[string]bool, pinned map[string]string) bool {
-	if len(required) == 0 && len(pinned) == 0 {
-		return true
-	}
-
-	if raw.Kind() != jsontext.KindBeginObject {
-		return false
-	}
-
-	dec := jsontext.NewDecoder(bytes.NewReader(raw))
-	if _, err := dec.ReadToken(); err != nil {
-		return false
-	}
-
-	present := map[string]bool{}
-
-	for dec.PeekKind() != jsontext.KindEndObject {
-		tok, err := dec.ReadToken()
-		if err != nil {
-			return false
-		}
-
-		name := tok.String()
-
-		val, err := dec.ReadValue()
-		if err != nil {
-			return false
-		}
-
-		present[name] = val.Kind() != jsontext.KindNull || nullable[name]
-
-		if want, ok := pinned[name]; ok {
-			got := val.Clone()
-			if err := got.Compact(); err != nil || string(got) != want {
-				return false
-			}
-		}
-	}
-
-	for _, r := range required {
-		if !present[r] {
-			return false
-		}
-	}
-
-	return true
-}
-
-// jsonChooseVariants returns the alternatives the JSON object raw is: the one its discriminator names, if there is
-// one, else those whose required members it has and whose members it holds, besides those of plain. Every member
-// must belong to plain or to a chosen alternative. Not strict, a member nothing declares is left out of the choice,
-// and of several alternatives of a oneOf the first is chosen.
-func jsonChooseVariants(raw jsontext.Value, discriminator string, variants []jsonVariant, plain map[string]bool, oneOf, strict bool) ([]int, error) {
-	names, err := jsonMembers(raw)
-	if err != nil {
-		return nil, err
-	}
-
-	if !strict {
-		names = slices.DeleteFunc(names, func(n string) bool {
-			return !plain[n] && !slices.ContainsFunc(variants, func(v jsonVariant) bool { return v.members[n] })
-		})
-	}
-
-	present := make(map[string]bool, len(names))
-	for _, n := range names {
-		present[n] = true
-	}
-
-	var chosen []int
-	if discriminator != "" {
-		tag, err := jsonMemberString(raw, discriminator)
-		if err != nil {
-			return nil, err
-		}
-
-		for i, v := range variants {
-			if v.value == tag {
-				chosen = append(chosen, i)
-			}
-		}
-
-		if len(chosen) == 0 {
-			return nil, jsonUnknownValue(discriminator, tag)
-		}
-	} else {
-	variants:
-		for i, v := range variants {
-			if !jsonFits(raw, v.required, v.nullable, v.pinned) {
-				continue variants
-			}
-
-			for _, n := range names {
-				if !plain[n] && !v.members[n] {
-					continue variants
-				}
-			}
-
-			chosen = append(chosen, i)
-		}
-
-		// a member outside its enum rules an alternative out; leniently, only while another fits
-		fit := slices.DeleteFunc(slices.Clone(chosen), func(i int) bool { return !jsonEnumsFit(raw, variants[i].enums) })
-		if len(fit) > 0 || strict {
-			chosen = fit
-		}
-
-		switch {
-		case len(chosen) == 0:
-			return nil, &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-		case oneOf && len(chosen) > 1 && strict:
-			return nil, &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", len(chosen))}
-		case oneOf:
-			chosen = chosen[:1]
-		}
-	}
-
-	for _, n := range names {
-		if plain[n] {
-			continue
-		}
-
-		known := false
-		for _, i := range chosen {
-			known = known || variants[i].members[n]
-		}
-
-		if !known {
-			return nil, jsonUnknownName(n)
-		}
-	}
-
-	return chosen, nil
-}
-
-// jsonTagNeed is how an alternative needs a member of its own.
-type jsonTagNeed int
-
-const (
-	jsonTagOptional jsonTagNeed = iota
-	jsonTagRequired
-	jsonTagRequiredOrNull
-)
-
-// jsonCheckTag reports an error unless set, the members of an alternative's own whose fields are set, holds only
-// members of the alternative the value tag of the tag name names, and the members it requires are there: in present,
-// the members of the object decoded, null ones included, or, encoding, with present nil, in set, where a member that
-// may be null cannot be told from one left out. Not strict, set may hold others too.
-func jsonCheckTag(name, tag string, tags map[string]map[string]jsonTagNeed, set, present []string, strict bool) error {
-	members, ok := tags[tag]
-	switch {
-	case tag == "":
-		return jsonMissing(name)
-	case !ok:
-		return jsonUnknownValue(name, tag)
-	}
-
-	for _, s := range set {
-		if _, ok := members[s]; strict && !ok {
-			return &json.SemanticError{JSONKind: jsontext.KindBeginObject, Err: fmt.Errorf("%s %q does not allow member %q", name, tag, s)}
-		}
-	}
-
-	for _, m := range slices.Sorted(maps.Keys(members)) {
-		switch need := members[m]; {
-		case present != nil && need != jsonTagOptional && !slices.Contains(present, m),
-			present == nil && need == jsonTagRequired && !slices.Contains(set, m):
-			return jsonMissing(m)
-		}
-	}
-
-	return nil
-}
-
-// jsonInferTag returns the value of a tag whose alternative is the one of tags that set, the members of an
-// alternative's own that are set, names: the one set member is a value whose alternative allows all of set.
-func jsonInferTag(tags map[string]map[string]jsonTagNeed, set []string) (string, bool) {
-	tag := ""
-
-	for _, s := range set {
-		members, ok := tags[s]
-		if !ok || !allIn(set, members) {
-			continue
-		}
-
-		if tag != "" {
-			return "", false
-		}
-
-		tag = s
-	}
-
-	return tag, tag != ""
-}
-
-// allIn reports whether every one of names is a key of m.
-func allIn(names []string, m map[string]jsonTagNeed) bool {
-	for _, n := range names {
-		if _, ok := m[n]; !ok {
-			return false
-		}
-	}
-
-	return true
 }
