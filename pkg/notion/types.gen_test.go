@@ -406,6 +406,16 @@ func TestEnums_Valid(t *testing.T) {
 		t.Errorf("DatabaseTypeOneOf(%v): valid, though no member", "not a member")
 	}
 
+	for _, v := range []DateFilterOperator{DateFilterOperatorDateIs, DateFilterOperatorDateIsBefore, DateFilterOperatorDateIsAfter, DateFilterOperatorDateIsOnOrBefore, DateFilterOperatorDateIsOnOrAfter} {
+		if !v.Valid() {
+			t.Errorf("DateFilterOperator %v: not valid", v)
+		}
+	}
+
+	if DateFilterOperator("not a member").Valid() {
+		t.Errorf("DateFilterOperator(%v): valid, though no member", "not a member")
+	}
+
 	for _, v := range []DateGroupByConfigGroupBy{DateGroupByConfigGroupByRelative, DateGroupByConfigGroupByDay, DateGroupByConfigGroupByWeek, DateGroupByConfigGroupByMonth, DateGroupByConfigGroupByYear} {
 		if !v.Valid() {
 			t.Errorf("DateGroupByConfigGroupBy %v: not valid", v)
@@ -424,6 +434,36 @@ func TestEnums_Valid(t *testing.T) {
 
 	if DateGroupByConfigType("not a member").Valid() {
 		t.Errorf("DateGroupByConfigType(%v): valid, though no member", "not a member")
+	}
+
+	for _, v := range []DateRangeFilterOperator{DateRangeFilterOperatorDateIsWithin, DateRangeFilterOperatorDateIsRelativeTo} {
+		if !v.Valid() {
+			t.Errorf("DateRangeFilterOperator %v: not valid", v)
+		}
+	}
+
+	if DateRangeFilterOperator("not a member").Valid() {
+		t.Errorf("DateRangeFilterOperator(%v): valid, though no member", "not a member")
+	}
+
+	for _, v := range []DateRangeFilterRelativeValue{DateRangeFilterRelativeValueThisWeek, DateRangeFilterRelativeValueThePastWeek, DateRangeFilterRelativeValueThePastMonth, DateRangeFilterRelativeValueThePastYear, DateRangeFilterRelativeValueTheNextWeek, DateRangeFilterRelativeValueTheNextMonth, DateRangeFilterRelativeValueTheNextYear} {
+		if !v.Valid() {
+			t.Errorf("DateRangeFilterRelativeValue %v: not valid", v)
+		}
+	}
+
+	if DateRangeFilterRelativeValue("not a member").Valid() {
+		t.Errorf("DateRangeFilterRelativeValue(%v): valid, though no member", "not a member")
+	}
+
+	for _, v := range []DateRangeFilterValueCustomDirection{DateRangeFilterValueCustomDirectionPast, DateRangeFilterValueCustomDirectionFuture} {
+		if !v.Valid() {
+			t.Errorf("DateRangeFilterValueCustomDirection %v: not valid", v)
+		}
+	}
+
+	if DateRangeFilterValueCustomDirection("not a member").Valid() {
+		t.Errorf("DateRangeFilterValueCustomDirection(%v): valid, though no member", "not a member")
 	}
 
 	for _, v := range []ErrorCode{ErrorCodeInvalidJSON, ErrorCodeInvalidRequestURL, ErrorCodeInvalidRequest, ErrorCodeMissingVersion, ErrorCodeInvalidBeta, ErrorCodeValidationError, ErrorCodeInvalidCreditLimit, ErrorCodeUnauthorized, ErrorCodeRestrictedResource, ErrorCodeStatusChangeNotAllowed, ErrorCodeWorkspaceCreditsExhausted, ErrorCodeAgentCreditLimitReached, ErrorCodeObjectNotFound, ErrorCodeDirectoryNotFound, ErrorCodeRowLimitExceeded, ErrorCodeConflictError, ErrorCodeIdempotencyKeyReused, ErrorCodeAgentDeleted, ErrorCodeRateLimited, ErrorCodeInternalServerError, ErrorCodeServiceUnavailable, ErrorCodeGatewayTimeout, ErrorCodeServiceOverload, ErrorCodeInvalidGrant, ErrorCodeUnauthorizedClient, ErrorCodeUnsupportedGrantType, ErrorCodeInvalidScope, ErrorCodeInvalidClient, ErrorCodeTestEnvError} {
@@ -506,56 +546,6 @@ func TestEnums_Valid(t *testing.T) {
 		t.Errorf("MarkdownVersion(%v): valid, though no member", "not a member")
 	}
 
-	for _, v := range []MeetingNotesDateFilterOperator{MeetingNotesDateFilterOperatorDateIs, MeetingNotesDateFilterOperatorDateIsBefore, MeetingNotesDateFilterOperatorDateIsAfter, MeetingNotesDateFilterOperatorDateIsOnOrBefore, MeetingNotesDateFilterOperatorDateIsOnOrAfter} {
-		if !v.Valid() {
-			t.Errorf("MeetingNotesDateFilterOperator %v: not valid", v)
-		}
-	}
-
-	if MeetingNotesDateFilterOperator("not a member").Valid() {
-		t.Errorf("MeetingNotesDateFilterOperator(%v): valid, though no member", "not a member")
-	}
-
-	for _, v := range []MeetingNotesDateRangeFilterOperator{MeetingNotesDateRangeFilterOperatorDateIsWithin, MeetingNotesDateRangeFilterOperatorDateIsRelativeTo} {
-		if !v.Valid() {
-			t.Errorf("MeetingNotesDateRangeFilterOperator %v: not valid", v)
-		}
-	}
-
-	if MeetingNotesDateRangeFilterOperator("not a member").Valid() {
-		t.Errorf("MeetingNotesDateRangeFilterOperator(%v): valid, though no member", "not a member")
-	}
-
-	for _, v := range []MeetingNotesDateRangeFilterRelativeValue{MeetingNotesDateRangeFilterRelativeValueThisWeek, MeetingNotesDateRangeFilterRelativeValueThePastWeek, MeetingNotesDateRangeFilterRelativeValueThePastMonth, MeetingNotesDateRangeFilterRelativeValueThePastYear, MeetingNotesDateRangeFilterRelativeValueTheNextWeek, MeetingNotesDateRangeFilterRelativeValueTheNextMonth, MeetingNotesDateRangeFilterRelativeValueTheNextYear} {
-		if !v.Valid() {
-			t.Errorf("MeetingNotesDateRangeFilterRelativeValue %v: not valid", v)
-		}
-	}
-
-	if MeetingNotesDateRangeFilterRelativeValue("not a member").Valid() {
-		t.Errorf("MeetingNotesDateRangeFilterRelativeValue(%v): valid, though no member", "not a member")
-	}
-
-	for _, v := range []MeetingNotesDateRangeFilterValueCustomDirection{MeetingNotesDateRangeFilterValueCustomDirectionPast, MeetingNotesDateRangeFilterValueCustomDirectionFuture} {
-		if !v.Valid() {
-			t.Errorf("MeetingNotesDateRangeFilterValueCustomDirection %v: not valid", v)
-		}
-	}
-
-	if MeetingNotesDateRangeFilterValueCustomDirection("not a member").Valid() {
-		t.Errorf("MeetingNotesDateRangeFilterValueCustomDirection(%v): valid, though no member", "not a member")
-	}
-
-	for _, v := range []MeetingNotesPersonFilterOperator{MeetingNotesPersonFilterOperatorPersonContains, MeetingNotesPersonFilterOperatorPersonDoesNotContain} {
-		if !v.Valid() {
-			t.Errorf("MeetingNotesPersonFilterOperator %v: not valid", v)
-		}
-	}
-
-	if MeetingNotesPersonFilterOperator("not a member").Valid() {
-		t.Errorf("MeetingNotesPersonFilterOperator(%v): valid, though no member", "not a member")
-	}
-
 	for _, v := range []MeetingNotesPropertyFilterFilterOperatorOperator{MeetingNotesPropertyFilterFilterOperatorOperatorIsEmpty, MeetingNotesPropertyFilterFilterOperatorOperatorIsNotEmpty} {
 		if !v.Valid() {
 			t.Errorf("MeetingNotesPropertyFilterFilterOperatorOperator %v: not valid", v)
@@ -584,16 +574,6 @@ func TestEnums_Valid(t *testing.T) {
 
 	if MeetingNotesPropertyFilterProperty("not a member").Valid() {
 		t.Errorf("MeetingNotesPropertyFilterProperty(%v): valid, though no member", "not a member")
-	}
-
-	for _, v := range []MeetingNotesTextFilterOperator{MeetingNotesTextFilterOperatorStringIs, MeetingNotesTextFilterOperatorStringIsNot, MeetingNotesTextFilterOperatorStringContains, MeetingNotesTextFilterOperatorStringDoesNotContain, MeetingNotesTextFilterOperatorStringStartsWith, MeetingNotesTextFilterOperatorStringEndsWith} {
-		if !v.Valid() {
-			t.Errorf("MeetingNotesTextFilterOperator %v: not valid", v)
-		}
-	}
-
-	if MeetingNotesTextFilterOperator("not a member").Valid() {
-		t.Errorf("MeetingNotesTextFilterOperator(%v): valid, though no member", "not a member")
 	}
 
 	for _, v := range []NonTerminalAsyncTaskStatus{NonTerminalAsyncTaskStatusQueued, NonTerminalAsyncTaskStatusRunning, NonTerminalAsyncTaskStatusRetrying} {
@@ -654,6 +634,16 @@ func TestEnums_Valid(t *testing.T) {
 
 	if PageWriteNotificationsSchemaMode("not a member").Valid() {
 		t.Errorf("PageWriteNotificationsSchemaMode(%v): valid, though no member", "not a member")
+	}
+
+	for _, v := range []PersonFilterOperator{PersonFilterOperatorPersonContains, PersonFilterOperatorPersonDoesNotContain} {
+		if !v.Valid() {
+			t.Errorf("PersonFilterOperator %v: not valid", v)
+		}
+	}
+
+	if PersonFilterOperator("not a member").Valid() {
+		t.Errorf("PersonFilterOperator(%v): valid, though no member", "not a member")
 	}
 
 	for _, v := range []PersonGroupByConfigType{PersonGroupByConfigTypePerson, PersonGroupByConfigTypeCreatedBy, PersonGroupByConfigTypeLastEditedBy} {
@@ -1004,6 +994,16 @@ func TestEnums_Valid(t *testing.T) {
 
 	if TemplateMentionDateTemplateMentionDate("not a member").Valid() {
 		t.Errorf("TemplateMentionDateTemplateMentionDate(%v): valid, though no member", "not a member")
+	}
+
+	for _, v := range []TextFilterOperator{TextFilterOperatorStringIs, TextFilterOperatorStringIsNot, TextFilterOperatorStringContains, TextFilterOperatorStringDoesNotContain, TextFilterOperatorStringStartsWith, TextFilterOperatorStringEndsWith} {
+		if !v.Valid() {
+			t.Errorf("TextFilterOperator %v: not valid", v)
+		}
+	}
+
+	if TextFilterOperator("not a member").Valid() {
+		t.Errorf("TextFilterOperator(%v): valid, though no member", "not a member")
 	}
 
 	for _, v := range []TextGroupByConfigGroupBy{TextGroupByConfigGroupByExact, TextGroupByConfigGroupByAlphabetPrefix} {
@@ -1572,6 +1572,46 @@ func TestUnions_RoundTrip(t *testing.T) {
 		roundTrip(t, DatabaseOrPartial{Database: &v}, func(u DatabaseOrPartial) bool { return u.Database != nil })
 	})
 
+	t.Run("DateFilterValue/DateFilterValueRelative", func(t *testing.T) {
+		v := DateFilterValueRelative{Type: "relative", Value: "today"}
+		roundTrip(t, DateFilterValue{DateFilterValueRelative: &v}, func(u DateFilterValue) bool { return u.DateFilterValueRelative != nil })
+	})
+
+	t.Run("DateFilterValue/DateFilterValueExact", func(t *testing.T) {
+		v := DateFilterValueExact{Type: "exact", Value: DateFilterValueExactValue{DateFilterValueExactValueDate: new(DateFilterValueExactValueDate{Type: "date", StartDate: civil.Date{Year: 2026, Month: 1, Day: 2}})}}
+		roundTrip(t, DateFilterValue{DateFilterValueExact: &v}, func(u DateFilterValue) bool { return u.DateFilterValueExact != nil })
+	})
+
+	t.Run("DateFilterValueExactValue/DateFilterValueExactValueDate", func(t *testing.T) {
+		v := DateFilterValueExactValueDate{Type: "date", StartDate: civil.Date{Year: 2026, Month: 1, Day: 2}}
+		roundTrip(t, DateFilterValueExactValue{DateFilterValueExactValueDate: &v}, func(u DateFilterValueExactValue) bool { return u.DateFilterValueExactValueDate != nil })
+	})
+
+	t.Run("DateFilterValueExactValue/DateFilterValueExactValueDatetime", func(t *testing.T) {
+		v := DateFilterValueExactValueDatetime{Type: "datetime", StartDate: civil.Date{Year: 2026, Month: 1, Day: 2}}
+		roundTrip(t, DateFilterValueExactValue{DateFilterValueExactValueDatetime: &v}, func(u DateFilterValueExactValue) bool { return u.DateFilterValueExactValueDatetime != nil })
+	})
+
+	t.Run("DateRangeFilterValue/DateRangeFilterValueCustom", func(t *testing.T) {
+		v := DateRangeFilterValueCustom{Type: "relative", Value: "custom", Direction: "past", Unit: "year"}
+		roundTrip(t, DateRangeFilterValue{DateRangeFilterValueCustom: &v}, func(u DateRangeFilterValue) bool { return u.DateRangeFilterValueCustom != nil })
+	})
+
+	t.Run("DateRangeFilterValue/DateRangeFilterValueSurrounding", func(t *testing.T) {
+		v := DateRangeFilterValueSurrounding{Type: "relative", Value: "surrounding", Unit: "year"}
+		roundTrip(t, DateRangeFilterValue{DateRangeFilterValueSurrounding: &v}, func(u DateRangeFilterValue) bool { return u.DateRangeFilterValueSurrounding != nil })
+	})
+
+	t.Run("DateRangeFilterValue/DateRangeFilterRelative", func(t *testing.T) {
+		v := DateRangeFilterRelative{Type: "relative", Value: "this_week"}
+		roundTrip(t, DateRangeFilterValue{DateRangeFilterRelative: &v}, func(u DateRangeFilterValue) bool { return u.DateRangeFilterRelative != nil })
+	})
+
+	t.Run("DateRangeFilterValue/DateRangeFilterValueExact", func(t *testing.T) {
+		v := DateRangeFilterValueExact{Type: "exact", Value: DateRangeFilterValueExactValue{Type: "daterange"}}
+		roundTrip(t, DateRangeFilterValue{DateRangeFilterValueExact: &v}, func(u DateRangeFilterValue) bool { return u.DateRangeFilterValueExact != nil })
+	})
+
 	t.Run("Embed/MediaContentWithURLAndCaption", func(t *testing.T) {
 		v := MediaContentWithURLAndCaption{}
 		roundTrip(t, Embed{MediaContentWithURLAndCaption: &v}, func(u Embed) bool { return u.MediaContentWithURLAndCaption != nil })
@@ -1662,64 +1702,6 @@ func TestUnions_RoundTrip(t *testing.T) {
 		roundTrip(t, MeetingNoteSource{MeetingNoteFromBlock: &v}, func(u MeetingNoteSource) bool { return u.MeetingNoteFromBlock != nil })
 	})
 
-	t.Run("MeetingNotesDateFilterValue/MeetingNotesDateFilterValueRelative", func(t *testing.T) {
-		v := MeetingNotesDateFilterValueRelative{Type: "relative", Value: "today"}
-		roundTrip(t, MeetingNotesDateFilterValue{MeetingNotesDateFilterValueRelative: &v}, func(u MeetingNotesDateFilterValue) bool { return u.MeetingNotesDateFilterValueRelative != nil })
-	})
-
-	t.Run("MeetingNotesDateFilterValue/MeetingNotesDateFilterValueExact", func(t *testing.T) {
-		v := MeetingNotesDateFilterValueExact{Type: "exact", Value: MeetingNotesDateFilterValueExactValue{MeetingNotesDateFilterValueExactValueDate: new(MeetingNotesDateFilterValueExactValueDate{Type: "date", StartDate: civil.Date{Year: 2026, Month: 1, Day: 2}})}}
-		roundTrip(t, MeetingNotesDateFilterValue{MeetingNotesDateFilterValueExact: &v}, func(u MeetingNotesDateFilterValue) bool { return u.MeetingNotesDateFilterValueExact != nil })
-	})
-
-	t.Run("MeetingNotesDateFilterValueExactValue/MeetingNotesDateFilterValueExactValueDate", func(t *testing.T) {
-		v := MeetingNotesDateFilterValueExactValueDate{Type: "date", StartDate: civil.Date{Year: 2026, Month: 1, Day: 2}}
-		roundTrip(t, MeetingNotesDateFilterValueExactValue{MeetingNotesDateFilterValueExactValueDate: &v}, func(u MeetingNotesDateFilterValueExactValue) bool {
-			return u.MeetingNotesDateFilterValueExactValueDate != nil
-		})
-	})
-
-	t.Run("MeetingNotesDateFilterValueExactValue/MeetingNotesDateFilterValueExactValueDatetime", func(t *testing.T) {
-		v := MeetingNotesDateFilterValueExactValueDatetime{Type: "datetime", StartDate: civil.Date{Year: 2026, Month: 1, Day: 2}}
-		roundTrip(t, MeetingNotesDateFilterValueExactValue{MeetingNotesDateFilterValueExactValueDatetime: &v}, func(u MeetingNotesDateFilterValueExactValue) bool {
-			return u.MeetingNotesDateFilterValueExactValueDatetime != nil
-		})
-	})
-
-	t.Run("MeetingNotesDateRangeFilterValue/MeetingNotesDateRangeFilterValueCustom", func(t *testing.T) {
-		v := MeetingNotesDateRangeFilterValueCustom{Type: "relative", Value: "custom", Direction: "past", Unit: "year"}
-		roundTrip(t, MeetingNotesDateRangeFilterValue{MeetingNotesDateRangeFilterValueCustom: &v}, func(u MeetingNotesDateRangeFilterValue) bool { return u.MeetingNotesDateRangeFilterValueCustom != nil })
-	})
-
-	t.Run("MeetingNotesDateRangeFilterValue/MeetingNotesDateRangeFilterValueSurrounding", func(t *testing.T) {
-		v := MeetingNotesDateRangeFilterValueSurrounding{Type: "relative", Value: "surrounding", Unit: "year"}
-		roundTrip(t, MeetingNotesDateRangeFilterValue{MeetingNotesDateRangeFilterValueSurrounding: &v}, func(u MeetingNotesDateRangeFilterValue) bool {
-			return u.MeetingNotesDateRangeFilterValueSurrounding != nil
-		})
-	})
-
-	t.Run("MeetingNotesDateRangeFilterValue/MeetingNotesDateRangeFilterRelative", func(t *testing.T) {
-		v := MeetingNotesDateRangeFilterRelative{Type: "relative", Value: "this_week"}
-		roundTrip(t, MeetingNotesDateRangeFilterValue{MeetingNotesDateRangeFilterRelative: &v}, func(u MeetingNotesDateRangeFilterValue) bool { return u.MeetingNotesDateRangeFilterRelative != nil })
-	})
-
-	t.Run("MeetingNotesDateRangeFilterValue/MeetingNotesDateRangeFilterValueExact", func(t *testing.T) {
-		v := MeetingNotesDateRangeFilterValueExact{Type: "exact", Value: MeetingNotesDateRangeFilterValueExactValue{Type: "daterange"}}
-		roundTrip(t, MeetingNotesDateRangeFilterValue{MeetingNotesDateRangeFilterValueExact: &v}, func(u MeetingNotesDateRangeFilterValue) bool { return u.MeetingNotesDateRangeFilterValueExact != nil })
-	})
-
-	t.Run("MeetingNotesPersonFilterValueItem/MeetingNotesPersonFilterValueItemExact", func(t *testing.T) {
-		v := MeetingNotesPersonFilterValueItemExact{Type: "exact", Value: MeetingNotesPersonFilterValueItemExactValue{Table: "notion_user"}}
-		roundTrip(t, MeetingNotesPersonFilterValueItem{MeetingNotesPersonFilterValueItemExact: &v}, func(u MeetingNotesPersonFilterValueItem) bool { return u.MeetingNotesPersonFilterValueItemExact != nil })
-	})
-
-	t.Run("MeetingNotesPersonFilterValueItem/MeetingNotesPersonFilterValueItemRelative", func(t *testing.T) {
-		v := MeetingNotesPersonFilterValueItemRelative{Type: "relative", Value: "me"}
-		roundTrip(t, MeetingNotesPersonFilterValueItem{MeetingNotesPersonFilterValueItemRelative: &v}, func(u MeetingNotesPersonFilterValueItem) bool {
-			return u.MeetingNotesPersonFilterValueItemRelative != nil
-		})
-	})
-
 	t.Run("MeetingNotesPropertyFilterFilter/MeetingNotesPropertyFilterOperator", func(t *testing.T) {
 		v := MeetingNotesPropertyFilterOperator{Operator: "is_empty"}
 		roundTrip(t, MeetingNotesPropertyFilterFilter{MeetingNotesPropertyFilterOperator: &v}, func(u MeetingNotesPropertyFilterFilter) bool { return u.MeetingNotesPropertyFilterOperator != nil })
@@ -1797,6 +1779,16 @@ func TestUnions_RoundTrip(t *testing.T) {
 		roundTrip(t, PagePropertiesValueVerificationVerification{PagePropertiesValueVerificationUnverified: &v}, func(u PagePropertiesValueVerificationVerification) bool {
 			return u.PagePropertiesValueVerificationUnverified != nil
 		})
+	})
+
+	t.Run("PersonFilterValueItem/PersonFilterValueItemExact", func(t *testing.T) {
+		v := PersonFilterValueItemExact{Type: "exact", Value: PersonFilterValueItemExactValue{Table: "notion_user"}}
+		roundTrip(t, PersonFilterValueItem{PersonFilterValueItemExact: &v}, func(u PersonFilterValueItem) bool { return u.PersonFilterValueItemExact != nil })
+	})
+
+	t.Run("PersonFilterValueItem/PersonFilterValueItemRelative", func(t *testing.T) {
+		v := PersonFilterValueItemRelative{Type: "relative", Value: "me"}
+		roundTrip(t, PersonFilterValueItem{PersonFilterValueItemRelative: &v}, func(u PersonFilterValueItem) bool { return u.PersonFilterValueItemRelative != nil })
 	})
 
 	t.Run("PostPageTemplate/PostPageTemplateNone", func(t *testing.T) {
@@ -2178,9 +2170,9 @@ func TestUnions_RoundTrip(t *testing.T) {
 		roundTrip(t, QueryMeetingNotesFilterFiltersItem{MeetingNotesPropertyFilter: &v}, func(u QueryMeetingNotesFilterFiltersItem) bool { return u.MeetingNotesPropertyFilter != nil })
 	})
 
-	t.Run("QueryMeetingNotesFilterFiltersItem/MeetingNotesFilterGroup", func(t *testing.T) {
-		v := MeetingNotesFilterGroup{Operator: "and"}
-		roundTrip(t, QueryMeetingNotesFilterFiltersItem{MeetingNotesFilterGroup: &v}, func(u QueryMeetingNotesFilterFiltersItem) bool { return u.MeetingNotesFilterGroup != nil })
+	t.Run("QueryMeetingNotesFilterFiltersItem/FilterGroup", func(t *testing.T) {
+		v := FilterGroup{Operator: "and"}
+		roundTrip(t, QueryMeetingNotesFilterFiltersItem{FilterGroup: &v}, func(u QueryMeetingNotesFilterFiltersItem) bool { return u.FilterGroup != nil })
 	})
 
 	t.Run("QuerySessionEventsFilter/SessionIDFilter", func(t *testing.T) {

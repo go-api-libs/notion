@@ -146,7 +146,7 @@ func persistOpenAPI(ctx context.Context) error {
 
 // shortNames names what has no better name than its position in a union or allOf, or one too long for what it is,
 // short and as Notion calls it: by the prefix the names hold, for the schemas within it too, as
-// MeetingNotesDateFilterOperator for MeetingNotesPropertyFilterFilterOneOf2Operator. A name in exactNames is renamed
+// DateFilterOperator for MeetingNotesPropertyFilterFilterOneOf2Operator. A name in exactNames is renamed
 // whole and goes before a prefix. An entry that names no schema fails the run.
 var shortNames = map[string]string{
 	"AgentListResultsItemOneOf0":   "CustomAgent",
@@ -167,13 +167,13 @@ var shortNames = map[string]string{
 	"CreateMeetingNoteAllOf0":       "MeetingNoteSource",
 	"CreateMeetingNoteOkOneOf0":     "MeetingNoteBlock",
 
-	"MeetingNotesPropertyFilterFilterString": "MeetingNotesTextFilter",
-	"MeetingNotesPropertyFilterFilterPerson": "MeetingNotesPersonFilter",
-	"MeetingNotesPropertyFilterFilterOneOf2": "MeetingNotesDateFilter",
-	"MeetingNotesPropertyFilterFilterOneOf3": "MeetingNotesDateRangeFilter",
+	"MeetingNotesPropertyFilterFilterString": "TextFilter",
+	"MeetingNotesPropertyFilterFilterPerson": "PersonFilter",
+	"MeetingNotesPropertyFilterFilterOneOf2": "DateFilter",
+	"MeetingNotesPropertyFilterFilterOneOf3": "DateRangeFilter",
 
-	"MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2": "MeetingNotesDateRangeFilterRelative",
-	"QueryMeetingNotesFilterFiltersItemOneOf1":          "MeetingNotesFilterGroup",
+	"MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2": "DateRangeFilterRelative",
+	"QueryMeetingNotesFilterFiltersItemOneOf1":          "FilterGroup",
 
 	"DataSourceObjectSyncMetadataHealthAnyOf":  "SyncHealth", // what the failing and the healthy share
 	"DataSourceObjectSyncMetadataHealthPaused": "SyncHealthPaused",

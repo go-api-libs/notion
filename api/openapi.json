@@ -13887,30 +13887,30 @@
         "description": "The comparison to apply. Use the arm matching the property's type.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/MeetingNotesTextFilter"
+            "$ref": "#/components/schemas/TextFilter"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesPersonFilter"
+            "$ref": "#/components/schemas/PersonFilter"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesDateFilter"
+            "$ref": "#/components/schemas/DateFilter"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilter"
+            "$ref": "#/components/schemas/DateRangeFilter"
           },
           {
             "$ref": "#/components/schemas/MeetingNotesPropertyFilterOperator"
           }
         ]
       },
-      "MeetingNotesDateFilter": {
+      "DateFilter": {
         "type": "object",
         "properties": {
           "operator": {
-            "$ref": "#/components/schemas/MeetingNotesDateFilterOperator"
+            "$ref": "#/components/schemas/DateFilterOperator"
           },
           "value": {
-            "$ref": "#/components/schemas/MeetingNotesDateFilterValue"
+            "$ref": "#/components/schemas/DateFilterValue"
           },
           "use_end": {
             "description": "Compare against the end of a date range rather than its start.",
@@ -13923,7 +13923,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateFilterOperator": {
+      "DateFilterOperator": {
         "description": "How to compare the date.",
         "type": "string",
         "enum": [
@@ -13934,18 +13934,18 @@
           "date_is_on_or_after"
         ]
       },
-      "MeetingNotesDateFilterValue": {
+      "DateFilterValue": {
         "description": "The date to compare against.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/MeetingNotesDateFilterValueRelative"
+            "$ref": "#/components/schemas/DateFilterValueRelative"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesDateFilterValueExact"
+            "$ref": "#/components/schemas/DateFilterValueExact"
           }
         ]
       },
-      "MeetingNotesDateFilterValueExact": {
+      "DateFilterValueExact": {
         "type": "object",
         "properties": {
           "type": {
@@ -13954,7 +13954,7 @@
             "const": "exact"
           },
           "value": {
-            "$ref": "#/components/schemas/MeetingNotesDateFilterValueExactValue"
+            "$ref": "#/components/schemas/DateFilterValueExactValue"
           }
         },
         "required": [
@@ -13963,18 +13963,18 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateFilterValueExactValue": {
+      "DateFilterValueExactValue": {
         "description": "Use the is_empty operator to match an unset date.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/MeetingNotesDateFilterValueExactValueDate"
+            "$ref": "#/components/schemas/DateFilterValueExactValueDate"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesDateFilterValueExactValueDatetime"
+            "$ref": "#/components/schemas/DateFilterValueExactValueDatetime"
           }
         ]
       },
-      "MeetingNotesDateFilterValueExactValueDate": {
+      "DateFilterValueExactValueDate": {
         "type": "object",
         "properties": {
           "type": {
@@ -13997,7 +13997,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateFilterValueExactValueDatetime": {
+      "DateFilterValueExactValueDatetime": {
         "type": "object",
         "properties": {
           "type": {
@@ -14036,7 +14036,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateFilterValueRelative": {
+      "DateFilterValueRelative": {
         "type": "object",
         "properties": {
           "type": {
@@ -14055,14 +14055,14 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateRangeFilter": {
+      "DateRangeFilter": {
         "type": "object",
         "properties": {
           "operator": {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterOperator"
+            "$ref": "#/components/schemas/DateRangeFilterOperator"
           },
           "value": {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValue"
+            "$ref": "#/components/schemas/DateRangeFilterValue"
           },
           "use_end": {
             "description": "Compare against the end of a date range rather than its start.",
@@ -14075,7 +14075,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateRangeFilterOperator": {
+      "DateRangeFilterOperator": {
         "description": "How to compare the date against the range.",
         "type": "string",
         "enum": [
@@ -14083,24 +14083,24 @@
           "date_is_relative_to"
         ]
       },
-      "MeetingNotesDateRangeFilterValue": {
+      "DateRangeFilterValue": {
         "description": "The range to compare against.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValueCustom"
+            "$ref": "#/components/schemas/DateRangeFilterValueCustom"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValueSurrounding"
+            "$ref": "#/components/schemas/DateRangeFilterValueSurrounding"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterRelative"
+            "$ref": "#/components/schemas/DateRangeFilterRelative"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValueExact"
+            "$ref": "#/components/schemas/DateRangeFilterValueExact"
           }
         ]
       },
-      "MeetingNotesDateRangeFilterValueCustom": {
+      "DateRangeFilterValueCustom": {
         "type": "object",
         "properties": {
           "type": {
@@ -14114,7 +14114,7 @@
             "const": "custom"
           },
           "direction": {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValueCustomDirection"
+            "$ref": "#/components/schemas/DateRangeFilterValueCustomDirection"
           },
           "unit": {
             "$ref": "#/components/schemas/MeetingNotesPropertyFilterOneOfValueCustomUnit"
@@ -14134,7 +14134,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateRangeFilterValueCustomDirection": {
+      "DateRangeFilterValueCustomDirection": {
         "description": "Whether the window runs backwards or forwards from now.",
         "type": "string",
         "enum": [
@@ -14142,7 +14142,7 @@
           "future"
         ]
       },
-      "MeetingNotesDateRangeFilterValueExact": {
+      "DateRangeFilterValueExact": {
         "type": "object",
         "properties": {
           "type": {
@@ -14151,7 +14151,7 @@
             "const": "exact"
           },
           "value": {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValueExactValue"
+            "$ref": "#/components/schemas/DateRangeFilterValueExactValue"
           }
         },
         "required": [
@@ -14160,7 +14160,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateRangeFilterValueExactValue": {
+      "DateRangeFilterValueExactValue": {
         "description": "Use the is_empty operator to match an unset date.",
         "type": "object",
         "properties": {
@@ -14191,7 +14191,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateRangeFilterRelative": {
+      "DateRangeFilterRelative": {
         "type": "object",
         "properties": {
           "type": {
@@ -14200,7 +14200,7 @@
             "const": "relative"
           },
           "value": {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterRelativeValue"
+            "$ref": "#/components/schemas/DateRangeFilterRelativeValue"
           }
         },
         "required": [
@@ -14209,7 +14209,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateRangeFilterRelativeValue": {
+      "DateRangeFilterRelativeValue": {
         "description": "One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`",
         "type": "string",
         "enum": [
@@ -14222,7 +14222,7 @@
           "the_next_year"
         ]
       },
-      "MeetingNotesDateRangeFilterValueSurrounding": {
+      "DateRangeFilterValueSurrounding": {
         "type": "object",
         "properties": {
           "type": {
@@ -14266,18 +14266,18 @@
           "is_not_empty"
         ]
       },
-      "MeetingNotesPersonFilter": {
+      "PersonFilter": {
         "type": "object",
         "properties": {
           "operator": {
-            "$ref": "#/components/schemas/MeetingNotesPersonFilterOperator"
+            "$ref": "#/components/schemas/PersonFilterOperator"
           },
           "value": {
             "description": "The people to compare against.",
             "type": "array",
             "maxItems": 100,
             "items": {
-              "$ref": "#/components/schemas/MeetingNotesPersonFilterValueItem"
+              "$ref": "#/components/schemas/PersonFilterValueItem"
             }
           }
         },
@@ -14287,7 +14287,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesPersonFilterOperator": {
+      "PersonFilterOperator": {
         "description": "Whether the property must contain the people listed.",
         "type": "string",
         "enum": [
@@ -14295,17 +14295,17 @@
           "person_does_not_contain"
         ]
       },
-      "MeetingNotesPersonFilterValueItem": {
+      "PersonFilterValueItem": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/MeetingNotesPersonFilterValueItemExact"
+            "$ref": "#/components/schemas/PersonFilterValueItemExact"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesPersonFilterValueItemRelative"
+            "$ref": "#/components/schemas/PersonFilterValueItemRelative"
           }
         ]
       },
-      "MeetingNotesPersonFilterValueItemExact": {
+      "PersonFilterValueItemExact": {
         "type": "object",
         "properties": {
           "type": {
@@ -14314,7 +14314,7 @@
             "const": "exact"
           },
           "value": {
-            "$ref": "#/components/schemas/MeetingNotesPersonFilterValueItemExactValue"
+            "$ref": "#/components/schemas/PersonFilterValueItemExactValue"
           }
         },
         "required": [
@@ -14323,7 +14323,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesPersonFilterValueItemExactValue": {
+      "PersonFilterValueItemExactValue": {
         "description": "Pointer to the Notion user to match.",
         "type": "object",
         "properties": {
@@ -14347,7 +14347,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesPersonFilterValueItemRelative": {
+      "PersonFilterValueItemRelative": {
         "type": "object",
         "properties": {
           "type": {
@@ -14367,14 +14367,14 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesTextFilter": {
+      "TextFilter": {
         "type": "object",
         "properties": {
           "operator": {
-            "$ref": "#/components/schemas/MeetingNotesTextFilterOperator"
+            "$ref": "#/components/schemas/TextFilterOperator"
           },
           "value": {
-            "$ref": "#/components/schemas/MeetingNotesTextFilterValue"
+            "$ref": "#/components/schemas/TextFilterValue"
           }
         },
         "required": [
@@ -14383,7 +14383,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesTextFilterOperator": {
+      "TextFilterOperator": {
         "description": "How to compare the text.",
         "type": "string",
         "enum": [
@@ -14395,7 +14395,7 @@
           "string_ends_with"
         ]
       },
-      "MeetingNotesTextFilterValue": {
+      "TextFilterValue": {
         "description": "The text to compare against.",
         "type": "object",
         "properties": {
@@ -18191,11 +18191,11 @@
             "$ref": "#/components/schemas/meetingNotesPropertyFilter"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesFilterGroup"
+            "$ref": "#/components/schemas/FilterGroup"
           }
         ]
       },
-      "MeetingNotesFilterGroup": {
+      "FilterGroup": {
         "type": "object",
         "properties": {
           "operator": {
