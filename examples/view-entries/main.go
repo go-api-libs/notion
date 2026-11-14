@@ -58,10 +58,8 @@ func queryOfView(ctx context.Context, c *notion.Client, id uuid.UUID) (uuid.UUID
 		return uuid.Nil(), notion.PostDatabaseQuery{}, errors.New("no access to the view")
 	}
 
-	query := notion.PostDatabaseQuery{Sorts: view.Sorts}
-	if view.Filter != nil {
-		query.Filter = view.Filter.Flatten() // a view may nest its filter deeper than a query allows
-	}
+	// a view may nest its filter deeper than a query allows
+	query := notion.PostDatabaseQuery{Filter: view.Filter.Flatten(), Sorts: view.Sorts}
 
 	return view.DataSourceID, query, nil
 }

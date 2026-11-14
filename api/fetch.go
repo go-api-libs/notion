@@ -152,7 +152,7 @@ var shortNames = map[string]string{
 	"AgentListResultsItemOneOf0":   "CustomAgent",
 	"AgentListResultsItemNotionAi": "NotionAIAgent",
 
-	"AgentListResultsItemOneOf0CreatedByOneOf0": "AgentCreator", // the user or bot that created it
+	"AgentListResultsItemOneOf0CreatedBy": "AgentCreator", // the user or bot that created it
 
 	"CreateACommentAllOf0OneOf0": "PageComment",
 	"CreateACommentAllOf0OneOf1": "PageMarkdownComment",
@@ -175,7 +175,7 @@ var shortNames = map[string]string{
 	"MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2": "DateRangeFilterRelative",
 	"QueryMeetingNotesFilterFiltersItemOneOf1":          "FilterGroup",
 
-	"DataSourceObjectSyncMetadataHealthAnyOf":  "SyncHealth", // what the failing and the healthy share
+	"SyncMetadataHealthAnyOf":                  "SyncHealth", // what the failing and the healthy share
 	"DataSourceObjectSyncMetadataHealthPaused": "SyncHealthPaused",
 
 	"RollupPropertyConfigurationRollupAllOfOneOf":   "RollupByNames",
@@ -194,8 +194,14 @@ var shortNames = map[string]string{
 
 // exactNames are the names of shortNames whose schema alone is renamed, as their prefix starts the names of others.
 var exactNames = map[string]string{
-	"DataSourceObjectSyncMetadataHealthAnyOf":         "SyncHealthFailing",
-	"DataSourceObjectResponseSyncMetadataHealthAnyOf": "SyncHealthOK",
+	"SyncMetadataHealthAnyOf":  "SyncHealthFailing",
+	"SyncMetadataHealthAnyOf2": "SyncHealthOK",
+
+	// what flatten names after the property that holds it, which says what the value is compared to or used for
+	"DoesNotEqual":         "VerificationStatus", // merged with the status a verification filter takes
+	"MultiSelect":          "SelectOptions",      // a select's options, which a multi-select's are too
+	"DatabaseType":         "CreateDatabaseType", // the types a database can be created as
+	"DatabaseDatabaseType": "DatabaseType",
 
 	// upstream's responses, whose names differ from the requests fetch builds only in case, as PageIconResponse holds
 	"contentWithRichTextColorAndIcon": "ContentWithRichTextColorAndIconResponse",
@@ -211,16 +217,13 @@ var sharedContents = map[string]map[string]string{
 }
 
 // blockContents names what a block of one type holds after the type, as Notion does: Code for what a response's code
-// block holds, CodeRequest for what a request's does, where the two differ, and CodeUpdate for what updates it; and
-// what an edit of a page's markdown holds after the edit. What a schema holds follows its new name. An entry that
-// names no schema fails the run.
+// block holds, CodeRequest for what a request's does, where the two differ, and CodeUpdate for what updates it. What
+// a schema holds follows its new name. An entry that names no schema fails the run. Where flatten already names what
+// a block holds after its type, as ToDo for to_do, it needs none.
 var blockContents = map[string]string{
-	"CodeBlockCode":                        "Code",
-	"ToDoBlockToDo":                        "ToDo",
-	"TemplateBlockTemplate":                "Template",
-	"LinkToPageBlockLinkToPage":            "LinkToPage",
-	"TableOfContentsBlockTableOfContents":  "TableOfContents",
-	"SyncedBlockObjectResponseSyncedBlock": "SyncedBlock",
+	"CodeBlockCode":             "Code",
+	"TemplateBlockTemplate":     "Template",
+	"LinkToPageBlockLinkToPage": "LinkToPage",
 
 	"BlockObjectCodeCode":                       "CodeRequest",
 	"BlockObjectEmbedEmbed":                     "Embed",
@@ -236,11 +239,6 @@ var blockContents = map[string]string{
 	"UpdateABlockSyncedBlockSyncedBlock": "SyncedBlockUpdate",
 	"UpdateABlockTableTable":             "TableUpdate",
 	"UpdateABlockToDoToDo":               "ToDoUpdate",
-
-	"MarkdownEditInsertContentInsertContent":             "InsertContent",
-	"MarkdownEditReplaceContentReplaceContent":           "ReplaceContent",
-	"MarkdownEditReplaceContentRangeReplaceContentRange": "ReplaceContentRange",
-	"MarkdownEditUpdateContentUpdateContent":             "UpdateContent",
 }
 
 // nameBlockContents gives each block type of sharedContents a copy of what it shares, with a Go name of its own so

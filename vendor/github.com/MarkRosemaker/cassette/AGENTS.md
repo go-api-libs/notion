@@ -56,6 +56,9 @@ the work in hand cannot go on without the fix.
   behind.
 - `make all` adds `govulncheck`, which reads the vulnerability database over
   the network. Run it where you have one; say so where you do not.
+- A pull request runs `.github/workflows/test.yml`: golangci-lint, then the
+  tests with the race detector. It is generated whole, so a check of your own
+  goes in a workflow beside it.
 - One commit per piece of work, not one per session.
 - Push each commit as soon as it is made.
 - Open the pull request yourself once there is something to review. Do not
@@ -95,6 +98,9 @@ generated. Your own rules go below that block, where they win — in a
 
 - Comments are one line, and only where the code would otherwise puzzle a
   reader. Never a restatement of what it already says.
+- Fail at startup when something required is missing, such as an
+  environment variable, rather than fall back to a default.
+- Keep one way to do each thing.
 - Linters, scanners and generators are installed at their latest by
   `make tools`, and `devtool.json` pins the versions installed. A run moves
   a pin up, never back. Do not vendor one or add it to `go.mod` to run it.
