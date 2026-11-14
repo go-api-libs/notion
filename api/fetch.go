@@ -146,11 +146,13 @@ func persistOpenAPI(ctx context.Context) error {
 
 // shortNames names what has no better name than its position in a union or allOf, or one too long for what it is,
 // short and as Notion calls it: by the prefix the names hold, for the schemas within it too, as
-// MeetingNotesDateFilterOperator for MeetingNotesPropertyFilterFilterOneOf2Operator. A name in exactNames is renamed
+// DateFilterOperator for MeetingNotesPropertyFilterFilterOneOf2Operator. A name in exactNames is renamed
 // whole and goes before a prefix. An entry that names no schema fails the run.
 var shortNames = map[string]string{
 	"AgentListResultsItemOneOf0":   "CustomAgent",
 	"AgentListResultsItemNotionAi": "NotionAIAgent",
+
+	"AgentListResultsItemOneOf0CreatedByOneOf0": "AgentCreator", // the user or bot that created it
 
 	"CreateACommentAllOf0OneOf0": "PageComment",
 	"CreateACommentAllOf0OneOf1": "PageMarkdownComment",
@@ -165,23 +167,26 @@ var shortNames = map[string]string{
 	"CreateMeetingNoteAllOf0":       "MeetingNoteSource",
 	"CreateMeetingNoteOkOneOf0":     "MeetingNoteBlock",
 
-	"MeetingNotesPropertyFilterFilterString":   "MeetingNotesTextFilter",
-	"MeetingNotesPropertyFilterFilterPerson":   "MeetingNotesPersonFilter",
-	"MeetingNotesPropertyFilterFilterOneOf2":   "MeetingNotesDateFilter",
-	"MeetingNotesPropertyFilterFilterOneOf3":   "MeetingNotesDateRangeFilter",
-	"QueryMeetingNotesFilterFiltersItemOneOf1": "MeetingNotesFilterGroup",
+	"MeetingNotesPropertyFilterFilterString": "TextFilter",
+	"MeetingNotesPropertyFilterFilterPerson": "PersonFilter",
+	"MeetingNotesPropertyFilterFilterOneOf2": "DateFilter",
+	"MeetingNotesPropertyFilterFilterOneOf3": "DateRangeFilter",
+
+	"MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2": "DateRangeFilterRelative",
+	"QueryMeetingNotesFilterFiltersItemOneOf1":          "FilterGroup",
 
 	"DataSourceObjectSyncMetadataHealthAnyOf":  "SyncHealth", // what the failing and the healthy share
 	"DataSourceObjectSyncMetadataHealthPaused": "SyncHealthPaused",
 
-	"RollupPropertyConfigurationRollupAllOfOneOf":  "RollupByNames",
-	"RollupPropertyConfigurationRollupAllOfOneOf2": "RollupByRelationID",
-	"RollupPropertyConfigurationRollupAllOfOneOf3": "RollupByRollupID",
-	"RollupPropertyConfigurationRollupAllOfOneOf4": "RollupByIDs",
+	"RollupPropertyConfigurationRollupAllOfOneOf":   "RollupByNames",
+	"RollupPropertyConfigurationRollupAllOf0OneOf1": "RollupByRelationID",
+	"RollupPropertyConfigurationRollupAllOf0OneOf2": "RollupByRollupID",
+	"RollupPropertyConfigurationRollupAllOf0OneOf3": "RollupByIDs",
 
 	"UpdateABlockAnyOf30":                    "BlockTrashUpdate",
 	"UpdateADataSourcePropertiesValueOneOf0": "PropertyUpdate",
 	"UpdateADataSourcePropertiesValueName":   "PropertyRename",
+	"UpdateAgentStatus2":                     "AgentStatusUpdate", // beside the UpdateAgentStatus it sets
 	"UpdateSessionRequestMessage":            "SessionMessage",
 	"UpdateSessionRequestOneOf1":             "SessionAnswer",
 	"UpdateSessionRequestOneOf2":             "SessionContinuation",
@@ -189,8 +194,128 @@ var shortNames = map[string]string{
 
 // exactNames are the names of shortNames whose schema alone is renamed, as their prefix starts the names of others.
 var exactNames = map[string]string{
-	"DataSourceObjectSyncMetadataHealthAnyOf":  "SyncHealthFailing",
-	"DataSourceObjectSyncMetadataHealthAnyOf2": "SyncHealthOK",
+	"DataSourceObjectSyncMetadataHealthAnyOf":         "SyncHealthFailing",
+	"DataSourceObjectResponseSyncMetadataHealthAnyOf": "SyncHealthOK",
+
+	// upstream's responses, whose names differ from the requests fetch builds only in case, as PageIconResponse holds
+	"contentWithRichTextColorAndIcon": "ContentWithRichTextColorAndIconResponse",
+	"customEmojiPageIcon":             "CustomEmojiPageIconResponse",
+	"externalPageIcon":                "ExternalPageIconResponse",
+}
+
+// sharedContents are the contents two block types share, by the schema they share, which each block type gets a
+// copy of, named after it, by the property that holds it: a paragraph is no callout, though it has the same shape.
+var sharedContents = map[string]map[string]string{
+	"ContentWithRichTextColorAndIconResponse": {"paragraph": "Paragraph", "callout": "Callout"},
+	"BlockObjectCalloutCallout":               {"paragraph": "ParagraphRequest", "callout": "CalloutRequest"},
+}
+
+// blockContents names what a block of one type holds after the type, as Notion does: Code for what a response's code
+// block holds, CodeRequest for what a request's does, where the two differ, and CodeUpdate for what updates it; and
+// what an edit of a page's markdown holds after the edit. What a schema holds follows its new name. An entry that
+// names no schema fails the run.
+var blockContents = map[string]string{
+	"CodeBlockCode":                        "Code",
+	"ToDoBlockToDo":                        "ToDo",
+	"TemplateBlockTemplate":                "Template",
+	"LinkToPageBlockLinkToPage":            "LinkToPage",
+	"TableOfContentsBlockTableOfContents":  "TableOfContents",
+	"SyncedBlockObjectResponseSyncedBlock": "SyncedBlock",
+
+	"BlockObjectCodeCode":                       "CodeRequest",
+	"BlockObjectEmbedEmbed":                     "Embed",
+	"BlockObjectToDoToDo":                       "ToDoRequest",
+	"BlockObjectTemplateTemplate":               "TemplateRequest",
+	"BlockObjectLinkToPageLinkToPage":           "LinkToPageRequest",
+	"BlockObjectTableOfContentsTableOfContents": "TableOfContentsRequest",
+	"BlockObjectSyncedBlockSyncedBlock":         "SyncedBlockRequest",
+
+	"UpdateABlockCodeCode":               "CodeUpdate",
+	"UpdateABlockColumnColumn":           "ColumnUpdate",
+	"UpdateABlockEmbedEmbed":             "EmbedUpdate",
+	"UpdateABlockSyncedBlockSyncedBlock": "SyncedBlockUpdate",
+	"UpdateABlockTableTable":             "TableUpdate",
+	"UpdateABlockToDoToDo":               "ToDoUpdate",
+
+	"MarkdownEditInsertContentInsertContent":             "InsertContent",
+	"MarkdownEditReplaceContentReplaceContent":           "ReplaceContent",
+	"MarkdownEditReplaceContentRangeReplaceContentRange": "ReplaceContentRange",
+	"MarkdownEditUpdateContentUpdateContent":             "UpdateContent",
+}
+
+// nameBlockContents gives each block type of sharedContents a copy of what it shares, with a Go name of its own so
+// that compress keeps the copies apart, and renames as blockContents says.
+func nameBlockContents(doc *openapi.Document) error {
+	for _, shared := range slices.Sorted(maps.Keys(sharedContents)) {
+		s, ok := doc.Components.Schemas[shared]
+		if !ok {
+			return componentErr(shared, errors.New("not found: fix sharedContents"))
+		}
+
+		names := sharedContents[shared]
+		copies := map[string]*openapi.Schema{}
+
+		for _, prop := range slices.Sorted(maps.Keys(names)) {
+			c := new(openapi.Schema)
+			c.Replace(s)
+			c.Properties = maps.Clone(s.Properties)
+
+			ext, err := json.Marshal(map[string]string{"x-go-name": names[prop]})
+			if err != nil {
+				return err
+			}
+
+			c.Extensions = ext
+			doc.Components.Schemas.Set(names[prop], c)
+			copies[prop] = c
+		}
+
+		var errs []error
+
+		edit.WalkSchemas(doc, func(o *openapi.Schema) {
+			for prop, p := range o.Properties.ByIndex() {
+				if p.Ref == nil || p.Ref.Identifier != schemaRefPrefix+shared {
+					continue
+				}
+
+				if _, ok := copies[prop]; !ok {
+					errs = append(errs, fmt.Errorf("%s holds %s as %q, which sharedContents gives no name", o.Title, shared, prop))
+					continue
+				}
+
+				ref := edit.SchemaRef(doc, names[prop])
+				ref.Description = p.Description
+				p.Replace(ref)
+			}
+		})
+
+		if err := errors.Join(errs...); err != nil {
+			return err
+		}
+
+		delete(doc.Components.Schemas, shared)
+	}
+
+	prefixes := slices.SortedFunc(maps.Keys(blockContents), func(a, b string) int { return len(b) - len(a) })
+	unused := maps.Clone(blockContents)
+
+	return errors.Join(edit.RenameSchemasFunc(doc, func(n string) string {
+		for _, prefix := range prefixes {
+			if rest, ok := strings.CutPrefix(n, prefix); ok && (rest == "" || unicode.IsUpper(rune(rest[0]))) {
+				delete(unused, prefix)
+				return blockContents[prefix] + rest
+			}
+		}
+
+		return n
+	}), func() error {
+		if len(unused) > 0 {
+			return fmt.Errorf("blockContents names schemas the specification no longer has: %s",
+				strings.Join(slices.Sorted(maps.Keys(unused)), ", "))
+		}
+
+		return nil
+	}())
 }
 
 // shortenNames renames the component schemas as shortNames and exactNames say, then drops ObjectResponse or Response
@@ -283,6 +408,16 @@ func shortenNames(doc *openapi.Document) error {
 
 	if err := edit.RenameSchemas(doc, to); err != nil {
 		return err
+	}
+
+	// codegen would number a second schema of the same Go name, as it did contentWithRichTextColorAndIcon2
+	byGoName := map[string]string{}
+	for n := range doc.Components.Schemas.ByIndex() {
+		if other, ok := byGoName[strcase.ToGoPascal(n)]; ok {
+			return fmt.Errorf("%s and %s would have the same Go name: name one in shortNames or exactNames", other, n)
+		}
+
+		byGoName[strcase.ToGoPascal(n)] = n
 	}
 
 	if len(unused) > 0 {
@@ -1356,6 +1491,10 @@ func fixOpenAPI() (*openapi.Document, error) {
 	}
 
 	if err := shortenNames(doc); err != nil {
+		return nil, err
+	}
+
+	if err := nameBlockContents(doc); err != nil {
 		return nil, err
 	}
 

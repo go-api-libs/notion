@@ -5263,7 +5263,7 @@
         ],
         "additionalProperties": false
       },
-      "AgentBatch2": {
+      "AgentBatchOk": {
         "type": "object",
         "properties": {
           "object": {
@@ -5399,7 +5399,7 @@
           },
           "fields": {
             "description": "The status to apply to this agent.",
-            "$ref": "#/components/schemas/UpdateAgentStatus3"
+            "$ref": "#/components/schemas/AgentStatusUpdate"
           }
         },
         "required": [
@@ -6704,14 +6704,14 @@
       "CustomAgentCreatedBy": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/CustomAgentCreatedByOneOf0"
+            "$ref": "#/components/schemas/AgentCreator"
           },
           {
             "type": "null"
           }
         ]
       },
-      "CustomAgentCreatedByOneOf0": {
+      "AgentCreator": {
         "type": "object",
         "properties": {
           "type": {
@@ -7498,7 +7498,7 @@
         "type": "object",
         "properties": {
           "bulleted_list_item": {
-            "$ref": "#/components/schemas/BlockObjectQuote2"
+            "$ref": "#/components/schemas/BlockObjectQuoteQuote"
           },
           "type": {
             "type": "string",
@@ -7519,7 +7519,7 @@
         "type": "object",
         "properties": {
           "callout": {
-            "$ref": "#/components/schemas/BlockObjectCallout2"
+            "$ref": "#/components/schemas/CalloutRequest"
           },
           "type": {
             "type": "string",
@@ -7535,41 +7535,12 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectCallout2": {
-        "type": "object",
-        "properties": {
-          "rich_text": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/RichTextItem"
-            }
-          },
-          "color": {
-            "$ref": "#/components/schemas/apiColor"
-          },
-          "children": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildren"
-            }
-          },
-          "icon": {
-            "$ref": "#/components/schemas/PageIcon"
-          }
-        },
-        "required": [
-          "rich_text"
-        ],
-        "additionalProperties": false
-      },
       "BlockObjectCode": {
         "title": "Code",
         "type": "object",
         "properties": {
           "code": {
-            "$ref": "#/components/schemas/BlockObjectCode2"
+            "$ref": "#/components/schemas/CodeRequest"
           },
           "type": {
             "type": "string",
@@ -7585,7 +7556,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectCode2": {
+      "CodeRequest": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -7680,7 +7651,7 @@
         "type": "object",
         "properties": {
           "embed": {
-            "$ref": "#/components/schemas/BlockObjectEmbed2"
+            "$ref": "#/components/schemas/Embed"
           },
           "type": {
             "type": "string",
@@ -7696,7 +7667,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectEmbed2": {
+      "Embed": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/MediaContentWithURLAndCaption"
@@ -7887,7 +7858,7 @@
         "type": "object",
         "properties": {
           "link_to_page": {
-            "$ref": "#/components/schemas/BlockObjectLinkToPageLinkToPage"
+            "$ref": "#/components/schemas/LinkToPageRequest"
           },
           "type": {
             "type": "string",
@@ -7903,7 +7874,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectLinkToPageLinkToPage": {
+      "LinkToPageRequest": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/PageParentPageID"
@@ -7938,7 +7909,7 @@
         "type": "object",
         "properties": {
           "numbered_list_item": {
-            "$ref": "#/components/schemas/BlockObjectQuote2"
+            "$ref": "#/components/schemas/BlockObjectQuoteQuote"
           },
           "type": {
             "type": "string",
@@ -7959,7 +7930,7 @@
         "type": "object",
         "properties": {
           "paragraph": {
-            "$ref": "#/components/schemas/BlockObjectCallout2"
+            "$ref": "#/components/schemas/ParagraphRequest"
           },
           "type": {
             "type": "string",
@@ -8001,7 +7972,7 @@
         "type": "object",
         "properties": {
           "quote": {
-            "$ref": "#/components/schemas/BlockObjectQuote2"
+            "$ref": "#/components/schemas/BlockObjectQuoteQuote"
           },
           "type": {
             "type": "string",
@@ -8017,7 +7988,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectQuote2": {
+      "BlockObjectQuoteQuote": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -8216,7 +8187,7 @@
         "type": "object",
         "properties": {
           "synced_block": {
-            "$ref": "#/components/schemas/UpdateABlockSyncedBlockSyncedBlock"
+            "$ref": "#/components/schemas/SyncedBlockUpdate"
           },
           "type": {
             "type": "string",
@@ -8343,7 +8314,7 @@
         "type": "object",
         "properties": {
           "synced_block": {
-            "$ref": "#/components/schemas/BlockObjectSyncedBlockSyncedBlock"
+            "$ref": "#/components/schemas/SyncedBlockRequest"
           },
           "type": {
             "type": "string",
@@ -8359,7 +8330,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectSyncedBlockSyncedBlock": {
+      "SyncedBlockRequest": {
         "type": "object",
         "properties": {
           "synced_from": {
@@ -8445,7 +8416,7 @@
         "type": "object",
         "properties": {
           "table_of_contents": {
-            "$ref": "#/components/schemas/BlockObjectTableOfContentsTableOfContents"
+            "$ref": "#/components/schemas/TableOfContentsRequest"
           },
           "type": {
             "type": "string",
@@ -8461,7 +8432,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectTableOfContentsTableOfContents": {
+      "TableOfContentsRequest": {
         "type": "object",
         "properties": {
           "color": {
@@ -8475,7 +8446,7 @@
         "type": "object",
         "properties": {
           "template": {
-            "$ref": "#/components/schemas/BlockObjectTemplateTemplate"
+            "$ref": "#/components/schemas/TemplateRequest"
           },
           "type": {
             "type": "string",
@@ -8491,7 +8462,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectTemplateTemplate": {
+      "TemplateRequest": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -8519,7 +8490,7 @@
         "type": "object",
         "properties": {
           "to_do": {
-            "$ref": "#/components/schemas/BlockObjectToDoToDo"
+            "$ref": "#/components/schemas/ToDoRequest"
           },
           "type": {
             "type": "string",
@@ -8535,7 +8506,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectToDoToDo": {
+      "ToDoRequest": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -8569,7 +8540,7 @@
         "type": "object",
         "properties": {
           "toggle": {
-            "$ref": "#/components/schemas/BlockObjectQuote2"
+            "$ref": "#/components/schemas/BlockObjectQuoteQuote"
           },
           "type": {
             "type": "string",
@@ -9351,7 +9322,7 @@
         },
         "additionalProperties": false
       },
-      "CancelSession2": {
+      "CancelSessionOk": {
         "type": "object",
         "properties": {
           "object": {
@@ -9765,6 +9736,16 @@
           }
         ]
       },
+      "ChartViewConfigResponseXAxis": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/groupByConfigResponse"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "ChartViewConfigResponseYAxis": {
         "description": "Y-axis aggregation for column/bar/line/donut charts using grouped data. Null when using results mode.",
         "oneOf": [
@@ -9812,16 +9793,6 @@
         "oneOf": [
           {
             "$ref": "#/components/schemas/GroupByConfig"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "ChartViewConfigXAxis2": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/groupByConfigResponse"
           },
           {
             "type": "null"
@@ -9894,7 +9865,7 @@
           "equals"
         ]
       },
-      "CodeBlockCode": {
+      "Code": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -10106,6 +10077,7 @@
         "type": "object",
         "properties": {
           "expression": {
+            "description": "A KaTeX compatible string.",
             "type": "string",
             "example": "e^{\\pi i}+1=0",
             "examples": [
@@ -10175,7 +10147,7 @@
         ],
         "additionalProperties": false
       },
-      "ContentWithRichTextColorAndIconUpdate": {
+      "ContentWithRichTextColorAndIconResponseUpdate": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -10757,10 +10729,12 @@
         "type": "object",
         "properties": {
           "type": {
+            "description": "Always `workspace`",
             "type": "string",
             "const": "workspace"
           },
           "workspace": {
+            "description": "Always `true`",
             "type": "boolean",
             "const": true
           }
@@ -10920,6 +10894,7 @@
             "const": "page_id"
           },
           "page_id": {
+            "description": "The ID of the page to create the database on.",
             "$ref": "#/components/schemas/ID"
           }
         },
@@ -11366,14 +11341,15 @@
             "const": "custom_emoji"
           },
           "custom_emoji": {
-            "$ref": "#/components/schemas/CustomEmojiPageIconCustomEmoji"
+            "description": "Details of the custom emoji mention.",
+            "$ref": "#/components/schemas/CustomEmojiPageIconResponseCustomEmoji"
           }
         },
         "required": [
           "custom_emoji"
         ]
       },
-      "CustomEmojiPageIconCustomEmoji": {
+      "CustomEmojiPageIconResponseCustomEmoji": {
         "type": "object",
         "properties": {
           "id": {
@@ -11392,6 +11368,31 @@
         "required": [
           "id"
         ]
+      },
+      "SyncHealthOK": {
+        "type": "object",
+        "properties": {
+          "checks": {
+            "$ref": "#/components/schemas/SyncHealthChecks"
+          },
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "paused": {
+            "type": "boolean"
+          },
+          "stage": {
+            "$ref": "#/components/schemas/SyncHealthStage"
+          }
+        },
+        "required": [
+          "checks",
+          "ok",
+          "paused",
+          "stage"
+        ],
+        "additionalProperties": false
       },
       "DataSourceObjectSyncMetadata": {
         "type": "object",
@@ -11502,31 +11503,6 @@
         "required": [
           "checks",
           "error",
-          "ok",
-          "paused",
-          "stage"
-        ],
-        "additionalProperties": false
-      },
-      "SyncHealthOK": {
-        "type": "object",
-        "properties": {
-          "checks": {
-            "$ref": "#/components/schemas/SyncHealthChecks"
-          },
-          "ok": {
-            "type": "boolean",
-            "const": true
-          },
-          "paused": {
-            "type": "boolean"
-          },
-          "stage": {
-            "$ref": "#/components/schemas/SyncHealthStage"
-          }
-        },
-        "required": [
-          "checks",
           "ok",
           "paused",
           "stage"
@@ -11782,11 +11758,11 @@
           },
           "icon": {
             "description": "The icon of the database.",
-            "$ref": "#/components/schemas/PageIcon3"
+            "$ref": "#/components/schemas/PageIcon2"
           },
           "cover": {
             "description": "The cover of the database.",
-            "$ref": "#/components/schemas/PageCover3"
+            "$ref": "#/components/schemas/PageCover2"
           },
           "url": {
             "description": "The URL of the database.",
@@ -12446,6 +12422,7 @@
             "const": "external"
           },
           "external": {
+            "description": "External URL for the cover.",
             "$ref": "#/components/schemas/TextRichTextItemTextLinkURL"
           }
         },
@@ -12457,6 +12434,7 @@
         "type": "object",
         "properties": {
           "id": {
+            "description": "The ID of the page in the mention.",
             "$ref": "#/components/schemas/ID"
           }
         },
@@ -12689,6 +12667,7 @@
             "const": "file_upload"
           },
           "file_upload": {
+            "description": "The file upload for the cover.",
             "$ref": "#/components/schemas/idObject"
           }
         },
@@ -13585,20 +13564,20 @@
           "last_visited_time"
         ]
       },
-      "LinkToPageBlockLinkToPage": {
+      "LinkToPage": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/CreateDatabaseParentAllOfPageID"
           },
           {
-            "$ref": "#/components/schemas/LinkToPageBlockLinkToPageDatabaseID"
+            "$ref": "#/components/schemas/LinkToPageDatabaseID"
           },
           {
-            "$ref": "#/components/schemas/LinkToPageBlockLinkToPageCommentID"
+            "$ref": "#/components/schemas/LinkToPageCommentID"
           }
         ]
       },
-      "LinkToPageBlockLinkToPageCommentID": {
+      "LinkToPageCommentID": {
         "title": "Comment Id",
         "type": "object",
         "properties": {
@@ -13615,7 +13594,7 @@
           "comment_id"
         ]
       },
-      "LinkToPageBlockLinkToPageDatabaseID": {
+      "LinkToPageDatabaseID": {
         "title": "Database Id",
         "type": "object",
         "properties": {
@@ -13908,30 +13887,30 @@
         "description": "The comparison to apply. Use the arm matching the property's type.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/MeetingNotesTextFilter"
+            "$ref": "#/components/schemas/TextFilter"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesPersonFilter"
+            "$ref": "#/components/schemas/PersonFilter"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesDateFilter"
+            "$ref": "#/components/schemas/DateFilter"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilter"
+            "$ref": "#/components/schemas/DateRangeFilter"
           },
           {
             "$ref": "#/components/schemas/MeetingNotesPropertyFilterOperator"
           }
         ]
       },
-      "MeetingNotesDateFilter": {
+      "DateFilter": {
         "type": "object",
         "properties": {
           "operator": {
-            "$ref": "#/components/schemas/MeetingNotesDateFilterOperator"
+            "$ref": "#/components/schemas/DateFilterOperator"
           },
           "value": {
-            "$ref": "#/components/schemas/MeetingNotesDateFilterValue"
+            "$ref": "#/components/schemas/DateFilterValue"
           },
           "use_end": {
             "description": "Compare against the end of a date range rather than its start.",
@@ -13944,7 +13923,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateFilterOperator": {
+      "DateFilterOperator": {
         "description": "How to compare the date.",
         "type": "string",
         "enum": [
@@ -13955,18 +13934,18 @@
           "date_is_on_or_after"
         ]
       },
-      "MeetingNotesDateFilterValue": {
+      "DateFilterValue": {
         "description": "The date to compare against.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/MeetingNotesDateFilterValueRelative"
+            "$ref": "#/components/schemas/DateFilterValueRelative"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesDateFilterValueExact"
+            "$ref": "#/components/schemas/DateFilterValueExact"
           }
         ]
       },
-      "MeetingNotesDateFilterValueExact": {
+      "DateFilterValueExact": {
         "type": "object",
         "properties": {
           "type": {
@@ -13975,7 +13954,7 @@
             "const": "exact"
           },
           "value": {
-            "$ref": "#/components/schemas/MeetingNotesDateFilterValueExactValue"
+            "$ref": "#/components/schemas/DateFilterValueExactValue"
           }
         },
         "required": [
@@ -13984,18 +13963,18 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateFilterValueExactValue": {
+      "DateFilterValueExactValue": {
         "description": "Use the is_empty operator to match an unset date.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/MeetingNotesDateFilterValueExactValueDate"
+            "$ref": "#/components/schemas/DateFilterValueExactValueDate"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesDateFilterValueExactValueDatetime"
+            "$ref": "#/components/schemas/DateFilterValueExactValueDatetime"
           }
         ]
       },
-      "MeetingNotesDateFilterValueExactValueDate": {
+      "DateFilterValueExactValueDate": {
         "type": "object",
         "properties": {
           "type": {
@@ -14018,7 +13997,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateFilterValueExactValueDatetime": {
+      "DateFilterValueExactValueDatetime": {
         "type": "object",
         "properties": {
           "type": {
@@ -14057,7 +14036,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateFilterValueRelative": {
+      "DateFilterValueRelative": {
         "type": "object",
         "properties": {
           "type": {
@@ -14076,14 +14055,14 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateRangeFilter": {
+      "DateRangeFilter": {
         "type": "object",
         "properties": {
           "operator": {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterOperator"
+            "$ref": "#/components/schemas/DateRangeFilterOperator"
           },
           "value": {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValue"
+            "$ref": "#/components/schemas/DateRangeFilterValue"
           },
           "use_end": {
             "description": "Compare against the end of a date range rather than its start.",
@@ -14096,7 +14075,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateRangeFilterOperator": {
+      "DateRangeFilterOperator": {
         "description": "How to compare the date against the range.",
         "type": "string",
         "enum": [
@@ -14104,24 +14083,24 @@
           "date_is_relative_to"
         ]
       },
-      "MeetingNotesDateRangeFilterValue": {
+      "DateRangeFilterValue": {
         "description": "The range to compare against.",
         "oneOf": [
           {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValueCustom"
+            "$ref": "#/components/schemas/DateRangeFilterValueCustom"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValueSurrounding"
+            "$ref": "#/components/schemas/DateRangeFilterValueSurrounding"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValueOneOf2"
+            "$ref": "#/components/schemas/DateRangeFilterRelative"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValueExact"
+            "$ref": "#/components/schemas/DateRangeFilterValueExact"
           }
         ]
       },
-      "MeetingNotesDateRangeFilterValueCustom": {
+      "DateRangeFilterValueCustom": {
         "type": "object",
         "properties": {
           "type": {
@@ -14135,7 +14114,7 @@
             "const": "custom"
           },
           "direction": {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValueCustomDirection"
+            "$ref": "#/components/schemas/DateRangeFilterValueCustomDirection"
           },
           "unit": {
             "$ref": "#/components/schemas/MeetingNotesPropertyFilterOneOfValueCustomUnit"
@@ -14155,7 +14134,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateRangeFilterValueCustomDirection": {
+      "DateRangeFilterValueCustomDirection": {
         "description": "Whether the window runs backwards or forwards from now.",
         "type": "string",
         "enum": [
@@ -14163,7 +14142,7 @@
           "future"
         ]
       },
-      "MeetingNotesDateRangeFilterValueExact": {
+      "DateRangeFilterValueExact": {
         "type": "object",
         "properties": {
           "type": {
@@ -14172,7 +14151,7 @@
             "const": "exact"
           },
           "value": {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValueExactValue"
+            "$ref": "#/components/schemas/DateRangeFilterValueExactValue"
           }
         },
         "required": [
@@ -14181,7 +14160,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateRangeFilterValueExactValue": {
+      "DateRangeFilterValueExactValue": {
         "description": "Use the is_empty operator to match an unset date.",
         "type": "object",
         "properties": {
@@ -14212,7 +14191,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateRangeFilterValueOneOf2": {
+      "DateRangeFilterRelative": {
         "type": "object",
         "properties": {
           "type": {
@@ -14221,7 +14200,7 @@
             "const": "relative"
           },
           "value": {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValueOneOf2Value"
+            "$ref": "#/components/schemas/DateRangeFilterRelativeValue"
           }
         },
         "required": [
@@ -14230,7 +14209,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateRangeFilterValueOneOf2Value": {
+      "DateRangeFilterRelativeValue": {
         "description": "One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`",
         "type": "string",
         "enum": [
@@ -14243,7 +14222,7 @@
           "the_next_year"
         ]
       },
-      "MeetingNotesDateRangeFilterValueSurrounding": {
+      "DateRangeFilterValueSurrounding": {
         "type": "object",
         "properties": {
           "type": {
@@ -14287,18 +14266,18 @@
           "is_not_empty"
         ]
       },
-      "MeetingNotesPersonFilter": {
+      "PersonFilter": {
         "type": "object",
         "properties": {
           "operator": {
-            "$ref": "#/components/schemas/MeetingNotesPersonFilterOperator"
+            "$ref": "#/components/schemas/PersonFilterOperator"
           },
           "value": {
             "description": "The people to compare against.",
             "type": "array",
             "maxItems": 100,
             "items": {
-              "$ref": "#/components/schemas/MeetingNotesPersonFilterValueItem"
+              "$ref": "#/components/schemas/PersonFilterValueItem"
             }
           }
         },
@@ -14308,7 +14287,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesPersonFilterOperator": {
+      "PersonFilterOperator": {
         "description": "Whether the property must contain the people listed.",
         "type": "string",
         "enum": [
@@ -14316,17 +14295,17 @@
           "person_does_not_contain"
         ]
       },
-      "MeetingNotesPersonFilterValueItem": {
+      "PersonFilterValueItem": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/MeetingNotesPersonFilterValueItemExact"
+            "$ref": "#/components/schemas/PersonFilterValueItemExact"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesPersonFilterValueItemRelative"
+            "$ref": "#/components/schemas/PersonFilterValueItemRelative"
           }
         ]
       },
-      "MeetingNotesPersonFilterValueItemExact": {
+      "PersonFilterValueItemExact": {
         "type": "object",
         "properties": {
           "type": {
@@ -14335,7 +14314,7 @@
             "const": "exact"
           },
           "value": {
-            "$ref": "#/components/schemas/MeetingNotesPersonFilterValueItemExactValue"
+            "$ref": "#/components/schemas/PersonFilterValueItemExactValue"
           }
         },
         "required": [
@@ -14344,7 +14323,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesPersonFilterValueItemExactValue": {
+      "PersonFilterValueItemExactValue": {
         "description": "Pointer to the Notion user to match.",
         "type": "object",
         "properties": {
@@ -14368,7 +14347,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesPersonFilterValueItemRelative": {
+      "PersonFilterValueItemRelative": {
         "type": "object",
         "properties": {
           "type": {
@@ -14388,14 +14367,14 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesTextFilter": {
+      "TextFilter": {
         "type": "object",
         "properties": {
           "operator": {
-            "$ref": "#/components/schemas/MeetingNotesTextFilterOperator"
+            "$ref": "#/components/schemas/TextFilterOperator"
           },
           "value": {
-            "$ref": "#/components/schemas/MeetingNotesTextFilterValue"
+            "$ref": "#/components/schemas/TextFilterValue"
           }
         },
         "required": [
@@ -14404,7 +14383,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesTextFilterOperator": {
+      "TextFilterOperator": {
         "description": "How to compare the text.",
         "type": "string",
         "enum": [
@@ -14416,7 +14395,7 @@
           "string_ends_with"
         ]
       },
-      "MeetingNotesTextFilterValue": {
+      "TextFilterValue": {
         "description": "The text to compare against.",
         "type": "object",
         "properties": {
@@ -14614,7 +14593,7 @@
             "$ref": "#/components/schemas/MentionRichTextItemResponseMentionTemplateMention"
           },
           {
-            "$ref": "#/components/schemas/customEmojiPageIcon"
+            "$ref": "#/components/schemas/CustomEmojiPageIconResponse"
           }
         ]
       },
@@ -15078,11 +15057,11 @@
           },
           "icon": {
             "description": "Page icon.",
-            "$ref": "#/components/schemas/PageIcon3"
+            "$ref": "#/components/schemas/PageIcon2"
           },
           "cover": {
             "description": "Page cover image.",
-            "$ref": "#/components/schemas/PageCover3"
+            "$ref": "#/components/schemas/PageCover2"
           },
           "created_by": {
             "description": "User who created the page.",
@@ -15151,16 +15130,6 @@
         ]
       },
       "PageCover2": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/PageCover"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "PageCover3": {
         "oneOf": [
           {
             "$ref": "#/components/schemas/pageCoverResponse"
@@ -15190,16 +15159,6 @@
         ]
       },
       "PageIcon2": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/PageIcon"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "PageIcon3": {
         "oneOf": [
           {
             "$ref": "#/components/schemas/pageIconResponse"
@@ -15598,7 +15557,7 @@
         "type": "object",
         "properties": {
           "email": {
-            "$ref": "#/components/schemas/PagePropertiesValueEmail2"
+            "$ref": "#/components/schemas/PagePropertiesValueEmailEmail"
           },
           "type": {
             "type": "string",
@@ -15610,7 +15569,7 @@
         ],
         "additionalProperties": false
       },
-      "PagePropertiesValueEmail2": {
+      "PagePropertiesValueEmailEmail": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/String"
@@ -15738,7 +15697,7 @@
         "type": "object",
         "properties": {
           "phone_number": {
-            "$ref": "#/components/schemas/PagePropertiesValueEmail2"
+            "$ref": "#/components/schemas/PagePropertiesValueEmailEmail"
           },
           "type": {
             "type": "string",
@@ -15755,7 +15714,7 @@
         "type": "object",
         "properties": {
           "place": {
-            "$ref": "#/components/schemas/PagePropertiesValuePlace2"
+            "$ref": "#/components/schemas/PagePropertiesValuePlacePlace"
           },
           "type": {
             "type": "string",
@@ -15767,7 +15726,7 @@
         ],
         "additionalProperties": false
       },
-      "PagePropertiesValuePlace2": {
+      "PagePropertiesValuePlacePlace": {
         "type": [
           "object",
           "null"
@@ -15856,7 +15815,7 @@
         "type": "object",
         "properties": {
           "select": {
-            "$ref": "#/components/schemas/PagePropertiesValueSelect2"
+            "$ref": "#/components/schemas/PagePropertiesValueSelectSelect"
           },
           "type": {
             "type": "string",
@@ -15867,19 +15826,6 @@
           "select"
         ],
         "additionalProperties": false
-      },
-      "PagePropertiesValueSelect2": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/PagePropertiesValueSelectID"
-          },
-          {
-            "$ref": "#/components/schemas/PagePropertiesValueSelectName"
-          },
-          {
-            "type": "null"
-          }
-        ]
       },
       "PagePropertiesValueSelectID": {
         "type": "object",
@@ -15923,12 +15869,25 @@
         ],
         "additionalProperties": false
       },
+      "PagePropertiesValueSelectSelect": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/PagePropertiesValueSelectID"
+          },
+          {
+            "$ref": "#/components/schemas/PagePropertiesValueSelectName"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "PagePropertiesValueStatus": {
         "title": "Status",
         "type": "object",
         "properties": {
           "status": {
-            "$ref": "#/components/schemas/PagePropertiesValueSelect2"
+            "$ref": "#/components/schemas/PagePropertiesValueSelectSelect"
           },
           "type": {
             "type": "string",
@@ -16221,10 +16180,10 @@
             "$ref": "#/components/schemas/PageProperties"
           },
           "icon": {
-            "$ref": "#/components/schemas/PageIcon2"
+            "$ref": "#/components/schemas/PostPageIcon"
           },
           "cover": {
-            "$ref": "#/components/schemas/PageCover2"
+            "$ref": "#/components/schemas/PostPageCover"
           },
           "is_locked": {
             "description": "Whether the page should be locked from editing in the Notion app UI. If not provided, the locked state will not be updated.",
@@ -16508,10 +16467,10 @@
             "$ref": "#/components/schemas/PageProperties"
           },
           "icon": {
-            "$ref": "#/components/schemas/PageIcon2"
+            "$ref": "#/components/schemas/PostPageIcon"
           },
           "cover": {
-            "$ref": "#/components/schemas/PageCover2"
+            "$ref": "#/components/schemas/PostPageCover"
           },
           "content": {
             "type": "array",
@@ -16549,6 +16508,26 @@
           }
         },
         "additionalProperties": false
+      },
+      "PostPageCover": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/PageCover"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "PostPageIcon": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/PageIcon"
+          },
+          {
+            "type": "null"
+          }
+        ]
       },
       "PostPageParent": {
         "anyOf": [
@@ -17387,7 +17366,7 @@
         "type": "object",
         "properties": {
           "verification": {
-            "$ref": "#/components/schemas/PropertyFilterVerification2"
+            "$ref": "#/components/schemas/PropertyFilterVerificationVerification"
           },
           "property": {
             "type": "string"
@@ -17403,7 +17382,7 @@
         ],
         "additionalProperties": false
       },
-      "PropertyFilterVerification2": {
+      "PropertyFilterVerificationVerification": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/verificationPropertyStatusFilter"
@@ -17900,6 +17879,7 @@
         "type": "object",
         "properties": {
           "equals": {
+            "description": "Return sessions with this exact value.",
             "type": "string"
           }
         },
@@ -18105,7 +18085,7 @@
             "const": "status"
           },
           "status": {
-            "$ref": "#/components/schemas/QueryAgentsFilterStatus2"
+            "$ref": "#/components/schemas/QueryAgentsFilterStatusStatus"
           }
         },
         "required": [
@@ -18114,7 +18094,14 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterStatus2": {
+      "QueryAgentsFilterStatusIn": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "$ref": "#/components/schemas/AgentStatus"
+        }
+      },
+      "QueryAgentsFilterStatusStatus": {
         "type": "object",
         "properties": {
           "in": {
@@ -18125,13 +18112,6 @@
           "in"
         ],
         "additionalProperties": false
-      },
-      "QueryAgentsFilterStatusIn": {
-        "type": "array",
-        "minItems": 1,
-        "items": {
-          "$ref": "#/components/schemas/AgentStatus"
-        }
       },
       "QueryAgentsSorts": {
         "description": "Ordered sort precedence. Defaults to created_time descending.",
@@ -18211,11 +18191,11 @@
             "$ref": "#/components/schemas/meetingNotesPropertyFilter"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesFilterGroup"
+            "$ref": "#/components/schemas/FilterGroup"
           }
         ]
       },
-      "MeetingNotesFilterGroup": {
+      "FilterGroup": {
         "type": "object",
         "properties": {
           "operator": {
@@ -19323,7 +19303,7 @@
         "type": "object",
         "properties": {
           "verification": {
-            "$ref": "#/components/schemas/PropertyFilterVerification2"
+            "$ref": "#/components/schemas/PropertyFilterVerificationVerification"
           },
           "type": {
             "type": "string",
@@ -19498,7 +19478,7 @@
       "RetrieveAsyncTaskOk": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/AgentBatch2"
+            "$ref": "#/components/schemas/AgentBatchOk"
           },
           {
             "$ref": "#/components/schemas/RetrieveAsyncTaskOkSucceeded"
@@ -20636,21 +20616,6 @@
           }
         ]
       },
-      "RollupByNames": {
-        "type": "object",
-        "properties": {
-          "relation_property_name": {
-            "type": "string"
-          },
-          "rollup_property_name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "relation_property_name",
-          "rollup_property_name"
-        ]
-      },
       "RollupByRelationID": {
         "type": "object",
         "properties": {
@@ -20694,6 +20659,21 @@
         "required": [
           "relation_property_id",
           "rollup_property_id"
+        ]
+      },
+      "RollupByNames": {
+        "type": "object",
+        "properties": {
+          "relation_property_name": {
+            "type": "string"
+          },
+          "rollup_property_name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "relation_property_name",
+          "rollup_property_name"
         ]
       },
       "RollupPropertyFilterAny": {
@@ -22451,18 +22431,18 @@
           "subitems"
         ]
       },
-      "SyncedBlockObjectResponseSyncedBlock": {
+      "SyncedBlock": {
         "type": "object",
         "properties": {
           "synced_from": {
-            "$ref": "#/components/schemas/SyncedBlockObjectResponseSyncedBlockSyncedFrom"
+            "$ref": "#/components/schemas/SyncedBlockSyncedFrom"
           }
         },
         "required": [
           "synced_from"
         ]
       },
-      "SyncedBlockObjectResponseSyncedBlockSyncedFrom": {
+      "SyncedBlockSyncedFrom": {
         "title": "Block Id",
         "type": [
           "object",
@@ -22482,7 +22462,7 @@
           "block_id"
         ]
       },
-      "TableOfContentsBlockTableOfContents": {
+      "TableOfContents": {
         "type": "object",
         "properties": {
           "color": {
@@ -22562,7 +22542,7 @@
           }
         ]
       },
-      "TemplateBlockTemplate": {
+      "Template": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -23011,7 +22991,7 @@
           "title"
         ]
       },
-      "ToDoBlockToDo": {
+      "ToDo": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -23312,7 +23292,7 @@
         "type": "object",
         "properties": {
           "callout": {
-            "$ref": "#/components/schemas/ContentWithRichTextColorAndIconUpdate"
+            "$ref": "#/components/schemas/ContentWithRichTextColorAndIconResponseUpdate"
           },
           "type": {
             "type": "string",
@@ -23332,7 +23312,7 @@
         "type": "object",
         "properties": {
           "code": {
-            "$ref": "#/components/schemas/UpdateABlockCodeCode"
+            "$ref": "#/components/schemas/CodeUpdate"
           },
           "type": {
             "type": "string",
@@ -23347,7 +23327,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockCodeCode": {
+      "CodeUpdate": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -23375,7 +23355,7 @@
         "type": "object",
         "properties": {
           "column": {
-            "$ref": "#/components/schemas/UpdateABlockColumnColumn"
+            "$ref": "#/components/schemas/ColumnUpdate"
           },
           "type": {
             "type": "string",
@@ -23390,7 +23370,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockColumnColumn": {
+      "ColumnUpdate": {
         "type": "object",
         "properties": {
           "width_ratio": {
@@ -23430,7 +23410,7 @@
         "type": "object",
         "properties": {
           "embed": {
-            "$ref": "#/components/schemas/UpdateABlockEmbedEmbed"
+            "$ref": "#/components/schemas/EmbedUpdate"
           },
           "type": {
             "type": "string",
@@ -23445,7 +23425,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockEmbedEmbed": {
+      "EmbedUpdate": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/UpdateMediaContentWithURLAndCaption"
@@ -23600,7 +23580,7 @@
         "type": "object",
         "properties": {
           "link_to_page": {
-            "$ref": "#/components/schemas/BlockObjectLinkToPageLinkToPage"
+            "$ref": "#/components/schemas/LinkToPageRequest"
           },
           "type": {
             "type": "string",
@@ -23640,7 +23620,7 @@
         "type": "object",
         "properties": {
           "paragraph": {
-            "$ref": "#/components/schemas/ContentWithRichTextColorAndIconUpdate"
+            "$ref": "#/components/schemas/ContentWithRichTextColorAndIconResponseUpdate"
           },
           "type": {
             "type": "string",
@@ -23700,7 +23680,7 @@
         "type": "object",
         "properties": {
           "synced_block": {
-            "$ref": "#/components/schemas/UpdateABlockSyncedBlockSyncedBlock"
+            "$ref": "#/components/schemas/SyncedBlockUpdate"
           },
           "type": {
             "type": "string",
@@ -23715,7 +23695,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockSyncedBlockSyncedBlock": {
+      "SyncedBlockUpdate": {
         "type": "object",
         "properties": {
           "synced_from": {
@@ -23752,7 +23732,7 @@
         "type": "object",
         "properties": {
           "table": {
-            "$ref": "#/components/schemas/UpdateABlockTableTable"
+            "$ref": "#/components/schemas/TableUpdate"
           },
           "type": {
             "type": "string",
@@ -23772,7 +23752,7 @@
         "type": "object",
         "properties": {
           "table_of_contents": {
-            "$ref": "#/components/schemas/BlockObjectTableOfContentsTableOfContents"
+            "$ref": "#/components/schemas/TableOfContentsRequest"
           },
           "type": {
             "type": "string",
@@ -23807,7 +23787,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockTableTable": {
+      "TableUpdate": {
         "type": "object",
         "properties": {
           "has_column_header": {
@@ -23844,7 +23824,7 @@
         "type": "object",
         "properties": {
           "to_do": {
-            "$ref": "#/components/schemas/UpdateABlockToDoToDo"
+            "$ref": "#/components/schemas/ToDoUpdate"
           },
           "type": {
             "type": "string",
@@ -23859,7 +23839,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockToDoToDo": {
+      "ToDoUpdate": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -24301,7 +24281,7 @@
           "disabled"
         ]
       },
-      "UpdateAgentStatus3": {
+      "AgentStatusUpdate": {
         "type": "object",
         "properties": {
           "status": {
@@ -24621,7 +24601,7 @@
             "const": "insert_content"
           },
           "insert_content": {
-            "$ref": "#/components/schemas/MarkdownEditInsertContentInsertContent"
+            "$ref": "#/components/schemas/InsertContent"
           }
         },
         "required": [
@@ -24630,7 +24610,7 @@
         ],
         "deprecated": true
       },
-      "MarkdownEditInsertContentInsertContent": {
+      "InsertContent": {
         "description": "Insert new content into the page.",
         "type": "object",
         "properties": {
@@ -24646,14 +24626,14 @@
             "type": "string"
           },
           "position": {
-            "$ref": "#/components/schemas/MarkdownEditInsertContentInsertContentPosition"
+            "$ref": "#/components/schemas/InsertContentPosition"
           }
         },
         "required": [
           "content"
         ]
       },
-      "MarkdownEditInsertContentInsertContentPosition": {
+      "InsertContentPosition": {
         "description": "Explicit position for inserted content. Use {\"type\":\"start\"} to prepend or {\"type\":\"end\"} to append. Cannot be combined with after.",
         "oneOf": [
           {
@@ -24674,7 +24654,7 @@
             "const": "replace_content"
           },
           "replace_content": {
-            "$ref": "#/components/schemas/MarkdownEditReplaceContentReplaceContent"
+            "$ref": "#/components/schemas/ReplaceContent"
           }
         },
         "required": [
@@ -24692,7 +24672,7 @@
             "const": "replace_content_range"
           },
           "replace_content_range": {
-            "$ref": "#/components/schemas/MarkdownEditReplaceContentRangeReplaceContentRange"
+            "$ref": "#/components/schemas/ReplaceContentRange"
           }
         },
         "required": [
@@ -24701,7 +24681,7 @@
         ],
         "deprecated": true
       },
-      "MarkdownEditReplaceContentRangeReplaceContentRange": {
+      "ReplaceContentRange": {
         "description": "Replace a range of content in the page.",
         "type": "object",
         "properties": {
@@ -24726,7 +24706,7 @@
           "content_range"
         ]
       },
-      "MarkdownEditReplaceContentReplaceContent": {
+      "ReplaceContent": {
         "description": "Replace the entire page content with new markdown.",
         "type": "object",
         "properties": {
@@ -24756,7 +24736,7 @@
             "const": "update_content"
           },
           "update_content": {
-            "$ref": "#/components/schemas/MarkdownEditUpdateContentUpdateContent"
+            "$ref": "#/components/schemas/UpdateContent"
           }
         },
         "required": [
@@ -24764,12 +24744,12 @@
           "update_content"
         ]
       },
-      "MarkdownEditUpdateContentUpdateContent": {
+      "UpdateContent": {
         "description": "Update specific content using search-and-replace operations.",
         "type": "object",
         "properties": {
           "content_updates": {
-            "$ref": "#/components/schemas/MarkdownEditUpdateContentUpdateContentContentUpdates"
+            "$ref": "#/components/schemas/UpdateContentContentUpdates"
           },
           "allow_deleting_content": {
             "description": "Set to true to allow the operation to delete child pages or databases. Defaults to false.",
@@ -24780,15 +24760,15 @@
           "content_updates"
         ]
       },
-      "MarkdownEditUpdateContentUpdateContentContentUpdates": {
+      "UpdateContentContentUpdates": {
         "description": "An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content). Operations that match are applied, and each one that matches nothing is reported in \"warnings\". The call fails only when no operation that changes content matches.",
         "type": "array",
         "maxItems": 100,
         "items": {
-          "$ref": "#/components/schemas/MarkdownEditUpdateContentUpdateContentContentUpdatesItem"
+          "$ref": "#/components/schemas/UpdateContentContentUpdatesItem"
         }
       },
-      "MarkdownEditUpdateContentUpdateContentContentUpdatesItem": {
+      "UpdateContentContentUpdatesItem": {
         "type": "object",
         "properties": {
           "old_str": {
@@ -26378,7 +26358,7 @@
             "const": "callout"
           },
           "callout": {
-            "$ref": "#/components/schemas/contentWithRichTextColorAndIcon"
+            "$ref": "#/components/schemas/Callout"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -26496,7 +26476,7 @@
           },
           "x_axis": {
             "description": "X-axis grouping configuration for column/bar/line/donut charts using grouped data. Null when using results (raw property values) mode.",
-            "$ref": "#/components/schemas/ChartViewConfigXAxis2"
+            "$ref": "#/components/schemas/ChartViewConfigResponseXAxis"
           },
           "y_axis": {
             "$ref": "#/components/schemas/ChartViewConfigResponseYAxis"
@@ -26579,7 +26559,7 @@
           },
           "stack_by": {
             "description": "Stack-by grouping configuration for stacked/grouped bar charts (column/bar/line only). Null when not stacked.",
-            "$ref": "#/components/schemas/ChartViewConfigXAxis2"
+            "$ref": "#/components/schemas/ChartViewConfigResponseXAxis"
           },
           "reference_lines": {
             "$ref": "#/components/schemas/ChartViewConfigResponseReferenceLines"
@@ -26849,7 +26829,7 @@
             "const": "code"
           },
           "code": {
-            "$ref": "#/components/schemas/CodeBlockCode"
+            "$ref": "#/components/schemas/Code"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -27264,25 +27244,6 @@
           "color"
         ]
       },
-      "contentWithRichTextColorAndIcon": {
-        "type": "object",
-        "properties": {
-          "rich_text": {
-            "$ref": "#/components/schemas/RichTexts"
-          },
-          "color": {
-            "$ref": "#/components/schemas/apiColor"
-          },
-          "icon": {
-            "$ref": "#/components/schemas/CalloutBlockObjectCalloutIcon"
-          }
-        },
-        "required": [
-          "rich_text",
-          "color",
-          "icon"
-        ]
-      },
       "ContentWithTable": {
         "type": "object",
         "properties": {
@@ -27477,7 +27438,7 @@
         ],
         "additionalProperties": false
       },
-      "customEmojiPageIcon": {
+      "CustomEmojiPageIconResponse": {
         "title": "Custom Emoji",
         "type": "object",
         "properties": {
@@ -27774,11 +27735,11 @@
           },
           "icon": {
             "description": "The icon of the data source.",
-            "$ref": "#/components/schemas/PageIcon3"
+            "$ref": "#/components/schemas/PageIcon2"
           },
           "cover": {
             "description": "The cover of the data source.",
-            "$ref": "#/components/schemas/PageCover3"
+            "$ref": "#/components/schemas/PageCover2"
           },
           "url": {
             "description": "The URL of the data source.",
@@ -28861,6 +28822,7 @@
         "type": "object",
         "properties": {
           "expression": {
+            "description": "A KaTeX compatible string.",
             "type": "string",
             "example": "e^{\\pi i}+1 = 0",
             "examples": [
@@ -28937,7 +28899,7 @@
           "name"
         ]
       },
-      "externalPageIcon": {
+      "ExternalPageIconResponse": {
         "title": "External",
         "type": "object",
         "properties": {
@@ -30062,6 +30024,7 @@
         "type": "object",
         "properties": {
           "id": {
+            "description": "ID of a FileUpload object that has the status `uploaded`.",
             "type": "string",
             "example": "%3ANHe"
           }
@@ -30542,7 +30505,7 @@
             "const": "link_to_page"
           },
           "link_to_page": {
-            "$ref": "#/components/schemas/LinkToPageBlockLinkToPage"
+            "$ref": "#/components/schemas/LinkToPage"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -31234,7 +31197,7 @@
             "$ref": "#/components/schemas/filePageIcon"
           },
           {
-            "$ref": "#/components/schemas/externalPageIcon"
+            "$ref": "#/components/schemas/ExternalPageIconResponse"
           }
         ]
       },
@@ -31301,10 +31264,10 @@
             "$ref": "#/components/schemas/filePageIcon"
           },
           {
-            "$ref": "#/components/schemas/externalPageIcon"
+            "$ref": "#/components/schemas/ExternalPageIconResponse"
           },
           {
-            "$ref": "#/components/schemas/customEmojiPageIcon"
+            "$ref": "#/components/schemas/CustomEmojiPageIconResponse"
           },
           {
             "$ref": "#/components/schemas/iconPageIconResponse"
@@ -31585,7 +31548,7 @@
             "const": "paragraph"
           },
           "paragraph": {
-            "$ref": "#/components/schemas/contentWithRichTextColorAndIcon"
+            "$ref": "#/components/schemas/Paragraph"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -32257,7 +32220,7 @@
             "const": "place"
           },
           "place": {
-            "$ref": "#/components/schemas/PagePropertiesValuePlace2"
+            "$ref": "#/components/schemas/PagePropertiesValuePlacePlace"
           },
           "object": {
             "type": "string",
@@ -32736,6 +32699,7 @@
         "type": "object",
         "properties": {
           "id": {
+            "description": "The ID of the page in the mention.",
             "$ref": "#/components/schemas/ID"
           }
         },
@@ -33107,17 +33071,21 @@
         "type": "object",
         "properties": {
           "id": {
+            "description": "The ID of the status option.",
             "type": "string",
             "example": "78673949-50fe-41c5-8cdb-ce44acb4b59f"
           },
           "name": {
+            "description": "The name of the status option.",
             "type": "string",
             "example": "Not Started"
           },
           "color": {
+            "description": "The color of the status option.",
             "$ref": "#/components/schemas/selectColor"
           },
           "description": {
+            "description": "The description of the status option.",
             "$ref": "#/components/schemas/PagePublicURL"
           }
         },
@@ -33642,7 +33610,7 @@
             "const": "synced_block"
           },
           "synced_block": {
-            "$ref": "#/components/schemas/SyncedBlockObjectResponseSyncedBlock"
+            "$ref": "#/components/schemas/SyncedBlock"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -33913,7 +33881,7 @@
             "const": "table_of_contents"
           },
           "table_of_contents": {
-            "$ref": "#/components/schemas/TableOfContentsBlockTableOfContents"
+            "$ref": "#/components/schemas/TableOfContents"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -34114,7 +34082,7 @@
             "const": "template"
           },
           "template": {
-            "$ref": "#/components/schemas/TemplateBlockTemplate"
+            "$ref": "#/components/schemas/Template"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -34531,7 +34499,7 @@
             "const": "to_do"
           },
           "to_do": {
-            "$ref": "#/components/schemas/ToDoBlockToDo"
+            "$ref": "#/components/schemas/ToDo"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -34884,6 +34852,7 @@
         "type": "object",
         "properties": {
           "type": {
+            "description": "Always `unsupported`",
             "type": "string",
             "const": "unsupported"
           },
@@ -35600,6 +35569,106 @@
           "workspace"
         ],
         "additionalProperties": false
+      },
+      "CalloutRequest": {
+        "type": "object",
+        "properties": {
+          "rich_text": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/RichTextItem"
+            }
+          },
+          "color": {
+            "$ref": "#/components/schemas/apiColor"
+          },
+          "children": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildren"
+            }
+          },
+          "icon": {
+            "$ref": "#/components/schemas/PageIcon"
+          }
+        },
+        "required": [
+          "rich_text"
+        ],
+        "additionalProperties": false,
+        "x-go-name": "CalloutRequest"
+      },
+      "ParagraphRequest": {
+        "type": "object",
+        "properties": {
+          "rich_text": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/RichTextItem"
+            }
+          },
+          "color": {
+            "$ref": "#/components/schemas/apiColor"
+          },
+          "children": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildren"
+            }
+          },
+          "icon": {
+            "$ref": "#/components/schemas/PageIcon"
+          }
+        },
+        "required": [
+          "rich_text"
+        ],
+        "additionalProperties": false,
+        "x-go-name": "ParagraphRequest"
+      },
+      "Callout": {
+        "type": "object",
+        "properties": {
+          "rich_text": {
+            "$ref": "#/components/schemas/RichTexts"
+          },
+          "color": {
+            "$ref": "#/components/schemas/apiColor"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/CalloutBlockObjectCalloutIcon"
+          }
+        },
+        "required": [
+          "rich_text",
+          "color",
+          "icon"
+        ],
+        "x-go-name": "Callout"
+      },
+      "Paragraph": {
+        "type": "object",
+        "properties": {
+          "rich_text": {
+            "$ref": "#/components/schemas/RichTexts"
+          },
+          "color": {
+            "$ref": "#/components/schemas/apiColor"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/CalloutBlockObjectCalloutIcon"
+          }
+        },
+        "required": [
+          "rich_text",
+          "color",
+          "icon"
+        ],
+        "x-go-name": "Paragraph"
       }
     },
     "responses": {
@@ -35608,7 +35677,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/AgentBatch2"
+              "$ref": "#/components/schemas/AgentBatchOk"
             }
           }
         }
@@ -35618,7 +35687,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CancelSession2"
+              "$ref": "#/components/schemas/CancelSessionOk"
             }
           }
         }
@@ -36258,7 +36327,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CancelSession2"
+              "$ref": "#/components/schemas/CancelSessionOk"
             }
           }
         }
@@ -37219,7 +37288,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/UpdateAgentStatus3"
+              "$ref": "#/components/schemas/AgentStatusUpdate"
             }
           }
         }
