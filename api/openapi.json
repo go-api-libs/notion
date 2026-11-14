@@ -7519,7 +7519,7 @@
         "type": "object",
         "properties": {
           "callout": {
-            "$ref": "#/components/schemas/BlockObjectCalloutCallout"
+            "$ref": "#/components/schemas/CalloutRequest"
           },
           "type": {
             "type": "string",
@@ -7535,41 +7535,12 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectCalloutCallout": {
-        "type": "object",
-        "properties": {
-          "rich_text": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/RichTextItem"
-            }
-          },
-          "color": {
-            "$ref": "#/components/schemas/apiColor"
-          },
-          "children": {
-            "type": "array",
-            "maxItems": 100,
-            "items": {
-              "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildren"
-            }
-          },
-          "icon": {
-            "$ref": "#/components/schemas/PageIcon"
-          }
-        },
-        "required": [
-          "rich_text"
-        ],
-        "additionalProperties": false
-      },
       "BlockObjectCode": {
         "title": "Code",
         "type": "object",
         "properties": {
           "code": {
-            "$ref": "#/components/schemas/BlockObjectCodeCode"
+            "$ref": "#/components/schemas/CodeRequest"
           },
           "type": {
             "type": "string",
@@ -7585,7 +7556,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectCodeCode": {
+      "CodeRequest": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -7680,7 +7651,7 @@
         "type": "object",
         "properties": {
           "embed": {
-            "$ref": "#/components/schemas/BlockObjectEmbedEmbed"
+            "$ref": "#/components/schemas/Embed"
           },
           "type": {
             "type": "string",
@@ -7696,7 +7667,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectEmbedEmbed": {
+      "Embed": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/MediaContentWithURLAndCaption"
@@ -7887,7 +7858,7 @@
         "type": "object",
         "properties": {
           "link_to_page": {
-            "$ref": "#/components/schemas/BlockObjectLinkToPageLinkToPage"
+            "$ref": "#/components/schemas/LinkToPageRequest"
           },
           "type": {
             "type": "string",
@@ -7903,7 +7874,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectLinkToPageLinkToPage": {
+      "LinkToPageRequest": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/PageParentPageID"
@@ -7959,7 +7930,7 @@
         "type": "object",
         "properties": {
           "paragraph": {
-            "$ref": "#/components/schemas/BlockObjectCalloutCallout"
+            "$ref": "#/components/schemas/ParagraphRequest"
           },
           "type": {
             "type": "string",
@@ -8216,7 +8187,7 @@
         "type": "object",
         "properties": {
           "synced_block": {
-            "$ref": "#/components/schemas/UpdateABlockSyncedBlockSyncedBlock"
+            "$ref": "#/components/schemas/SyncedBlockUpdate"
           },
           "type": {
             "type": "string",
@@ -8343,7 +8314,7 @@
         "type": "object",
         "properties": {
           "synced_block": {
-            "$ref": "#/components/schemas/BlockObjectSyncedBlockSyncedBlock"
+            "$ref": "#/components/schemas/SyncedBlockRequest"
           },
           "type": {
             "type": "string",
@@ -8359,7 +8330,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectSyncedBlockSyncedBlock": {
+      "SyncedBlockRequest": {
         "type": "object",
         "properties": {
           "synced_from": {
@@ -8445,7 +8416,7 @@
         "type": "object",
         "properties": {
           "table_of_contents": {
-            "$ref": "#/components/schemas/BlockObjectTableOfContentsTableOfContents"
+            "$ref": "#/components/schemas/TableOfContentsRequest"
           },
           "type": {
             "type": "string",
@@ -8461,7 +8432,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectTableOfContentsTableOfContents": {
+      "TableOfContentsRequest": {
         "type": "object",
         "properties": {
           "color": {
@@ -8475,7 +8446,7 @@
         "type": "object",
         "properties": {
           "template": {
-            "$ref": "#/components/schemas/BlockObjectTemplateTemplate"
+            "$ref": "#/components/schemas/TemplateRequest"
           },
           "type": {
             "type": "string",
@@ -8491,7 +8462,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectTemplateTemplate": {
+      "TemplateRequest": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -8519,7 +8490,7 @@
         "type": "object",
         "properties": {
           "to_do": {
-            "$ref": "#/components/schemas/BlockObjectToDoToDo"
+            "$ref": "#/components/schemas/ToDoRequest"
           },
           "type": {
             "type": "string",
@@ -8535,7 +8506,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectToDoToDo": {
+      "ToDoRequest": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -9894,7 +9865,7 @@
           "equals"
         ]
       },
-      "CodeBlockCode": {
+      "Code": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -13593,20 +13564,20 @@
           "last_visited_time"
         ]
       },
-      "LinkToPageBlockLinkToPage": {
+      "LinkToPage": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/CreateDatabaseParentAllOfPageID"
           },
           {
-            "$ref": "#/components/schemas/LinkToPageBlockLinkToPageDatabaseID"
+            "$ref": "#/components/schemas/LinkToPageDatabaseID"
           },
           {
-            "$ref": "#/components/schemas/LinkToPageBlockLinkToPageCommentID"
+            "$ref": "#/components/schemas/LinkToPageCommentID"
           }
         ]
       },
-      "LinkToPageBlockLinkToPageCommentID": {
+      "LinkToPageCommentID": {
         "title": "Comment Id",
         "type": "object",
         "properties": {
@@ -13623,7 +13594,7 @@
           "comment_id"
         ]
       },
-      "LinkToPageBlockLinkToPageDatabaseID": {
+      "LinkToPageDatabaseID": {
         "title": "Database Id",
         "type": "object",
         "properties": {
@@ -22460,18 +22431,18 @@
           "subitems"
         ]
       },
-      "SyncedBlockObjectResponseSyncedBlock": {
+      "SyncedBlock": {
         "type": "object",
         "properties": {
           "synced_from": {
-            "$ref": "#/components/schemas/SyncedBlockObjectResponseSyncedBlockSyncedFrom"
+            "$ref": "#/components/schemas/SyncedBlockSyncedFrom"
           }
         },
         "required": [
           "synced_from"
         ]
       },
-      "SyncedBlockObjectResponseSyncedBlockSyncedFrom": {
+      "SyncedBlockSyncedFrom": {
         "title": "Block Id",
         "type": [
           "object",
@@ -22491,7 +22462,7 @@
           "block_id"
         ]
       },
-      "TableOfContentsBlockTableOfContents": {
+      "TableOfContents": {
         "type": "object",
         "properties": {
           "color": {
@@ -22571,7 +22542,7 @@
           }
         ]
       },
-      "TemplateBlockTemplate": {
+      "Template": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -23020,7 +22991,7 @@
           "title"
         ]
       },
-      "ToDoBlockToDo": {
+      "ToDo": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -23341,7 +23312,7 @@
         "type": "object",
         "properties": {
           "code": {
-            "$ref": "#/components/schemas/UpdateABlockCodeCode"
+            "$ref": "#/components/schemas/CodeUpdate"
           },
           "type": {
             "type": "string",
@@ -23356,7 +23327,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockCodeCode": {
+      "CodeUpdate": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -23384,7 +23355,7 @@
         "type": "object",
         "properties": {
           "column": {
-            "$ref": "#/components/schemas/UpdateABlockColumnColumn"
+            "$ref": "#/components/schemas/ColumnUpdate"
           },
           "type": {
             "type": "string",
@@ -23399,7 +23370,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockColumnColumn": {
+      "ColumnUpdate": {
         "type": "object",
         "properties": {
           "width_ratio": {
@@ -23439,7 +23410,7 @@
         "type": "object",
         "properties": {
           "embed": {
-            "$ref": "#/components/schemas/UpdateABlockEmbedEmbed"
+            "$ref": "#/components/schemas/EmbedUpdate"
           },
           "type": {
             "type": "string",
@@ -23454,7 +23425,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockEmbedEmbed": {
+      "EmbedUpdate": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/UpdateMediaContentWithURLAndCaption"
@@ -23609,7 +23580,7 @@
         "type": "object",
         "properties": {
           "link_to_page": {
-            "$ref": "#/components/schemas/BlockObjectLinkToPageLinkToPage"
+            "$ref": "#/components/schemas/LinkToPageRequest"
           },
           "type": {
             "type": "string",
@@ -23709,7 +23680,7 @@
         "type": "object",
         "properties": {
           "synced_block": {
-            "$ref": "#/components/schemas/UpdateABlockSyncedBlockSyncedBlock"
+            "$ref": "#/components/schemas/SyncedBlockUpdate"
           },
           "type": {
             "type": "string",
@@ -23724,7 +23695,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockSyncedBlockSyncedBlock": {
+      "SyncedBlockUpdate": {
         "type": "object",
         "properties": {
           "synced_from": {
@@ -23761,7 +23732,7 @@
         "type": "object",
         "properties": {
           "table": {
-            "$ref": "#/components/schemas/UpdateABlockTableTable"
+            "$ref": "#/components/schemas/TableUpdate"
           },
           "type": {
             "type": "string",
@@ -23781,7 +23752,7 @@
         "type": "object",
         "properties": {
           "table_of_contents": {
-            "$ref": "#/components/schemas/BlockObjectTableOfContentsTableOfContents"
+            "$ref": "#/components/schemas/TableOfContentsRequest"
           },
           "type": {
             "type": "string",
@@ -23816,7 +23787,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockTableTable": {
+      "TableUpdate": {
         "type": "object",
         "properties": {
           "has_column_header": {
@@ -23853,7 +23824,7 @@
         "type": "object",
         "properties": {
           "to_do": {
-            "$ref": "#/components/schemas/UpdateABlockToDoToDo"
+            "$ref": "#/components/schemas/ToDoUpdate"
           },
           "type": {
             "type": "string",
@@ -23868,7 +23839,7 @@
         ],
         "additionalProperties": false
       },
-      "UpdateABlockToDoToDo": {
+      "ToDoUpdate": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -24630,7 +24601,7 @@
             "const": "insert_content"
           },
           "insert_content": {
-            "$ref": "#/components/schemas/MarkdownEditInsertContentInsertContent"
+            "$ref": "#/components/schemas/InsertContent"
           }
         },
         "required": [
@@ -24639,7 +24610,7 @@
         ],
         "deprecated": true
       },
-      "MarkdownEditInsertContentInsertContent": {
+      "InsertContent": {
         "description": "Insert new content into the page.",
         "type": "object",
         "properties": {
@@ -24655,14 +24626,14 @@
             "type": "string"
           },
           "position": {
-            "$ref": "#/components/schemas/MarkdownEditInsertContentInsertContentPosition"
+            "$ref": "#/components/schemas/InsertContentPosition"
           }
         },
         "required": [
           "content"
         ]
       },
-      "MarkdownEditInsertContentInsertContentPosition": {
+      "InsertContentPosition": {
         "description": "Explicit position for inserted content. Use {\"type\":\"start\"} to prepend or {\"type\":\"end\"} to append. Cannot be combined with after.",
         "oneOf": [
           {
@@ -24683,7 +24654,7 @@
             "const": "replace_content"
           },
           "replace_content": {
-            "$ref": "#/components/schemas/MarkdownEditReplaceContentReplaceContent"
+            "$ref": "#/components/schemas/ReplaceContent"
           }
         },
         "required": [
@@ -24701,7 +24672,7 @@
             "const": "replace_content_range"
           },
           "replace_content_range": {
-            "$ref": "#/components/schemas/MarkdownEditReplaceContentRangeReplaceContentRange"
+            "$ref": "#/components/schemas/ReplaceContentRange"
           }
         },
         "required": [
@@ -24710,7 +24681,7 @@
         ],
         "deprecated": true
       },
-      "MarkdownEditReplaceContentRangeReplaceContentRange": {
+      "ReplaceContentRange": {
         "description": "Replace a range of content in the page.",
         "type": "object",
         "properties": {
@@ -24735,7 +24706,7 @@
           "content_range"
         ]
       },
-      "MarkdownEditReplaceContentReplaceContent": {
+      "ReplaceContent": {
         "description": "Replace the entire page content with new markdown.",
         "type": "object",
         "properties": {
@@ -24765,7 +24736,7 @@
             "const": "update_content"
           },
           "update_content": {
-            "$ref": "#/components/schemas/MarkdownEditUpdateContentUpdateContent"
+            "$ref": "#/components/schemas/UpdateContent"
           }
         },
         "required": [
@@ -24773,12 +24744,12 @@
           "update_content"
         ]
       },
-      "MarkdownEditUpdateContentUpdateContent": {
+      "UpdateContent": {
         "description": "Update specific content using search-and-replace operations.",
         "type": "object",
         "properties": {
           "content_updates": {
-            "$ref": "#/components/schemas/MarkdownEditUpdateContentUpdateContentContentUpdates"
+            "$ref": "#/components/schemas/UpdateContentContentUpdates"
           },
           "allow_deleting_content": {
             "description": "Set to true to allow the operation to delete child pages or databases. Defaults to false.",
@@ -24789,15 +24760,15 @@
           "content_updates"
         ]
       },
-      "MarkdownEditUpdateContentUpdateContentContentUpdates": {
+      "UpdateContentContentUpdates": {
         "description": "An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content). Operations that match are applied, and each one that matches nothing is reported in \"warnings\". The call fails only when no operation that changes content matches.",
         "type": "array",
         "maxItems": 100,
         "items": {
-          "$ref": "#/components/schemas/MarkdownEditUpdateContentUpdateContentContentUpdatesItem"
+          "$ref": "#/components/schemas/UpdateContentContentUpdatesItem"
         }
       },
-      "MarkdownEditUpdateContentUpdateContentContentUpdatesItem": {
+      "UpdateContentContentUpdatesItem": {
         "type": "object",
         "properties": {
           "old_str": {
@@ -26387,7 +26358,7 @@
             "const": "callout"
           },
           "callout": {
-            "$ref": "#/components/schemas/ContentWithRichTextColorAndIconResponse"
+            "$ref": "#/components/schemas/Callout"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -26858,7 +26829,7 @@
             "const": "code"
           },
           "code": {
-            "$ref": "#/components/schemas/CodeBlockCode"
+            "$ref": "#/components/schemas/Code"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -27271,25 +27242,6 @@
         "required": [
           "rich_text",
           "color"
-        ]
-      },
-      "ContentWithRichTextColorAndIconResponse": {
-        "type": "object",
-        "properties": {
-          "rich_text": {
-            "$ref": "#/components/schemas/RichTexts"
-          },
-          "color": {
-            "$ref": "#/components/schemas/apiColor"
-          },
-          "icon": {
-            "$ref": "#/components/schemas/CalloutBlockObjectCalloutIcon"
-          }
-        },
-        "required": [
-          "rich_text",
-          "color",
-          "icon"
         ]
       },
       "ContentWithTable": {
@@ -30553,7 +30505,7 @@
             "const": "link_to_page"
           },
           "link_to_page": {
-            "$ref": "#/components/schemas/LinkToPageBlockLinkToPage"
+            "$ref": "#/components/schemas/LinkToPage"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -31596,7 +31548,7 @@
             "const": "paragraph"
           },
           "paragraph": {
-            "$ref": "#/components/schemas/ContentWithRichTextColorAndIconResponse"
+            "$ref": "#/components/schemas/Paragraph"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -33658,7 +33610,7 @@
             "const": "synced_block"
           },
           "synced_block": {
-            "$ref": "#/components/schemas/SyncedBlockObjectResponseSyncedBlock"
+            "$ref": "#/components/schemas/SyncedBlock"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -33929,7 +33881,7 @@
             "const": "table_of_contents"
           },
           "table_of_contents": {
-            "$ref": "#/components/schemas/TableOfContentsBlockTableOfContents"
+            "$ref": "#/components/schemas/TableOfContents"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -34130,7 +34082,7 @@
             "const": "template"
           },
           "template": {
-            "$ref": "#/components/schemas/TemplateBlockTemplate"
+            "$ref": "#/components/schemas/Template"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -34547,7 +34499,7 @@
             "const": "to_do"
           },
           "to_do": {
-            "$ref": "#/components/schemas/ToDoBlockToDo"
+            "$ref": "#/components/schemas/ToDo"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -35617,6 +35569,106 @@
           "workspace"
         ],
         "additionalProperties": false
+      },
+      "CalloutRequest": {
+        "type": "object",
+        "properties": {
+          "rich_text": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/RichTextItem"
+            }
+          },
+          "color": {
+            "$ref": "#/components/schemas/apiColor"
+          },
+          "children": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildren"
+            }
+          },
+          "icon": {
+            "$ref": "#/components/schemas/PageIcon"
+          }
+        },
+        "required": [
+          "rich_text"
+        ],
+        "additionalProperties": false,
+        "x-go-name": "CalloutRequest"
+      },
+      "ParagraphRequest": {
+        "type": "object",
+        "properties": {
+          "rich_text": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/RichTextItem"
+            }
+          },
+          "color": {
+            "$ref": "#/components/schemas/apiColor"
+          },
+          "children": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+              "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildren"
+            }
+          },
+          "icon": {
+            "$ref": "#/components/schemas/PageIcon"
+          }
+        },
+        "required": [
+          "rich_text"
+        ],
+        "additionalProperties": false,
+        "x-go-name": "ParagraphRequest"
+      },
+      "Callout": {
+        "type": "object",
+        "properties": {
+          "rich_text": {
+            "$ref": "#/components/schemas/RichTexts"
+          },
+          "color": {
+            "$ref": "#/components/schemas/apiColor"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/CalloutBlockObjectCalloutIcon"
+          }
+        },
+        "required": [
+          "rich_text",
+          "color",
+          "icon"
+        ],
+        "x-go-name": "Callout"
+      },
+      "Paragraph": {
+        "type": "object",
+        "properties": {
+          "rich_text": {
+            "$ref": "#/components/schemas/RichTexts"
+          },
+          "color": {
+            "$ref": "#/components/schemas/apiColor"
+          },
+          "icon": {
+            "$ref": "#/components/schemas/CalloutBlockObjectCalloutIcon"
+          }
+        },
+        "required": [
+          "rich_text",
+          "color",
+          "icon"
+        ],
+        "x-go-name": "Paragraph"
       }
     },
     "responses": {

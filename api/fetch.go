@@ -203,6 +203,121 @@ var exactNames = map[string]string{
 	"externalPageIcon":                "ExternalPageIconResponse",
 }
 
+// sharedContents are the contents two block types share, by the schema they share, which each block type gets a
+// copy of, named after it, by the property that holds it: a paragraph is no callout, though it has the same shape.
+var sharedContents = map[string]map[string]string{
+	"ContentWithRichTextColorAndIconResponse": {"paragraph": "Paragraph", "callout": "Callout"},
+	"BlockObjectCalloutCallout":               {"paragraph": "ParagraphRequest", "callout": "CalloutRequest"},
+}
+
+// blockContents names what a block of one type holds after the type, as Notion does: Code for what a response's code
+// block holds, CodeRequest for what a request's does, where the two differ, and CodeUpdate for what updates it; and
+// what an edit of a page's markdown holds after the edit. What a schema holds follows its new name. An entry that
+// names no schema fails the run.
+var blockContents = map[string]string{
+	"CodeBlockCode":                        "Code",
+	"ToDoBlockToDo":                        "ToDo",
+	"TemplateBlockTemplate":                "Template",
+	"LinkToPageBlockLinkToPage":            "LinkToPage",
+	"TableOfContentsBlockTableOfContents":  "TableOfContents",
+	"SyncedBlockObjectResponseSyncedBlock": "SyncedBlock",
+
+	"BlockObjectCodeCode":                       "CodeRequest",
+	"BlockObjectEmbedEmbed":                     "Embed",
+	"BlockObjectToDoToDo":                       "ToDoRequest",
+	"BlockObjectTemplateTemplate":               "TemplateRequest",
+	"BlockObjectLinkToPageLinkToPage":           "LinkToPageRequest",
+	"BlockObjectTableOfContentsTableOfContents": "TableOfContentsRequest",
+	"BlockObjectSyncedBlockSyncedBlock":         "SyncedBlockRequest",
+
+	"UpdateABlockCodeCode":               "CodeUpdate",
+	"UpdateABlockColumnColumn":           "ColumnUpdate",
+	"UpdateABlockEmbedEmbed":             "EmbedUpdate",
+	"UpdateABlockSyncedBlockSyncedBlock": "SyncedBlockUpdate",
+	"UpdateABlockTableTable":             "TableUpdate",
+	"UpdateABlockToDoToDo":               "ToDoUpdate",
+
+	"MarkdownEditInsertContentInsertContent":             "InsertContent",
+	"MarkdownEditReplaceContentReplaceContent":           "ReplaceContent",
+	"MarkdownEditReplaceContentRangeReplaceContentRange": "ReplaceContentRange",
+	"MarkdownEditUpdateContentUpdateContent":             "UpdateContent",
+}
+
+// nameBlockContents gives each block type of sharedContents a copy of what it shares, with a Go name of its own so
+// that compress keeps the copies apart, and renames as blockContents says.
+func nameBlockContents(doc *openapi.Document) error {
+	for _, shared := range slices.Sorted(maps.Keys(sharedContents)) {
+		s, ok := doc.Components.Schemas[shared]
+		if !ok {
+			return componentErr(shared, errors.New("not found: fix sharedContents"))
+		}
+
+		names := sharedContents[shared]
+		copies := map[string]*openapi.Schema{}
+
+		for _, prop := range slices.Sorted(maps.Keys(names)) {
+			c := new(openapi.Schema)
+			c.Replace(s)
+			c.Properties = maps.Clone(s.Properties)
+
+			ext, err := json.Marshal(map[string]string{"x-go-name": names[prop]})
+			if err != nil {
+				return err
+			}
+
+			c.Extensions = ext
+			doc.Components.Schemas.Set(names[prop], c)
+			copies[prop] = c
+		}
+
+		var errs []error
+
+		edit.WalkSchemas(doc, func(o *openapi.Schema) {
+			for prop, p := range o.Properties.ByIndex() {
+				if p.Ref == nil || p.Ref.Identifier != schemaRefPrefix+shared {
+					continue
+				}
+
+				if _, ok := copies[prop]; !ok {
+					errs = append(errs, fmt.Errorf("%s holds %s as %q, which sharedContents gives no name", o.Title, shared, prop))
+					continue
+				}
+
+				ref := edit.SchemaRef(doc, names[prop])
+				ref.Description = p.Description
+				p.Replace(ref)
+			}
+		})
+
+		if err := errors.Join(errs...); err != nil {
+			return err
+		}
+
+		delete(doc.Components.Schemas, shared)
+	}
+
+	prefixes := slices.SortedFunc(maps.Keys(blockContents), func(a, b string) int { return len(b) - len(a) })
+	unused := maps.Clone(blockContents)
+
+	return errors.Join(edit.RenameSchemasFunc(doc, func(n string) string {
+		for _, prefix := range prefixes {
+			if rest, ok := strings.CutPrefix(n, prefix); ok && (rest == "" || unicode.IsUpper(rune(rest[0]))) {
+				delete(unused, prefix)
+				return blockContents[prefix] + rest
+			}
+		}
+
+		return n
+	}), func() error {
+		if len(unused) > 0 {
+			return fmt.Errorf("blockContents names schemas the specification no longer has: %s",
+				strings.Join(slices.Sorted(maps.Keys(unused)), ", "))
+		}
+
+		return nil
+	}())
+}
+
 // shortenNames renames the component schemas as shortNames and exactNames say, then drops ObjectResponse or Response
 // from a name, as User for userObjectResponse, and a word said twice in a row, as BlockObjectToDo for
 // BlockObjectToDoToDo, where the name without it is no other schema's. A response that the request of the same name
@@ -1376,6 +1491,10 @@ func fixOpenAPI() (*openapi.Document, error) {
 	}
 
 	if err := shortenNames(doc); err != nil {
+		return nil, err
+	}
+
+	if err := nameBlockContents(doc); err != nil {
 		return nil, err
 	}
 

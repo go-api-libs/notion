@@ -1437,23 +1437,13 @@ func TestUnions_RoundTrip(t *testing.T) {
 		roundTrip(t, AsyncTaskOperation{AsyncTaskOperationMcp: &v}, func(u AsyncTaskOperation) bool { return u.AsyncTaskOperationMcp != nil })
 	})
 
-	t.Run("BlockObjectEmbedEmbed/MediaContentWithURLAndCaption", func(t *testing.T) {
-		v := MediaContentWithURLAndCaption{}
-		roundTrip(t, BlockObjectEmbedEmbed{MediaContentWithURLAndCaption: &v}, func(u BlockObjectEmbedEmbed) bool { return u.MediaContentWithURLAndCaption != nil })
-	})
-
-	t.Run("BlockObjectEmbedEmbed/EmbedFileUpload", func(t *testing.T) {
-		v := EmbedFileUpload{Type: "file_upload"}
-		roundTrip(t, BlockObjectEmbedEmbed{EmbedFileUpload: &v}, func(u BlockObjectEmbedEmbed) bool { return u.EmbedFileUpload != nil })
-	})
-
 	t.Run("BlockOrPartial/PartialBlock", func(t *testing.T) {
 		v := PartialBlock{Object: "block"}
 		roundTrip(t, BlockOrPartial{PartialBlock: &v}, func(u BlockOrPartial) bool { return u.PartialBlock != nil })
 	})
 
 	t.Run("BlockOrPartial/Block", func(t *testing.T) {
-		v := Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "paragraph", Paragraph: new(ContentWithRichTextColorAndIconResponse{})}
+		v := Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "paragraph", Paragraph: new(Paragraph{})}
 		roundTrip(t, BlockOrPartial{Block: &v}, func(u BlockOrPartial) bool { return u.Block != nil })
 	})
 
@@ -1580,6 +1570,26 @@ func TestUnions_RoundTrip(t *testing.T) {
 	t.Run("DatabaseOrPartial/Database", func(t *testing.T) {
 		v := Database{Object: "database", Parent: ParentOfDatabase{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}}
 		roundTrip(t, DatabaseOrPartial{Database: &v}, func(u DatabaseOrPartial) bool { return u.Database != nil })
+	})
+
+	t.Run("Embed/MediaContentWithURLAndCaption", func(t *testing.T) {
+		v := MediaContentWithURLAndCaption{}
+		roundTrip(t, Embed{MediaContentWithURLAndCaption: &v}, func(u Embed) bool { return u.MediaContentWithURLAndCaption != nil })
+	})
+
+	t.Run("Embed/EmbedFileUpload", func(t *testing.T) {
+		v := EmbedFileUpload{Type: "file_upload"}
+		roundTrip(t, Embed{EmbedFileUpload: &v}, func(u Embed) bool { return u.EmbedFileUpload != nil })
+	})
+
+	t.Run("EmbedUpdate/UpdateMediaContentWithURLAndCaption", func(t *testing.T) {
+		v := UpdateMediaContentWithURLAndCaption{}
+		roundTrip(t, EmbedUpdate{UpdateMediaContentWithURLAndCaption: &v}, func(u EmbedUpdate) bool { return u.UpdateMediaContentWithURLAndCaption != nil })
+	})
+
+	t.Run("EmbedUpdate/UpdateEmbedFileUpload", func(t *testing.T) {
+		v := UpdateEmbedFileUpload{}
+		roundTrip(t, EmbedUpdate{UpdateEmbedFileUpload: &v}, func(u EmbedUpdate) bool { return u.UpdateEmbedFileUpload != nil })
 	})
 
 	t.Run("ExistencePropertyFilter/ExistencePropertyFilterIsEmpty", func(t *testing.T) {
@@ -2731,7 +2741,7 @@ func TestUnions_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("UpdateABlock/UpdateABlockEmbed", func(t *testing.T) {
-		v := UpdateABlockEmbed{Embed: UpdateABlockEmbedEmbed{UpdateMediaContentWithURLAndCaption: new(UpdateMediaContentWithURLAndCaption{})}, Type: "embed"}
+		v := UpdateABlockEmbed{Embed: EmbedUpdate{UpdateMediaContentWithURLAndCaption: new(UpdateMediaContentWithURLAndCaption{})}, Type: "embed"}
 		roundTrip(t, UpdateABlock{UpdateABlockEmbed: &v}, func(u UpdateABlock) bool { return u.UpdateABlockEmbed != nil })
 	})
 
@@ -2796,7 +2806,7 @@ func TestUnions_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("UpdateABlock/UpdateABlockLinkToPage", func(t *testing.T) {
-		v := UpdateABlockLinkToPage{LinkToPage: BlockObjectLinkToPageLinkToPage{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Type: "link_to_page"}
+		v := UpdateABlockLinkToPage{LinkToPage: LinkToPageRequest{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Type: "link_to_page"}
 		roundTrip(t, UpdateABlock{UpdateABlockLinkToPage: &v}, func(u UpdateABlock) bool { return u.UpdateABlockLinkToPage != nil })
 	})
 
@@ -2883,16 +2893,6 @@ func TestUnions_RoundTrip(t *testing.T) {
 	t.Run("UpdateABlock/BlockTrashUpdate", func(t *testing.T) {
 		v := BlockTrashUpdate{}
 		roundTrip(t, UpdateABlock{BlockTrashUpdate: &v}, func(u UpdateABlock) bool { return u.BlockTrashUpdate != nil })
-	})
-
-	t.Run("UpdateABlockEmbedEmbed/UpdateMediaContentWithURLAndCaption", func(t *testing.T) {
-		v := UpdateMediaContentWithURLAndCaption{}
-		roundTrip(t, UpdateABlockEmbedEmbed{UpdateMediaContentWithURLAndCaption: &v}, func(u UpdateABlockEmbedEmbed) bool { return u.UpdateMediaContentWithURLAndCaption != nil })
-	})
-
-	t.Run("UpdateABlockEmbedEmbed/UpdateEmbedFileUpload", func(t *testing.T) {
-		v := UpdateEmbedFileUpload{}
-		roundTrip(t, UpdateABlockEmbedEmbed{UpdateEmbedFileUpload: &v}, func(u UpdateABlockEmbedEmbed) bool { return u.UpdateEmbedFileUpload != nil })
 	})
 
 	t.Run("UpdateADataSourcePropertiesValue/PropertyUpdate", func(t *testing.T) {
@@ -3072,7 +3072,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("Block/paragraph", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "paragraph", Paragraph: new(ContentWithRichTextColorAndIconResponse{})}, func(v Block) bool { return v.Type == "paragraph" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "paragraph", Paragraph: new(Paragraph{})}, func(v Block) bool { return v.Type == "paragraph" })
 	})
 
 	t.Run("Block/heading_1", func(t *testing.T) {
@@ -3104,7 +3104,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("Block/to_do", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "to_do", ToDo: new(ToDoBlockToDo{})}, func(v Block) bool { return v.Type == "to_do" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "to_do", ToDo: new(ToDo{})}, func(v Block) bool { return v.Type == "to_do" })
 	})
 
 	t.Run("Block/toggle", func(t *testing.T) {
@@ -3112,11 +3112,11 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("Block/template", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "template", Template: new(TemplateBlockTemplate{})}, func(v Block) bool { return v.Type == "template" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "template", Template: new(Template{})}, func(v Block) bool { return v.Type == "template" })
 	})
 
 	t.Run("Block/synced_block", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "synced_block", SyncedBlock: new(SyncedBlockObjectResponseSyncedBlock{SyncedFrom: SyncedBlockObjectResponseSyncedBlockSyncedFrom{Type: "block_id"}})}, func(v Block) bool { return v.Type == "synced_block" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "synced_block", SyncedBlock: new(SyncedBlock{SyncedFrom: SyncedBlockSyncedFrom{Type: "block_id"}})}, func(v Block) bool { return v.Type == "synced_block" })
 	})
 
 	t.Run("Block/child_page", func(t *testing.T) {
@@ -3132,11 +3132,11 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("Block/code", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "code", Code: new(CodeBlockCode{})}, func(v Block) bool { return v.Type == "code" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "code", Code: new(Code{})}, func(v Block) bool { return v.Type == "code" })
 	})
 
 	t.Run("Block/callout", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "callout", Callout: new(ContentWithRichTextColorAndIconResponse{})}, func(v Block) bool { return v.Type == "callout" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "callout", Callout: new(Callout{})}, func(v Block) bool { return v.Type == "callout" })
 	})
 
 	t.Run("Block/divider", func(t *testing.T) {
@@ -3148,7 +3148,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("Block/table_of_contents", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "table_of_contents", TableOfContents: new(TableOfContentsBlockTableOfContents{})}, func(v Block) bool { return v.Type == "table_of_contents" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "table_of_contents", TableOfContents: new(TableOfContents{})}, func(v Block) bool { return v.Type == "table_of_contents" })
 	})
 
 	t.Run("Block/tab", func(t *testing.T) {
@@ -3164,7 +3164,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("Block/link_to_page", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "link_to_page", LinkToPage: new(LinkToPageBlockLinkToPage{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))})}, func(v Block) bool { return v.Type == "link_to_page" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "link_to_page", LinkToPage: new(LinkToPage{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))})}, func(v Block) bool { return v.Type == "link_to_page" })
 	})
 
 	t.Run("Block/table", func(t *testing.T) {
@@ -3216,7 +3216,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("BlockObject/embed", func(t *testing.T) {
-		roundTrip(t, BlockObject{Type: "embed", Embed: new(BlockObjectEmbedEmbed{MediaContentWithURLAndCaption: new(MediaContentWithURLAndCaption{})})}, func(v BlockObject) bool { return v.Type == "embed" })
+		roundTrip(t, BlockObject{Type: "embed", Embed: new(Embed{MediaContentWithURLAndCaption: new(MediaContentWithURLAndCaption{})})}, func(v BlockObject) bool { return v.Type == "embed" })
 	})
 
 	t.Run("BlockObject/bookmark", func(t *testing.T) {
@@ -3244,7 +3244,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("BlockObject/code", func(t *testing.T) {
-		roundTrip(t, BlockObject{Type: "code", Code: new(BlockObjectCodeCode{})}, func(v BlockObject) bool { return v.Type == "code" })
+		roundTrip(t, BlockObject{Type: "code", Code: new(CodeRequest{})}, func(v BlockObject) bool { return v.Type == "code" })
 	})
 
 	t.Run("BlockObject/equation", func(t *testing.T) {
@@ -3264,11 +3264,11 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("BlockObject/table_of_contents", func(t *testing.T) {
-		roundTrip(t, BlockObject{Type: "table_of_contents", TableOfContents: new(BlockObjectTableOfContentsTableOfContents{})}, func(v BlockObject) bool { return v.Type == "table_of_contents" })
+		roundTrip(t, BlockObject{Type: "table_of_contents", TableOfContents: new(TableOfContentsRequest{})}, func(v BlockObject) bool { return v.Type == "table_of_contents" })
 	})
 
 	t.Run("BlockObject/link_to_page", func(t *testing.T) {
-		roundTrip(t, BlockObject{Type: "link_to_page", LinkToPage: new(BlockObjectLinkToPageLinkToPage{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))})}, func(v BlockObject) bool { return v.Type == "link_to_page" })
+		roundTrip(t, BlockObject{Type: "link_to_page", LinkToPage: new(LinkToPageRequest{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))})}, func(v BlockObject) bool { return v.Type == "link_to_page" })
 	})
 
 	t.Run("BlockObject/table_row", func(t *testing.T) {
@@ -3304,7 +3304,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("BlockObject/paragraph", func(t *testing.T) {
-		roundTrip(t, BlockObject{Type: "paragraph", Paragraph: new(BlockObjectCalloutCallout{})}, func(v BlockObject) bool { return v.Type == "paragraph" })
+		roundTrip(t, BlockObject{Type: "paragraph", Paragraph: new(ParagraphRequest{})}, func(v BlockObject) bool { return v.Type == "paragraph" })
 	})
 
 	t.Run("BlockObject/bulleted_list_item", func(t *testing.T) {
@@ -3320,7 +3320,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("BlockObject/to_do", func(t *testing.T) {
-		roundTrip(t, BlockObject{Type: "to_do", ToDo: new(BlockObjectToDoToDo{})}, func(v BlockObject) bool { return v.Type == "to_do" })
+		roundTrip(t, BlockObject{Type: "to_do", ToDo: new(ToDoRequest{})}, func(v BlockObject) bool { return v.Type == "to_do" })
 	})
 
 	t.Run("BlockObject/toggle", func(t *testing.T) {
@@ -3328,31 +3328,19 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("BlockObject/template", func(t *testing.T) {
-		roundTrip(t, BlockObject{Type: "template", Template: new(BlockObjectTemplateTemplate{})}, func(v BlockObject) bool { return v.Type == "template" })
+		roundTrip(t, BlockObject{Type: "template", Template: new(TemplateRequest{})}, func(v BlockObject) bool { return v.Type == "template" })
 	})
 
 	t.Run("BlockObject/callout", func(t *testing.T) {
-		roundTrip(t, BlockObject{Type: "callout", Callout: new(BlockObjectCalloutCallout{})}, func(v BlockObject) bool { return v.Type == "callout" })
+		roundTrip(t, BlockObject{Type: "callout", Callout: new(CalloutRequest{})}, func(v BlockObject) bool { return v.Type == "callout" })
 	})
 
 	t.Run("BlockObject/synced_block", func(t *testing.T) {
-		roundTrip(t, BlockObject{Type: "synced_block", SyncedBlock: new(BlockObjectSyncedBlockSyncedBlock{})}, func(v BlockObject) bool { return v.Type == "synced_block" })
-	})
-
-	t.Run("BlockObjectLinkToPageLinkToPage/page_id", func(t *testing.T) {
-		roundTrip(t, BlockObjectLinkToPageLinkToPage{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v BlockObjectLinkToPageLinkToPage) bool { return v.Type == "page_id" })
-	})
-
-	t.Run("BlockObjectLinkToPageLinkToPage/database_id", func(t *testing.T) {
-		roundTrip(t, BlockObjectLinkToPageLinkToPage{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v BlockObjectLinkToPageLinkToPage) bool { return v.Type == "database_id" })
-	})
-
-	t.Run("BlockObjectLinkToPageLinkToPage/comment_id", func(t *testing.T) {
-		roundTrip(t, BlockObjectLinkToPageLinkToPage{Type: "comment_id", CommentID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v BlockObjectLinkToPageLinkToPage) bool { return v.Type == "comment_id" })
+		roundTrip(t, BlockObject{Type: "synced_block", SyncedBlock: new(SyncedBlockRequest{})}, func(v BlockObject) bool { return v.Type == "synced_block" })
 	})
 
 	t.Run("BlockObjectRequestWithoutChildren/embed", func(t *testing.T) {
-		roundTrip(t, BlockObjectRequestWithoutChildren{Type: "embed", Embed: new(BlockObjectEmbedEmbed{MediaContentWithURLAndCaption: new(MediaContentWithURLAndCaption{})})}, func(v BlockObjectRequestWithoutChildren) bool { return v.Type == "embed" })
+		roundTrip(t, BlockObjectRequestWithoutChildren{Type: "embed", Embed: new(Embed{MediaContentWithURLAndCaption: new(MediaContentWithURLAndCaption{})})}, func(v BlockObjectRequestWithoutChildren) bool { return v.Type == "embed" })
 	})
 
 	t.Run("BlockObjectRequestWithoutChildren/bookmark", func(t *testing.T) {
@@ -3380,7 +3368,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("BlockObjectRequestWithoutChildren/code", func(t *testing.T) {
-		roundTrip(t, BlockObjectRequestWithoutChildren{Type: "code", Code: new(BlockObjectCodeCode{})}, func(v BlockObjectRequestWithoutChildren) bool { return v.Type == "code" })
+		roundTrip(t, BlockObjectRequestWithoutChildren{Type: "code", Code: new(CodeRequest{})}, func(v BlockObjectRequestWithoutChildren) bool { return v.Type == "code" })
 	})
 
 	t.Run("BlockObjectRequestWithoutChildren/equation", func(t *testing.T) {
@@ -3400,11 +3388,11 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("BlockObjectRequestWithoutChildren/table_of_contents", func(t *testing.T) {
-		roundTrip(t, BlockObjectRequestWithoutChildren{Type: "table_of_contents", TableOfContents: new(BlockObjectTableOfContentsTableOfContents{})}, func(v BlockObjectRequestWithoutChildren) bool { return v.Type == "table_of_contents" })
+		roundTrip(t, BlockObjectRequestWithoutChildren{Type: "table_of_contents", TableOfContents: new(TableOfContentsRequest{})}, func(v BlockObjectRequestWithoutChildren) bool { return v.Type == "table_of_contents" })
 	})
 
 	t.Run("BlockObjectRequestWithoutChildren/link_to_page", func(t *testing.T) {
-		roundTrip(t, BlockObjectRequestWithoutChildren{Type: "link_to_page", LinkToPage: new(BlockObjectLinkToPageLinkToPage{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))})}, func(v BlockObjectRequestWithoutChildren) bool { return v.Type == "link_to_page" })
+		roundTrip(t, BlockObjectRequestWithoutChildren{Type: "link_to_page", LinkToPage: new(LinkToPageRequest{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))})}, func(v BlockObjectRequestWithoutChildren) bool { return v.Type == "link_to_page" })
 	})
 
 	t.Run("BlockObjectRequestWithoutChildren/table_row", func(t *testing.T) {
@@ -3460,11 +3448,11 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("BlockObjectRequestWithoutChildren/synced_block", func(t *testing.T) {
-		roundTrip(t, BlockObjectRequestWithoutChildren{Type: "synced_block", SyncedBlock: new(UpdateABlockSyncedBlockSyncedBlock{})}, func(v BlockObjectRequestWithoutChildren) bool { return v.Type == "synced_block" })
+		roundTrip(t, BlockObjectRequestWithoutChildren{Type: "synced_block", SyncedBlock: new(SyncedBlockUpdate{})}, func(v BlockObjectRequestWithoutChildren) bool { return v.Type == "synced_block" })
 	})
 
 	t.Run("BlockObjectWithSingleLevelOfChildren/embed", func(t *testing.T) {
-		roundTrip(t, BlockObjectWithSingleLevelOfChildren{Type: "embed", Embed: new(BlockObjectEmbedEmbed{MediaContentWithURLAndCaption: new(MediaContentWithURLAndCaption{})})}, func(v BlockObjectWithSingleLevelOfChildren) bool { return v.Type == "embed" })
+		roundTrip(t, BlockObjectWithSingleLevelOfChildren{Type: "embed", Embed: new(Embed{MediaContentWithURLAndCaption: new(MediaContentWithURLAndCaption{})})}, func(v BlockObjectWithSingleLevelOfChildren) bool { return v.Type == "embed" })
 	})
 
 	t.Run("BlockObjectWithSingleLevelOfChildren/bookmark", func(t *testing.T) {
@@ -3492,7 +3480,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("BlockObjectWithSingleLevelOfChildren/code", func(t *testing.T) {
-		roundTrip(t, BlockObjectWithSingleLevelOfChildren{Type: "code", Code: new(BlockObjectCodeCode{})}, func(v BlockObjectWithSingleLevelOfChildren) bool { return v.Type == "code" })
+		roundTrip(t, BlockObjectWithSingleLevelOfChildren{Type: "code", Code: new(CodeRequest{})}, func(v BlockObjectWithSingleLevelOfChildren) bool { return v.Type == "code" })
 	})
 
 	t.Run("BlockObjectWithSingleLevelOfChildren/equation", func(t *testing.T) {
@@ -3512,11 +3500,11 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("BlockObjectWithSingleLevelOfChildren/table_of_contents", func(t *testing.T) {
-		roundTrip(t, BlockObjectWithSingleLevelOfChildren{Type: "table_of_contents", TableOfContents: new(BlockObjectTableOfContentsTableOfContents{})}, func(v BlockObjectWithSingleLevelOfChildren) bool { return v.Type == "table_of_contents" })
+		roundTrip(t, BlockObjectWithSingleLevelOfChildren{Type: "table_of_contents", TableOfContents: new(TableOfContentsRequest{})}, func(v BlockObjectWithSingleLevelOfChildren) bool { return v.Type == "table_of_contents" })
 	})
 
 	t.Run("BlockObjectWithSingleLevelOfChildren/link_to_page", func(t *testing.T) {
-		roundTrip(t, BlockObjectWithSingleLevelOfChildren{Type: "link_to_page", LinkToPage: new(BlockObjectLinkToPageLinkToPage{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))})}, func(v BlockObjectWithSingleLevelOfChildren) bool { return v.Type == "link_to_page" })
+		roundTrip(t, BlockObjectWithSingleLevelOfChildren{Type: "link_to_page", LinkToPage: new(LinkToPageRequest{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))})}, func(v BlockObjectWithSingleLevelOfChildren) bool { return v.Type == "link_to_page" })
 	})
 
 	t.Run("BlockObjectWithSingleLevelOfChildren/table_row", func(t *testing.T) {
@@ -3699,6 +3687,14 @@ func TestTagged_RoundTrip(t *testing.T) {
 		roundTrip(t, FormulaPropertyValue{Type: "unsupported", Unsupported: new(EmptyObject{})}, func(v FormulaPropertyValue) bool { return v.Type == "unsupported" })
 	})
 
+	t.Run("InsertContentPosition/start", func(t *testing.T) {
+		roundTrip(t, InsertContentPosition{Type: "start"}, func(v InsertContentPosition) bool { return v.Type == "start" })
+	})
+
+	t.Run("InsertContentPosition/end", func(t *testing.T) {
+		roundTrip(t, InsertContentPosition{Type: "end"}, func(v InsertContentPosition) bool { return v.Type == "end" })
+	})
+
 	t.Run("InternalOrExternalFileWithNameResponse/file", func(t *testing.T) {
 		roundTrip(t, InternalOrExternalFileWithNameResponse{Type: "file", File: new(InternalFileResponse{})}, func(v InternalOrExternalFileWithNameResponse) bool { return v.Type == "file" })
 	})
@@ -3707,24 +3703,28 @@ func TestTagged_RoundTrip(t *testing.T) {
 		roundTrip(t, InternalOrExternalFileWithNameResponse{Type: "external", External: new(LinkPreviewMention{})}, func(v InternalOrExternalFileWithNameResponse) bool { return v.Type == "external" })
 	})
 
-	t.Run("LinkToPageBlockLinkToPage/page_id", func(t *testing.T) {
-		roundTrip(t, LinkToPageBlockLinkToPage{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v LinkToPageBlockLinkToPage) bool { return v.Type == "page_id" })
+	t.Run("LinkToPage/page_id", func(t *testing.T) {
+		roundTrip(t, LinkToPage{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v LinkToPage) bool { return v.Type == "page_id" })
 	})
 
-	t.Run("LinkToPageBlockLinkToPage/database_id", func(t *testing.T) {
-		roundTrip(t, LinkToPageBlockLinkToPage{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v LinkToPageBlockLinkToPage) bool { return v.Type == "database_id" })
+	t.Run("LinkToPage/database_id", func(t *testing.T) {
+		roundTrip(t, LinkToPage{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v LinkToPage) bool { return v.Type == "database_id" })
 	})
 
-	t.Run("LinkToPageBlockLinkToPage/comment_id", func(t *testing.T) {
-		roundTrip(t, LinkToPageBlockLinkToPage{Type: "comment_id", CommentID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v LinkToPageBlockLinkToPage) bool { return v.Type == "comment_id" })
+	t.Run("LinkToPage/comment_id", func(t *testing.T) {
+		roundTrip(t, LinkToPage{Type: "comment_id", CommentID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v LinkToPage) bool { return v.Type == "comment_id" })
 	})
 
-	t.Run("MarkdownEditInsertContentInsertContentPosition/start", func(t *testing.T) {
-		roundTrip(t, MarkdownEditInsertContentInsertContentPosition{Type: "start"}, func(v MarkdownEditInsertContentInsertContentPosition) bool { return v.Type == "start" })
+	t.Run("LinkToPageRequest/page_id", func(t *testing.T) {
+		roundTrip(t, LinkToPageRequest{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v LinkToPageRequest) bool { return v.Type == "page_id" })
 	})
 
-	t.Run("MarkdownEditInsertContentInsertContentPosition/end", func(t *testing.T) {
-		roundTrip(t, MarkdownEditInsertContentInsertContentPosition{Type: "end"}, func(v MarkdownEditInsertContentInsertContentPosition) bool { return v.Type == "end" })
+	t.Run("LinkToPageRequest/database_id", func(t *testing.T) {
+		roundTrip(t, LinkToPageRequest{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v LinkToPageRequest) bool { return v.Type == "database_id" })
+	})
+
+	t.Run("LinkToPageRequest/comment_id", func(t *testing.T) {
+		roundTrip(t, LinkToPageRequest{Type: "comment_id", CommentID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v LinkToPageRequest) bool { return v.Type == "comment_id" })
 	})
 
 	t.Run("MediaContentWithFileAndCaption/external", func(t *testing.T) {
@@ -4640,19 +4640,19 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("UpdatePageMarkdown/insert_content", func(t *testing.T) {
-		roundTrip(t, UpdatePageMarkdown{Type: "insert_content", InsertContent: new(MarkdownEditInsertContentInsertContent{})}, func(v UpdatePageMarkdown) bool { return v.Type == "insert_content" })
+		roundTrip(t, UpdatePageMarkdown{Type: "insert_content", InsertContent: new(InsertContent{})}, func(v UpdatePageMarkdown) bool { return v.Type == "insert_content" })
 	})
 
 	t.Run("UpdatePageMarkdown/replace_content_range", func(t *testing.T) {
-		roundTrip(t, UpdatePageMarkdown{Type: "replace_content_range", ReplaceContentRange: new(MarkdownEditReplaceContentRangeReplaceContentRange{})}, func(v UpdatePageMarkdown) bool { return v.Type == "replace_content_range" })
+		roundTrip(t, UpdatePageMarkdown{Type: "replace_content_range", ReplaceContentRange: new(ReplaceContentRange{})}, func(v UpdatePageMarkdown) bool { return v.Type == "replace_content_range" })
 	})
 
 	t.Run("UpdatePageMarkdown/update_content", func(t *testing.T) {
-		roundTrip(t, UpdatePageMarkdown{Type: "update_content", UpdateContent: new(MarkdownEditUpdateContentUpdateContent{})}, func(v UpdatePageMarkdown) bool { return v.Type == "update_content" })
+		roundTrip(t, UpdatePageMarkdown{Type: "update_content", UpdateContent: new(UpdateContent{})}, func(v UpdatePageMarkdown) bool { return v.Type == "update_content" })
 	})
 
 	t.Run("UpdatePageMarkdown/replace_content", func(t *testing.T) {
-		roundTrip(t, UpdatePageMarkdown{Type: "replace_content", ReplaceContent: new(MarkdownEditReplaceContentReplaceContent{})}, func(v UpdatePageMarkdown) bool { return v.Type == "replace_content" })
+		roundTrip(t, UpdatePageMarkdown{Type: "replace_content", ReplaceContent: new(ReplaceContent{})}, func(v UpdatePageMarkdown) bool { return v.Type == "replace_content" })
 	})
 
 	t.Run("User/person", func(t *testing.T) {

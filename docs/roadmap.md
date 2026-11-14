@@ -16,9 +16,9 @@ property the API returns, but these:
 
 ## Names in the specification
 
-- 43 names say a word twice, as `UpdateABlockCodeCode` or `MarkdownEditInsertContentInsertContent`: what a block or
-  an edit holds, named after it, where saying the word once would be the name of what holds it. Notion calls them by
-  the word alone (`Code`), which the request, response and update forms of each cannot all have.
+- 30 names say a word twice, as `PagePropertiesValueSelectSelect` or `QueryAgentsFilterStatusStatus`: what a property
+  value or a filter holds, named after it, where saying the word once would be the name of what holds it. Like a
+  block's content (`blockContents` in `api/fetch.go`), each wants a short name of its own.
 
 ## Recordings
 

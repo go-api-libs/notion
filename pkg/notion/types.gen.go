@@ -2710,7 +2710,7 @@ type Block struct {
 	InTrash          bool                                        `json:"in_trash"`
 	RequestID        uuid.UUID                                   `json:"request_id,omitzero"`
 	Type             BlockType                                   `json:"type"`
-	Paragraph        *ContentWithRichTextColorAndIconResponse    `json:"paragraph,omitzero"`
+	Paragraph        *Paragraph                                  `json:"paragraph,omitzero"`
 	Heading1         *HeaderContentWithRichTextAndColorResponse  `json:"heading_1,omitzero"`
 	Heading2         *HeaderContentWithRichTextAndColorResponse  `json:"heading_2,omitzero"`
 	Heading3         *HeaderContentWithRichTextAndColorResponse  `json:"heading_3,omitzero"`
@@ -2718,22 +2718,22 @@ type Block struct {
 	BulletedListItem *ContentWithRichTextAndColorResponse        `json:"bulleted_list_item,omitzero"`
 	NumberedListItem *ContentWithRichTextAndColorAndList         `json:"numbered_list_item,omitzero"`
 	Quote            *ContentWithRichTextAndColorResponse        `json:"quote,omitzero"`
-	ToDo             *ToDoBlockToDo                              `json:"to_do,omitzero"`
+	ToDo             *ToDo                                       `json:"to_do,omitzero"`
 	Toggle           *ContentWithRichTextAndColorResponse        `json:"toggle,omitzero"`
-	Template         *TemplateBlockTemplate                      `json:"template,omitzero"`
-	SyncedBlock      *SyncedBlockObjectResponseSyncedBlock       `json:"synced_block,omitzero"`
+	Template         *Template                                   `json:"template,omitzero"`
+	SyncedBlock      *SyncedBlock                                `json:"synced_block,omitzero"`
 	ChildPage        *Title                                      `json:"child_page,omitzero"`
 	ChildDatabase    *Title                                      `json:"child_database,omitzero"`
 	Equation         *ExpressionObject                           `json:"equation,omitzero"`
-	Code             *CodeBlockCode                              `json:"code,omitzero"`
-	Callout          *ContentWithRichTextColorAndIconResponse    `json:"callout,omitzero"`
+	Code             *Code                                       `json:"code,omitzero"`
+	Callout          *Callout                                    `json:"callout,omitzero"`
 	Divider          *EmptyObject                                `json:"divider,omitzero"`
 	Breadcrumb       *EmptyObject                                `json:"breadcrumb,omitzero"`
-	TableOfContents  *TableOfContentsBlockTableOfContents        `json:"table_of_contents,omitzero"`
+	TableOfContents  *TableOfContents                            `json:"table_of_contents,omitzero"`
 	Tab              *EmptyObject                                `json:"tab,omitzero"`
 	ColumnList       *EmptyObject                                `json:"column_list,omitzero"`
 	Column           *Column                                     `json:"column,omitzero"`
-	LinkToPage       *LinkToPageBlockLinkToPage                  `json:"link_to_page,omitzero"`
+	LinkToPage       *LinkToPage                                 `json:"link_to_page,omitzero"`
 	Table            *ContentWithTable                           `json:"table,omitzero"`
 	TableRow         *ContentWithTableRowResponse                `json:"table_row,omitzero"`
 	MeetingNotes     *TranscriptionBlock                         `json:"meeting_notes,omitzero"`
@@ -3014,39 +3014,39 @@ type BlockList struct {
 
 // BlockObject defines a model
 type BlockObject struct {
-	Object           string                                     `json:"object,omitzero"`
-	Type             BlockObjectType                            `json:"type,omitzero"`
-	Embed            *BlockObjectEmbedEmbed                     `json:"embed,omitzero"`
-	Bookmark         *MediaContentWithURLAndCaption             `json:"bookmark,omitzero"`
-	Image            *MediaContentWithFileAndCaption            `json:"image,omitzero"`
-	Video            *MediaContentWithFileAndCaption            `json:"video,omitzero"`
-	PDF              *MediaContentWithFileAndCaption            `json:"pdf,omitzero"`
-	File             *MediaContentWithFileNameAndCaption        `json:"file,omitzero"`
-	Audio            *MediaContentWithFileAndCaption            `json:"audio,omitzero"`
-	Code             *BlockObjectCodeCode                       `json:"code,omitzero"`
-	Equation         *ContentWithExpression                     `json:"equation,omitzero"`
-	Divider          *EmptyObject                               `json:"divider,omitzero"`
-	Breadcrumb       *EmptyObject                               `json:"breadcrumb,omitzero"`
-	Tab              *TabRequestWithNestedTabItemChildren       `json:"tab,omitzero"`
-	TableOfContents  *BlockObjectTableOfContentsTableOfContents `json:"table_of_contents,omitzero"`
-	LinkToPage       *BlockObjectLinkToPageLinkToPage           `json:"link_to_page,omitzero"`
-	TableRow         *ContentWithTableRow                       `json:"table_row,omitzero"`
-	Table            *TableRequestWithTableRowChildren          `json:"table,omitzero"`
-	ColumnList       *ColumnList                                `json:"column_list,omitzero"`
-	Column           *ColumnWithChildren                        `json:"column,omitzero"`
-	Heading1         *BlockObjectHeading                        `json:"heading_1,omitzero"`
-	Heading2         *BlockObjectHeading                        `json:"heading_2,omitzero"`
-	Heading3         *BlockObjectHeading                        `json:"heading_3,omitzero"`
-	Heading4         *BlockObjectHeading                        `json:"heading_4,omitzero"`
-	Paragraph        *BlockObjectCalloutCallout                 `json:"paragraph,omitzero"`
-	BulletedListItem *BlockObjectQuoteQuote                     `json:"bulleted_list_item,omitzero"`
-	NumberedListItem *BlockObjectQuoteQuote                     `json:"numbered_list_item,omitzero"`
-	Quote            *BlockObjectQuoteQuote                     `json:"quote,omitzero"`
-	ToDo             *BlockObjectToDoToDo                       `json:"to_do,omitzero"`
-	Toggle           *BlockObjectQuoteQuote                     `json:"toggle,omitzero"`
-	Template         *BlockObjectTemplateTemplate               `json:"template,omitzero"`
-	Callout          *BlockObjectCalloutCallout                 `json:"callout,omitzero"`
-	SyncedBlock      *BlockObjectSyncedBlockSyncedBlock         `json:"synced_block,omitzero"`
+	Object           string                               `json:"object,omitzero"`
+	Type             BlockObjectType                      `json:"type,omitzero"`
+	Embed            *Embed                               `json:"embed,omitzero"`
+	Bookmark         *MediaContentWithURLAndCaption       `json:"bookmark,omitzero"`
+	Image            *MediaContentWithFileAndCaption      `json:"image,omitzero"`
+	Video            *MediaContentWithFileAndCaption      `json:"video,omitzero"`
+	PDF              *MediaContentWithFileAndCaption      `json:"pdf,omitzero"`
+	File             *MediaContentWithFileNameAndCaption  `json:"file,omitzero"`
+	Audio            *MediaContentWithFileAndCaption      `json:"audio,omitzero"`
+	Code             *CodeRequest                         `json:"code,omitzero"`
+	Equation         *ContentWithExpression               `json:"equation,omitzero"`
+	Divider          *EmptyObject                         `json:"divider,omitzero"`
+	Breadcrumb       *EmptyObject                         `json:"breadcrumb,omitzero"`
+	Tab              *TabRequestWithNestedTabItemChildren `json:"tab,omitzero"`
+	TableOfContents  *TableOfContentsRequest              `json:"table_of_contents,omitzero"`
+	LinkToPage       *LinkToPageRequest                   `json:"link_to_page,omitzero"`
+	TableRow         *ContentWithTableRow                 `json:"table_row,omitzero"`
+	Table            *TableRequestWithTableRowChildren    `json:"table,omitzero"`
+	ColumnList       *ColumnList                          `json:"column_list,omitzero"`
+	Column           *ColumnWithChildren                  `json:"column,omitzero"`
+	Heading1         *BlockObjectHeading                  `json:"heading_1,omitzero"`
+	Heading2         *BlockObjectHeading                  `json:"heading_2,omitzero"`
+	Heading3         *BlockObjectHeading                  `json:"heading_3,omitzero"`
+	Heading4         *BlockObjectHeading                  `json:"heading_4,omitzero"`
+	Paragraph        *ParagraphRequest                    `json:"paragraph,omitzero"`
+	BulletedListItem *BlockObjectQuoteQuote               `json:"bulleted_list_item,omitzero"`
+	NumberedListItem *BlockObjectQuoteQuote               `json:"numbered_list_item,omitzero"`
+	Quote            *BlockObjectQuoteQuote               `json:"quote,omitzero"`
+	ToDo             *ToDoRequest                         `json:"to_do,omitzero"`
+	Toggle           *BlockObjectQuoteQuote               `json:"toggle,omitzero"`
+	Template         *TemplateRequest                     `json:"template,omitzero"`
+	Callout          *CalloutRequest                      `json:"callout,omitzero"`
+	SyncedBlock      *SyncedBlockRequest                  `json:"synced_block,omitzero"`
 }
 
 // BlockObjectType is a value of BlockObject's type, naming the members it holds.
@@ -3295,27 +3295,11 @@ type BlockObjectBreadcrumb struct {
 	Object     string      `json:"object,omitzero"`
 }
 
-// BlockObjectCalloutCallout defines a model
-type BlockObjectCalloutCallout struct {
-	RichText []RichTextItem `json:"rich_text"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                               `json:"color,omitzero"`
-	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
-	Icon     PageIcon                               `json:"icon,omitzero"`
-}
-
 // BlockObjectCode defines a model
 type BlockObjectCode struct {
-	Code   BlockObjectCodeCode `json:"code"`
-	Type   string              `json:"type,omitzero"`
-	Object string              `json:"object,omitzero"`
-}
-
-// BlockObjectCodeCode defines a model
-type BlockObjectCodeCode struct {
-	RichText []RichTextItem `json:"rich_text"`
-	Language Language       `json:"language"`
-	Caption  []RichTextItem `json:"caption,omitzero"`
+	Code   CodeRequest `json:"code"`
+	Type   string      `json:"type,omitzero"`
+	Object string      `json:"object,omitzero"`
 }
 
 // BlockObjectColumn defines a model
@@ -3334,72 +3318,9 @@ type BlockObjectDivider struct {
 
 // BlockObjectEmbed defines a model
 type BlockObjectEmbed struct {
-	Embed  BlockObjectEmbedEmbed `json:"embed"`
-	Type   string                `json:"type,omitzero"`
-	Object string                `json:"object,omitzero"`
-}
-
-// BlockObjectEmbedEmbed defines a model
-// BlockObjectEmbedEmbed is an untagged anyOf union: at least one field is set after unmarshaling.
-type BlockObjectEmbedEmbed struct {
-	MediaContentWithURLAndCaption *MediaContentWithURLAndCaption
-	EmbedFileUpload               *EmbedFileUpload
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *BlockObjectEmbedEmbed) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = BlockObjectEmbedEmbed{}
-
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		// decoding checks neither the members the alternative requires nor those it pins to one value
-		required, nullable, pinned := []string{"url"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
-			var vv MediaContentWithURLAndCaption
-			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.MediaContentWithURLAndCaption = &vv
-				matched++
-			}
-		}
-	}
-
-	{
-		// decoding checks neither the members the alternative requires nor those it pins to one value
-		required, nullable, pinned := []string{"file_upload"}, map[string]bool{}, map[string]string{"type": "\"file_upload\""}
-		if jsonFits(raw, required, nullable, pinned) {
-			var vv EmbedFileUpload
-			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.EmbedFileUpload = &vv
-				matched++
-			}
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *BlockObjectEmbedEmbed) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.MediaContentWithURLAndCaption != nil:
-		return json.MarshalEncode(enc, v.MediaContentWithURLAndCaption, jsonOptsTo(enc))
-	case v.EmbedFileUpload != nil:
-		return json.MarshalEncode(enc, v.EmbedFileUpload, jsonOptsTo(enc))
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	Embed  Embed  `json:"embed"`
+	Type   string `json:"type,omitzero"`
+	Object string `json:"object,omitzero"`
 }
 
 // BlockObjectEquation defines a model
@@ -3434,102 +3355,9 @@ type BlockObjectImage struct {
 
 // BlockObjectLinkToPage defines a model
 type BlockObjectLinkToPage struct {
-	LinkToPage BlockObjectLinkToPageLinkToPage `json:"link_to_page"`
-	Type       string                          `json:"type,omitzero"`
-	Object     string                          `json:"object,omitzero"`
-}
-
-// BlockObjectLinkToPageLinkToPage defines a model
-type BlockObjectLinkToPageLinkToPage struct {
-	Type       BlockObjectLinkToPageLinkToPageType `json:"type,omitzero"`
-	PageID     *ID                                 `json:"page_id,omitzero"`
-	DatabaseID *ID                                 `json:"database_id,omitzero"`
-	CommentID  *ID                                 `json:"comment_id,omitzero"`
-}
-
-// BlockObjectLinkToPageLinkToPageType is a value of BlockObjectLinkToPageLinkToPage's type, naming the members it holds.
-type BlockObjectLinkToPageLinkToPageType string
-
-const (
-	BlockObjectLinkToPageLinkToPageTypePageID     BlockObjectLinkToPageLinkToPageType = "page_id"
-	BlockObjectLinkToPageLinkToPageTypeDatabaseID BlockObjectLinkToPageLinkToPageType = "database_id"
-	BlockObjectLinkToPageLinkToPageTypeCommentID  BlockObjectLinkToPageLinkToPageType = "comment_id"
-)
-
-// Valid indicates whether the value is a known member of the BlockObjectLinkToPageLinkToPageType enum.
-func (e BlockObjectLinkToPageLinkToPageType) Valid() bool {
-	_, ok := tagsOfBlockObjectLinkToPageLinkToPage[string(e)]
-	return ok
-}
-
-// tagsOfBlockObjectLinkToPageLinkToPage holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfBlockObjectLinkToPageLinkToPage = map[string]map[string]jsonTagNeed{
-	"page_id":     {"page_id": jsonTagRequired},
-	"database_id": {"database_id": jsonTagRequired},
-	"comment_id":  {"comment_id": jsonTagRequired},
-}
-
-// taggedMembers returns those of the members of an alternative's own that are set.
-func (v *BlockObjectLinkToPageLinkToPage) taggedMembers() []string {
-	var set []string
-	if v.PageID != nil {
-		set = append(set, "page_id")
-	}
-	if v.DatabaseID != nil {
-		set = append(set, "database_id")
-	}
-	if v.CommentID != nil {
-		set = append(set, "comment_id")
-	}
-
-	return set
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
-func (v *BlockObjectLinkToPageLinkToPage) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain BlockObjectLinkToPageLinkToPage
-
-	*v = BlockObjectLinkToPageLinkToPage{}
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	if err := json.Unmarshal(raw, (*plain)(v), jsonOptsOf(dec)); err != nil {
-		return err
-	}
-
-	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
-	if err != nil {
-		return err
-	}
-
-	// type may be left out, and is then the value whose member is set, as encoding infers it
-	if tag, ok := jsonInferTag(tagsOfBlockObjectLinkToPageLinkToPage, v.taggedMembers()); ok && v.Type == "" {
-		v.Type = BlockObjectLinkToPageLinkToPageType(tag)
-	}
-
-	return jsonCheckTag("type", string(v.Type), tagsOfBlockObjectLinkToPageLinkToPage, v.taggedMembers(), present, jsonStrict(dec))
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
-func (v *BlockObjectLinkToPageLinkToPage) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain BlockObjectLinkToPageLinkToPage
-
-	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfBlockObjectLinkToPageLinkToPage, set); ok && out.Type == "" {
-		out.Type = BlockObjectLinkToPageLinkToPageType(tag)
-	}
-
-	if err := jsonCheckTag("type", string(out.Type), tagsOfBlockObjectLinkToPageLinkToPage, set, nil, true); err != nil {
-		return err
-	}
-
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
+	LinkToPage LinkToPageRequest `json:"link_to_page"`
+	Type       string            `json:"type,omitzero"`
+	Object     string            `json:"object,omitzero"`
 }
 
 // BlockObjectPdf defines a model
@@ -3551,20 +3379,20 @@ type BlockObjectQuoteQuote struct {
 type BlockObjectRequestWithoutChildren struct {
 	Object           string                                     `json:"object,omitzero"`
 	Type             BlockObjectRequestWithoutChildrenType      `json:"type,omitzero"`
-	Embed            *BlockObjectEmbedEmbed                     `json:"embed,omitzero"`
+	Embed            *Embed                                     `json:"embed,omitzero"`
 	Bookmark         *MediaContentWithURLAndCaption             `json:"bookmark,omitzero"`
 	Image            *MediaContentWithFileAndCaption            `json:"image,omitzero"`
 	Video            *MediaContentWithFileAndCaption            `json:"video,omitzero"`
 	PDF              *MediaContentWithFileAndCaption            `json:"pdf,omitzero"`
 	File             *MediaContentWithFileNameAndCaption        `json:"file,omitzero"`
 	Audio            *MediaContentWithFileAndCaption            `json:"audio,omitzero"`
-	Code             *BlockObjectCodeCode                       `json:"code,omitzero"`
+	Code             *CodeRequest                               `json:"code,omitzero"`
 	Equation         *ContentWithExpression                     `json:"equation,omitzero"`
 	Divider          *EmptyObject                               `json:"divider,omitzero"`
 	Breadcrumb       *EmptyObject                               `json:"breadcrumb,omitzero"`
 	Tab              *EmptyObject                               `json:"tab,omitzero"`
-	TableOfContents  *BlockObjectTableOfContentsTableOfContents `json:"table_of_contents,omitzero"`
-	LinkToPage       *BlockObjectLinkToPageLinkToPage           `json:"link_to_page,omitzero"`
+	TableOfContents  *TableOfContentsRequest                    `json:"table_of_contents,omitzero"`
+	LinkToPage       *LinkToPageRequest                         `json:"link_to_page,omitzero"`
 	TableRow         *ContentWithTableRow                       `json:"table_row,omitzero"`
 	Heading1         *HeaderContentWithRichTextAndColor         `json:"heading_1,omitzero"`
 	Heading2         *HeaderContentWithRichTextAndColor         `json:"heading_2,omitzero"`
@@ -3578,7 +3406,7 @@ type BlockObjectRequestWithoutChildren struct {
 	Toggle           *ContentWithRichTextAndColor               `json:"toggle,omitzero"`
 	Template         *ContentWithRichText                       `json:"template,omitzero"`
 	Callout          *ContentWithRichTextColorAndIcon           `json:"callout,omitzero"`
-	SyncedBlock      *UpdateABlockSyncedBlockSyncedBlock        `json:"synced_block,omitzero"`
+	SyncedBlock      *SyncedBlockUpdate                         `json:"synced_block,omitzero"`
 }
 
 // BlockObjectRequestWithoutChildrenType is a value of BlockObjectRequestWithoutChildren's type, naming the members it holds.
@@ -3799,12 +3627,6 @@ type BlockObjectRequestWithoutChildrenToDoToDo struct {
 	Color APIColor `json:"color,omitzero"`
 }
 
-// BlockObjectSyncedBlockSyncedBlock defines a model
-type BlockObjectSyncedBlockSyncedBlock struct {
-	SyncedFrom BlockObjectSyncedBlockSyncedFrom       `json:"synced_from"`
-	Children   []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
-}
-
 // BlockObjectSyncedBlockSyncedFrom defines a model
 type BlockObjectSyncedBlockSyncedFrom struct {
 	BlockID ID     `json:"block_id"`
@@ -3820,30 +3642,9 @@ type BlockObjectTable struct {
 
 // BlockObjectTableOfContents defines a model
 type BlockObjectTableOfContents struct {
-	TableOfContents BlockObjectTableOfContentsTableOfContents `json:"table_of_contents"`
-	Type            string                                    `json:"type,omitzero"`
-	Object          string                                    `json:"object,omitzero"`
-}
-
-// BlockObjectTableOfContentsTableOfContents defines a model
-type BlockObjectTableOfContentsTableOfContents struct {
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color APIColor `json:"color,omitzero"`
-}
-
-// BlockObjectTemplateTemplate defines a model
-type BlockObjectTemplateTemplate struct {
-	RichText []RichTextItem                         `json:"rich_text"`
-	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
-}
-
-// BlockObjectToDoToDo defines a model
-type BlockObjectToDoToDo struct {
-	RichText []RichTextItem `json:"rich_text"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                               `json:"color,omitzero"`
-	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
-	Checked  *bool                                  `json:"checked,omitzero"`
+	TableOfContents TableOfContentsRequest `json:"table_of_contents"`
+	Type            string                 `json:"type,omitzero"`
+	Object          string                 `json:"object,omitzero"`
 }
 
 // BlockObjectVideo defines a model
@@ -3857,20 +3658,20 @@ type BlockObjectVideo struct {
 type BlockObjectWithSingleLevelOfChildren struct {
 	Object           string                                                      `json:"object,omitzero"`
 	Type             BlockObjectWithSingleLevelOfChildrenType                    `json:"type,omitzero"`
-	Embed            *BlockObjectEmbedEmbed                                      `json:"embed,omitzero"`
+	Embed            *Embed                                                      `json:"embed,omitzero"`
 	Bookmark         *MediaContentWithURLAndCaption                              `json:"bookmark,omitzero"`
 	Image            *MediaContentWithFileAndCaption                             `json:"image,omitzero"`
 	Video            *MediaContentWithFileAndCaption                             `json:"video,omitzero"`
 	PDF              *MediaContentWithFileAndCaption                             `json:"pdf,omitzero"`
 	File             *MediaContentWithFileNameAndCaption                         `json:"file,omitzero"`
 	Audio            *MediaContentWithFileAndCaption                             `json:"audio,omitzero"`
-	Code             *BlockObjectCodeCode                                        `json:"code,omitzero"`
+	Code             *CodeRequest                                                `json:"code,omitzero"`
 	Equation         *ContentWithExpression                                      `json:"equation,omitzero"`
 	Divider          *EmptyObject                                                `json:"divider,omitzero"`
 	Breadcrumb       *EmptyObject                                                `json:"breadcrumb,omitzero"`
 	Tab              *TabRequestWithTabItemChildren                              `json:"tab,omitzero"`
-	TableOfContents  *BlockObjectTableOfContentsTableOfContents                  `json:"table_of_contents,omitzero"`
-	LinkToPage       *BlockObjectLinkToPageLinkToPage                            `json:"link_to_page,omitzero"`
+	TableOfContents  *TableOfContentsRequest                                     `json:"table_of_contents,omitzero"`
+	LinkToPage       *LinkToPageRequest                                          `json:"link_to_page,omitzero"`
 	TableRow         *ContentWithTableRow                                        `json:"table_row,omitzero"`
 	Heading1         *HeaderContentWithSingleLevelOfChildren                     `json:"heading_1,omitzero"`
 	Heading2         *HeaderContentWithSingleLevelOfChildren                     `json:"heading_2,omitzero"`
@@ -4691,6 +4492,23 @@ func (e CalendarViewConfigViewRangeOneOf) Valid() bool {
 	}
 }
 
+// Callout defines a model
+type Callout struct {
+	RichText RichTexts `json:"rich_text"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color APIColor          `json:"color"`
+	Icon  *PageIconResponse `json:"icon"`
+}
+
+// CalloutRequest defines a model
+type CalloutRequest struct {
+	RichText []RichTextItem `json:"rich_text"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color    APIColor                               `json:"color,omitzero"`
+	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
+	Icon     PageIcon                               `json:"icon,omitzero"`
+}
+
 // CancelSession defines a model
 type CancelSession struct {
 	// A session event identifying the turn to cancel. If omitted, cancels the current nonterminal turn.
@@ -5353,11 +5171,25 @@ func (v *CheckboxPropertyItem) unmarshalJSONMember(dec *jsontext.Decoder, name s
 	return false, nil
 }
 
-// CodeBlockCode defines a model
-type CodeBlockCode struct {
+// Code defines a model
+type Code struct {
 	RichText RichTexts `json:"rich_text"`
 	Caption  RichTexts `json:"caption"`
 	Language Language  `json:"language"`
+}
+
+// CodeRequest defines a model
+type CodeRequest struct {
+	RichText []RichTextItem `json:"rich_text"`
+	Language Language       `json:"language"`
+	Caption  []RichTextItem `json:"caption,omitzero"`
+}
+
+// CodeUpdate defines a model
+type CodeUpdate struct {
+	RichText []RichTextItem `json:"rich_text,omitzero"`
+	Language Language       `json:"language,omitzero"`
+	Caption  []RichTextItem `json:"caption,omitzero"`
 }
 
 // Column defines a model
@@ -5369,6 +5201,12 @@ type Column struct {
 // ColumnList defines a model
 type ColumnList struct {
 	Children []BlockObjectColumn `json:"children"`
+}
+
+// ColumnUpdate defines a model
+type ColumnUpdate struct {
+	// Ratio between 0 and 1 of the width of this column relative to all columns in the list. If not provided, uses an equal width.
+	WidthRatio float64 `json:"width_ratio,omitzero"`
 }
 
 // ColumnWithChildren defines a model
@@ -5869,14 +5707,6 @@ type ContentWithRichTextColorAndIcon struct {
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor `json:"color,omitzero"`
 	Icon  PageIcon `json:"icon,omitzero"`
-}
-
-// ContentWithRichTextColorAndIconResponse defines a model
-type ContentWithRichTextColorAndIconResponse struct {
-	RichText RichTexts `json:"rich_text"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color APIColor          `json:"color"`
-	Icon  *PageIconResponse `json:"icon"`
 }
 
 // ContentWithRichTextColorAndIconResponseUpdate defines a model
@@ -8837,11 +8667,133 @@ func (v *EmailPropertyItem) unmarshalJSONMember(dec *jsontext.Decoder, name stri
 	return false, nil
 }
 
+// Embed defines a model
+// Embed is an untagged anyOf union: at least one field is set after unmarshaling.
+type Embed struct {
+	MediaContentWithURLAndCaption *MediaContentWithURLAndCaption
+	EmbedFileUpload               *EmbedFileUpload
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *Embed) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = Embed{}
+
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, nullable, pinned := []string{"url"}, map[string]bool{}, map[string]string{}
+		if jsonFits(raw, required, nullable, pinned) {
+			var vv MediaContentWithURLAndCaption
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.MediaContentWithURLAndCaption = &vv
+				matched++
+			}
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, nullable, pinned := []string{"file_upload"}, map[string]bool{}, map[string]string{"type": "\"file_upload\""}
+		if jsonFits(raw, required, nullable, pinned) {
+			var vv EmbedFileUpload
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.EmbedFileUpload = &vv
+				matched++
+			}
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *Embed) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.MediaContentWithURLAndCaption != nil:
+		return json.MarshalEncode(enc, v.MediaContentWithURLAndCaption, jsonOptsTo(enc))
+	case v.EmbedFileUpload != nil:
+		return json.MarshalEncode(enc, v.EmbedFileUpload, jsonOptsTo(enc))
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
+}
+
 // EmbedFileUpload defines a model
 type EmbedFileUpload struct {
 	FileUpload FileUploadID   `json:"file_upload"`
 	Type       string         `json:"type,omitzero"`
 	Caption    []RichTextItem `json:"caption,omitzero"`
+}
+
+// EmbedUpdate defines a model
+// EmbedUpdate is an untagged anyOf union: at least one field is set after unmarshaling.
+type EmbedUpdate struct {
+	UpdateMediaContentWithURLAndCaption *UpdateMediaContentWithURLAndCaption
+	UpdateEmbedFileUpload               *UpdateEmbedFileUpload
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
+func (v *EmbedUpdate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = EmbedUpdate{}
+
+	opts := jsonOptsOf(dec)
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	var matched int
+
+	{
+		var vv UpdateMediaContentWithURLAndCaption
+		if err := json.Unmarshal(raw, &vv, opts); err == nil {
+			v.UpdateMediaContentWithURLAndCaption = &vv
+			matched++
+		}
+	}
+
+	{
+		// decoding checks neither the members the alternative requires nor those it pins to one value
+		required, nullable, pinned := []string{"file_upload"}, map[string]bool{}, map[string]string{}
+		if jsonFits(raw, required, nullable, pinned) {
+			var vv UpdateEmbedFileUpload
+			if err := json.Unmarshal(raw, &vv, opts); err == nil {
+				v.UpdateEmbedFileUpload = &vv
+				matched++
+			}
+		}
+	}
+
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
+	}
+
+	return nil
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
+func (v *EmbedUpdate) MarshalJSONTo(enc *jsontext.Encoder) error {
+	switch {
+	case v.UpdateMediaContentWithURLAndCaption != nil:
+		return json.MarshalEncode(enc, v.UpdateMediaContentWithURLAndCaption, jsonOptsTo(enc))
+	case v.UpdateEmbedFileUpload != nil:
+		return json.MarshalEncode(enc, v.UpdateEmbedFileUpload, jsonOptsTo(enc))
+	}
+
+	return &json.SemanticError{Err: errors.New("no alternative set")}
 }
 
 // Emoji defines a model
@@ -10884,6 +10836,90 @@ type InitialDataSource struct {
 	Properties map[string]PropertyConfiguration `json:"properties,omitzero"`
 }
 
+// Insert new content into the page.
+type InsertContent struct {
+	// The Markdown content to insert into the page, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).
+	Content string `json:"content"`
+	// Selection of existing content to insert after, using the ellipsis format ("start text...end text"). Omit to append at the end of the page.
+	After string `json:"after,omitzero"`
+	// Explicit position for inserted content. Use {"type":"start"} to prepend or {"type":"end"} to append. Cannot be combined with after.
+	Position InsertContentPosition `json:"position,omitzero"`
+}
+
+// Explicit position for inserted content. Use {"type":"start"} to prepend or {"type":"end"} to append. Cannot be combined with after.
+type InsertContentPosition struct {
+	Type InsertContentPositionType `json:"type"`
+}
+
+// InsertContentPositionType is a value of InsertContentPosition's type, naming the members it holds.
+type InsertContentPositionType string
+
+const (
+	InsertContentPositionTypeStart InsertContentPositionType = "start"
+	InsertContentPositionTypeEnd   InsertContentPositionType = "end"
+)
+
+// Valid indicates whether the value is a known member of the InsertContentPositionType enum.
+func (e InsertContentPositionType) Valid() bool {
+	_, ok := tagsOfInsertContentPosition[string(e)]
+	return ok
+}
+
+// tagsOfInsertContentPosition holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfInsertContentPosition = map[string]map[string]jsonTagNeed{
+	"start": {},
+	"end":   {},
+}
+
+// taggedMembers returns those of the members of an alternative's own that are set.
+func (v *InsertContentPosition) taggedMembers() []string {
+	var set []string
+
+	return set
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
+// alternative's own, only those of the one type names are set.
+func (v *InsertContentPosition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain InsertContentPosition
+
+	*v = InsertContentPosition{}
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(raw, (*plain)(v), jsonOptsOf(dec)); err != nil {
+		return err
+	}
+
+	// a member sent as null is there, though its field reads as left out
+	present, err := jsonMembers(raw)
+	if err != nil {
+		return err
+	}
+
+	return jsonCheckTag("type", string(v.Type), tagsOfInsertContentPosition, v.taggedMembers(), present, jsonStrict(dec))
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
+// the value whose member is set.
+func (v *InsertContentPosition) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain InsertContentPosition
+
+	out, set := *v, v.taggedMembers()
+	if tag, ok := jsonInferTag(tagsOfInsertContentPosition, set); ok && out.Type == "" {
+		out.Type = InsertContentPositionType(tag)
+	}
+
+	if err := jsonCheckTag("type", string(out.Type), tagsOfInsertContentPosition, set, nil, true); err != nil {
+		return err
+	}
+
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
+}
+
 // InternalFile defines a model
 type InternalFile struct {
 	URL        string    `json:"url"`
@@ -11225,39 +11261,39 @@ type LinkPreviewMention struct {
 	URL string `json:"url"`
 }
 
-// LinkToPageBlockLinkToPage defines a model
-type LinkToPageBlockLinkToPage struct {
-	Type LinkToPageBlockLinkToPageType `json:"type"`
+// LinkToPage defines a model
+type LinkToPage struct {
+	Type LinkToPageType `json:"type"`
 	// The ID of the page to create the database on.
 	PageID     *ID `json:"page_id,omitzero"`
 	DatabaseID *ID `json:"database_id,omitzero"`
 	CommentID  *ID `json:"comment_id,omitzero"`
 }
 
-// LinkToPageBlockLinkToPageType is a value of LinkToPageBlockLinkToPage's type, naming the members it holds.
-type LinkToPageBlockLinkToPageType string
+// LinkToPageType is a value of LinkToPage's type, naming the members it holds.
+type LinkToPageType string
 
 const (
-	LinkToPageBlockLinkToPageTypePageID     LinkToPageBlockLinkToPageType = "page_id"
-	LinkToPageBlockLinkToPageTypeDatabaseID LinkToPageBlockLinkToPageType = "database_id"
-	LinkToPageBlockLinkToPageTypeCommentID  LinkToPageBlockLinkToPageType = "comment_id"
+	LinkToPageTypePageID     LinkToPageType = "page_id"
+	LinkToPageTypeDatabaseID LinkToPageType = "database_id"
+	LinkToPageTypeCommentID  LinkToPageType = "comment_id"
 )
 
-// Valid indicates whether the value is a known member of the LinkToPageBlockLinkToPageType enum.
-func (e LinkToPageBlockLinkToPageType) Valid() bool {
-	_, ok := tagsOfLinkToPageBlockLinkToPage[string(e)]
+// Valid indicates whether the value is a known member of the LinkToPageType enum.
+func (e LinkToPageType) Valid() bool {
+	_, ok := tagsOfLinkToPage[string(e)]
 	return ok
 }
 
-// tagsOfLinkToPageBlockLinkToPage holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfLinkToPageBlockLinkToPage = map[string]map[string]jsonTagNeed{
+// tagsOfLinkToPage holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfLinkToPage = map[string]map[string]jsonTagNeed{
 	"page_id":     {"page_id": jsonTagRequired},
 	"database_id": {"database_id": jsonTagRequired},
 	"comment_id":  {"comment_id": jsonTagRequired},
 }
 
 // taggedMembers returns those of the members of an alternative's own that are set.
-func (v *LinkToPageBlockLinkToPage) taggedMembers() []string {
+func (v *LinkToPage) taggedMembers() []string {
 	var set []string
 	if v.PageID != nil {
 		set = append(set, "page_id")
@@ -11274,10 +11310,10 @@ func (v *LinkToPageBlockLinkToPage) taggedMembers() []string {
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
 // alternative's own, only those of the one type names are set.
-func (v *LinkToPageBlockLinkToPage) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain LinkToPageBlockLinkToPage
+func (v *LinkToPage) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain LinkToPage
 
-	*v = LinkToPageBlockLinkToPage{}
+	*v = LinkToPage{}
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -11294,20 +11330,113 @@ func (v *LinkToPageBlockLinkToPage) UnmarshalJSONFrom(dec *jsontext.Decoder) err
 		return err
 	}
 
-	return jsonCheckTag("type", string(v.Type), tagsOfLinkToPageBlockLinkToPage, v.taggedMembers(), present, jsonStrict(dec))
+	return jsonCheckTag("type", string(v.Type), tagsOfLinkToPage, v.taggedMembers(), present, jsonStrict(dec))
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
 // the value whose member is set.
-func (v *LinkToPageBlockLinkToPage) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain LinkToPageBlockLinkToPage
+func (v *LinkToPage) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain LinkToPage
 
 	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfLinkToPageBlockLinkToPage, set); ok && out.Type == "" {
-		out.Type = LinkToPageBlockLinkToPageType(tag)
+	if tag, ok := jsonInferTag(tagsOfLinkToPage, set); ok && out.Type == "" {
+		out.Type = LinkToPageType(tag)
 	}
 
-	if err := jsonCheckTag("type", string(out.Type), tagsOfLinkToPageBlockLinkToPage, set, nil, true); err != nil {
+	if err := jsonCheckTag("type", string(out.Type), tagsOfLinkToPage, set, nil, true); err != nil {
+		return err
+	}
+
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
+}
+
+// LinkToPageRequest defines a model
+type LinkToPageRequest struct {
+	Type       LinkToPageRequestType `json:"type,omitzero"`
+	PageID     *ID                   `json:"page_id,omitzero"`
+	DatabaseID *ID                   `json:"database_id,omitzero"`
+	CommentID  *ID                   `json:"comment_id,omitzero"`
+}
+
+// LinkToPageRequestType is a value of LinkToPageRequest's type, naming the members it holds.
+type LinkToPageRequestType string
+
+const (
+	LinkToPageRequestTypePageID     LinkToPageRequestType = "page_id"
+	LinkToPageRequestTypeDatabaseID LinkToPageRequestType = "database_id"
+	LinkToPageRequestTypeCommentID  LinkToPageRequestType = "comment_id"
+)
+
+// Valid indicates whether the value is a known member of the LinkToPageRequestType enum.
+func (e LinkToPageRequestType) Valid() bool {
+	_, ok := tagsOfLinkToPageRequest[string(e)]
+	return ok
+}
+
+// tagsOfLinkToPageRequest holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfLinkToPageRequest = map[string]map[string]jsonTagNeed{
+	"page_id":     {"page_id": jsonTagRequired},
+	"database_id": {"database_id": jsonTagRequired},
+	"comment_id":  {"comment_id": jsonTagRequired},
+}
+
+// taggedMembers returns those of the members of an alternative's own that are set.
+func (v *LinkToPageRequest) taggedMembers() []string {
+	var set []string
+	if v.PageID != nil {
+		set = append(set, "page_id")
+	}
+	if v.DatabaseID != nil {
+		set = append(set, "database_id")
+	}
+	if v.CommentID != nil {
+		set = append(set, "comment_id")
+	}
+
+	return set
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
+// alternative's own, only those of the one type names are set.
+func (v *LinkToPageRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain LinkToPageRequest
+
+	*v = LinkToPageRequest{}
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(raw, (*plain)(v), jsonOptsOf(dec)); err != nil {
+		return err
+	}
+
+	// a member sent as null is there, though its field reads as left out
+	present, err := jsonMembers(raw)
+	if err != nil {
+		return err
+	}
+
+	// type may be left out, and is then the value whose member is set, as encoding infers it
+	if tag, ok := jsonInferTag(tagsOfLinkToPageRequest, v.taggedMembers()); ok && v.Type == "" {
+		v.Type = LinkToPageRequestType(tag)
+	}
+
+	return jsonCheckTag("type", string(v.Type), tagsOfLinkToPageRequest, v.taggedMembers(), present, jsonStrict(dec))
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
+// the value whose member is set.
+func (v *LinkToPageRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain LinkToPageRequest
+
+	out, set := *v, v.taggedMembers()
+	if tag, ok := jsonInferTag(tagsOfLinkToPageRequest, set); ok && out.Type == "" {
+		out.Type = LinkToPageRequestType(tag)
+	}
+
+	if err := jsonCheckTag("type", string(out.Type), tagsOfLinkToPageRequest, set, nil, true); err != nil {
 		return err
 	}
 
@@ -11455,129 +11584,6 @@ func (v *MapViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name 
 	}
 
 	return false, nil
-}
-
-// Insert new content into the page.
-type MarkdownEditInsertContentInsertContent struct {
-	// The Markdown content to insert into the page, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).
-	Content string `json:"content"`
-	// Selection of existing content to insert after, using the ellipsis format ("start text...end text"). Omit to append at the end of the page.
-	After string `json:"after,omitzero"`
-	// Explicit position for inserted content. Use {"type":"start"} to prepend or {"type":"end"} to append. Cannot be combined with after.
-	Position MarkdownEditInsertContentInsertContentPosition `json:"position,omitzero"`
-}
-
-// Explicit position for inserted content. Use {"type":"start"} to prepend or {"type":"end"} to append. Cannot be combined with after.
-type MarkdownEditInsertContentInsertContentPosition struct {
-	Type MarkdownEditInsertContentInsertContentPositionType `json:"type"`
-}
-
-// MarkdownEditInsertContentInsertContentPositionType is a value of MarkdownEditInsertContentInsertContentPosition's type, naming the members it holds.
-type MarkdownEditInsertContentInsertContentPositionType string
-
-const (
-	MarkdownEditInsertContentInsertContentPositionTypeStart MarkdownEditInsertContentInsertContentPositionType = "start"
-	MarkdownEditInsertContentInsertContentPositionTypeEnd   MarkdownEditInsertContentInsertContentPositionType = "end"
-)
-
-// Valid indicates whether the value is a known member of the MarkdownEditInsertContentInsertContentPositionType enum.
-func (e MarkdownEditInsertContentInsertContentPositionType) Valid() bool {
-	_, ok := tagsOfMarkdownEditInsertContentInsertContentPosition[string(e)]
-	return ok
-}
-
-// tagsOfMarkdownEditInsertContentInsertContentPosition holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfMarkdownEditInsertContentInsertContentPosition = map[string]map[string]jsonTagNeed{
-	"start": {},
-	"end":   {},
-}
-
-// taggedMembers returns those of the members of an alternative's own that are set.
-func (v *MarkdownEditInsertContentInsertContentPosition) taggedMembers() []string {
-	var set []string
-
-	return set
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set.
-func (v *MarkdownEditInsertContentInsertContentPosition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain MarkdownEditInsertContentInsertContentPosition
-
-	*v = MarkdownEditInsertContentInsertContentPosition{}
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	if err := json.Unmarshal(raw, (*plain)(v), jsonOptsOf(dec)); err != nil {
-		return err
-	}
-
-	// a member sent as null is there, though its field reads as left out
-	present, err := jsonMembers(raw)
-	if err != nil {
-		return err
-	}
-
-	return jsonCheckTag("type", string(v.Type), tagsOfMarkdownEditInsertContentInsertContentPosition, v.taggedMembers(), present, jsonStrict(dec))
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set.
-func (v *MarkdownEditInsertContentInsertContentPosition) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain MarkdownEditInsertContentInsertContentPosition
-
-	out, set := *v, v.taggedMembers()
-	if tag, ok := jsonInferTag(tagsOfMarkdownEditInsertContentInsertContentPosition, set); ok && out.Type == "" {
-		out.Type = MarkdownEditInsertContentInsertContentPositionType(tag)
-	}
-
-	if err := jsonCheckTag("type", string(out.Type), tagsOfMarkdownEditInsertContentInsertContentPosition, set, nil, true); err != nil {
-		return err
-	}
-
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
-}
-
-// Replace a range of content in the page.
-type MarkdownEditReplaceContentRangeReplaceContentRange struct {
-	// The new Markdown content to replace the matched range, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).
-	Content string `json:"content"`
-	// Selection of existing content to replace, using the ellipsis format ("start text...end text").
-	ContentRange string `json:"content_range"`
-	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
-	AllowDeletingContent *bool `json:"allow_deleting_content,omitzero"`
-}
-
-// Replace the entire page content with new markdown.
-type MarkdownEditReplaceContentReplaceContent struct {
-	// The new Markdown content to replace the entire page content, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).
-	NewStr string `json:"new_str"`
-	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
-	AllowDeletingContent *bool `json:"allow_deleting_content,omitzero"`
-}
-
-// Update specific content using search-and-replace operations.
-type MarkdownEditUpdateContentUpdateContent struct {
-	// An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content). Operations that match are applied, and each one that matches nothing is reported in "warnings". The call fails only when no operation that changes content matches.
-	ContentUpdates MarkdownEditUpdateContentUpdateContentContentUpdates `json:"content_updates"`
-	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
-	AllowDeletingContent *bool `json:"allow_deleting_content,omitzero"`
-}
-
-// An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content). Operations that match are applied, and each one that matches nothing is reported in "warnings". The call fails only when no operation that changes content matches.
-type MarkdownEditUpdateContentUpdateContentContentUpdates []MarkdownEditUpdateContentUpdateContentContentUpdatesItem
-
-// MarkdownEditUpdateContentUpdateContentContentUpdatesItem defines a model
-type MarkdownEditUpdateContentUpdateContentContentUpdatesItem struct {
-	// The existing content string to find and replace. Must exactly match the page content.
-	OldStr string `json:"old_str"`
-	// The new content string to replace old_str with.
-	NewStr string `json:"new_str"`
-	// If true, replaces all occurrences of old_str. If false (default), the operation fails if there are multiple matches.
-	ReplaceAllMatches *bool `json:"replace_all_matches,omitzero"`
 }
 
 // The Markdown syntax to use. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown) and is recommended. `v1` is enhanced markdown. It's deprecated. It's the default on current Notion-Versions. The next Notion-Version rejects `v1` with a `400` `validation_error`.
@@ -15514,6 +15520,23 @@ func (e PageWriteNotificationsSchemaMode) Valid() bool {
 	default:
 		return false
 	}
+}
+
+// Paragraph defines a model
+type Paragraph struct {
+	RichText RichTexts `json:"rich_text"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color APIColor          `json:"color"`
+	Icon  *PageIconResponse `json:"icon"`
+}
+
+// ParagraphRequest defines a model
+type ParagraphRequest struct {
+	RichText []RichTextItem `json:"rich_text"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color    APIColor                               `json:"color,omitzero"`
+	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
+	Icon     PageIcon                               `json:"icon,omitzero"`
 }
 
 // ParagraphWithSingleLevelOfChildren defines a model
@@ -21493,6 +21516,24 @@ func (e RelativeDateValue) Valid() bool {
 	}
 }
 
+// Replace the entire page content with new markdown.
+type ReplaceContent struct {
+	// The new Markdown content to replace the entire page content, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).
+	NewStr string `json:"new_str"`
+	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
+	AllowDeletingContent *bool `json:"allow_deleting_content,omitzero"`
+}
+
+// Replace a range of content in the page.
+type ReplaceContentRange struct {
+	// The new Markdown content to replace the matched range, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).
+	Content string `json:"content"`
+	// Selection of existing content to replace, using the ellipsis format ("start text...end text").
+	ContentRange string `json:"content_range"`
+	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
+	AllowDeletingContent *bool `json:"allow_deleting_content,omitzero"`
+}
+
 // RequestStatus defines a model
 type RequestStatus struct {
 	// Whether the result set is complete or incomplete. `incomplete` means the response does not include all rows that match the query parameters (e.g. due to a server-side pagination depth limit).
@@ -26166,15 +26207,26 @@ func (e SyncHealthStage) Valid() bool {
 	}
 }
 
-// SyncedBlockObjectResponseSyncedBlock defines a model
-type SyncedBlockObjectResponseSyncedBlock struct {
-	SyncedFrom SyncedBlockObjectResponseSyncedBlockSyncedFrom `json:"synced_from"`
+// SyncedBlock defines a model
+type SyncedBlock struct {
+	SyncedFrom SyncedBlockSyncedFrom `json:"synced_from"`
 }
 
-// SyncedBlockObjectResponseSyncedBlockSyncedFrom defines a model
-type SyncedBlockObjectResponseSyncedBlockSyncedFrom struct {
+// SyncedBlockRequest defines a model
+type SyncedBlockRequest struct {
+	SyncedFrom BlockObjectSyncedBlockSyncedFrom       `json:"synced_from"`
+	Children   []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
+}
+
+// SyncedBlockSyncedFrom defines a model
+type SyncedBlockSyncedFrom struct {
 	Type    string `json:"type"`
 	BlockID ID     `json:"block_id"`
+}
+
+// SyncedBlockUpdate defines a model
+type SyncedBlockUpdate struct {
+	SyncedFrom BlockObjectSyncedBlockSyncedFrom `json:"synced_from"`
 }
 
 // TabItemWithSingleLevelOfChildren defines a model
@@ -26201,10 +26253,16 @@ type TabRequestWithTabItemChildren struct {
 	Children []TabItemWithoutChildren `json:"children"`
 }
 
-// TableOfContentsBlockTableOfContents defines a model
-type TableOfContentsBlockTableOfContents struct {
+// TableOfContents defines a model
+type TableOfContents struct {
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor `json:"color"`
+}
+
+// TableOfContentsRequest defines a model
+type TableOfContentsRequest struct {
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color APIColor `json:"color,omitzero"`
 }
 
 // TableRequestWithTableRowChildren defines a model
@@ -26220,6 +26278,12 @@ type TableRow struct {
 	TableRow ContentWithTableRow `json:"table_row"`
 	Type     string              `json:"type,omitzero"`
 	Object   string              `json:"object,omitzero"`
+}
+
+// TableUpdate defines a model
+type TableUpdate struct {
+	HasColumnHeader *bool `json:"has_column_header,omitzero"`
+	HasRowHeader    *bool `json:"has_row_header,omitzero"`
 }
 
 // TableViewConfig defines a model
@@ -26302,8 +26366,8 @@ func (v *TableViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, nam
 	return false, nil
 }
 
-// TemplateBlockTemplate defines a model
-type TemplateBlockTemplate struct {
+// Template defines a model
+type Template struct {
 	RichText RichTexts `json:"rich_text"`
 }
 
@@ -26496,6 +26560,12 @@ func (v *TemplateMentionResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
+}
+
+// TemplateRequest defines a model
+type TemplateRequest struct {
+	RichText []RichTextItem                         `json:"rich_text"`
+	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
 }
 
 // IANA timezone to use when resolving template variables like @now and @today (e.g. 'America/New_York'). Defaults to the authorizing user's timezone for public integrations, or UTC for internal integrations.
@@ -27095,12 +27165,29 @@ func (v *TitlePropertyItem) unmarshalJSONMember(dec *jsontext.Decoder, name stri
 	return false, nil
 }
 
-// ToDoBlockToDo defines a model
-type ToDoBlockToDo struct {
+// ToDo defines a model
+type ToDo struct {
 	RichText RichTexts `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color   APIColor `json:"color"`
 	Checked bool     `json:"checked"`
+}
+
+// ToDoRequest defines a model
+type ToDoRequest struct {
+	RichText []RichTextItem `json:"rich_text"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color    APIColor                               `json:"color,omitzero"`
+	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
+	Checked  *bool                                  `json:"checked,omitzero"`
+}
+
+// ToDoUpdate defines a model
+type ToDoUpdate struct {
+	RichText []RichTextItem `json:"rich_text,omitzero"`
+	Checked  *bool          `json:"checked,omitzero"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
+	Color APIColor `json:"color,omitzero"`
 }
 
 // TranscriptionBlock defines a model
@@ -27769,29 +27856,16 @@ type UpdateABlockCallout struct {
 
 // UpdateABlockCode defines a model
 type UpdateABlockCode struct {
-	Code    UpdateABlockCodeCode `json:"code"`
-	Type    string               `json:"type,omitzero"`
-	InTrash *bool                `json:"in_trash,omitzero"`
-}
-
-// UpdateABlockCodeCode defines a model
-type UpdateABlockCodeCode struct {
-	RichText []RichTextItem `json:"rich_text,omitzero"`
-	Language Language       `json:"language,omitzero"`
-	Caption  []RichTextItem `json:"caption,omitzero"`
+	Code    CodeUpdate `json:"code"`
+	Type    string     `json:"type,omitzero"`
+	InTrash *bool      `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockColumn defines a model
 type UpdateABlockColumn struct {
-	Column  UpdateABlockColumnColumn `json:"column"`
-	Type    string                   `json:"type,omitzero"`
-	InTrash *bool                    `json:"in_trash,omitzero"`
-}
-
-// UpdateABlockColumnColumn defines a model
-type UpdateABlockColumnColumn struct {
-	// Ratio between 0 and 1 of the width of this column relative to all columns in the list. If not provided, uses an equal width.
-	WidthRatio float64 `json:"width_ratio,omitzero"`
+	Column  ColumnUpdate `json:"column"`
+	Type    string       `json:"type,omitzero"`
+	InTrash *bool        `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockDivider defines a model
@@ -27803,68 +27877,9 @@ type UpdateABlockDivider struct {
 
 // UpdateABlockEmbed defines a model
 type UpdateABlockEmbed struct {
-	Embed   UpdateABlockEmbedEmbed `json:"embed"`
-	Type    string                 `json:"type,omitzero"`
-	InTrash *bool                  `json:"in_trash,omitzero"`
-}
-
-// UpdateABlockEmbedEmbed defines a model
-// UpdateABlockEmbedEmbed is an untagged anyOf union: at least one field is set after unmarshaling.
-type UpdateABlockEmbedEmbed struct {
-	UpdateMediaContentWithURLAndCaption *UpdateMediaContentWithURLAndCaption
-	UpdateEmbedFileUpload               *UpdateEmbedFileUpload
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *UpdateABlockEmbedEmbed) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = UpdateABlockEmbedEmbed{}
-
-	opts := jsonOptsOf(dec)
-
-	raw, err := dec.ReadValue()
-	if err != nil {
-		return err
-	}
-
-	var matched int
-
-	{
-		var vv UpdateMediaContentWithURLAndCaption
-		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.UpdateMediaContentWithURLAndCaption = &vv
-			matched++
-		}
-	}
-
-	{
-		// decoding checks neither the members the alternative requires nor those it pins to one value
-		required, nullable, pinned := []string{"file_upload"}, map[string]bool{}, map[string]string{}
-		if jsonFits(raw, required, nullable, pinned) {
-			var vv UpdateEmbedFileUpload
-			if err := json.Unmarshal(raw, &vv, opts); err == nil {
-				v.UpdateEmbedFileUpload = &vv
-				matched++
-			}
-		}
-	}
-
-	if matched == 0 {
-		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
-	}
-
-	return nil
-}
-
-// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *UpdateABlockEmbedEmbed) MarshalJSONTo(enc *jsontext.Encoder) error {
-	switch {
-	case v.UpdateMediaContentWithURLAndCaption != nil:
-		return json.MarshalEncode(enc, v.UpdateMediaContentWithURLAndCaption, jsonOptsTo(enc))
-	case v.UpdateEmbedFileUpload != nil:
-		return json.MarshalEncode(enc, v.UpdateEmbedFileUpload, jsonOptsTo(enc))
-	}
-
-	return &json.SemanticError{Err: errors.New("no alternative set")}
+	Embed   EmbedUpdate `json:"embed"`
+	Type    string      `json:"type,omitzero"`
+	InTrash *bool       `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockEquation defines a model
@@ -27918,9 +27933,9 @@ type UpdateABlockImage struct {
 
 // UpdateABlockLinkToPage defines a model
 type UpdateABlockLinkToPage struct {
-	LinkToPage BlockObjectLinkToPageLinkToPage `json:"link_to_page"`
-	Type       string                          `json:"type,omitzero"`
-	InTrash    *bool                           `json:"in_trash,omitzero"`
+	LinkToPage LinkToPageRequest `json:"link_to_page"`
+	Type       string            `json:"type,omitzero"`
+	InTrash    *bool             `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockNumberedListItem defines a model
@@ -27953,14 +27968,9 @@ type UpdateABlockQuote struct {
 
 // UpdateABlockSyncedBlock defines a model
 type UpdateABlockSyncedBlock struct {
-	SyncedBlock UpdateABlockSyncedBlockSyncedBlock `json:"synced_block"`
-	Type        string                             `json:"type,omitzero"`
-	InTrash     *bool                              `json:"in_trash,omitzero"`
-}
-
-// UpdateABlockSyncedBlockSyncedBlock defines a model
-type UpdateABlockSyncedBlockSyncedBlock struct {
-	SyncedFrom BlockObjectSyncedBlockSyncedFrom `json:"synced_from"`
+	SyncedBlock SyncedBlockUpdate `json:"synced_block"`
+	Type        string            `json:"type,omitzero"`
+	InTrash     *bool             `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockTab defines a model
@@ -27972,16 +27982,16 @@ type UpdateABlockTab struct {
 
 // UpdateABlockTable defines a model
 type UpdateABlockTable struct {
-	Table   UpdateABlockTableTable `json:"table"`
-	Type    string                 `json:"type,omitzero"`
-	InTrash *bool                  `json:"in_trash,omitzero"`
+	Table   TableUpdate `json:"table"`
+	Type    string      `json:"type,omitzero"`
+	InTrash *bool       `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockTableOfContents defines a model
 type UpdateABlockTableOfContents struct {
-	TableOfContents BlockObjectTableOfContentsTableOfContents `json:"table_of_contents"`
-	Type            string                                    `json:"type,omitzero"`
-	InTrash         *bool                                     `json:"in_trash,omitzero"`
+	TableOfContents TableOfContentsRequest `json:"table_of_contents"`
+	Type            string                 `json:"type,omitzero"`
+	InTrash         *bool                  `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockTableRow defines a model
@@ -27989,12 +27999,6 @@ type UpdateABlockTableRow struct {
 	TableRow ContentWithTableRow `json:"table_row"`
 	Type     string              `json:"type,omitzero"`
 	InTrash  *bool               `json:"in_trash,omitzero"`
-}
-
-// UpdateABlockTableTable defines a model
-type UpdateABlockTableTable struct {
-	HasColumnHeader *bool `json:"has_column_header,omitzero"`
-	HasRowHeader    *bool `json:"has_row_header,omitzero"`
 }
 
 // UpdateABlockTemplate defines a model
@@ -28006,17 +28010,9 @@ type UpdateABlockTemplate struct {
 
 // UpdateABlockToDo defines a model
 type UpdateABlockToDo struct {
-	ToDo    UpdateABlockToDoToDo `json:"to_do"`
-	Type    string               `json:"type,omitzero"`
-	InTrash *bool                `json:"in_trash,omitzero"`
-}
-
-// UpdateABlockToDoToDo defines a model
-type UpdateABlockToDoToDo struct {
-	RichText []RichTextItem `json:"rich_text,omitzero"`
-	Checked  *bool          `json:"checked,omitzero"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color APIColor `json:"color,omitzero"`
+	ToDo    ToDoUpdate `json:"to_do"`
+	Type    string     `json:"type,omitzero"`
+	InTrash *bool      `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockToggle defines a model
@@ -28517,6 +28513,27 @@ type UpdateAgentStatusOk struct {
 	LastEditedTime string `json:"last_edited_time"`
 }
 
+// Update specific content using search-and-replace operations.
+type UpdateContent struct {
+	// An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content). Operations that match are applied, and each one that matches nothing is reported in "warnings". The call fails only when no operation that changes content matches.
+	ContentUpdates UpdateContentContentUpdates `json:"content_updates"`
+	// Set to true to allow the operation to delete child pages or databases. Defaults to false.
+	AllowDeletingContent *bool `json:"allow_deleting_content,omitzero"`
+}
+
+// An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content). Operations that match are applied, and each one that matches nothing is reported in "warnings". The call fails only when no operation that changes content matches.
+type UpdateContentContentUpdates []UpdateContentContentUpdatesItem
+
+// UpdateContentContentUpdatesItem defines a model
+type UpdateContentContentUpdatesItem struct {
+	// The existing content string to find and replace. Must exactly match the page content.
+	OldStr string `json:"old_str"`
+	// The new content string to replace old_str with.
+	NewStr string `json:"new_str"`
+	// If true, replaces all occurrences of old_str. If false (default), the operation fails if there are multiple matches.
+	ReplaceAllMatches *bool `json:"replace_all_matches,omitzero"`
+}
+
 // UpdateDatabase defines a model
 type UpdateDatabase struct {
 	// The parent page or workspace to move the database to. If not provided, the database will not be moved.
@@ -28574,13 +28591,13 @@ type UpdatePageMarkdown struct {
 	MarkdownVersion MarkdownVersion        `json:"markdown_version,omitzero"`
 	Type            UpdatePageMarkdownType `json:"type"`
 	// Insert new content into the page.
-	InsertContent *MarkdownEditInsertContentInsertContent `json:"insert_content,omitzero"`
+	InsertContent *InsertContent `json:"insert_content,omitzero"`
 	// Replace a range of content in the page.
-	ReplaceContentRange *MarkdownEditReplaceContentRangeReplaceContentRange `json:"replace_content_range,omitzero"`
+	ReplaceContentRange *ReplaceContentRange `json:"replace_content_range,omitzero"`
 	// Update specific content using search-and-replace operations.
-	UpdateContent *MarkdownEditUpdateContentUpdateContent `json:"update_content,omitzero"`
+	UpdateContent *UpdateContent `json:"update_content,omitzero"`
 	// Replace the entire page content with new markdown.
-	ReplaceContent *MarkdownEditReplaceContentReplaceContent `json:"replace_content,omitzero"`
+	ReplaceContent *ReplaceContent `json:"replace_content,omitzero"`
 }
 
 // UpdatePageMarkdownType is a value of UpdatePageMarkdown's type, naming the members it holds.
