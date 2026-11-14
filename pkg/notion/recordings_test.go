@@ -62,7 +62,7 @@ func responseOf(url url.URL) any {
 	case strings.HasPrefix(path, "views?"):
 		return new(ViewList)
 	case path == "users/me":
-		return new(UserObjectResponse)
+		return new(User)
 	case strings.HasPrefix(path, "users?"):
 		return new(UserList)
 	default:

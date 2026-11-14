@@ -135,7 +135,7 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 // Retrieve your token's bot user
 //
 //	GET /users/me
-func (c *Client) GetSelf(ctx context.Context) (*UserObjectResponse, error) {
+func (c *Client) GetSelf(ctx context.Context) (*User, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -166,7 +166,7 @@ func (c *Client) GetSelf(ctx context.Context) (*UserObjectResponse, error) {
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out UserObjectResponse
+			var out User
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
 					return nil, err
@@ -210,7 +210,7 @@ func (c *Client) GetSelf(ctx context.Context) (*UserObjectResponse, error) {
 // Retrieve a user
 //
 //	GET /users/{user_id}
-func (c *Client) GetUser(ctx context.Context, userID ID) (*UserObjectResponse, error) {
+func (c *Client) GetUser(ctx context.Context, userID ID) (*User, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -241,7 +241,7 @@ func (c *Client) GetUser(ctx context.Context, userID ID) (*UserObjectResponse, e
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out UserObjectResponse
+			var out User
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
 					return nil, err
@@ -829,7 +829,7 @@ func (c *Client) RetrieveAPageProperty(ctx context.Context, pageID ID, propertyI
 // Retrieve a page as markdown
 //
 //	GET /pages/{page_id}/markdown
-func (c *Client) RetrievePageMarkdown(ctx context.Context, pageID ID, params *RetrievePageMarkdownParams) (*PageMarkdownResponse, error) {
+func (c *Client) RetrievePageMarkdown(ctx context.Context, pageID ID, params *RetrievePageMarkdownParams) (*PageMarkdown, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -874,7 +874,7 @@ func (c *Client) RetrievePageMarkdown(ctx context.Context, pageID ID, params *Re
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out PageMarkdownResponse
+			var out PageMarkdown
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
 					return nil, err
@@ -918,7 +918,7 @@ func (c *Client) RetrievePageMarkdown(ctx context.Context, pageID ID, params *Re
 // Update a page's content as markdown
 //
 //	PATCH /pages/{page_id}/markdown
-func (c *Client) UpdatePageMarkdown(ctx context.Context, pageID ID, body UpdatePageMarkdown) (*PageMarkdownResponse, error) {
+func (c *Client) UpdatePageMarkdown(ctx context.Context, pageID ID, body UpdatePageMarkdown) (*PageMarkdown, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -956,7 +956,7 @@ func (c *Client) UpdatePageMarkdown(ctx context.Context, pageID ID, body UpdateP
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out PageMarkdownResponse
+			var out PageMarkdown
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
 					return nil, err
@@ -971,7 +971,7 @@ func (c *Client) UpdatePageMarkdown(ctx context.Context, pageID ID, body UpdateP
 		// Accepted when `allow_async` is true and the update has been queued for background execution.
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out PageMarkdownResponse
+			var out PageMarkdown
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
 					return nil, err
@@ -2745,7 +2745,7 @@ func (c *Client) ListFileUploads(ctx context.Context, params *ListFileUploadsPar
 // Create a file upload
 //
 //	POST /file_uploads
-func (c *Client) CreateFile(ctx context.Context, body CreateFile) (*FileUploadObjectResponse, error) {
+func (c *Client) CreateFile(ctx context.Context, body CreateFile) (*FileUpload, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -2783,7 +2783,7 @@ func (c *Client) CreateFile(ctx context.Context, body CreateFile) (*FileUploadOb
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out FileUploadObjectResponse
+			var out FileUpload
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
 					return nil, err
@@ -2827,7 +2827,7 @@ func (c *Client) CreateFile(ctx context.Context, body CreateFile) (*FileUploadOb
 // Upload a file
 //
 //	POST /file_uploads/{file_upload_id}/send
-func (c *Client) UploadFile(ctx context.Context, fileUploadID ID, body UploadFile) (*FileUploadObjectResponse, error) {
+func (c *Client) UploadFile(ctx context.Context, fileUploadID ID, body UploadFile) (*FileUpload, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -2865,7 +2865,7 @@ func (c *Client) UploadFile(ctx context.Context, fileUploadID ID, body UploadFil
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out FileUploadObjectResponse
+			var out FileUpload
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
 					return nil, err
@@ -2909,7 +2909,7 @@ func (c *Client) UploadFile(ctx context.Context, fileUploadID ID, body UploadFil
 // Complete a multi-part file upload
 //
 //	POST /file_uploads/{file_upload_id}/complete
-func (c *Client) CompleteFileUpload(ctx context.Context, fileUploadID ID) (*FileUploadObjectResponse, error) {
+func (c *Client) CompleteFileUpload(ctx context.Context, fileUploadID ID) (*FileUpload, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -2940,7 +2940,7 @@ func (c *Client) CompleteFileUpload(ctx context.Context, fileUploadID ID) (*File
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out FileUploadObjectResponse
+			var out FileUpload
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
 					return nil, err
@@ -2984,7 +2984,7 @@ func (c *Client) CompleteFileUpload(ctx context.Context, fileUploadID ID) (*File
 // Retrieve a file upload
 //
 //	GET /file_uploads/{file_upload_id}
-func (c *Client) RetrieveFileUpload(ctx context.Context, fileUploadID ID) (*FileUploadObjectResponse, error) {
+func (c *Client) RetrieveFileUpload(ctx context.Context, fileUploadID ID) (*FileUpload, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -3015,7 +3015,7 @@ func (c *Client) RetrieveFileUpload(ctx context.Context, fileUploadID ID) (*File
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out FileUploadObjectResponse
+			var out FileUpload
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
 					return nil, err
@@ -3406,7 +3406,7 @@ func (c *Client) RetrieveAView(ctx context.Context, viewID ID) (*DataSourceViewO
 // Delete a view
 //
 //	DELETE /views/{view_id}
-func (c *Client) DeleteView(ctx context.Context, viewID ID) (*PartialDataSourceViewObjectResponse, error) {
+func (c *Client) DeleteView(ctx context.Context, viewID ID) (*PartialDataSourceView, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -3437,7 +3437,7 @@ func (c *Client) DeleteView(ctx context.Context, viewID ID) (*PartialDataSourceV
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out PartialDataSourceViewObjectResponse
+			var out PartialDataSourceView
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
 					return nil, err
@@ -3563,7 +3563,7 @@ func (c *Client) UpdateAView(ctx context.Context, viewID ID, body UpdateView) (*
 // Create a view query
 //
 //	POST /views/{view_id}/queries
-func (c *Client) CreateViewQuery(ctx context.Context, viewID ID, body CreateViewQuery) (*ViewQueryResponse, error) {
+func (c *Client) CreateViewQuery(ctx context.Context, viewID ID, body CreateViewQuery) (*ViewQuery, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -3601,7 +3601,7 @@ func (c *Client) CreateViewQuery(ctx context.Context, viewID ID, body CreateView
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out ViewQueryResponse
+			var out ViewQuery
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
 					return nil, err
@@ -3734,7 +3734,7 @@ func (c *Client) GetViewQueryResults(ctx context.Context, viewID ID, queryID ID,
 // Delete a view query
 //
 //	DELETE /views/{view_id}/queries/{query_id}
-func (c *Client) DeleteViewQuery(ctx context.Context, viewID ID, queryID ID) (*DeletedViewQueryResponse, error) {
+func (c *Client) DeleteViewQuery(ctx context.Context, viewID ID, queryID ID) (*DeletedViewQuery, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -3765,7 +3765,7 @@ func (c *Client) DeleteViewQuery(ctx context.Context, viewID ID, queryID ID) (*D
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out DeletedViewQueryResponse
+			var out DeletedViewQuery
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
 					return nil, err

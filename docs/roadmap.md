@@ -18,10 +18,11 @@ property the API returns, but these:
 
 - 40 names end in a number to resolve a clash, such as `PageIcon2` or `QueryAgentsFilterStatus2`. Compress appends
   one when a shortened name is taken, and flatten when a name is (`AgentID6`); keeping the longer name would say more.
-- 55 names hold a position (`…OneOf2…`, `…AllOf0…`), in 14 groups: union branches that no const, one-valued enum,
-  single required member or prefix of an enum's values tells apart, and the union an `allOf` begins with. Those need
-  names picked by hand in `api/fetch.go`.
-- The `ObjectResponse` and `Response` suffixes could go.
+- 3 names hold a position: `CustomAgentCreatedByOneOf0` and `MeetingNotesDateRangeFilterValueOneOf2`, with its
+  value. `shortNames` in `api/fetch.go` can name them.
+- 43 names say a word twice, as `UpdateABlockCodeCode` or `MarkdownEditInsertContentInsertContent`: what a block or
+  an edit holds, named after it, where saying the word once would be the name of what holds it. Notion calls them by
+  the word alone (`Code`), which the request, response and update forms of each cannot all have.
 
 ## Recordings
 
