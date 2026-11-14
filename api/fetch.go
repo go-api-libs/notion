@@ -152,6 +152,8 @@ var shortNames = map[string]string{
 	"AgentListResultsItemOneOf0":   "CustomAgent",
 	"AgentListResultsItemNotionAi": "NotionAIAgent",
 
+	"AgentListResultsItemOneOf0CreatedByOneOf0": "AgentCreator", // the user or bot that created it
+
 	"CreateACommentAllOf0OneOf0": "PageComment",
 	"CreateACommentAllOf0OneOf1": "PageMarkdownComment",
 	"CreateACommentAllOf0OneOf2": "DiscussionComment",
@@ -165,23 +167,26 @@ var shortNames = map[string]string{
 	"CreateMeetingNoteAllOf0":       "MeetingNoteSource",
 	"CreateMeetingNoteOkOneOf0":     "MeetingNoteBlock",
 
-	"MeetingNotesPropertyFilterFilterString":   "MeetingNotesTextFilter",
-	"MeetingNotesPropertyFilterFilterPerson":   "MeetingNotesPersonFilter",
-	"MeetingNotesPropertyFilterFilterOneOf2":   "MeetingNotesDateFilter",
-	"MeetingNotesPropertyFilterFilterOneOf3":   "MeetingNotesDateRangeFilter",
-	"QueryMeetingNotesFilterFiltersItemOneOf1": "MeetingNotesFilterGroup",
+	"MeetingNotesPropertyFilterFilterString": "MeetingNotesTextFilter",
+	"MeetingNotesPropertyFilterFilterPerson": "MeetingNotesPersonFilter",
+	"MeetingNotesPropertyFilterFilterOneOf2": "MeetingNotesDateFilter",
+	"MeetingNotesPropertyFilterFilterOneOf3": "MeetingNotesDateRangeFilter",
+
+	"MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2": "MeetingNotesDateRangeFilterRelative",
+	"QueryMeetingNotesFilterFiltersItemOneOf1":          "MeetingNotesFilterGroup",
 
 	"DataSourceObjectSyncMetadataHealthAnyOf":  "SyncHealth", // what the failing and the healthy share
 	"DataSourceObjectSyncMetadataHealthPaused": "SyncHealthPaused",
 
-	"RollupPropertyConfigurationRollupAllOfOneOf":  "RollupByNames",
-	"RollupPropertyConfigurationRollupAllOfOneOf2": "RollupByRelationID",
-	"RollupPropertyConfigurationRollupAllOfOneOf3": "RollupByRollupID",
-	"RollupPropertyConfigurationRollupAllOfOneOf4": "RollupByIDs",
+	"RollupPropertyConfigurationRollupAllOfOneOf":   "RollupByNames",
+	"RollupPropertyConfigurationRollupAllOf0OneOf1": "RollupByRelationID",
+	"RollupPropertyConfigurationRollupAllOf0OneOf2": "RollupByRollupID",
+	"RollupPropertyConfigurationRollupAllOf0OneOf3": "RollupByIDs",
 
 	"UpdateABlockAnyOf30":                    "BlockTrashUpdate",
 	"UpdateADataSourcePropertiesValueOneOf0": "PropertyUpdate",
 	"UpdateADataSourcePropertiesValueName":   "PropertyRename",
+	"UpdateAgentStatus2":                     "AgentStatusUpdate", // beside the UpdateAgentStatus it sets
 	"UpdateSessionRequestMessage":            "SessionMessage",
 	"UpdateSessionRequestOneOf1":             "SessionAnswer",
 	"UpdateSessionRequestOneOf2":             "SessionContinuation",
@@ -189,8 +194,13 @@ var shortNames = map[string]string{
 
 // exactNames are the names of shortNames whose schema alone is renamed, as their prefix starts the names of others.
 var exactNames = map[string]string{
-	"DataSourceObjectSyncMetadataHealthAnyOf":  "SyncHealthFailing",
-	"DataSourceObjectSyncMetadataHealthAnyOf2": "SyncHealthOK",
+	"DataSourceObjectSyncMetadataHealthAnyOf":         "SyncHealthFailing",
+	"DataSourceObjectResponseSyncMetadataHealthAnyOf": "SyncHealthOK",
+
+	// upstream's responses, whose names differ from the requests fetch builds only in case, as PageIconResponse holds
+	"contentWithRichTextColorAndIcon": "ContentWithRichTextColorAndIconResponse",
+	"customEmojiPageIcon":             "CustomEmojiPageIconResponse",
+	"externalPageIcon":                "ExternalPageIconResponse",
 }
 
 // shortenNames renames the component schemas as shortNames and exactNames say, then drops ObjectResponse or Response
@@ -283,6 +293,16 @@ func shortenNames(doc *openapi.Document) error {
 
 	if err := edit.RenameSchemas(doc, to); err != nil {
 		return err
+	}
+
+	// codegen would number a second schema of the same Go name, as it did contentWithRichTextColorAndIcon2
+	byGoName := map[string]string{}
+	for n := range doc.Components.Schemas.ByIndex() {
+		if other, ok := byGoName[strcase.ToGoPascal(n)]; ok {
+			return fmt.Errorf("%s and %s would have the same Go name: name one in shortNames or exactNames", other, n)
+		}
+
+		byGoName[strcase.ToGoPascal(n)] = n
 	}
 
 	if len(unused) > 0 {

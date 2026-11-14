@@ -4388,7 +4388,7 @@ func (c *Client) GetAgentInsights(ctx context.Context, agentID string, params *G
 //	PATCH /agents/{agent_id}/status
 //
 // Deprecated.
-func (c *Client) UpdateAgentStatus(ctx context.Context, agentID string, body UpdateAgentStatus3) (*UpdateAgentStatusOk, error) {
+func (c *Client) UpdateAgentStatus(ctx context.Context, agentID string, body AgentStatusUpdate) (*UpdateAgentStatusOk, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -4552,7 +4552,7 @@ func (c *Client) UpdateAgentCreditLimit(ctx context.Context, agentID string, bod
 // Apply many agent operations
 //
 //	POST /agents/batch
-func (c *Client) AgentBatch(ctx context.Context, body AgentBatch) (*AgentBatch2, error) {
+func (c *Client) AgentBatch(ctx context.Context, body AgentBatch) (*AgentBatchOk, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -4590,7 +4590,7 @@ func (c *Client) AgentBatch(ctx context.Context, body AgentBatch) (*AgentBatch2,
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out AgentBatch2
+			var out AgentBatchOk
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
 					return nil, err
@@ -4873,7 +4873,7 @@ func (c *Client) GetSkillDirectory(ctx context.Context, id ID) (*GetSkillDirecto
 // Update a session
 //
 //	POST /sessions
-func (c *Client) UpdateSession(ctx context.Context, body UpdateSessionRequest) (*CancelSession2, error) {
+func (c *Client) UpdateSession(ctx context.Context, body UpdateSessionRequest) (*CancelSessionOk, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -4911,7 +4911,7 @@ func (c *Client) UpdateSession(ctx context.Context, body UpdateSessionRequest) (
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out CancelSession2
+			var out CancelSessionOk
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
 					return nil, err
@@ -5194,7 +5194,7 @@ func (c *Client) QuerySessionEvents(ctx context.Context, sessionID ID, body Quer
 // Cancel a session
 //
 //	POST /sessions/{session_id}/cancel
-func (c *Client) CancelSession(ctx context.Context, sessionID ID, body CancelSession) (*CancelSession2, error) {
+func (c *Client) CancelSession(ctx context.Context, sessionID ID, body CancelSession) (*CancelSessionOk, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -5232,7 +5232,7 @@ func (c *Client) CancelSession(ctx context.Context, sessionID ID, body CancelSes
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out CancelSession2
+			var out CancelSessionOk
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
 					return nil, err

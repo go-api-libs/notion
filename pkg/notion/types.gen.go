@@ -253,8 +253,8 @@ type AgentBatch struct {
 	Operations []AgentBatchOperationsItem `json:"operations"`
 }
 
-// AgentBatch2 defines a model
-type AgentBatch2 struct {
+// AgentBatchOk defines a model
+type AgentBatchOk struct {
 	Object           string                     `json:"object"`
 	ID               string                     `json:"id"`
 	StatusURL        string                     `json:"status_url"`
@@ -416,7 +416,7 @@ type AgentBatchOperationsItemUpdateStatus struct {
 	// The agent ID (a UUID), or `notion_ai` for the personal agent. Endpoint-specific restrictions still apply.
 	AgentID AgentID `json:"agent_id"`
 	// The status to apply to this agent.
-	Fields UpdateAgentStatus3 `json:"fields"`
+	Fields AgentStatusUpdate `json:"fields"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether AgentBatchOperationsItemUpdateStatus declares it.
@@ -1504,6 +1504,14 @@ type AgentCreatedByUser struct {
 	ID ID `json:"id"`
 }
 
+// AgentCreator defines a model
+type AgentCreator struct {
+	// One of: `user`, `bot`
+	Type SessionCreatedByType `json:"type"`
+	// The ID of the user or bot that created this agent.
+	ID ID `json:"id"`
+}
+
 // The per-agent credit limit that applies to this agent, null when uncapped, or "hidden" when the caller lacks full access to the agent. This is the effective limit computed at runtime, folding in both the agent's own limit and any workspace-admin default.
 // AgentCreditLimit is an untagged oneOf union: exactly one field is set after unmarshaling.
 type AgentCreditLimit struct {
@@ -2211,6 +2219,12 @@ func (e AgentStatus) Valid() bool {
 	}
 }
 
+// AgentStatusUpdate defines a model
+type AgentStatusUpdate struct {
+	// Set to "active" to re-enable an agent that an editor disabled, through this API or in agent settings, or "disabled" to turn off a running agent.
+	Status UpdateAgentStatus `json:"status"`
+}
+
 // AgentTriggers defines a model
 type AgentTriggers []AgentTriggersItem
 
@@ -2696,7 +2710,7 @@ type Block struct {
 	InTrash          bool                                        `json:"in_trash"`
 	RequestID        uuid.UUID                                   `json:"request_id,omitzero"`
 	Type             BlockType                                   `json:"type"`
-	Paragraph        *ContentWithRichTextColorAndIcon2           `json:"paragraph,omitzero"`
+	Paragraph        *ContentWithRichTextColorAndIconResponse    `json:"paragraph,omitzero"`
 	Heading1         *HeaderContentWithRichTextAndColorResponse  `json:"heading_1,omitzero"`
 	Heading2         *HeaderContentWithRichTextAndColorResponse  `json:"heading_2,omitzero"`
 	Heading3         *HeaderContentWithRichTextAndColorResponse  `json:"heading_3,omitzero"`
@@ -2712,7 +2726,7 @@ type Block struct {
 	ChildDatabase    *Title                                      `json:"child_database,omitzero"`
 	Equation         *ExpressionObject                           `json:"equation,omitzero"`
 	Code             *CodeBlockCode                              `json:"code,omitzero"`
-	Callout          *ContentWithRichTextColorAndIcon2           `json:"callout,omitzero"`
+	Callout          *ContentWithRichTextColorAndIconResponse    `json:"callout,omitzero"`
 	Divider          *EmptyObject                                `json:"divider,omitzero"`
 	Breadcrumb       *EmptyObject                                `json:"breadcrumb,omitzero"`
 	TableOfContents  *TableOfContentsBlockTableOfContents        `json:"table_of_contents,omitzero"`
@@ -3002,14 +3016,14 @@ type BlockList struct {
 type BlockObject struct {
 	Object           string                                     `json:"object,omitzero"`
 	Type             BlockObjectType                            `json:"type,omitzero"`
-	Embed            *BlockObjectEmbed2                         `json:"embed,omitzero"`
+	Embed            *BlockObjectEmbedEmbed                     `json:"embed,omitzero"`
 	Bookmark         *MediaContentWithURLAndCaption             `json:"bookmark,omitzero"`
 	Image            *MediaContentWithFileAndCaption            `json:"image,omitzero"`
 	Video            *MediaContentWithFileAndCaption            `json:"video,omitzero"`
 	PDF              *MediaContentWithFileAndCaption            `json:"pdf,omitzero"`
 	File             *MediaContentWithFileNameAndCaption        `json:"file,omitzero"`
 	Audio            *MediaContentWithFileAndCaption            `json:"audio,omitzero"`
-	Code             *BlockObjectCode2                          `json:"code,omitzero"`
+	Code             *BlockObjectCodeCode                       `json:"code,omitzero"`
 	Equation         *ContentWithExpression                     `json:"equation,omitzero"`
 	Divider          *EmptyObject                               `json:"divider,omitzero"`
 	Breadcrumb       *EmptyObject                               `json:"breadcrumb,omitzero"`
@@ -3024,14 +3038,14 @@ type BlockObject struct {
 	Heading2         *BlockObjectHeading                        `json:"heading_2,omitzero"`
 	Heading3         *BlockObjectHeading                        `json:"heading_3,omitzero"`
 	Heading4         *BlockObjectHeading                        `json:"heading_4,omitzero"`
-	Paragraph        *BlockObjectCallout2                       `json:"paragraph,omitzero"`
-	BulletedListItem *BlockObjectQuote2                         `json:"bulleted_list_item,omitzero"`
-	NumberedListItem *BlockObjectQuote2                         `json:"numbered_list_item,omitzero"`
-	Quote            *BlockObjectQuote2                         `json:"quote,omitzero"`
+	Paragraph        *BlockObjectCalloutCallout                 `json:"paragraph,omitzero"`
+	BulletedListItem *BlockObjectQuoteQuote                     `json:"bulleted_list_item,omitzero"`
+	NumberedListItem *BlockObjectQuoteQuote                     `json:"numbered_list_item,omitzero"`
+	Quote            *BlockObjectQuoteQuote                     `json:"quote,omitzero"`
 	ToDo             *BlockObjectToDoToDo                       `json:"to_do,omitzero"`
-	Toggle           *BlockObjectQuote2                         `json:"toggle,omitzero"`
+	Toggle           *BlockObjectQuoteQuote                     `json:"toggle,omitzero"`
 	Template         *BlockObjectTemplateTemplate               `json:"template,omitzero"`
-	Callout          *BlockObjectCallout2                       `json:"callout,omitzero"`
+	Callout          *BlockObjectCalloutCallout                 `json:"callout,omitzero"`
 	SyncedBlock      *BlockObjectSyncedBlockSyncedBlock         `json:"synced_block,omitzero"`
 }
 
@@ -3281,8 +3295,8 @@ type BlockObjectBreadcrumb struct {
 	Object     string      `json:"object,omitzero"`
 }
 
-// BlockObjectCallout2 defines a model
-type BlockObjectCallout2 struct {
+// BlockObjectCalloutCallout defines a model
+type BlockObjectCalloutCallout struct {
 	RichText []RichTextItem `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color    APIColor                               `json:"color,omitzero"`
@@ -3292,13 +3306,13 @@ type BlockObjectCallout2 struct {
 
 // BlockObjectCode defines a model
 type BlockObjectCode struct {
-	Code   BlockObjectCode2 `json:"code"`
-	Type   string           `json:"type,omitzero"`
-	Object string           `json:"object,omitzero"`
+	Code   BlockObjectCodeCode `json:"code"`
+	Type   string              `json:"type,omitzero"`
+	Object string              `json:"object,omitzero"`
 }
 
-// BlockObjectCode2 defines a model
-type BlockObjectCode2 struct {
+// BlockObjectCodeCode defines a model
+type BlockObjectCodeCode struct {
 	RichText []RichTextItem `json:"rich_text"`
 	Language Language       `json:"language"`
 	Caption  []RichTextItem `json:"caption,omitzero"`
@@ -3320,21 +3334,21 @@ type BlockObjectDivider struct {
 
 // BlockObjectEmbed defines a model
 type BlockObjectEmbed struct {
-	Embed  BlockObjectEmbed2 `json:"embed"`
-	Type   string            `json:"type,omitzero"`
-	Object string            `json:"object,omitzero"`
+	Embed  BlockObjectEmbedEmbed `json:"embed"`
+	Type   string                `json:"type,omitzero"`
+	Object string                `json:"object,omitzero"`
 }
 
-// BlockObjectEmbed2 defines a model
-// BlockObjectEmbed2 is an untagged anyOf union: at least one field is set after unmarshaling.
-type BlockObjectEmbed2 struct {
+// BlockObjectEmbedEmbed defines a model
+// BlockObjectEmbedEmbed is an untagged anyOf union: at least one field is set after unmarshaling.
+type BlockObjectEmbedEmbed struct {
 	MediaContentWithURLAndCaption *MediaContentWithURLAndCaption
 	EmbedFileUpload               *EmbedFileUpload
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *BlockObjectEmbed2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = BlockObjectEmbed2{}
+func (v *BlockObjectEmbedEmbed) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = BlockObjectEmbedEmbed{}
 
 	opts := jsonOptsOf(dec)
 
@@ -3377,7 +3391,7 @@ func (v *BlockObjectEmbed2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *BlockObjectEmbed2) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *BlockObjectEmbedEmbed) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.MediaContentWithURLAndCaption != nil:
 		return json.MarshalEncode(enc, v.MediaContentWithURLAndCaption, jsonOptsTo(enc))
@@ -3525,8 +3539,8 @@ type BlockObjectPdf struct {
 	Object string                         `json:"object,omitzero"`
 }
 
-// BlockObjectQuote2 defines a model
-type BlockObjectQuote2 struct {
+// BlockObjectQuoteQuote defines a model
+type BlockObjectQuoteQuote struct {
 	RichText []RichTextItem `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color    APIColor                               `json:"color,omitzero"`
@@ -3537,14 +3551,14 @@ type BlockObjectQuote2 struct {
 type BlockObjectRequestWithoutChildren struct {
 	Object           string                                     `json:"object,omitzero"`
 	Type             BlockObjectRequestWithoutChildrenType      `json:"type,omitzero"`
-	Embed            *BlockObjectEmbed2                         `json:"embed,omitzero"`
+	Embed            *BlockObjectEmbedEmbed                     `json:"embed,omitzero"`
 	Bookmark         *MediaContentWithURLAndCaption             `json:"bookmark,omitzero"`
 	Image            *MediaContentWithFileAndCaption            `json:"image,omitzero"`
 	Video            *MediaContentWithFileAndCaption            `json:"video,omitzero"`
 	PDF              *MediaContentWithFileAndCaption            `json:"pdf,omitzero"`
 	File             *MediaContentWithFileNameAndCaption        `json:"file,omitzero"`
 	Audio            *MediaContentWithFileAndCaption            `json:"audio,omitzero"`
-	Code             *BlockObjectCode2                          `json:"code,omitzero"`
+	Code             *BlockObjectCodeCode                       `json:"code,omitzero"`
 	Equation         *ContentWithExpression                     `json:"equation,omitzero"`
 	Divider          *EmptyObject                               `json:"divider,omitzero"`
 	Breadcrumb       *EmptyObject                               `json:"breadcrumb,omitzero"`
@@ -3843,14 +3857,14 @@ type BlockObjectVideo struct {
 type BlockObjectWithSingleLevelOfChildren struct {
 	Object           string                                                      `json:"object,omitzero"`
 	Type             BlockObjectWithSingleLevelOfChildrenType                    `json:"type,omitzero"`
-	Embed            *BlockObjectEmbed2                                          `json:"embed,omitzero"`
+	Embed            *BlockObjectEmbedEmbed                                      `json:"embed,omitzero"`
 	Bookmark         *MediaContentWithURLAndCaption                              `json:"bookmark,omitzero"`
 	Image            *MediaContentWithFileAndCaption                             `json:"image,omitzero"`
 	Video            *MediaContentWithFileAndCaption                             `json:"video,omitzero"`
 	PDF              *MediaContentWithFileAndCaption                             `json:"pdf,omitzero"`
 	File             *MediaContentWithFileNameAndCaption                         `json:"file,omitzero"`
 	Audio            *MediaContentWithFileAndCaption                             `json:"audio,omitzero"`
-	Code             *BlockObjectCode2                                           `json:"code,omitzero"`
+	Code             *BlockObjectCodeCode                                        `json:"code,omitzero"`
 	Equation         *ContentWithExpression                                      `json:"equation,omitzero"`
 	Divider          *EmptyObject                                                `json:"divider,omitzero"`
 	Breadcrumb       *EmptyObject                                                `json:"breadcrumb,omitzero"`
@@ -4683,8 +4697,8 @@ type CancelSession struct {
 	EventID string `json:"event_id,omitzero"`
 }
 
-// CancelSession2 defines a model
-type CancelSession2 struct {
+// CancelSessionOk defines a model
+type CancelSessionOk struct {
 	// Always `session`
 	Object  string `json:"object"`
 	ID      string `json:"id"`
@@ -5817,6 +5831,7 @@ func (v *ContentPositionSchema) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 // ContentWithExpression defines a model
 type ContentWithExpression struct {
+	// A KaTeX compatible string.
 	Expression string `json:"expression"`
 }
 
@@ -5856,16 +5871,16 @@ type ContentWithRichTextColorAndIcon struct {
 	Icon  PageIcon `json:"icon,omitzero"`
 }
 
-// ContentWithRichTextColorAndIcon2 defines a model
-type ContentWithRichTextColorAndIcon2 struct {
+// ContentWithRichTextColorAndIconResponse defines a model
+type ContentWithRichTextColorAndIconResponse struct {
 	RichText RichTexts `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor          `json:"color"`
 	Icon  *PageIconResponse `json:"icon"`
 }
 
-// ContentWithRichTextColorAndIconUpdate defines a model
-type ContentWithRichTextColorAndIconUpdate struct {
+// ContentWithRichTextColorAndIconResponseUpdate defines a model
+type ContentWithRichTextColorAndIconResponseUpdate struct {
 	RichText []RichTextItem `json:"rich_text,omitzero"`
 	Icon     PageIcon       `json:"icon,omitzero"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
@@ -6448,9 +6463,10 @@ type CreateATokenOk struct {
 
 // CreateATokenOkOwner defines a model
 type CreateATokenOkOwner struct {
-	Type      CreateATokenOkOwnerType      `json:"type"`
-	User      *CreateATokenOkOwnerUserUser `json:"user,omitzero"`
-	Workspace *bool                        `json:"workspace,omitzero"`
+	Type CreateATokenOkOwnerType      `json:"type"`
+	User *CreateATokenOkOwnerUserUser `json:"user,omitzero"`
+	// Always `true`
+	Workspace *bool `json:"workspace,omitzero"`
 }
 
 // CreateATokenOkOwnerType is a value of CreateATokenOkOwner's type, naming the members it holds.
@@ -6609,8 +6625,10 @@ type CreateATokenOkOwnerUserUserPersonPerson struct {
 
 // CreateATokenOwnerWorkspace defines a model
 type CreateATokenOwnerWorkspace struct {
-	Type      string `json:"type"`
-	Workspace bool   `json:"workspace"`
+	// Always `workspace`
+	Type string `json:"type"`
+	// Always `true`
+	Workspace bool `json:"workspace"`
 }
 
 // CreateATokenRefreshToken defines a model
@@ -6674,9 +6692,11 @@ type CreateDatabaseForViewPosition struct {
 // CreateDatabaseParent defines a model
 type CreateDatabaseParent struct {
 	// The type of parent.
-	Type      CreateDatabaseParentType `json:"type"`
-	PageID    *ID                      `json:"page_id,omitzero"`
-	Workspace *bool                    `json:"workspace,omitzero"`
+	Type CreateDatabaseParentType `json:"type"`
+	// The ID of the page to create the database on.
+	PageID *ID `json:"page_id,omitzero"`
+	// Always `true`
+	Workspace *bool `json:"workspace,omitzero"`
 }
 
 // tagsOfCreateDatabaseParent holds, for each value of type, the members of its alternative's own, each with how it is needed.
@@ -6743,8 +6763,9 @@ func (v *CreateDatabaseParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 // CreateDatabaseParentAllOfPageID defines a model
 type CreateDatabaseParentAllOfPageID struct {
 	// Always `page_id`
-	Type   string `json:"type"`
-	PageID ID     `json:"page_id"`
+	Type string `json:"type"`
+	// The ID of the page to create the database on.
+	PageID ID `json:"page_id"`
 }
 
 // The type of parent.
@@ -7203,9 +7224,9 @@ type CustomAgent struct {
 	// "active" when the agent can run; "disabled" when it is paused (see pause_reason); "deleted" when it has been removed.
 	Status AgentStatus `json:"status"`
 	// Why the agent is paused when status is "disabled" (e.g. "credit_limit", "disabled_from_workspace_settings"); null when active.
-	PauseReason  AgentPauseReasonOneOf      `json:"pause_reason"`
-	CreatedBy    CustomAgentCreatedByOneOf0 `json:"created_by"`
-	AgentVersion AgentVersionOneOf          `json:"agent_version"`
+	PauseReason  AgentPauseReasonOneOf `json:"pause_reason"`
+	CreatedBy    AgentCreator          `json:"created_by"`
+	AgentVersion AgentVersionOneOf     `json:"agent_version"`
 	// Date and time when this agent was created.
 	CreatedTime time.Time `json:"created_time"`
 	// Date and time when this agent was last edited.
@@ -7238,14 +7259,6 @@ func (e CustomAgentAgentType) Valid() bool {
 	}
 }
 
-// CustomAgentCreatedByOneOf0 defines a model
-type CustomAgentCreatedByOneOf0 struct {
-	// One of: `user`, `bot`
-	Type SessionCreatedByType `json:"type"`
-	// The ID of the user or bot that created this agent.
-	ID ID `json:"id"`
-}
-
 // CustomEmoji defines a model
 type CustomEmoji struct {
 	// The ID of the custom emoji.
@@ -7274,20 +7287,21 @@ type CustomEmojiList struct {
 // CustomEmojiPageIcon defines a model
 type CustomEmojiPageIcon struct {
 	// Always `custom_emoji`
-	Type        string                         `json:"type,omitzero"`
-	CustomEmoji CustomEmojiPageIconCustomEmoji `json:"custom_emoji"`
+	Type string `json:"type,omitzero"`
+	// Details of the custom emoji mention.
+	CustomEmoji CustomEmojiPageIconResponseCustomEmoji `json:"custom_emoji"`
 }
 
-// CustomEmojiPageIcon2 defines a model
-type CustomEmojiPageIcon2 struct {
+// CustomEmojiPageIconResponse defines a model
+type CustomEmojiPageIconResponse struct {
 	// Type of icon. In this case, a custom emoji.
 	Type string `json:"type"`
 	// The custom emoji details for the icon.
 	CustomEmoji CustomEmoji `json:"custom_emoji"`
 }
 
-// CustomEmojiPageIconCustomEmoji defines a model
-type CustomEmojiPageIconCustomEmoji struct {
+// CustomEmojiPageIconResponseCustomEmoji defines a model
+type CustomEmojiPageIconResponseCustomEmoji struct {
 	// The ID of the custom emoji.
 	ID ID `json:"id"`
 	// The name of the custom emoji.
@@ -8966,6 +8980,7 @@ type ExistencePropertyFilterIsNotEmpty struct {
 
 // ExpressionObject defines a model
 type ExpressionObject struct {
+	// A KaTeX compatible string.
 	Expression string `json:"expression"`
 }
 
@@ -8977,12 +8992,13 @@ type ExternalFile struct {
 // ExternalPageIcon defines a model
 type ExternalPageIcon struct {
 	// Always `external`
-	Type     string                      `json:"type,omitzero"`
+	Type string `json:"type,omitzero"`
+	// External URL for the cover.
 	External TextRichTextItemTextLinkURL `json:"external"`
 }
 
-// ExternalPageIcon2 defines a model
-type ExternalPageIcon2 struct {
+// ExternalPageIconResponse defines a model
+type ExternalPageIconResponse struct {
 	// Type of icon. In this case, an external URL.
 	Type string `json:"type"`
 	// The external URL for the icon.
@@ -9262,6 +9278,7 @@ func (v *FileUploadFileImportResult) MarshalJSONTo(enc *jsontext.Encoder) error 
 
 // FileUploadID defines a model
 type FileUploadID struct {
+	// The ID of the page in the mention.
 	ID ID `json:"id"`
 }
 
@@ -9322,7 +9339,8 @@ func (e FileUploadObjectFileImportResultAllOfErrorType) Valid() bool {
 // FileUploadPageIcon defines a model
 type FileUploadPageIcon struct {
 	// Always `file_upload`
-	Type       string   `json:"type,omitzero"`
+	Type string `json:"type,omitzero"`
+	// The file upload for the cover.
 	FileUpload IDObject `json:"file_upload"`
 }
 
@@ -10848,6 +10866,7 @@ type ID = uuid.UUID
 
 // IDObject defines a model
 type IDObject struct {
+	// ID of a FileUpload object that has the status `uploaded`.
 	ID string `json:"id"`
 }
 
@@ -11208,10 +11227,11 @@ type LinkPreviewMention struct {
 
 // LinkToPageBlockLinkToPage defines a model
 type LinkToPageBlockLinkToPage struct {
-	Type       LinkToPageBlockLinkToPageType `json:"type"`
-	PageID     *ID                           `json:"page_id,omitzero"`
-	DatabaseID *ID                           `json:"database_id,omitzero"`
-	CommentID  *ID                           `json:"comment_id,omitzero"`
+	Type LinkToPageBlockLinkToPageType `json:"type"`
+	// The ID of the page to create the database on.
+	PageID     *ID `json:"page_id,omitzero"`
+	DatabaseID *ID `json:"database_id,omitzero"`
+	CommentID  *ID `json:"comment_id,omitzero"`
 }
 
 // LinkToPageBlockLinkToPageType is a value of LinkToPageBlockLinkToPage's type, naming the members it holds.
@@ -12326,12 +12346,43 @@ func (e MeetingNotesDateRangeFilterOperator) Valid() bool {
 	}
 }
 
+// MeetingNotesDateRangeFilterRelative defines a model
+type MeetingNotesDateRangeFilterRelative struct {
+	// Always `relative`
+	Type string `json:"type"`
+	// One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`
+	Value MeetingNotesDateRangeFilterRelativeValue `json:"value"`
+}
+
+// One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`
+type MeetingNotesDateRangeFilterRelativeValue string
+
+const (
+	MeetingNotesDateRangeFilterRelativeValueThisWeek     MeetingNotesDateRangeFilterRelativeValue = "this_week"
+	MeetingNotesDateRangeFilterRelativeValueThePastWeek  MeetingNotesDateRangeFilterRelativeValue = "the_past_week"
+	MeetingNotesDateRangeFilterRelativeValueThePastMonth MeetingNotesDateRangeFilterRelativeValue = "the_past_month"
+	MeetingNotesDateRangeFilterRelativeValueThePastYear  MeetingNotesDateRangeFilterRelativeValue = "the_past_year"
+	MeetingNotesDateRangeFilterRelativeValueTheNextWeek  MeetingNotesDateRangeFilterRelativeValue = "the_next_week"
+	MeetingNotesDateRangeFilterRelativeValueTheNextMonth MeetingNotesDateRangeFilterRelativeValue = "the_next_month"
+	MeetingNotesDateRangeFilterRelativeValueTheNextYear  MeetingNotesDateRangeFilterRelativeValue = "the_next_year"
+)
+
+// Valid indicates whether the value is a known member of the MeetingNotesDateRangeFilterRelativeValue enum.
+func (e MeetingNotesDateRangeFilterRelativeValue) Valid() bool {
+	switch e {
+	case MeetingNotesDateRangeFilterRelativeValueThisWeek, MeetingNotesDateRangeFilterRelativeValueThePastWeek, MeetingNotesDateRangeFilterRelativeValueThePastMonth, MeetingNotesDateRangeFilterRelativeValueThePastYear, MeetingNotesDateRangeFilterRelativeValueTheNextWeek, MeetingNotesDateRangeFilterRelativeValueTheNextMonth, MeetingNotesDateRangeFilterRelativeValueTheNextYear:
+		return true
+	default:
+		return false
+	}
+}
+
 // The range to compare against.
 // MeetingNotesDateRangeFilterValue is an untagged oneOf union: exactly one field is set after unmarshaling.
 type MeetingNotesDateRangeFilterValue struct {
 	MeetingNotesDateRangeFilterValueCustom      *MeetingNotesDateRangeFilterValueCustom
 	MeetingNotesDateRangeFilterValueSurrounding *MeetingNotesDateRangeFilterValueSurrounding
-	MeetingNotesDateRangeFilterValueOneOf2      *MeetingNotesDateRangeFilterValueOneOf2
+	MeetingNotesDateRangeFilterRelative         *MeetingNotesDateRangeFilterRelative
 	MeetingNotesDateRangeFilterValueExact       *MeetingNotesDateRangeFilterValueExact
 }
 
@@ -12383,9 +12434,9 @@ func (v *MeetingNotesDateRangeFilterValue) UnmarshalJSONFrom(dec *jsontext.Decod
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"type", "value"}, map[string]bool{}, map[string]string{"type": "\"relative\""}
 			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"value": {"\"this_week\"", "\"the_past_week\"", "\"the_past_month\"", "\"the_past_year\"", "\"the_next_week\"", "\"the_next_month\"", "\"the_next_year\""}})) {
-				var vv MeetingNotesDateRangeFilterValueOneOf2
+				var vv MeetingNotesDateRangeFilterRelative
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.MeetingNotesDateRangeFilterValueOneOf2 = &vv
+					v.MeetingNotesDateRangeFilterRelative = &vv
 					matched++
 				}
 			}
@@ -12423,8 +12474,8 @@ func (v *MeetingNotesDateRangeFilterValue) MarshalJSONTo(enc *jsontext.Encoder) 
 		return json.MarshalEncode(enc, v.MeetingNotesDateRangeFilterValueCustom, jsonOptsTo(enc))
 	case v.MeetingNotesDateRangeFilterValueSurrounding != nil:
 		return json.MarshalEncode(enc, v.MeetingNotesDateRangeFilterValueSurrounding, jsonOptsTo(enc))
-	case v.MeetingNotesDateRangeFilterValueOneOf2 != nil:
-		return json.MarshalEncode(enc, v.MeetingNotesDateRangeFilterValueOneOf2, jsonOptsTo(enc))
+	case v.MeetingNotesDateRangeFilterRelative != nil:
+		return json.MarshalEncode(enc, v.MeetingNotesDateRangeFilterRelative, jsonOptsTo(enc))
 	case v.MeetingNotesDateRangeFilterValueExact != nil:
 		return json.MarshalEncode(enc, v.MeetingNotesDateRangeFilterValueExact, jsonOptsTo(enc))
 	}
@@ -12480,37 +12531,6 @@ type MeetingNotesDateRangeFilterValueExactValue struct {
 	StartDate civil.Date `json:"start_date,omitzero"`
 	// Inclusive end of the range as an ISO 8601 date string, if any.
 	EndDate civil.Date `json:"end_date,omitzero"`
-}
-
-// MeetingNotesDateRangeFilterValueOneOf2 defines a model
-type MeetingNotesDateRangeFilterValueOneOf2 struct {
-	// Always `relative`
-	Type string `json:"type"`
-	// One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`
-	Value MeetingNotesDateRangeFilterValueOneOf2Value `json:"value"`
-}
-
-// One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`
-type MeetingNotesDateRangeFilterValueOneOf2Value string
-
-const (
-	MeetingNotesDateRangeFilterValueOneOf2ValueThisWeek     MeetingNotesDateRangeFilterValueOneOf2Value = "this_week"
-	MeetingNotesDateRangeFilterValueOneOf2ValueThePastWeek  MeetingNotesDateRangeFilterValueOneOf2Value = "the_past_week"
-	MeetingNotesDateRangeFilterValueOneOf2ValueThePastMonth MeetingNotesDateRangeFilterValueOneOf2Value = "the_past_month"
-	MeetingNotesDateRangeFilterValueOneOf2ValueThePastYear  MeetingNotesDateRangeFilterValueOneOf2Value = "the_past_year"
-	MeetingNotesDateRangeFilterValueOneOf2ValueTheNextWeek  MeetingNotesDateRangeFilterValueOneOf2Value = "the_next_week"
-	MeetingNotesDateRangeFilterValueOneOf2ValueTheNextMonth MeetingNotesDateRangeFilterValueOneOf2Value = "the_next_month"
-	MeetingNotesDateRangeFilterValueOneOf2ValueTheNextYear  MeetingNotesDateRangeFilterValueOneOf2Value = "the_next_year"
-)
-
-// Valid indicates whether the value is a known member of the MeetingNotesDateRangeFilterValueOneOf2Value enum.
-func (e MeetingNotesDateRangeFilterValueOneOf2Value) Valid() bool {
-	switch e {
-	case MeetingNotesDateRangeFilterValueOneOf2ValueThisWeek, MeetingNotesDateRangeFilterValueOneOf2ValueThePastWeek, MeetingNotesDateRangeFilterValueOneOf2ValueThePastMonth, MeetingNotesDateRangeFilterValueOneOf2ValueThePastYear, MeetingNotesDateRangeFilterValueOneOf2ValueTheNextWeek, MeetingNotesDateRangeFilterValueOneOf2ValueTheNextMonth, MeetingNotesDateRangeFilterValueOneOf2ValueTheNextYear:
-		return true
-	default:
-		return false
-	}
 }
 
 // MeetingNotesDateRangeFilterValueSurrounding defines a model
@@ -12919,8 +12939,9 @@ type MentionRichTextItemMention struct {
 	// Details of the database mention.
 	Database *RelationItemPropertyValue `json:"database,omitzero"`
 	// Details of the template mention.
-	TemplateMention *TemplateMention                `json:"template_mention,omitzero"`
-	CustomEmoji     *CustomEmojiPageIconCustomEmoji `json:"custom_emoji,omitzero"`
+	TemplateMention *TemplateMention `json:"template_mention,omitzero"`
+	// Details of the custom emoji mention.
+	CustomEmoji *CustomEmojiPageIconResponseCustomEmoji `json:"custom_emoji,omitzero"`
 }
 
 // MentionRichTextItemMentionType is a value of MentionRichTextItemMention's type, naming the members it holds.
@@ -14012,9 +14033,11 @@ type PageContentUpdatedWebhookPayloadData struct {
 
 // PageCover defines a model
 type PageCover struct {
-	Type       PageCoverType                `json:"type,omitzero"`
-	FileUpload *IDObject                    `json:"file_upload,omitzero"`
-	External   *TextRichTextItemTextLinkURL `json:"external,omitzero"`
+	Type PageCoverType `json:"type,omitzero"`
+	// The file upload for the cover.
+	FileUpload *IDObject `json:"file_upload,omitzero"`
+	// External URL for the cover.
+	External *TextRichTextItemTextLinkURL `json:"external,omitzero"`
 }
 
 // PageCoverType is a value of PageCover's type, naming the members it holds.
@@ -14213,12 +14236,15 @@ type PageIDParentForBlockBasedObject struct {
 
 // PageIcon defines a model
 type PageIcon struct {
-	Type       PageIconType `json:"type,omitzero"`
-	FileUpload *IDObject    `json:"file_upload,omitzero"`
+	Type PageIconType `json:"type,omitzero"`
+	// The file upload for the cover.
+	FileUpload *IDObject `json:"file_upload,omitzero"`
 	// An emoji character.
-	Emoji       Emoji                           `json:"emoji,omitzero"`
-	External    *TextRichTextItemTextLinkURL    `json:"external,omitzero"`
-	CustomEmoji *CustomEmojiPageIconCustomEmoji `json:"custom_emoji,omitzero"`
+	Emoji Emoji `json:"emoji,omitzero"`
+	// External URL for the cover.
+	External *TextRichTextItemTextLinkURL `json:"external,omitzero"`
+	// Details of the custom emoji mention.
+	CustomEmoji *CustomEmojiPageIconResponseCustomEmoji `json:"custom_emoji,omitzero"`
 	// A Notion native icon, specified by name and optional color.
 	Icon *IconPageIconIcon `json:"icon,omitzero"`
 }
@@ -14780,7 +14806,7 @@ type PagePropertiesValue struct {
 	RichText     []RichTextItem                               `json:"rich_text,omitzero"`
 	Number       *float64                                     `json:"number,omitzero"`
 	URL          *Text                                        `json:"url,omitzero"`
-	Select       *PagePropertiesValueSelect2                  `json:"select,omitzero"`
+	Select       *PagePropertiesValueSelectSelect             `json:"select,omitzero"`
 	MultiSelect  []PagePropertiesValueMultiSelectItem         `json:"multi_select,omitzero"`
 	People       []PagePropertiesValuePeopleItem              `json:"people,omitzero"`
 	Email        *String                                      `json:"email,omitzero"`
@@ -14789,8 +14815,8 @@ type PagePropertiesValue struct {
 	Checkbox     *bool                                        `json:"checkbox,omitzero"`
 	Relation     []RelationItemPropertyValue                  `json:"relation,omitzero"`
 	Files        []PagePropertiesValueFilesItem               `json:"files,omitzero"`
-	Status       *PagePropertiesValueSelect2                  `json:"status,omitzero"`
-	Place        *PagePropertiesValuePlace2                   `json:"place,omitzero"`
+	Status       *PagePropertiesValueSelectSelect             `json:"status,omitzero"`
+	Place        *PagePropertiesValuePlacePlace               `json:"place,omitzero"`
 	Verification *PagePropertiesValueVerificationVerification `json:"verification,omitzero"`
 }
 
@@ -15177,8 +15203,8 @@ func (v *PagePropertiesValuePeopleItem) MarshalJSONTo(enc *jsontext.Encoder) err
 	return enc.WriteValue(out)
 }
 
-// PagePropertiesValuePlace2 defines a model
-type PagePropertiesValuePlace2 struct {
+// PagePropertiesValuePlacePlace defines a model
+type PagePropertiesValuePlacePlace struct {
 	Lat           float64 `json:"lat"`
 	Lon           float64 `json:"lon"`
 	Name          string  `json:"name,omitzero"`
@@ -15187,16 +15213,34 @@ type PagePropertiesValuePlace2 struct {
 	GooglePlaceID string  `json:"google_place_id,omitzero"`
 }
 
-// PagePropertiesValueSelect2 defines a model
-// PagePropertiesValueSelect2 is an untagged anyOf union: at least one field is set after unmarshaling.
-type PagePropertiesValueSelect2 struct {
+// PagePropertiesValueSelectID defines a model
+type PagePropertiesValueSelectID struct {
+	ID   String `json:"id"`
+	Name Text   `json:"name,omitzero"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
+	Color       SelectColor `json:"color,omitzero"`
+	Description Text        `json:"description,omitzero"`
+}
+
+// PagePropertiesValueSelectName defines a model
+type PagePropertiesValueSelectName struct {
+	Name Text   `json:"name"`
+	ID   String `json:"id,omitzero"`
+	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
+	Color       SelectColor `json:"color,omitzero"`
+	Description Text        `json:"description,omitzero"`
+}
+
+// PagePropertiesValueSelectSelect defines a model
+// PagePropertiesValueSelectSelect is an untagged anyOf union: at least one field is set after unmarshaling.
+type PagePropertiesValueSelectSelect struct {
 	PagePropertiesValueSelectID   *PagePropertiesValueSelectID
 	PagePropertiesValueSelectName *PagePropertiesValueSelectName
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *PagePropertiesValueSelect2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = PagePropertiesValueSelect2{}
+func (v *PagePropertiesValueSelectSelect) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = PagePropertiesValueSelectSelect{}
 
 	opts := jsonOptsOf(dec)
 	strict := jsonStrict(dec)
@@ -15248,7 +15292,7 @@ func (v *PagePropertiesValueSelect2) UnmarshalJSONFrom(dec *jsontext.Decoder) er
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *PagePropertiesValueSelect2) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *PagePropertiesValueSelectSelect) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.PagePropertiesValueSelectID != nil:
 		return json.MarshalEncode(enc, v.PagePropertiesValueSelectID, jsonOptsTo(enc))
@@ -15257,24 +15301,6 @@ func (v *PagePropertiesValueSelect2) MarshalJSONTo(enc *jsontext.Encoder) error 
 	}
 
 	return &json.SemanticError{Err: errors.New("no alternative set")}
-}
-
-// PagePropertiesValueSelectID defines a model
-type PagePropertiesValueSelectID struct {
-	ID   String `json:"id"`
-	Name Text   `json:"name,omitzero"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
-	Color       SelectColor `json:"color,omitzero"`
-	Description Text        `json:"description,omitzero"`
-}
-
-// PagePropertiesValueSelectName defines a model
-type PagePropertiesValueSelectName struct {
-	Name Text   `json:"name"`
-	ID   String `json:"id,omitzero"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
-	Color       SelectColor `json:"color,omitzero"`
-	Description Text        `json:"description,omitzero"`
 }
 
 // PagePropertiesValueVerificationUnverified defines a model
@@ -16431,11 +16457,11 @@ type PlacePropertyConfiguration struct {
 
 // PlacePropertyItem defines a model
 type PlacePropertyItem struct {
-	Type      string                    `json:"type"`
-	Place     PagePropertiesValuePlace2 `json:"place"`
-	Object    string                    `json:"object"`
-	ID        string                    `json:"id"`
-	RequestID uuid.UUID                 `json:"request_id,omitzero"`
+	Type      string                        `json:"type"`
+	Place     PagePropertiesValuePlacePlace `json:"place"`
+	Object    string                        `json:"object"`
+	ID        string                        `json:"id"`
+	RequestID uuid.UUID                     `json:"request_id,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether PlacePropertyItem declares it.
@@ -17393,30 +17419,30 @@ type PropertyDescription string
 
 // PropertyFilter defines a model
 type PropertyFilter struct {
-	Property       string                       `json:"property"`
-	Type           PropertyFilterType           `json:"type,omitzero"`
-	Title          *TextPropertyFilter          `json:"title,omitzero"`
-	RichText       *TextPropertyFilter          `json:"rich_text,omitzero"`
-	Number         *NumberPropertyFilter        `json:"number,omitzero"`
-	Checkbox       *CheckboxPropertyFilter      `json:"checkbox,omitzero"`
-	Select         *SelectPropertyFilter        `json:"select,omitzero"`
-	MultiSelect    *MultiSelectPropertyFilter   `json:"multi_select,omitzero"`
-	Status         *StatusPropertyFilter        `json:"status,omitzero"`
-	Date           *DatePropertyFilter          `json:"date,omitzero"`
-	People         *PeoplePropertyFilter        `json:"people,omitzero"`
-	Files          *ExistencePropertyFilter     `json:"files,omitzero"`
-	URL            *TextPropertyFilter          `json:"url,omitzero"`
-	Email          *TextPropertyFilter          `json:"email,omitzero"`
-	PhoneNumber    *TextPropertyFilter          `json:"phone_number,omitzero"`
-	Relation       *RelationPropertyFilter      `json:"relation,omitzero"`
-	CreatedBy      *PeoplePropertyFilter        `json:"created_by,omitzero"`
-	CreatedTime    *DatePropertyFilter          `json:"created_time,omitzero"`
-	LastEditedBy   *PeoplePropertyFilter        `json:"last_edited_by,omitzero"`
-	LastEditedTime *DatePropertyFilter          `json:"last_edited_time,omitzero"`
-	Formula        *FormulaPropertyFilter       `json:"formula,omitzero"`
-	UniqueID       *NumberPropertyFilter        `json:"unique_id,omitzero"`
-	Rollup         *RollupPropertyFilter        `json:"rollup,omitzero"`
-	Verification   *PropertyFilterVerification2 `json:"verification,omitzero"`
+	Property       string                                  `json:"property"`
+	Type           PropertyFilterType                      `json:"type,omitzero"`
+	Title          *TextPropertyFilter                     `json:"title,omitzero"`
+	RichText       *TextPropertyFilter                     `json:"rich_text,omitzero"`
+	Number         *NumberPropertyFilter                   `json:"number,omitzero"`
+	Checkbox       *CheckboxPropertyFilter                 `json:"checkbox,omitzero"`
+	Select         *SelectPropertyFilter                   `json:"select,omitzero"`
+	MultiSelect    *MultiSelectPropertyFilter              `json:"multi_select,omitzero"`
+	Status         *StatusPropertyFilter                   `json:"status,omitzero"`
+	Date           *DatePropertyFilter                     `json:"date,omitzero"`
+	People         *PeoplePropertyFilter                   `json:"people,omitzero"`
+	Files          *ExistencePropertyFilter                `json:"files,omitzero"`
+	URL            *TextPropertyFilter                     `json:"url,omitzero"`
+	Email          *TextPropertyFilter                     `json:"email,omitzero"`
+	PhoneNumber    *TextPropertyFilter                     `json:"phone_number,omitzero"`
+	Relation       *RelationPropertyFilter                 `json:"relation,omitzero"`
+	CreatedBy      *PeoplePropertyFilter                   `json:"created_by,omitzero"`
+	CreatedTime    *DatePropertyFilter                     `json:"created_time,omitzero"`
+	LastEditedBy   *PeoplePropertyFilter                   `json:"last_edited_by,omitzero"`
+	LastEditedTime *DatePropertyFilter                     `json:"last_edited_time,omitzero"`
+	Formula        *FormulaPropertyFilter                  `json:"formula,omitzero"`
+	UniqueID       *NumberPropertyFilter                   `json:"unique_id,omitzero"`
+	Rollup         *RollupPropertyFilter                   `json:"rollup,omitzero"`
+	Verification   *PropertyFilterVerificationVerification `json:"verification,omitzero"`
 }
 
 // PropertyFilterType is a value of PropertyFilter's type, naming the members it holds.
@@ -17599,16 +17625,16 @@ func (v *PropertyFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// PropertyFilterVerification2 defines a model
-// PropertyFilterVerification2 is an untagged anyOf union: at least one field is set after unmarshaling.
-type PropertyFilterVerification2 struct {
+// PropertyFilterVerificationVerification defines a model
+// PropertyFilterVerificationVerification is an untagged anyOf union: at least one field is set after unmarshaling.
+type PropertyFilterVerificationVerification struct {
 	VerificationPropertyStatusFilter       *VerificationPropertyStatusFilter
 	VerificationPropertyDoesNotEqualFilter *VerificationPropertyDoesNotEqualFilter
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom].
-func (v *PropertyFilterVerification2) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = PropertyFilterVerification2{}
+func (v *PropertyFilterVerificationVerification) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = PropertyFilterVerificationVerification{}
 
 	opts := jsonOptsOf(dec)
 	strict := jsonStrict(dec)
@@ -17660,7 +17686,7 @@ func (v *PropertyFilterVerification2) UnmarshalJSONFrom(dec *jsontext.Decoder) e
 }
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
-func (v *PropertyFilterVerification2) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *PropertyFilterVerificationVerification) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.VerificationPropertyStatusFilter != nil:
 		return json.MarshalEncode(enc, v.VerificationPropertyStatusFilter, jsonOptsTo(enc))
@@ -19083,6 +19109,7 @@ func (v *QueryAgentsFilterID) unmarshalJSONMember(dec *jsontext.Decoder, name st
 
 // QueryAgentsFilterIDID defines a model
 type QueryAgentsFilterIDID struct {
+	// Return sessions with this exact value.
 	Equals string `json:"equals"`
 }
 
@@ -19541,8 +19568,8 @@ func (v *QueryAgentsFilterOrItemOrItem) MarshalJSONTo(enc *jsontext.Encoder) err
 
 // QueryAgentsFilterStatus defines a model
 type QueryAgentsFilterStatus struct {
-	Property string                   `json:"property"`
-	Status   QueryAgentsFilterStatus2 `json:"status"`
+	Property string                        `json:"property"`
+	Status   QueryAgentsFilterStatusStatus `json:"status"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether QueryAgentsFilterStatus declares it.
@@ -19557,13 +19584,13 @@ func (v *QueryAgentsFilterStatus) unmarshalJSONMember(dec *jsontext.Decoder, nam
 	return false, nil
 }
 
-// QueryAgentsFilterStatus2 defines a model
-type QueryAgentsFilterStatus2 struct {
-	In QueryAgentsFilterStatusIn `json:"in"`
-}
-
 // QueryAgentsFilterStatusIn defines a model
 type QueryAgentsFilterStatusIn []AgentStatus
+
+// QueryAgentsFilterStatusStatus defines a model
+type QueryAgentsFilterStatusStatus struct {
+	In QueryAgentsFilterStatusIn `json:"in"`
+}
 
 // Ordered sort precedence. Defaults to created_time descending.
 type QueryAgentsSorts []QueryAgentsSortsItem
@@ -21193,8 +21220,8 @@ type QuickFilterConditionUniqueID struct {
 
 // QuickFilterConditionVerification defines a model
 type QuickFilterConditionVerification struct {
-	Verification PropertyFilterVerification2 `json:"verification"`
-	Type         string                      `json:"type,omitzero"`
+	Verification PropertyFilterVerificationVerification `json:"verification"`
+	Type         string                                 `json:"type,omitzero"`
 }
 
 // RelationGroupByConfig defines a model
@@ -21225,6 +21252,7 @@ type RelationGroupByConfigResponse struct {
 
 // RelationItemPropertyValue defines a model
 type RelationItemPropertyValue struct {
+	// The ID of the page in the mention.
 	ID ID `json:"id"`
 }
 
@@ -21531,7 +21559,7 @@ func (v *RetrieveAPagePropertyOk) MarshalJSONTo(enc *jsontext.Encoder) error {
 // RetrieveAsyncTaskOk defines a model
 // RetrieveAsyncTaskOk is an untagged oneOf union: exactly one field is set after unmarshaling.
 type RetrieveAsyncTaskOk struct {
-	AgentBatch2                  *AgentBatch2
+	AgentBatchOk                 *AgentBatchOk
 	RetrieveAsyncTaskOkSucceeded *RetrieveAsyncTaskOkSucceeded
 	RetrieveAsyncTaskOkFailed    *RetrieveAsyncTaskOkFailed
 }
@@ -21558,9 +21586,9 @@ func (v *RetrieveAsyncTaskOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			// decoding checks neither the members the alternative requires nor those it pins to one value
 			required, nullable, pinned := []string{"created_time", "id", "object", "operation", "poll_after_seconds", "status", "status_url"}, map[string]bool{}, map[string]string{"object": "\"async_task\""}
 			if jsonFits(raw, required, nullable, pinned) && (!enums || jsonEnumsFit(raw, map[string][]string{"status": {"\"queued\"", "\"running\"", "\"retrying\""}})) {
-				var vv AgentBatch2
+				var vv AgentBatchOk
 				if err := json.Unmarshal(raw, &vv, opts); err == nil {
-					v.AgentBatch2 = &vv
+					v.AgentBatchOk = &vv
 					matched++
 				}
 			}
@@ -21607,8 +21635,8 @@ func (v *RetrieveAsyncTaskOk) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant.
 func (v *RetrieveAsyncTaskOk) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
-	case v.AgentBatch2 != nil:
-		return json.MarshalEncode(enc, v.AgentBatch2, jsonOptsTo(enc))
+	case v.AgentBatchOk != nil:
+		return json.MarshalEncode(enc, v.AgentBatchOk, jsonOptsTo(enc))
 	case v.RetrieveAsyncTaskOkSucceeded != nil:
 		return json.MarshalEncode(enc, v.RetrieveAsyncTaskOkSucceeded, jsonOptsTo(enc))
 	case v.RetrieveAsyncTaskOkFailed != nil:
@@ -23690,11 +23718,14 @@ func (e SelectGroupByConfigType) Valid() bool {
 
 // SelectProperty defines a model
 type SelectProperty struct {
-	ID   string `json:"id"`
+	// The ID of the status option.
+	ID string `json:"id"`
+	// The name of the status option.
 	Name string `json:"name"`
-	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
-	Color       SelectColor `json:"color"`
-	Description string      `json:"description"`
+	// The color of the status option.
+	Color SelectColor `json:"color"`
+	// The description of the status option.
+	Description string `json:"description"`
 }
 
 // SelectPropertyConfigurationSelect defines a model
@@ -27202,6 +27233,7 @@ type UnsupportedBlockUnsupported struct {
 
 // UnsupportedFormulaProperty defines a model
 type UnsupportedFormulaProperty struct {
+	// Always `unsupported`
 	Type        string      `json:"type"`
 	Unsupported EmptyObject `json:"unsupported"`
 }
@@ -27730,9 +27762,9 @@ type UpdateABlockBulletedListItem struct {
 
 // UpdateABlockCallout defines a model
 type UpdateABlockCallout struct {
-	Callout ContentWithRichTextColorAndIconUpdate `json:"callout"`
-	Type    string                                `json:"type,omitzero"`
-	InTrash *bool                                 `json:"in_trash,omitzero"`
+	Callout ContentWithRichTextColorAndIconResponseUpdate `json:"callout"`
+	Type    string                                        `json:"type,omitzero"`
+	InTrash *bool                                         `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockCode defines a model
@@ -27900,9 +27932,9 @@ type UpdateABlockNumberedListItem struct {
 
 // UpdateABlockParagraph defines a model
 type UpdateABlockParagraph struct {
-	Paragraph ContentWithRichTextColorAndIconUpdate `json:"paragraph"`
-	Type      string                                `json:"type,omitzero"`
-	InTrash   *bool                                 `json:"in_trash,omitzero"`
+	Paragraph ContentWithRichTextColorAndIconResponseUpdate `json:"paragraph"`
+	Type      string                                        `json:"type,omitzero"`
+	InTrash   *bool                                         `json:"in_trash,omitzero"`
 }
 
 // UpdateABlockPdf defines a model
@@ -28472,12 +28504,6 @@ func (e UpdateAgentStatus) Valid() bool {
 	default:
 		return false
 	}
-}
-
-// UpdateAgentStatus3 defines a model
-type UpdateAgentStatus3 struct {
-	// Set to "active" to re-enable an agent that an editor disabled, through this API or in agent settings, or "disabled" to turn off a running agent.
-	Status UpdateAgentStatus `json:"status"`
 }
 
 // UpdateAgentStatusOk defines a model

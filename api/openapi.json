@@ -5263,7 +5263,7 @@
         ],
         "additionalProperties": false
       },
-      "AgentBatch2": {
+      "AgentBatchOk": {
         "type": "object",
         "properties": {
           "object": {
@@ -5399,7 +5399,7 @@
           },
           "fields": {
             "description": "The status to apply to this agent.",
-            "$ref": "#/components/schemas/UpdateAgentStatus3"
+            "$ref": "#/components/schemas/AgentStatusUpdate"
           }
         },
         "required": [
@@ -6704,14 +6704,14 @@
       "CustomAgentCreatedBy": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/CustomAgentCreatedByOneOf0"
+            "$ref": "#/components/schemas/AgentCreator"
           },
           {
             "type": "null"
           }
         ]
       },
-      "CustomAgentCreatedByOneOf0": {
+      "AgentCreator": {
         "type": "object",
         "properties": {
           "type": {
@@ -7498,7 +7498,7 @@
         "type": "object",
         "properties": {
           "bulleted_list_item": {
-            "$ref": "#/components/schemas/BlockObjectQuote2"
+            "$ref": "#/components/schemas/BlockObjectQuoteQuote"
           },
           "type": {
             "type": "string",
@@ -7519,7 +7519,7 @@
         "type": "object",
         "properties": {
           "callout": {
-            "$ref": "#/components/schemas/BlockObjectCallout2"
+            "$ref": "#/components/schemas/BlockObjectCalloutCallout"
           },
           "type": {
             "type": "string",
@@ -7535,7 +7535,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectCallout2": {
+      "BlockObjectCalloutCallout": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -7569,7 +7569,7 @@
         "type": "object",
         "properties": {
           "code": {
-            "$ref": "#/components/schemas/BlockObjectCode2"
+            "$ref": "#/components/schemas/BlockObjectCodeCode"
           },
           "type": {
             "type": "string",
@@ -7585,7 +7585,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectCode2": {
+      "BlockObjectCodeCode": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -7680,7 +7680,7 @@
         "type": "object",
         "properties": {
           "embed": {
-            "$ref": "#/components/schemas/BlockObjectEmbed2"
+            "$ref": "#/components/schemas/BlockObjectEmbedEmbed"
           },
           "type": {
             "type": "string",
@@ -7696,7 +7696,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectEmbed2": {
+      "BlockObjectEmbedEmbed": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/MediaContentWithURLAndCaption"
@@ -7938,7 +7938,7 @@
         "type": "object",
         "properties": {
           "numbered_list_item": {
-            "$ref": "#/components/schemas/BlockObjectQuote2"
+            "$ref": "#/components/schemas/BlockObjectQuoteQuote"
           },
           "type": {
             "type": "string",
@@ -7959,7 +7959,7 @@
         "type": "object",
         "properties": {
           "paragraph": {
-            "$ref": "#/components/schemas/BlockObjectCallout2"
+            "$ref": "#/components/schemas/BlockObjectCalloutCallout"
           },
           "type": {
             "type": "string",
@@ -8001,7 +8001,7 @@
         "type": "object",
         "properties": {
           "quote": {
-            "$ref": "#/components/schemas/BlockObjectQuote2"
+            "$ref": "#/components/schemas/BlockObjectQuoteQuote"
           },
           "type": {
             "type": "string",
@@ -8017,7 +8017,7 @@
         ],
         "additionalProperties": false
       },
-      "BlockObjectQuote2": {
+      "BlockObjectQuoteQuote": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -8569,7 +8569,7 @@
         "type": "object",
         "properties": {
           "toggle": {
-            "$ref": "#/components/schemas/BlockObjectQuote2"
+            "$ref": "#/components/schemas/BlockObjectQuoteQuote"
           },
           "type": {
             "type": "string",
@@ -9351,7 +9351,7 @@
         },
         "additionalProperties": false
       },
-      "CancelSession2": {
+      "CancelSessionOk": {
         "type": "object",
         "properties": {
           "object": {
@@ -9765,6 +9765,16 @@
           }
         ]
       },
+      "ChartViewConfigResponseXAxis": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/groupByConfigResponse"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "ChartViewConfigResponseYAxis": {
         "description": "Y-axis aggregation for column/bar/line/donut charts using grouped data. Null when using results mode.",
         "oneOf": [
@@ -9812,16 +9822,6 @@
         "oneOf": [
           {
             "$ref": "#/components/schemas/GroupByConfig"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "ChartViewConfigXAxis2": {
-        "oneOf": [
-          {
-            "$ref": "#/components/schemas/groupByConfigResponse"
           },
           {
             "type": "null"
@@ -10106,6 +10106,7 @@
         "type": "object",
         "properties": {
           "expression": {
+            "description": "A KaTeX compatible string.",
             "type": "string",
             "example": "e^{\\pi i}+1=0",
             "examples": [
@@ -10175,7 +10176,7 @@
         ],
         "additionalProperties": false
       },
-      "ContentWithRichTextColorAndIconUpdate": {
+      "ContentWithRichTextColorAndIconResponseUpdate": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -10757,10 +10758,12 @@
         "type": "object",
         "properties": {
           "type": {
+            "description": "Always `workspace`",
             "type": "string",
             "const": "workspace"
           },
           "workspace": {
+            "description": "Always `true`",
             "type": "boolean",
             "const": true
           }
@@ -10920,6 +10923,7 @@
             "const": "page_id"
           },
           "page_id": {
+            "description": "The ID of the page to create the database on.",
             "$ref": "#/components/schemas/ID"
           }
         },
@@ -11366,14 +11370,15 @@
             "const": "custom_emoji"
           },
           "custom_emoji": {
-            "$ref": "#/components/schemas/CustomEmojiPageIconCustomEmoji"
+            "description": "Details of the custom emoji mention.",
+            "$ref": "#/components/schemas/CustomEmojiPageIconResponseCustomEmoji"
           }
         },
         "required": [
           "custom_emoji"
         ]
       },
-      "CustomEmojiPageIconCustomEmoji": {
+      "CustomEmojiPageIconResponseCustomEmoji": {
         "type": "object",
         "properties": {
           "id": {
@@ -11392,6 +11397,31 @@
         "required": [
           "id"
         ]
+      },
+      "SyncHealthOK": {
+        "type": "object",
+        "properties": {
+          "checks": {
+            "$ref": "#/components/schemas/SyncHealthChecks"
+          },
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "paused": {
+            "type": "boolean"
+          },
+          "stage": {
+            "$ref": "#/components/schemas/SyncHealthStage"
+          }
+        },
+        "required": [
+          "checks",
+          "ok",
+          "paused",
+          "stage"
+        ],
+        "additionalProperties": false
       },
       "DataSourceObjectSyncMetadata": {
         "type": "object",
@@ -11502,31 +11532,6 @@
         "required": [
           "checks",
           "error",
-          "ok",
-          "paused",
-          "stage"
-        ],
-        "additionalProperties": false
-      },
-      "SyncHealthOK": {
-        "type": "object",
-        "properties": {
-          "checks": {
-            "$ref": "#/components/schemas/SyncHealthChecks"
-          },
-          "ok": {
-            "type": "boolean",
-            "const": true
-          },
-          "paused": {
-            "type": "boolean"
-          },
-          "stage": {
-            "$ref": "#/components/schemas/SyncHealthStage"
-          }
-        },
-        "required": [
-          "checks",
           "ok",
           "paused",
           "stage"
@@ -11782,11 +11787,11 @@
           },
           "icon": {
             "description": "The icon of the database.",
-            "$ref": "#/components/schemas/PageIcon3"
+            "$ref": "#/components/schemas/PageIcon2"
           },
           "cover": {
             "description": "The cover of the database.",
-            "$ref": "#/components/schemas/PageCover3"
+            "$ref": "#/components/schemas/PageCover2"
           },
           "url": {
             "description": "The URL of the database.",
@@ -12446,6 +12451,7 @@
             "const": "external"
           },
           "external": {
+            "description": "External URL for the cover.",
             "$ref": "#/components/schemas/TextRichTextItemTextLinkURL"
           }
         },
@@ -12457,6 +12463,7 @@
         "type": "object",
         "properties": {
           "id": {
+            "description": "The ID of the page in the mention.",
             "$ref": "#/components/schemas/ID"
           }
         },
@@ -12689,6 +12696,7 @@
             "const": "file_upload"
           },
           "file_upload": {
+            "description": "The file upload for the cover.",
             "$ref": "#/components/schemas/idObject"
           }
         },
@@ -14114,7 +14122,7 @@
             "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValueSurrounding"
           },
           {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValueOneOf2"
+            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterRelative"
           },
           {
             "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValueExact"
@@ -14212,7 +14220,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateRangeFilterValueOneOf2": {
+      "MeetingNotesDateRangeFilterRelative": {
         "type": "object",
         "properties": {
           "type": {
@@ -14221,7 +14229,7 @@
             "const": "relative"
           },
           "value": {
-            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterValueOneOf2Value"
+            "$ref": "#/components/schemas/MeetingNotesDateRangeFilterRelativeValue"
           }
         },
         "required": [
@@ -14230,7 +14238,7 @@
         ],
         "additionalProperties": false
       },
-      "MeetingNotesDateRangeFilterValueOneOf2Value": {
+      "MeetingNotesDateRangeFilterRelativeValue": {
         "description": "One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`",
         "type": "string",
         "enum": [
@@ -14614,7 +14622,7 @@
             "$ref": "#/components/schemas/MentionRichTextItemResponseMentionTemplateMention"
           },
           {
-            "$ref": "#/components/schemas/customEmojiPageIcon"
+            "$ref": "#/components/schemas/CustomEmojiPageIconResponse"
           }
         ]
       },
@@ -15078,11 +15086,11 @@
           },
           "icon": {
             "description": "Page icon.",
-            "$ref": "#/components/schemas/PageIcon3"
+            "$ref": "#/components/schemas/PageIcon2"
           },
           "cover": {
             "description": "Page cover image.",
-            "$ref": "#/components/schemas/PageCover3"
+            "$ref": "#/components/schemas/PageCover2"
           },
           "created_by": {
             "description": "User who created the page.",
@@ -15151,16 +15159,6 @@
         ]
       },
       "PageCover2": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/PageCover"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "PageCover3": {
         "oneOf": [
           {
             "$ref": "#/components/schemas/pageCoverResponse"
@@ -15190,16 +15188,6 @@
         ]
       },
       "PageIcon2": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/PageIcon"
-          },
-          {
-            "type": "null"
-          }
-        ]
-      },
-      "PageIcon3": {
         "oneOf": [
           {
             "$ref": "#/components/schemas/pageIconResponse"
@@ -15598,7 +15586,7 @@
         "type": "object",
         "properties": {
           "email": {
-            "$ref": "#/components/schemas/PagePropertiesValueEmail2"
+            "$ref": "#/components/schemas/PagePropertiesValueEmailEmail"
           },
           "type": {
             "type": "string",
@@ -15610,7 +15598,7 @@
         ],
         "additionalProperties": false
       },
-      "PagePropertiesValueEmail2": {
+      "PagePropertiesValueEmailEmail": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/String"
@@ -15738,7 +15726,7 @@
         "type": "object",
         "properties": {
           "phone_number": {
-            "$ref": "#/components/schemas/PagePropertiesValueEmail2"
+            "$ref": "#/components/schemas/PagePropertiesValueEmailEmail"
           },
           "type": {
             "type": "string",
@@ -15755,7 +15743,7 @@
         "type": "object",
         "properties": {
           "place": {
-            "$ref": "#/components/schemas/PagePropertiesValuePlace2"
+            "$ref": "#/components/schemas/PagePropertiesValuePlacePlace"
           },
           "type": {
             "type": "string",
@@ -15767,7 +15755,7 @@
         ],
         "additionalProperties": false
       },
-      "PagePropertiesValuePlace2": {
+      "PagePropertiesValuePlacePlace": {
         "type": [
           "object",
           "null"
@@ -15856,7 +15844,7 @@
         "type": "object",
         "properties": {
           "select": {
-            "$ref": "#/components/schemas/PagePropertiesValueSelect2"
+            "$ref": "#/components/schemas/PagePropertiesValueSelectSelect"
           },
           "type": {
             "type": "string",
@@ -15867,19 +15855,6 @@
           "select"
         ],
         "additionalProperties": false
-      },
-      "PagePropertiesValueSelect2": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/PagePropertiesValueSelectID"
-          },
-          {
-            "$ref": "#/components/schemas/PagePropertiesValueSelectName"
-          },
-          {
-            "type": "null"
-          }
-        ]
       },
       "PagePropertiesValueSelectID": {
         "type": "object",
@@ -15923,12 +15898,25 @@
         ],
         "additionalProperties": false
       },
+      "PagePropertiesValueSelectSelect": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/PagePropertiesValueSelectID"
+          },
+          {
+            "$ref": "#/components/schemas/PagePropertiesValueSelectName"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
       "PagePropertiesValueStatus": {
         "title": "Status",
         "type": "object",
         "properties": {
           "status": {
-            "$ref": "#/components/schemas/PagePropertiesValueSelect2"
+            "$ref": "#/components/schemas/PagePropertiesValueSelectSelect"
           },
           "type": {
             "type": "string",
@@ -16221,10 +16209,10 @@
             "$ref": "#/components/schemas/PageProperties"
           },
           "icon": {
-            "$ref": "#/components/schemas/PageIcon2"
+            "$ref": "#/components/schemas/PostPageIcon"
           },
           "cover": {
-            "$ref": "#/components/schemas/PageCover2"
+            "$ref": "#/components/schemas/PostPageCover"
           },
           "is_locked": {
             "description": "Whether the page should be locked from editing in the Notion app UI. If not provided, the locked state will not be updated.",
@@ -16508,10 +16496,10 @@
             "$ref": "#/components/schemas/PageProperties"
           },
           "icon": {
-            "$ref": "#/components/schemas/PageIcon2"
+            "$ref": "#/components/schemas/PostPageIcon"
           },
           "cover": {
-            "$ref": "#/components/schemas/PageCover2"
+            "$ref": "#/components/schemas/PostPageCover"
           },
           "content": {
             "type": "array",
@@ -16549,6 +16537,26 @@
           }
         },
         "additionalProperties": false
+      },
+      "PostPageCover": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/PageCover"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "PostPageIcon": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/PageIcon"
+          },
+          {
+            "type": "null"
+          }
+        ]
       },
       "PostPageParent": {
         "anyOf": [
@@ -17387,7 +17395,7 @@
         "type": "object",
         "properties": {
           "verification": {
-            "$ref": "#/components/schemas/PropertyFilterVerification2"
+            "$ref": "#/components/schemas/PropertyFilterVerificationVerification"
           },
           "property": {
             "type": "string"
@@ -17403,7 +17411,7 @@
         ],
         "additionalProperties": false
       },
-      "PropertyFilterVerification2": {
+      "PropertyFilterVerificationVerification": {
         "anyOf": [
           {
             "$ref": "#/components/schemas/verificationPropertyStatusFilter"
@@ -17900,6 +17908,7 @@
         "type": "object",
         "properties": {
           "equals": {
+            "description": "Return sessions with this exact value.",
             "type": "string"
           }
         },
@@ -18105,7 +18114,7 @@
             "const": "status"
           },
           "status": {
-            "$ref": "#/components/schemas/QueryAgentsFilterStatus2"
+            "$ref": "#/components/schemas/QueryAgentsFilterStatusStatus"
           }
         },
         "required": [
@@ -18114,7 +18123,14 @@
         ],
         "additionalProperties": false
       },
-      "QueryAgentsFilterStatus2": {
+      "QueryAgentsFilterStatusIn": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "$ref": "#/components/schemas/AgentStatus"
+        }
+      },
+      "QueryAgentsFilterStatusStatus": {
         "type": "object",
         "properties": {
           "in": {
@@ -18125,13 +18141,6 @@
           "in"
         ],
         "additionalProperties": false
-      },
-      "QueryAgentsFilterStatusIn": {
-        "type": "array",
-        "minItems": 1,
-        "items": {
-          "$ref": "#/components/schemas/AgentStatus"
-        }
       },
       "QueryAgentsSorts": {
         "description": "Ordered sort precedence. Defaults to created_time descending.",
@@ -19323,7 +19332,7 @@
         "type": "object",
         "properties": {
           "verification": {
-            "$ref": "#/components/schemas/PropertyFilterVerification2"
+            "$ref": "#/components/schemas/PropertyFilterVerificationVerification"
           },
           "type": {
             "type": "string",
@@ -19498,7 +19507,7 @@
       "RetrieveAsyncTaskOk": {
         "oneOf": [
           {
-            "$ref": "#/components/schemas/AgentBatch2"
+            "$ref": "#/components/schemas/AgentBatchOk"
           },
           {
             "$ref": "#/components/schemas/RetrieveAsyncTaskOkSucceeded"
@@ -20636,21 +20645,6 @@
           }
         ]
       },
-      "RollupByNames": {
-        "type": "object",
-        "properties": {
-          "relation_property_name": {
-            "type": "string"
-          },
-          "rollup_property_name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "relation_property_name",
-          "rollup_property_name"
-        ]
-      },
       "RollupByRelationID": {
         "type": "object",
         "properties": {
@@ -20694,6 +20688,21 @@
         "required": [
           "relation_property_id",
           "rollup_property_id"
+        ]
+      },
+      "RollupByNames": {
+        "type": "object",
+        "properties": {
+          "relation_property_name": {
+            "type": "string"
+          },
+          "rollup_property_name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "relation_property_name",
+          "rollup_property_name"
         ]
       },
       "RollupPropertyFilterAny": {
@@ -23312,7 +23321,7 @@
         "type": "object",
         "properties": {
           "callout": {
-            "$ref": "#/components/schemas/ContentWithRichTextColorAndIconUpdate"
+            "$ref": "#/components/schemas/ContentWithRichTextColorAndIconResponseUpdate"
           },
           "type": {
             "type": "string",
@@ -23640,7 +23649,7 @@
         "type": "object",
         "properties": {
           "paragraph": {
-            "$ref": "#/components/schemas/ContentWithRichTextColorAndIconUpdate"
+            "$ref": "#/components/schemas/ContentWithRichTextColorAndIconResponseUpdate"
           },
           "type": {
             "type": "string",
@@ -24301,7 +24310,7 @@
           "disabled"
         ]
       },
-      "UpdateAgentStatus3": {
+      "AgentStatusUpdate": {
         "type": "object",
         "properties": {
           "status": {
@@ -26378,7 +26387,7 @@
             "const": "callout"
           },
           "callout": {
-            "$ref": "#/components/schemas/contentWithRichTextColorAndIcon"
+            "$ref": "#/components/schemas/ContentWithRichTextColorAndIconResponse"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -26496,7 +26505,7 @@
           },
           "x_axis": {
             "description": "X-axis grouping configuration for column/bar/line/donut charts using grouped data. Null when using results (raw property values) mode.",
-            "$ref": "#/components/schemas/ChartViewConfigXAxis2"
+            "$ref": "#/components/schemas/ChartViewConfigResponseXAxis"
           },
           "y_axis": {
             "$ref": "#/components/schemas/ChartViewConfigResponseYAxis"
@@ -26579,7 +26588,7 @@
           },
           "stack_by": {
             "description": "Stack-by grouping configuration for stacked/grouped bar charts (column/bar/line only). Null when not stacked.",
-            "$ref": "#/components/schemas/ChartViewConfigXAxis2"
+            "$ref": "#/components/schemas/ChartViewConfigResponseXAxis"
           },
           "reference_lines": {
             "$ref": "#/components/schemas/ChartViewConfigResponseReferenceLines"
@@ -27264,7 +27273,7 @@
           "color"
         ]
       },
-      "contentWithRichTextColorAndIcon": {
+      "ContentWithRichTextColorAndIconResponse": {
         "type": "object",
         "properties": {
           "rich_text": {
@@ -27477,7 +27486,7 @@
         ],
         "additionalProperties": false
       },
-      "customEmojiPageIcon": {
+      "CustomEmojiPageIconResponse": {
         "title": "Custom Emoji",
         "type": "object",
         "properties": {
@@ -27774,11 +27783,11 @@
           },
           "icon": {
             "description": "The icon of the data source.",
-            "$ref": "#/components/schemas/PageIcon3"
+            "$ref": "#/components/schemas/PageIcon2"
           },
           "cover": {
             "description": "The cover of the data source.",
-            "$ref": "#/components/schemas/PageCover3"
+            "$ref": "#/components/schemas/PageCover2"
           },
           "url": {
             "description": "The URL of the data source.",
@@ -28861,6 +28870,7 @@
         "type": "object",
         "properties": {
           "expression": {
+            "description": "A KaTeX compatible string.",
             "type": "string",
             "example": "e^{\\pi i}+1 = 0",
             "examples": [
@@ -28937,7 +28947,7 @@
           "name"
         ]
       },
-      "externalPageIcon": {
+      "ExternalPageIconResponse": {
         "title": "External",
         "type": "object",
         "properties": {
@@ -30062,6 +30072,7 @@
         "type": "object",
         "properties": {
           "id": {
+            "description": "ID of a FileUpload object that has the status `uploaded`.",
             "type": "string",
             "example": "%3ANHe"
           }
@@ -31234,7 +31245,7 @@
             "$ref": "#/components/schemas/filePageIcon"
           },
           {
-            "$ref": "#/components/schemas/externalPageIcon"
+            "$ref": "#/components/schemas/ExternalPageIconResponse"
           }
         ]
       },
@@ -31301,10 +31312,10 @@
             "$ref": "#/components/schemas/filePageIcon"
           },
           {
-            "$ref": "#/components/schemas/externalPageIcon"
+            "$ref": "#/components/schemas/ExternalPageIconResponse"
           },
           {
-            "$ref": "#/components/schemas/customEmojiPageIcon"
+            "$ref": "#/components/schemas/CustomEmojiPageIconResponse"
           },
           {
             "$ref": "#/components/schemas/iconPageIconResponse"
@@ -31585,7 +31596,7 @@
             "const": "paragraph"
           },
           "paragraph": {
-            "$ref": "#/components/schemas/contentWithRichTextColorAndIcon"
+            "$ref": "#/components/schemas/ContentWithRichTextColorAndIconResponse"
           },
           "parent": {
             "$ref": "#/components/schemas/ParentForBlockBased"
@@ -32257,7 +32268,7 @@
             "const": "place"
           },
           "place": {
-            "$ref": "#/components/schemas/PagePropertiesValuePlace2"
+            "$ref": "#/components/schemas/PagePropertiesValuePlacePlace"
           },
           "object": {
             "type": "string",
@@ -32736,6 +32747,7 @@
         "type": "object",
         "properties": {
           "id": {
+            "description": "The ID of the page in the mention.",
             "$ref": "#/components/schemas/ID"
           }
         },
@@ -33107,17 +33119,21 @@
         "type": "object",
         "properties": {
           "id": {
+            "description": "The ID of the status option.",
             "type": "string",
             "example": "78673949-50fe-41c5-8cdb-ce44acb4b59f"
           },
           "name": {
+            "description": "The name of the status option.",
             "type": "string",
             "example": "Not Started"
           },
           "color": {
+            "description": "The color of the status option.",
             "$ref": "#/components/schemas/selectColor"
           },
           "description": {
+            "description": "The description of the status option.",
             "$ref": "#/components/schemas/PagePublicURL"
           }
         },
@@ -34884,6 +34900,7 @@
         "type": "object",
         "properties": {
           "type": {
+            "description": "Always `unsupported`",
             "type": "string",
             "const": "unsupported"
           },
@@ -35608,7 +35625,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/AgentBatch2"
+              "$ref": "#/components/schemas/AgentBatchOk"
             }
           }
         }
@@ -35618,7 +35635,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CancelSession2"
+              "$ref": "#/components/schemas/CancelSessionOk"
             }
           }
         }
@@ -36258,7 +36275,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/CancelSession2"
+              "$ref": "#/components/schemas/CancelSessionOk"
             }
           }
         }
@@ -37219,7 +37236,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/UpdateAgentStatus3"
+              "$ref": "#/components/schemas/AgentStatusUpdate"
             }
           }
         }

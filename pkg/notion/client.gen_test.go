@@ -34594,7 +34594,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, io.EOF) {
 				t.Fatalf("want: %v, got: %v", io.EOF, err)
@@ -34614,7 +34614,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -34642,7 +34642,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -34667,7 +34667,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -34685,7 +34685,7 @@ func TestClient_Error(t *testing.T) {
 			}
 
 			for range 2 {
-				if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err != nil {
+				if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err != nil {
 					t.Fatalf("debug mode decodes leniently: %v", err)
 				}
 			}
@@ -34705,7 +34705,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -34730,7 +34730,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want the *api.DecodingError", err)
@@ -34750,7 +34750,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -34767,7 +34767,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -34780,7 +34780,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -34798,7 +34798,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -34815,7 +34815,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -34828,7 +34828,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -34846,7 +34846,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -34863,7 +34863,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -34876,7 +34876,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -34894,7 +34894,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -34911,7 +34911,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -34924,7 +34924,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -34942,7 +34942,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -34959,7 +34959,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -34972,7 +34972,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -34990,7 +34990,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -35007,7 +35007,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -35020,7 +35020,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -35038,7 +35038,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -35055,7 +35055,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -35068,7 +35068,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -35086,7 +35086,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -35103,7 +35103,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -35116,7 +35116,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -35134,7 +35134,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -35151,7 +35151,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -35164,7 +35164,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -35182,7 +35182,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -35199,7 +35199,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -35212,7 +35212,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -35230,7 +35230,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -35247,7 +35247,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -35260,7 +35260,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateAgentStatus(t.Context(), "", UpdateAgentStatus3{}); err == nil {
+			if _, err := c.UpdateAgentStatus(t.Context(), "", AgentStatusUpdate{}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -36055,7 +36055,7 @@ func TestClient_Error(t *testing.T) {
 		t.Run("debug mode keeps an unknown member", func(t *testing.T) {
 			file := filepath.Join(t.TempDir(), "interactions.json")
 
-			c, err := NewClient(WithBaseURL(newBodyServer(t, http.StatusOK, "application/json", withUnknownMember(t, AgentBatch2{}))), WithDebugFile(file))
+			c, err := NewClient(WithBaseURL(newBodyServer(t, http.StatusOK, "application/json", withUnknownMember(t, AgentBatchOk{}))), WithDebugFile(file))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -38807,7 +38807,7 @@ func TestClient_Error(t *testing.T) {
 		t.Run("debug mode keeps an unknown member", func(t *testing.T) {
 			file := filepath.Join(t.TempDir(), "interactions.json")
 
-			c, err := NewClient(WithBaseURL(newBodyServer(t, http.StatusOK, "application/json", withUnknownMember(t, CancelSession2{}))), WithDebugFile(file))
+			c, err := NewClient(WithBaseURL(newBodyServer(t, http.StatusOK, "application/json", withUnknownMember(t, CancelSessionOk{}))), WithDebugFile(file))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -41538,7 +41538,7 @@ func TestClient_Error(t *testing.T) {
 		t.Run("debug mode keeps an unknown member", func(t *testing.T) {
 			file := filepath.Join(t.TempDir(), "interactions.json")
 
-			c, err := NewClient(WithBaseURL(newBodyServer(t, http.StatusOK, "application/json", withUnknownMember(t, CancelSession2{}))), WithDebugFile(file))
+			c, err := NewClient(WithBaseURL(newBodyServer(t, http.StatusOK, "application/json", withUnknownMember(t, CancelSessionOk{}))), WithDebugFile(file))
 			if err != nil {
 				t.Fatal(err)
 			}
