@@ -60,7 +60,7 @@ func TestPostDatabaseQueryAll(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		ids = append(ids, r.PageOrPartial.PartialPageObjectResponse.ID)
+		ids = append(ids, r.PageOrPartial.PartialPage.ID)
 	}
 
 	if want := []uuid.UUID{first, second, third}; len(ids) != 3 || ids[0] != want[0] || ids[1] != want[1] || ids[2] != want[2] {

@@ -66,16 +66,6 @@ func TestEnums_Valid(t *testing.T) {
 		t.Errorf("AgentInsightsAgentType(%v): valid, though no member", "not a member")
 	}
 
-	for _, v := range []AgentListResultsItemOneOf0AgentType{AgentListResultsItemOneOf0AgentTypeCustomAgent, AgentListResultsItemOneOf0AgentTypeAutofillCustomAgent} {
-		if !v.Valid() {
-			t.Errorf("AgentListResultsItemOneOf0AgentType %v: not valid", v)
-		}
-	}
-
-	if AgentListResultsItemOneOf0AgentType("not a member").Valid() {
-		t.Errorf("AgentListResultsItemOneOf0AgentType(%v): valid, though no member", "not a member")
-	}
-
 	for _, v := range []AgentPauseReasonOneOf{AgentPauseReasonOneOfRunLimit, AgentPauseReasonOneOfCreditLimit, AgentPauseReasonOneOfRunawayCreditUsage, AgentPauseReasonOneOfWorkspaceCreditLimit, AgentPauseReasonOneOfOwnerAllowanceLimit, AgentPauseReasonOneOfFailureLimit, AgentPauseReasonOneOfMarkSessionFailedAutopause, AgentPauseReasonOneOfDisabledFromWorkspaceSettings, AgentPauseReasonOneOfDisabledFromWorkspaceSettingsButResumable, AgentPauseReasonOneOfDisabledFromAPI, AgentPauseReasonOneOfDisabledFromAgentSettings, AgentPauseReasonOneOfDisabledDueToNoMembersWithAccess, AgentPauseReasonOneOfDisabledDueToLackOfEditors, AgentPauseReasonOneOfDisabledByNotion, AgentPauseReasonOneOfInternalError, AgentPauseReasonOneOfNeedsUserReview, AgentPauseReasonOneOfToolUnavailable} {
 		if !v.Valid() {
 			t.Errorf("AgentPauseReasonOneOf %v: not valid", v)
@@ -276,24 +266,24 @@ func TestEnums_Valid(t *testing.T) {
 		t.Errorf("ChartViewConfigSortOneOf(%v): valid, though no member", "not a member")
 	}
 
-	for _, v := range []CommentObjectResponseAttachmentsItemCategory{CommentObjectResponseAttachmentsItemCategoryAudio, CommentObjectResponseAttachmentsItemCategoryImage, CommentObjectResponseAttachmentsItemCategoryPdf, CommentObjectResponseAttachmentsItemCategoryProductivity, CommentObjectResponseAttachmentsItemCategoryVideo} {
+	for _, v := range []CommentAttachmentsItemCategory{CommentAttachmentsItemCategoryAudio, CommentAttachmentsItemCategoryImage, CommentAttachmentsItemCategoryPdf, CommentAttachmentsItemCategoryProductivity, CommentAttachmentsItemCategoryVideo} {
 		if !v.Valid() {
-			t.Errorf("CommentObjectResponseAttachmentsItemCategory %v: not valid", v)
+			t.Errorf("CommentAttachmentsItemCategory %v: not valid", v)
 		}
 	}
 
-	if CommentObjectResponseAttachmentsItemCategory("not a member").Valid() {
-		t.Errorf("CommentObjectResponseAttachmentsItemCategory(%v): valid, though no member", "not a member")
+	if CommentAttachmentsItemCategory("not a member").Valid() {
+		t.Errorf("CommentAttachmentsItemCategory(%v): valid, though no member", "not a member")
 	}
 
-	for _, v := range []CommentObjectResponseDisplayNameType{CommentObjectResponseDisplayNameTypeCustom, CommentObjectResponseDisplayNameTypeUser, CommentObjectResponseDisplayNameTypeIntegration} {
+	for _, v := range []CommentDisplayNameType{CommentDisplayNameTypeCustom, CommentDisplayNameTypeUser, CommentDisplayNameTypeIntegration} {
 		if !v.Valid() {
-			t.Errorf("CommentObjectResponseDisplayNameType %v: not valid", v)
+			t.Errorf("CommentDisplayNameType %v: not valid", v)
 		}
 	}
 
-	if CommentObjectResponseDisplayNameType("not a member").Valid() {
-		t.Errorf("CommentObjectResponseDisplayNameType(%v): valid, though no member", "not a member")
+	if CommentDisplayNameType("not a member").Valid() {
+		t.Errorf("CommentDisplayNameType(%v): valid, though no member", "not a member")
 	}
 
 	for _, v := range []CoverConfigResponseType{CoverConfigResponseTypePageCover, CoverConfigResponseTypePageContent, CoverConfigResponseTypePageContentFirst, CoverConfigResponseTypeProperty} {
@@ -316,16 +306,6 @@ func TestEnums_Valid(t *testing.T) {
 		t.Errorf("CoverConfigType(%v): valid, though no member", "not a member")
 	}
 
-	for _, v := range []CreateDatabaseDatabaseType{CreateDatabaseDatabaseTypeTasks, CreateDatabaseDatabaseTypeProjects, CreateDatabaseDatabaseTypeSkills} {
-		if !v.Valid() {
-			t.Errorf("CreateDatabaseDatabaseType %v: not valid", v)
-		}
-	}
-
-	if CreateDatabaseDatabaseType("not a member").Valid() {
-		t.Errorf("CreateDatabaseDatabaseType(%v): valid, though no member", "not a member")
-	}
-
 	for _, v := range []CreateDatabaseParentType{CreateDatabaseParentTypePageID, CreateDatabaseParentTypeWorkspace} {
 		if !v.Valid() {
 			t.Errorf("CreateDatabaseParentType %v: not valid", v)
@@ -334,6 +314,16 @@ func TestEnums_Valid(t *testing.T) {
 
 	if CreateDatabaseParentType("not a member").Valid() {
 		t.Errorf("CreateDatabaseParentType(%v): valid, though no member", "not a member")
+	}
+
+	for _, v := range []CreateDatabaseType{CreateDatabaseTypeTasks, CreateDatabaseTypeProjects, CreateDatabaseTypeSkills} {
+		if !v.Valid() {
+			t.Errorf("CreateDatabaseType %v: not valid", v)
+		}
+	}
+
+	if CreateDatabaseType("not a member").Valid() {
+		t.Errorf("CreateDatabaseType(%v): valid, though no member", "not a member")
 	}
 
 	for _, v := range []CreateFileMode{CreateFileModeSinglePart, CreateFileModeMultiPart, CreateFileModeExternalURL} {
@@ -356,6 +346,16 @@ func TestEnums_Valid(t *testing.T) {
 		t.Errorf("CreateMeetingNoteLanguage(%v): valid, though no member", "not a member")
 	}
 
+	for _, v := range []CustomAgentAgentType{CustomAgentAgentTypeCustomAgent, CustomAgentAgentTypeAutofillCustomAgent} {
+		if !v.Valid() {
+			t.Errorf("CustomAgentAgentType %v: not valid", v)
+		}
+	}
+
+	if CustomAgentAgentType("not a member").Valid() {
+		t.Errorf("CustomAgentAgentType(%v): valid, though no member", "not a member")
+	}
+
 	for _, v := range []DataSourceObjectSyncMetadataExternalCollectionType{DataSourceObjectSyncMetadataExternalCollectionTypeJira, DataSourceObjectSyncMetadataExternalCollectionTypeSalesforce} {
 		if !v.Valid() {
 			t.Errorf("DataSourceObjectSyncMetadataExternalCollectionType %v: not valid", v)
@@ -374,26 +374,6 @@ func TestEnums_Valid(t *testing.T) {
 
 	if DataSourceObjectSyncMetadataExternalDatabaseSyncProvider("not a member").Valid() {
 		t.Errorf("DataSourceObjectSyncMetadataExternalDatabaseSyncProvider(%v): valid, though no member", "not a member")
-	}
-
-	for _, v := range []DataSourceObjectSyncMetadataHealthAnyOfErrorSeverity{DataSourceObjectSyncMetadataHealthAnyOfErrorSeverityActionRequired, DataSourceObjectSyncMetadataHealthAnyOfErrorSeverityDegraded, DataSourceObjectSyncMetadataHealthAnyOfErrorSeverityFailing} {
-		if !v.Valid() {
-			t.Errorf("DataSourceObjectSyncMetadataHealthAnyOfErrorSeverity %v: not valid", v)
-		}
-	}
-
-	if DataSourceObjectSyncMetadataHealthAnyOfErrorSeverity("not a member").Valid() {
-		t.Errorf("DataSourceObjectSyncMetadataHealthAnyOfErrorSeverity(%v): valid, though no member", "not a member")
-	}
-
-	for _, v := range []DataSourceObjectSyncMetadataHealthAnyOfStage{DataSourceObjectSyncMetadataHealthAnyOfStageBackfilling, DataSourceObjectSyncMetadataHealthAnyOfStageInitializing, DataSourceObjectSyncMetadataHealthAnyOfStageSteady} {
-		if !v.Valid() {
-			t.Errorf("DataSourceObjectSyncMetadataHealthAnyOfStage %v: not valid", v)
-		}
-	}
-
-	if DataSourceObjectSyncMetadataHealthAnyOfStage("not a member").Valid() {
-		t.Errorf("DataSourceObjectSyncMetadataHealthAnyOfStage(%v): valid, though no member", "not a member")
 	}
 
 	for _, v := range []DatabaseQueryResultType{DatabaseQueryResultTypePage, DatabaseQueryResultTypeDataSource} {
@@ -456,6 +436,16 @@ func TestEnums_Valid(t *testing.T) {
 		t.Errorf("ErrorCode(%v): valid, though no member", "not a member")
 	}
 
+	for _, v := range []FileUploadCreatedByType{FileUploadCreatedByTypePerson, FileUploadCreatedByTypeBot, FileUploadCreatedByTypeAgent} {
+		if !v.Valid() {
+			t.Errorf("FileUploadCreatedByType %v: not valid", v)
+		}
+	}
+
+	if FileUploadCreatedByType("not a member").Valid() {
+		t.Errorf("FileUploadCreatedByType(%v): valid, though no member", "not a member")
+	}
+
 	for _, v := range []FileUploadObjectFileImportResultAllOfErrorType{FileUploadObjectFileImportResultAllOfErrorTypeValidationError, FileUploadObjectFileImportResultAllOfErrorTypeInternalSystemError, FileUploadObjectFileImportResultAllOfErrorTypeDownloadError, FileUploadObjectFileImportResultAllOfErrorTypeUploadError} {
 		if !v.Valid() {
 			t.Errorf("FileUploadObjectFileImportResultAllOfErrorType %v: not valid", v)
@@ -464,16 +454,6 @@ func TestEnums_Valid(t *testing.T) {
 
 	if FileUploadObjectFileImportResultAllOfErrorType("not a member").Valid() {
 		t.Errorf("FileUploadObjectFileImportResultAllOfErrorType(%v): valid, though no member", "not a member")
-	}
-
-	for _, v := range []FileUploadObjectResponseCreatedByType{FileUploadObjectResponseCreatedByTypePerson, FileUploadObjectResponseCreatedByTypeBot, FileUploadObjectResponseCreatedByTypeAgent} {
-		if !v.Valid() {
-			t.Errorf("FileUploadObjectResponseCreatedByType %v: not valid", v)
-		}
-	}
-
-	if FileUploadObjectResponseCreatedByType("not a member").Valid() {
-		t.Errorf("FileUploadObjectResponseCreatedByType(%v): valid, though no member", "not a member")
 	}
 
 	for _, v := range []FormViewConfigSubmissionPermissionsOneOf{FormViewConfigSubmissionPermissionsOneOfNone, FormViewConfigSubmissionPermissionsOneOfCommentOnly, FormViewConfigSubmissionPermissionsOneOfReader, FormViewConfigSubmissionPermissionsOneOfReadAndWrite, FormViewConfigSubmissionPermissionsOneOfEditor} {
@@ -526,64 +506,54 @@ func TestEnums_Valid(t *testing.T) {
 		t.Errorf("MarkdownVersion(%v): valid, though no member", "not a member")
 	}
 
-	for _, v := range []MeetingNotesPropertyFilterFilterOneOf0Operator{MeetingNotesPropertyFilterFilterOneOf0OperatorStringIs, MeetingNotesPropertyFilterFilterOneOf0OperatorStringIsNot, MeetingNotesPropertyFilterFilterOneOf0OperatorStringContains, MeetingNotesPropertyFilterFilterOneOf0OperatorStringDoesNotContain, MeetingNotesPropertyFilterFilterOneOf0OperatorStringStartsWith, MeetingNotesPropertyFilterFilterOneOf0OperatorStringEndsWith} {
+	for _, v := range []MeetingNotesDateFilterOperator{MeetingNotesDateFilterOperatorDateIs, MeetingNotesDateFilterOperatorDateIsBefore, MeetingNotesDateFilterOperatorDateIsAfter, MeetingNotesDateFilterOperatorDateIsOnOrBefore, MeetingNotesDateFilterOperatorDateIsOnOrAfter} {
 		if !v.Valid() {
-			t.Errorf("MeetingNotesPropertyFilterFilterOneOf0Operator %v: not valid", v)
+			t.Errorf("MeetingNotesDateFilterOperator %v: not valid", v)
 		}
 	}
 
-	if MeetingNotesPropertyFilterFilterOneOf0Operator("not a member").Valid() {
-		t.Errorf("MeetingNotesPropertyFilterFilterOneOf0Operator(%v): valid, though no member", "not a member")
+	if MeetingNotesDateFilterOperator("not a member").Valid() {
+		t.Errorf("MeetingNotesDateFilterOperator(%v): valid, though no member", "not a member")
 	}
 
-	for _, v := range []MeetingNotesPropertyFilterFilterOneOf1Operator{MeetingNotesPropertyFilterFilterOneOf1OperatorPersonContains, MeetingNotesPropertyFilterFilterOneOf1OperatorPersonDoesNotContain} {
+	for _, v := range []MeetingNotesDateRangeFilterOperator{MeetingNotesDateRangeFilterOperatorDateIsWithin, MeetingNotesDateRangeFilterOperatorDateIsRelativeTo} {
 		if !v.Valid() {
-			t.Errorf("MeetingNotesPropertyFilterFilterOneOf1Operator %v: not valid", v)
+			t.Errorf("MeetingNotesDateRangeFilterOperator %v: not valid", v)
 		}
 	}
 
-	if MeetingNotesPropertyFilterFilterOneOf1Operator("not a member").Valid() {
-		t.Errorf("MeetingNotesPropertyFilterFilterOneOf1Operator(%v): valid, though no member", "not a member")
+	if MeetingNotesDateRangeFilterOperator("not a member").Valid() {
+		t.Errorf("MeetingNotesDateRangeFilterOperator(%v): valid, though no member", "not a member")
 	}
 
-	for _, v := range []MeetingNotesPropertyFilterFilterOneOf2Operator{MeetingNotesPropertyFilterFilterOneOf2OperatorDateIs, MeetingNotesPropertyFilterFilterOneOf2OperatorDateIsBefore, MeetingNotesPropertyFilterFilterOneOf2OperatorDateIsAfter, MeetingNotesPropertyFilterFilterOneOf2OperatorDateIsOnOrBefore, MeetingNotesPropertyFilterFilterOneOf2OperatorDateIsOnOrAfter} {
+	for _, v := range []MeetingNotesDateRangeFilterValueCustomDirection{MeetingNotesDateRangeFilterValueCustomDirectionPast, MeetingNotesDateRangeFilterValueCustomDirectionFuture} {
 		if !v.Valid() {
-			t.Errorf("MeetingNotesPropertyFilterFilterOneOf2Operator %v: not valid", v)
+			t.Errorf("MeetingNotesDateRangeFilterValueCustomDirection %v: not valid", v)
 		}
 	}
 
-	if MeetingNotesPropertyFilterFilterOneOf2Operator("not a member").Valid() {
-		t.Errorf("MeetingNotesPropertyFilterFilterOneOf2Operator(%v): valid, though no member", "not a member")
+	if MeetingNotesDateRangeFilterValueCustomDirection("not a member").Valid() {
+		t.Errorf("MeetingNotesDateRangeFilterValueCustomDirection(%v): valid, though no member", "not a member")
 	}
 
-	for _, v := range []MeetingNotesPropertyFilterFilterOneOf3Operator{MeetingNotesPropertyFilterFilterOneOf3OperatorDateIsWithin, MeetingNotesPropertyFilterFilterOneOf3OperatorDateIsRelativeTo} {
+	for _, v := range []MeetingNotesDateRangeFilterValueOneOf2Value{MeetingNotesDateRangeFilterValueOneOf2ValueThisWeek, MeetingNotesDateRangeFilterValueOneOf2ValueThePastWeek, MeetingNotesDateRangeFilterValueOneOf2ValueThePastMonth, MeetingNotesDateRangeFilterValueOneOf2ValueThePastYear, MeetingNotesDateRangeFilterValueOneOf2ValueTheNextWeek, MeetingNotesDateRangeFilterValueOneOf2ValueTheNextMonth, MeetingNotesDateRangeFilterValueOneOf2ValueTheNextYear} {
 		if !v.Valid() {
-			t.Errorf("MeetingNotesPropertyFilterFilterOneOf3Operator %v: not valid", v)
+			t.Errorf("MeetingNotesDateRangeFilterValueOneOf2Value %v: not valid", v)
 		}
 	}
 
-	if MeetingNotesPropertyFilterFilterOneOf3Operator("not a member").Valid() {
-		t.Errorf("MeetingNotesPropertyFilterFilterOneOf3Operator(%v): valid, though no member", "not a member")
+	if MeetingNotesDateRangeFilterValueOneOf2Value("not a member").Valid() {
+		t.Errorf("MeetingNotesDateRangeFilterValueOneOf2Value(%v): valid, though no member", "not a member")
 	}
 
-	for _, v := range []MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirection{MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirectionPast, MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirectionFuture} {
+	for _, v := range []MeetingNotesPersonFilterOperator{MeetingNotesPersonFilterOperatorPersonContains, MeetingNotesPersonFilterOperatorPersonDoesNotContain} {
 		if !v.Valid() {
-			t.Errorf("MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirection %v: not valid", v)
+			t.Errorf("MeetingNotesPersonFilterOperator %v: not valid", v)
 		}
 	}
 
-	if MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirection("not a member").Valid() {
-		t.Errorf("MeetingNotesPropertyFilterFilterOneOf3ValueCustomDirection(%v): valid, though no member", "not a member")
-	}
-
-	for _, v := range []MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2Value{MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueThisWeek, MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueThePastWeek, MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueThePastMonth, MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueThePastYear, MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueTheNextWeek, MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueTheNextMonth, MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2ValueTheNextYear} {
-		if !v.Valid() {
-			t.Errorf("MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2Value %v: not valid", v)
-		}
-	}
-
-	if MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2Value("not a member").Valid() {
-		t.Errorf("MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2Value(%v): valid, though no member", "not a member")
+	if MeetingNotesPersonFilterOperator("not a member").Valid() {
+		t.Errorf("MeetingNotesPersonFilterOperator(%v): valid, though no member", "not a member")
 	}
 
 	for _, v := range []MeetingNotesPropertyFilterFilterOperatorOperator{MeetingNotesPropertyFilterFilterOperatorOperatorIsEmpty, MeetingNotesPropertyFilterFilterOperatorOperatorIsNotEmpty} {
@@ -614,6 +584,16 @@ func TestEnums_Valid(t *testing.T) {
 
 	if MeetingNotesPropertyFilterProperty("not a member").Valid() {
 		t.Errorf("MeetingNotesPropertyFilterProperty(%v): valid, though no member", "not a member")
+	}
+
+	for _, v := range []MeetingNotesTextFilterOperator{MeetingNotesTextFilterOperatorStringIs, MeetingNotesTextFilterOperatorStringIsNot, MeetingNotesTextFilterOperatorStringContains, MeetingNotesTextFilterOperatorStringDoesNotContain, MeetingNotesTextFilterOperatorStringStartsWith, MeetingNotesTextFilterOperatorStringEndsWith} {
+		if !v.Valid() {
+			t.Errorf("MeetingNotesTextFilterOperator %v: not valid", v)
+		}
+	}
+
+	if MeetingNotesTextFilterOperator("not a member").Valid() {
+		t.Errorf("MeetingNotesTextFilterOperator(%v): valid, though no member", "not a member")
 	}
 
 	for _, v := range []NonTerminalAsyncTaskStatus{NonTerminalAsyncTaskStatusQueued, NonTerminalAsyncTaskStatusRunning, NonTerminalAsyncTaskStatusRetrying} {
@@ -996,14 +976,34 @@ func TestEnums_Valid(t *testing.T) {
 		t.Errorf("SubtaskConfigFilterScope(%v): valid, though no member", "not a member")
 	}
 
-	for _, v := range []TemplateMentionDateTemplateMentionTemplateMentionDate{TemplateMentionDateTemplateMentionTemplateMentionDateToday, TemplateMentionDateTemplateMentionTemplateMentionDateNow} {
+	for _, v := range []SyncHealthErrorSeverity{SyncHealthErrorSeverityActionRequired, SyncHealthErrorSeverityDegraded, SyncHealthErrorSeverityFailing} {
 		if !v.Valid() {
-			t.Errorf("TemplateMentionDateTemplateMentionTemplateMentionDate %v: not valid", v)
+			t.Errorf("SyncHealthErrorSeverity %v: not valid", v)
 		}
 	}
 
-	if TemplateMentionDateTemplateMentionTemplateMentionDate("not a member").Valid() {
-		t.Errorf("TemplateMentionDateTemplateMentionTemplateMentionDate(%v): valid, though no member", "not a member")
+	if SyncHealthErrorSeverity("not a member").Valid() {
+		t.Errorf("SyncHealthErrorSeverity(%v): valid, though no member", "not a member")
+	}
+
+	for _, v := range []SyncHealthStage{SyncHealthStageBackfilling, SyncHealthStageInitializing, SyncHealthStageSteady} {
+		if !v.Valid() {
+			t.Errorf("SyncHealthStage %v: not valid", v)
+		}
+	}
+
+	if SyncHealthStage("not a member").Valid() {
+		t.Errorf("SyncHealthStage(%v): valid, though no member", "not a member")
+	}
+
+	for _, v := range []TemplateMentionDateTemplateMentionDate{TemplateMentionDateTemplateMentionDateToday, TemplateMentionDateTemplateMentionDateNow} {
+		if !v.Valid() {
+			t.Errorf("TemplateMentionDateTemplateMentionDate %v: not valid", v)
+		}
+	}
+
+	if TemplateMentionDateTemplateMentionDate("not a member").Valid() {
+		t.Errorf("TemplateMentionDateTemplateMentionDate(%v): valid, though no member", "not a member")
 	}
 
 	for _, v := range []TextGroupByConfigGroupBy{TextGroupByConfigGroupByExact, TextGroupByConfigGroupByAlphabetPrefix} {
@@ -1106,14 +1106,14 @@ func TestEnums_Valid(t *testing.T) {
 		t.Errorf("UpdatePageMarkdownAcceptedOperationRestSurface(%v): valid, though no member", "not a member")
 	}
 
-	for _, v := range []VerificationPropertyResponseState{VerificationPropertyResponseStateVerified, VerificationPropertyResponseStateExpired} {
+	for _, v := range []VerificationPropertyState{VerificationPropertyStateVerified, VerificationPropertyStateExpired} {
 		if !v.Valid() {
-			t.Errorf("VerificationPropertyResponseState %v: not valid", v)
+			t.Errorf("VerificationPropertyState %v: not valid", v)
 		}
 	}
 
-	if VerificationPropertyResponseState("not a member").Valid() {
-		t.Errorf("VerificationPropertyResponseState(%v): valid, though no member", "not a member")
+	if VerificationPropertyState("not a member").Valid() {
+		t.Errorf("VerificationPropertyState(%v): valid, though no member", "not a member")
 	}
 
 	for _, v := range []VerificationPropertyStatusFilterStatus{VerificationPropertyStatusFilterStatusVerified, VerificationPropertyStatusFilterStatusExpired, VerificationPropertyStatusFilterStatusNone} {
@@ -1447,29 +1447,29 @@ func TestUnions_RoundTrip(t *testing.T) {
 		roundTrip(t, BlockObjectEmbed2{EmbedFileUpload: &v}, func(u BlockObjectEmbed2) bool { return u.EmbedFileUpload != nil })
 	})
 
-	t.Run("BlockOrPartial/PartialBlockObjectResponse", func(t *testing.T) {
-		v := PartialBlockObjectResponse{Object: "block"}
-		roundTrip(t, BlockOrPartial{PartialBlockObjectResponse: &v}, func(u BlockOrPartial) bool { return u.PartialBlockObjectResponse != nil })
+	t.Run("BlockOrPartial/PartialBlock", func(t *testing.T) {
+		v := PartialBlock{Object: "block"}
+		roundTrip(t, BlockOrPartial{PartialBlock: &v}, func(u BlockOrPartial) bool { return u.PartialBlock != nil })
 	})
 
 	t.Run("BlockOrPartial/Block", func(t *testing.T) {
-		v := Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "paragraph", Paragraph: new(ContentWithRichTextColorAndIcon2{})}
+		v := Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "paragraph", Paragraph: new(ContentWithRichTextColorAndIcon2{})}
 		roundTrip(t, BlockOrPartial{Block: &v}, func(u BlockOrPartial) bool { return u.Block != nil })
 	})
 
-	t.Run("BotInfoResponseOwnerUserUser/PartialUserObjectResponse", func(t *testing.T) {
-		v := PartialUserObjectResponse{Object: "user"}
-		roundTrip(t, BotInfoResponseOwnerUserUser{PartialUserObjectResponse: &v}, func(u BotInfoResponseOwnerUserUser) bool { return u.PartialUserObjectResponse != nil })
+	t.Run("BotInfoResponseOwnerUserUser/PartialUser", func(t *testing.T) {
+		v := PartialUser{Object: "user"}
+		roundTrip(t, BotInfoResponseOwnerUserUser{PartialUser: &v}, func(u BotInfoResponseOwnerUserUser) bool { return u.PartialUser != nil })
 	})
 
-	t.Run("BotUserObjectResponseBot/EmptyObject", func(t *testing.T) {
+	t.Run("BotUserBot/EmptyObject", func(t *testing.T) {
 		v := EmptyObject{}
-		roundTrip(t, BotUserObjectResponseBot{EmptyObject: &v}, func(u BotUserObjectResponseBot) bool { return u.EmptyObject != nil })
+		roundTrip(t, BotUserBot{EmptyObject: &v}, func(u BotUserBot) bool { return u.EmptyObject != nil })
 	})
 
-	t.Run("BotUserObjectResponseBot/BotInfoResponse", func(t *testing.T) {
-		v := BotInfoResponse{Owner: BotInfoResponseOwner{Type: "user", User: new(BotInfoResponseOwnerUserUser{PartialUserObjectResponse: new(PartialUserObjectResponse{Object: "user"})})}}
-		roundTrip(t, BotUserObjectResponseBot{BotInfoResponse: &v}, func(u BotUserObjectResponseBot) bool { return u.BotInfoResponse != nil })
+	t.Run("BotUserBot/BotInfo", func(t *testing.T) {
+		v := BotInfo{Owner: BotInfoOwner{Type: "user", User: new(BotInfoResponseOwnerUserUser{PartialUser: new(PartialUser{Object: "user"})})}}
+		roundTrip(t, BotUserBot{BotInfo: &v}, func(u BotUserBot) bool { return u.BotInfo != nil })
 	})
 
 	t.Run("CheckboxPropertyFilter/CheckboxPropertyFilterEquals", func(t *testing.T) {
@@ -1482,34 +1482,24 @@ func TestUnions_RoundTrip(t *testing.T) {
 		roundTrip(t, CheckboxPropertyFilter{CheckboxPropertyFilterDoesNotEqual: &v}, func(u CheckboxPropertyFilter) bool { return u.CheckboxPropertyFilterDoesNotEqual != nil })
 	})
 
-	t.Run("CommentOrPartial/PartialCommentObjectResponse", func(t *testing.T) {
-		v := PartialCommentObjectResponse{Object: "comment"}
-		roundTrip(t, CommentOrPartial{PartialCommentObjectResponse: &v}, func(u CommentOrPartial) bool { return u.PartialCommentObjectResponse != nil })
+	t.Run("CommentOrPartial/PartialComment", func(t *testing.T) {
+		v := PartialComment{Object: "comment"}
+		roundTrip(t, CommentOrPartial{PartialComment: &v}, func(u CommentOrPartial) bool { return u.PartialComment != nil })
 	})
 
-	t.Run("CommentOrPartial/CommentObjectResponse", func(t *testing.T) {
-		v := CommentObjectResponse{Object: "comment", Parent: CommentParentResponse{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, CreatedBy: PartialUserObjectResponse{Object: "user"}}
-		roundTrip(t, CommentOrPartial{CommentObjectResponse: &v}, func(u CommentOrPartial) bool { return u.CommentObjectResponse != nil })
+	t.Run("CommentOrPartial/Comment", func(t *testing.T) {
+		v := Comment{Object: "comment", Parent: CommentParent{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, CreatedBy: PartialUser{Object: "user"}}
+		roundTrip(t, CommentOrPartial{Comment: &v}, func(u CommentOrPartial) bool { return u.Comment != nil })
 	})
 
-	t.Run("CreateACommentAllOf0/CreateACommentAllOf0OneOf0", func(t *testing.T) {
-		v := CreateACommentAllOf0OneOf0{Parent: CreateACommentAllOfOneOfParent{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}}
-		roundTrip(t, CreateACommentAllOf0{CreateACommentAllOf0OneOf0: &v}, func(u CreateACommentAllOf0) bool { return u.CreateACommentAllOf0OneOf0 != nil })
+	t.Run("CommentUpdate/CommentUpdateRichText", func(t *testing.T) {
+		v := CommentUpdateRichText{}
+		roundTrip(t, CommentUpdate{CommentUpdateRichText: &v}, func(u CommentUpdate) bool { return u.CommentUpdateRichText != nil })
 	})
 
-	t.Run("CreateACommentAllOf0/CreateACommentAllOf0OneOf1", func(t *testing.T) {
-		v := CreateACommentAllOf0OneOf1{Parent: CreateACommentAllOfOneOfParent{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}}
-		roundTrip(t, CreateACommentAllOf0{CreateACommentAllOf0OneOf1: &v}, func(u CreateACommentAllOf0) bool { return u.CreateACommentAllOf0OneOf1 != nil })
-	})
-
-	t.Run("CreateACommentAllOf0/CreateACommentAllOf0OneOf2", func(t *testing.T) {
-		v := CreateACommentAllOf0OneOf2{}
-		roundTrip(t, CreateACommentAllOf0{CreateACommentAllOf0OneOf2: &v}, func(u CreateACommentAllOf0) bool { return u.CreateACommentAllOf0OneOf2 != nil })
-	})
-
-	t.Run("CreateACommentAllOf0/CreateACommentAllOf0OneOf3", func(t *testing.T) {
-		v := CreateACommentAllOf0OneOf3{}
-		roundTrip(t, CreateACommentAllOf0{CreateACommentAllOf0OneOf3: &v}, func(u CreateACommentAllOf0) bool { return u.CreateACommentAllOf0OneOf3 != nil })
+	t.Run("CommentUpdate/CommentUpdateMarkdown", func(t *testing.T) {
+		v := CommentUpdateMarkdown{}
+		roundTrip(t, CommentUpdate{CommentUpdateMarkdown: &v}, func(u CommentUpdate) bool { return u.CommentUpdateMarkdown != nil })
 	})
 
 	t.Run("CreateAToken/CreateATokenAuthorizationCode", func(t *testing.T) {
@@ -1522,45 +1512,34 @@ func TestUnions_RoundTrip(t *testing.T) {
 		roundTrip(t, CreateAToken{CreateATokenRefreshToken: &v}, func(u CreateAToken) bool { return u.CreateATokenRefreshToken != nil })
 	})
 
-	t.Run("CreateATokenOkOwnerUserUser/PartialUserObjectResponse", func(t *testing.T) {
-		v := PartialUserObjectResponse{Object: "user"}
-		roundTrip(t, CreateATokenOkOwnerUserUser{PartialUserObjectResponse: &v}, func(u CreateATokenOkOwnerUserUser) bool { return u.PartialUserObjectResponse != nil })
+	t.Run("CreateATokenOkOwnerUserUser/PartialUser", func(t *testing.T) {
+		v := PartialUser{Object: "user"}
+		roundTrip(t, CreateATokenOkOwnerUserUser{PartialUser: &v}, func(u CreateATokenOkOwnerUserUser) bool { return u.PartialUser != nil })
 	})
 
-	t.Run("CreateMeetingNoteAllOf0/CreateMeetingNoteAllOf0Source", func(t *testing.T) {
-		v := CreateMeetingNoteAllOf0Source{Source: CreateMeetingNoteAllOf0SourceSource{Type: "block"}}
-		roundTrip(t, CreateMeetingNoteAllOf0{CreateMeetingNoteAllOf0Source: &v}, func(u CreateMeetingNoteAllOf0) bool { return u.CreateMeetingNoteAllOf0Source != nil })
-	})
-
-	t.Run("CreateMeetingNoteOk/CreateMeetingNoteOkOneOf0", func(t *testing.T) {
-		v := CreateMeetingNoteOkOneOf0{Object: "block"}
-		roundTrip(t, CreateMeetingNoteOk{CreateMeetingNoteOkOneOf0: &v}, func(u CreateMeetingNoteOk) bool { return u.CreateMeetingNoteOkOneOf0 != nil })
+	t.Run("CreateMeetingNoteOk/MeetingNoteBlock", func(t *testing.T) {
+		v := MeetingNoteBlock{Object: "block"}
+		roundTrip(t, CreateMeetingNoteOk{MeetingNoteBlock: &v}, func(u CreateMeetingNoteOk) bool { return u.MeetingNoteBlock != nil })
 	})
 
 	t.Run("CreateMeetingNoteOk/CreateMeetingNoteMeetingNotes", func(t *testing.T) {
-		v := CreateMeetingNoteMeetingNotes{Object: "block", Type: "meeting_notes", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}}
+		v := CreateMeetingNoteMeetingNotes{Object: "block", Type: "meeting_notes", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}}
 		roundTrip(t, CreateMeetingNoteOk{CreateMeetingNoteMeetingNotes: &v}, func(u CreateMeetingNoteOk) bool { return u.CreateMeetingNoteMeetingNotes != nil })
 	})
 
-	t.Run("DataSourceObjectSyncMetadataHealth/DataSourceObjectSyncMetadataHealthAnyOf", func(t *testing.T) {
-		v := DataSourceObjectSyncMetadataHealthAnyOf{Ok: false, Stage: "backfilling"}
-		roundTrip(t, DataSourceObjectSyncMetadataHealth{DataSourceObjectSyncMetadataHealthAnyOf: &v}, func(u DataSourceObjectSyncMetadataHealth) bool {
-			return u.DataSourceObjectSyncMetadataHealthAnyOf != nil
-		})
+	t.Run("DataSourceObjectSyncMetadataHealth/SyncHealthFailing", func(t *testing.T) {
+		v := SyncHealthFailing{Ok: false, Stage: "backfilling"}
+		roundTrip(t, DataSourceObjectSyncMetadataHealth{SyncHealthFailing: &v}, func(u DataSourceObjectSyncMetadataHealth) bool { return u.SyncHealthFailing != nil })
 	})
 
-	t.Run("DataSourceObjectSyncMetadataHealth/DataSourceObjectSyncMetadataHealthAnyOf2", func(t *testing.T) {
-		v := DataSourceObjectSyncMetadataHealthAnyOf2{Ok: true, Stage: "backfilling"}
-		roundTrip(t, DataSourceObjectSyncMetadataHealth{DataSourceObjectSyncMetadataHealthAnyOf2: &v}, func(u DataSourceObjectSyncMetadataHealth) bool {
-			return u.DataSourceObjectSyncMetadataHealthAnyOf2 != nil
-		})
+	t.Run("DataSourceObjectSyncMetadataHealth/SyncHealthOK", func(t *testing.T) {
+		v := SyncHealthOK{Ok: true, Stage: "backfilling"}
+		roundTrip(t, DataSourceObjectSyncMetadataHealth{SyncHealthOK: &v}, func(u DataSourceObjectSyncMetadataHealth) bool { return u.SyncHealthOK != nil })
 	})
 
-	t.Run("DataSourceObjectSyncMetadataHealth/DataSourceObjectSyncMetadataHealthPaused", func(t *testing.T) {
-		v := DataSourceObjectSyncMetadataHealthPaused{Paused: true}
-		roundTrip(t, DataSourceObjectSyncMetadataHealth{DataSourceObjectSyncMetadataHealthPaused: &v}, func(u DataSourceObjectSyncMetadataHealth) bool {
-			return u.DataSourceObjectSyncMetadataHealthPaused != nil
-		})
+	t.Run("DataSourceObjectSyncMetadataHealth/SyncHealthPaused", func(t *testing.T) {
+		v := SyncHealthPaused{Paused: true}
+		roundTrip(t, DataSourceObjectSyncMetadataHealth{SyncHealthPaused: &v}, func(u DataSourceObjectSyncMetadataHealth) bool { return u.SyncHealthPaused != nil })
 	})
 
 	t.Run("DataSourceObjectSyncMetadataSyncStateSyncing/Bool", func(t *testing.T) {
@@ -1573,33 +1552,33 @@ func TestUnions_RoundTrip(t *testing.T) {
 		roundTrip(t, DataSourceObjectSyncMetadataSyncStateSyncing{String: v}, func(u DataSourceObjectSyncMetadataSyncStateSyncing) bool { return u.String != "" })
 	})
 
-	t.Run("DataSourceOrPartial/PartialDataSourceObjectResponse", func(t *testing.T) {
-		v := PartialDataSourceObjectResponse{Object: "data_source"}
-		roundTrip(t, DataSourceOrPartial{PartialDataSourceObjectResponse: &v}, func(u DataSourceOrPartial) bool { return u.PartialDataSourceObjectResponse != nil })
+	t.Run("DataSourceOrPartial/PartialDataSource", func(t *testing.T) {
+		v := PartialDataSource{Object: "data_source"}
+		roundTrip(t, DataSourceOrPartial{PartialDataSource: &v}, func(u DataSourceOrPartial) bool { return u.PartialDataSource != nil })
 	})
 
-	t.Run("DataSourceOrPartial/DataSourceObjectResponse", func(t *testing.T) {
-		v := DataSourceObjectResponse{Object: "data_source", Parent: ParentOfDataSourceResponse{Type: "database_id"}, DatabaseParent: ParentOfDatabaseResponse{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}}
-		roundTrip(t, DataSourceOrPartial{DataSourceObjectResponse: &v}, func(u DataSourceOrPartial) bool { return u.DataSourceObjectResponse != nil })
+	t.Run("DataSourceOrPartial/DataSource", func(t *testing.T) {
+		v := DataSource{Object: "data_source", Parent: ParentOfDataSourceResponse{Type: "database_id"}, DatabaseParent: ParentOfDatabase{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}}
+		roundTrip(t, DataSourceOrPartial{DataSource: &v}, func(u DataSourceOrPartial) bool { return u.DataSource != nil })
 	})
 
-	t.Run("DataSourceViewOrPartial/PartialDataSourceViewObjectResponse", func(t *testing.T) {
-		v := PartialDataSourceViewObjectResponse{Object: "view", Parent: DatabaseParentResponse{Type: "database_id"}, Type: "table"}
-		roundTrip(t, DataSourceViewOrPartial{PartialDataSourceViewObjectResponse: &v}, func(u DataSourceViewOrPartial) bool { return u.PartialDataSourceViewObjectResponse != nil })
+	t.Run("DataSourceViewOrPartial/PartialDataSourceView", func(t *testing.T) {
+		v := PartialDataSourceView{Object: "view", Parent: DatabaseParent{Type: "database_id"}, Type: "table"}
+		roundTrip(t, DataSourceViewOrPartial{PartialDataSourceView: &v}, func(u DataSourceViewOrPartial) bool { return u.PartialDataSourceView != nil })
 	})
 
-	t.Run("DataSourceViewOrPartial/DataSourceViewObjectResponse", func(t *testing.T) {
-		v := DataSourceViewObjectResponse{Object: "view", Parent: DatabaseParentResponse{Type: "database_id"}, Type: "table"}
-		roundTrip(t, DataSourceViewOrPartial{DataSourceViewObjectResponse: &v}, func(u DataSourceViewOrPartial) bool { return u.DataSourceViewObjectResponse != nil })
+	t.Run("DataSourceViewOrPartial/DataSourceView", func(t *testing.T) {
+		v := DataSourceView{Object: "view", Parent: DatabaseParent{Type: "database_id"}, Type: "table"}
+		roundTrip(t, DataSourceViewOrPartial{DataSourceView: &v}, func(u DataSourceViewOrPartial) bool { return u.DataSourceView != nil })
 	})
 
-	t.Run("DatabaseOrPartial/PartialDatabaseObjectResponse", func(t *testing.T) {
-		v := PartialDatabaseObjectResponse{Object: "database"}
-		roundTrip(t, DatabaseOrPartial{PartialDatabaseObjectResponse: &v}, func(u DatabaseOrPartial) bool { return u.PartialDatabaseObjectResponse != nil })
+	t.Run("DatabaseOrPartial/PartialDatabase", func(t *testing.T) {
+		v := PartialDatabase{Object: "database"}
+		roundTrip(t, DatabaseOrPartial{PartialDatabase: &v}, func(u DatabaseOrPartial) bool { return u.PartialDatabase != nil })
 	})
 
 	t.Run("DatabaseOrPartial/Database", func(t *testing.T) {
-		v := Database{Object: "database", Parent: ParentOfDatabaseResponse{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}}
+		v := Database{Object: "database", Parent: ParentOfDatabase{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}}
 		roundTrip(t, DatabaseOrPartial{Database: &v}, func(u DatabaseOrPartial) bool { return u.Database != nil })
 	})
 
@@ -1638,24 +1617,24 @@ func TestUnions_RoundTrip(t *testing.T) {
 		roundTrip(t, FormulaPropertyFilter{FormulaPropertyFilterCheckbox: &v}, func(u FormulaPropertyFilter) bool { return u.FormulaPropertyFilterCheckbox != nil })
 	})
 
-	t.Run("FormulaSubGroupByResponse/FormulaDateSubGroupByResponse", func(t *testing.T) {
+	t.Run("FormulaSubGroupBy/FormulaDateSubGroupByResponse", func(t *testing.T) {
 		v := FormulaDateSubGroupByResponse{Type: "date", GroupBy: "relative", StartDayOfWeek: new(float64(0))}
-		roundTrip(t, FormulaSubGroupByResponse{FormulaDateSubGroupByResponse: &v}, func(u FormulaSubGroupByResponse) bool { return u.FormulaDateSubGroupByResponse != nil })
+		roundTrip(t, FormulaSubGroupBy{FormulaDateSubGroupByResponse: &v}, func(u FormulaSubGroupBy) bool { return u.FormulaDateSubGroupByResponse != nil })
 	})
 
-	t.Run("FormulaSubGroupByResponse/FormulaTextSubGroupByResponse", func(t *testing.T) {
+	t.Run("FormulaSubGroupBy/FormulaTextSubGroupByResponse", func(t *testing.T) {
 		v := FormulaTextSubGroupByResponse{Type: "text", GroupBy: "exact"}
-		roundTrip(t, FormulaSubGroupByResponse{FormulaTextSubGroupByResponse: &v}, func(u FormulaSubGroupByResponse) bool { return u.FormulaTextSubGroupByResponse != nil })
+		roundTrip(t, FormulaSubGroupBy{FormulaTextSubGroupByResponse: &v}, func(u FormulaSubGroupBy) bool { return u.FormulaTextSubGroupByResponse != nil })
 	})
 
-	t.Run("FormulaSubGroupByResponse/FormulaNumberSubGroupByResponse", func(t *testing.T) {
+	t.Run("FormulaSubGroupBy/FormulaNumberSubGroupByResponse", func(t *testing.T) {
 		v := FormulaNumberSubGroupByResponse{Type: "number"}
-		roundTrip(t, FormulaSubGroupByResponse{FormulaNumberSubGroupByResponse: &v}, func(u FormulaSubGroupByResponse) bool { return u.FormulaNumberSubGroupByResponse != nil })
+		roundTrip(t, FormulaSubGroupBy{FormulaNumberSubGroupByResponse: &v}, func(u FormulaSubGroupBy) bool { return u.FormulaNumberSubGroupByResponse != nil })
 	})
 
-	t.Run("FormulaSubGroupByResponse/FormulaCheckboxSubGroupByResponse", func(t *testing.T) {
+	t.Run("FormulaSubGroupBy/FormulaCheckboxSubGroupByResponse", func(t *testing.T) {
 		v := FormulaCheckboxSubGroupByResponse{Type: "checkbox"}
-		roundTrip(t, FormulaSubGroupByResponse{FormulaCheckboxSubGroupByResponse: &v}, func(u FormulaSubGroupByResponse) bool { return u.FormulaCheckboxSubGroupByResponse != nil })
+		roundTrip(t, FormulaSubGroupBy{FormulaCheckboxSubGroupByResponse: &v}, func(u FormulaSubGroupBy) bool { return u.FormulaCheckboxSubGroupByResponse != nil })
 	})
 
 	t.Run("GroupByConfig/FormulaGroupByConfig", func(t *testing.T) {
@@ -1664,119 +1643,126 @@ func TestUnions_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("GroupByConfigResponse/FormulaGroupByConfigResponse", func(t *testing.T) {
-		v := FormulaGroupByConfigResponse{Type: "formula", GroupBy: FormulaSubGroupByResponse{FormulaDateSubGroupByResponse: new(FormulaDateSubGroupByResponse{Type: "date", GroupBy: "relative", StartDayOfWeek: new(float64(0))})}}
+		v := FormulaGroupByConfigResponse{Type: "formula", GroupBy: FormulaSubGroupBy{FormulaDateSubGroupByResponse: new(FormulaDateSubGroupByResponse{Type: "date", GroupBy: "relative", StartDayOfWeek: new(float64(0))})}}
 		roundTrip(t, GroupByConfigResponse{FormulaGroupByConfigResponse: &v}, func(u GroupByConfigResponse) bool { return u.FormulaGroupByConfigResponse != nil })
 	})
 
-	t.Run("MeetingNotesPropertyFilterFilter/MeetingNotesPropertyFilterFilterOperator", func(t *testing.T) {
-		v := MeetingNotesPropertyFilterFilterOperator{Operator: "is_empty"}
-		roundTrip(t, MeetingNotesPropertyFilterFilter{MeetingNotesPropertyFilterFilterOperator: &v}, func(u MeetingNotesPropertyFilterFilter) bool {
-			return u.MeetingNotesPropertyFilterFilterOperator != nil
+	t.Run("MeetingNoteSource/MeetingNoteFromBlock", func(t *testing.T) {
+		v := MeetingNoteFromBlock{Source: MeetingNoteFromBlockSource{Type: "block"}}
+		roundTrip(t, MeetingNoteSource{MeetingNoteFromBlock: &v}, func(u MeetingNoteSource) bool { return u.MeetingNoteFromBlock != nil })
+	})
+
+	t.Run("MeetingNotesDateFilterValue/MeetingNotesDateFilterValueRelative", func(t *testing.T) {
+		v := MeetingNotesDateFilterValueRelative{Type: "relative", Value: "today"}
+		roundTrip(t, MeetingNotesDateFilterValue{MeetingNotesDateFilterValueRelative: &v}, func(u MeetingNotesDateFilterValue) bool { return u.MeetingNotesDateFilterValueRelative != nil })
+	})
+
+	t.Run("MeetingNotesDateFilterValue/MeetingNotesDateFilterValueExact", func(t *testing.T) {
+		v := MeetingNotesDateFilterValueExact{Type: "exact", Value: MeetingNotesDateFilterValueExactValue{MeetingNotesDateFilterValueExactValueDate: new(MeetingNotesDateFilterValueExactValueDate{Type: "date", StartDate: civil.Date{Year: 2026, Month: 1, Day: 2}})}}
+		roundTrip(t, MeetingNotesDateFilterValue{MeetingNotesDateFilterValueExact: &v}, func(u MeetingNotesDateFilterValue) bool { return u.MeetingNotesDateFilterValueExact != nil })
+	})
+
+	t.Run("MeetingNotesDateFilterValueExactValue/MeetingNotesDateFilterValueExactValueDate", func(t *testing.T) {
+		v := MeetingNotesDateFilterValueExactValueDate{Type: "date", StartDate: civil.Date{Year: 2026, Month: 1, Day: 2}}
+		roundTrip(t, MeetingNotesDateFilterValueExactValue{MeetingNotesDateFilterValueExactValueDate: &v}, func(u MeetingNotesDateFilterValueExactValue) bool {
+			return u.MeetingNotesDateFilterValueExactValueDate != nil
 		})
 	})
 
-	t.Run("MeetingNotesPropertyFilterFilterOneOf1ValueItem/MeetingNotesPropertyFilterFilterOneOf1ValueItemExact", func(t *testing.T) {
-		v := MeetingNotesPropertyFilterFilterOneOf1ValueItemExact{Type: "exact", Value: MeetingNotesPropertyFilterFilterOneOf1ValueItemExactValue{Table: "notion_user"}}
-		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf1ValueItem{MeetingNotesPropertyFilterFilterOneOf1ValueItemExact: &v}, func(u MeetingNotesPropertyFilterFilterOneOf1ValueItem) bool {
-			return u.MeetingNotesPropertyFilterFilterOneOf1ValueItemExact != nil
+	t.Run("MeetingNotesDateFilterValueExactValue/MeetingNotesDateFilterValueExactValueDatetime", func(t *testing.T) {
+		v := MeetingNotesDateFilterValueExactValueDatetime{Type: "datetime", StartDate: civil.Date{Year: 2026, Month: 1, Day: 2}}
+		roundTrip(t, MeetingNotesDateFilterValueExactValue{MeetingNotesDateFilterValueExactValueDatetime: &v}, func(u MeetingNotesDateFilterValueExactValue) bool {
+			return u.MeetingNotesDateFilterValueExactValueDatetime != nil
 		})
 	})
 
-	t.Run("MeetingNotesPropertyFilterFilterOneOf1ValueItem/MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative", func(t *testing.T) {
-		v := MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative{Type: "relative", Value: "me"}
-		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf1ValueItem{MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative: &v}, func(u MeetingNotesPropertyFilterFilterOneOf1ValueItem) bool {
-			return u.MeetingNotesPropertyFilterFilterOneOf1ValueItemRelative != nil
+	t.Run("MeetingNotesDateRangeFilterValue/MeetingNotesDateRangeFilterValueCustom", func(t *testing.T) {
+		v := MeetingNotesDateRangeFilterValueCustom{Type: "relative", Value: "custom", Direction: "past", Unit: "year"}
+		roundTrip(t, MeetingNotesDateRangeFilterValue{MeetingNotesDateRangeFilterValueCustom: &v}, func(u MeetingNotesDateRangeFilterValue) bool { return u.MeetingNotesDateRangeFilterValueCustom != nil })
+	})
+
+	t.Run("MeetingNotesDateRangeFilterValue/MeetingNotesDateRangeFilterValueSurrounding", func(t *testing.T) {
+		v := MeetingNotesDateRangeFilterValueSurrounding{Type: "relative", Value: "surrounding", Unit: "year"}
+		roundTrip(t, MeetingNotesDateRangeFilterValue{MeetingNotesDateRangeFilterValueSurrounding: &v}, func(u MeetingNotesDateRangeFilterValue) bool {
+			return u.MeetingNotesDateRangeFilterValueSurrounding != nil
 		})
 	})
 
-	t.Run("MeetingNotesPropertyFilterFilterOneOf2Value/MeetingNotesPropertyFilterFilterOneOf2ValueRelative", func(t *testing.T) {
-		v := MeetingNotesPropertyFilterFilterOneOf2ValueRelative{Type: "relative", Value: "today"}
-		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf2Value{MeetingNotesPropertyFilterFilterOneOf2ValueRelative: &v}, func(u MeetingNotesPropertyFilterFilterOneOf2Value) bool {
-			return u.MeetingNotesPropertyFilterFilterOneOf2ValueRelative != nil
+	t.Run("MeetingNotesDateRangeFilterValue/MeetingNotesDateRangeFilterValueOneOf2", func(t *testing.T) {
+		v := MeetingNotesDateRangeFilterValueOneOf2{Type: "relative", Value: "this_week"}
+		roundTrip(t, MeetingNotesDateRangeFilterValue{MeetingNotesDateRangeFilterValueOneOf2: &v}, func(u MeetingNotesDateRangeFilterValue) bool { return u.MeetingNotesDateRangeFilterValueOneOf2 != nil })
+	})
+
+	t.Run("MeetingNotesDateRangeFilterValue/MeetingNotesDateRangeFilterValueExact", func(t *testing.T) {
+		v := MeetingNotesDateRangeFilterValueExact{Type: "exact", Value: MeetingNotesDateRangeFilterValueExactValue{Type: "daterange"}}
+		roundTrip(t, MeetingNotesDateRangeFilterValue{MeetingNotesDateRangeFilterValueExact: &v}, func(u MeetingNotesDateRangeFilterValue) bool { return u.MeetingNotesDateRangeFilterValueExact != nil })
+	})
+
+	t.Run("MeetingNotesPersonFilterValueItem/MeetingNotesPersonFilterValueItemExact", func(t *testing.T) {
+		v := MeetingNotesPersonFilterValueItemExact{Type: "exact", Value: MeetingNotesPersonFilterValueItemExactValue{Table: "notion_user"}}
+		roundTrip(t, MeetingNotesPersonFilterValueItem{MeetingNotesPersonFilterValueItemExact: &v}, func(u MeetingNotesPersonFilterValueItem) bool { return u.MeetingNotesPersonFilterValueItemExact != nil })
+	})
+
+	t.Run("MeetingNotesPersonFilterValueItem/MeetingNotesPersonFilterValueItemRelative", func(t *testing.T) {
+		v := MeetingNotesPersonFilterValueItemRelative{Type: "relative", Value: "me"}
+		roundTrip(t, MeetingNotesPersonFilterValueItem{MeetingNotesPersonFilterValueItemRelative: &v}, func(u MeetingNotesPersonFilterValueItem) bool {
+			return u.MeetingNotesPersonFilterValueItemRelative != nil
 		})
 	})
 
-	t.Run("MeetingNotesPropertyFilterFilterOneOf2Value/MeetingNotesPropertyFilterFilterOneOf2ValueExact", func(t *testing.T) {
-		v := MeetingNotesPropertyFilterFilterOneOf2ValueExact{Type: "exact", Value: MeetingNotesPropertyFilterFilterOneOf2ValueExactValue{MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate: new(MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate{Type: "date", StartDate: civil.Date{Year: 2026, Month: 1, Day: 2}})}}
-		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf2Value{MeetingNotesPropertyFilterFilterOneOf2ValueExact: &v}, func(u MeetingNotesPropertyFilterFilterOneOf2Value) bool {
-			return u.MeetingNotesPropertyFilterFilterOneOf2ValueExact != nil
-		})
+	t.Run("MeetingNotesPropertyFilterFilter/MeetingNotesPropertyFilterOperator", func(t *testing.T) {
+		v := MeetingNotesPropertyFilterOperator{Operator: "is_empty"}
+		roundTrip(t, MeetingNotesPropertyFilterFilter{MeetingNotesPropertyFilterOperator: &v}, func(u MeetingNotesPropertyFilterFilter) bool { return u.MeetingNotesPropertyFilterOperator != nil })
 	})
 
-	t.Run("MeetingNotesPropertyFilterFilterOneOf2ValueExactValue/MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate", func(t *testing.T) {
-		v := MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate{Type: "date", StartDate: civil.Date{Year: 2026, Month: 1, Day: 2}}
-		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf2ValueExactValue{MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate: &v}, func(u MeetingNotesPropertyFilterFilterOneOf2ValueExactValue) bool {
-			return u.MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDate != nil
-		})
+	t.Run("NewComment/PageComment", func(t *testing.T) {
+		v := PageComment{Parent: CreateACommentAllOfOneOfParent{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}}
+		roundTrip(t, NewComment{PageComment: &v}, func(u NewComment) bool { return u.PageComment != nil })
 	})
 
-	t.Run("MeetingNotesPropertyFilterFilterOneOf2ValueExactValue/MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDatetime", func(t *testing.T) {
-		v := MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDatetime{Type: "datetime", StartDate: civil.Date{Year: 2026, Month: 1, Day: 2}}
-		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf2ValueExactValue{MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDatetime: &v}, func(u MeetingNotesPropertyFilterFilterOneOf2ValueExactValue) bool {
-			return u.MeetingNotesPropertyFilterFilterOneOf2ValueExactValueDatetime != nil
-		})
+	t.Run("NewComment/PageMarkdownComment", func(t *testing.T) {
+		v := PageMarkdownComment{Parent: CreateACommentAllOfOneOfParent{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}}
+		roundTrip(t, NewComment{PageMarkdownComment: &v}, func(u NewComment) bool { return u.PageMarkdownComment != nil })
 	})
 
-	t.Run("MeetingNotesPropertyFilterFilterOneOf3Value/MeetingNotesPropertyFilterFilterOneOf3ValueCustom", func(t *testing.T) {
-		v := MeetingNotesPropertyFilterFilterOneOf3ValueCustom{Type: "relative", Value: "custom", Direction: "past", Unit: "year"}
-		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf3Value{MeetingNotesPropertyFilterFilterOneOf3ValueCustom: &v}, func(u MeetingNotesPropertyFilterFilterOneOf3Value) bool {
-			return u.MeetingNotesPropertyFilterFilterOneOf3ValueCustom != nil
-		})
+	t.Run("NewComment/DiscussionComment", func(t *testing.T) {
+		v := DiscussionComment{}
+		roundTrip(t, NewComment{DiscussionComment: &v}, func(u NewComment) bool { return u.DiscussionComment != nil })
 	})
 
-	t.Run("MeetingNotesPropertyFilterFilterOneOf3Value/MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding", func(t *testing.T) {
-		v := MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding{Type: "relative", Value: "surrounding", Unit: "year"}
-		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf3Value{MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding: &v}, func(u MeetingNotesPropertyFilterFilterOneOf3Value) bool {
-			return u.MeetingNotesPropertyFilterFilterOneOf3ValueSurrounding != nil
-		})
-	})
-
-	t.Run("MeetingNotesPropertyFilterFilterOneOf3Value/MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2", func(t *testing.T) {
-		v := MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2{Type: "relative", Value: "this_week"}
-		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf3Value{MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2: &v}, func(u MeetingNotesPropertyFilterFilterOneOf3Value) bool {
-			return u.MeetingNotesPropertyFilterFilterOneOf3ValueOneOf2 != nil
-		})
-	})
-
-	t.Run("MeetingNotesPropertyFilterFilterOneOf3Value/MeetingNotesPropertyFilterFilterOneOf3ValueExact", func(t *testing.T) {
-		v := MeetingNotesPropertyFilterFilterOneOf3ValueExact{Type: "exact", Value: MeetingNotesPropertyFilterFilterOneOf3ValueExactValue{Type: "daterange"}}
-		roundTrip(t, MeetingNotesPropertyFilterFilterOneOf3Value{MeetingNotesPropertyFilterFilterOneOf3ValueExact: &v}, func(u MeetingNotesPropertyFilterFilterOneOf3Value) bool {
-			return u.MeetingNotesPropertyFilterFilterOneOf3ValueExact != nil
-		})
+	t.Run("NewComment/DiscussionMarkdownComment", func(t *testing.T) {
+		v := DiscussionMarkdownComment{}
+		roundTrip(t, NewComment{DiscussionMarkdownComment: &v}, func(u NewComment) bool { return u.DiscussionMarkdownComment != nil })
 	})
 
 	t.Run("PageOrPartial/Page", func(t *testing.T) {
-		v := Page{Object: "page", Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}}
+		v := Page{Object: "page", Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}}
 		roundTrip(t, PageOrPartial{Page: &v}, func(u PageOrPartial) bool { return u.Page != nil })
 	})
 
-	t.Run("PageOrPartial/PartialPageObjectResponse", func(t *testing.T) {
-		v := PartialPageObjectResponse{Object: "page"}
-		roundTrip(t, PageOrPartial{PartialPageObjectResponse: &v}, func(u PageOrPartial) bool { return u.PartialPageObjectResponse != nil })
+	t.Run("PageOrPartial/PartialPage", func(t *testing.T) {
+		v := PartialPage{Object: "page"}
+		roundTrip(t, PageOrPartial{PartialPage: &v}, func(u PageOrPartial) bool { return u.PartialPage != nil })
 	})
 
-	t.Run("PagePropertiesValueMultiSelectMultiSelectItem/PagePropertiesValueSelectID", func(t *testing.T) {
+	t.Run("PagePropertiesValueMultiSelectItem/PagePropertiesValueSelectID", func(t *testing.T) {
 		v := PagePropertiesValueSelectID{Color: "default"}
-		roundTrip(t, PagePropertiesValueMultiSelectMultiSelectItem{PagePropertiesValueSelectID: &v}, func(u PagePropertiesValueMultiSelectMultiSelectItem) bool {
-			return u.PagePropertiesValueSelectID != nil
-		})
+		roundTrip(t, PagePropertiesValueMultiSelectItem{PagePropertiesValueSelectID: &v}, func(u PagePropertiesValueMultiSelectItem) bool { return u.PagePropertiesValueSelectID != nil })
 	})
 
-	t.Run("PagePropertiesValueMultiSelectMultiSelectItem/PagePropertiesValueSelectName", func(t *testing.T) {
+	t.Run("PagePropertiesValueMultiSelectItem/PagePropertiesValueSelectName", func(t *testing.T) {
 		v := PagePropertiesValueSelectName{Color: "default"}
-		roundTrip(t, PagePropertiesValueMultiSelectMultiSelectItem{PagePropertiesValueSelectName: &v}, func(u PagePropertiesValueMultiSelectMultiSelectItem) bool {
-			return u.PagePropertiesValueSelectName != nil
-		})
+		roundTrip(t, PagePropertiesValueMultiSelectItem{PagePropertiesValueSelectName: &v}, func(u PagePropertiesValueMultiSelectItem) bool { return u.PagePropertiesValueSelectName != nil })
 	})
 
-	t.Run("PagePropertiesValuePeoplePeopleItem/PartialUserObject", func(t *testing.T) {
+	t.Run("PagePropertiesValuePeopleItem/PartialUserObject", func(t *testing.T) {
 		v := PartialUserObject{Object: "user"}
-		roundTrip(t, PagePropertiesValuePeoplePeopleItem{PartialUserObject: &v}, func(u PagePropertiesValuePeoplePeopleItem) bool { return u.PartialUserObject != nil })
+		roundTrip(t, PagePropertiesValuePeopleItem{PartialUserObject: &v}, func(u PagePropertiesValuePeopleItem) bool { return u.PartialUserObject != nil })
 	})
 
-	t.Run("PagePropertiesValuePeoplePeopleItem/GroupObject", func(t *testing.T) {
+	t.Run("PagePropertiesValuePeopleItem/GroupObject", func(t *testing.T) {
 		v := GroupObject{Object: "group"}
-		roundTrip(t, PagePropertiesValuePeoplePeopleItem{GroupObject: &v}, func(u PagePropertiesValuePeoplePeopleItem) bool { return u.GroupObject != nil })
+		roundTrip(t, PagePropertiesValuePeopleItem{GroupObject: &v}, func(u PagePropertiesValuePeopleItem) bool { return u.GroupObject != nil })
 	})
 
 	t.Run("PagePropertiesValueSelect2/PagePropertiesValueSelectID", func(t *testing.T) {
@@ -1789,17 +1775,17 @@ func TestUnions_RoundTrip(t *testing.T) {
 		roundTrip(t, PagePropertiesValueSelect2{PagePropertiesValueSelectName: &v}, func(u PagePropertiesValueSelect2) bool { return u.PagePropertiesValueSelectName != nil })
 	})
 
-	t.Run("PagePropertiesValueVerificationVerification/PagePropertiesValueVerificationVerificationVerified", func(t *testing.T) {
-		v := PagePropertiesValueVerificationVerificationVerified{State: "verified"}
-		roundTrip(t, PagePropertiesValueVerificationVerification{PagePropertiesValueVerificationVerificationVerified: &v}, func(u PagePropertiesValueVerificationVerification) bool {
-			return u.PagePropertiesValueVerificationVerificationVerified != nil
+	t.Run("PagePropertiesValueVerificationVerification/PagePropertiesValueVerificationVerified", func(t *testing.T) {
+		v := PagePropertiesValueVerificationVerified{State: "verified"}
+		roundTrip(t, PagePropertiesValueVerificationVerification{PagePropertiesValueVerificationVerified: &v}, func(u PagePropertiesValueVerificationVerification) bool {
+			return u.PagePropertiesValueVerificationVerified != nil
 		})
 	})
 
-	t.Run("PagePropertiesValueVerificationVerification/PagePropertiesValueVerificationVerificationUnverified", func(t *testing.T) {
-		v := PagePropertiesValueVerificationVerificationUnverified{State: "unverified"}
-		roundTrip(t, PagePropertiesValueVerificationVerification{PagePropertiesValueVerificationVerificationUnverified: &v}, func(u PagePropertiesValueVerificationVerification) bool {
-			return u.PagePropertiesValueVerificationVerificationUnverified != nil
+	t.Run("PagePropertiesValueVerificationVerification/PagePropertiesValueVerificationUnverified", func(t *testing.T) {
+		v := PagePropertiesValueVerificationUnverified{State: "unverified"}
+		roundTrip(t, PagePropertiesValueVerificationVerification{PagePropertiesValueVerificationUnverified: &v}, func(u PagePropertiesValueVerificationVerification) bool {
+			return u.PagePropertiesValueVerificationUnverified != nil
 		})
 	})
 
@@ -1848,129 +1834,129 @@ func TestUnions_RoundTrip(t *testing.T) {
 		roundTrip(t, PropertyFilterVerification2{VerificationPropertyDoesNotEqualFilter: &v}, func(u PropertyFilterVerification2) bool { return u.VerificationPropertyDoesNotEqualFilter != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/NumberPropertyItemObjectResponse", func(t *testing.T) {
-		v := NumberPropertyItemObjectResponse{Type: "number", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{NumberPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.NumberPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/NumberPropertyItem", func(t *testing.T) {
+		v := NumberPropertyItem{Type: "number", Object: "property_item"}
+		roundTrip(t, PropertyItem{NumberPropertyItem: &v}, func(u PropertyItem) bool { return u.NumberPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/URLPropertyItemObjectResponse", func(t *testing.T) {
-		v := URLPropertyItemObjectResponse{Type: "url", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{URLPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.URLPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/URLPropertyItem", func(t *testing.T) {
+		v := URLPropertyItem{Type: "url", Object: "property_item"}
+		roundTrip(t, PropertyItem{URLPropertyItem: &v}, func(u PropertyItem) bool { return u.URLPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/SelectPropertyItemObjectResponse", func(t *testing.T) {
-		v := SelectPropertyItemObjectResponse{Type: "select", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{SelectPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.SelectPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/SelectPropertyItem", func(t *testing.T) {
+		v := SelectPropertyItem{Type: "select", Object: "property_item"}
+		roundTrip(t, PropertyItem{SelectPropertyItem: &v}, func(u PropertyItem) bool { return u.SelectPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/MultiSelectPropertyItemObjectResponse", func(t *testing.T) {
-		v := MultiSelectPropertyItemObjectResponse{Type: "multi_select", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{MultiSelectPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.MultiSelectPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/MultiSelectPropertyItem", func(t *testing.T) {
+		v := MultiSelectPropertyItem{Type: "multi_select", Object: "property_item"}
+		roundTrip(t, PropertyItem{MultiSelectPropertyItem: &v}, func(u PropertyItem) bool { return u.MultiSelectPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/StatusPropertyItemObjectResponse", func(t *testing.T) {
-		v := StatusPropertyItemObjectResponse{Type: "status", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{StatusPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.StatusPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/StatusPropertyItem", func(t *testing.T) {
+		v := StatusPropertyItem{Type: "status", Object: "property_item"}
+		roundTrip(t, PropertyItem{StatusPropertyItem: &v}, func(u PropertyItem) bool { return u.StatusPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/DatePropertyItemObjectResponse", func(t *testing.T) {
-		v := DatePropertyItemObjectResponse{Type: "date", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{DatePropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.DatePropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/DatePropertyItem", func(t *testing.T) {
+		v := DatePropertyItem{Type: "date", Object: "property_item"}
+		roundTrip(t, PropertyItem{DatePropertyItem: &v}, func(u PropertyItem) bool { return u.DatePropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/EmailPropertyItemObjectResponse", func(t *testing.T) {
-		v := EmailPropertyItemObjectResponse{Type: "email", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{EmailPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.EmailPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/EmailPropertyItem", func(t *testing.T) {
+		v := EmailPropertyItem{Type: "email", Object: "property_item"}
+		roundTrip(t, PropertyItem{EmailPropertyItem: &v}, func(u PropertyItem) bool { return u.EmailPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/PhoneNumberPropertyItemObjectResponse", func(t *testing.T) {
-		v := PhoneNumberPropertyItemObjectResponse{Type: "phone_number", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{PhoneNumberPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.PhoneNumberPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/PhoneNumberPropertyItem", func(t *testing.T) {
+		v := PhoneNumberPropertyItem{Type: "phone_number", Object: "property_item"}
+		roundTrip(t, PropertyItem{PhoneNumberPropertyItem: &v}, func(u PropertyItem) bool { return u.PhoneNumberPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/CheckboxPropertyItemObjectResponse", func(t *testing.T) {
-		v := CheckboxPropertyItemObjectResponse{Type: "checkbox", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{CheckboxPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.CheckboxPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/CheckboxPropertyItem", func(t *testing.T) {
+		v := CheckboxPropertyItem{Type: "checkbox", Object: "property_item"}
+		roundTrip(t, PropertyItem{CheckboxPropertyItem: &v}, func(u PropertyItem) bool { return u.CheckboxPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/FilesPropertyItemObjectResponse", func(t *testing.T) {
-		v := FilesPropertyItemObjectResponse{Type: "files", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{FilesPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.FilesPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/FilesPropertyItem", func(t *testing.T) {
+		v := FilesPropertyItem{Type: "files", Object: "property_item"}
+		roundTrip(t, PropertyItem{FilesPropertyItem: &v}, func(u PropertyItem) bool { return u.FilesPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/CreatedByPropertyItemObjectResponse", func(t *testing.T) {
-		v := CreatedByPropertyItemObjectResponse{Type: "created_by", CreatedBy: UserOrPartial{PartialUserObjectResponse: new(PartialUserObjectResponse{Object: "user"})}, Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{CreatedByPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.CreatedByPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/CreatedByPropertyItem", func(t *testing.T) {
+		v := CreatedByPropertyItem{Type: "created_by", CreatedBy: UserOrPartial{PartialUser: new(PartialUser{Object: "user"})}, Object: "property_item"}
+		roundTrip(t, PropertyItem{CreatedByPropertyItem: &v}, func(u PropertyItem) bool { return u.CreatedByPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/CreatedTimePropertyItemObjectResponse", func(t *testing.T) {
-		v := CreatedTimePropertyItemObjectResponse{Type: "created_time", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{CreatedTimePropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.CreatedTimePropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/CreatedTimePropertyItem", func(t *testing.T) {
+		v := CreatedTimePropertyItem{Type: "created_time", Object: "property_item"}
+		roundTrip(t, PropertyItem{CreatedTimePropertyItem: &v}, func(u PropertyItem) bool { return u.CreatedTimePropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/LastEditedByPropertyItemObjectResponse", func(t *testing.T) {
-		v := LastEditedByPropertyItemObjectResponse{Type: "last_edited_by", LastEditedBy: UserOrPartial{PartialUserObjectResponse: new(PartialUserObjectResponse{Object: "user"})}, Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{LastEditedByPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.LastEditedByPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/LastEditedByPropertyItem", func(t *testing.T) {
+		v := LastEditedByPropertyItem{Type: "last_edited_by", LastEditedBy: UserOrPartial{PartialUser: new(PartialUser{Object: "user"})}, Object: "property_item"}
+		roundTrip(t, PropertyItem{LastEditedByPropertyItem: &v}, func(u PropertyItem) bool { return u.LastEditedByPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/LastEditedTimePropertyItemObjectResponse", func(t *testing.T) {
-		v := LastEditedTimePropertyItemObjectResponse{Type: "last_edited_time", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{LastEditedTimePropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.LastEditedTimePropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/LastEditedTimePropertyItem", func(t *testing.T) {
+		v := LastEditedTimePropertyItem{Type: "last_edited_time", Object: "property_item"}
+		roundTrip(t, PropertyItem{LastEditedTimePropertyItem: &v}, func(u PropertyItem) bool { return u.LastEditedTimePropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/FormulaPropertyItemObjectResponse", func(t *testing.T) {
-		v := FormulaPropertyItemObjectResponse{Type: "formula", Formula: FormulaPropertyResponse{Type: "string", String: "sample"}, Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{FormulaPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.FormulaPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/FormulaPropertyItem", func(t *testing.T) {
+		v := FormulaPropertyItem{Type: "formula", Formula: FormulaProperty{Type: "string", String: "sample"}, Object: "property_item"}
+		roundTrip(t, PropertyItem{FormulaPropertyItem: &v}, func(u PropertyItem) bool { return u.FormulaPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/ButtonPropertyItemObjectResponse", func(t *testing.T) {
-		v := ButtonPropertyItemObjectResponse{Type: "button", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{ButtonPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.ButtonPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/ButtonPropertyItem", func(t *testing.T) {
+		v := ButtonPropertyItem{Type: "button", Object: "property_item"}
+		roundTrip(t, PropertyItem{ButtonPropertyItem: &v}, func(u PropertyItem) bool { return u.ButtonPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/UniqueIDPropertyItemObjectResponse", func(t *testing.T) {
-		v := UniqueIDPropertyItemObjectResponse{Type: "unique_id", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{UniqueIDPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.UniqueIDPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/UniqueIDPropertyItem", func(t *testing.T) {
+		v := UniqueIDPropertyItem{Type: "unique_id", Object: "property_item"}
+		roundTrip(t, PropertyItem{UniqueIDPropertyItem: &v}, func(u PropertyItem) bool { return u.UniqueIDPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/VerificationPropertyItemObjectResponse", func(t *testing.T) {
-		v := VerificationPropertyItemObjectResponse{Type: "verification", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{VerificationPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.VerificationPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/VerificationPropertyItem", func(t *testing.T) {
+		v := VerificationPropertyItem{Type: "verification", Object: "property_item"}
+		roundTrip(t, PropertyItem{VerificationPropertyItem: &v}, func(u PropertyItem) bool { return u.VerificationPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/PlacePropertyItemObjectResponse", func(t *testing.T) {
-		v := PlacePropertyItemObjectResponse{Type: "place", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{PlacePropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.PlacePropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/PlacePropertyItem", func(t *testing.T) {
+		v := PlacePropertyItem{Type: "place", Object: "property_item"}
+		roundTrip(t, PropertyItem{PlacePropertyItem: &v}, func(u PropertyItem) bool { return u.PlacePropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/TitlePropertyItemObjectResponse", func(t *testing.T) {
-		v := TitlePropertyItemObjectResponse{Type: "title", Title: RichText{Type: "text", Text: new(TextRichTextItemResponseText{})}, Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{TitlePropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.TitlePropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/TitlePropertyItem", func(t *testing.T) {
+		v := TitlePropertyItem{Type: "title", Title: RichText{Type: "text", Text: new(TextRichTextItemResponseText{})}, Object: "property_item"}
+		roundTrip(t, PropertyItem{TitlePropertyItem: &v}, func(u PropertyItem) bool { return u.TitlePropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/RichTextPropertyItemObjectResponse", func(t *testing.T) {
-		v := RichTextPropertyItemObjectResponse{Type: "rich_text", RichText: RichText{Type: "text", Text: new(TextRichTextItemResponseText{})}, Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{RichTextPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.RichTextPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/RichTextPropertyItem", func(t *testing.T) {
+		v := RichTextPropertyItem{Type: "rich_text", RichText: RichText{Type: "text", Text: new(TextRichTextItemResponseText{})}, Object: "property_item"}
+		roundTrip(t, PropertyItem{RichTextPropertyItem: &v}, func(u PropertyItem) bool { return u.RichTextPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/PeoplePropertyItemObjectResponse", func(t *testing.T) {
-		v := PeoplePropertyItemObjectResponse{Type: "people", People: UserOrPartial{PartialUserObjectResponse: new(PartialUserObjectResponse{Object: "user"})}, Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{PeoplePropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.PeoplePropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/PeoplePropertyItem", func(t *testing.T) {
+		v := PeoplePropertyItem{Type: "people", People: UserOrPartial{PartialUser: new(PartialUser{Object: "user"})}, Object: "property_item"}
+		roundTrip(t, PropertyItem{PeoplePropertyItem: &v}, func(u PropertyItem) bool { return u.PeoplePropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/RelationPropertyItemObjectResponse", func(t *testing.T) {
-		v := RelationPropertyItemObjectResponse{Type: "relation", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{RelationPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.RelationPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/RelationPropertyItem", func(t *testing.T) {
+		v := RelationPropertyItem{Type: "relation", Object: "property_item"}
+		roundTrip(t, PropertyItem{RelationPropertyItem: &v}, func(u PropertyItem) bool { return u.RelationPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/RollupPropertyItemObjectResponse", func(t *testing.T) {
-		v := RollupPropertyItemObjectResponse{Type: "rollup", Rollup: RollupPropertyItemObjectRollup{Type: "number", Number: new(1.5)}, Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{RollupPropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.RollupPropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/RollupPropertyItem", func(t *testing.T) {
+		v := RollupPropertyItem{Type: "rollup", Rollup: RollupPropertyItemObjectRollup{Type: "number", Number: new(1.5)}, Object: "property_item"}
+		roundTrip(t, PropertyItem{RollupPropertyItem: &v}, func(u PropertyItem) bool { return u.RollupPropertyItem != nil })
 	})
 
-	t.Run("PropertyItemObjectResponse/LastVisitedTimePropertyItemObjectResponse", func(t *testing.T) {
-		v := LastVisitedTimePropertyItemObjectResponse{Type: "last_visited_time", Object: "property_item"}
-		roundTrip(t, PropertyItemObjectResponse{LastVisitedTimePropertyItemObjectResponse: &v}, func(u PropertyItemObjectResponse) bool { return u.LastVisitedTimePropertyItemObjectResponse != nil })
+	t.Run("PropertyItem/LastVisitedTimePropertyItem", func(t *testing.T) {
+		v := LastVisitedTimePropertyItem{Type: "last_visited_time", Object: "property_item"}
+		roundTrip(t, PropertyItem{LastVisitedTimePropertyItem: &v}, func(u PropertyItem) bool { return u.LastVisitedTimePropertyItem != nil })
 	})
 
 	t.Run("PublicAPIAsyncTaskStatusResultJSONValue/String", func(t *testing.T) {
@@ -2176,15 +2162,13 @@ func TestUnions_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("QueryMeetingNotesFilterFiltersItem/MeetingNotesPropertyFilter", func(t *testing.T) {
-		v := MeetingNotesPropertyFilter{Filter: MeetingNotesPropertyFilterFilter{MeetingNotesPropertyFilterFilterOperator: new(MeetingNotesPropertyFilterFilterOperator{Operator: "is_empty"})}, Property: "title"}
+		v := MeetingNotesPropertyFilter{Filter: MeetingNotesPropertyFilterFilter{MeetingNotesPropertyFilterOperator: new(MeetingNotesPropertyFilterOperator{Operator: "is_empty"})}, Property: "title"}
 		roundTrip(t, QueryMeetingNotesFilterFiltersItem{MeetingNotesPropertyFilter: &v}, func(u QueryMeetingNotesFilterFiltersItem) bool { return u.MeetingNotesPropertyFilter != nil })
 	})
 
-	t.Run("QueryMeetingNotesFilterFiltersItem/QueryMeetingNotesFilterFiltersItemOneOf1", func(t *testing.T) {
-		v := QueryMeetingNotesFilterFiltersItemOneOf1{Operator: "and"}
-		roundTrip(t, QueryMeetingNotesFilterFiltersItem{QueryMeetingNotesFilterFiltersItemOneOf1: &v}, func(u QueryMeetingNotesFilterFiltersItem) bool {
-			return u.QueryMeetingNotesFilterFiltersItemOneOf1 != nil
-		})
+	t.Run("QueryMeetingNotesFilterFiltersItem/MeetingNotesFilterGroup", func(t *testing.T) {
+		v := MeetingNotesFilterGroup{Operator: "and"}
+		roundTrip(t, QueryMeetingNotesFilterFiltersItem{MeetingNotesFilterGroup: &v}, func(u QueryMeetingNotesFilterFiltersItem) bool { return u.MeetingNotesFilterGroup != nil })
 	})
 
 	t.Run("QuerySessionEventsFilter/SessionIDFilter", func(t *testing.T) {
@@ -2535,32 +2519,24 @@ func TestUnions_RoundTrip(t *testing.T) {
 		})
 	})
 
-	t.Run("RollupPropertyConfigurationRollupAllOf/RollupPropertyConfigurationRollupAllOfOneOf", func(t *testing.T) {
-		v := RollupPropertyConfigurationRollupAllOfOneOf{}
-		roundTrip(t, RollupPropertyConfigurationRollupAllOf{RollupPropertyConfigurationRollupAllOfOneOf: &v}, func(u RollupPropertyConfigurationRollupAllOf) bool {
-			return u.RollupPropertyConfigurationRollupAllOfOneOf != nil
-		})
+	t.Run("RollupPropertyConfigurationRollupAllOf/RollupByNames", func(t *testing.T) {
+		v := RollupByNames{}
+		roundTrip(t, RollupPropertyConfigurationRollupAllOf{RollupByNames: &v}, func(u RollupPropertyConfigurationRollupAllOf) bool { return u.RollupByNames != nil })
 	})
 
-	t.Run("RollupPropertyConfigurationRollupAllOf/RollupPropertyConfigurationRollupAllOfOneOf2", func(t *testing.T) {
-		v := RollupPropertyConfigurationRollupAllOfOneOf2{}
-		roundTrip(t, RollupPropertyConfigurationRollupAllOf{RollupPropertyConfigurationRollupAllOfOneOf2: &v}, func(u RollupPropertyConfigurationRollupAllOf) bool {
-			return u.RollupPropertyConfigurationRollupAllOfOneOf2 != nil
-		})
+	t.Run("RollupPropertyConfigurationRollupAllOf/RollupByRelationID", func(t *testing.T) {
+		v := RollupByRelationID{}
+		roundTrip(t, RollupPropertyConfigurationRollupAllOf{RollupByRelationID: &v}, func(u RollupPropertyConfigurationRollupAllOf) bool { return u.RollupByRelationID != nil })
 	})
 
-	t.Run("RollupPropertyConfigurationRollupAllOf/RollupPropertyConfigurationRollupAllOfOneOf3", func(t *testing.T) {
-		v := RollupPropertyConfigurationRollupAllOfOneOf3{}
-		roundTrip(t, RollupPropertyConfigurationRollupAllOf{RollupPropertyConfigurationRollupAllOfOneOf3: &v}, func(u RollupPropertyConfigurationRollupAllOf) bool {
-			return u.RollupPropertyConfigurationRollupAllOfOneOf3 != nil
-		})
+	t.Run("RollupPropertyConfigurationRollupAllOf/RollupByRollupID", func(t *testing.T) {
+		v := RollupByRollupID{}
+		roundTrip(t, RollupPropertyConfigurationRollupAllOf{RollupByRollupID: &v}, func(u RollupPropertyConfigurationRollupAllOf) bool { return u.RollupByRollupID != nil })
 	})
 
-	t.Run("RollupPropertyConfigurationRollupAllOf/RollupPropertyConfigurationRollupAllOfOneOf4", func(t *testing.T) {
-		v := RollupPropertyConfigurationRollupAllOfOneOf4{}
-		roundTrip(t, RollupPropertyConfigurationRollupAllOf{RollupPropertyConfigurationRollupAllOfOneOf4: &v}, func(u RollupPropertyConfigurationRollupAllOf) bool {
-			return u.RollupPropertyConfigurationRollupAllOfOneOf4 != nil
-		})
+	t.Run("RollupPropertyConfigurationRollupAllOf/RollupByIDs", func(t *testing.T) {
+		v := RollupByIDs{}
+		roundTrip(t, RollupPropertyConfigurationRollupAllOf{RollupByIDs: &v}, func(u RollupPropertyConfigurationRollupAllOf) bool { return u.RollupByIDs != nil })
 	})
 
 	t.Run("RollupPropertyFilter/RollupPropertyFilterAny", func(t *testing.T) {
@@ -2902,9 +2878,9 @@ func TestUnions_RoundTrip(t *testing.T) {
 		roundTrip(t, UpdateABlock{UpdateABlockColumn: &v}, func(u UpdateABlock) bool { return u.UpdateABlockColumn != nil })
 	})
 
-	t.Run("UpdateABlock/UpdateABlockAnyOf30", func(t *testing.T) {
-		v := UpdateABlockAnyOf30{}
-		roundTrip(t, UpdateABlock{UpdateABlockAnyOf30: &v}, func(u UpdateABlock) bool { return u.UpdateABlockAnyOf30 != nil })
+	t.Run("UpdateABlock/BlockTrashUpdate", func(t *testing.T) {
+		v := BlockTrashUpdate{}
+		roundTrip(t, UpdateABlock{BlockTrashUpdate: &v}, func(u UpdateABlock) bool { return u.BlockTrashUpdate != nil })
 	})
 
 	t.Run("UpdateABlockEmbedEmbed/UpdateMediaContentWithURLAndCaption", func(t *testing.T) {
@@ -2917,19 +2893,9 @@ func TestUnions_RoundTrip(t *testing.T) {
 		roundTrip(t, UpdateABlockEmbedEmbed{UpdateEmbedFileUpload: &v}, func(u UpdateABlockEmbedEmbed) bool { return u.UpdateEmbedFileUpload != nil })
 	})
 
-	t.Run("UpdateACommentAllOf0/UpdateACommentAllOf0RichText", func(t *testing.T) {
-		v := UpdateACommentAllOf0RichText{}
-		roundTrip(t, UpdateACommentAllOf0{UpdateACommentAllOf0RichText: &v}, func(u UpdateACommentAllOf0) bool { return u.UpdateACommentAllOf0RichText != nil })
-	})
-
-	t.Run("UpdateACommentAllOf0/UpdateACommentAllOf0Markdown", func(t *testing.T) {
-		v := UpdateACommentAllOf0Markdown{}
-		roundTrip(t, UpdateACommentAllOf0{UpdateACommentAllOf0Markdown: &v}, func(u UpdateACommentAllOf0) bool { return u.UpdateACommentAllOf0Markdown != nil })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValue/UpdateADataSourcePropertiesValueOneOf0", func(t *testing.T) {
-		v := UpdateADataSourcePropertiesValueOneOf0{Type: "number", Number: new(NumberPropertyConfigurationNumber{})}
-		roundTrip(t, UpdateADataSourcePropertiesValue{UpdateADataSourcePropertiesValueOneOf0: &v}, func(u UpdateADataSourcePropertiesValue) bool { return u.UpdateADataSourcePropertiesValueOneOf0 != nil })
+	t.Run("UpdateADataSourcePropertiesValue/PropertyUpdate", func(t *testing.T) {
+		v := PropertyUpdate{Type: "number", Number: new(NumberPropertyConfigurationNumber{})}
+		roundTrip(t, UpdateADataSourcePropertiesValue{PropertyUpdate: &v}, func(u UpdateADataSourcePropertiesValue) bool { return u.PropertyUpdate != nil })
 	})
 
 	t.Run("UpdateAgentModel/AgentModelAuto", func(t *testing.T) {
@@ -2956,29 +2922,29 @@ func TestUnions_RoundTrip(t *testing.T) {
 		})
 	})
 
-	t.Run("UpdateSessionRequest/UpdateSessionRequestMessage", func(t *testing.T) {
-		v := UpdateSessionRequestMessage{}
-		roundTrip(t, UpdateSessionRequest{UpdateSessionRequestMessage: &v}, func(u UpdateSessionRequest) bool { return u.UpdateSessionRequestMessage != nil })
+	t.Run("UpdateSessionRequest/SessionMessage", func(t *testing.T) {
+		v := SessionMessage{}
+		roundTrip(t, UpdateSessionRequest{SessionMessage: &v}, func(u UpdateSessionRequest) bool { return u.SessionMessage != nil })
 	})
 
-	t.Run("UpdateSessionRequest/UpdateSessionRequestOneOf1", func(t *testing.T) {
-		v := UpdateSessionRequestOneOf1{}
-		roundTrip(t, UpdateSessionRequest{UpdateSessionRequestOneOf1: &v}, func(u UpdateSessionRequest) bool { return u.UpdateSessionRequestOneOf1 != nil })
+	t.Run("UpdateSessionRequest/SessionAnswer", func(t *testing.T) {
+		v := SessionAnswer{}
+		roundTrip(t, UpdateSessionRequest{SessionAnswer: &v}, func(u UpdateSessionRequest) bool { return u.SessionAnswer != nil })
 	})
 
-	t.Run("UpdateSessionRequest/UpdateSessionRequestOneOf2", func(t *testing.T) {
-		v := UpdateSessionRequestOneOf2{}
-		roundTrip(t, UpdateSessionRequest{UpdateSessionRequestOneOf2: &v}, func(u UpdateSessionRequest) bool { return u.UpdateSessionRequestOneOf2 != nil })
+	t.Run("UpdateSessionRequest/SessionContinuation", func(t *testing.T) {
+		v := SessionContinuation{}
+		roundTrip(t, UpdateSessionRequest{SessionContinuation: &v}, func(u UpdateSessionRequest) bool { return u.SessionContinuation != nil })
 	})
 
-	t.Run("UserOrPartial/PartialUserObjectResponse", func(t *testing.T) {
-		v := PartialUserObjectResponse{Object: "user"}
-		roundTrip(t, UserOrPartial{PartialUserObjectResponse: &v}, func(u UserOrPartial) bool { return u.PartialUserObjectResponse != nil })
+	t.Run("UserOrPartial/PartialUser", func(t *testing.T) {
+		v := PartialUser{Object: "user"}
+		roundTrip(t, UserOrPartial{PartialUser: &v}, func(u UserOrPartial) bool { return u.PartialUser != nil })
 	})
 
-	t.Run("VerificationPropertyValueResponse/VerificationPropertyResponse", func(t *testing.T) {
-		v := VerificationPropertyResponse{State: "verified"}
-		roundTrip(t, VerificationPropertyValueResponse{VerificationPropertyResponse: &v}, func(u VerificationPropertyValueResponse) bool { return u.VerificationPropertyResponse != nil })
+	t.Run("VerificationPropertyValue/VerificationProperty", func(t *testing.T) {
+		v := VerificationProperty{State: "verified"}
+		roundTrip(t, VerificationPropertyValue{VerificationProperty: &v}, func(u VerificationPropertyValue) bool { return u.VerificationProperty != nil })
 	})
 
 	t.Run("ViewConfig/TableViewConfig", func(t *testing.T) {
@@ -3032,7 +2998,7 @@ func TestUnions_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("ViewConfigResponse/BoardViewConfigResponse", func(t *testing.T) {
-		v := BoardViewConfigResponse{Type: "board", GroupBy: GroupByConfigResponse{FormulaGroupByConfigResponse: new(FormulaGroupByConfigResponse{Type: "formula", GroupBy: FormulaSubGroupByResponse{FormulaDateSubGroupByResponse: new(FormulaDateSubGroupByResponse{Type: "date", GroupBy: "relative", StartDayOfWeek: new(float64(0))})}})}, CoverSize: "small", CoverAspect: "contain", CardLayout: "list"}
+		v := BoardViewConfigResponse{Type: "board", GroupBy: GroupByConfigResponse{FormulaGroupByConfigResponse: new(FormulaGroupByConfigResponse{Type: "formula", GroupBy: FormulaSubGroupBy{FormulaDateSubGroupByResponse: new(FormulaDateSubGroupByResponse{Type: "date", GroupBy: "relative", StartDayOfWeek: new(float64(0))})}})}, CoverSize: "small", CoverAspect: "contain", CardLayout: "list"}
 		roundTrip(t, ViewConfigResponse{BoardViewConfigResponse: &v}, func(u ViewConfigResponse) bool { return u.BoardViewConfigResponse != nil })
 	})
 
@@ -3071,9 +3037,9 @@ func TestUnions_RoundTrip(t *testing.T) {
 		roundTrip(t, ViewConfigResponse{ChartViewConfigResponse: &v}, func(u ViewConfigResponse) bool { return u.ChartViewConfigResponse != nil })
 	})
 
-	t.Run("ViewConfigResponse/DashboardViewConfigResponse", func(t *testing.T) {
-		v := DashboardViewConfigResponse{Type: "dashboard"}
-		roundTrip(t, ViewConfigResponse{DashboardViewConfigResponse: &v}, func(u ViewConfigResponse) bool { return u.DashboardViewConfigResponse != nil })
+	t.Run("ViewConfigResponse/DashboardViewConfig", func(t *testing.T) {
+		v := DashboardViewConfig{Type: "dashboard"}
+		roundTrip(t, ViewConfigResponse{DashboardViewConfig: &v}, func(u ViewConfigResponse) bool { return u.DashboardViewConfig != nil })
 	})
 
 	t.Run("ViewPosition/ViewPositionStart", func(t *testing.T) {
@@ -3095,30 +3061,6 @@ func TestUnions_RoundTrip(t *testing.T) {
 // TestTagged_RoundTrip sets each tag of each struct told apart by one in turn, with the members the tag requires,
 // encodes it and decodes it strictly: the tag must come back, and the struct encode as before.
 func TestTagged_RoundTrip(t *testing.T) {
-	t.Run("AgentListResultsItemNotionAiIcon/emoji", func(t *testing.T) {
-		roundTrip(t, AgentListResultsItemNotionAiIcon{Type: "emoji", Emoji: Emoji("sample")}, func(v AgentListResultsItemNotionAiIcon) bool { return v.Type == "emoji" })
-	})
-
-	t.Run("AgentListResultsItemNotionAiIcon/file", func(t *testing.T) {
-		roundTrip(t, AgentListResultsItemNotionAiIcon{Type: "file", File: new(InternalFileResponse{})}, func(v AgentListResultsItemNotionAiIcon) bool { return v.Type == "file" })
-	})
-
-	t.Run("AgentListResultsItemNotionAiIcon/external", func(t *testing.T) {
-		roundTrip(t, AgentListResultsItemNotionAiIcon{Type: "external", External: new(LinkPreviewMention{})}, func(v AgentListResultsItemNotionAiIcon) bool { return v.Type == "external" })
-	})
-
-	t.Run("AgentListResultsItemNotionAiIcon/custom_emoji", func(t *testing.T) {
-		roundTrip(t, AgentListResultsItemNotionAiIcon{Type: "custom_emoji", CustomEmoji: new(CustomEmojiResponse{})}, func(v AgentListResultsItemNotionAiIcon) bool { return v.Type == "custom_emoji" })
-	})
-
-	t.Run("AgentListResultsItemNotionAiIcon/icon", func(t *testing.T) {
-		roundTrip(t, AgentListResultsItemNotionAiIcon{Type: "icon", Icon: new(NoticonIconResponse{})}, func(v AgentListResultsItemNotionAiIcon) bool { return v.Type == "icon" })
-	})
-
-	t.Run("AgentListResultsItemNotionAiIcon/custom_agent_avatar", func(t *testing.T) {
-		roundTrip(t, AgentListResultsItemNotionAiIcon{Type: "custom_agent_avatar", CustomAgentAvatar: new(AgentIconCustomAgentAvatarCustomAgentAvatar{})}, func(v AgentListResultsItemNotionAiIcon) bool { return v.Type == "custom_agent_avatar" })
-	})
-
 	t.Run("BaseWebhookPayloadAuthorsItem/person", func(t *testing.T) {
 		roundTrip(t, BaseWebhookPayloadAuthorsItem{Type: "person"}, func(v BaseWebhookPayloadAuthorsItem) bool { return v.Type == "person" })
 	})
@@ -3128,147 +3070,147 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("Block/paragraph", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "paragraph", Paragraph: new(ContentWithRichTextColorAndIcon2{})}, func(v Block) bool { return v.Type == "paragraph" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "paragraph", Paragraph: new(ContentWithRichTextColorAndIcon2{})}, func(v Block) bool { return v.Type == "paragraph" })
 	})
 
 	t.Run("Block/heading_1", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "heading_1", Heading1: new(HeaderContentWithRichTextAndColorResponse{})}, func(v Block) bool { return v.Type == "heading_1" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "heading_1", Heading1: new(HeaderContentWithRichTextAndColorResponse{})}, func(v Block) bool { return v.Type == "heading_1" })
 	})
 
 	t.Run("Block/heading_2", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "heading_2", Heading2: new(HeaderContentWithRichTextAndColorResponse{})}, func(v Block) bool { return v.Type == "heading_2" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "heading_2", Heading2: new(HeaderContentWithRichTextAndColorResponse{})}, func(v Block) bool { return v.Type == "heading_2" })
 	})
 
 	t.Run("Block/heading_3", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "heading_3", Heading3: new(HeaderContentWithRichTextAndColorResponse{})}, func(v Block) bool { return v.Type == "heading_3" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "heading_3", Heading3: new(HeaderContentWithRichTextAndColorResponse{})}, func(v Block) bool { return v.Type == "heading_3" })
 	})
 
 	t.Run("Block/heading_4", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "heading_4", Heading4: new(HeaderContentWithRichTextAndColorResponse{})}, func(v Block) bool { return v.Type == "heading_4" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "heading_4", Heading4: new(HeaderContentWithRichTextAndColorResponse{})}, func(v Block) bool { return v.Type == "heading_4" })
 	})
 
 	t.Run("Block/bulleted_list_item", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "bulleted_list_item", BulletedListItem: new(ContentWithRichTextAndColorResponse{})}, func(v Block) bool { return v.Type == "bulleted_list_item" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "bulleted_list_item", BulletedListItem: new(ContentWithRichTextAndColorResponse{})}, func(v Block) bool { return v.Type == "bulleted_list_item" })
 	})
 
 	t.Run("Block/numbered_list_item", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "numbered_list_item", NumberedListItem: new(ContentWithRichTextAndColorAndListResponse{})}, func(v Block) bool { return v.Type == "numbered_list_item" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "numbered_list_item", NumberedListItem: new(ContentWithRichTextAndColorAndList{})}, func(v Block) bool { return v.Type == "numbered_list_item" })
 	})
 
 	t.Run("Block/quote", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "quote", Quote: new(ContentWithRichTextAndColorResponse{})}, func(v Block) bool { return v.Type == "quote" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "quote", Quote: new(ContentWithRichTextAndColorResponse{})}, func(v Block) bool { return v.Type == "quote" })
 	})
 
 	t.Run("Block/to_do", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "to_do", ToDo: new(ToDoBlockObjectResponseToDo{})}, func(v Block) bool { return v.Type == "to_do" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "to_do", ToDo: new(ToDoBlockToDo{})}, func(v Block) bool { return v.Type == "to_do" })
 	})
 
 	t.Run("Block/toggle", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "toggle", Toggle: new(ContentWithRichTextAndColorResponse{})}, func(v Block) bool { return v.Type == "toggle" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "toggle", Toggle: new(ContentWithRichTextAndColorResponse{})}, func(v Block) bool { return v.Type == "toggle" })
 	})
 
 	t.Run("Block/template", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "template", Template: new(TemplateBlockObjectResponseTemplate{})}, func(v Block) bool { return v.Type == "template" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "template", Template: new(TemplateBlockTemplate{})}, func(v Block) bool { return v.Type == "template" })
 	})
 
 	t.Run("Block/synced_block", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "synced_block", SyncedBlock: new(SyncedBlockBlockObjectResponseSyncedBlock{SyncedFrom: SyncedBlockBlockObjectResponseSyncedBlockSyncedFrom{Type: "block_id"}})}, func(v Block) bool { return v.Type == "synced_block" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "synced_block", SyncedBlock: new(SyncedBlockObjectResponseSyncedBlock{SyncedFrom: SyncedBlockObjectResponseSyncedBlockSyncedFrom{Type: "block_id"}})}, func(v Block) bool { return v.Type == "synced_block" })
 	})
 
 	t.Run("Block/child_page", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "child_page", ChildPage: new(TitleObjectResponse{})}, func(v Block) bool { return v.Type == "child_page" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "child_page", ChildPage: new(Title{})}, func(v Block) bool { return v.Type == "child_page" })
 	})
 
 	t.Run("Block/child_database", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "child_database", ChildDatabase: new(TitleObjectResponse{})}, func(v Block) bool { return v.Type == "child_database" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "child_database", ChildDatabase: new(Title{})}, func(v Block) bool { return v.Type == "child_database" })
 	})
 
 	t.Run("Block/equation", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "equation", Equation: new(ExpressionObject{})}, func(v Block) bool { return v.Type == "equation" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "equation", Equation: new(ExpressionObject{})}, func(v Block) bool { return v.Type == "equation" })
 	})
 
 	t.Run("Block/code", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "code", Code: new(CodeBlockObjectResponseCode{})}, func(v Block) bool { return v.Type == "code" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "code", Code: new(CodeBlockCode{})}, func(v Block) bool { return v.Type == "code" })
 	})
 
 	t.Run("Block/callout", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "callout", Callout: new(ContentWithRichTextColorAndIcon2{})}, func(v Block) bool { return v.Type == "callout" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "callout", Callout: new(ContentWithRichTextColorAndIcon2{})}, func(v Block) bool { return v.Type == "callout" })
 	})
 
 	t.Run("Block/divider", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "divider", Divider: new(EmptyObject{})}, func(v Block) bool { return v.Type == "divider" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "divider", Divider: new(EmptyObject{})}, func(v Block) bool { return v.Type == "divider" })
 	})
 
 	t.Run("Block/breadcrumb", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "breadcrumb", Breadcrumb: new(EmptyObject{})}, func(v Block) bool { return v.Type == "breadcrumb" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "breadcrumb", Breadcrumb: new(EmptyObject{})}, func(v Block) bool { return v.Type == "breadcrumb" })
 	})
 
 	t.Run("Block/table_of_contents", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "table_of_contents", TableOfContents: new(TableOfContentsBlockObjectResponseTableOfContents{})}, func(v Block) bool { return v.Type == "table_of_contents" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "table_of_contents", TableOfContents: new(TableOfContentsBlockTableOfContents{})}, func(v Block) bool { return v.Type == "table_of_contents" })
 	})
 
 	t.Run("Block/tab", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "tab", Tab: new(EmptyObject{})}, func(v Block) bool { return v.Type == "tab" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "tab", Tab: new(EmptyObject{})}, func(v Block) bool { return v.Type == "tab" })
 	})
 
 	t.Run("Block/column_list", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "column_list", ColumnList: new(EmptyObject{})}, func(v Block) bool { return v.Type == "column_list" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "column_list", ColumnList: new(EmptyObject{})}, func(v Block) bool { return v.Type == "column_list" })
 	})
 
 	t.Run("Block/column", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "column", Column: new(ColumnResponse{})}, func(v Block) bool { return v.Type == "column" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "column", Column: new(Column{})}, func(v Block) bool { return v.Type == "column" })
 	})
 
 	t.Run("Block/link_to_page", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "link_to_page", LinkToPage: new(LinkToPageBlockObjectResponseLinkToPage{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))})}, func(v Block) bool { return v.Type == "link_to_page" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "link_to_page", LinkToPage: new(LinkToPageBlockLinkToPage{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))})}, func(v Block) bool { return v.Type == "link_to_page" })
 	})
 
 	t.Run("Block/table", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "table", Table: new(ContentWithTableResponse{})}, func(v Block) bool { return v.Type == "table" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "table", Table: new(ContentWithTable{})}, func(v Block) bool { return v.Type == "table" })
 	})
 
 	t.Run("Block/table_row", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "table_row", TableRow: new(ContentWithTableRowResponse{})}, func(v Block) bool { return v.Type == "table_row" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "table_row", TableRow: new(ContentWithTableRowResponse{})}, func(v Block) bool { return v.Type == "table_row" })
 	})
 
 	t.Run("Block/meeting_notes", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "meeting_notes", MeetingNotes: new(TranscriptionBlockResponse{})}, func(v Block) bool { return v.Type == "meeting_notes" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "meeting_notes", MeetingNotes: new(TranscriptionBlock{})}, func(v Block) bool { return v.Type == "meeting_notes" })
 	})
 
 	t.Run("Block/embed", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "embed", Embed: new(MediaContentWithURLAndCaptionResponse{})}, func(v Block) bool { return v.Type == "embed" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "embed", Embed: new(MediaContentWithURLAndCaptionResponse{})}, func(v Block) bool { return v.Type == "embed" })
 	})
 
 	t.Run("Block/bookmark", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "bookmark", Bookmark: new(MediaContentWithURLAndCaptionResponse{})}, func(v Block) bool { return v.Type == "bookmark" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "bookmark", Bookmark: new(MediaContentWithURLAndCaptionResponse{})}, func(v Block) bool { return v.Type == "bookmark" })
 	})
 
 	t.Run("Block/image", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "image", Image: new(MediaContentWithFileAndCaptionResponse{Type: "external", External: new(MediaContentWithURL{})})}, func(v Block) bool { return v.Type == "image" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "image", Image: new(MediaContentWithFileAndCaptionResponse{Type: "external", External: new(MediaContentWithURL{})})}, func(v Block) bool { return v.Type == "image" })
 	})
 
 	t.Run("Block/video", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "video", Video: new(MediaContentWithFileAndCaptionResponse{Type: "external", External: new(MediaContentWithURL{})})}, func(v Block) bool { return v.Type == "video" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "video", Video: new(MediaContentWithFileAndCaptionResponse{Type: "external", External: new(MediaContentWithURL{})})}, func(v Block) bool { return v.Type == "video" })
 	})
 
 	t.Run("Block/pdf", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "pdf", PDF: new(MediaContentWithFileAndCaptionResponse{Type: "external", External: new(MediaContentWithURL{})})}, func(v Block) bool { return v.Type == "pdf" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "pdf", PDF: new(MediaContentWithFileAndCaptionResponse{Type: "external", External: new(MediaContentWithURL{})})}, func(v Block) bool { return v.Type == "pdf" })
 	})
 
 	t.Run("Block/file", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "file", File: new(MediaContentWithFileNameAndCaptionResponse{Type: "external", External: new(MediaContentWithURL{})})}, func(v Block) bool { return v.Type == "file" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "file", File: new(MediaContentWithFileNameAndCaptionResponse{Type: "external", External: new(MediaContentWithURL{})})}, func(v Block) bool { return v.Type == "file" })
 	})
 
 	t.Run("Block/audio", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "audio", Audio: new(MediaContentWithFileAndCaptionResponse{Type: "external", External: new(MediaContentWithURL{})})}, func(v Block) bool { return v.Type == "audio" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "audio", Audio: new(MediaContentWithFileAndCaptionResponse{Type: "external", External: new(MediaContentWithURL{})})}, func(v Block) bool { return v.Type == "audio" })
 	})
 
 	t.Run("Block/link_preview", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "link_preview", LinkPreview: new(MediaContentWithURL{})}, func(v Block) bool { return v.Type == "link_preview" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "link_preview", LinkPreview: new(MediaContentWithURL{})}, func(v Block) bool { return v.Type == "link_preview" })
 	})
 
 	t.Run("Block/unsupported", func(t *testing.T) {
-		roundTrip(t, Block{Parent: ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUserObjectResponse{Object: "user"}, LastEditedBy: PartialUserObjectResponse{Object: "user"}, Type: "unsupported", Unsupported: new(UnsupportedBlockObjectResponseUnsupported{})}, func(v Block) bool { return v.Type == "unsupported" })
+		roundTrip(t, Block{Parent: ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, Object: "block", CreatedBy: PartialUser{Object: "user"}, LastEditedBy: PartialUser{Object: "user"}, Type: "unsupported", Unsupported: new(UnsupportedBlockUnsupported{})}, func(v Block) bool { return v.Type == "unsupported" })
 	})
 
 	t.Run("BlockObject/embed", func(t *testing.T) {
@@ -3635,20 +3577,20 @@ func TestTagged_RoundTrip(t *testing.T) {
 		roundTrip(t, BlockObjectWithSingleLevelOfChildren{Type: "synced_block", SyncedBlock: new(BlockObjectWithSingleLevelOfChildrenSyncedBlockSyncedBlock{})}, func(v BlockObjectWithSingleLevelOfChildren) bool { return v.Type == "synced_block" })
 	})
 
-	t.Run("BotInfoResponseOwner/user", func(t *testing.T) {
-		roundTrip(t, BotInfoResponseOwner{Type: "user", User: new(BotInfoResponseOwnerUserUser{PartialUserObjectResponse: new(PartialUserObjectResponse{Object: "user"})})}, func(v BotInfoResponseOwner) bool { return v.Type == "user" })
+	t.Run("BotInfoOwner/user", func(t *testing.T) {
+		roundTrip(t, BotInfoOwner{Type: "user", User: new(BotInfoResponseOwnerUserUser{PartialUser: new(PartialUser{Object: "user"})})}, func(v BotInfoOwner) bool { return v.Type == "user" })
 	})
 
-	t.Run("BotInfoResponseOwner/workspace", func(t *testing.T) {
-		roundTrip(t, BotInfoResponseOwner{Type: "workspace", Workspace: new(true)}, func(v BotInfoResponseOwner) bool { return v.Type == "workspace" })
+	t.Run("BotInfoOwner/workspace", func(t *testing.T) {
+		roundTrip(t, BotInfoOwner{Type: "workspace", Workspace: new(true)}, func(v BotInfoOwner) bool { return v.Type == "workspace" })
 	})
 
-	t.Run("CommentParentResponse/page_id", func(t *testing.T) {
-		roundTrip(t, CommentParentResponse{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v CommentParentResponse) bool { return v.Type == "page_id" })
+	t.Run("CommentParent/page_id", func(t *testing.T) {
+		roundTrip(t, CommentParent{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v CommentParent) bool { return v.Type == "page_id" })
 	})
 
-	t.Run("CommentParentResponse/block_id", func(t *testing.T) {
-		roundTrip(t, CommentParentResponse{Type: "block_id", BlockID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v CommentParentResponse) bool { return v.Type == "block_id" })
+	t.Run("CommentParent/block_id", func(t *testing.T) {
+		roundTrip(t, CommentParent{Type: "block_id", BlockID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v CommentParent) bool { return v.Type == "block_id" })
 	})
 
 	t.Run("ContentPositionSchema/after_block", func(t *testing.T) {
@@ -3684,7 +3626,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("CreateATokenOkOwner/user", func(t *testing.T) {
-		roundTrip(t, CreateATokenOkOwner{Type: "user", User: new(CreateATokenOkOwnerUserUser{PartialUserObjectResponse: new(PartialUserObjectResponse{Object: "user"})})}, func(v CreateATokenOkOwner) bool { return v.Type == "user" })
+		roundTrip(t, CreateATokenOkOwner{Type: "user", User: new(CreateATokenOkOwnerUserUser{PartialUser: new(PartialUser{Object: "user"})})}, func(v CreateATokenOkOwner) bool { return v.Type == "user" })
 	})
 
 	t.Run("CreateATokenOkOwner/workspace", func(t *testing.T) {
@@ -3699,60 +3641,60 @@ func TestTagged_RoundTrip(t *testing.T) {
 		roundTrip(t, CreateDatabaseParent{Type: "workspace", Workspace: new(true)}, func(v CreateDatabaseParent) bool { return v.Type == "workspace" })
 	})
 
-	t.Run("DatabasePropertyRelationConfigResponse/single_property", func(t *testing.T) {
-		roundTrip(t, DatabasePropertyRelationConfigResponse{Type: "single_property", SingleProperty: new(EmptyObject{})}, func(v DatabasePropertyRelationConfigResponse) bool { return v.Type == "single_property" })
+	t.Run("DatabasePropertyRelationConfig/single_property", func(t *testing.T) {
+		roundTrip(t, DatabasePropertyRelationConfig{Type: "single_property", SingleProperty: new(EmptyObject{})}, func(v DatabasePropertyRelationConfig) bool { return v.Type == "single_property" })
 	})
 
-	t.Run("DatabasePropertyRelationConfigResponse/dual_property", func(t *testing.T) {
-		roundTrip(t, DatabasePropertyRelationConfigResponse{Type: "dual_property", DualProperty: new(DualPropertyDatabasePropertyRelationConfigResponseDualProperty{})}, func(v DatabasePropertyRelationConfigResponse) bool { return v.Type == "dual_property" })
+	t.Run("DatabasePropertyRelationConfig/dual_property", func(t *testing.T) {
+		roundTrip(t, DatabasePropertyRelationConfig{Type: "dual_property", DualProperty: new(DualPropertyDatabasePropertyRelationConfigDualProperty{})}, func(v DatabasePropertyRelationConfig) bool { return v.Type == "dual_property" })
 	})
 
-	t.Run("FileUploadObjectResponseFileImportResult/success", func(t *testing.T) {
-		roundTrip(t, FileUploadObjectResponseFileImportResult{Type: "success", Success: new(EmptyObject{})}, func(v FileUploadObjectResponseFileImportResult) bool { return v.Type == "success" })
+	t.Run("FileUploadFailedWebhookPayloadDataFileImportResult/success", func(t *testing.T) {
+		roundTrip(t, FileUploadFailedWebhookPayloadDataFileImportResult{Type: "success", Success: new(EmptyObject{})}, func(v FileUploadFailedWebhookPayloadDataFileImportResult) bool { return v.Type == "success" })
 	})
 
-	t.Run("FileUploadObjectResponseFileImportResult/error", func(t *testing.T) {
-		roundTrip(t, FileUploadObjectResponseFileImportResult{Type: "error", Err: new(FileUploadObjectFileImportResultAllOfError{})}, func(v FileUploadObjectResponseFileImportResult) bool { return v.Type == "error" })
+	t.Run("FileUploadFailedWebhookPayloadDataFileImportResult/error", func(t *testing.T) {
+		roundTrip(t, FileUploadFailedWebhookPayloadDataFileImportResult{Type: "error", Err: new(FileUploadObjectFileImportResultAllOfError{})}, func(v FileUploadFailedWebhookPayloadDataFileImportResult) bool { return v.Type == "error" })
 	})
 
-	t.Run("FileUploadUploadFailedWebhookPayloadDataFileImportResult/success", func(t *testing.T) {
-		roundTrip(t, FileUploadUploadFailedWebhookPayloadDataFileImportResult{Type: "success", Success: new(EmptyObject{})}, func(v FileUploadUploadFailedWebhookPayloadDataFileImportResult) bool { return v.Type == "success" })
+	t.Run("FileUploadFileImportResult/success", func(t *testing.T) {
+		roundTrip(t, FileUploadFileImportResult{Type: "success", Success: new(EmptyObject{})}, func(v FileUploadFileImportResult) bool { return v.Type == "success" })
 	})
 
-	t.Run("FileUploadUploadFailedWebhookPayloadDataFileImportResult/error", func(t *testing.T) {
-		roundTrip(t, FileUploadUploadFailedWebhookPayloadDataFileImportResult{Type: "error", Err: new(FileUploadObjectFileImportResultAllOfError{})}, func(v FileUploadUploadFailedWebhookPayloadDataFileImportResult) bool { return v.Type == "error" })
+	t.Run("FileUploadFileImportResult/error", func(t *testing.T) {
+		roundTrip(t, FileUploadFileImportResult{Type: "error", Err: new(FileUploadObjectFileImportResultAllOfError{})}, func(v FileUploadFileImportResult) bool { return v.Type == "error" })
 	})
 
-	t.Run("FormulaPropertyResponse/string", func(t *testing.T) {
-		roundTrip(t, FormulaPropertyResponse{Type: "string", String: "sample"}, func(v FormulaPropertyResponse) bool { return v.Type == "string" })
+	t.Run("FormulaProperty/string", func(t *testing.T) {
+		roundTrip(t, FormulaProperty{Type: "string", String: "sample"}, func(v FormulaProperty) bool { return v.Type == "string" })
 	})
 
-	t.Run("FormulaPropertyResponse/number", func(t *testing.T) {
-		roundTrip(t, FormulaPropertyResponse{Type: "number", Number: new(1.5)}, func(v FormulaPropertyResponse) bool { return v.Type == "number" })
+	t.Run("FormulaProperty/number", func(t *testing.T) {
+		roundTrip(t, FormulaProperty{Type: "number", Number: new(1.5)}, func(v FormulaProperty) bool { return v.Type == "number" })
 	})
 
-	t.Run("FormulaPropertyResponse/boolean", func(t *testing.T) {
-		roundTrip(t, FormulaPropertyResponse{Type: "boolean", Boolean: new(true)}, func(v FormulaPropertyResponse) bool { return v.Type == "boolean" })
+	t.Run("FormulaProperty/boolean", func(t *testing.T) {
+		roundTrip(t, FormulaProperty{Type: "boolean", Boolean: new(true)}, func(v FormulaProperty) bool { return v.Type == "boolean" })
 	})
 
-	t.Run("FormulaPropertyResponse/unsupported", func(t *testing.T) {
-		roundTrip(t, FormulaPropertyResponse{Type: "unsupported", Unsupported: new(EmptyObject{})}, func(v FormulaPropertyResponse) bool { return v.Type == "unsupported" })
+	t.Run("FormulaProperty/unsupported", func(t *testing.T) {
+		roundTrip(t, FormulaProperty{Type: "unsupported", Unsupported: new(EmptyObject{})}, func(v FormulaProperty) bool { return v.Type == "unsupported" })
 	})
 
-	t.Run("FormulaPropertyValueResponse/boolean", func(t *testing.T) {
-		roundTrip(t, FormulaPropertyValueResponse{Type: "boolean", Boolean: new(true)}, func(v FormulaPropertyValueResponse) bool { return v.Type == "boolean" })
+	t.Run("FormulaPropertyValue/boolean", func(t *testing.T) {
+		roundTrip(t, FormulaPropertyValue{Type: "boolean", Boolean: new(true)}, func(v FormulaPropertyValue) bool { return v.Type == "boolean" })
 	})
 
-	t.Run("FormulaPropertyValueResponse/number", func(t *testing.T) {
-		roundTrip(t, FormulaPropertyValueResponse{Type: "number", Number: new(1.5)}, func(v FormulaPropertyValueResponse) bool { return v.Type == "number" })
+	t.Run("FormulaPropertyValue/number", func(t *testing.T) {
+		roundTrip(t, FormulaPropertyValue{Type: "number", Number: new(1.5)}, func(v FormulaPropertyValue) bool { return v.Type == "number" })
 	})
 
-	t.Run("FormulaPropertyValueResponse/string", func(t *testing.T) {
-		roundTrip(t, FormulaPropertyValueResponse{Type: "string", String: new("sample")}, func(v FormulaPropertyValueResponse) bool { return v.Type == "string" })
+	t.Run("FormulaPropertyValue/string", func(t *testing.T) {
+		roundTrip(t, FormulaPropertyValue{Type: "string", String: new("sample")}, func(v FormulaPropertyValue) bool { return v.Type == "string" })
 	})
 
-	t.Run("FormulaPropertyValueResponse/unsupported", func(t *testing.T) {
-		roundTrip(t, FormulaPropertyValueResponse{Type: "unsupported", Unsupported: new(EmptyObject{})}, func(v FormulaPropertyValueResponse) bool { return v.Type == "unsupported" })
+	t.Run("FormulaPropertyValue/unsupported", func(t *testing.T) {
+		roundTrip(t, FormulaPropertyValue{Type: "unsupported", Unsupported: new(EmptyObject{})}, func(v FormulaPropertyValue) bool { return v.Type == "unsupported" })
 	})
 
 	t.Run("InternalOrExternalFileWithNameResponse/file", func(t *testing.T) {
@@ -3763,16 +3705,24 @@ func TestTagged_RoundTrip(t *testing.T) {
 		roundTrip(t, InternalOrExternalFileWithNameResponse{Type: "external", External: new(LinkPreviewMention{})}, func(v InternalOrExternalFileWithNameResponse) bool { return v.Type == "external" })
 	})
 
-	t.Run("LinkToPageBlockObjectResponseLinkToPage/page_id", func(t *testing.T) {
-		roundTrip(t, LinkToPageBlockObjectResponseLinkToPage{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v LinkToPageBlockObjectResponseLinkToPage) bool { return v.Type == "page_id" })
+	t.Run("LinkToPageBlockLinkToPage/page_id", func(t *testing.T) {
+		roundTrip(t, LinkToPageBlockLinkToPage{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v LinkToPageBlockLinkToPage) bool { return v.Type == "page_id" })
 	})
 
-	t.Run("LinkToPageBlockObjectResponseLinkToPage/database_id", func(t *testing.T) {
-		roundTrip(t, LinkToPageBlockObjectResponseLinkToPage{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v LinkToPageBlockObjectResponseLinkToPage) bool { return v.Type == "database_id" })
+	t.Run("LinkToPageBlockLinkToPage/database_id", func(t *testing.T) {
+		roundTrip(t, LinkToPageBlockLinkToPage{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v LinkToPageBlockLinkToPage) bool { return v.Type == "database_id" })
 	})
 
-	t.Run("LinkToPageBlockObjectResponseLinkToPage/comment_id", func(t *testing.T) {
-		roundTrip(t, LinkToPageBlockObjectResponseLinkToPage{Type: "comment_id", CommentID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v LinkToPageBlockObjectResponseLinkToPage) bool { return v.Type == "comment_id" })
+	t.Run("LinkToPageBlockLinkToPage/comment_id", func(t *testing.T) {
+		roundTrip(t, LinkToPageBlockLinkToPage{Type: "comment_id", CommentID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v LinkToPageBlockLinkToPage) bool { return v.Type == "comment_id" })
+	})
+
+	t.Run("MarkdownEditInsertContentInsertContentPosition/start", func(t *testing.T) {
+		roundTrip(t, MarkdownEditInsertContentInsertContentPosition{Type: "start"}, func(v MarkdownEditInsertContentInsertContentPosition) bool { return v.Type == "start" })
+	})
+
+	t.Run("MarkdownEditInsertContentInsertContentPosition/end", func(t *testing.T) {
+		roundTrip(t, MarkdownEditInsertContentInsertContentPosition{Type: "end"}, func(v MarkdownEditInsertContentInsertContentPosition) bool { return v.Type == "end" })
 	})
 
 	t.Run("MediaContentWithFileAndCaption/external", func(t *testing.T) {
@@ -3820,7 +3770,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("MentionRichTextItemMention/template_mention", func(t *testing.T) {
-		roundTrip(t, MentionRichTextItemMention{Type: "template_mention", TemplateMention: new(TemplateMention{Type: "template_mention_date", TemplateMentionDate: TemplateMentionDateTemplateMentionTemplateMentionDateToday})}, func(v MentionRichTextItemMention) bool { return v.Type == "template_mention" })
+		roundTrip(t, MentionRichTextItemMention{Type: "template_mention", TemplateMention: new(TemplateMention{Type: "template_mention_date", TemplateMentionDate: TemplateMentionDateTemplateMentionDateToday})}, func(v MentionRichTextItemMention) bool { return v.Type == "template_mention" })
 	})
 
 	t.Run("MentionRichTextItemMention/custom_emoji", func(t *testing.T) {
@@ -3828,7 +3778,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("MentionRichTextItemResponseMention/user", func(t *testing.T) {
-		roundTrip(t, MentionRichTextItemResponseMention{Type: "user", User: new(UserOrPartial{PartialUserObjectResponse: new(PartialUserObjectResponse{Object: "user"})})}, func(v MentionRichTextItemResponseMention) bool { return v.Type == "user" })
+		roundTrip(t, MentionRichTextItemResponseMention{Type: "user", User: new(UserOrPartial{PartialUser: new(PartialUser{Object: "user"})})}, func(v MentionRichTextItemResponseMention) bool { return v.Type == "user" })
 	})
 
 	t.Run("MentionRichTextItemResponseMention/link_preview", func(t *testing.T) {
@@ -3836,7 +3786,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("MentionRichTextItemResponseMention/link_mention", func(t *testing.T) {
-		roundTrip(t, MentionRichTextItemResponseMention{Type: "link_mention", LinkMention: new(LinkMentionResponse{})}, func(v MentionRichTextItemResponseMention) bool { return v.Type == "link_mention" })
+		roundTrip(t, MentionRichTextItemResponseMention{Type: "link_mention", LinkMention: new(LinkMention{})}, func(v MentionRichTextItemResponseMention) bool { return v.Type == "link_mention" })
 	})
 
 	t.Run("MentionRichTextItemResponseMention/page", func(t *testing.T) {
@@ -3848,11 +3798,11 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("MentionRichTextItemResponseMention/template_mention", func(t *testing.T) {
-		roundTrip(t, MentionRichTextItemResponseMention{Type: "template_mention", TemplateMention: new(TemplateMentionResponse{Type: "template_mention_date", TemplateMentionDate: TemplateMentionDateTemplateMentionTemplateMentionDateToday})}, func(v MentionRichTextItemResponseMention) bool { return v.Type == "template_mention" })
+		roundTrip(t, MentionRichTextItemResponseMention{Type: "template_mention", TemplateMention: new(TemplateMentionResponse{Type: "template_mention_date", TemplateMentionDate: TemplateMentionDateTemplateMentionDateToday})}, func(v MentionRichTextItemResponseMention) bool { return v.Type == "template_mention" })
 	})
 
 	t.Run("MentionRichTextItemResponseMention/custom_emoji", func(t *testing.T) {
-		roundTrip(t, MentionRichTextItemResponseMention{Type: "custom_emoji", CustomEmoji: new(CustomEmojiResponse{})}, func(v MentionRichTextItemResponseMention) bool { return v.Type == "custom_emoji" })
+		roundTrip(t, MentionRichTextItemResponseMention{Type: "custom_emoji", CustomEmoji: new(CustomEmoji{})}, func(v MentionRichTextItemResponseMention) bool { return v.Type == "custom_emoji" })
 	})
 
 	t.Run("MovePageParent/page_id", func(t *testing.T) {
@@ -3861,6 +3811,30 @@ func TestTagged_RoundTrip(t *testing.T) {
 
 	t.Run("MovePageParent/data_source_id", func(t *testing.T) {
 		roundTrip(t, MovePageParent{Type: "data_source_id", DataSourceID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v MovePageParent) bool { return v.Type == "data_source_id" })
+	})
+
+	t.Run("NotionAIAgentIcon/emoji", func(t *testing.T) {
+		roundTrip(t, NotionAIAgentIcon{Type: "emoji", Emoji: Emoji("sample")}, func(v NotionAIAgentIcon) bool { return v.Type == "emoji" })
+	})
+
+	t.Run("NotionAIAgentIcon/file", func(t *testing.T) {
+		roundTrip(t, NotionAIAgentIcon{Type: "file", File: new(InternalFileResponse{})}, func(v NotionAIAgentIcon) bool { return v.Type == "file" })
+	})
+
+	t.Run("NotionAIAgentIcon/external", func(t *testing.T) {
+		roundTrip(t, NotionAIAgentIcon{Type: "external", External: new(LinkPreviewMention{})}, func(v NotionAIAgentIcon) bool { return v.Type == "external" })
+	})
+
+	t.Run("NotionAIAgentIcon/custom_emoji", func(t *testing.T) {
+		roundTrip(t, NotionAIAgentIcon{Type: "custom_emoji", CustomEmoji: new(CustomEmoji{})}, func(v NotionAIAgentIcon) bool { return v.Type == "custom_emoji" })
+	})
+
+	t.Run("NotionAIAgentIcon/icon", func(t *testing.T) {
+		roundTrip(t, NotionAIAgentIcon{Type: "icon", Icon: new(NoticonIcon{})}, func(v NotionAIAgentIcon) bool { return v.Type == "icon" })
+	})
+
+	t.Run("NotionAIAgentIcon/custom_agent_avatar", func(t *testing.T) {
+		roundTrip(t, NotionAIAgentIcon{Type: "custom_agent_avatar", CustomAgentAvatar: new(AgentIconCustomAgentAvatarCustomAgentAvatar{})}, func(v NotionAIAgentIcon) bool { return v.Type == "custom_agent_avatar" })
 	})
 
 	t.Run("PageCover/file_upload", func(t *testing.T) {
@@ -3912,11 +3886,11 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PageIconResponse/custom_emoji", func(t *testing.T) {
-		roundTrip(t, PageIconResponse{Type: "custom_emoji", CustomEmoji: new(CustomEmojiResponse{})}, func(v PageIconResponse) bool { return v.Type == "custom_emoji" })
+		roundTrip(t, PageIconResponse{Type: "custom_emoji", CustomEmoji: new(CustomEmoji{})}, func(v PageIconResponse) bool { return v.Type == "custom_emoji" })
 	})
 
 	t.Run("PageIconResponse/icon", func(t *testing.T) {
-		roundTrip(t, PageIconResponse{Type: "icon", Icon: new(NoticonIconResponse{})}, func(v PageIconResponse) bool { return v.Type == "icon" })
+		roundTrip(t, PageIconResponse{Type: "icon", Icon: new(NoticonIcon{})}, func(v PageIconResponse) bool { return v.Type == "icon" })
 	})
 
 	t.Run("PagePositionSchema/after_block", func(t *testing.T) {
@@ -3952,11 +3926,11 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PagePropertiesValue/multi_select", func(t *testing.T) {
-		roundTrip(t, PagePropertiesValue{Type: "multi_select", MultiSelect: []PagePropertiesValueMultiSelectMultiSelectItem{{PagePropertiesValueSelectID: new(PagePropertiesValueSelectID{Color: "default"})}}}, func(v PagePropertiesValue) bool { return v.Type == "multi_select" })
+		roundTrip(t, PagePropertiesValue{Type: "multi_select", MultiSelect: []PagePropertiesValueMultiSelectItem{{PagePropertiesValueSelectID: new(PagePropertiesValueSelectID{Color: "default"})}}}, func(v PagePropertiesValue) bool { return v.Type == "multi_select" })
 	})
 
 	t.Run("PagePropertiesValue/people", func(t *testing.T) {
-		roundTrip(t, PagePropertiesValue{Type: "people", People: []PagePropertiesValuePeoplePeopleItem{{PartialUserObject: new(PartialUserObject{Object: "user"})}}}, func(v PagePropertiesValue) bool { return v.Type == "people" })
+		roundTrip(t, PagePropertiesValue{Type: "people", People: []PagePropertiesValuePeopleItem{{PartialUserObject: new(PartialUserObject{Object: "user"})}}}, func(v PagePropertiesValue) bool { return v.Type == "people" })
 	})
 
 	t.Run("PagePropertiesValue/email", func(t *testing.T) {
@@ -3976,7 +3950,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PagePropertiesValue/files", func(t *testing.T) {
-		roundTrip(t, PagePropertiesValue{Type: "files", Files: []PagePropertiesValueFilesFilesItem{{Type: "file", File: new(InternalFile{})}}}, func(v PagePropertiesValue) bool { return v.Type == "files" })
+		roundTrip(t, PagePropertiesValue{Type: "files", Files: []PagePropertiesValueFilesItem{{Type: "file", File: new(InternalFile{})}}}, func(v PagePropertiesValue) bool { return v.Type == "files" })
 	})
 
 	t.Run("PagePropertiesValue/status", func(t *testing.T) {
@@ -3988,43 +3962,43 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PagePropertiesValue/verification", func(t *testing.T) {
-		roundTrip(t, PagePropertiesValue{Type: "verification", Verification: new(PagePropertiesValueVerificationVerification{PagePropertiesValueVerificationVerificationVerified: new(PagePropertiesValueVerificationVerificationVerified{State: "verified"})})}, func(v PagePropertiesValue) bool { return v.Type == "verification" })
+		roundTrip(t, PagePropertiesValue{Type: "verification", Verification: new(PagePropertiesValueVerificationVerification{PagePropertiesValueVerificationVerified: new(PagePropertiesValueVerificationVerified{State: "verified"})})}, func(v PagePropertiesValue) bool { return v.Type == "verification" })
 	})
 
-	t.Run("PagePropertiesValueFilesFilesItem/file", func(t *testing.T) {
-		roundTrip(t, PagePropertiesValueFilesFilesItem{Type: "file", File: new(InternalFile{})}, func(v PagePropertiesValueFilesFilesItem) bool { return v.Type == "file" })
+	t.Run("PagePropertiesValueFilesItem/file", func(t *testing.T) {
+		roundTrip(t, PagePropertiesValueFilesItem{Type: "file", File: new(InternalFile{})}, func(v PagePropertiesValueFilesItem) bool { return v.Type == "file" })
 	})
 
-	t.Run("PagePropertiesValueFilesFilesItem/external", func(t *testing.T) {
-		roundTrip(t, PagePropertiesValueFilesFilesItem{Type: "external", External: new(ExternalFile{})}, func(v PagePropertiesValueFilesFilesItem) bool { return v.Type == "external" })
+	t.Run("PagePropertiesValueFilesItem/external", func(t *testing.T) {
+		roundTrip(t, PagePropertiesValueFilesItem{Type: "external", External: new(ExternalFile{})}, func(v PagePropertiesValueFilesItem) bool { return v.Type == "external" })
 	})
 
-	t.Run("PagePropertiesValueFilesFilesItem/file_upload", func(t *testing.T) {
-		roundTrip(t, PagePropertiesValueFilesFilesItem{Type: "file_upload", FileUpload: new(FileUploadID{})}, func(v PagePropertiesValueFilesFilesItem) bool { return v.Type == "file_upload" })
+	t.Run("PagePropertiesValueFilesItem/file_upload", func(t *testing.T) {
+		roundTrip(t, PagePropertiesValueFilesItem{Type: "file_upload", FileUpload: new(FileUploadID{})}, func(v PagePropertiesValueFilesItem) bool { return v.Type == "file_upload" })
 	})
 
-	t.Run("ParentForBlockBasedObjectResponse/database_id", func(t *testing.T) {
-		roundTrip(t, ParentForBlockBasedObjectResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v ParentForBlockBasedObjectResponse) bool { return v.Type == "database_id" })
+	t.Run("ParentForBlockBased/database_id", func(t *testing.T) {
+		roundTrip(t, ParentForBlockBased{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v ParentForBlockBased) bool { return v.Type == "database_id" })
 	})
 
-	t.Run("ParentForBlockBasedObjectResponse/data_source_id", func(t *testing.T) {
-		roundTrip(t, ParentForBlockBasedObjectResponse{Type: "data_source_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351"))), DataSourceID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v ParentForBlockBasedObjectResponse) bool { return v.Type == "data_source_id" })
+	t.Run("ParentForBlockBased/data_source_id", func(t *testing.T) {
+		roundTrip(t, ParentForBlockBased{Type: "data_source_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351"))), DataSourceID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v ParentForBlockBased) bool { return v.Type == "data_source_id" })
 	})
 
-	t.Run("ParentForBlockBasedObjectResponse/page_id", func(t *testing.T) {
-		roundTrip(t, ParentForBlockBasedObjectResponse{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v ParentForBlockBasedObjectResponse) bool { return v.Type == "page_id" })
+	t.Run("ParentForBlockBased/page_id", func(t *testing.T) {
+		roundTrip(t, ParentForBlockBased{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v ParentForBlockBased) bool { return v.Type == "page_id" })
 	})
 
-	t.Run("ParentForBlockBasedObjectResponse/block_id", func(t *testing.T) {
-		roundTrip(t, ParentForBlockBasedObjectResponse{Type: "block_id", BlockID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v ParentForBlockBasedObjectResponse) bool { return v.Type == "block_id" })
+	t.Run("ParentForBlockBased/block_id", func(t *testing.T) {
+		roundTrip(t, ParentForBlockBased{Type: "block_id", BlockID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v ParentForBlockBased) bool { return v.Type == "block_id" })
 	})
 
-	t.Run("ParentForBlockBasedObjectResponse/agent_id", func(t *testing.T) {
-		roundTrip(t, ParentForBlockBasedObjectResponse{Type: "agent_id", AgentID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v ParentForBlockBasedObjectResponse) bool { return v.Type == "agent_id" })
+	t.Run("ParentForBlockBased/agent_id", func(t *testing.T) {
+		roundTrip(t, ParentForBlockBased{Type: "agent_id", AgentID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v ParentForBlockBased) bool { return v.Type == "agent_id" })
 	})
 
-	t.Run("ParentForBlockBasedObjectResponse/workspace", func(t *testing.T) {
-		roundTrip(t, ParentForBlockBasedObjectResponse{Type: "workspace", Workspace: new(true)}, func(v ParentForBlockBasedObjectResponse) bool { return v.Type == "workspace" })
+	t.Run("ParentForBlockBased/workspace", func(t *testing.T) {
+		roundTrip(t, ParentForBlockBased{Type: "workspace", Workspace: new(true)}, func(v ParentForBlockBased) bool { return v.Type == "workspace" })
 	})
 
 	t.Run("ParentOfDataSourceResponse/database_id", func(t *testing.T) {
@@ -4035,32 +4009,32 @@ func TestTagged_RoundTrip(t *testing.T) {
 		roundTrip(t, ParentOfDataSourceResponse{Type: "data_source_id", DataSourceID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v ParentOfDataSourceResponse) bool { return v.Type == "data_source_id" })
 	})
 
-	t.Run("ParentOfDatabaseResponse/page_id", func(t *testing.T) {
-		roundTrip(t, ParentOfDatabaseResponse{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v ParentOfDatabaseResponse) bool { return v.Type == "page_id" })
+	t.Run("ParentOfDatabase/page_id", func(t *testing.T) {
+		roundTrip(t, ParentOfDatabase{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v ParentOfDatabase) bool { return v.Type == "page_id" })
 	})
 
-	t.Run("ParentOfDatabaseResponse/workspace", func(t *testing.T) {
-		roundTrip(t, ParentOfDatabaseResponse{Type: "workspace", Workspace: new(true)}, func(v ParentOfDatabaseResponse) bool { return v.Type == "workspace" })
+	t.Run("ParentOfDatabase/workspace", func(t *testing.T) {
+		roundTrip(t, ParentOfDatabase{Type: "workspace", Workspace: new(true)}, func(v ParentOfDatabase) bool { return v.Type == "workspace" })
 	})
 
-	t.Run("ParentOfDatabaseResponse/database_id", func(t *testing.T) {
-		roundTrip(t, ParentOfDatabaseResponse{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v ParentOfDatabaseResponse) bool { return v.Type == "database_id" })
+	t.Run("ParentOfDatabase/database_id", func(t *testing.T) {
+		roundTrip(t, ParentOfDatabase{Type: "database_id", DatabaseID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v ParentOfDatabase) bool { return v.Type == "database_id" })
 	})
 
-	t.Run("ParentOfDatabaseResponse/block_id", func(t *testing.T) {
-		roundTrip(t, ParentOfDatabaseResponse{Type: "block_id", BlockID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v ParentOfDatabaseResponse) bool { return v.Type == "block_id" })
+	t.Run("ParentOfDatabase/block_id", func(t *testing.T) {
+		roundTrip(t, ParentOfDatabase{Type: "block_id", BlockID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v ParentOfDatabase) bool { return v.Type == "block_id" })
 	})
 
-	t.Run("PartialRollupValueResponse/number", func(t *testing.T) {
-		roundTrip(t, PartialRollupValueResponse{Type: "number", Number: new(1.5)}, func(v PartialRollupValueResponse) bool { return v.Type == "number" })
+	t.Run("PartialRollupValue/number", func(t *testing.T) {
+		roundTrip(t, PartialRollupValue{Type: "number", Number: new(1.5)}, func(v PartialRollupValue) bool { return v.Type == "number" })
 	})
 
-	t.Run("PartialRollupValueResponse/array", func(t *testing.T) {
-		roundTrip(t, PartialRollupValueResponse{Type: "array", Array: []SimpleOrArrayPropertyValueResponse{{Type: "number", Number: new(1.5)}}}, func(v PartialRollupValueResponse) bool { return v.Type == "array" })
+	t.Run("PartialRollupValue/array", func(t *testing.T) {
+		roundTrip(t, PartialRollupValue{Type: "array", Array: []SimpleOrArrayPropertyValue{{Type: "number", Number: new(1.5)}}}, func(v PartialRollupValue) bool { return v.Type == "array" })
 	})
 
-	t.Run("PartialRollupValueResponse/unsupported", func(t *testing.T) {
-		roundTrip(t, PartialRollupValueResponse{Type: "unsupported", Unsupported: new(EmptyObject{})}, func(v PartialRollupValueResponse) bool { return v.Type == "unsupported" })
+	t.Run("PartialRollupValue/unsupported", func(t *testing.T) {
+		roundTrip(t, PartialRollupValue{Type: "unsupported", Unsupported: new(EmptyObject{})}, func(v PartialRollupValue) bool { return v.Type == "unsupported" })
 	})
 
 	t.Run("PatchPageTemplate/default", func(t *testing.T) {
@@ -4088,7 +4062,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PropertyConfig/number", func(t *testing.T) {
-		roundTrip(t, PropertyConfig{Type: "number", Number: new(NumberDatabasePropertyConfigResponseNumber{})}, func(v PropertyConfig) bool { return v.Type == "number" })
+		roundTrip(t, PropertyConfig{Type: "number", Number: new(NumberDatabasePropertyConfigNumber{})}, func(v PropertyConfig) bool { return v.Type == "number" })
 	})
 
 	t.Run("PropertyConfig/formula", func(t *testing.T) {
@@ -4104,19 +4078,19 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PropertyConfig/status", func(t *testing.T) {
-		roundTrip(t, PropertyConfig{Type: "status", Status: new(StatusDatabasePropertyConfigResponseStatus{})}, func(v PropertyConfig) bool { return v.Type == "status" })
+		roundTrip(t, PropertyConfig{Type: "status", Status: new(StatusDatabasePropertyConfigStatus{})}, func(v PropertyConfig) bool { return v.Type == "status" })
 	})
 
 	t.Run("PropertyConfig/relation", func(t *testing.T) {
-		roundTrip(t, PropertyConfig{Type: "relation", Relation: new(DatabasePropertyRelationConfigResponse{Type: "single_property", SingleProperty: new(EmptyObject{})})}, func(v PropertyConfig) bool { return v.Type == "relation" })
+		roundTrip(t, PropertyConfig{Type: "relation", Relation: new(DatabasePropertyRelationConfig{Type: "single_property", SingleProperty: new(EmptyObject{})})}, func(v PropertyConfig) bool { return v.Type == "relation" })
 	})
 
 	t.Run("PropertyConfig/rollup", func(t *testing.T) {
-		roundTrip(t, PropertyConfig{Type: "rollup", Rollup: new(RollupDatabasePropertyConfigResponseRollup{})}, func(v PropertyConfig) bool { return v.Type == "rollup" })
+		roundTrip(t, PropertyConfig{Type: "rollup", Rollup: new(RollupDatabasePropertyConfigRollup{})}, func(v PropertyConfig) bool { return v.Type == "rollup" })
 	})
 
 	t.Run("PropertyConfig/unique_id", func(t *testing.T) {
-		roundTrip(t, PropertyConfig{Type: "unique_id", UniqueID: new(UniqueIDDatabasePropertyConfigResponseUniqueID{})}, func(v PropertyConfig) bool { return v.Type == "unique_id" })
+		roundTrip(t, PropertyConfig{Type: "unique_id", UniqueID: new(UniqueIDDatabasePropertyConfigUniqueID{})}, func(v PropertyConfig) bool { return v.Type == "unique_id" })
 	})
 
 	t.Run("PropertyConfig/title", func(t *testing.T) {
@@ -4204,7 +4178,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PropertyConfiguration/rollup", func(t *testing.T) {
-		roundTrip(t, PropertyConfiguration{Type: "rollup", Rollup: new(RollupPropertyConfigurationRollup{RollupPropertyConfigurationRollupAllOf: RollupPropertyConfigurationRollupAllOf{RollupPropertyConfigurationRollupAllOfOneOf: new(RollupPropertyConfigurationRollupAllOfOneOf{})}})}, func(v PropertyConfiguration) bool { return v.Type == "rollup" })
+		roundTrip(t, PropertyConfiguration{Type: "rollup", Rollup: new(RollupPropertyConfigurationRollup{RollupPropertyConfigurationRollupAllOf: RollupPropertyConfigurationRollupAllOf{RollupByNames: new(RollupByNames{})}})}, func(v PropertyConfiguration) bool { return v.Type == "rollup" })
 	})
 
 	t.Run("PropertyConfiguration/unique_id", func(t *testing.T) {
@@ -4303,24 +4277,112 @@ func TestTagged_RoundTrip(t *testing.T) {
 		roundTrip(t, PropertyFilter{Type: "verification", Verification: new(PropertyFilterVerification2{VerificationPropertyStatusFilter: new(VerificationPropertyStatusFilter{Status: "verified"})})}, func(v PropertyFilter) bool { return v.Type == "verification" })
 	})
 
-	t.Run("PropertyItemPropertyItemListResponsePropertyItem/title", func(t *testing.T) {
-		roundTrip(t, PropertyItemPropertyItemListResponsePropertyItem{Type: "title", Title: new(EmptyObject{})}, func(v PropertyItemPropertyItemListResponsePropertyItem) bool { return v.Type == "title" })
+	t.Run("PropertyItemListResponsePropertyItem/title", func(t *testing.T) {
+		roundTrip(t, PropertyItemListResponsePropertyItem{Type: "title", Title: new(EmptyObject{})}, func(v PropertyItemListResponsePropertyItem) bool { return v.Type == "title" })
 	})
 
-	t.Run("PropertyItemPropertyItemListResponsePropertyItem/rich_text", func(t *testing.T) {
-		roundTrip(t, PropertyItemPropertyItemListResponsePropertyItem{Type: "rich_text", RichText: new(EmptyObject{})}, func(v PropertyItemPropertyItemListResponsePropertyItem) bool { return v.Type == "rich_text" })
+	t.Run("PropertyItemListResponsePropertyItem/rich_text", func(t *testing.T) {
+		roundTrip(t, PropertyItemListResponsePropertyItem{Type: "rich_text", RichText: new(EmptyObject{})}, func(v PropertyItemListResponsePropertyItem) bool { return v.Type == "rich_text" })
 	})
 
-	t.Run("PropertyItemPropertyItemListResponsePropertyItem/people", func(t *testing.T) {
-		roundTrip(t, PropertyItemPropertyItemListResponsePropertyItem{Type: "people", People: new(EmptyObject{})}, func(v PropertyItemPropertyItemListResponsePropertyItem) bool { return v.Type == "people" })
+	t.Run("PropertyItemListResponsePropertyItem/people", func(t *testing.T) {
+		roundTrip(t, PropertyItemListResponsePropertyItem{Type: "people", People: new(EmptyObject{})}, func(v PropertyItemListResponsePropertyItem) bool { return v.Type == "people" })
 	})
 
-	t.Run("PropertyItemPropertyItemListResponsePropertyItem/relation", func(t *testing.T) {
-		roundTrip(t, PropertyItemPropertyItemListResponsePropertyItem{Type: "relation", Relation: new(EmptyObject{})}, func(v PropertyItemPropertyItemListResponsePropertyItem) bool { return v.Type == "relation" })
+	t.Run("PropertyItemListResponsePropertyItem/relation", func(t *testing.T) {
+		roundTrip(t, PropertyItemListResponsePropertyItem{Type: "relation", Relation: new(EmptyObject{})}, func(v PropertyItemListResponsePropertyItem) bool { return v.Type == "relation" })
 	})
 
-	t.Run("PropertyItemPropertyItemListResponsePropertyItem/rollup", func(t *testing.T) {
-		roundTrip(t, PropertyItemPropertyItemListResponsePropertyItem{Type: "rollup", Rollup: new(RollupPropertyItemObjectRollup{Type: "number", Number: new(1.5)})}, func(v PropertyItemPropertyItemListResponsePropertyItem) bool { return v.Type == "rollup" })
+	t.Run("PropertyItemListResponsePropertyItem/rollup", func(t *testing.T) {
+		roundTrip(t, PropertyItemListResponsePropertyItem{Type: "rollup", Rollup: new(RollupPropertyItemObjectRollup{Type: "number", Number: new(1.5)})}, func(v PropertyItemListResponsePropertyItem) bool { return v.Type == "rollup" })
+	})
+
+	t.Run("PropertyUpdate/number", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "number", Number: new(NumberPropertyConfigurationNumber{})}, func(v PropertyUpdate) bool { return v.Type == "number" })
+	})
+
+	t.Run("PropertyUpdate/formula", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "formula", Formula: new(FormulaPropertyConfigurationFormula{})}, func(v PropertyUpdate) bool { return v.Type == "formula" })
+	})
+
+	t.Run("PropertyUpdate/select", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "select", Select: new(UpdateADataSourcePropertiesValueOneOfAllOfSelect{})}, func(v PropertyUpdate) bool { return v.Type == "select" })
+	})
+
+	t.Run("PropertyUpdate/multi_select", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "multi_select", MultiSelect: new(UpdateADataSourcePropertiesValueOneOfAllOfSelect{})}, func(v PropertyUpdate) bool { return v.Type == "multi_select" })
+	})
+
+	t.Run("PropertyUpdate/status", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "status", Status: new(StatusPropertyConfigUpdate{})}, func(v PropertyUpdate) bool { return v.Type == "status" })
+	})
+
+	t.Run("PropertyUpdate/relation", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "relation", Relation: new(RelationPropertyConfigurationRelation{Type: "single_property", SingleProperty: new(EmptyObject{})})}, func(v PropertyUpdate) bool { return v.Type == "relation" })
+	})
+
+	t.Run("PropertyUpdate/rollup", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "rollup", Rollup: new(RollupPropertyConfigurationRollup{RollupPropertyConfigurationRollupAllOf: RollupPropertyConfigurationRollupAllOf{RollupByNames: new(RollupByNames{})}})}, func(v PropertyUpdate) bool { return v.Type == "rollup" })
+	})
+
+	t.Run("PropertyUpdate/unique_id", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "unique_id", UniqueID: new(UniqueIDPropertyConfigurationUniqueID{})}, func(v PropertyUpdate) bool { return v.Type == "unique_id" })
+	})
+
+	t.Run("PropertyUpdate/title", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "title", Title: new(EmptyObject{})}, func(v PropertyUpdate) bool { return v.Type == "title" })
+	})
+
+	t.Run("PropertyUpdate/rich_text", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "rich_text", RichText: new(EmptyObject{})}, func(v PropertyUpdate) bool { return v.Type == "rich_text" })
+	})
+
+	t.Run("PropertyUpdate/url", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "url", URL: new(EmptyObject{})}, func(v PropertyUpdate) bool { return v.Type == "url" })
+	})
+
+	t.Run("PropertyUpdate/people", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "people", People: new(EmptyObject{})}, func(v PropertyUpdate) bool { return v.Type == "people" })
+	})
+
+	t.Run("PropertyUpdate/files", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "files", Files: new(EmptyObject{})}, func(v PropertyUpdate) bool { return v.Type == "files" })
+	})
+
+	t.Run("PropertyUpdate/email", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "email", Email: new(EmptyObject{})}, func(v PropertyUpdate) bool { return v.Type == "email" })
+	})
+
+	t.Run("PropertyUpdate/phone_number", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "phone_number", PhoneNumber: new(EmptyObject{})}, func(v PropertyUpdate) bool { return v.Type == "phone_number" })
+	})
+
+	t.Run("PropertyUpdate/date", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "date", Date: new(EmptyObject{})}, func(v PropertyUpdate) bool { return v.Type == "date" })
+	})
+
+	t.Run("PropertyUpdate/checkbox", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "checkbox", Checkbox: new(EmptyObject{})}, func(v PropertyUpdate) bool { return v.Type == "checkbox" })
+	})
+
+	t.Run("PropertyUpdate/created_by", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "created_by", CreatedBy: new(EmptyObject{})}, func(v PropertyUpdate) bool { return v.Type == "created_by" })
+	})
+
+	t.Run("PropertyUpdate/created_time", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "created_time", CreatedTime: new(EmptyObject{})}, func(v PropertyUpdate) bool { return v.Type == "created_time" })
+	})
+
+	t.Run("PropertyUpdate/last_edited_by", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "last_edited_by", LastEditedBy: new(EmptyObject{})}, func(v PropertyUpdate) bool { return v.Type == "last_edited_by" })
+	})
+
+	t.Run("PropertyUpdate/last_edited_time", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "last_edited_time", LastEditedTime: new(EmptyObject{})}, func(v PropertyUpdate) bool { return v.Type == "last_edited_time" })
+	})
+
+	t.Run("PropertyUpdate/place", func(t *testing.T) {
+		roundTrip(t, PropertyUpdate{Type: "place", Place: new(EmptyObject{})}, func(v PropertyUpdate) bool { return v.Type == "place" })
 	})
 
 	t.Run("PropertyValue/number", func(t *testing.T) {
@@ -4332,15 +4394,15 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PropertyValue/select", func(t *testing.T) {
-		roundTrip(t, PropertyValue{Type: "select", Select: new(PartialSelectPropertyValueResponse{})}, func(v PropertyValue) bool { return v.Type == "select" })
+		roundTrip(t, PropertyValue{Type: "select", Select: new(PartialSelectPropertyValue{})}, func(v PropertyValue) bool { return v.Type == "select" })
 	})
 
 	t.Run("PropertyValue/multi_select", func(t *testing.T) {
-		roundTrip(t, PropertyValue{Type: "multi_select", MultiSelect: []PartialSelectPropertyValueResponse{{}}}, func(v PropertyValue) bool { return v.Type == "multi_select" })
+		roundTrip(t, PropertyValue{Type: "multi_select", MultiSelect: []PartialSelectPropertyValue{{}}}, func(v PropertyValue) bool { return v.Type == "multi_select" })
 	})
 
 	t.Run("PropertyValue/status", func(t *testing.T) {
-		roundTrip(t, PropertyValue{Type: "status", Status: new(PartialSelectPropertyValueResponse{})}, func(v PropertyValue) bool { return v.Type == "status" })
+		roundTrip(t, PropertyValue{Type: "status", Status: new(PartialSelectPropertyValue{})}, func(v PropertyValue) bool { return v.Type == "status" })
 	})
 
 	t.Run("PropertyValue/email", func(t *testing.T) {
@@ -4360,7 +4422,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PropertyValue/created_by", func(t *testing.T) {
-		roundTrip(t, PropertyValue{Type: "created_by", CreatedBy: new(UserOrPartial{PartialUserObjectResponse: new(PartialUserObjectResponse{Object: "user"})})}, func(v PropertyValue) bool { return v.Type == "created_by" })
+		roundTrip(t, PropertyValue{Type: "created_by", CreatedBy: new(UserOrPartial{PartialUser: new(PartialUser{Object: "user"})})}, func(v PropertyValue) bool { return v.Type == "created_by" })
 	})
 
 	t.Run("PropertyValue/created_time", func(t *testing.T) {
@@ -4368,7 +4430,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PropertyValue/last_edited_by", func(t *testing.T) {
-		roundTrip(t, PropertyValue{Type: "last_edited_by", LastEditedBy: new(UserOrPartial{PartialUserObjectResponse: new(PartialUserObjectResponse{Object: "user"})})}, func(v PropertyValue) bool { return v.Type == "last_edited_by" })
+		roundTrip(t, PropertyValue{Type: "last_edited_by", LastEditedBy: new(UserOrPartial{PartialUser: new(PartialUser{Object: "user"})})}, func(v PropertyValue) bool { return v.Type == "last_edited_by" })
 	})
 
 	t.Run("PropertyValue/last_edited_time", func(t *testing.T) {
@@ -4376,7 +4438,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PropertyValue/formula", func(t *testing.T) {
-		roundTrip(t, PropertyValue{Type: "formula", Formula: new(FormulaPropertyValueResponse{Type: "boolean", Boolean: new(true)})}, func(v PropertyValue) bool { return v.Type == "formula" })
+		roundTrip(t, PropertyValue{Type: "formula", Formula: new(FormulaPropertyValue{Type: "boolean", Boolean: new(true)})}, func(v PropertyValue) bool { return v.Type == "formula" })
 	})
 
 	t.Run("PropertyValue/button", func(t *testing.T) {
@@ -4384,15 +4446,15 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PropertyValue/unique_id", func(t *testing.T) {
-		roundTrip(t, PropertyValue{Type: "unique_id", UniqueID: new(UniqueIDPropertyValueResponse{})}, func(v PropertyValue) bool { return v.Type == "unique_id" })
+		roundTrip(t, PropertyValue{Type: "unique_id", UniqueID: new(UniqueIDPropertyValue{})}, func(v PropertyValue) bool { return v.Type == "unique_id" })
 	})
 
 	t.Run("PropertyValue/verification", func(t *testing.T) {
-		roundTrip(t, PropertyValue{Type: "verification", Verification: new(VerificationPropertyValueResponse{VerificationPropertyResponse: new(VerificationPropertyResponse{State: "verified"})})}, func(v PropertyValue) bool { return v.Type == "verification" })
+		roundTrip(t, PropertyValue{Type: "verification", Verification: new(VerificationPropertyValue{VerificationProperty: new(VerificationProperty{State: "verified"})})}, func(v PropertyValue) bool { return v.Type == "verification" })
 	})
 
 	t.Run("PropertyValue/place", func(t *testing.T) {
-		roundTrip(t, PropertyValue{Type: "place", Place: new(PlacePropertyValueResponse{})}, func(v PropertyValue) bool { return v.Type == "place" })
+		roundTrip(t, PropertyValue{Type: "place", Place: new(PlacePropertyValue{})}, func(v PropertyValue) bool { return v.Type == "place" })
 	})
 
 	t.Run("PropertyValue/last_visited_time", func(t *testing.T) {
@@ -4408,7 +4470,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PropertyValue/people", func(t *testing.T) {
-		roundTrip(t, PropertyValue{Type: "people", People: []PeopleArrayBasedPropertyValueResponsePeopleItem{}}, func(v PropertyValue) bool { return v.Type == "people" })
+		roundTrip(t, PropertyValue{Type: "people", People: []PeopleArrayBasedPropertyValuePeopleItem{}}, func(v PropertyValue) bool { return v.Type == "people" })
 	})
 
 	t.Run("PropertyValue/relation", func(t *testing.T) {
@@ -4416,7 +4478,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PropertyValue/rollup", func(t *testing.T) {
-		roundTrip(t, PropertyValue{Type: "rollup", Rollup: new(PartialRollupValueResponse{Type: "number", Number: new(1.5)})}, func(v PropertyValue) bool { return v.Type == "rollup" })
+		roundTrip(t, PropertyValue{Type: "rollup", Rollup: new(PartialRollupValue{Type: "number", Number: new(1.5)})}, func(v PropertyValue) bool { return v.Type == "rollup" })
 	})
 
 	t.Run("RelationPropertyConfigurationRelation/single_property", func(t *testing.T) {
@@ -4432,7 +4494,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("RichText/mention", func(t *testing.T) {
-		roundTrip(t, RichText{Type: "mention", Mention: new(MentionRichTextItemResponseMention{Type: "user", User: new(UserOrPartial{PartialUserObjectResponse: new(PartialUserObjectResponse{Object: "user"})})})}, func(v RichText) bool { return v.Type == "mention" })
+		roundTrip(t, RichText{Type: "mention", Mention: new(MentionRichTextItemResponseMention{Type: "user", User: new(UserOrPartial{PartialUser: new(PartialUser{Object: "user"})})})}, func(v RichText) bool { return v.Type == "mention" })
 	})
 
 	t.Run("RichText/equation", func(t *testing.T) {
@@ -4467,100 +4529,100 @@ func TestTagged_RoundTrip(t *testing.T) {
 		roundTrip(t, RollupPropertyItemObjectRollup{Type: "incomplete", Incomplete: new(EmptyObject{})}, func(v RollupPropertyItemObjectRollup) bool { return v.Type == "incomplete" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/number", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "number", Number: new(1.5)}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "number" })
+	t.Run("SimpleOrArrayPropertyValue/number", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "number", Number: new(1.5)}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "number" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/url", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "url", URL: new("sample")}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "url" })
+	t.Run("SimpleOrArrayPropertyValue/url", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "url", URL: new("sample")}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "url" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/select", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "select", Select: new(PartialSelectPropertyValueResponse{})}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "select" })
+	t.Run("SimpleOrArrayPropertyValue/select", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "select", Select: new(PartialSelectPropertyValue{})}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "select" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/multi_select", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "multi_select", MultiSelect: []PartialSelectPropertyValueResponse{{}}}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "multi_select" })
+	t.Run("SimpleOrArrayPropertyValue/multi_select", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "multi_select", MultiSelect: []PartialSelectPropertyValue{{}}}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "multi_select" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/status", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "status", Status: new(PartialSelectPropertyValueResponse{})}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "status" })
+	t.Run("SimpleOrArrayPropertyValue/status", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "status", Status: new(PartialSelectPropertyValue{})}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "status" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/email", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "email", Email: new("sample")}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "email" })
+	t.Run("SimpleOrArrayPropertyValue/email", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "email", Email: new("sample")}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "email" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/phone_number", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "phone_number", PhoneNumber: new("sample")}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "phone_number" })
+	t.Run("SimpleOrArrayPropertyValue/phone_number", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "phone_number", PhoneNumber: new("sample")}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "phone_number" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/checkbox", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "checkbox", Checkbox: new(true)}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "checkbox" })
+	t.Run("SimpleOrArrayPropertyValue/checkbox", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "checkbox", Checkbox: new(true)}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "checkbox" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/files", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "files", Files: []InternalOrExternalFileWithNameResponse{{Type: "file", File: new(InternalFileResponse{})}}}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "files" })
+	t.Run("SimpleOrArrayPropertyValue/files", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "files", Files: []InternalOrExternalFileWithNameResponse{{Type: "file", File: new(InternalFileResponse{})}}}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "files" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/created_by", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "created_by", CreatedBy: new(UserOrPartial{PartialUserObjectResponse: new(PartialUserObjectResponse{Object: "user"})})}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "created_by" })
+	t.Run("SimpleOrArrayPropertyValue/created_by", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "created_by", CreatedBy: new(UserOrPartial{PartialUser: new(PartialUser{Object: "user"})})}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "created_by" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/created_time", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "created_time", CreatedTime: new(time.Date(2026, 1, 2, 3, 4, 5, 0, time.UTC))}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "created_time" })
+	t.Run("SimpleOrArrayPropertyValue/created_time", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "created_time", CreatedTime: new(time.Date(2026, 1, 2, 3, 4, 5, 0, time.UTC))}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "created_time" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/last_edited_by", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "last_edited_by", LastEditedBy: new(UserOrPartial{PartialUserObjectResponse: new(PartialUserObjectResponse{Object: "user"})})}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "last_edited_by" })
+	t.Run("SimpleOrArrayPropertyValue/last_edited_by", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "last_edited_by", LastEditedBy: new(UserOrPartial{PartialUser: new(PartialUser{Object: "user"})})}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "last_edited_by" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/last_edited_time", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "last_edited_time", LastEditedTime: new(time.Date(2026, 1, 2, 3, 4, 5, 0, time.UTC))}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "last_edited_time" })
+	t.Run("SimpleOrArrayPropertyValue/last_edited_time", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "last_edited_time", LastEditedTime: new(time.Date(2026, 1, 2, 3, 4, 5, 0, time.UTC))}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "last_edited_time" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/formula", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "formula", Formula: new(FormulaPropertyValueResponse{Type: "boolean", Boolean: new(true)})}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "formula" })
+	t.Run("SimpleOrArrayPropertyValue/formula", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "formula", Formula: new(FormulaPropertyValue{Type: "boolean", Boolean: new(true)})}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "formula" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/button", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "button", Button: new(EmptyObject{})}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "button" })
+	t.Run("SimpleOrArrayPropertyValue/button", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "button", Button: new(EmptyObject{})}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "button" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/unique_id", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "unique_id", UniqueID: new(UniqueIDPropertyValueResponse{})}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "unique_id" })
+	t.Run("SimpleOrArrayPropertyValue/unique_id", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "unique_id", UniqueID: new(UniqueIDPropertyValue{})}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "unique_id" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/verification", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "verification", Verification: new(VerificationPropertyValueResponse{VerificationPropertyResponse: new(VerificationPropertyResponse{State: "verified"})})}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "verification" })
+	t.Run("SimpleOrArrayPropertyValue/verification", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "verification", Verification: new(VerificationPropertyValue{VerificationProperty: new(VerificationProperty{State: "verified"})})}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "verification" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/place", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "place", Place: new(PlacePropertyValueResponse{})}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "place" })
+	t.Run("SimpleOrArrayPropertyValue/place", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "place", Place: new(PlacePropertyValue{})}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "place" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/last_visited_time", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "last_visited_time", LastVisitedTime: new(time.Date(2026, 1, 2, 3, 4, 5, 0, time.UTC))}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "last_visited_time" })
+	t.Run("SimpleOrArrayPropertyValue/last_visited_time", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "last_visited_time", LastVisitedTime: new(time.Date(2026, 1, 2, 3, 4, 5, 0, time.UTC))}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "last_visited_time" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/title", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "title", Title: RichTexts{RichText{Type: "text", Text: new(TextRichTextItemResponseText{})}}}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "title" })
+	t.Run("SimpleOrArrayPropertyValue/title", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "title", Title: RichTexts{RichText{Type: "text", Text: new(TextRichTextItemResponseText{})}}}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "title" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/rich_text", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "rich_text", RichText: RichTexts{RichText{Type: "text", Text: new(TextRichTextItemResponseText{})}}}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "rich_text" })
+	t.Run("SimpleOrArrayPropertyValue/rich_text", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "rich_text", RichText: RichTexts{RichText{Type: "text", Text: new(TextRichTextItemResponseText{})}}}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "rich_text" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/people", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "people", People: []PeopleArrayBasedPropertyValueResponsePeopleItem{}}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "people" })
+	t.Run("SimpleOrArrayPropertyValue/people", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "people", People: []PeopleArrayBasedPropertyValuePeopleItem{}}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "people" })
 	})
 
-	t.Run("SimpleOrArrayPropertyValueResponse/relation", func(t *testing.T) {
-		roundTrip(t, SimpleOrArrayPropertyValueResponse{Type: "relation", Relation: []RelationItemPropertyValue{{}}}, func(v SimpleOrArrayPropertyValueResponse) bool { return v.Type == "relation" })
+	t.Run("SimpleOrArrayPropertyValue/relation", func(t *testing.T) {
+		roundTrip(t, SimpleOrArrayPropertyValue{Type: "relation", Relation: []RelationItemPropertyValue{{}}}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "relation" })
 	})
 
 	t.Run("TemplateMention/template_mention_date", func(t *testing.T) {
-		roundTrip(t, TemplateMention{Type: "template_mention_date", TemplateMentionDate: TemplateMentionDateTemplateMentionTemplateMentionDateToday}, func(v TemplateMention) bool { return v.Type == "template_mention_date" })
+		roundTrip(t, TemplateMention{Type: "template_mention_date", TemplateMentionDate: TemplateMentionDateTemplateMentionDateToday}, func(v TemplateMention) bool { return v.Type == "template_mention_date" })
 	})
 
 	t.Run("TemplateMention/template_mention_user", func(t *testing.T) {
@@ -4568,131 +4630,35 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("TemplateMentionResponse/template_mention_date", func(t *testing.T) {
-		roundTrip(t, TemplateMentionResponse{Type: "template_mention_date", TemplateMentionDate: TemplateMentionDateTemplateMentionTemplateMentionDateToday}, func(v TemplateMentionResponse) bool { return v.Type == "template_mention_date" })
+		roundTrip(t, TemplateMentionResponse{Type: "template_mention_date", TemplateMentionDate: TemplateMentionDateTemplateMentionDateToday}, func(v TemplateMentionResponse) bool { return v.Type == "template_mention_date" })
 	})
 
 	t.Run("TemplateMentionResponse/template_mention_user", func(t *testing.T) {
 		roundTrip(t, TemplateMentionResponse{Type: "template_mention_user", TemplateMentionUser: "sample"}, func(v TemplateMentionResponse) bool { return v.Type == "template_mention_user" })
 	})
 
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/number", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "number", Number: new(NumberPropertyConfigurationNumber{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "number" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/formula", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "formula", Formula: new(FormulaPropertyConfigurationFormula{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "formula" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/select", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "select", Select: new(UpdateADataSourcePropertiesValueOneOfAllOfSelect{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "select" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/multi_select", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "multi_select", MultiSelect: new(UpdateADataSourcePropertiesValueOneOfAllOfSelect{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "multi_select" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/status", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "status", Status: new(StatusPropertyConfigUpdate{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "status" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/relation", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "relation", Relation: new(RelationPropertyConfigurationRelation{Type: "single_property", SingleProperty: new(EmptyObject{})})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "relation" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/rollup", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "rollup", Rollup: new(RollupPropertyConfigurationRollup{RollupPropertyConfigurationRollupAllOf: RollupPropertyConfigurationRollupAllOf{RollupPropertyConfigurationRollupAllOfOneOf: new(RollupPropertyConfigurationRollupAllOfOneOf{})}})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "rollup" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/unique_id", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "unique_id", UniqueID: new(UniqueIDPropertyConfigurationUniqueID{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "unique_id" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/title", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "title", Title: new(EmptyObject{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "title" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/rich_text", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "rich_text", RichText: new(EmptyObject{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "rich_text" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/url", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "url", URL: new(EmptyObject{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "url" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/people", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "people", People: new(EmptyObject{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "people" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/files", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "files", Files: new(EmptyObject{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "files" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/email", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "email", Email: new(EmptyObject{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "email" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/phone_number", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "phone_number", PhoneNumber: new(EmptyObject{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "phone_number" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/date", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "date", Date: new(EmptyObject{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "date" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/checkbox", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "checkbox", Checkbox: new(EmptyObject{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "checkbox" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/created_by", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "created_by", CreatedBy: new(EmptyObject{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "created_by" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/created_time", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "created_time", CreatedTime: new(EmptyObject{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "created_time" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/last_edited_by", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "last_edited_by", LastEditedBy: new(EmptyObject{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "last_edited_by" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/last_edited_time", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "last_edited_time", LastEditedTime: new(EmptyObject{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "last_edited_time" })
-	})
-
-	t.Run("UpdateADataSourcePropertiesValueOneOf0/place", func(t *testing.T) {
-		roundTrip(t, UpdateADataSourcePropertiesValueOneOf0{Type: "place", Place: new(EmptyObject{})}, func(v UpdateADataSourcePropertiesValueOneOf0) bool { return v.Type == "place" })
-	})
-
 	t.Run("UpdatePageMarkdown/insert_content", func(t *testing.T) {
-		roundTrip(t, UpdatePageMarkdown{Type: "insert_content", InsertContent: new(UpdatePageMarkdownAllOf0InsertContentInsertContent{})}, func(v UpdatePageMarkdown) bool { return v.Type == "insert_content" })
+		roundTrip(t, UpdatePageMarkdown{Type: "insert_content", InsertContent: new(MarkdownEditInsertContentInsertContent{})}, func(v UpdatePageMarkdown) bool { return v.Type == "insert_content" })
 	})
 
 	t.Run("UpdatePageMarkdown/replace_content_range", func(t *testing.T) {
-		roundTrip(t, UpdatePageMarkdown{Type: "replace_content_range", ReplaceContentRange: new(UpdatePageMarkdownAllOf0ReplaceContentRangeReplaceContentRange{})}, func(v UpdatePageMarkdown) bool { return v.Type == "replace_content_range" })
+		roundTrip(t, UpdatePageMarkdown{Type: "replace_content_range", ReplaceContentRange: new(MarkdownEditReplaceContentRangeReplaceContentRange{})}, func(v UpdatePageMarkdown) bool { return v.Type == "replace_content_range" })
 	})
 
 	t.Run("UpdatePageMarkdown/update_content", func(t *testing.T) {
-		roundTrip(t, UpdatePageMarkdown{Type: "update_content", UpdateContent: new(UpdatePageMarkdownAllOf0UpdateContentUpdateContent{})}, func(v UpdatePageMarkdown) bool { return v.Type == "update_content" })
+		roundTrip(t, UpdatePageMarkdown{Type: "update_content", UpdateContent: new(MarkdownEditUpdateContentUpdateContent{})}, func(v UpdatePageMarkdown) bool { return v.Type == "update_content" })
 	})
 
 	t.Run("UpdatePageMarkdown/replace_content", func(t *testing.T) {
-		roundTrip(t, UpdatePageMarkdown{Type: "replace_content", ReplaceContent: new(UpdatePageMarkdownAllOf0ReplaceContentReplaceContent{})}, func(v UpdatePageMarkdown) bool { return v.Type == "replace_content" })
+		roundTrip(t, UpdatePageMarkdown{Type: "replace_content", ReplaceContent: new(MarkdownEditReplaceContentReplaceContent{})}, func(v UpdatePageMarkdown) bool { return v.Type == "replace_content" })
 	})
 
-	t.Run("UpdatePageMarkdownAllOf0InsertContentInsertContentPosition/start", func(t *testing.T) {
-		roundTrip(t, UpdatePageMarkdownAllOf0InsertContentInsertContentPosition{Type: "start"}, func(v UpdatePageMarkdownAllOf0InsertContentInsertContentPosition) bool { return v.Type == "start" })
+	t.Run("User/person", func(t *testing.T) {
+		roundTrip(t, User{Object: "user", Type: "person", Person: new(PersonUserObjectPerson{})}, func(v User) bool { return v.Type == "person" })
 	})
 
-	t.Run("UpdatePageMarkdownAllOf0InsertContentInsertContentPosition/end", func(t *testing.T) {
-		roundTrip(t, UpdatePageMarkdownAllOf0InsertContentInsertContentPosition{Type: "end"}, func(v UpdatePageMarkdownAllOf0InsertContentInsertContentPosition) bool { return v.Type == "end" })
-	})
-
-	t.Run("UserObjectResponse/person", func(t *testing.T) {
-		roundTrip(t, UserObjectResponse{Object: "user", Type: "person", Person: new(PersonUserObjectPerson{})}, func(v UserObjectResponse) bool { return v.Type == "person" })
-	})
-
-	t.Run("UserObjectResponse/bot", func(t *testing.T) {
-		roundTrip(t, UserObjectResponse{Object: "user", Type: "bot", Bot: new(BotUserObjectResponseBot{EmptyObject: new(EmptyObject{})})}, func(v UserObjectResponse) bool { return v.Type == "bot" })
+	t.Run("User/bot", func(t *testing.T) {
+		roundTrip(t, User{Object: "user", Type: "bot", Bot: new(BotUserBot{EmptyObject: new(EmptyObject{})})}, func(v User) bool { return v.Type == "bot" })
 	})
 
 	t.Run("WidgetPlacement/new_row", func(t *testing.T) {

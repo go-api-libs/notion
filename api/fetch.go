@@ -13,9 +13,11 @@ import (
 	"maps"
 	"net/http"
 	"os"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
+	"unicode"
 
 	"github.com/MarkRosemaker/cassette"
 	"github.com/MarkRosemaker/errpath"
@@ -140,6 +142,175 @@ func persistOpenAPI(ctx context.Context) error {
 	}
 
 	return doc.WriteJSON(w)
+}
+
+// shortNames names what has no better name than its position in a union or allOf, or one too long for what it is,
+// short and as Notion calls it: by the prefix the names hold, for the schemas within it too, as
+// MeetingNotesDateFilterOperator for MeetingNotesPropertyFilterFilterOneOf2Operator. A name in exactNames is renamed
+// whole and goes before a prefix. An entry that names no schema fails the run.
+var shortNames = map[string]string{
+	"AgentListResultsItemOneOf0":   "CustomAgent",
+	"AgentListResultsItemNotionAi": "NotionAIAgent",
+
+	"CreateACommentAllOf0OneOf0": "PageComment",
+	"CreateACommentAllOf0OneOf1": "PageMarkdownComment",
+	"CreateACommentAllOf0OneOf2": "DiscussionComment",
+	"CreateACommentAllOf0OneOf3": "DiscussionMarkdownComment",
+	"CreateACommentAllOf0":       "NewComment",
+	"UpdateACommentAllOf0":       "CommentUpdate",
+	"UpdatePageMarkdownAllOf0":   "MarkdownEdit",
+
+	"CreateMeetingNoteAllOf0OneOf0": "MeetingNoteInPage",
+	"CreateMeetingNoteAllOf0Source": "MeetingNoteFromBlock",
+	"CreateMeetingNoteAllOf0":       "MeetingNoteSource",
+	"CreateMeetingNoteOkOneOf0":     "MeetingNoteBlock",
+
+	"MeetingNotesPropertyFilterFilterString":   "MeetingNotesTextFilter",
+	"MeetingNotesPropertyFilterFilterPerson":   "MeetingNotesPersonFilter",
+	"MeetingNotesPropertyFilterFilterOneOf2":   "MeetingNotesDateFilter",
+	"MeetingNotesPropertyFilterFilterOneOf3":   "MeetingNotesDateRangeFilter",
+	"QueryMeetingNotesFilterFiltersItemOneOf1": "MeetingNotesFilterGroup",
+
+	"DataSourceObjectSyncMetadataHealthAnyOf":  "SyncHealth", // what the failing and the healthy share
+	"DataSourceObjectSyncMetadataHealthPaused": "SyncHealthPaused",
+
+	"RollupPropertyConfigurationRollupAllOfOneOf":  "RollupByNames",
+	"RollupPropertyConfigurationRollupAllOfOneOf2": "RollupByRelationID",
+	"RollupPropertyConfigurationRollupAllOfOneOf3": "RollupByRollupID",
+	"RollupPropertyConfigurationRollupAllOfOneOf4": "RollupByIDs",
+
+	"UpdateABlockAnyOf30":                    "BlockTrashUpdate",
+	"UpdateADataSourcePropertiesValueOneOf0": "PropertyUpdate",
+	"UpdateADataSourcePropertiesValueName":   "PropertyRename",
+	"UpdateSessionRequestMessage":            "SessionMessage",
+	"UpdateSessionRequestOneOf1":             "SessionAnswer",
+	"UpdateSessionRequestOneOf2":             "SessionContinuation",
+}
+
+// exactNames are the names of shortNames whose schema alone is renamed, as their prefix starts the names of others.
+var exactNames = map[string]string{
+	"DataSourceObjectSyncMetadataHealthAnyOf":  "SyncHealthFailing",
+	"DataSourceObjectSyncMetadataHealthAnyOf2": "SyncHealthOK",
+}
+
+// shortenNames renames the component schemas as shortNames and exactNames say, then drops ObjectResponse or Response
+// from a name, as User for userObjectResponse, and a word said twice in a row, as BlockObjectToDo for
+// BlockObjectToDoToDo, where the name without it is no other schema's. A response that the request of the same name
+// differs from keeps its suffix, as BoardViewConfigResponse beside BoardViewConfig: there it tells the two apart.
+func shortenNames(doc *openapi.Document) error {
+	unused := map[string]bool{}
+	for k := range shortNames {
+		unused[k] = true
+	}
+
+	for k := range exactNames {
+		unused[k] = true
+	}
+
+	prefixes := slices.SortedFunc(maps.Keys(shortNames), func(a, b string) int { return len(b) - len(a) })
+
+	byTable := func(n string) string {
+		if to, ok := exactNames[n]; ok {
+			delete(unused, n)
+			return to
+		}
+
+		for _, prefix := range prefixes {
+			if rest, ok := strings.CutPrefix(n, prefix); ok {
+				delete(unused, prefix)
+				return shortNames[prefix] + rest
+			}
+		}
+
+		return n
+	}
+
+	names := slices.Collect(maps.Keys(doc.Components.Schemas))
+	slices.Sort(names)
+
+	taken := map[string]bool{} // by Go name, as codegen writes it
+	for _, n := range names {
+		taken[strcase.ToGoPascal(byTable(n))] = true
+	}
+
+	to := map[string]string{}
+	claim := func(n, short string) bool {
+		if taken[short] {
+			return false
+		}
+
+		taken[short] = true
+		to[n] = short
+
+		return true
+	}
+
+	for _, n := range names {
+		if t := byTable(n); t != n {
+			to[n] = t
+			continue
+		}
+
+		for _, suffix := range []string{"ObjectResponse", "Response"} {
+			if before, ok := strings.CutSuffix(n, suffix); ok && before != "" && claim(n, strcase.ToGoPascal(before)) {
+				break
+			}
+		}
+
+		if _, ok := to[n]; !ok {
+			if short := withoutRepeats(strcase.ToGoPascal(n)); short != strcase.ToGoPascal(n) {
+				claim(n, short)
+			}
+		}
+	}
+
+	// flatten named what a schema holds after it, as BotInfoResponseOwner, which follows its new name, as BotInfoOwner
+	renamed := slices.SortedFunc(maps.Keys(to), func(a, b string) int { return len(b) - len(a) })
+	for _, n := range names {
+		if _, ok := to[n]; ok {
+			continue
+		}
+
+		goName := strcase.ToGoPascal(n)
+		for _, parent := range renamed {
+			rest, ok := strings.CutPrefix(goName, strcase.ToGoPascal(parent))
+			if ok && rest != "" && unicode.IsUpper(rune(rest[0])) {
+				claim(n, withoutRepeats(strcase.ToGoPascal(to[parent])+rest))
+				break
+			}
+		}
+	}
+
+	if err := edit.RenameSchemas(doc, to); err != nil {
+		return err
+	}
+
+	if len(unused) > 0 {
+		return fmt.Errorf("shortNames or exactNames name schemas the specification no longer has: %s",
+			strings.Join(slices.Sorted(maps.Keys(unused)), ", "))
+	}
+
+	return nil
+}
+
+// reWord matches a word of a Go name, as To, Do and URL.
+var reWord = regexp.MustCompile(`[A-Z]+[a-z0-9]*|[a-z0-9]+`)
+
+// withoutRepeats is the Go name with every run of words said twice in a row said once, as BlockObjectToDo for
+// BlockObjectToDoToDo.
+func withoutRepeats(name string) string {
+	words := reWord.FindAllString(name, -1)
+
+	for k := len(words) / 2; k >= 1; k-- {
+		for i := 0; i+2*k <= len(words); i++ {
+			if slices.Equal(words[i:i+k], words[i+k:i+2*k]) {
+				words = slices.Delete(words, i+k, i+2*k)
+				i--
+			}
+		}
+	}
+
+	return strings.Join(words, "")
 }
 
 func stripSuffixes(doc *openapi.Document) error {
@@ -617,7 +788,48 @@ func telling(alts openapi.SchemaList, i int) (string, bool) {
 		return s.Required[0], true
 	}
 
+	// an enum whose values all begin alike, as string_is and string_contains, unlike those of every other alternative
+	for _, prop := range props {
+		if v := enumPrefix(s.Properties[prop]); v != "" && !slices.ContainsFunc(alts, func(other *openapi.Schema) bool {
+			return other != s && enumPrefix(deref(other).Properties[prop]) == v
+		}) {
+			return v, true
+		}
+	}
+
 	return "", false
+}
+
+// enumPrefix is the words, joined by underscores, that every value of p's string enum of two or more begins with, as
+// string of string_is and string_contains, or "" if they share none.
+func enumPrefix(p *openapi.Schema) string {
+	if p == nil || len(deref(p).Enum) < 2 {
+		return ""
+	}
+
+	var prefix []string
+
+	for i, e := range deref(p).Enum {
+		var v string
+		if json.Unmarshal(e, &v) != nil {
+			return ""
+		}
+
+		words := strings.Split(v, "_")
+		if i == 0 {
+			prefix = words
+			continue
+		}
+
+		n := 0
+		for n < len(prefix) && n < len(words) && prefix[n] == words[n] {
+			n++
+		}
+
+		prefix = prefix[:n]
+	}
+
+	return strings.Join(prefix, "_")
 }
 
 // constString is the string p fixes its value to, if it does, as its const or the one value of its enum.
@@ -1140,6 +1352,10 @@ func fixOpenAPI() (*openapi.Document, error) {
 	}
 
 	if err := applyPasses(doc); err != nil {
+		return nil, err
+	}
+
+	if err := shortenNames(doc); err != nil {
 		return nil, err
 	}
 

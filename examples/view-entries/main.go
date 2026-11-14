@@ -53,7 +53,7 @@ func queryOfView(ctx context.Context, c *notion.Client, id uuid.UUID) (uuid.UUID
 		return uuid.Nil(), notion.PostDatabaseQuery{}, err
 	}
 
-	view := v.DataSourceViewObjectResponse
+	view := v.DataSourceView
 	if view == nil {
 		return uuid.Nil(), notion.PostDatabaseQuery{}, errors.New("no access to the view")
 	}

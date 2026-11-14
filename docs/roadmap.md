@@ -18,12 +18,11 @@ property the API returns, but these:
 
 - 40 names end in a number to resolve a clash, such as `PageIcon2` or `QueryAgentsFilterStatus2`. Compress appends
   one when a shortened name is taken, and flatten when a name is (`AgentID6`); keeping the longer name would say more.
-- Components that only make another nullable, such as `PageIcon` or `DateTimeZone`, need no name of their own: codegen
-  makes them pointers. Flatten could leave them inline, and name their branch after them.
-- 175 names hold a position (`…OneOf2…`, `…AllOf1…`), mostly union branches that no const, one-valued enum or single
-  required member tells apart. Those need names picked by hand in `api/fetch.go`.
-- The `ObjectResponse` and `Response` suffixes could go, and the names compress leaves in lower case, such as
-  `numberSimplePropertyValue`, could be in Go's PascalCase like the rest.
+- 3 names hold a position: `CustomAgentCreatedByOneOf0` and `MeetingNotesDateRangeFilterValueOneOf2`, with its
+  value. `shortNames` in `api/fetch.go` can name them.
+- 43 names say a word twice, as `UpdateABlockCodeCode` or `MarkdownEditInsertContentInsertContent`: what a block or
+  an edit holds, named after it, where saying the word once would be the name of what holds it. Notion calls them by
+  the word alone (`Code`), which the request, response and update forms of each cannot all have.
 
 ## Recordings
 
