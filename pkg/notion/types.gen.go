@@ -306,12 +306,6 @@ func (v *AccessibleByItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *AccessibleByItem) unknownEnum() bool {
-	return !v.Type.Valid()
-}
-
 // AdditionalDataValue defines a model
 // AdditionalDataValue is an untagged oneOf union: exactly one field is set after unmarshaling.
 type AdditionalDataValue struct {
@@ -421,23 +415,17 @@ type Agent struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *Agent) unknownEnum() bool {
-	return !v.AgentType.Valid() ||
+	return v.AgentType != "" && !v.AgentType.Valid() ||
 		v.Icon.unknownEnum() ||
 		slices.ContainsFunc(v.Connections, func(x AgentConnectionsItem) bool { return x.unknownEnum() }) ||
-		!v.Status.Valid() ||
-		!v.PauseReason.Valid()
+		v.Status != "" && !v.Status.Valid() ||
+		v.PauseReason != "" && !v.PauseReason.Valid()
 }
 
 // AgentBatch defines a model
 type AgentBatch struct {
 	// The operations to apply, at least one and at most 100. Operations are applied in the order given, and the batch is not atomic: each operation succeeds or fails on its own, and per-operation outcomes are reported in the async task's result.
 	Operations []AgentBatchOperationsItem `json:"operations"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *AgentBatch) unknownEnum() bool {
-	return slices.ContainsFunc(v.Operations, func(x AgentBatchOperationsItem) bool { return x.unknownEnum() })
 }
 
 // AgentBatchOk defines a model
@@ -455,7 +443,7 @@ type AgentBatchOk struct {
 // records.
 func (v *AgentBatchOk) unknownEnum() bool {
 	return v.Operation.unknownEnum() ||
-		!v.Status.Valid()
+		v.Status != "" && !v.Status.Valid()
 }
 
 // AgentBatchOperation defines a model
@@ -467,7 +455,7 @@ type AgentBatchOperation struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *AgentBatchOperation) unknownEnum() bool {
-	return !v.Surface.Valid()
+	return v.Surface != "" && !v.Surface.Valid()
 }
 
 // AgentBatchOperationSurface defines a model
@@ -571,12 +559,6 @@ func (v *AgentBatchOperationsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *AgentBatchOperationsItem) unknownEnum() bool {
-	return v.AgentBatchOperationsItemUpdateStatus != nil && v.AgentBatchOperationsItemUpdateStatus.unknownEnum()
-}
-
 // AgentBatchOperationsItemDelete defines a model
 type AgentBatchOperationsItemDelete struct {
 	// Soft-delete one agent, equivalent to `DELETE /v1/agents/:agent_id`.
@@ -643,12 +625,6 @@ func (v *AgentBatchOperationsItemUpdateStatus) unmarshalJSONMember(dec *jsontext
 	}
 
 	return false, nil
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *AgentBatchOperationsItemUpdateStatus) unknownEnum() bool {
-	return v.Fields.unknownEnum()
 }
 
 // AgentCondition defines a model
@@ -802,14 +778,6 @@ func (v *AgentCondition) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return enc.WriteValue(out)
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *AgentCondition) unknownEnum() bool {
-	return v.QueryAgentsFilterAgentType != nil && v.QueryAgentsFilterAgentType.unknownEnum() ||
-		v.QueryAgentsFilterStatus != nil && v.QueryAgentsFilterStatus.unknownEnum() ||
-		v.QueryAgentsFilterModelMode != nil && v.QueryAgentsFilterModelMode.unknownEnum()
 }
 
 // AgentConnectionsItem defines a model
@@ -1623,7 +1591,7 @@ type AgentConnectionsItemOneOf struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *AgentConnectionsItemOneOf) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // AgentConnectionsItemOneOfPermissions defines a model
@@ -1946,7 +1914,7 @@ type AgentCreator struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *AgentCreator) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // The per-agent credit limit that applies to this agent, null when uncapped, or "hidden" when the caller lacks full access to the agent. This is the effective limit computed at runtime, folding in both the agent's own limit and any workspace-admin default.
@@ -2248,9 +2216,9 @@ type AgentInsights struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *AgentInsights) unknownEnum() bool {
-	return !v.AgentType.Valid() ||
-		!v.Status.Valid() ||
-		!v.PauseReason.Valid() ||
+	return v.AgentType != "" && !v.AgentType.Valid() ||
+		v.Status != "" && !v.Status.Valid() ||
+		v.PauseReason != "" && !v.PauseReason.Valid() ||
 		v.CreatedBy.unknownEnum()
 }
 
@@ -2703,22 +2671,10 @@ type AgentStatusIn struct {
 	In QueryAgentsFilterStatusIn `json:"in"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *AgentStatusIn) unknownEnum() bool {
-	return v.In.unknownEnum()
-}
-
 // AgentStatusUpdate defines a model
 type AgentStatusUpdate struct {
 	// Set to "active" to re-enable an agent that an editor disabled, through this API or in agent settings, or "disabled" to turn off a running agent.
 	Status UpdateAgentStatus `json:"status"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *AgentStatusUpdate) unknownEnum() bool {
-	return !v.Status.Valid()
 }
 
 // AgentTriggers defines a model
@@ -2919,12 +2875,6 @@ type Annotation struct {
 	Color APIColor `json:"color,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *Annotation) unknownEnum() bool {
-	return v.Color != "" && !v.Color.Valid()
-}
-
 // AnnotationResponse defines a model
 type AnnotationResponse struct {
 	Bold          bool `json:"bold"`
@@ -2939,7 +2889,7 @@ type AnnotationResponse struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *AnnotationResponse) unknownEnum() bool {
-	return !v.Color.Valid()
+	return v.Color != "" && !v.Color.Valid()
 }
 
 // AsyncTask defines a model
@@ -2956,7 +2906,7 @@ type AsyncTask struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *AsyncTask) unknownEnum() bool {
-	return !v.Status.Valid() ||
+	return v.Status != "" && !v.Status.Valid() ||
 		v.Operation.unknownEnum()
 }
 
@@ -3079,7 +3029,7 @@ func (v *AsyncTaskOperationMcp) unmarshalJSONMember(dec *jsontext.Decoder, name 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *AsyncTaskOperationMcp) unknownEnum() bool {
-	return !v.Name.Valid()
+	return v.Name != "" && !v.Name.Valid()
 }
 
 // AsyncTaskOperationRest defines a model
@@ -3103,7 +3053,7 @@ func (v *AsyncTaskOperationRest) unmarshalJSONMember(dec *jsontext.Decoder, name
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *AsyncTaskOperationRest) unknownEnum() bool {
-	return !v.Name.Valid()
+	return v.Name != "" && !v.Name.Valid()
 }
 
 // AsyncTaskRestOperationName defines a model
@@ -3166,14 +3116,6 @@ type BaseWebhookPayload struct {
 	APIVersion APIVersion `json:"api_version"`
 	// The users or bots who own the bot connection to the `integration_id` and have access to the webhook's `entity`. Only present for public integrations.
 	AccessibleBy []AccessibleByItem `json:"accessible_by,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BaseWebhookPayload) unknownEnum() bool {
-	return slices.ContainsFunc(v.Authors, func(x AccessibleByItem) bool { return x.unknownEnum() }) ||
-		!v.APIVersion.Valid() ||
-		slices.ContainsFunc(v.AccessibleBy, func(x AccessibleByItem) bool { return x.unknownEnum() })
 }
 
 // Block defines a model
@@ -3484,7 +3426,7 @@ func (v *Block) MarshalJSONTo(enc *jsontext.Encoder) error {
 // records.
 func (v *Block) unknownEnum() bool {
 	return v.Parent.unknownEnum() ||
-		!v.Type.Valid() ||
+		v.Type != "" && !v.Type.Valid() ||
 		v.Paragraph != nil && v.Paragraph.unknownEnum() ||
 		v.Heading1 != nil && v.Heading1.unknownEnum() ||
 		v.Heading2 != nil && v.Heading2.unknownEnum() ||
@@ -3806,40 +3748,6 @@ func (v *BlockObject) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BlockObject) unknownEnum() bool {
-	return v.Type != "" && !v.Type.Valid() ||
-		v.Embed != nil && v.Embed.unknownEnum() ||
-		v.Bookmark != nil && v.Bookmark.unknownEnum() ||
-		v.Image != nil && v.Image.unknownEnum() ||
-		v.Video != nil && v.Video.unknownEnum() ||
-		v.PDF != nil && v.PDF.unknownEnum() ||
-		v.File != nil && v.File.unknownEnum() ||
-		v.Audio != nil && v.Audio.unknownEnum() ||
-		v.Code != nil && v.Code.unknownEnum() ||
-		v.Tab != nil && v.Tab.unknownEnum() ||
-		v.TableOfContents != nil && v.TableOfContents.unknownEnum() ||
-		v.LinkToPage != nil && v.LinkToPage.unknownEnum() ||
-		v.TableRow != nil && v.TableRow.unknownEnum() ||
-		v.Table != nil && v.Table.unknownEnum() ||
-		v.ColumnList != nil && v.ColumnList.unknownEnum() ||
-		v.Column != nil && v.Column.unknownEnum() ||
-		v.Heading1 != nil && v.Heading1.unknownEnum() ||
-		v.Heading2 != nil && v.Heading2.unknownEnum() ||
-		v.Heading3 != nil && v.Heading3.unknownEnum() ||
-		v.Heading4 != nil && v.Heading4.unknownEnum() ||
-		v.Paragraph != nil && v.Paragraph.unknownEnum() ||
-		v.BulletedListItem != nil && v.BulletedListItem.unknownEnum() ||
-		v.NumberedListItem != nil && v.NumberedListItem.unknownEnum() ||
-		v.Quote != nil && v.Quote.unknownEnum() ||
-		v.ToDo != nil && v.ToDo.unknownEnum() ||
-		v.Toggle != nil && v.Toggle.unknownEnum() ||
-		v.Template != nil && v.Template.unknownEnum() ||
-		v.Callout != nil && v.Callout.unknownEnum() ||
-		v.SyncedBlock != nil && v.SyncedBlock.unknownEnum()
-}
-
 // BlockObjectAudio defines a model
 type BlockObjectAudio struct {
 	Audio  MediaContentWithFileAndCaption `json:"audio"`
@@ -3847,23 +3755,11 @@ type BlockObjectAudio struct {
 	Object string                         `json:"object,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BlockObjectAudio) unknownEnum() bool {
-	return v.Audio.unknownEnum()
-}
-
 // BlockObjectBookmark defines a model
 type BlockObjectBookmark struct {
 	Bookmark MediaContentWithURLAndCaption `json:"bookmark"`
 	Type     string                        `json:"type,omitzero"`
 	Object   string                        `json:"object,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BlockObjectBookmark) unknownEnum() bool {
-	return v.Bookmark.unknownEnum()
 }
 
 // BlockObjectBreadcrumb defines a model
@@ -3880,23 +3776,11 @@ type BlockObjectCode struct {
 	Object string      `json:"object,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BlockObjectCode) unknownEnum() bool {
-	return v.Code.unknownEnum()
-}
-
 // BlockObjectColumn defines a model
 type BlockObjectColumn struct {
 	Column ColumnWithChildren `json:"column"`
 	Type   string             `json:"type,omitzero"`
 	Object string             `json:"object,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BlockObjectColumn) unknownEnum() bool {
-	return v.Column.unknownEnum()
 }
 
 // BlockObjectDivider defines a model
@@ -3913,12 +3797,6 @@ type BlockObjectEmbed struct {
 	Object string `json:"object,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BlockObjectEmbed) unknownEnum() bool {
-	return v.Embed.unknownEnum()
-}
-
 // BlockObjectEquation defines a model
 type BlockObjectEquation struct {
 	Equation ContentWithExpression `json:"equation"`
@@ -3933,12 +3811,6 @@ type BlockObjectFile struct {
 	Object string                             `json:"object,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BlockObjectFile) unknownEnum() bool {
-	return v.File.unknownEnum()
-}
-
 // BlockObjectHeading defines a model
 type BlockObjectHeading struct {
 	RichText []RichTextItem `json:"rich_text"`
@@ -3948,25 +3820,11 @@ type BlockObjectHeading struct {
 	Children     []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BlockObjectHeading) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Color != "" && !v.Color.Valid() ||
-		slices.ContainsFunc(v.Children, func(x BlockObjectWithSingleLevelOfChildren) bool { return x.unknownEnum() })
-}
-
 // BlockObjectImage defines a model
 type BlockObjectImage struct {
 	Image  MediaContentWithFileAndCaption `json:"image"`
 	Type   string                         `json:"type,omitzero"`
 	Object string                         `json:"object,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BlockObjectImage) unknownEnum() bool {
-	return v.Image.unknownEnum()
 }
 
 // BlockObjectLinkToPage defines a model
@@ -3976,23 +3834,11 @@ type BlockObjectLinkToPage struct {
 	Object     string            `json:"object,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BlockObjectLinkToPage) unknownEnum() bool {
-	return v.LinkToPage.unknownEnum()
-}
-
 // BlockObjectPdf defines a model
 type BlockObjectPdf struct {
 	PDF    MediaContentWithFileAndCaption `json:"pdf"`
 	Type   string                         `json:"type,omitzero"`
 	Object string                         `json:"object,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BlockObjectPdf) unknownEnum() bool {
-	return v.PDF.unknownEnum()
 }
 
 // BlockObjectRequestWithoutChildren defines a model
@@ -4247,35 +4093,6 @@ func (v *BlockObjectRequestWithoutChildren) MarshalJSONTo(enc *jsontext.Encoder)
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BlockObjectRequestWithoutChildren) unknownEnum() bool {
-	return v.Type != "" && !v.Type.Valid() ||
-		v.Embed != nil && v.Embed.unknownEnum() ||
-		v.Bookmark != nil && v.Bookmark.unknownEnum() ||
-		v.Image != nil && v.Image.unknownEnum() ||
-		v.Video != nil && v.Video.unknownEnum() ||
-		v.PDF != nil && v.PDF.unknownEnum() ||
-		v.File != nil && v.File.unknownEnum() ||
-		v.Audio != nil && v.Audio.unknownEnum() ||
-		v.Code != nil && v.Code.unknownEnum() ||
-		v.TableOfContents != nil && v.TableOfContents.unknownEnum() ||
-		v.LinkToPage != nil && v.LinkToPage.unknownEnum() ||
-		v.TableRow != nil && v.TableRow.unknownEnum() ||
-		v.Heading1 != nil && v.Heading1.unknownEnum() ||
-		v.Heading2 != nil && v.Heading2.unknownEnum() ||
-		v.Heading3 != nil && v.Heading3.unknownEnum() ||
-		v.Heading4 != nil && v.Heading4.unknownEnum() ||
-		v.Paragraph != nil && v.Paragraph.unknownEnum() ||
-		v.BulletedListItem != nil && v.BulletedListItem.unknownEnum() ||
-		v.NumberedListItem != nil && v.NumberedListItem.unknownEnum() ||
-		v.Quote != nil && v.Quote.unknownEnum() ||
-		v.ToDo != nil && v.ToDo.unknownEnum() ||
-		v.Toggle != nil && v.Toggle.unknownEnum() ||
-		v.Template != nil && v.Template.unknownEnum() ||
-		v.Callout != nil && v.Callout.unknownEnum()
-}
-
 // BlockObjectSyncedBlockSyncedFrom defines a model
 type BlockObjectSyncedBlockSyncedFrom struct {
 	BlockID ID     `json:"block_id"`
@@ -4289,12 +4106,6 @@ type BlockObjectTable struct {
 	Object string                           `json:"object,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BlockObjectTable) unknownEnum() bool {
-	return v.Table.unknownEnum()
-}
-
 // BlockObjectTableOfContents defines a model
 type BlockObjectTableOfContents struct {
 	TableOfContents TableOfContentsRequest `json:"table_of_contents"`
@@ -4302,23 +4113,11 @@ type BlockObjectTableOfContents struct {
 	Object          string                 `json:"object,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BlockObjectTableOfContents) unknownEnum() bool {
-	return v.TableOfContents.unknownEnum()
-}
-
 // BlockObjectVideo defines a model
 type BlockObjectVideo struct {
 	Video  MediaContentWithFileAndCaption `json:"video"`
 	Type   string                         `json:"type,omitzero"`
 	Object string                         `json:"object,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BlockObjectVideo) unknownEnum() bool {
-	return v.Video.unknownEnum()
 }
 
 // BlockObjectWithSingleLevelOfChildren defines a model
@@ -4579,38 +4378,6 @@ func (v *BlockObjectWithSingleLevelOfChildren) MarshalJSONTo(enc *jsontext.Encod
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BlockObjectWithSingleLevelOfChildren) unknownEnum() bool {
-	return v.Type != "" && !v.Type.Valid() ||
-		v.Embed != nil && v.Embed.unknownEnum() ||
-		v.Bookmark != nil && v.Bookmark.unknownEnum() ||
-		v.Image != nil && v.Image.unknownEnum() ||
-		v.Video != nil && v.Video.unknownEnum() ||
-		v.PDF != nil && v.PDF.unknownEnum() ||
-		v.File != nil && v.File.unknownEnum() ||
-		v.Audio != nil && v.Audio.unknownEnum() ||
-		v.Code != nil && v.Code.unknownEnum() ||
-		v.Tab != nil && v.Tab.unknownEnum() ||
-		v.TableOfContents != nil && v.TableOfContents.unknownEnum() ||
-		v.LinkToPage != nil && v.LinkToPage.unknownEnum() ||
-		v.TableRow != nil && v.TableRow.unknownEnum() ||
-		v.Heading1 != nil && v.Heading1.unknownEnum() ||
-		v.Heading2 != nil && v.Heading2.unknownEnum() ||
-		v.Heading3 != nil && v.Heading3.unknownEnum() ||
-		v.Heading4 != nil && v.Heading4.unknownEnum() ||
-		v.Paragraph != nil && v.Paragraph.unknownEnum() ||
-		v.BulletedListItem != nil && v.BulletedListItem.unknownEnum() ||
-		v.NumberedListItem != nil && v.NumberedListItem.unknownEnum() ||
-		v.Quote != nil && v.Quote.unknownEnum() ||
-		v.Table != nil && v.Table.unknownEnum() ||
-		v.ToDo != nil && v.ToDo.unknownEnum() ||
-		v.Toggle != nil && v.Toggle.unknownEnum() ||
-		v.Template != nil && v.Template.unknownEnum() ||
-		v.Callout != nil && v.Callout.unknownEnum() ||
-		v.SyncedBlock != nil && v.SyncedBlock.unknownEnum()
-}
-
 // BlockOrPartial defines a model
 // BlockOrPartial is an untagged anyOf union: at least one field is set after unmarshaling.
 type BlockOrPartial struct {
@@ -4733,18 +4500,6 @@ func (v *BoardViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string
 	}
 
 	return false, nil
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BoardViewConfig) unknownEnum() bool {
-	return v.GroupBy.unknownEnum() ||
-		v.SubGroupBy.unknownEnum() ||
-		slices.ContainsFunc(v.Properties, func(x ViewPropertyConfig) bool { return x.unknownEnum() }) ||
-		v.Cover.unknownEnum() ||
-		v.CoverSize != "" && !v.CoverSize.Valid() ||
-		v.CoverAspect != "" && !v.CoverAspect.Valid() ||
-		v.CardLayout != "" && !v.CardLayout.Valid()
 }
 
 // BoardViewConfigResponse defines a model
@@ -4916,7 +4671,7 @@ func (v *BotInfoOwner) MarshalJSONTo(enc *jsontext.Encoder) error {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *BotInfoOwner) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // BotInfoResponseOwnerUserPerson defines a model
@@ -5089,14 +4844,6 @@ type BulletedListItem struct {
 	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *BulletedListItem) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Color != "" && !v.Color.Valid() ||
-		slices.ContainsFunc(v.Children, func(x BlockObjectWithSingleLevelOfChildren) bool { return x.unknownEnum() })
-}
-
 // ButtonPropertyItem defines a model
 type ButtonPropertyItem struct {
 	Type   string      `json:"type"`
@@ -5165,13 +4912,6 @@ func (v *CalendarViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name str
 	return false, nil
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CalendarViewConfig) unknownEnum() bool {
-	return slices.ContainsFunc(v.Properties, func(x ViewPropertyConfig) bool { return x.unknownEnum() }) ||
-		v.ViewRange != "" && !v.ViewRange.Valid()
-}
-
 // CalendarViewConfigResponse defines a model
 type CalendarViewConfigResponse struct {
 	// The view configuration type.
@@ -5227,7 +4967,7 @@ type Callout struct {
 // records.
 func (v *Callout) unknownEnum() bool {
 	return v.RichText.unknownEnum() ||
-		!v.Color.Valid() ||
+		v.Color != "" && !v.Color.Valid() ||
 		v.Icon.unknownEnum()
 }
 
@@ -5238,15 +4978,6 @@ type CalloutRequest struct {
 	Color    APIColor                               `json:"color,omitzero"`
 	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
 	Icon     PageIcon                               `json:"icon,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CalloutRequest) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Color != "" && !v.Color.Valid() ||
-		slices.ContainsFunc(v.Children, func(x BlockObjectWithSingleLevelOfChildren) bool { return x.unknownEnum() }) ||
-		v.Icon.unknownEnum()
 }
 
 // CancelSession defines a model
@@ -5273,7 +5004,7 @@ type CancelSessionOk struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *CancelSessionOk) unknownEnum() bool {
-	return !v.Status.Valid() ||
+	return v.Status != "" && !v.Status.Valid() ||
 		v.RequiredActions.unknownEnum()
 }
 
@@ -5319,12 +5050,6 @@ type ChartAggregation struct {
 	Aggregator ChartAggregationAggregator `json:"aggregator"`
 	// The property to aggregate on. Required for all operators except "count".
 	PropertyID string `json:"property_id,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ChartAggregation) unknownEnum() bool {
-	return !v.Aggregator.Valid()
 }
 
 // The aggregation operator. "count" counts all rows and does not require a property_id. All other operators require a property_id.
@@ -5374,7 +5099,7 @@ type ChartAggregationResponse struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *ChartAggregationResponse) unknownEnum() bool {
-	return !v.Aggregator.Valid()
+	return v.Aggregator != "" && !v.Aggregator.Valid()
 }
 
 // ChartReferenceLine defines a model
@@ -5389,13 +5114,6 @@ type ChartReferenceLine struct {
 	DashStyle DashStyle `json:"dash_style"`
 	// Unique identifier for the reference line. Auto-generated if omitted.
 	ID string `json:"id,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ChartReferenceLine) unknownEnum() bool {
-	return !v.Color.Valid() ||
-		!v.DashStyle.Valid()
 }
 
 // ChartReferenceLineResponse defines a model
@@ -5415,8 +5133,8 @@ type ChartReferenceLineResponse struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *ChartReferenceLineResponse) unknownEnum() bool {
-	return !v.Color.Valid() ||
-		!v.DashStyle.Valid()
+	return v.Color != "" && !v.Color.Valid() ||
+		v.DashStyle != "" && !v.DashStyle.Valid()
 }
 
 // ChartType defines a model
@@ -5560,25 +5278,6 @@ func (v *ChartViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string
 	return false, nil
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ChartViewConfig) unknownEnum() bool {
-	return !v.ChartType.Valid() ||
-		v.XAxis.unknownEnum() ||
-		v.YAxis.unknownEnum() ||
-		v.Value.unknownEnum() ||
-		v.Sort != "" && !v.Sort.Valid() ||
-		v.ColorTheme != "" && !v.ColorTheme.Valid() ||
-		v.Height != "" && !v.Height.Valid() ||
-		v.LegendPosition != "" && !v.LegendPosition.Valid() ||
-		v.AxisLabels != "" && !v.AxisLabels.Valid() ||
-		v.GridLines != "" && !v.GridLines.Valid() ||
-		v.GroupStyle != "" && !v.GroupStyle.Valid() ||
-		v.DonutLabels != "" && !v.DonutLabels.Valid() ||
-		v.StackBy.unknownEnum() ||
-		slices.ContainsFunc(v.ReferenceLines, func(x ChartReferenceLine) bool { return x.unknownEnum() })
-}
-
 // ChartViewConfigResponse defines a model
 type ChartViewConfigResponse struct {
 	// The view configuration type.
@@ -5702,7 +5401,7 @@ func (v *ChartViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, nam
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *ChartViewConfigResponse) unknownEnum() bool {
-	return !v.ChartType.Valid() ||
+	return v.ChartType != "" && !v.ChartType.Valid() ||
 		v.XAxis.unknownEnum() ||
 		v.YAxis.unknownEnum() ||
 		v.Value.unknownEnum() ||
@@ -5749,12 +5448,6 @@ type CheckboxGroupByConfig struct {
 	Sort GroupSort `json:"sort"`
 	// Whether to hide groups that have no items.
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CheckboxGroupByConfig) unknownEnum() bool {
-	return v.Sort.unknownEnum()
 }
 
 // CheckboxGroupByConfigResponse defines a model
@@ -5902,7 +5595,7 @@ type Code struct {
 func (v *Code) unknownEnum() bool {
 	return v.RichText.unknownEnum() ||
 		v.Caption.unknownEnum() ||
-		!v.Language.Valid()
+		v.Language != "" && !v.Language.Valid()
 }
 
 // CodeRequest defines a model
@@ -5912,27 +5605,11 @@ type CodeRequest struct {
 	Caption  []RichTextItem `json:"caption,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CodeRequest) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		!v.Language.Valid() ||
-		slices.ContainsFunc(v.Caption, func(x RichTextItem) bool { return x.unknownEnum() })
-}
-
 // CodeUpdate defines a model
 type CodeUpdate struct {
 	RichText []RichTextItem `json:"rich_text,omitzero"`
 	Language Language       `json:"language,omitzero"`
 	Caption  []RichTextItem `json:"caption,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CodeUpdate) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Language != "" && !v.Language.Valid() ||
-		slices.ContainsFunc(v.Caption, func(x RichTextItem) bool { return x.unknownEnum() })
 }
 
 // ColorTheme defines a model
@@ -5973,12 +5650,6 @@ type ColumnList struct {
 	Children []BlockObjectColumn `json:"children"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ColumnList) unknownEnum() bool {
-	return slices.ContainsFunc(v.Children, func(x BlockObjectColumn) bool { return x.unknownEnum() })
-}
-
 // ColumnUpdate defines a model
 type ColumnUpdate struct {
 	// Ratio between 0 and 1 of the width of this column relative to all columns in the list. If not provided, uses an equal width.
@@ -5990,12 +5661,6 @@ type ColumnWithChildren struct {
 	Children []BlockObjectWithSingleLevelOfChildren `json:"children"`
 	// Ratio between 0 and 1 of the width of this column relative to all columns in the list. If not provided, uses an equal width.
 	WidthRatio float64 `json:"width_ratio,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ColumnWithChildren) unknownEnum() bool {
-	return slices.ContainsFunc(v.Children, func(x BlockObjectWithSingleLevelOfChildren) bool { return x.unknownEnum() })
 }
 
 // Comment defines a model
@@ -6056,7 +5721,7 @@ type CommentAttachmentsItem struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *CommentAttachmentsItem) unknownEnum() bool {
-	return !v.Category.Valid()
+	return v.Category != "" && !v.Category.Valid()
 }
 
 // One of: `audio`, `image`, `pdf`, `productivity`, `video`
@@ -6091,13 +5756,6 @@ type CommentCreatedWebhookPayload struct {
 	Data CommentCreatedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CommentCreatedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // Additional event-specific data.
 type CommentCreatedWebhookPayloadData struct {
 	// The parent of the comment (the page or block the comment is attached to).
@@ -6110,12 +5768,6 @@ type CommentCreatedWebhookPayloadData struct {
 	PropertyID string `json:"property_id,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CommentCreatedWebhookPayloadData) unknownEnum() bool {
-	return v.Parent.unknownEnum()
-}
-
 // CommentDeletedWebhookPayload defines a model
 type CommentDeletedWebhookPayload struct {
 	BaseWebhookPayload
@@ -6125,13 +5777,6 @@ type CommentDeletedWebhookPayload struct {
 	Entity WebhookCommentEntity `json:"entity"`
 	// Additional event-specific data.
 	Data CommentCreatedWebhookPayloadData `json:"data"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CommentDeletedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Data.unknownEnum()
 }
 
 // CommentList defines a model
@@ -6325,7 +5970,7 @@ func (v *CommentParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *CommentParent) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // CommentUpdate defines a model
@@ -6400,12 +6045,6 @@ func (v *CommentUpdate) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CommentUpdate) unknownEnum() bool {
-	return v.CommentUpdateRichText != nil && v.CommentUpdateRichText.unknownEnum()
-}
-
 // CommentUpdateMarkdown defines a model
 type CommentUpdateMarkdown struct {
 	// The updated content of the comment as a Markdown string. Comment Markdown supports inline formatting only (bold, italic, strikethrough, code, links), inline equations ($expression$), and mentions. Block-level Markdown such as fenced code blocks, headings, lists, tables, and blockquotes does not render as structured blocks in comments.
@@ -6418,12 +6057,6 @@ type CommentUpdateRichText struct {
 	RichText []RichTextItem `json:"rich_text"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CommentUpdateRichText) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() })
-}
-
 // CommentUpdatedWebhookPayload defines a model
 type CommentUpdatedWebhookPayload struct {
 	BaseWebhookPayload
@@ -6433,13 +6066,6 @@ type CommentUpdatedWebhookPayload struct {
 	Entity WebhookCommentEntity `json:"entity"`
 	// Additional event-specific data.
 	Data CommentCreatedWebhookPayloadData `json:"data"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CommentUpdatedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Data.unknownEnum()
 }
 
 // ContentPositionSchema defines a model
@@ -6530,12 +6156,6 @@ func (v *ContentPositionSchema) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ContentPositionSchema) unknownEnum() bool {
-	return !v.Type.Valid()
-}
-
 // An array of search-and-replace operations, each with old_str (content to find) and new_str (replacement content). Operations that match are applied, and each one that matches nothing is reported in "warnings". The call fails only when no operation that changes content matches.
 type ContentUpdates []ContentUpdatesItem
 
@@ -6560,24 +6180,11 @@ type ContentWithRichText struct {
 	RichText []RichTextItem `json:"rich_text"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ContentWithRichText) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() })
-}
-
 // ContentWithRichTextAndColor defines a model
 type ContentWithRichTextAndColor struct {
 	RichText []RichTextItem `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor `json:"color,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ContentWithRichTextAndColor) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Color != "" && !v.Color.Valid()
 }
 
 // ContentWithRichTextAndColorAndList defines a model
@@ -6593,7 +6200,7 @@ type ContentWithRichTextAndColorAndList struct {
 // records.
 func (v *ContentWithRichTextAndColorAndList) unknownEnum() bool {
 	return v.RichText.unknownEnum() ||
-		!v.Color.Valid() ||
+		v.Color != "" && !v.Color.Valid() ||
 		v.ListFormat != "" && !v.ListFormat.Valid()
 }
 
@@ -6608,7 +6215,7 @@ type ContentWithRichTextAndColorResponse struct {
 // records.
 func (v *ContentWithRichTextAndColorResponse) unknownEnum() bool {
 	return v.RichText.unknownEnum() ||
-		!v.Color.Valid()
+		v.Color != "" && !v.Color.Valid()
 }
 
 // ContentWithRichTextColorAndIcon defines a model
@@ -6619,14 +6226,6 @@ type ContentWithRichTextColorAndIcon struct {
 	Icon  PageIcon `json:"icon,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ContentWithRichTextColorAndIcon) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Color != "" && !v.Color.Valid() ||
-		v.Icon.unknownEnum()
-}
-
 // ContentWithRichTextColorAndIconResponseUpdate defines a model
 type ContentWithRichTextColorAndIconResponseUpdate struct {
 	RichText []RichTextItem `json:"rich_text,omitzero"`
@@ -6635,28 +6234,12 @@ type ContentWithRichTextColorAndIconResponseUpdate struct {
 	Color APIColor `json:"color,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ContentWithRichTextColorAndIconResponseUpdate) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Icon.unknownEnum() ||
-		v.Color != "" && !v.Color.Valid()
-}
-
 // ContentWithSingleLevelOfChildren defines a model
 type ContentWithSingleLevelOfChildren struct {
 	RichText []RichTextItem `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color    APIColor                            `json:"color,omitzero"`
 	Children []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ContentWithSingleLevelOfChildren) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Color != "" && !v.Color.Valid() ||
-		slices.ContainsFunc(v.Children, func(x BlockObjectRequestWithoutChildren) bool { return x.unknownEnum() })
 }
 
 // ContentWithTable defines a model
@@ -6669,12 +6252,6 @@ type ContentWithTable struct {
 // ContentWithTableRow defines a model
 type ContentWithTableRow struct {
 	Cells []RichTextItem `json:"cells"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ContentWithTableRow) unknownEnum() bool {
-	return slices.ContainsFunc(v.Cells, func(x RichTextItem) bool { return x.unknownEnum() })
 }
 
 // ContentWithTableRowResponse defines a model
@@ -6714,12 +6291,6 @@ type CoverConfig struct {
 	PropertyID string `json:"property_id,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CoverConfig) unknownEnum() bool {
-	return !v.Type.Valid()
-}
-
 // CoverConfigResponse defines a model
 type CoverConfigResponse struct {
 	// Source of the cover image.
@@ -6731,7 +6302,7 @@ type CoverConfigResponse struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *CoverConfigResponse) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // Source of the cover image.
@@ -6977,14 +6548,6 @@ func (v *CreateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CreateAComment) unknownEnum() bool {
-	return v.DisplayName.unknownEnum() ||
-		v.MarkdownVersion != "" && !v.MarkdownVersion.Valid() ||
-		v.NewComment.unknownEnum()
-}
-
 // The parent of the comment. This can be a page or a block.
 type CreateACommentAllOfOneOfParent struct {
 	Type CreateACommentAllOfOneOfParentType `json:"type,omitzero"`
@@ -7080,12 +6643,6 @@ func (v *CreateACommentAllOfOneOfParent) MarshalJSONTo(enc *jsontext.Encoder) er
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CreateACommentAllOfOneOfParent) unknownEnum() bool {
-	return v.Type != "" && !v.Type.Valid()
 }
 
 // An array of files to attach to the comment. Maximum of 3 allowed.
@@ -7187,12 +6744,6 @@ func (v *CreateACommentDisplayName) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CreateACommentDisplayName) unknownEnum() bool {
-	return !v.Type.Valid()
-}
-
 // CreateADatabase defines a model
 type CreateADatabase struct {
 	// An object specifying the parent of the new data source to be created.
@@ -7203,22 +6754,6 @@ type CreateADatabase struct {
 	Title []RichTextItem `json:"title,omitzero"`
 	// Page icon.
 	Icon PageIcon `json:"icon,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CreateADatabase) unknownEnum() bool {
-	return func() bool {
-		for _, x := range v.Properties {
-			if x.unknownEnum() {
-				return true
-			}
-		}
-
-		return false
-	}() ||
-		slices.ContainsFunc(v.Title, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Icon.unknownEnum()
 }
 
 // CreateAToken defines a model
@@ -7432,7 +6967,7 @@ func (v *CreateATokenOkOwner) MarshalJSONTo(enc *jsontext.Encoder) error {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *CreateATokenOkOwner) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // CreateATokenOkOwnerUserPerson defines a model
@@ -7491,18 +7026,6 @@ type CreateDatabase struct {
 	Cover PageCover `json:"cover,omitzero"`
 	// Whether to show the data source title above the database's views. Matches the Show data source title toggle in the Notion app. Defaults to true. Full-page databases with one data source don't show this title.
 	ShowDataSourceTitle *bool `json:"show_data_source_title,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CreateDatabase) unknownEnum() bool {
-	return v.Parent.unknownEnum() ||
-		slices.ContainsFunc(v.Title, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		slices.ContainsFunc(v.Description, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.InitialDataSource != nil && v.InitialDataSource.unknownEnum() ||
-		v.DatabaseType != "" && !v.DatabaseType.Valid() ||
-		v.Icon.unknownEnum() ||
-		v.Cover.unknownEnum()
 }
 
 // CreateDatabaseForView defines a model
@@ -7602,12 +7125,6 @@ func (v *CreateDatabaseParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CreateDatabaseParent) unknownEnum() bool {
-	return !v.Type.Valid()
-}
-
 // CreateDatabaseParentAllOfPageID defines a model
 type CreateDatabaseParentAllOfPageID struct {
 	// Always `page_id`
@@ -7665,12 +7182,6 @@ type CreateFile struct {
 	NumberOfParts int `json:"number_of_parts,omitzero"`
 	// A public HTTPS URL to import. Required only for external_url uploads.
 	ExternalURL string `json:"external_url,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CreateFile) unknownEnum() bool {
-	return v.Mode != "" && !v.Mode.Valid()
 }
 
 // How the file is sent. Defaults to single_part. Use multi_part for files larger than 20 MiB or external_url for a temporary public HTTPS URL.
@@ -7821,12 +7332,6 @@ func (v *CreateMeetingNote) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return enc.WriteValue(out)
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CreateMeetingNote) unknownEnum() bool {
-	return v.Language != "" && !v.Language.Valid()
 }
 
 // Language hint for transcription. Defaults to automatic detection.
@@ -8010,25 +7515,6 @@ type CreateView struct {
 	Placement WidgetPlacement `json:"placement,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *CreateView) unknownEnum() bool {
-	return !v.Type.Valid() ||
-		v.Filter.unknownEnum() ||
-		v.Sorts.unknownEnum() ||
-		func() bool {
-			for _, x := range v.QuickFilters {
-				if x.unknownEnum() {
-					return true
-				}
-			}
-
-			return false
-		}() ||
-		v.Configuration.unknownEnum() ||
-		v.Placement.unknownEnum()
-}
-
 // CreateViewQuery defines a model
 type CreateViewQuery struct {
 	// The number of results to return per page. Maximum: 100
@@ -8045,7 +7531,7 @@ type CreatedBy struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *CreatedBy) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // CreatedByPropertyConfiguration defines a model
@@ -8179,11 +7665,11 @@ type CustomAgent struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *CustomAgent) unknownEnum() bool {
-	return !v.AgentType.Valid() ||
+	return v.AgentType != "" && !v.AgentType.Valid() ||
 		v.Icon.unknownEnum() ||
 		slices.ContainsFunc(v.Connections, func(x AgentConnectionsItem) bool { return x.unknownEnum() }) ||
-		!v.Status.Valid() ||
-		!v.PauseReason.Valid() ||
+		v.Status != "" && !v.Status.Valid() ||
+		v.PauseReason != "" && !v.PauseReason.Valid() ||
 		v.CreatedBy.unknownEnum()
 }
 
@@ -8379,7 +7865,7 @@ func (v *DataSource) unknownEnum() bool {
 		v.Description.unknownEnum() ||
 		v.Parent.unknownEnum() ||
 		v.DatabaseParent.unknownEnum() ||
-		!v.DatabaseType.Valid() ||
+		v.DatabaseType != "" && !v.DatabaseType.Valid() ||
 		func() bool {
 			for _, x := range v.Properties {
 				if x.unknownEnum() {
@@ -8405,14 +7891,6 @@ type DataSourceContentUpdatedWebhookPayload struct {
 	Data PageContentUpdatedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DataSourceContentUpdatedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Entity.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // DataSourceCreatedWebhookPayload defines a model
 type DataSourceCreatedWebhookPayload struct {
 	BaseWebhookPayload
@@ -8422,14 +7900,6 @@ type DataSourceCreatedWebhookPayload struct {
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
 	Data PageMovedWebhookPayloadData `json:"data"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DataSourceCreatedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Entity.unknownEnum() ||
-		v.Data.unknownEnum()
 }
 
 // DataSourceDeletedWebhookPayload defines a model
@@ -8443,14 +7913,6 @@ type DataSourceDeletedWebhookPayload struct {
 	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DataSourceDeletedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Entity.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // DataSourceMovedWebhookPayload defines a model
 type DataSourceMovedWebhookPayload struct {
 	BaseWebhookPayload
@@ -8460,14 +7922,6 @@ type DataSourceMovedWebhookPayload struct {
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
 	Data PageMovedWebhookPayloadData `json:"data"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DataSourceMovedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Entity.unknownEnum() ||
-		v.Data.unknownEnum()
 }
 
 // DataSourceOrPartial defines a model
@@ -8583,14 +8037,6 @@ type DataSourceSchemaUpdatedWebhookPayload struct {
 	Data DatabaseSchemaUpdatedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DataSourceSchemaUpdatedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Entity.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // DataSourceUndeletedWebhookPayload defines a model
 type DataSourceUndeletedWebhookPayload struct {
 	BaseWebhookPayload
@@ -8600,14 +8046,6 @@ type DataSourceUndeletedWebhookPayload struct {
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
 	Data PageMovedWebhookPayloadData `json:"data"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DataSourceUndeletedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Entity.unknownEnum() ||
-		v.Data.unknownEnum()
 }
 
 // DataSourceView defines a model
@@ -8650,7 +8088,7 @@ type DataSourceView struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *DataSourceView) unknownEnum() bool {
-	return !v.Type.Valid() ||
+	return v.Type != "" && !v.Type.Valid() ||
 		v.Filter.unknownEnum() ||
 		v.Sorts.unknownEnum() ||
 		v.Configuration.unknownEnum()
@@ -8794,7 +8232,7 @@ func (v *Database) unknownEnum() bool {
 	return v.Title.unknownEnum() ||
 		v.Description.unknownEnum() ||
 		v.Parent.unknownEnum() ||
-		!v.DatabaseType.Valid() ||
+		v.DatabaseType != "" && !v.DatabaseType.Valid() ||
 		slices.ContainsFunc(v.DataSources, func(x DataSourceReference) bool { return x.unknownEnum() }) ||
 		v.Icon.unknownEnum() ||
 		v.Cover.unknownEnum()
@@ -8811,14 +8249,6 @@ type DatabaseContentUpdatedWebhookPayload struct {
 	Data PageContentUpdatedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DatabaseContentUpdatedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Entity.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // DatabaseCreatedWebhookPayload defines a model
 type DatabaseCreatedWebhookPayload struct {
 	BaseWebhookPayload
@@ -8828,14 +8258,6 @@ type DatabaseCreatedWebhookPayload struct {
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
 	Data PageMovedWebhookPayloadData `json:"data"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DatabaseCreatedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Entity.unknownEnum() ||
-		v.Data.unknownEnum()
 }
 
 // DatabaseDeletedWebhookPayload defines a model
@@ -8849,14 +8271,6 @@ type DatabaseDeletedWebhookPayload struct {
 	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DatabaseDeletedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Entity.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // DatabaseMovedWebhookPayload defines a model
 type DatabaseMovedWebhookPayload struct {
 	BaseWebhookPayload
@@ -8866,14 +8280,6 @@ type DatabaseMovedWebhookPayload struct {
 	Entity WebhookDatabaseEventEntity `json:"entity"`
 	// Additional event-specific data.
 	Data PageMovedWebhookPayloadData `json:"data"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DatabaseMovedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Entity.unknownEnum() ||
-		v.Data.unknownEnum()
 }
 
 // DatabaseOrPartial defines a model
@@ -9075,27 +8481,12 @@ type DatabaseSchemaUpdatedWebhookPayload struct {
 	Data DatabaseSchemaUpdatedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DatabaseSchemaUpdatedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Entity.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // Additional event-specific data.
 type DatabaseSchemaUpdatedWebhookPayloadData struct {
 	// The parent of the database whose schema was updated.
 	Parent WebhookParentBlock `json:"parent"`
 	// The database properties that were created, updated, or deleted.
 	UpdatedProperties UpdatedProperties `json:"updated_properties,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DatabaseSchemaUpdatedWebhookPayloadData) unknownEnum() bool {
-	return v.Parent.unknownEnum() ||
-		v.UpdatedProperties.unknownEnum()
 }
 
 // One of: `tasks`, `projects`, `sprints`, `docs`, `wiki`, `meetings`, `meeting_notes`, `skills`, `github_prs`
@@ -9134,14 +8525,6 @@ type DatabaseUndeletedWebhookPayload struct {
 	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DatabaseUndeletedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Entity.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // Date defines a model
 type Date struct {
 	// The start date of the date object.
@@ -9160,13 +8543,6 @@ type DateFilter struct {
 	Value DateFilterValue `json:"value"`
 	// Compare against the end of a date range rather than its start.
 	UseEnd *bool `json:"use_end,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DateFilter) unknownEnum() bool {
-	return !v.Operator.Valid() ||
-		v.Value.unknownEnum()
 }
 
 // How to compare the date.
@@ -9261,12 +8637,6 @@ func (v *DateFilterValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return enc.WriteValue(out)
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DateFilterValue) unknownEnum() bool {
-	return v.DateFilterValueRelative != nil && v.DateFilterValueRelative.unknownEnum()
 }
 
 // DateFilterValueExact defines a model
@@ -9430,12 +8800,6 @@ func (v *DateFilterValueRelative) unmarshalJSONMember(dec *jsontext.Decoder, nam
 	return false, nil
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DateFilterValueRelative) unknownEnum() bool {
-	return !v.Value.Valid()
-}
-
 // DateFormat defines a model
 type DateFormat string
 
@@ -9474,14 +8838,6 @@ type DateGroupByConfig struct {
 	StartDayOfWeek *float64 `json:"start_day_of_week,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DateGroupByConfig) unknownEnum() bool {
-	return !v.Type.Valid() ||
-		!v.GroupBy.Valid() ||
-		v.Sort.unknownEnum()
-}
-
 // DateGroupByConfigResponse defines a model
 type DateGroupByConfigResponse struct {
 	// The property type for grouping.
@@ -9503,8 +8859,8 @@ type DateGroupByConfigResponse struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *DateGroupByConfigResponse) unknownEnum() bool {
-	return !v.Type.Valid() ||
-		!v.GroupBy.Valid() ||
+	return v.Type != "" && !v.Type.Valid() ||
+		v.GroupBy != "" && !v.GroupBy.Valid() ||
 		v.Sort.unknownEnum()
 }
 
@@ -10029,13 +9385,6 @@ type DateRangeFilter struct {
 	UseEnd *bool `json:"use_end,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DateRangeFilter) unknownEnum() bool {
-	return !v.Operator.Valid() ||
-		v.Value.unknownEnum()
-}
-
 // How to compare the date against the range.
 type DateRangeFilterOperator string
 
@@ -10060,12 +9409,6 @@ type DateRangeFilterRelative struct {
 	Type string `json:"type"`
 	// One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`
 	Value DateRangeFilterRelativeValue `json:"value"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DateRangeFilterRelative) unknownEnum() bool {
-	return !v.Value.Valid()
 }
 
 // One of: `this_week`, `the_past_week`, `the_past_month`, `the_past_year`, `the_next_week`, `the_next_month`, `the_next_year`
@@ -10203,14 +9546,6 @@ func (v *DateRangeFilterValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DateRangeFilterValue) unknownEnum() bool {
-	return v.DateRangeFilterValueCustom != nil && v.DateRangeFilterValueCustom.unknownEnum() ||
-		v.DateRangeFilterValueSurrounding != nil && v.DateRangeFilterValueSurrounding.unknownEnum() ||
-		v.DateRangeFilterRelative != nil && v.DateRangeFilterRelative.unknownEnum()
-}
-
 // DateRangeFilterValueCustom defines a model
 type DateRangeFilterValueCustom struct {
 	// Always `relative`
@@ -10223,13 +9558,6 @@ type DateRangeFilterValueCustom struct {
 	Unit MeetingNotesPropertyFilterOneOfValueCustomUnit `json:"unit"`
 	// How many units wide the window is.
 	Count int `json:"count"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DateRangeFilterValueCustom) unknownEnum() bool {
-	return !v.Direction.Valid() ||
-		!v.Unit.Valid()
 }
 
 // Whether the window runs backwards or forwards from now.
@@ -10278,12 +9606,6 @@ type DateRangeFilterValueSurrounding struct {
 	Unit MeetingNotesPropertyFilterOneOfValueCustomUnit `json:"unit"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DateRangeFilterValueSurrounding) unknownEnum() bool {
-	return !v.Unit.Valid()
-}
-
 // DateResponse defines a model
 type DateResponse struct {
 	// The start date of the date object.
@@ -10328,12 +9650,6 @@ type DiscussionComment struct {
 	RichText []RichTextItem `json:"rich_text"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *DiscussionComment) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() })
-}
-
 // DiscussionMarkdownComment defines a model
 type DiscussionMarkdownComment struct {
 	// The ID of the discussion to comment on.
@@ -10372,7 +9688,7 @@ type DisplayName struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *DisplayName) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // One of: `custom`, `user`, `integration`
@@ -10529,24 +9845,11 @@ func (v *Embed) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *Embed) unknownEnum() bool {
-	return v.MediaContentWithURLAndCaption != nil && v.MediaContentWithURLAndCaption.unknownEnum() ||
-		v.EmbedFileUpload != nil && v.EmbedFileUpload.unknownEnum()
-}
-
 // EmbedFileUpload defines a model
 type EmbedFileUpload struct {
 	FileUpload FileUploadID   `json:"file_upload"`
 	Type       string         `json:"type,omitzero"`
 	Caption    []RichTextItem `json:"caption,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *EmbedFileUpload) unknownEnum() bool {
-	return slices.ContainsFunc(v.Caption, func(x RichTextItem) bool { return x.unknownEnum() })
 }
 
 // EmbedUpdate defines a model
@@ -10614,13 +9917,6 @@ func (v *EmbedUpdate) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *EmbedUpdate) unknownEnum() bool {
-	return v.UpdateMediaContentWithURLAndCaption != nil && v.UpdateMediaContentWithURLAndCaption.unknownEnum() ||
-		v.UpdateEmbedFileUpload != nil && v.UpdateEmbedFileUpload.unknownEnum()
-}
-
 // Emoji defines a model
 type Emoji string
 
@@ -10658,7 +9954,7 @@ type Error struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *Error) unknownEnum() bool {
-	return !v.Code.Valid()
+	return v.Code != "" && !v.Code.Valid()
 }
 
 // ErrorCode defines a model
@@ -10712,13 +10008,6 @@ type EventType struct {
 	In     EventTypeIn     `json:"in,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *EventType) unknownEnum() bool {
-	return v.Equals != "" && !v.Equals.Valid() ||
-		v.In.unknownEnum()
-}
-
 // EventTypeEquals defines a model
 type EventTypeEquals string
 
@@ -10743,12 +10032,6 @@ func (e EventTypeEquals) Valid() bool {
 
 // EventTypeIn defines a model
 type EventTypeIn []EventTypeEquals
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v EventTypeIn) unknownEnum() bool {
-	return slices.ContainsFunc(v, func(x EventTypeEquals) bool { return !x.Valid() })
-}
 
 // ExistencePropertyFilter defines a model
 // ExistencePropertyFilter is an untagged anyOf union: at least one field is set after unmarshaling.
@@ -10870,7 +10153,7 @@ type ExternalDatabaseSync struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *ExternalDatabaseSync) unknownEnum() bool {
-	return !v.Provider.Valid()
+	return v.Provider != "" && !v.Provider.Valid()
 }
 
 // The sync provider: github (GitHub), jira (Jira), or salesforce (Salesforce).
@@ -11010,7 +10293,7 @@ func (v *FileImportResult) MarshalJSONTo(enc *jsontext.Encoder) error {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *FileImportResult) unknownEnum() bool {
-	return !v.Type.Valid() ||
+	return v.Type != "" && !v.Type.Valid() ||
 		v.Err != nil && v.Err.unknownEnum()
 }
 
@@ -11047,7 +10330,7 @@ type FileUpload struct {
 // records.
 func (v *FileUpload) unknownEnum() bool {
 	return v.CreatedBy.unknownEnum() ||
-		!v.Status.Valid() ||
+		v.Status != "" && !v.Status.Valid() ||
 		v.FileImportResult.unknownEnum()
 }
 
@@ -11060,12 +10343,6 @@ type FileUploadCompletedWebhookPayload struct {
 	Entity WebhookFileUploadEntity `json:"entity"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *FileUploadCompletedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum()
-}
-
 // FileUploadCreatedWebhookPayload defines a model
 type FileUploadCreatedWebhookPayload struct {
 	BaseWebhookPayload
@@ -11075,12 +10352,6 @@ type FileUploadCreatedWebhookPayload struct {
 	Entity WebhookFileUploadEntity `json:"entity"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *FileUploadCreatedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum()
-}
-
 // FileUploadExpiredWebhookPayload defines a model
 type FileUploadExpiredWebhookPayload struct {
 	BaseWebhookPayload
@@ -11088,12 +10359,6 @@ type FileUploadExpiredWebhookPayload struct {
 	Type string `json:"type"`
 	// The object that triggered the event.
 	Entity WebhookFileUploadEntity `json:"entity"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *FileUploadExpiredWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum()
 }
 
 // FileUploadFailedWebhookPayload defines a model
@@ -11107,23 +10372,10 @@ type FileUploadFailedWebhookPayload struct {
 	Data FileUploadFailedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *FileUploadFailedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // Additional event-specific data.
 type FileUploadFailedWebhookPayloadData struct {
 	// The result of the file import attempt.
 	FileImportResult FileUploadFailedWebhookPayloadDataFileImportResult `json:"file_import_result"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *FileUploadFailedWebhookPayloadData) unknownEnum() bool {
-	return v.FileImportResult.unknownEnum()
 }
 
 // The result of the file import attempt.
@@ -11220,13 +10472,6 @@ func (v *FileUploadFailedWebhookPayloadDataFileImportResult) MarshalJSONTo(enc *
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *FileUploadFailedWebhookPayloadDataFileImportResult) unknownEnum() bool {
-	return !v.Type.Valid() ||
-		v.Err != nil && v.Err.unknownEnum()
-}
-
 // FileUploadID defines a model
 type FileUploadID struct {
 	// The ID of the page in the mention.
@@ -11271,7 +10516,7 @@ type FileUploadObjectFileImportResultAllOfError struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *FileUploadObjectFileImportResultAllOfError) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // FileUploadObjectFileImportResultAllOfErrorType defines a model
@@ -11463,13 +10708,6 @@ type FilterGroup struct {
 	Filters []MeetingNotesPropertyFilter `json:"filters"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *FilterGroup) unknownEnum() bool {
-	return !v.Operator.Valid() ||
-		slices.ContainsFunc(v.Filters, func(x MeetingNotesPropertyFilter) bool { return x.unknownEnum() })
-}
-
 // FilterOr defines a model
 type FilterOr struct {
 	// The entries any of the filters allow.
@@ -11521,12 +10759,6 @@ func (v *FormViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string)
 	}
 
 	return false, nil
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *FormViewConfig) unknownEnum() bool {
-	return v.SubmissionPermissions != "" && !v.SubmissionPermissions.Valid()
 }
 
 // FormViewConfigResponse defines a model
@@ -11583,12 +10815,6 @@ func (v *FormulaCheckboxSubGroupBy) unmarshalJSONMember(dec *jsontext.Decoder, n
 	return false, nil
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *FormulaCheckboxSubGroupBy) unknownEnum() bool {
-	return v.Sort.unknownEnum()
-}
-
 // FormulaCheckboxSubGroupByResponse defines a model
 type FormulaCheckboxSubGroupByResponse struct {
 	// The formula result type for grouping.
@@ -11643,13 +10869,6 @@ func (v *FormulaDateSubGroupBy) unmarshalJSONMember(dec *jsontext.Decoder, name 
 	return false, nil
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *FormulaDateSubGroupBy) unknownEnum() bool {
-	return !v.GroupBy.Valid() ||
-		v.Sort.unknownEnum()
-}
-
 // FormulaDateSubGroupByResponse defines a model
 type FormulaDateSubGroupByResponse struct {
 	// The formula result type for grouping.
@@ -11681,7 +10900,7 @@ func (v *FormulaDateSubGroupByResponse) unmarshalJSONMember(dec *jsontext.Decode
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *FormulaDateSubGroupByResponse) unknownEnum() bool {
-	return !v.GroupBy.Valid() ||
+	return v.GroupBy != "" && !v.GroupBy.Valid() ||
 		v.Sort.unknownEnum()
 }
 
@@ -11695,12 +10914,6 @@ type FormulaGroupByConfig struct {
 	GroupBy FormulaGroupByConfigGroupBy `json:"group_by"`
 	// Whether to hide groups that have no items.
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *FormulaGroupByConfig) unknownEnum() bool {
-	return v.GroupBy.unknownEnum()
 }
 
 // Sub-group-by configuration based on the formula result type.
@@ -11796,15 +11009,6 @@ func (v *FormulaGroupByConfigGroupBy) MarshalJSONTo(enc *jsontext.Encoder) error
 	return enc.WriteValue(out)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *FormulaGroupByConfigGroupBy) unknownEnum() bool {
-	return v.FormulaDateSubGroupBy != nil && v.FormulaDateSubGroupBy.unknownEnum() ||
-		v.FormulaTextSubGroupBy != nil && v.FormulaTextSubGroupBy.unknownEnum() ||
-		v.FormulaNumberSubGroupBy != nil && v.FormulaNumberSubGroupBy.unknownEnum() ||
-		v.FormulaCheckboxSubGroupBy != nil && v.FormulaCheckboxSubGroupBy.unknownEnum()
-}
-
 // FormulaGroupByConfigResponse defines a model
 type FormulaGroupByConfigResponse struct {
 	// The property type for grouping.
@@ -11855,12 +11059,6 @@ func (v *FormulaNumberSubGroupBy) unmarshalJSONMember(dec *jsontext.Decoder, nam
 	}
 
 	return false, nil
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *FormulaNumberSubGroupBy) unknownEnum() bool {
-	return v.Sort.unknownEnum()
 }
 
 // FormulaNumberSubGroupByResponse defines a model
@@ -12012,7 +11210,7 @@ func (v *FormulaProperty) MarshalJSONTo(enc *jsontext.Encoder) error {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *FormulaProperty) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // FormulaPropertyConfiguration defines a model
@@ -12286,7 +11484,7 @@ func (v *FormulaPropertyValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *FormulaPropertyValue) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // Sub-group-by configuration for formula properties based on result type.
@@ -12415,13 +11613,6 @@ func (v *FormulaTextSubGroupBy) unmarshalJSONMember(dec *jsontext.Decoder, name 
 	return false, nil
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *FormulaTextSubGroupBy) unknownEnum() bool {
-	return !v.GroupBy.Valid() ||
-		v.Sort.unknownEnum()
-}
-
 // FormulaTextSubGroupByResponse defines a model
 type FormulaTextSubGroupByResponse struct {
 	// The formula result type for grouping.
@@ -12449,7 +11640,7 @@ func (v *FormulaTextSubGroupByResponse) unmarshalJSONMember(dec *jsontext.Decode
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *FormulaTextSubGroupByResponse) unknownEnum() bool {
-	return !v.GroupBy.Valid() ||
+	return v.GroupBy != "" && !v.GroupBy.Valid() ||
 		v.Sort.unknownEnum()
 }
 
@@ -12487,16 +11678,6 @@ func (v *GalleryViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name stri
 	}
 
 	return false, nil
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *GalleryViewConfig) unknownEnum() bool {
-	return slices.ContainsFunc(v.Properties, func(x ViewPropertyConfig) bool { return x.unknownEnum() }) ||
-		v.Cover.unknownEnum() ||
-		v.CoverSize != "" && !v.CoverSize.Valid() ||
-		v.CoverAspect != "" && !v.CoverAspect.Valid() ||
-		v.CardLayout != "" && !v.CardLayout.Valid()
 }
 
 // GalleryViewConfigResponse defines a model
@@ -12807,20 +11988,6 @@ func (v *GroupByConfig) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *GroupByConfig) unknownEnum() bool {
-	return v.SelectGroupByConfig != nil && v.SelectGroupByConfig.unknownEnum() ||
-		v.StatusGroupByConfig != nil && v.StatusGroupByConfig.unknownEnum() ||
-		v.PersonGroupByConfig != nil && v.PersonGroupByConfig.unknownEnum() ||
-		v.RelationGroupByConfig != nil && v.RelationGroupByConfig.unknownEnum() ||
-		v.DateGroupByConfig != nil && v.DateGroupByConfig.unknownEnum() ||
-		v.TextGroupByConfig != nil && v.TextGroupByConfig.unknownEnum() ||
-		v.NumberGroupByConfig != nil && v.NumberGroupByConfig.unknownEnum() ||
-		v.CheckboxGroupByConfig != nil && v.CheckboxGroupByConfig.unknownEnum() ||
-		v.FormulaGroupByConfig != nil && v.FormulaGroupByConfig.unknownEnum()
-}
-
 // Group-by configuration based on property type.
 // GroupByConfigResponse is an untagged oneOf union: exactly one field is set after unmarshaling.
 type GroupByConfigResponse struct {
@@ -13054,12 +12221,6 @@ type GroupSort struct {
 	Type GroupSortType `json:"type"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *GroupSort) unknownEnum() bool {
-	return !v.Type.Valid()
-}
-
 // GroupSortResponse defines a model
 type GroupSortResponse struct {
 	// Sort direction for groups.
@@ -13069,7 +12230,7 @@ type GroupSortResponse struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *GroupSortResponse) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // Sort direction for groups.
@@ -13118,13 +12279,6 @@ type HeaderContentWithRichTextAndColor struct {
 	IsToggleable *bool    `json:"is_toggleable,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *HeaderContentWithRichTextAndColor) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Color != "" && !v.Color.Valid()
-}
-
 // HeaderContentWithRichTextAndColorResponse defines a model
 type HeaderContentWithRichTextAndColorResponse struct {
 	RichText RichTexts `json:"rich_text"`
@@ -13137,7 +12291,7 @@ type HeaderContentWithRichTextAndColorResponse struct {
 // records.
 func (v *HeaderContentWithRichTextAndColorResponse) unknownEnum() bool {
 	return v.RichText.unknownEnum() ||
-		!v.Color.Valid()
+		v.Color != "" && !v.Color.Valid()
 }
 
 // HeaderContentWithSingleLevelOfChildren defines a model
@@ -13147,14 +12301,6 @@ type HeaderContentWithSingleLevelOfChildren struct {
 	Color        APIColor                            `json:"color,omitzero"`
 	IsToggleable *bool                               `json:"is_toggleable,omitzero"`
 	Children     []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *HeaderContentWithSingleLevelOfChildren) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Color != "" && !v.Color.Valid() ||
-		slices.ContainsFunc(v.Children, func(x BlockObjectRequestWithoutChildren) bool { return x.unknownEnum() })
 }
 
 // ID defines a model
@@ -13189,20 +12335,6 @@ type InitialDataSource struct {
 	Properties map[string]PropertyConfiguration `json:"properties,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *InitialDataSource) unknownEnum() bool {
-	return func() bool {
-		for _, x := range v.Properties {
-			if x.unknownEnum() {
-				return true
-			}
-		}
-
-		return false
-	}()
-}
-
 // Insert new content into the page.
 type InsertContent struct {
 	// The Markdown content to insert into the page, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).
@@ -13211,12 +12343,6 @@ type InsertContent struct {
 	After string `json:"after,omitzero"`
 	// Explicit position for inserted content. Use {"type":"start"} to prepend or {"type":"end"} to append. Cannot be combined with after.
 	Position InsertContentPosition `json:"position,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *InsertContent) unknownEnum() bool {
-	return v.Position.unknownEnum()
 }
 
 // Explicit position for inserted content. Use {"type":"start"} to prepend or {"type":"end"} to append. Cannot be combined with after.
@@ -13299,12 +12425,6 @@ func (v *InsertContentPosition) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *InsertContentPosition) unknownEnum() bool {
-	return !v.Type.Valid()
 }
 
 // InternalFile defines a model
@@ -13418,7 +12538,7 @@ func (v *InternalOrExternalFileWithNameResponse) MarshalJSONTo(enc *jsontext.Enc
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *InternalOrExternalFileWithNameResponse) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // IntrospectTokenOk defines a model
@@ -13787,7 +12907,7 @@ func (v *LinkToPage) MarshalJSONTo(enc *jsontext.Encoder) error {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *LinkToPage) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // LinkToPageRequest defines a model
@@ -13891,12 +13011,6 @@ func (v *LinkToPageRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *LinkToPageRequest) unknownEnum() bool {
-	return v.Type != "" && !v.Type.Valid()
-}
-
 // ListDataSourceTemplatesOk defines a model
 type ListDataSourceTemplatesOk struct {
 	// Array of templates available in this data source.
@@ -13937,12 +13051,6 @@ func (v *ListViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string)
 	}
 
 	return false, nil
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ListViewConfig) unknownEnum() bool {
-	return slices.ContainsFunc(v.Properties, func(x ViewPropertyConfig) bool { return x.unknownEnum() })
 }
 
 // ListViewConfigResponse defines a model
@@ -13997,13 +13105,6 @@ func (v *MapViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string) 
 	}
 
 	return false, nil
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *MapViewConfig) unknownEnum() bool {
-	return v.Height != "" && !v.Height.Valid() ||
-		slices.ContainsFunc(v.Properties, func(x ViewPropertyConfig) bool { return x.unknownEnum() })
 }
 
 // MapViewConfigHeight defines a model
@@ -14184,13 +13285,6 @@ func (v *MediaContentWithFileAndCaption) MarshalJSONTo(enc *jsontext.Encoder) er
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *MediaContentWithFileAndCaption) unknownEnum() bool {
-	return slices.ContainsFunc(v.Caption, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Type != "" && !v.Type.Valid()
-}
-
 // MediaContentWithFileAndCaptionResponse defines a model
 type MediaContentWithFileAndCaptionResponse struct {
 	Caption  RichTexts                                  `json:"caption"`
@@ -14286,7 +13380,7 @@ func (v *MediaContentWithFileAndCaptionResponse) MarshalJSONTo(enc *jsontext.Enc
 // records.
 func (v *MediaContentWithFileAndCaptionResponse) unknownEnum() bool {
 	return v.Caption.unknownEnum() ||
-		!v.Type.Valid()
+		v.Type != "" && !v.Type.Valid()
 }
 
 // MediaContentWithFileNameAndCaption defines a model
@@ -14386,13 +13480,6 @@ func (v *MediaContentWithFileNameAndCaption) MarshalJSONTo(enc *jsontext.Encoder
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *MediaContentWithFileNameAndCaption) unknownEnum() bool {
-	return slices.ContainsFunc(v.Caption, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Type != "" && !v.Type.Valid()
-}
-
 // MediaContentWithFileNameAndCaptionResponse defines a model
 type MediaContentWithFileNameAndCaptionResponse struct {
 	Caption  RichTexts                                      `json:"caption"`
@@ -14489,7 +13576,7 @@ func (v *MediaContentWithFileNameAndCaptionResponse) MarshalJSONTo(enc *jsontext
 // records.
 func (v *MediaContentWithFileNameAndCaptionResponse) unknownEnum() bool {
 	return v.Caption.unknownEnum() ||
-		!v.Type.Valid()
+		v.Type != "" && !v.Type.Valid()
 }
 
 // MediaContentWithURL defines a model
@@ -14501,12 +13588,6 @@ type MediaContentWithURL struct {
 type MediaContentWithURLAndCaption struct {
 	URL     string         `json:"url"`
 	Caption []RichTextItem `json:"caption,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *MediaContentWithURLAndCaption) unknownEnum() bool {
-	return slices.ContainsFunc(v.Caption, func(x RichTextItem) bool { return x.unknownEnum() })
 }
 
 // MediaContentWithURLAndCaptionResponse defines a model
@@ -14794,29 +13875,12 @@ func (v *MeetingNotesCondition) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *MeetingNotesCondition) unknownEnum() bool {
-	return v.TextFilter != nil && v.TextFilter.unknownEnum() ||
-		v.PersonFilter != nil && v.PersonFilter.unknownEnum() ||
-		v.DateFilter != nil && v.DateFilter.unknownEnum() ||
-		v.DateRangeFilter != nil && v.DateRangeFilter.unknownEnum() ||
-		v.MeetingNotesPropertyFilterOperator != nil && v.MeetingNotesPropertyFilterOperator.unknownEnum()
-}
-
 // MeetingNotesPropertyFilter defines a model
 type MeetingNotesPropertyFilter struct {
 	// Which meeting-note property to filter on. Prefer the short names; the schema URI form is accepted for compatibility.
 	Property MeetingNotesPropertyFilterProperty `json:"property"`
 	// The comparison to apply. Use the arm matching the property's type.
 	Filter MeetingNotesCondition `json:"filter"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *MeetingNotesPropertyFilter) unknownEnum() bool {
-	return !v.Property.Valid() ||
-		v.Filter.unknownEnum()
 }
 
 // One of: `year`, `month`, `week`, `day`
@@ -14843,12 +13907,6 @@ func (e MeetingNotesPropertyFilterOneOfValueCustomUnit) Valid() bool {
 type MeetingNotesPropertyFilterOperator struct {
 	// Whether the property must be empty or set.
 	Operator EmptyOperator `json:"operator"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *MeetingNotesPropertyFilterOperator) unknownEnum() bool {
-	return !v.Operator.Valid()
 }
 
 // Which meeting-note property to filter on. Prefer the short names; the schema URI form is accepted for compatibility.
@@ -15007,13 +14065,6 @@ func (v *MentionRichTextItemMention) MarshalJSONTo(enc *jsontext.Encoder) error 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *MentionRichTextItemMention) unknownEnum() bool {
-	return v.Type != "" && !v.Type.Valid() ||
-		v.TemplateMention != nil && v.TemplateMention.unknownEnum()
-}
-
 // Mention objects represent an inline mention of a database, date, link preview mention, page, template mention, or user. A mention is created in the Notion UI when a user types `@` followed by the name of the reference.
 type MentionRichTextItemResponseMention struct {
 	Type MentionRichTextItemResponseMentionType `json:"type"`
@@ -15151,7 +14202,7 @@ func (v *MentionRichTextItemResponseMention) MarshalJSONTo(enc *jsontext.Encoder
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *MentionRichTextItemResponseMention) unknownEnum() bool {
-	return !v.Type.Valid() ||
+	return v.Type != "" && !v.Type.Valid() ||
 		v.User != nil && v.User.unknownEnum() ||
 		v.TemplateMention != nil && v.TemplateMention.unknownEnum()
 }
@@ -15160,12 +14211,6 @@ func (v *MentionRichTextItemResponseMention) unknownEnum() bool {
 type MovePage struct {
 	// The new parent of the page.
 	Parent MovePageParent `json:"parent"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *MovePage) unknownEnum() bool {
-	return v.Parent.unknownEnum()
 }
 
 // The new parent of the page.
@@ -15263,12 +14308,6 @@ func (v *MovePageParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *MovePageParent) unknownEnum() bool {
-	return v.Type != "" && !v.Type.Valid()
 }
 
 // MovePageParentPageID defines a model
@@ -15416,14 +14455,6 @@ func (v *NewComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *NewComment) unknownEnum() bool {
-	return v.PageComment != nil && v.PageComment.unknownEnum() ||
-		v.PageMarkdownComment != nil && v.PageMarkdownComment.unknownEnum() ||
-		v.DiscussionComment != nil && v.DiscussionComment.unknownEnum()
-}
-
 // NonTerminalAsyncTaskStatus defines a model
 type NonTerminalAsyncTaskStatus string
 
@@ -15449,12 +14480,6 @@ type Noticon struct {
 	Name NoticonName `json:"name"`
 	// The color variant of the icon. Defaults to gray if not specified. Valid values: gray, lightgray, brown, yellow, orange, green, blue, purple, pink, red.
 	Color NoticonColor `json:"color,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *Noticon) unknownEnum() bool {
-	return v.Color != "" && !v.Color.Valid()
 }
 
 // NoticonColor defines a model
@@ -15494,7 +14519,7 @@ type NoticonIcon struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *NoticonIcon) unknownEnum() bool {
-	return !v.Color.Valid()
+	return v.Color != "" && !v.Color.Valid()
 }
 
 // NoticonName defines a model
@@ -15656,7 +14681,7 @@ func (v *NotionAIAgentIcon) MarshalJSONTo(enc *jsontext.Encoder) error {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *NotionAIAgentIcon) unknownEnum() bool {
-	return !v.Type.Valid() ||
+	return v.Type != "" && !v.Type.Valid() ||
 		v.Icon != nil && v.Icon.unknownEnum()
 }
 
@@ -15702,12 +14727,6 @@ type NumberGroupByConfig struct {
 	RangeEnd *int `json:"range_end,omitzero"`
 	// Size of each bucket in number grouping.
 	RangeSize int `json:"range_size,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *NumberGroupByConfig) unknownEnum() bool {
-	return v.Sort.unknownEnum()
 }
 
 // NumberGroupByConfigResponse defines a model
@@ -16073,13 +15092,6 @@ func (v *OptionRef) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *OptionRef) unknownEnum() bool {
-	return v.PagePropertiesValueSelectID != nil && v.PagePropertiesValueSelectID.unknownEnum() ||
-		v.PagePropertiesValueSelectName != nil && v.PagePropertiesValueSelectName.unknownEnum()
-}
-
 // Page defines a model
 type Page struct {
 	// The page object type name.
@@ -16140,13 +15152,6 @@ type PageComment struct {
 	RichText []RichTextItem `json:"rich_text"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PageComment) unknownEnum() bool {
-	return v.Parent.unknownEnum() ||
-		slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() })
-}
-
 // PageContentUpdatedWebhookPayload defines a model
 type PageContentUpdatedWebhookPayload struct {
 	BaseWebhookPayload
@@ -16158,26 +15163,12 @@ type PageContentUpdatedWebhookPayload struct {
 	Data PageContentUpdatedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PageContentUpdatedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // Additional event-specific data.
 type PageContentUpdatedWebhookPayloadData struct {
 	// The parent of the entity whose content was updated.
 	Parent WebhookParentBlock `json:"parent"`
 	// The blocks that were updated in this event.
 	UpdatedBlocks []WebhookExternalBlock `json:"updated_blocks"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PageContentUpdatedWebhookPayloadData) unknownEnum() bool {
-	return v.Parent.unknownEnum() ||
-		slices.ContainsFunc(v.UpdatedBlocks, func(x WebhookExternalBlock) bool { return x.unknownEnum() })
 }
 
 // PageCover defines a model
@@ -16277,12 +15268,6 @@ func (v *PageCover) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PageCover) unknownEnum() bool {
-	return v.Type != "" && !v.Type.Valid()
-}
-
 // PageCoverResponse defines a model
 type PageCoverResponse struct {
 	Type PageCoverResponseType `json:"type"`
@@ -16378,7 +15363,7 @@ func (v *PageCoverResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *PageCoverResponse) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // PageCreatedWebhookPayload defines a model
@@ -16392,13 +15377,6 @@ type PageCreatedWebhookPayload struct {
 	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PageCreatedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // PageDeletedWebhookPayload defines a model
 type PageDeletedWebhookPayload struct {
 	BaseWebhookPayload
@@ -16408,13 +15386,6 @@ type PageDeletedWebhookPayload struct {
 	Entity WebhookPageEntity `json:"entity"`
 	// Additional event-specific data.
 	Data PageMovedWebhookPayloadData `json:"data"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PageDeletedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Data.unknownEnum()
 }
 
 // PageIDParentForBlockBasedObject defines a model
@@ -16543,13 +15514,6 @@ func (v *PageIcon) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PageIcon) unknownEnum() bool {
-	return v.Type != "" && !v.Type.Valid() ||
-		v.Icon != nil && v.Icon.unknownEnum()
-}
-
 // PageIconResponse defines a model
 type PageIconResponse struct {
 	Type PageIconResponseType `json:"type"`
@@ -16666,7 +15630,7 @@ func (v *PageIconResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *PageIconResponse) unknownEnum() bool {
-	return !v.Type.Valid() ||
+	return v.Type != "" && !v.Type.Valid() ||
 		v.Icon != nil && v.Icon.unknownEnum()
 }
 
@@ -16701,13 +15665,6 @@ type PageLockedWebhookPayload struct {
 	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PageLockedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // PageMarkdown defines a model
 type PageMarkdown struct {
 	// The type of object, always 'page_markdown'.
@@ -16732,12 +15689,6 @@ type PageMarkdownComment struct {
 	Markdown string `json:"markdown"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PageMarkdownComment) unknownEnum() bool {
-	return v.Parent.unknownEnum()
-}
-
 // Content warnings from a synchronous update. Returned only when there is at least one warning.
 type PageMarkdownWarnings []PageMarkdownWarningsItem
 
@@ -16760,23 +15711,10 @@ type PageMovedWebhookPayload struct {
 	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PageMovedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // Additional event-specific data.
 type PageMovedWebhookPayloadData struct {
 	// The parent of the entity that triggered the event.
 	Parent WebhookParentBlock `json:"parent"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PageMovedWebhookPayloadData) unknownEnum() bool {
-	return v.Parent.unknownEnum()
 }
 
 // PageOrDataSource defines a model
@@ -17022,12 +15960,6 @@ func (v *PagePositionSchema) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PagePositionSchema) unknownEnum() bool {
-	return !v.Type.Valid()
-}
-
 // PagePositionSchemaAfterBlock defines a model
 type PagePositionSchemaAfterBlock struct {
 	Type       string                    `json:"type"`
@@ -17036,20 +15968,6 @@ type PagePositionSchemaAfterBlock struct {
 
 // PageProperties defines a model
 type PageProperties map[string]PagePropertiesValue
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v PageProperties) unknownEnum() bool {
-	return func() bool {
-		for _, x := range v {
-			if x.unknownEnum() {
-				return true
-			}
-		}
-
-		return false
-	}()
-}
 
 // PagePropertiesUpdatedWebhookPayload defines a model
 type PagePropertiesUpdatedWebhookPayload struct {
@@ -17062,25 +15980,12 @@ type PagePropertiesUpdatedWebhookPayload struct {
 	Data PagePropertiesUpdatedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PagePropertiesUpdatedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // Additional event-specific data.
 type PagePropertiesUpdatedWebhookPayloadData struct {
 	// The parent of the page whose properties were updated.
 	Parent WebhookParentBlock `json:"parent"`
 	// The IDs of the properties that were updated.
 	UpdatedProperties []string `json:"updated_properties"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PagePropertiesUpdatedWebhookPayloadData) unknownEnum() bool {
-	return v.Parent.unknownEnum()
 }
 
 // PagePropertiesValue defines a model
@@ -17262,18 +16167,6 @@ func (v *PagePropertiesValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PagePropertiesValue) unknownEnum() bool {
-	return v.Type != "" && !v.Type.Valid() ||
-		slices.ContainsFunc(v.Title, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Select != nil && v.Select.unknownEnum() ||
-		slices.ContainsFunc(v.MultiSelect, func(x PagePropertiesValueMultiSelectItem) bool { return x.unknownEnum() }) ||
-		slices.ContainsFunc(v.Files, func(x PagePropertiesValueFilesItem) bool { return x.unknownEnum() }) ||
-		v.Status != nil && v.Status.unknownEnum()
-}
-
 // PagePropertiesValueFilesItem defines a model
 type PagePropertiesValueFilesItem struct {
 	Name       String                           `json:"name,omitzero"`
@@ -17376,12 +16269,6 @@ func (v *PagePropertiesValueFilesItem) MarshalJSONTo(enc *jsontext.Encoder) erro
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PagePropertiesValueFilesItem) unknownEnum() bool {
-	return v.Type != "" && !v.Type.Valid()
-}
-
 // PagePropertiesValueMultiSelectItem defines a model
 // PagePropertiesValueMultiSelectItem is an untagged anyOf union: at least one field is set after unmarshaling.
 type PagePropertiesValueMultiSelectItem struct {
@@ -17458,13 +16345,6 @@ func (v *PagePropertiesValueMultiSelectItem) MarshalJSONTo(enc *jsontext.Encoder
 	}
 
 	return enc.WriteToken(jsontext.Null)
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PagePropertiesValueMultiSelectItem) unknownEnum() bool {
-	return v.PagePropertiesValueSelectID != nil && v.PagePropertiesValueSelectID.unknownEnum() ||
-		v.PagePropertiesValueSelectName != nil && v.PagePropertiesValueSelectName.unknownEnum()
 }
 
 // PagePropertiesValuePeopleItem defines a model
@@ -17549,12 +16429,6 @@ type PagePropertiesValueSelectID struct {
 	Description Text        `json:"description,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PagePropertiesValueSelectID) unknownEnum() bool {
-	return v.Color != "" && !v.Color.Valid()
-}
-
 // PagePropertiesValueSelectName defines a model
 type PagePropertiesValueSelectName struct {
 	Name Text   `json:"name"`
@@ -17562,12 +16436,6 @@ type PagePropertiesValueSelectName struct {
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
 	Color       SelectColor `json:"color,omitzero"`
 	Description Text        `json:"description,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PagePropertiesValueSelectName) unknownEnum() bool {
-	return v.Color != "" && !v.Color.Valid()
 }
 
 // PagePropertiesValueVerificationUnverified defines a model
@@ -17663,25 +16531,12 @@ type PageTranscriptionBlockTranscriptDeletedWebhookPayload struct {
 	Data PageTranscriptionBlockTranscriptDeletedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PageTranscriptionBlockTranscriptDeletedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // Additional event-specific data.
 type PageTranscriptionBlockTranscriptDeletedWebhookPayloadData struct {
 	// The block that contained the deleted transcript.
 	Target WebhookExternalBlock `json:"target"`
 	// The ID of the deleted transcript, or `null` if not available.
 	TranscriptID string `json:"transcript_id"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PageTranscriptionBlockTranscriptDeletedWebhookPayloadData) unknownEnum() bool {
-	return v.Target.unknownEnum()
 }
 
 // PageUndeletedWebhookPayload defines a model
@@ -17695,13 +16550,6 @@ type PageUndeletedWebhookPayload struct {
 	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PageUndeletedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // PageUnlockedWebhookPayload defines a model
 type PageUnlockedWebhookPayload struct {
 	BaseWebhookPayload
@@ -17713,22 +16561,9 @@ type PageUnlockedWebhookPayload struct {
 	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PageUnlockedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // Controls the notifications Notion sends people about this change. Set mode to "silent" to skip page update notifications, @mention notifications, and notifications to people added to a Person property, or "default" to use the standard behavior. Database automations, reminders, and connection webhooks still work as usual. Page history, page activity, and workspace audit logs still record the change.
 type PageWriteNotificationsSchema struct {
 	Mode PageWriteNotificationsSchemaMode `json:"mode"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PageWriteNotificationsSchema) unknownEnum() bool {
-	return !v.Mode.Valid()
 }
 
 // PageWriteNotificationsSchemaMode defines a model
@@ -17761,7 +16596,7 @@ type Paragraph struct {
 // records.
 func (v *Paragraph) unknownEnum() bool {
 	return v.RichText.unknownEnum() ||
-		!v.Color.Valid() ||
+		v.Color != "" && !v.Color.Valid() ||
 		v.Icon.unknownEnum()
 }
 
@@ -17774,15 +16609,6 @@ type ParagraphRequest struct {
 	Icon     PageIcon                               `json:"icon,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ParagraphRequest) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Color != "" && !v.Color.Valid() ||
-		slices.ContainsFunc(v.Children, func(x BlockObjectWithSingleLevelOfChildren) bool { return x.unknownEnum() }) ||
-		v.Icon.unknownEnum()
-}
-
 // ParagraphWithSingleLevelOfChildren defines a model
 type ParagraphWithSingleLevelOfChildren struct {
 	RichText []RichTextItem `json:"rich_text"`
@@ -17790,15 +16616,6 @@ type ParagraphWithSingleLevelOfChildren struct {
 	Color    APIColor                            `json:"color,omitzero"`
 	Icon     PageIcon                            `json:"icon,omitzero"`
 	Children []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ParagraphWithSingleLevelOfChildren) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Color != "" && !v.Color.Valid() ||
-		v.Icon.unknownEnum() ||
-		slices.ContainsFunc(v.Children, func(x BlockObjectRequestWithoutChildren) bool { return x.unknownEnum() })
 }
 
 // ParentForBlockBased defines a model
@@ -17924,7 +16741,7 @@ func (v *ParentForBlockBased) MarshalJSONTo(enc *jsontext.Encoder) error {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *ParentForBlockBased) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // ParentOfDataSource defines a model
@@ -18027,7 +16844,7 @@ func (v *ParentOfDataSourceResponse) MarshalJSONTo(enc *jsontext.Encoder) error 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *ParentOfDataSourceResponse) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // ParentOfDatabase defines a model
@@ -18139,7 +16956,7 @@ func (v *ParentOfDatabase) MarshalJSONTo(enc *jsontext.Encoder) error {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *ParentOfDatabase) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // PartialBlock defines a model
@@ -18195,7 +17012,7 @@ type PartialDataSourceView struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *PartialDataSourceView) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // PartialDatabase defines a model
@@ -18321,8 +17138,8 @@ func (v *PartialRollupValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *PartialRollupValue) unknownEnum() bool {
-	return !v.Function.Valid() ||
-		!v.Type.Valid() ||
+	return v.Function != "" && !v.Function.Valid() ||
+		v.Type != "" && !v.Type.Valid() ||
 		slices.ContainsFunc(v.Array, func(x SimpleOrArrayPropertyValue) bool { return x.unknownEnum() })
 }
 
@@ -18337,7 +17154,7 @@ type PartialSelect struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *PartialSelect) unknownEnum() bool {
-	return !v.Color.Valid()
+	return v.Color != "" && !v.Color.Valid()
 }
 
 // PartialSelectPropertyValue defines a model
@@ -18351,7 +17168,7 @@ type PartialSelectPropertyValue struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *PartialSelectPropertyValue) unknownEnum() bool {
-	return !v.Color.Valid()
+	return v.Color != "" && !v.Color.Valid()
 }
 
 // PartialUser defines a model
@@ -18399,14 +17216,6 @@ type PatchBlockChildren struct {
 	Notifications PageWriteNotificationsSchema `json:"notifications,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PatchBlockChildren) unknownEnum() bool {
-	return slices.ContainsFunc(v.Children, func(x BlockObject) bool { return x.unknownEnum() }) ||
-		v.Position.unknownEnum() ||
-		v.Notifications.unknownEnum()
-}
-
 // PatchPage defines a model
 type PatchPage struct {
 	Properties PageProperties `json:"properties,omitzero"`
@@ -18421,16 +17230,6 @@ type PatchPage struct {
 	Notifications PageWriteNotificationsSchema `json:"notifications,omitzero"`
 	InTrash       *bool                        `json:"in_trash,omitzero"`
 	IsArchived    *bool                        `json:"is_archived,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PatchPage) unknownEnum() bool {
-	return v.Properties.unknownEnum() ||
-		v.Icon.unknownEnum() ||
-		v.Cover.unknownEnum() ||
-		v.Template.unknownEnum() ||
-		v.Notifications.unknownEnum()
 }
 
 // PatchPageTemplate defines a model
@@ -18519,12 +17318,6 @@ func (v *PatchPageTemplate) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PatchPageTemplate) unknownEnum() bool {
-	return !v.Type.Valid()
 }
 
 // One of: `run_limit`, `credit_limit`, `runaway_credit_usage`, `workspace_credit_limit`, `owner_allowance_limit`, `failure_limit`, `mark_session_failed_autopause`, `disabled_from_workspace_settings`, `disabled_from_workspace_settings_but_resumable`, `disabled_from_api`, `disabled_from_agent_settings`, `disabled_due_to_no_members_with_access`, `disabled_due_to_lack_of_editors`, `disabled_by_notion`, `internal_error`, `needs_user_review`, `tool_unavailable`
@@ -18775,12 +17568,6 @@ type PersonFilter struct {
 	Value []PersonFilterValueItem `json:"value"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PersonFilter) unknownEnum() bool {
-	return !v.Operator.Valid()
-}
-
 // Whether the property must contain the people listed.
 type PersonFilterOperator string
 
@@ -18932,13 +17719,6 @@ type PersonGroupByConfig struct {
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PersonGroupByConfig) unknownEnum() bool {
-	return !v.Type.Valid() ||
-		v.Sort.unknownEnum()
-}
-
 // PersonGroupByConfigResponse defines a model
 type PersonGroupByConfigResponse struct {
 	// The property type for grouping.
@@ -18956,7 +17736,7 @@ type PersonGroupByConfigResponse struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *PersonGroupByConfigResponse) unknownEnum() bool {
-	return !v.Type.Valid() ||
+	return v.Type != "" && !v.Type.Valid() ||
 		v.Sort.unknownEnum()
 }
 
@@ -19174,14 +17954,6 @@ type PostDatabaseQuery struct {
 	StartCursor QueryCursor `json:"start_cursor,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PostDatabaseQuery) unknownEnum() bool {
-	return v.Sorts.unknownEnum() ||
-		v.ResultType != "" && !v.ResultType.Valid() ||
-		v.Filter.unknownEnum()
-}
-
 // PostPage defines a model
 type PostPage struct {
 	Parent     PostPageParent `json:"parent,omitzero"`
@@ -19200,20 +17972,6 @@ type PostPage struct {
 	Position        PagePositionSchema `json:"position,omitzero"`
 	// Controls the notifications Notion sends people about this change. Set mode to "silent" to skip page update notifications, @mention notifications, and notifications to people added to a Person property, or "default" to use the standard behavior. Database automations, reminders, and connection webhooks still work as usual. Page history, page activity, and workspace audit logs still record the change.
 	Notifications PageWriteNotificationsSchema `json:"notifications,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PostPage) unknownEnum() bool {
-	return v.Parent.unknownEnum() ||
-		v.Properties.unknownEnum() ||
-		v.Icon.unknownEnum() ||
-		v.Cover.unknownEnum() ||
-		slices.ContainsFunc(v.Content, func(x BlockObject) bool { return x.unknownEnum() }) ||
-		slices.ContainsFunc(v.Children, func(x BlockObject) bool { return x.unknownEnum() }) ||
-		v.MarkdownVersion != "" && !v.MarkdownVersion.Valid() ||
-		v.Position.unknownEnum() ||
-		v.Notifications.unknownEnum()
 }
 
 // PostPageParent defines a model
@@ -19323,12 +18081,6 @@ func (v *PostPageParent) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PostPageParent) unknownEnum() bool {
-	return v.Type != "" && !v.Type.Valid()
-}
-
 // PostPageTemplate defines a model
 // PostPageTemplate is an untagged anyOf union: at least one field is set after unmarshaling.
 type PostPageTemplate struct {
@@ -19436,13 +18188,6 @@ type PostSearch struct {
 	Filter      PostSearchFilter `json:"filter,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PostSearch) unknownEnum() bool {
-	return v.Sort.unknownEnum() ||
-		v.Filter.unknownEnum()
-}
-
 // PostSearchFilter defines a model
 // PostSearchFilter is an untagged anyOf union: at least one field is set after unmarshaling.
 type PostSearchFilter struct {
@@ -19521,12 +18266,6 @@ func (v *PostSearchFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PostSearchFilter) unknownEnum() bool {
-	return v.PostSearchFilterObject != nil && v.PostSearchFilterObject.unknownEnum()
-}
-
 // PostSearchFilterInTrash defines a model
 type PostSearchFilterInTrash struct {
 	InTrash bool `json:"in_trash"`
@@ -19537,13 +18276,6 @@ type PostSearchFilterObject struct {
 	Property PostSearchFilterObjectProperty `json:"property"`
 	Value    ResultType                     `json:"value"`
 	InTrash  *bool                          `json:"in_trash,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PostSearchFilterObject) unknownEnum() bool {
-	return !v.Property.Valid() ||
-		!v.Value.Valid()
 }
 
 // PostSearchFilterObjectProperty defines a model
@@ -19641,24 +18373,10 @@ func (v *PostSearchSort) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PostSearchSort) unknownEnum() bool {
-	return v.PostSearchSortLastEditedTime != nil && v.PostSearchSortLastEditedTime.unknownEnum() ||
-		v.PostSearchSortRelevance != nil && v.PostSearchSortRelevance.unknownEnum()
-}
-
 // PostSearchSortLastEditedTime defines a model
 type PostSearchSortLastEditedTime struct {
 	Timestamp PostSearchSortLastEditedTimeTimestamp `json:"timestamp"`
 	Direction SortDirection                         `json:"direction"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PostSearchSortLastEditedTime) unknownEnum() bool {
-	return !v.Timestamp.Valid() ||
-		!v.Direction.Valid()
 }
 
 // PostSearchSortLastEditedTimeTimestamp defines a model
@@ -19681,12 +18399,6 @@ func (e PostSearchSortLastEditedTimeTimestamp) Valid() bool {
 // PostSearchSortRelevance defines a model
 type PostSearchSortRelevance struct {
 	Property PostSearchSortRelevanceProperty `json:"property"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PostSearchSortRelevance) unknownEnum() bool {
-	return !v.Property.Valid()
 }
 
 // PostSearchSortRelevanceProperty defines a model
@@ -19931,7 +18643,7 @@ func (v *PropertyConfig) MarshalJSONTo(enc *jsontext.Encoder) error {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *PropertyConfig) unknownEnum() bool {
-	return !v.Type.Valid() ||
+	return v.Type != "" && !v.Type.Valid() ||
 		v.Select != nil && v.Select.unknownEnum() ||
 		v.MultiSelect != nil && v.MultiSelect.unknownEnum() ||
 		v.Status != nil && v.Status.unknownEnum() ||
@@ -20178,17 +18890,6 @@ func (v *PropertyConfiguration) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PropertyConfiguration) unknownEnum() bool {
-	return v.Type != "" && !v.Type.Valid() ||
-		v.Select != nil && v.Select.unknownEnum() ||
-		v.MultiSelect != nil && v.MultiSelect.unknownEnum() ||
-		v.Status != nil && v.Status.unknownEnum() ||
-		v.Relation != nil && v.Relation.unknownEnum() ||
-		v.Rollup != nil && v.Rollup.unknownEnum()
 }
 
 // PropertyDescription defines a model
@@ -20873,7 +19574,7 @@ func (v *PropertyItemListResponsePropertyItem) MarshalJSONTo(enc *jsontext.Encod
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *PropertyItemListResponsePropertyItem) unknownEnum() bool {
-	return !v.Type.Valid() ||
+	return v.Type != "" && !v.Type.Valid() ||
 		v.Rollup != nil && v.Rollup.unknownEnum()
 }
 
@@ -20894,17 +19595,11 @@ type PropertySort struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *PropertySort) unknownEnum() bool {
-	return !v.Direction.Valid()
+	return v.Direction != "" && !v.Direction.Valid()
 }
 
 // PropertySorts defines a model
 type PropertySorts []PropertySort
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v PropertySorts) unknownEnum() bool {
-	return slices.ContainsFunc(v, func(x PropertySort) bool { return x.unknownEnum() })
-}
 
 // PropertyUpdate defines a model
 type PropertyUpdate struct {
@@ -21123,17 +19818,6 @@ func (v *PropertyUpdate) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *PropertyUpdate) unknownEnum() bool {
-	return v.Type != "" && !v.Type.Valid() ||
-		v.Select != nil && v.Select.unknownEnum() ||
-		v.MultiSelect != nil && v.MultiSelect.unknownEnum() ||
-		v.Status != nil && v.Status.unknownEnum() ||
-		v.Relation != nil && v.Relation.unknownEnum() ||
-		v.Rollup != nil && v.Rollup.unknownEnum()
 }
 
 // PropertyValue defines a model
@@ -21372,7 +20056,7 @@ func (v *PropertyValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *PropertyValue) unknownEnum() bool {
-	return !v.Type.Valid() ||
+	return v.Type != "" && !v.Type.Valid() ||
 		v.Select != nil && v.Select.unknownEnum() ||
 		slices.ContainsFunc(v.MultiSelect, func(x PartialSelectPropertyValue) bool { return x.unknownEnum() }) ||
 		v.Status != nil && v.Status.unknownEnum() ||
@@ -21503,13 +20187,6 @@ type QueryAgents struct {
 	Verbose *bool `json:"verbose,omitzero"`
 	// Whether to include soft-deleted agents. Defaults to false.
 	IncludeDeleted *bool `json:"include_deleted,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QueryAgents) unknownEnum() bool {
-	return v.Filter.unknownEnum() ||
-		v.Sorts.unknownEnum()
 }
 
 // Filter agents by public properties, optionally combined with and/or.
@@ -21744,16 +20421,6 @@ func (v *QueryAgentsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QueryAgentsFilter) unknownEnum() bool {
-	return v.QueryAgentsFilterAgentType != nil && v.QueryAgentsFilterAgentType.unknownEnum() ||
-		v.QueryAgentsFilterStatus != nil && v.QueryAgentsFilterStatus.unknownEnum() ||
-		v.QueryAgentsFilterModelMode != nil && v.QueryAgentsFilterModelMode.unknownEnum() ||
-		v.QueryAgentsFilterAnd != nil && v.QueryAgentsFilterAnd.unknownEnum() ||
-		v.QueryAgentsFilterOr != nil && v.QueryAgentsFilterOr.unknownEnum()
-}
-
 // QueryAgentsFilterAgentType defines a model
 type QueryAgentsFilterAgentType struct {
 	Property string                           `json:"property"`
@@ -21772,21 +20439,9 @@ func (v *QueryAgentsFilterAgentType) unmarshalJSONMember(dec *jsontext.Decoder, 
 	return false, nil
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QueryAgentsFilterAgentType) unknownEnum() bool {
-	return v.String.unknownEnum()
-}
-
 // QueryAgentsFilterAgentTypeString defines a model
 type QueryAgentsFilterAgentTypeString struct {
 	Equals AgentInsightsAgentType `json:"equals"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QueryAgentsFilterAgentTypeString) unknownEnum() bool {
-	return !v.Equals.Valid()
 }
 
 // QueryAgentsFilterAgentVersion defines a model
@@ -21815,12 +20470,6 @@ type QueryAgentsFilterAgentVersionNumber struct {
 // QueryAgentsFilterAnd defines a model
 type QueryAgentsFilterAnd struct {
 	And []QueryAgentsFilterOrItem `json:"and"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QueryAgentsFilterAnd) unknownEnum() bool {
-	return slices.ContainsFunc(v.And, func(x QueryAgentsFilterOrItem) bool { return x.unknownEnum() })
 }
 
 // QueryAgentsFilterConnections defines a model
@@ -21960,21 +20609,9 @@ func (v *QueryAgentsFilterModelMode) unmarshalJSONMember(dec *jsontext.Decoder, 
 	return false, nil
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QueryAgentsFilterModelMode) unknownEnum() bool {
-	return v.Select.unknownEnum()
-}
-
 // QueryAgentsFilterModelModeSelect defines a model
 type QueryAgentsFilterModelModeSelect struct {
 	Equals QueryAgentsFilterModelModeSelectEquals `json:"equals"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QueryAgentsFilterModelModeSelect) unknownEnum() bool {
-	return !v.Equals.Valid()
 }
 
 // QueryAgentsFilterModelModeSelectEquals defines a model
@@ -21998,12 +20635,6 @@ func (e QueryAgentsFilterModelModeSelectEquals) Valid() bool {
 // QueryAgentsFilterOr defines a model
 type QueryAgentsFilterOr struct {
 	Or []QueryAgentsFilterOrItem `json:"or"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QueryAgentsFilterOr) unknownEnum() bool {
-	return slices.ContainsFunc(v.Or, func(x QueryAgentsFilterOrItem) bool { return x.unknownEnum() })
 }
 
 // QueryAgentsFilterOrItem defines a model
@@ -22238,36 +20869,14 @@ func (v *QueryAgentsFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QueryAgentsFilterOrItem) unknownEnum() bool {
-	return v.QueryAgentsFilterAgentType != nil && v.QueryAgentsFilterAgentType.unknownEnum() ||
-		v.QueryAgentsFilterStatus != nil && v.QueryAgentsFilterStatus.unknownEnum() ||
-		v.QueryAgentsFilterModelMode != nil && v.QueryAgentsFilterModelMode.unknownEnum() ||
-		v.QueryAgentsFilterOrItemAnd != nil && v.QueryAgentsFilterOrItemAnd.unknownEnum() ||
-		v.QueryAgentsFilterOrItemOr != nil && v.QueryAgentsFilterOrItemOr.unknownEnum()
-}
-
 // QueryAgentsFilterOrItemAnd defines a model
 type QueryAgentsFilterOrItemAnd struct {
 	And []AgentCondition `json:"and"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QueryAgentsFilterOrItemAnd) unknownEnum() bool {
-	return slices.ContainsFunc(v.And, func(x AgentCondition) bool { return x.unknownEnum() })
-}
-
 // QueryAgentsFilterOrItemOr defines a model
 type QueryAgentsFilterOrItemOr struct {
 	Or []AgentCondition `json:"or"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QueryAgentsFilterOrItemOr) unknownEnum() bool {
-	return slices.ContainsFunc(v.Or, func(x AgentCondition) bool { return x.unknownEnum() })
 }
 
 // QueryAgentsFilterStatus defines a model
@@ -22288,29 +20897,11 @@ func (v *QueryAgentsFilterStatus) unmarshalJSONMember(dec *jsontext.Decoder, nam
 	return false, nil
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QueryAgentsFilterStatus) unknownEnum() bool {
-	return v.Status.unknownEnum()
-}
-
 // QueryAgentsFilterStatusIn defines a model
 type QueryAgentsFilterStatusIn []AgentStatus
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v QueryAgentsFilterStatusIn) unknownEnum() bool {
-	return slices.ContainsFunc(v, func(x AgentStatus) bool { return !x.Valid() })
-}
-
 // Ordered sort precedence. Defaults to created_time descending.
 type QueryAgentsSorts []QueryAgentsSortsItem
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v QueryAgentsSorts) unknownEnum() bool {
-	return slices.ContainsFunc(v, func(x QueryAgentsSortsItem) bool { return x.unknownEnum() })
-}
 
 // QueryAgentsSortsItem defines a model
 type QueryAgentsSortsItem struct {
@@ -22318,13 +20909,6 @@ type QueryAgentsSortsItem struct {
 	Property QueryAgentsSortsItemProperty `json:"property"`
 	// Sort direction.
 	Direction SortDirection `json:"direction"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QueryAgentsSortsItem) unknownEnum() bool {
-	return !v.Property.Valid() ||
-		!v.Direction.Valid()
 }
 
 // Timestamp used to sort agents.
@@ -22378,26 +20962,12 @@ type QueryMeetingNotes struct {
 	Limit int `json:"limit,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QueryMeetingNotes) unknownEnum() bool {
-	return v.Filter.unknownEnum() ||
-		v.Sort.unknownEnum()
-}
-
 // Optional filter for querying meeting notes. Supports combinator (and/or) and property filters on title, attendees, created_time, created_by, last_edited_time, last_edited_by.
 type QueryMeetingNotesFilter struct {
 	// Operator for combinator filters.
 	Operator QueryMeetingNotesFilterOperator `json:"operator"`
 	// Nested filters; each may be a combinator (and/or) or property filter.
 	Filters []QueryMeetingNotesFilterFiltersItem `json:"filters,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QueryMeetingNotesFilter) unknownEnum() bool {
-	return !v.Operator.Valid() ||
-		slices.ContainsFunc(v.Filters, func(x QueryMeetingNotesFilterFiltersItem) bool { return x.unknownEnum() })
 }
 
 // QueryMeetingNotesFilterFiltersItem defines a model
@@ -22480,13 +21050,6 @@ func (v *QueryMeetingNotesFilterFiltersItem) MarshalJSONTo(enc *jsontext.Encoder
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QueryMeetingNotesFilterFiltersItem) unknownEnum() bool {
-	return v.MeetingNotesPropertyFilter != nil && v.MeetingNotesPropertyFilter.unknownEnum() ||
-		v.FilterGroup != nil && v.FilterGroup.unknownEnum()
-}
-
 // QueryMeetingNotesFilterOperator defines a model
 type QueryMeetingNotesFilterOperator string
 
@@ -22531,25 +21094,12 @@ func (v QueryMeetingNotesOkResults) unknownEnum() bool {
 // Optional sort order for the results. Each entry specifies a property name and direction.
 type QueryMeetingNotesSort []QueryMeetingNotesSortItem
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v QueryMeetingNotesSort) unknownEnum() bool {
-	return slices.ContainsFunc(v, func(x QueryMeetingNotesSortItem) bool { return x.unknownEnum() })
-}
-
 // QueryMeetingNotesSortItem defines a model
 type QueryMeetingNotesSortItem struct {
 	// Property name to sort by.
 	Property QueryMeetingNotesSortItemProperty `json:"property"`
 	// Sort direction. Must be 'ascending' or 'descending'.
 	Direction SortDirection `json:"direction"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QueryMeetingNotesSortItem) unknownEnum() bool {
-	return !v.Property.Valid() ||
-		!v.Direction.Valid()
 }
 
 // Property name to sort by.
@@ -22584,13 +21134,6 @@ type QuerySessionEvents struct {
 	StartCursor string `json:"start_cursor,omitzero"`
 	// The number of events to return. Maximum: 100.
 	PageSize int `json:"page_size,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuerySessionEvents) unknownEnum() bool {
-	return v.Filter.unknownEnum() ||
-		v.Sorts.unknownEnum()
 }
 
 // A session event property filter, or an and/or compound filter nested up to three levels deep.
@@ -22729,26 +21272,9 @@ func (v *QuerySessionEventsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuerySessionEventsFilter) unknownEnum() bool {
-	return v.SessionIDFilter != nil && v.SessionIDFilter.unknownEnum() ||
-		v.QuerySessionEventsFilterType != nil && v.QuerySessionEventsFilterType.unknownEnum() ||
-		v.QuerySessionEventsFilterSequence != nil && v.QuerySessionEventsFilterSequence.unknownEnum() ||
-		v.QuerySessionEventsFilterCreatedAt != nil && v.QuerySessionEventsFilterCreatedAt.unknownEnum() ||
-		v.QuerySessionEventsFilterAnd != nil && v.QuerySessionEventsFilterAnd.unknownEnum() ||
-		v.QuerySessionEventsFilterOr != nil && v.QuerySessionEventsFilterOr.unknownEnum()
-}
-
 // QuerySessionEventsFilterAnd defines a model
 type QuerySessionEventsFilterAnd struct {
 	And []QuerySessionEventsFilterOrItem `json:"and"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuerySessionEventsFilterAnd) unknownEnum() bool {
-	return slices.ContainsFunc(v.And, func(x QuerySessionEventsFilterOrItem) bool { return x.unknownEnum() })
 }
 
 // QuerySessionEventsFilterCreatedAt defines a model
@@ -22767,12 +21293,6 @@ func (v *QuerySessionEventsFilterCreatedAt) unmarshalJSONMember(dec *jsontext.De
 	}
 
 	return false, nil
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuerySessionEventsFilterCreatedAt) unknownEnum() bool {
-	return !v.Property.Valid()
 }
 
 // QuerySessionEventsFilterCreatedAtProperty defines a model
@@ -22804,12 +21324,6 @@ type QuerySessionEventsFilterCreatedAtTimestamp struct {
 // QuerySessionEventsFilterOr defines a model
 type QuerySessionEventsFilterOr struct {
 	Or []QuerySessionEventsFilterOrItem `json:"or"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuerySessionEventsFilterOr) unknownEnum() bool {
-	return slices.ContainsFunc(v.Or, func(x QuerySessionEventsFilterOrItem) bool { return x.unknownEnum() })
 }
 
 // QuerySessionEventsFilterOrItem defines a model
@@ -22948,37 +21462,14 @@ func (v *QuerySessionEventsFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) er
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuerySessionEventsFilterOrItem) unknownEnum() bool {
-	return v.SessionIDFilter != nil && v.SessionIDFilter.unknownEnum() ||
-		v.QuerySessionEventsFilterType != nil && v.QuerySessionEventsFilterType.unknownEnum() ||
-		v.QuerySessionEventsFilterSequence != nil && v.QuerySessionEventsFilterSequence.unknownEnum() ||
-		v.QuerySessionEventsFilterCreatedAt != nil && v.QuerySessionEventsFilterCreatedAt.unknownEnum() ||
-		v.QuerySessionEventsFilterOrItemAnd != nil && v.QuerySessionEventsFilterOrItemAnd.unknownEnum() ||
-		v.QuerySessionEventsFilterOrItemOr != nil && v.QuerySessionEventsFilterOrItemOr.unknownEnum()
-}
-
 // QuerySessionEventsFilterOrItemAnd defines a model
 type QuerySessionEventsFilterOrItemAnd struct {
 	And []SessionEventFilterItem `json:"and"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuerySessionEventsFilterOrItemAnd) unknownEnum() bool {
-	return slices.ContainsFunc(v.And, func(x SessionEventFilterItem) bool { return x.unknownEnum() })
-}
-
 // QuerySessionEventsFilterOrItemOr defines a model
 type QuerySessionEventsFilterOrItemOr struct {
 	Or []SessionEventFilterItem `json:"or"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuerySessionEventsFilterOrItemOr) unknownEnum() bool {
-	return slices.ContainsFunc(v.Or, func(x SessionEventFilterItem) bool { return x.unknownEnum() })
 }
 
 // QuerySessionEventsFilterSequence defines a model
@@ -22997,12 +21488,6 @@ func (v *QuerySessionEventsFilterSequence) unmarshalJSONMember(dec *jsontext.Dec
 	}
 
 	return false, nil
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuerySessionEventsFilterSequence) unknownEnum() bool {
-	return !v.Property.Valid()
 }
 
 // QuerySessionEventsFilterSequenceNumber defines a model
@@ -23048,13 +21533,6 @@ func (v *QuerySessionEventsFilterType) unmarshalJSONMember(dec *jsontext.Decoder
 	return false, nil
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuerySessionEventsFilterType) unknownEnum() bool {
-	return !v.Property.Valid() ||
-		v.EventType.unknownEnum()
-}
-
 // QuerySessionEventsFilterTypeProperty defines a model
 type QuerySessionEventsFilterTypeProperty string
 
@@ -23075,25 +21553,12 @@ func (e QuerySessionEventsFilterTypeProperty) Valid() bool {
 // Ordered sort precedence. Defaults to sequence ascending.
 type QuerySessionEventsSorts []QuerySessionEventsSortsItem
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v QuerySessionEventsSorts) unknownEnum() bool {
-	return slices.ContainsFunc(v, func(x QuerySessionEventsSortsItem) bool { return x.unknownEnum() })
-}
-
 // QuerySessionEventsSortsItem defines a model
 type QuerySessionEventsSortsItem struct {
 	// One of: `sequence`, `created_at`
 	Property QuerySessionEventsSortsItemProperty `json:"property"`
 	// One of: `ascending`, `descending`
 	Direction SortDirection `json:"direction"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuerySessionEventsSortsItem) unknownEnum() bool {
-	return !v.Property.Valid() ||
-		!v.Direction.Valid()
 }
 
 // One of: `sequence`, `created_at`
@@ -23126,13 +21591,6 @@ type QuerySessions struct {
 	StartCursor string `json:"start_cursor,omitzero"`
 	// The number of sessions to return. Maximum: 100.
 	PageSize int `json:"page_size,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuerySessions) unknownEnum() bool {
-	return v.Filter.unknownEnum() ||
-		v.Sorts.unknownEnum()
 }
 
 // A session property filter, or an and/or compound filter nested up to two levels deep.
@@ -23279,27 +21737,10 @@ func (v *QuerySessionsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuerySessionsFilter) unknownEnum() bool {
-	return v.SessionIDFilter != nil && v.SessionIDFilter.unknownEnum() ||
-		v.SessionAgentIDFilter != nil && v.SessionAgentIDFilter.unknownEnum() ||
-		v.SessionStatusFilter != nil && v.SessionStatusFilter.unknownEnum() ||
-		v.SessionTimestampFilter != nil && v.SessionTimestampFilter.unknownEnum() ||
-		v.QuerySessionsFilterAnd != nil && v.QuerySessionsFilterAnd.unknownEnum() ||
-		v.QuerySessionsFilterOr != nil && v.QuerySessionsFilterOr.unknownEnum()
-}
-
 // QuerySessionsFilterAnd defines a model
 type QuerySessionsFilterAnd struct {
 	// Return sessions that match every child filter.
 	And []SessionNestedFilter `json:"and"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuerySessionsFilterAnd) unknownEnum() bool {
-	return slices.ContainsFunc(v.And, func(x SessionNestedFilter) bool { return x.unknownEnum() })
 }
 
 // QuerySessionsFilterOr defines a model
@@ -23308,20 +21749,8 @@ type QuerySessionsFilterOr struct {
 	Or []SessionNestedFilter `json:"or"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuerySessionsFilterOr) unknownEnum() bool {
-	return slices.ContainsFunc(v.Or, func(x SessionNestedFilter) bool { return x.unknownEnum() })
-}
-
 // Ordered sort precedence. Defaults to updated_at descending.
 type QuerySessionsSorts []QuerySessionsSortsItem
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v QuerySessionsSorts) unknownEnum() bool {
-	return slices.ContainsFunc(v, func(x QuerySessionsSortsItem) bool { return x.unknownEnum() })
-}
 
 // QuerySessionsSortsItem defines a model
 type QuerySessionsSortsItem struct {
@@ -23329,13 +21758,6 @@ type QuerySessionsSortsItem struct {
 	Property QuerySessionsSortsItemProperty `json:"property"`
 	// One of: `ascending`, `descending`
 	Direction SortDirection `json:"direction"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuerySessionsSortsItem) unknownEnum() bool {
-	return !v.Property.Valid() ||
-		!v.Direction.Valid()
 }
 
 // QuerySessionsSortsItemProperty defines a model
@@ -23736,17 +22158,6 @@ func (v *QuickFilterCondition) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuickFilterCondition) unknownEnum() bool {
-	return v.QuickFilterConditionDate != nil && v.QuickFilterConditionDate.unknownEnum() ||
-		v.QuickFilterConditionCreatedTime != nil && v.QuickFilterConditionCreatedTime.unknownEnum() ||
-		v.QuickFilterConditionLastEditedTime != nil && v.QuickFilterConditionLastEditedTime.unknownEnum() ||
-		v.QuickFilterConditionFormula != nil && v.QuickFilterConditionFormula.unknownEnum() ||
-		v.QuickFilterConditionRollup != nil && v.QuickFilterConditionRollup.unknownEnum() ||
-		v.QuickFilterConditionVerification != nil && v.QuickFilterConditionVerification.unknownEnum()
-}
-
 // QuickFilterConditionCheckbox defines a model
 type QuickFilterConditionCheckbox struct {
 	Checkbox CheckboxPropertyFilter `json:"checkbox"`
@@ -23765,22 +22176,10 @@ type QuickFilterConditionCreatedTime struct {
 	Type        string             `json:"type,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuickFilterConditionCreatedTime) unknownEnum() bool {
-	return v.CreatedTime.unknownEnum()
-}
-
 // QuickFilterConditionDate defines a model
 type QuickFilterConditionDate struct {
 	Date DatePropertyFilter `json:"date"`
 	Type string             `json:"type,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuickFilterConditionDate) unknownEnum() bool {
-	return v.Date.unknownEnum()
 }
 
 // QuickFilterConditionEmail defines a model
@@ -23801,12 +22200,6 @@ type QuickFilterConditionFormula struct {
 	Type    string                `json:"type,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuickFilterConditionFormula) unknownEnum() bool {
-	return v.Formula.unknownEnum()
-}
-
 // QuickFilterConditionLastEditedBy defines a model
 type QuickFilterConditionLastEditedBy struct {
 	LastEditedBy PeoplePropertyFilter `json:"last_edited_by"`
@@ -23817,12 +22210,6 @@ type QuickFilterConditionLastEditedBy struct {
 type QuickFilterConditionLastEditedTime struct {
 	LastEditedTime DatePropertyFilter `json:"last_edited_time"`
 	Type           string             `json:"type,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuickFilterConditionLastEditedTime) unknownEnum() bool {
-	return v.LastEditedTime.unknownEnum()
 }
 
 // QuickFilterConditionMultiSelect defines a model
@@ -23870,12 +22257,6 @@ type QuickFilterConditionRollup struct {
 	Type   string               `json:"type,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuickFilterConditionRollup) unknownEnum() bool {
-	return v.Rollup.unknownEnum()
-}
-
 // QuickFilterConditionSelect defines a model
 type QuickFilterConditionSelect struct {
 	Select SelectPropertyFilter `json:"select"`
@@ -23912,12 +22293,6 @@ type QuickFilterConditionVerification struct {
 	Type         string             `json:"type,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *QuickFilterConditionVerification) unknownEnum() bool {
-	return v.Verification.unknownEnum()
-}
-
 // RelationGroupByConfig defines a model
 type RelationGroupByConfig struct {
 	// The property type for grouping.
@@ -23928,12 +22303,6 @@ type RelationGroupByConfig struct {
 	Sort GroupSort `json:"sort"`
 	// Whether to hide groups that have no items.
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *RelationGroupByConfig) unknownEnum() bool {
-	return v.Sort.unknownEnum()
 }
 
 // RelationGroupByConfigResponse defines a model
@@ -23967,12 +22336,6 @@ type RelationPropertyConfiguration struct {
 	// Always `relation`
 	Type     string                                `json:"type,omitzero"`
 	Relation RelationPropertyConfigurationRelation `json:"relation"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *RelationPropertyConfiguration) unknownEnum() bool {
-	return v.Relation.unknownEnum()
 }
 
 // RelationPropertyConfigurationRelation defines a model
@@ -24069,12 +22432,6 @@ func (v *RelationPropertyConfigurationRelation) MarshalJSONTo(enc *jsontext.Enco
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *RelationPropertyConfigurationRelation) unknownEnum() bool {
-	return v.Type != "" && !v.Type.Valid()
 }
 
 // RelationPropertyFilter defines a model
@@ -24246,7 +22603,7 @@ type RequestStatus struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *RequestStatus) unknownEnum() bool {
-	return !v.Type.Valid() ||
+	return v.Type != "" && !v.Type.Valid() ||
 		v.IncompleteReason != "" && !v.IncompleteReason.Valid()
 }
 
@@ -24261,7 +22618,7 @@ type RequestStatusResponse struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *RequestStatusResponse) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // RequiredActions defines a model
@@ -24305,7 +22662,7 @@ type RequiredActionsItemOptionsItem struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *RequiredActionsItemOptionsItem) unknownEnum() bool {
-	return !v.ID.Valid()
+	return v.ID != "" && !v.ID.Valid()
 }
 
 // ResultType defines a model
@@ -25555,7 +23912,7 @@ func (v *RichText) MarshalJSONTo(enc *jsontext.Encoder) error {
 // records.
 func (v *RichText) unknownEnum() bool {
 	return v.Annotations.unknownEnum() ||
-		!v.Type.Valid() ||
+		v.Type != "" && !v.Type.Valid() ||
 		v.Mention != nil && v.Mention.unknownEnum()
 }
 
@@ -25665,14 +24022,6 @@ func (v *RichTextItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *RichTextItem) unknownEnum() bool {
-	return v.Annotations != nil && v.Annotations.unknownEnum() ||
-		v.Type != "" && !v.Type.Valid() ||
-		v.Mention != nil && v.Mention.unknownEnum()
-}
-
 // RichTextPropertyConfiguration defines a model
 type RichTextPropertyConfiguration struct {
 	// Always `rich_text`
@@ -25756,7 +24105,7 @@ type RollupDatabasePropertyConfigRollup struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *RollupDatabasePropertyConfigRollup) unknownEnum() bool {
-	return !v.Function.Valid()
+	return v.Function != "" && !v.Function.Valid()
 }
 
 // RollupFunction defines a model
@@ -25804,12 +24153,6 @@ type RollupPropertyConfiguration struct {
 	// Always `rollup`
 	Type   string                            `json:"type,omitzero"`
 	Rollup RollupPropertyConfigurationRollup `json:"rollup"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *RollupPropertyConfiguration) unknownEnum() bool {
-	return v.Rollup.unknownEnum()
 }
 
 // RollupPropertyConfigurationRollup defines a model
@@ -25991,12 +24334,6 @@ func (v *RollupPropertyConfigurationRollup) MarshalJSONTo(enc *jsontext.Encoder)
 	}
 
 	return enc.WriteValue(out)
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *RollupPropertyConfigurationRollup) unknownEnum() bool {
-	return !v.Function.Valid()
 }
 
 // RollupPropertyConfigurationRollupAllOf defines a model
@@ -26417,8 +24754,8 @@ func (v *RollupPropertyItemObjectRollup) MarshalJSONTo(enc *jsontext.Encoder) er
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *RollupPropertyItemObjectRollup) unknownEnum() bool {
-	return !v.Function.Valid() ||
-		!v.Type.Valid()
+	return v.Function != "" && !v.Function.Valid() ||
+		v.Type != "" && !v.Type.Valid()
 }
 
 // RollupSubfilterPropertyFilter defines a model
@@ -26716,13 +25053,6 @@ type SelectGroupByConfig struct {
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SelectGroupByConfig) unknownEnum() bool {
-	return !v.Type.Valid() ||
-		v.Sort.unknownEnum()
-}
-
 // SelectGroupByConfigResponse defines a model
 type SelectGroupByConfigResponse struct {
 	// The property type for grouping.
@@ -26740,7 +25070,7 @@ type SelectGroupByConfigResponse struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *SelectGroupByConfigResponse) unknownEnum() bool {
-	return !v.Type.Valid() ||
+	return v.Type != "" && !v.Type.Valid() ||
 		v.Sort.unknownEnum()
 }
 
@@ -26878,7 +25208,7 @@ type SelectProperty struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *SelectProperty) unknownEnum() bool {
-	return !v.Color.Valid()
+	return v.Color != "" && !v.Color.Valid()
 }
 
 // SelectPropertyConfigurationSelect defines a model
@@ -26886,20 +25216,8 @@ type SelectPropertyConfigurationSelect struct {
 	Options SelectPropertyConfigurationSelectOptions `json:"options,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SelectPropertyConfigurationSelect) unknownEnum() bool {
-	return v.Options.unknownEnum()
-}
-
 // SelectPropertyConfigurationSelectOptions defines a model
 type SelectPropertyConfigurationSelectOptions []SelectPropertyConfigurationSelectOptionsItem
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v SelectPropertyConfigurationSelectOptions) unknownEnum() bool {
-	return slices.ContainsFunc(v, func(x SelectPropertyConfigurationSelectOptionsItem) bool { return x.unknownEnum() })
-}
 
 // SelectPropertyConfigurationSelectOptionsItem defines a model
 type SelectPropertyConfigurationSelectOptionsItem struct {
@@ -26907,12 +25225,6 @@ type SelectPropertyConfigurationSelectOptionsItem struct {
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`
 	Color       SelectColor `json:"color,omitzero"`
 	Description string      `json:"description,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SelectPropertyConfigurationSelectOptionsItem) unknownEnum() bool {
-	return v.Color != "" && !v.Color.Valid()
 }
 
 // SelectPropertyFilter defines a model
@@ -27058,7 +25370,7 @@ type Session struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *Session) unknownEnum() bool {
-	return !v.Status.Valid() ||
+	return v.Status != "" && !v.Status.Valid() ||
 		v.CreatedBy.unknownEnum() ||
 		v.RequiredActions.unknownEnum()
 }
@@ -27069,12 +25381,6 @@ type SessionAgentIDFilter struct {
 	Property SessionAgentIDFilterProperty `json:"property"`
 	// An exact string comparison.
 	String StringEquals `json:"string"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SessionAgentIDFilter) unknownEnum() bool {
-	return !v.Property.Valid()
 }
 
 // Filter sessions by agent_id.
@@ -27108,32 +25414,14 @@ type SessionAnswer struct {
 	Metadata  map[string]string    `json:"metadata,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SessionAnswer) unknownEnum() bool {
-	return v.Actions.unknownEnum()
-}
-
 // SessionAnswerActions defines a model
 type SessionAnswerActions []SessionAnswerActionsItem
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v SessionAnswerActions) unknownEnum() bool {
-	return slices.ContainsFunc(v, func(x SessionAnswerActionsItem) bool { return x.unknownEnum() })
-}
 
 // SessionAnswerActionsItem defines a model
 type SessionAnswerActionsItem struct {
 	ActionID ID `json:"action_id"`
 	// One of: `approve`, `reject`
 	OptionID OptionID `json:"option_id"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SessionAnswerActionsItem) unknownEnum() bool {
-	return !v.OptionID.Valid()
 }
 
 // SessionContinuation defines a model
@@ -27152,7 +25440,7 @@ type SessionCreatedBy struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *SessionCreatedBy) unknownEnum() bool {
-	return !v.Type.Valid()
+	return v.Type != "" && !v.Type.Valid()
 }
 
 // One of: `user`, `bot`
@@ -27273,24 +25561,9 @@ func (v *SessionEventCondition) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SessionEventCondition) unknownEnum() bool {
-	return v.SessionIDFilter != nil && v.SessionIDFilter.unknownEnum() ||
-		v.QuerySessionEventsFilterType != nil && v.QuerySessionEventsFilterType.unknownEnum() ||
-		v.QuerySessionEventsFilterSequence != nil && v.QuerySessionEventsFilterSequence.unknownEnum() ||
-		v.QuerySessionEventsFilterCreatedAt != nil && v.QuerySessionEventsFilterCreatedAt.unknownEnum()
-}
-
 // SessionEventFilterAnd defines a model
 type SessionEventFilterAnd struct {
 	And []SessionEventCondition `json:"and"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SessionEventFilterAnd) unknownEnum() bool {
-	return slices.ContainsFunc(v.And, func(x SessionEventCondition) bool { return x.unknownEnum() })
 }
 
 // SessionEventFilterItem defines a model
@@ -27429,26 +25702,9 @@ func (v *SessionEventFilterItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SessionEventFilterItem) unknownEnum() bool {
-	return v.SessionIDFilter != nil && v.SessionIDFilter.unknownEnum() ||
-		v.QuerySessionEventsFilterType != nil && v.QuerySessionEventsFilterType.unknownEnum() ||
-		v.QuerySessionEventsFilterSequence != nil && v.QuerySessionEventsFilterSequence.unknownEnum() ||
-		v.QuerySessionEventsFilterCreatedAt != nil && v.QuerySessionEventsFilterCreatedAt.unknownEnum() ||
-		v.SessionEventFilterAnd != nil && v.SessionEventFilterAnd.unknownEnum() ||
-		v.SessionEventFilterOr != nil && v.SessionEventFilterOr.unknownEnum()
-}
-
 // SessionEventFilterOr defines a model
 type SessionEventFilterOr struct {
 	Or []SessionEventCondition `json:"or"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SessionEventFilterOr) unknownEnum() bool {
-	return slices.ContainsFunc(v.Or, func(x SessionEventCondition) bool { return x.unknownEnum() })
 }
 
 // SessionEventList defines a model
@@ -27802,7 +26058,7 @@ func (v *SessionEventListResultsItemSessionStatus) unmarshalJSONMember(dec *json
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *SessionEventListResultsItemSessionStatus) unknownEnum() bool {
-	return !v.Status.Valid() ||
+	return v.Status != "" && !v.Status.Valid() ||
 		v.RequiredActions.unknownEnum()
 }
 
@@ -28014,12 +26270,6 @@ func (v *SessionIDFilter) unmarshalJSONMember(dec *jsontext.Decoder, name string
 	return false, nil
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SessionIDFilter) unknownEnum() bool {
-	return !v.Property.Valid()
-}
-
 // SessionIDFilterProperty defines a model
 type SessionIDFilterProperty string
 
@@ -28098,7 +26348,7 @@ type SessionListResultsItem struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *SessionListResultsItem) unknownEnum() bool {
-	return !v.Status.Valid() ||
+	return v.Status != "" && !v.Status.Valid() ||
 		v.CreatedBy.unknownEnum() ||
 		v.RequiredActions.unknownEnum()
 }
@@ -28383,39 +26633,16 @@ func (v *SessionNestedFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SessionNestedFilter) unknownEnum() bool {
-	return v.SessionIDFilter != nil && v.SessionIDFilter.unknownEnum() ||
-		v.SessionAgentIDFilter != nil && v.SessionAgentIDFilter.unknownEnum() ||
-		v.SessionStatusFilter != nil && v.SessionStatusFilter.unknownEnum() ||
-		v.SessionTimestampFilter != nil && v.SessionTimestampFilter.unknownEnum() ||
-		v.SessionNestedFilterAnd != nil && v.SessionNestedFilterAnd.unknownEnum() ||
-		v.SessionNestedFilterOr != nil && v.SessionNestedFilterOr.unknownEnum()
-}
-
 // SessionNestedFilterAnd defines a model
 type SessionNestedFilterAnd struct {
 	// Return sessions that match every child filter.
 	And []SessionNestedFilterOrItem `json:"and"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SessionNestedFilterAnd) unknownEnum() bool {
-	return slices.ContainsFunc(v.And, func(x SessionNestedFilterOrItem) bool { return x.unknownEnum() })
-}
-
 // SessionNestedFilterOr defines a model
 type SessionNestedFilterOr struct {
 	// Return sessions that match any child filter.
 	Or []SessionNestedFilterOrItem `json:"or"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SessionNestedFilterOr) unknownEnum() bool {
-	return slices.ContainsFunc(v.Or, func(x SessionNestedFilterOrItem) bool { return x.unknownEnum() })
 }
 
 // SessionNestedFilterOrItem defines a model
@@ -28530,15 +26757,6 @@ func (v *SessionNestedFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SessionNestedFilterOrItem) unknownEnum() bool {
-	return v.SessionIDFilter != nil && v.SessionIDFilter.unknownEnum() ||
-		v.SessionAgentIDFilter != nil && v.SessionAgentIDFilter.unknownEnum() ||
-		v.SessionStatusFilter != nil && v.SessionStatusFilter.unknownEnum() ||
-		v.SessionTimestampFilter != nil && v.SessionTimestampFilter.unknownEnum()
-}
-
 // SessionRequiredActions defines a model
 type SessionRequiredActions []RequiredActionsItem
 
@@ -28579,13 +26797,6 @@ type SessionStatusFilter struct {
 	Status SessionStatusFilterStatus `json:"status"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SessionStatusFilter) unknownEnum() bool {
-	return !v.Property.Valid() ||
-		v.Status.unknownEnum()
-}
-
 // Filter sessions by status.
 type SessionStatusFilterProperty string
 
@@ -28611,21 +26822,8 @@ type SessionStatusFilterStatus struct {
 	In SessionStatusFilterStatusIn `json:"in,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SessionStatusFilterStatus) unknownEnum() bool {
-	return v.Equals != "" && !v.Equals.Valid() ||
-		v.In.unknownEnum()
-}
-
 // Return sessions with any of these statuses.
 type SessionStatusFilterStatusIn []SessionStatus
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v SessionStatusFilterStatusIn) unknownEnum() bool {
-	return slices.ContainsFunc(v, func(x SessionStatus) bool { return !x.Valid() })
-}
 
 // SessionTimestampFilter defines a model
 type SessionTimestampFilter struct {
@@ -28633,12 +26831,6 @@ type SessionTimestampFilter struct {
 	Property QuerySessionsSortsItemProperty `json:"property"`
 	// A timestamp range.
 	Timestamp SessionTimestampFilterTimestamp `json:"timestamp"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SessionTimestampFilter) unknownEnum() bool {
-	return !v.Property.Valid()
 }
 
 // A timestamp range.
@@ -28882,7 +27074,7 @@ func (v *SimpleOrArrayPropertyValue) MarshalJSONTo(enc *jsontext.Encoder) error 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *SimpleOrArrayPropertyValue) unknownEnum() bool {
-	return !v.Type.Valid() ||
+	return v.Type != "" && !v.Type.Valid() ||
 		v.Select != nil && v.Select.unknownEnum() ||
 		slices.ContainsFunc(v.MultiSelect, func(x PartialSelectPropertyValue) bool { return x.unknownEnum() }) ||
 		v.Status != nil && v.Status.unknownEnum() ||
@@ -29071,7 +27263,7 @@ type StatusDatabasePropertyConfigStatusGroupsItem struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *StatusDatabasePropertyConfigStatusGroupsItem) unknownEnum() bool {
-	return !v.Color.Valid()
+	return v.Color != "" && !v.Color.Valid()
 }
 
 // StatusGroupByConfig defines a model
@@ -29086,13 +27278,6 @@ type StatusGroupByConfig struct {
 	Sort GroupSort `json:"sort"`
 	// Whether to hide groups that have no items.
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *StatusGroupByConfig) unknownEnum() bool {
-	return !v.GroupBy.Valid() ||
-		v.Sort.unknownEnum()
 }
 
 // How to group status values. "group" groups by status group (To Do/In Progress/Done), "option" groups by individual option.
@@ -29132,7 +27317,7 @@ type StatusGroupByConfigResponse struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *StatusGroupByConfigResponse) unknownEnum() bool {
-	return !v.GroupBy.Valid() ||
+	return v.GroupBy != "" && !v.GroupBy.Valid() ||
 		v.Sort.unknownEnum()
 }
 
@@ -29207,13 +27392,6 @@ type StatusOption struct {
 	Group StatusOptionGroup `json:"group,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *StatusOption) unknownEnum() bool {
-	return v.Color != "" && !v.Color.Valid() ||
-		v.Group != "" && !v.Group.Valid()
-}
-
 // One of: `To-do`, `In progress`, `Complete`
 type StatusOptionGroup string
 
@@ -29235,12 +27413,6 @@ func (e StatusOptionGroup) Valid() bool {
 
 // StatusOptionRequestArray defines a model
 type StatusOptionRequestArray []StatusOption
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v StatusOptionRequestArray) unknownEnum() bool {
-	return slices.ContainsFunc(v, func(x StatusOption) bool { return x.unknownEnum() })
-}
 
 // StatusOptionUpdate defines a model
 type StatusOptionUpdate struct {
@@ -29372,13 +27544,6 @@ func (v *StatusOptionUpdate) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *StatusOptionUpdate) unknownEnum() bool {
-	return v.Color != "" && !v.Color.Valid() ||
-		v.Group != "" && !v.Group.Valid()
-}
-
 // StatusOptionUpdateAllOf defines a model
 // StatusOptionUpdateAllOf is an untagged anyOf union: at least one field is set after unmarshaling.
 type StatusOptionUpdateAllOf struct {
@@ -29463,34 +27628,16 @@ type StatusOptionUpdateAllOfName struct {
 // StatusOptionUpdateRequestArray defines a model
 type StatusOptionUpdateRequestArray []StatusOptionUpdate
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v StatusOptionUpdateRequestArray) unknownEnum() bool {
-	return slices.ContainsFunc(v, func(x StatusOptionUpdate) bool { return x.unknownEnum() })
-}
-
 // StatusPropertyConfig defines a model
 type StatusPropertyConfig struct {
 	// The initial status options. If not provided, defaults are created.
 	Options StatusOptionRequestArray `json:"options,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *StatusPropertyConfig) unknownEnum() bool {
-	return v.Options.unknownEnum()
-}
-
 // StatusPropertyConfigUpdate defines a model
 type StatusPropertyConfigUpdate struct {
 	// Status options to add or update. Use group to assign an option to To-do, In progress, or Complete. Existing options keep their current group when group is omitted; new options use To-do when present, or the first existing group otherwise.
 	Options StatusOptionUpdateRequestArray `json:"options,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *StatusPropertyConfigUpdate) unknownEnum() bool {
-	return v.Options.unknownEnum()
 }
 
 // StatusPropertyFilter defines a model
@@ -29845,13 +27992,6 @@ type SubtaskConfig struct {
 	ToggleColumnID string `json:"toggle_column_id,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SubtaskConfig) unknownEnum() bool {
-	return v.DisplayMode != "" && !v.DisplayMode.Valid() ||
-		v.FilterScope != "" && !v.FilterScope.Valid()
-}
-
 // SubtaskConfigResponse defines a model
 type SubtaskConfigResponse struct {
 	// Relation property ID used for parent-child nesting.
@@ -29887,7 +28027,7 @@ type SyncHealthError struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *SyncHealthError) unknownEnum() bool {
-	return !v.Severity.Valid()
+	return v.Severity != "" && !v.Severity.Valid()
 }
 
 // SyncHealthErrorSeverity defines a model
@@ -29922,7 +28062,7 @@ type SyncHealthFailing struct {
 // records.
 func (v *SyncHealthFailing) unknownEnum() bool {
 	return v.Err.unknownEnum() ||
-		!v.Stage.Valid()
+		v.Stage != "" && !v.Stage.Valid()
 }
 
 // SyncHealthOK defines a model
@@ -29936,7 +28076,7 @@ type SyncHealthOK struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *SyncHealthOK) unknownEnum() bool {
-	return !v.Stage.Valid()
+	return v.Stage != "" && !v.Stage.Valid()
 }
 
 // SyncHealthPaused defines a model
@@ -30178,22 +28318,10 @@ type SyncedBlockChild struct {
 	Children   []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SyncedBlockChild) unknownEnum() bool {
-	return slices.ContainsFunc(v.Children, func(x BlockObjectRequestWithoutChildren) bool { return x.unknownEnum() })
-}
-
 // SyncedBlockRequest defines a model
 type SyncedBlockRequest struct {
 	SyncedFrom BlockObjectSyncedBlockSyncedFrom       `json:"synced_from"`
 	Children   []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *SyncedBlockRequest) unknownEnum() bool {
-	return slices.ContainsFunc(v.Children, func(x BlockObjectWithSingleLevelOfChildren) bool { return x.unknownEnum() })
 }
 
 // SyncedBlockUpdate defines a model
@@ -30214,12 +28342,6 @@ type TabItemWithSingleLevelOfChildren struct {
 	Object    string                             `json:"object,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *TabItemWithSingleLevelOfChildren) unknownEnum() bool {
-	return v.Paragraph.unknownEnum()
-}
-
 // TabItemWithoutChildren defines a model
 type TabItemWithoutChildren struct {
 	Paragraph ContentWithRichTextColorAndIcon `json:"paragraph"`
@@ -30227,32 +28349,14 @@ type TabItemWithoutChildren struct {
 	Object    string                          `json:"object,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *TabItemWithoutChildren) unknownEnum() bool {
-	return v.Paragraph.unknownEnum()
-}
-
 // TabRequestWithNestedTabItemChildren defines a model
 type TabRequestWithNestedTabItemChildren struct {
 	Children []TabItemWithSingleLevelOfChildren `json:"children"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *TabRequestWithNestedTabItemChildren) unknownEnum() bool {
-	return slices.ContainsFunc(v.Children, func(x TabItemWithSingleLevelOfChildren) bool { return x.unknownEnum() })
-}
-
 // TabRequestWithTabItemChildren defines a model
 type TabRequestWithTabItemChildren struct {
 	Children []TabItemWithoutChildren `json:"children"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *TabRequestWithTabItemChildren) unknownEnum() bool {
-	return slices.ContainsFunc(v.Children, func(x TabItemWithoutChildren) bool { return x.unknownEnum() })
 }
 
 // TableOfContents defines a model
@@ -30264,19 +28368,13 @@ type TableOfContents struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *TableOfContents) unknownEnum() bool {
-	return !v.Color.Valid()
+	return v.Color != "" && !v.Color.Valid()
 }
 
 // TableOfContentsRequest defines a model
 type TableOfContentsRequest struct {
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor `json:"color,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *TableOfContentsRequest) unknownEnum() bool {
-	return v.Color != "" && !v.Color.Valid()
 }
 
 // TableRequestWithTableRowChildren defines a model
@@ -30287,23 +28385,11 @@ type TableRequestWithTableRowChildren struct {
 	HasRowHeader    *bool      `json:"has_row_header,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *TableRequestWithTableRowChildren) unknownEnum() bool {
-	return slices.ContainsFunc(v.Children, func(x TableRow) bool { return x.unknownEnum() })
-}
-
 // TableRow defines a model
 type TableRow struct {
 	TableRow ContentWithTableRow `json:"table_row"`
 	Type     string              `json:"type,omitzero"`
 	Object   string              `json:"object,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *TableRow) unknownEnum() bool {
-	return v.TableRow.unknownEnum()
 }
 
 // TableUpdate defines a model
@@ -30350,14 +28436,6 @@ func (v *TableViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name string
 	}
 
 	return false, nil
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *TableViewConfig) unknownEnum() bool {
-	return slices.ContainsFunc(v.Properties, func(x ViewPropertyConfig) bool { return x.unknownEnum() }) ||
-		v.GroupBy.unknownEnum() ||
-		v.Subtasks != nil && v.Subtasks.unknownEnum()
 }
 
 // TableViewConfigResponse defines a model
@@ -30423,13 +28501,6 @@ func (v *Template) unknownEnum() bool {
 type TemplateChild struct {
 	RichText []RichTextItem                      `json:"rich_text"`
 	Children []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *TemplateChild) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		slices.ContainsFunc(v.Children, func(x BlockObjectRequestWithoutChildren) bool { return x.unknownEnum() })
 }
 
 // TemplateMention defines a model
@@ -30527,13 +28598,6 @@ func (v *TemplateMention) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *TemplateMention) unknownEnum() bool {
-	return v.Type != "" && !v.Type.Valid() ||
-		v.TemplateMentionDate != "" && !v.TemplateMentionDate.Valid()
 }
 
 // The date of the template mention.
@@ -30649,7 +28713,7 @@ func (v *TemplateMentionResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *TemplateMentionResponse) unknownEnum() bool {
-	return !v.Type.Valid() ||
+	return v.Type != "" && !v.Type.Valid() ||
 		v.TemplateMentionDate != "" && !v.TemplateMentionDate.Valid()
 }
 
@@ -30657,13 +28721,6 @@ func (v *TemplateMentionResponse) unknownEnum() bool {
 type TemplateRequest struct {
 	RichText []RichTextItem                         `json:"rich_text"`
 	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *TemplateRequest) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		slices.ContainsFunc(v.Children, func(x BlockObjectWithSingleLevelOfChildren) bool { return x.unknownEnum() })
 }
 
 // IANA timezone to use when resolving template variables like @now and @today (e.g. 'America/New_York'). Defaults to the authorizing user's timezone for public integrations, or UTC for internal integrations.
@@ -30678,12 +28735,6 @@ type TextFilter struct {
 	Operator TextFilterOperator `json:"operator"`
 	// The text to compare against.
 	Value TextFilterValue `json:"value"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *TextFilter) unknownEnum() bool {
-	return !v.Operator.Valid()
 }
 
 // How to compare the text.
@@ -30730,14 +28781,6 @@ type TextGroupByConfig struct {
 	HideEmptyGroups *bool `json:"hide_empty_groups,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *TextGroupByConfig) unknownEnum() bool {
-	return !v.Type.Valid() ||
-		!v.GroupBy.Valid() ||
-		v.Sort.unknownEnum()
-}
-
 // How to group text values. "exact" = exact match, "alphabet_prefix" = first letter.
 type TextGroupByConfigGroupBy string
 
@@ -30775,8 +28818,8 @@ type TextGroupByConfigResponse struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *TextGroupByConfigResponse) unknownEnum() bool {
-	return !v.Type.Valid() ||
-		!v.GroupBy.Valid() ||
+	return v.Type != "" && !v.Type.Valid() ||
+		v.GroupBy != "" && !v.GroupBy.Valid() ||
 		v.Sort.unknownEnum()
 }
 
@@ -31041,12 +29084,6 @@ type TimelinePreference struct {
 	CenterTimestamp *int `json:"center_timestamp,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *TimelinePreference) unknownEnum() bool {
-	return !v.ZoomLevel.Valid()
-}
-
 // TimelinePreferenceResponse defines a model
 type TimelinePreferenceResponse struct {
 	// Zoom level for the timeline.
@@ -31058,7 +29095,7 @@ type TimelinePreferenceResponse struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *TimelinePreferenceResponse) unknownEnum() bool {
-	return !v.ZoomLevel.Valid()
+	return v.ZoomLevel != "" && !v.ZoomLevel.Valid()
 }
 
 // TimelineViewConfig defines a model
@@ -31107,14 +29144,6 @@ func (v *TimelineViewConfig) unmarshalJSONMember(dec *jsontext.Decoder, name str
 	}
 
 	return false, nil
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *TimelineViewConfig) unknownEnum() bool {
-	return slices.ContainsFunc(v.Properties, func(x ViewPropertyConfig) bool { return x.unknownEnum() }) ||
-		slices.ContainsFunc(v.TableProperties, func(x ViewPropertyConfig) bool { return x.unknownEnum() }) ||
-		v.Preference.unknownEnum()
 }
 
 // TimelineViewConfigResponse defines a model
@@ -31326,8 +29355,8 @@ type TimestampSort struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *TimestampSort) unknownEnum() bool {
-	return !v.Timestamp.Valid() ||
-		!v.Direction.Valid()
+	return v.Timestamp != "" && !v.Timestamp.Valid() ||
+		v.Direction != "" && !v.Direction.Valid()
 }
 
 // The timestamp to sort by.
@@ -31402,7 +29431,7 @@ type ToDo struct {
 // records.
 func (v *ToDo) unknownEnum() bool {
 	return v.RichText.unknownEnum() ||
-		!v.Color.Valid()
+		v.Color != "" && !v.Color.Valid()
 }
 
 // ToDoChild defines a model
@@ -31414,27 +29443,12 @@ type ToDoChild struct {
 	Checked  *bool                               `json:"checked,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ToDoChild) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Color != "" && !v.Color.Valid() ||
-		slices.ContainsFunc(v.Children, func(x BlockObjectRequestWithoutChildren) bool { return x.unknownEnum() })
-}
-
 // ToDoGrandchild defines a model
 type ToDoGrandchild struct {
 	RichText []RichTextItem `json:"rich_text"`
 	Checked  *bool          `json:"checked,omitzero"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor `json:"color,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ToDoGrandchild) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Color != "" && !v.Color.Valid()
 }
 
 // ToDoRequest defines a model
@@ -31446,27 +29460,12 @@ type ToDoRequest struct {
 	Checked  *bool                                  `json:"checked,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ToDoRequest) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Color != "" && !v.Color.Valid() ||
-		slices.ContainsFunc(v.Children, func(x BlockObjectWithSingleLevelOfChildren) bool { return x.unknownEnum() })
-}
-
 // ToDoUpdate defines a model
 type ToDoUpdate struct {
 	RichText []RichTextItem `json:"rich_text,omitzero"`
 	Checked  *bool          `json:"checked,omitzero"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor `json:"color,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ToDoUpdate) unknownEnum() bool {
-	return slices.ContainsFunc(v.RichText, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Color != "" && !v.Color.Valid()
 }
 
 // TokenOwnerUser defines a model
@@ -32180,34 +30179,6 @@ func (v *UpdateABlock) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlock) unknownEnum() bool {
-	return v.UpdateABlockEmbed != nil && v.UpdateABlockEmbed.unknownEnum() ||
-		v.UpdateABlockBookmark != nil && v.UpdateABlockBookmark.unknownEnum() ||
-		v.UpdateABlockImage != nil && v.UpdateABlockImage.unknownEnum() ||
-		v.UpdateABlockVideo != nil && v.UpdateABlockVideo.unknownEnum() ||
-		v.UpdateABlockPdf != nil && v.UpdateABlockPdf.unknownEnum() ||
-		v.UpdateABlockFile != nil && v.UpdateABlockFile.unknownEnum() ||
-		v.UpdateABlockAudio != nil && v.UpdateABlockAudio.unknownEnum() ||
-		v.UpdateABlockCode != nil && v.UpdateABlockCode.unknownEnum() ||
-		v.UpdateABlockTableOfContents != nil && v.UpdateABlockTableOfContents.unknownEnum() ||
-		v.UpdateABlockLinkToPage != nil && v.UpdateABlockLinkToPage.unknownEnum() ||
-		v.UpdateABlockTableRow != nil && v.UpdateABlockTableRow.unknownEnum() ||
-		v.UpdateABlockHeading1 != nil && v.UpdateABlockHeading1.unknownEnum() ||
-		v.UpdateABlockHeading2 != nil && v.UpdateABlockHeading2.unknownEnum() ||
-		v.UpdateABlockHeading3 != nil && v.UpdateABlockHeading3.unknownEnum() ||
-		v.UpdateABlockHeading4 != nil && v.UpdateABlockHeading4.unknownEnum() ||
-		v.UpdateABlockParagraph != nil && v.UpdateABlockParagraph.unknownEnum() ||
-		v.UpdateABlockBulletedListItem != nil && v.UpdateABlockBulletedListItem.unknownEnum() ||
-		v.UpdateABlockNumberedListItem != nil && v.UpdateABlockNumberedListItem.unknownEnum() ||
-		v.UpdateABlockQuote != nil && v.UpdateABlockQuote.unknownEnum() ||
-		v.UpdateABlockToDo != nil && v.UpdateABlockToDo.unknownEnum() ||
-		v.UpdateABlockToggle != nil && v.UpdateABlockToggle.unknownEnum() ||
-		v.UpdateABlockTemplate != nil && v.UpdateABlockTemplate.unknownEnum() ||
-		v.UpdateABlockCallout != nil && v.UpdateABlockCallout.unknownEnum()
-}
-
 // UpdateABlockAudio defines a model
 type UpdateABlockAudio struct {
 	Audio   UpdateMediaContentWithFileAndCaption `json:"audio"`
@@ -32215,23 +30186,11 @@ type UpdateABlockAudio struct {
 	InTrash *bool                                `json:"in_trash,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockAudio) unknownEnum() bool {
-	return v.Audio.unknownEnum()
-}
-
 // UpdateABlockBookmark defines a model
 type UpdateABlockBookmark struct {
 	Bookmark UpdateMediaContentWithURLAndCaption `json:"bookmark"`
 	Type     string                              `json:"type,omitzero"`
 	InTrash  *bool                               `json:"in_trash,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockBookmark) unknownEnum() bool {
-	return v.Bookmark.unknownEnum()
 }
 
 // UpdateABlockBreadcrumb defines a model
@@ -32248,12 +30207,6 @@ type UpdateABlockBulletedListItem struct {
 	InTrash          *bool                       `json:"in_trash,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockBulletedListItem) unknownEnum() bool {
-	return v.BulletedListItem.unknownEnum()
-}
-
 // UpdateABlockCallout defines a model
 type UpdateABlockCallout struct {
 	Callout ContentWithRichTextColorAndIconResponseUpdate `json:"callout"`
@@ -32261,23 +30214,11 @@ type UpdateABlockCallout struct {
 	InTrash *bool                                         `json:"in_trash,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockCallout) unknownEnum() bool {
-	return v.Callout.unknownEnum()
-}
-
 // UpdateABlockCode defines a model
 type UpdateABlockCode struct {
 	Code    CodeUpdate `json:"code"`
 	Type    string     `json:"type,omitzero"`
 	InTrash *bool      `json:"in_trash,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockCode) unknownEnum() bool {
-	return v.Code.unknownEnum()
 }
 
 // UpdateABlockColumn defines a model
@@ -32301,12 +30242,6 @@ type UpdateABlockEmbed struct {
 	InTrash *bool       `json:"in_trash,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockEmbed) unknownEnum() bool {
-	return v.Embed.unknownEnum()
-}
-
 // UpdateABlockEquation defines a model
 type UpdateABlockEquation struct {
 	Equation ContentWithExpression `json:"equation"`
@@ -32321,23 +30256,11 @@ type UpdateABlockFile struct {
 	InTrash *bool                                    `json:"in_trash,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockFile) unknownEnum() bool {
-	return v.File.unknownEnum()
-}
-
 // UpdateABlockHeading1 defines a model
 type UpdateABlockHeading1 struct {
 	Heading1 HeaderContentWithRichTextAndColor `json:"heading_1"`
 	Type     string                            `json:"type,omitzero"`
 	InTrash  *bool                             `json:"in_trash,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockHeading1) unknownEnum() bool {
-	return v.Heading1.unknownEnum()
 }
 
 // UpdateABlockHeading2 defines a model
@@ -32347,23 +30270,11 @@ type UpdateABlockHeading2 struct {
 	InTrash  *bool                             `json:"in_trash,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockHeading2) unknownEnum() bool {
-	return v.Heading2.unknownEnum()
-}
-
 // UpdateABlockHeading3 defines a model
 type UpdateABlockHeading3 struct {
 	Heading3 HeaderContentWithRichTextAndColor `json:"heading_3"`
 	Type     string                            `json:"type,omitzero"`
 	InTrash  *bool                             `json:"in_trash,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockHeading3) unknownEnum() bool {
-	return v.Heading3.unknownEnum()
 }
 
 // UpdateABlockHeading4 defines a model
@@ -32373,23 +30284,11 @@ type UpdateABlockHeading4 struct {
 	InTrash  *bool                             `json:"in_trash,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockHeading4) unknownEnum() bool {
-	return v.Heading4.unknownEnum()
-}
-
 // UpdateABlockImage defines a model
 type UpdateABlockImage struct {
 	Image   UpdateMediaContentWithFileAndCaption `json:"image"`
 	Type    string                               `json:"type,omitzero"`
 	InTrash *bool                                `json:"in_trash,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockImage) unknownEnum() bool {
-	return v.Image.unknownEnum()
 }
 
 // UpdateABlockLinkToPage defines a model
@@ -32399,23 +30298,11 @@ type UpdateABlockLinkToPage struct {
 	InTrash    *bool             `json:"in_trash,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockLinkToPage) unknownEnum() bool {
-	return v.LinkToPage.unknownEnum()
-}
-
 // UpdateABlockNumberedListItem defines a model
 type UpdateABlockNumberedListItem struct {
 	NumberedListItem ContentWithRichTextAndColor `json:"numbered_list_item"`
 	Type             string                      `json:"type,omitzero"`
 	InTrash          *bool                       `json:"in_trash,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockNumberedListItem) unknownEnum() bool {
-	return v.NumberedListItem.unknownEnum()
 }
 
 // UpdateABlockParagraph defines a model
@@ -32425,12 +30312,6 @@ type UpdateABlockParagraph struct {
 	InTrash   *bool                                         `json:"in_trash,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockParagraph) unknownEnum() bool {
-	return v.Paragraph.unknownEnum()
-}
-
 // UpdateABlockPdf defines a model
 type UpdateABlockPdf struct {
 	PDF     UpdateMediaContentWithFileAndCaption `json:"pdf"`
@@ -32438,23 +30319,11 @@ type UpdateABlockPdf struct {
 	InTrash *bool                                `json:"in_trash,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockPdf) unknownEnum() bool {
-	return v.PDF.unknownEnum()
-}
-
 // UpdateABlockQuote defines a model
 type UpdateABlockQuote struct {
 	Quote   ContentWithRichTextAndColor `json:"quote"`
 	Type    string                      `json:"type,omitzero"`
 	InTrash *bool                       `json:"in_trash,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockQuote) unknownEnum() bool {
-	return v.Quote.unknownEnum()
 }
 
 // UpdateABlockSyncedBlock defines a model
@@ -32485,23 +30354,11 @@ type UpdateABlockTableOfContents struct {
 	InTrash         *bool                  `json:"in_trash,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockTableOfContents) unknownEnum() bool {
-	return v.TableOfContents.unknownEnum()
-}
-
 // UpdateABlockTableRow defines a model
 type UpdateABlockTableRow struct {
 	TableRow ContentWithTableRow `json:"table_row"`
 	Type     string              `json:"type,omitzero"`
 	InTrash  *bool               `json:"in_trash,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockTableRow) unknownEnum() bool {
-	return v.TableRow.unknownEnum()
 }
 
 // UpdateABlockTemplate defines a model
@@ -32511,23 +30368,11 @@ type UpdateABlockTemplate struct {
 	InTrash  *bool               `json:"in_trash,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockTemplate) unknownEnum() bool {
-	return v.Template.unknownEnum()
-}
-
 // UpdateABlockToDo defines a model
 type UpdateABlockToDo struct {
 	ToDo    ToDoUpdate `json:"to_do"`
 	Type    string     `json:"type,omitzero"`
 	InTrash *bool      `json:"in_trash,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockToDo) unknownEnum() bool {
-	return v.ToDo.unknownEnum()
 }
 
 // UpdateABlockToggle defines a model
@@ -32537,23 +30382,11 @@ type UpdateABlockToggle struct {
 	InTrash *bool                       `json:"in_trash,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockToggle) unknownEnum() bool {
-	return v.Toggle.unknownEnum()
-}
-
 // UpdateABlockVideo defines a model
 type UpdateABlockVideo struct {
 	Video   UpdateMediaContentWithFileAndCaption `json:"video"`
 	Type    string                               `json:"type,omitzero"`
 	InTrash *bool                                `json:"in_trash,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateABlockVideo) unknownEnum() bool {
-	return v.Video.unknownEnum()
 }
 
 // UpdateAComment defines a model
@@ -32683,13 +30516,6 @@ func (v *UpdateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateAComment) unknownEnum() bool {
-	return v.MarkdownVersion != "" && !v.MarkdownVersion.Valid() ||
-		v.CommentUpdate.unknownEnum()
-}
-
 // UpdateADataSource defines a model
 type UpdateADataSource struct {
 	// Title of data source as it appears in Notion.
@@ -32702,22 +30528,6 @@ type UpdateADataSource struct {
 	InTrash *bool `json:"in_trash,omitzero"`
 	// The parent of the data source, when moving it to a different database. If not provided, the parent will not be updated.
 	Parent ParentOfDataSource `json:"parent,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateADataSource) unknownEnum() bool {
-	return slices.ContainsFunc(v.Title, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Icon.unknownEnum() ||
-		func() bool {
-			for _, x := range v.Properties {
-				if x.unknownEnum() {
-					return true
-				}
-			}
-
-			return false
-		}()
 }
 
 // UpdateADataSourcePropertiesValue defines a model
@@ -32788,31 +30598,13 @@ func (v *UpdateADataSourcePropertiesValue) MarshalJSONTo(enc *jsontext.Encoder) 
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateADataSourcePropertiesValue) unknownEnum() bool {
-	return v.PropertyUpdate != nil && v.PropertyUpdate.unknownEnum()
-}
-
 // UpdateADataSourcePropertiesValueOneOfAllOfSelect defines a model
 type UpdateADataSourcePropertiesValueOneOfAllOfSelect struct {
 	Options UpdateADataSourcePropertiesValueOneOfAllOfSelectOptions `json:"options,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelect) unknownEnum() bool {
-	return v.Options.unknownEnum()
-}
-
 // UpdateADataSourcePropertiesValueOneOfAllOfSelectOptions defines a model
 type UpdateADataSourcePropertiesValueOneOfAllOfSelectOptions []UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v UpdateADataSourcePropertiesValueOneOfAllOfSelectOptions) unknownEnum() bool {
-	return slices.ContainsFunc(v, func(x UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem) bool { return x.unknownEnum() })
-}
 
 // UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem defines a model
 type UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem struct {
@@ -32942,12 +30734,6 @@ func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem) MarshalJSO
 	return enc.WriteValue(out)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem) unknownEnum() bool {
-	return v.Color != "" && !v.Color.Valid()
-}
-
 // UpdateAgent defines a model
 type UpdateAgent struct {
 	// Enable or disable the agent. Re-enabling works only for an agent an editor disabled, through the API or in agent settings.
@@ -32960,12 +30746,6 @@ type UpdateAgent struct {
 	IsFavorited *bool `json:"is_favorited,omitzero"`
 	// The model selection. Use auto to let Notion choose, or pinned with an available public model ID.
 	Model UpdateAgentModel `json:"model,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateAgent) unknownEnum() bool {
-	return v.Status != "" && !v.Status.Valid()
 }
 
 // UpdateAgentCreditLimit defines a model
@@ -33108,8 +30888,8 @@ type UpdateAgentStatusOk struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *UpdateAgentStatusOk) unknownEnum() bool {
-	return !v.Status.Valid() ||
-		!v.PauseReason.Valid()
+	return v.Status != "" && !v.Status.Valid() ||
+		v.PauseReason != "" && !v.PauseReason.Valid()
 }
 
 // Update specific content using search-and-replace operations.
@@ -33142,26 +30922,10 @@ type UpdateDatabase struct {
 	ShowDataSourceTitle *bool `json:"show_data_source_title,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateDatabase) unknownEnum() bool {
-	return v.Parent.unknownEnum() ||
-		slices.ContainsFunc(v.Title, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		slices.ContainsFunc(v.Description, func(x RichTextItem) bool { return x.unknownEnum() }) ||
-		v.Icon.unknownEnum() ||
-		v.Cover.unknownEnum()
-}
-
 // UpdateEmbedFileUpload defines a model
 type UpdateEmbedFileUpload struct {
 	FileUpload FileUploadID   `json:"file_upload"`
 	Caption    []RichTextItem `json:"caption,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateEmbedFileUpload) unknownEnum() bool {
-	return slices.ContainsFunc(v.Caption, func(x RichTextItem) bool { return x.unknownEnum() })
 }
 
 // UpdateMediaContentWithFileAndCaption defines a model
@@ -33169,12 +30933,6 @@ type UpdateMediaContentWithFileAndCaption struct {
 	Caption    []RichTextItem `json:"caption,omitzero"`
 	External   ExternalFile   `json:"external,omitzero"`
 	FileUpload FileUploadID   `json:"file_upload,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateMediaContentWithFileAndCaption) unknownEnum() bool {
-	return slices.ContainsFunc(v.Caption, func(x RichTextItem) bool { return x.unknownEnum() })
 }
 
 // UpdateMediaContentWithFileNameAndCaption defines a model
@@ -33185,22 +30943,10 @@ type UpdateMediaContentWithFileNameAndCaption struct {
 	Name       String         `json:"name,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateMediaContentWithFileNameAndCaption) unknownEnum() bool {
-	return slices.ContainsFunc(v.Caption, func(x RichTextItem) bool { return x.unknownEnum() })
-}
-
 // UpdateMediaContentWithURLAndCaption defines a model
 type UpdateMediaContentWithURLAndCaption struct {
 	URL     string         `json:"url,omitzero"`
 	Caption []RichTextItem `json:"caption,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateMediaContentWithURLAndCaption) unknownEnum() bool {
-	return slices.ContainsFunc(v.Caption, func(x RichTextItem) bool { return x.unknownEnum() })
 }
 
 // UpdatePageMarkdown defines a model
@@ -33313,14 +31059,6 @@ func (v *UpdatePageMarkdown) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdatePageMarkdown) unknownEnum() bool {
-	return v.MarkdownVersion != "" && !v.MarkdownVersion.Valid() ||
-		!v.Type.Valid() ||
-		v.InsertContent != nil && v.InsertContent.unknownEnum()
-}
-
 // UpdatePageMarkdownAccepted defines a model
 type UpdatePageMarkdownAccepted struct {
 	Object           UpdatePageMarkdownAcceptedObject    `json:"object"`
@@ -33335,8 +31073,8 @@ type UpdatePageMarkdownAccepted struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *UpdatePageMarkdownAccepted) unknownEnum() bool {
-	return !v.Object.Valid() ||
-		!v.Status.Valid() ||
+	return v.Object != "" && !v.Object.Valid() ||
+		v.Status != "" && !v.Status.Valid() ||
 		v.Operation.unknownEnum()
 }
 
@@ -33458,8 +31196,8 @@ func (v *UpdatePageMarkdownAcceptedOperationMcp) unmarshalJSONMember(dec *jsonte
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *UpdatePageMarkdownAcceptedOperationMcp) unknownEnum() bool {
-	return !v.Surface.Valid() ||
-		!v.Name.Valid()
+	return v.Surface != "" && !v.Surface.Valid() ||
+		v.Name != "" && !v.Name.Valid()
 }
 
 // UpdatePageMarkdownAcceptedOperationMcpName defines a model
@@ -33517,8 +31255,8 @@ func (v *UpdatePageMarkdownAcceptedOperationRest) unmarshalJSONMember(dec *jsont
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *UpdatePageMarkdownAcceptedOperationRest) unknownEnum() bool {
-	return !v.Surface.Valid() ||
-		!v.Name.Valid()
+	return v.Surface != "" && !v.Surface.Valid() ||
+		v.Name != "" && !v.Name.Valid()
 }
 
 // UpdatePageMarkdownAcceptedOperationRestName defines a model
@@ -33643,12 +31381,6 @@ func (v *UpdateSessionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateSessionRequest) unknownEnum() bool {
-	return v.SessionAnswer != nil && v.SessionAnswer.unknownEnum()
-}
-
 // UpdateView defines a model
 type UpdateView struct {
 	// New name for the view.
@@ -33663,31 +31395,8 @@ type UpdateView struct {
 	Configuration ViewConfig `json:"configuration,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdateView) unknownEnum() bool {
-	return v.Filter.unknownEnum() ||
-		v.Sorts.unknownEnum() ||
-		func() bool {
-			for _, x := range v.QuickFilters {
-				if x.unknownEnum() {
-					return true
-				}
-			}
-
-			return false
-		}() ||
-		v.Configuration.unknownEnum()
-}
-
 // The fields of the view that were updated.
 type UpdatedFields []UpdatedFieldsItem
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v UpdatedFields) unknownEnum() bool {
-	return slices.ContainsFunc(v, func(x UpdatedFieldsItem) bool { return !x.Valid() })
-}
 
 // One of: `name`, `filter`, `sorts`, `configuration`
 type UpdatedFieldsItem string
@@ -33712,12 +31421,6 @@ func (e UpdatedFieldsItem) Valid() bool {
 // The database properties that were created, updated, or deleted.
 type UpdatedProperties []UpdatedPropertiesItem
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v UpdatedProperties) unknownEnum() bool {
-	return slices.ContainsFunc(v, func(x UpdatedPropertiesItem) bool { return x.unknownEnum() })
-}
-
 // UpdatedPropertiesItem defines a model
 type UpdatedPropertiesItem struct {
 	// The ID of the database property that changed.
@@ -33726,12 +31429,6 @@ type UpdatedPropertiesItem struct {
 	Name string `json:"name"`
 	// The action taken on the property.
 	Action UpdatedPropertiesItemAction `json:"action"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *UpdatedPropertiesItem) unknownEnum() bool {
-	return !v.Action.Valid()
 }
 
 // The action taken on the property.
@@ -33886,7 +31583,7 @@ func (v *User) MarshalJSONTo(enc *jsontext.Encoder) error {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *User) unknownEnum() bool {
-	return !v.Type.Valid() ||
+	return v.Type != "" && !v.Type.Valid() ||
 		v.Bot != nil && v.Bot.unknownEnum()
 }
 
@@ -34078,7 +31775,7 @@ type VerificationProperty struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *VerificationProperty) unknownEnum() bool {
-	return !v.State.Valid() ||
+	return v.State != "" && !v.State.Valid() ||
 		v.VerifiedBy.unknownEnum()
 }
 
@@ -34090,7 +31787,7 @@ type VerificationPropertyDoesNotEqualFilter struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *VerificationPropertyDoesNotEqualFilter) unknownEnum() bool {
-	return !v.DoesNotEqual.Valid()
+	return v.DoesNotEqual != "" && !v.DoesNotEqual.Valid()
 }
 
 // VerificationPropertyItem defines a model
@@ -34149,7 +31846,7 @@ type VerificationPropertyStatusFilter struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *VerificationPropertyStatusFilter) unknownEnum() bool {
-	return !v.Status.Valid()
+	return v.Status != "" && !v.Status.Valid()
 }
 
 // VerificationPropertyUnverified defines a model
@@ -34481,20 +32178,6 @@ func (v *ViewConfig) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteValue(out)
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ViewConfig) unknownEnum() bool {
-	return v.TableViewConfig != nil && v.TableViewConfig.unknownEnum() ||
-		v.BoardViewConfig != nil && v.BoardViewConfig.unknownEnum() ||
-		v.CalendarViewConfig != nil && v.CalendarViewConfig.unknownEnum() ||
-		v.TimelineViewConfig != nil && v.TimelineViewConfig.unknownEnum() ||
-		v.GalleryViewConfig != nil && v.GalleryViewConfig.unknownEnum() ||
-		v.ListViewConfig != nil && v.ListViewConfig.unknownEnum() ||
-		v.MapViewConfig != nil && v.MapViewConfig.unknownEnum() ||
-		v.FormViewConfig != nil && v.FormViewConfig.unknownEnum() ||
-		v.ChartViewConfig != nil && v.ChartViewConfig.unknownEnum()
-}
-
 // View configuration, typed by view type (table, board, calendar, etc.).
 // ViewConfigResponse is an untagged oneOf union: exactly one field is set after unmarshaling.
 type ViewConfigResponse struct {
@@ -34673,25 +32356,12 @@ type ViewCreatedWebhookPayload struct {
 	Data ViewCreatedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ViewCreatedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // Additional event-specific data.
 type ViewCreatedWebhookPayloadData struct {
 	// The parent of the created view.
 	Parent WebhookParentBlock `json:"parent"`
 	// The type of the created view (e.g. `table`, `board`, `list`, `calendar`, `gallery`, `timeline`).
 	ViewType string `json:"view_type"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ViewCreatedWebhookPayloadData) unknownEnum() bool {
-	return v.Parent.unknownEnum()
 }
 
 // ViewDeletedWebhookPayload defines a model
@@ -34703,13 +32373,6 @@ type ViewDeletedWebhookPayload struct {
 	Entity WebhookViewEntity `json:"entity"`
 	// Additional event-specific data.
 	Data PageMovedWebhookPayloadData `json:"data"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ViewDeletedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Data.unknownEnum()
 }
 
 // ViewList defines a model
@@ -34887,15 +32550,6 @@ type ViewPropertyConfig struct {
 	TimeFormat TimeFormat `json:"time_format,omitzero"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ViewPropertyConfig) unknownEnum() bool {
-	return v.StatusShowAs != "" && !v.StatusShowAs.Valid() ||
-		v.CardPropertyWidthMode != "" && !v.CardPropertyWidthMode.Valid() ||
-		v.DateFormat != "" && !v.DateFormat.Valid() ||
-		v.TimeFormat != "" && !v.TimeFormat.Valid()
-}
-
 // ViewPropertyConfigResponse defines a model
 type ViewPropertyConfigResponse struct {
 	// Property ID (stable identifier).
@@ -35010,26 +32664,12 @@ type ViewUpdatedWebhookPayload struct {
 	Data ViewUpdatedWebhookPayloadData `json:"data"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ViewUpdatedWebhookPayload) unknownEnum() bool {
-	return v.BaseWebhookPayload.unknownEnum() ||
-		v.Data.unknownEnum()
-}
-
 // Additional event-specific data.
 type ViewUpdatedWebhookPayloadData struct {
 	// The parent of the updated view.
 	Parent WebhookParentBlock `json:"parent"`
 	// The fields of the view that were updated.
 	UpdatedFields UpdatedFields `json:"updated_fields"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *ViewUpdatedWebhookPayloadData) unknownEnum() bool {
-	return v.Parent.unknownEnum() ||
-		v.UpdatedFields.unknownEnum()
 }
 
 // WebhookCommentEntity defines a model
@@ -35046,12 +32686,6 @@ type WebhookDatabaseEventEntity struct {
 	ID ID `json:"id"`
 	// The type of entity. For linked databases, this is `block`.
 	Type WebhookDatabaseEventEntityType `json:"type"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *WebhookDatabaseEventEntity) unknownEnum() bool {
-	return !v.Type.Valid()
 }
 
 // The type of entity. For linked databases, this is `block`.
@@ -35081,12 +32715,6 @@ type WebhookExternalBlock struct {
 	Type WebhookUpdatedBlockType `json:"type"`
 }
 
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *WebhookExternalBlock) unknownEnum() bool {
-	return !v.Type.Valid()
-}
-
 // WebhookFileUploadEntity defines a model
 type WebhookFileUploadEntity struct {
 	// Always `file_upload`
@@ -35111,12 +32739,6 @@ type WebhookParentBlock struct {
 	Type WebhookParentBlockType `json:"type"`
 	// The data source ID of the parent, if applicable.
 	DataSourceID ID `json:"data_source_id,omitzero"`
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *WebhookParentBlock) unknownEnum() bool {
-	return !v.Type.Valid()
 }
 
 // The type of the parent.
@@ -35250,12 +32872,6 @@ func (v *WidgetPlacement) MarshalJSONTo(enc *jsontext.Encoder) error {
 	}
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
-}
-
-// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
-// records.
-func (v *WidgetPlacement) unknownEnum() bool {
-	return !v.Type.Valid()
 }
 
 // Limits and restrictions that apply to the bot's workspace
