@@ -3333,10 +3333,10 @@ type BlockList struct {
 	Type       string           `json:"type"`
 	Block      EmptyObject      `json:"block"`
 	Object     string           `json:"object"`
-	NextCursor string           `json:"next_cursor"`
 	HasMore    bool             `json:"has_more"`
 	Results    []BlockOrPartial `json:"results"`
 	RequestID  uuid.UUID        `json:"request_id,omitzero"`
+	NextCursor ID               `json:"next_cursor"`
 }
 
 // BlockObject defines a model
@@ -14993,18 +14993,6 @@ func (v *PageOrDataSource) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// PageOrDataSourceList defines a model
-type PageOrDataSourceList struct {
-	Type             string             `json:"type"`
-	PageOrDataSource EmptyObject        `json:"page_or_data_source"`
-	Object           string             `json:"object"`
-	NextCursor       string             `json:"next_cursor"`
-	HasMore          bool               `json:"has_more"`
-	Results          []PageOrDataSource `json:"results"`
-	RequestStatus    RequestStatus      `json:"request_status,omitzero"`
-	RequestID        uuid.UUID          `json:"request_id,omitzero"`
-}
-
 // PageOrPartial defines a model
 // PageOrPartial is an untagged anyOf union: at least one field is set after unmarshaling.
 type PageOrPartial struct {
@@ -17071,15 +17059,16 @@ type PluginListResultsItem struct {
 
 // PostDatabaseQuery defines a model
 type PostDatabaseQuery struct {
-	Sorts       Sorts  `json:"sorts,omitzero"`
-	StartCursor string `json:"start_cursor,omitzero"`
-	PageSize    int    `json:"page_size,omitzero"`
+	Sorts    Sorts `json:"sorts,omitzero"`
+	PageSize int   `json:"page_size,omitzero"`
 	// Whether to return archived pages. When omitted or false, returns non-archived pages. When true, returns archived pages.
 	IsArchived *bool `json:"is_archived,omitzero"`
 	// Optionally filter the results to only include pages or data sources. Regular, non-wiki databases only support page children. The default behavior is no result type filtering, in other words, returning both pages and data sources for wikis.
 	ResultType ResultType `json:"result_type,omitzero"`
 	// A filter of a data source's entries: by a property or a timestamp, or by any or all of other filters.
 	Filter Filter `json:"filter,omitzero"`
+	// Where a query of a data source goes on: "s:" and two UUIDs, unlike the cursor of any other list.
+	StartCursor QueryCursor `json:"start_cursor,omitzero"`
 }
 
 // PostPage defines a model
@@ -19977,6 +19966,22 @@ func (e QueryAgentsSortsItemProperty) Valid() bool {
 	default:
 		return false
 	}
+}
+
+// Where a query of a data source goes on: "s:" and two UUIDs, unlike the cursor of any other list.
+type QueryCursor string
+
+// QueryList defines a model
+type QueryList struct {
+	Type             string             `json:"type"`
+	PageOrDataSource EmptyObject        `json:"page_or_data_source"`
+	Object           string             `json:"object"`
+	HasMore          bool               `json:"has_more"`
+	Results          []PageOrDataSource `json:"results"`
+	RequestStatus    RequestStatus      `json:"request_status,omitzero"`
+	// Where a query of a data source goes on: "s:" and two UUIDs, unlike the cursor of any other list.
+	NextCursor QueryCursor `json:"next_cursor"`
+	RequestID  uuid.UUID   `json:"request_id,omitzero"`
 }
 
 // QueryMeetingNotes defines a model
@@ -23861,6 +23866,18 @@ type RunToolsAutomatically struct {
 	Read bool `json:"read"`
 	// Whether write tool calls run without a confirmation step.
 	Write bool `json:"write"`
+}
+
+// SearchList defines a model
+type SearchList struct {
+	Type             string             `json:"type"`
+	PageOrDataSource EmptyObject        `json:"page_or_data_source"`
+	Object           string             `json:"object"`
+	HasMore          bool               `json:"has_more"`
+	Results          []PageOrDataSource `json:"results"`
+	RequestStatus    RequestStatus      `json:"request_status,omitzero"`
+	NextCursor       ID                 `json:"next_cursor"`
+	RequestID        uuid.UUID          `json:"request_id,omitzero"`
 }
 
 // One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`

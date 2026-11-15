@@ -793,6 +793,116 @@ func setResults(doc *openapi.Document) error {
 	return nil
 }
 
+// typeCursors types each cursor of a list as Notion gives it: a UUID for a search and for the blocks within a block,
+// and a QueryCursor, "s:" and two UUIDs, for a query of a data source. Search and query share their results upstream,
+// so the search's become a list of their own, SearchList, and the query's QueryList.
+func typeCursors(doc *openapi.Document) error {
+	const (
+		queryPath    = "/v1/data_sources/{data_source_id}/query"
+		searchPath   = "/v1/search"
+		childrenPath = "/v1/blocks/{block_id}/children"
+	)
+
+	doc.Components.Schemas.Set("QueryCursor", &openapi.Schema{
+		Type:        openapi.TypeString,
+		Description: "Where a query of a data source goes on: \"s:\" and two UUIDs, unlike the cursor of any other list.",
+	})
+
+	body, err := queryBody(doc)
+	if err != nil {
+		return err
+	}
+
+	if body = resolved(body); body.Properties["start_cursor"] == nil {
+		return fmt.Errorf("POST %s takes no start_cursor", queryPath)
+	}
+
+	body.Properties.Set("start_cursor", edit.SchemaRef(doc, "QueryCursor"))
+
+	query, err := answer(doc, queryPath, http.MethodPost)
+	if err != nil {
+		return err
+	}
+
+	search, err := answer(doc, searchPath, http.MethodPost)
+	if err != nil {
+		return err
+	}
+
+	const shared = "PageOrDataSourceList"
+
+	list, ok := doc.Components.Schemas[shared]
+	if !ok || query.Ref == nil || search.Ref == nil {
+		return componentErr(shared, errors.New("not what the query and the search answer with"))
+	}
+
+	searchList := *list
+	searchList.Properties = maps.Clone(list.Properties)
+	doc.Components.Schemas.Set("SearchList", &searchList)
+	search.Replace(edit.SchemaRef(doc, "SearchList"))
+
+	if err := edit.RenameSchema(doc, shared, "QueryList"); err != nil {
+		return err
+	}
+
+	children, err := answer(doc, childrenPath, http.MethodGet)
+	if err != nil {
+		return err
+	}
+
+	for name, s := range map[string]*openapi.Schema{
+		"QueryList": doc.Components.Schemas["QueryList"], "SearchList": &searchList, childrenPath: resolved(children),
+	} {
+		cursor := "ID"
+		if name == "QueryList" {
+			cursor = "QueryCursor"
+		}
+
+		if s.Properties["next_cursor"] == nil {
+			return propertyErr(name, "next_cursor", errors.New("not found"))
+		}
+
+		s.Properties.Set("next_cursor", &openapi.Schema{
+			OneOf: openapi.SchemaList{edit.SchemaRef(doc, cursor), {Type: openapi.TypeNull}},
+		})
+	}
+
+	return nil
+}
+
+// answer is the schema of the JSON a successful call of the operation answers with.
+func answer(doc *openapi.Document, path, method string) (*openapi.Schema, error) {
+	item, ok := doc.Paths[openapi.Path(path)]
+	if !ok {
+		return nil, fmt.Errorf("no path %s", path)
+	}
+
+	for m, op := range item.Operations {
+		if m != method {
+			continue
+		}
+
+		for code, rsp := range op.Responses.ByIndex() {
+			if code.IsSuccess() && rsp.Value != nil {
+				if mt, ok := rsp.Value.Content["application/json"]; ok && mt.Schema != nil {
+					return mt.Schema, nil
+				}
+			}
+		}
+	}
+
+	return nil, fmt.Errorf("%s %s answers with no JSON", method, path)
+}
+
+// resolved is the schema s refers to, or s.
+func resolved(s *openapi.Schema) *openapi.Schema {
+	if s.Ref != nil && s.Ref.Value != nil {
+		return s.Ref.Value
+	}
+
+	return s
+}
+
 // requestID is the schema of the request_id Notion sends with every response.
 func requestID() *openapi.Schema {
 	return &openapi.Schema{Type: openapi.TypeString, Format: openapi.FormatUUID}
@@ -1505,6 +1615,10 @@ func fixOpenAPI() (*openapi.Document, error) {
 	nameLists(doc)
 
 	if err := setResults(doc); err != nil {
+		return nil, err
+	}
+
+	if err := typeCursors(doc); err != nil {
 		return nil, err
 	}
 

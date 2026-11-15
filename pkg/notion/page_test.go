@@ -47,7 +47,7 @@ func TestPageOrDataSourcePage(t *testing.T) {
 		t.Fatal("no query of the board's data source is recorded")
 	}
 
-	var list PageOrDataSourceList
+	var list QueryList
 	if err := json.Unmarshal(ias[i].Response.Body, &list, jsonOpts); err != nil {
 		t.Fatal(err)
 	}
