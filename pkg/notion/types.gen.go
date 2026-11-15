@@ -26167,7 +26167,7 @@ func (v *StatusOptionUpdate) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		return err
 	}
 
-	chosen, err := union.ChooseVariants(raw, "", variantsOfStatusOptionUpdate, membersOfStatusOptionUpdate, true, strict)
+	chosen, err := union.ChooseVariants(raw, "", variantsOfStatusOptionUpdate, membersOfStatusOptionUpdate, false, strict)
 	if err != nil {
 		return err
 	}
@@ -26246,15 +26246,15 @@ func (v *StatusOptionUpdate) MarshalJSONTo(enc *jsontext.Encoder) error {
 		set++
 	}
 
-	if set != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of StatusOptionUpdateAllOf set, got %d", set)}
+	if set == 0 {
+		return &json.SemanticError{Err: errors.New("no alternative of StatusOptionUpdateAllOf set")}
 	}
 
 	return enc.WriteValue(out)
 }
 
 // StatusOptionUpdateAllOf defines a model
-// StatusOptionUpdateAllOf is an untagged oneOf union: exactly one field is set after unmarshaling.
+// StatusOptionUpdateAllOf is an untagged anyOf union: at least one field is set after unmarshaling.
 type StatusOptionUpdateAllOf struct {
 	StatusOptionUpdateAllOfName *StatusOptionUpdateAllOfName
 	StatusOptionUpdateAllOfID   *StatusOptionUpdateAllOfID
@@ -26270,7 +26270,6 @@ func (v *StatusOptionUpdateAllOf) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 	}
 
 	opts := jsonOptsOf(dec)
-	strict := union.Strict(dec)
 
 	raw, err := dec.ReadValue()
 	if err != nil {
@@ -26279,8 +26278,7 @@ func (v *StatusOptionUpdateAllOf) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 
 	var matched int
 
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
+	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"name"}, map[string]bool{}, map[string]string{}
 		if union.Fits(raw, required, nullable, pinned) {
@@ -26292,8 +26290,7 @@ func (v *StatusOptionUpdateAllOf) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 		}
 	}
 
-	// leniently, more than one may match, and the first does
-	if strict || matched == 0 {
+	{
 		// decoding checks neither the members the alternative requires nor those it pins to one value
 		required, nullable, pinned := []string{"id"}, map[string]bool{}, map[string]string{}
 		if union.Fits(raw, required, nullable, pinned) {
@@ -26305,8 +26302,8 @@ func (v *StatusOptionUpdateAllOf) UnmarshalJSONFrom(dec *jsontext.Decoder) error
 		}
 	}
 
-	if matched != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("matches %d of its alternatives, want exactly one", matched)}
+	if matched == 0 {
+		return &json.SemanticError{Err: errors.New("matches none of its alternatives")}
 	}
 
 	return nil
@@ -29218,7 +29215,7 @@ func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem) UnmarshalJ
 		return err
 	}
 
-	chosen, err := union.ChooseVariants(raw, "", variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem, membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem, true, strict)
+	chosen, err := union.ChooseVariants(raw, "", variantsOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem, membersOfUpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem, false, strict)
 	if err != nil {
 		return err
 	}
@@ -29297,8 +29294,8 @@ func (v *UpdateADataSourcePropertiesValueOneOfAllOfSelectOptionsItem) MarshalJSO
 		set++
 	}
 
-	if set != 1 {
-		return &json.SemanticError{Err: fmt.Errorf("want exactly one alternative of StatusOptionUpdateAllOf set, got %d", set)}
+	if set == 0 {
+		return &json.SemanticError{Err: errors.New("no alternative of StatusOptionUpdateAllOf set")}
 	}
 
 	return enc.WriteValue(out)
