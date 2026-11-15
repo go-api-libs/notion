@@ -28,8 +28,8 @@ func TestPostDatabaseQueryAll(t *testing.T) {
 			t.Error(err)
 		}
 
-		if body.PageSize != maxPageSize {
-			t.Errorf("page size %d, want %d", body.PageSize, maxPageSize)
+		if body.PageSize != 2 {
+			t.Errorf("page size %d, want the 2 asked for on every page", body.PageSize)
 		}
 
 		cursors = append(cursors, body.StartCursor)
@@ -46,7 +46,7 @@ func TestPostDatabaseQueryAll(t *testing.T) {
 
 	var ids []uuid.UUID
 
-	for r, err := range testClient(t, srv).PostDatabaseQueryAll(t.Context(), uuid.New(), nil, PostDatabaseQuery{}) {
+	for r, err := range testClient(t, srv).PostDatabaseQueryAll(t.Context(), uuid.New(), nil, PostDatabaseQuery{PageSize: 2}) {
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -106,8 +106,8 @@ func TestGetBlockChildrenAll(t *testing.T) {
 			t.Errorf("path %s, want %s", r.URL.Path, want)
 		}
 
-		if got := r.URL.Query().Get("page_size"); got != "100" {
-			t.Errorf("page size %s, want 100", got)
+		if got := r.URL.Query().Get("page_size"); got != "2" {
+			t.Errorf("page size %s, want the 2 asked for on every page", got)
 		}
 
 		cursor := r.URL.Query().Get("start_cursor")
@@ -125,7 +125,7 @@ func TestGetBlockChildrenAll(t *testing.T) {
 
 	var ids []uuid.UUID
 
-	for b, err := range testClient(t, srv).GetBlockChildrenAll(t.Context(), page) {
+	for b, err := range testClient(t, srv).GetBlockChildrenAll(t.Context(), page, &GetBlockChildrenParams{PageSize: 2}) {
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -157,8 +157,8 @@ func TestPostSearchAll(t *testing.T) {
 			t.Error(err)
 		}
 
-		if body.Query != "kale" || body.PageSize != maxPageSize {
-			t.Errorf("searched %q, %v at a time, want %q, %d", body.Query, body.PageSize, "kale", maxPageSize)
+		if body.Query != "kale" || body.PageSize != 2 {
+			t.Errorf("searched %q, %v at a time, want %q, 2 on every page", body.Query, body.PageSize, "kale")
 		}
 
 		cursors = append(cursors, body.StartCursor)
@@ -175,7 +175,7 @@ func TestPostSearchAll(t *testing.T) {
 
 	var ids []uuid.UUID
 
-	for r, err := range testClient(t, srv).PostSearchAll(t.Context(), nil, PostSearch{Query: "kale"}) {
+	for r, err := range testClient(t, srv).PostSearchAll(t.Context(), nil, PostSearch{Query: "kale", PageSize: new(2.0)}) {
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -214,7 +214,7 @@ func TestAll_Stops(t *testing.T) {
 
 	c := testClient(t, srv)
 
-	for _, err := range c.GetBlockChildrenAll(t.Context(), uuid.New()) {
+	for _, err := range c.GetBlockChildrenAll(t.Context(), uuid.New(), nil) {
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -233,7 +233,7 @@ func TestAll_Stops(t *testing.T) {
 		errs   []error
 	)
 
-	for _, err := range c.GetBlockChildrenAll(t.Context(), uuid.New()) {
+	for _, err := range c.GetBlockChildrenAll(t.Context(), uuid.New(), nil) {
 		if err != nil {
 			errs = append(errs, err)
 			continue

@@ -793,9 +793,10 @@ func setResults(doc *openapi.Document) error {
 	return nil
 }
 
-// typeCursors types each cursor of a list as Notion gives it: a UUID for a search and for the blocks within a block,
-// and a QueryCursor, "s:" and two UUIDs, for a query of a data source. Search and query share their results upstream,
-// so the search's become a list of their own, SearchList, and the query's QueryList.
+// typeCursors types each cursor of a list as Notion gives it: a UUID for a search and for each list whose start_cursor
+// is a query parameter, as the blocks within a block, and a QueryCursor, "s:" and two UUIDs, for a query of a data
+// source. Search and query share their results upstream, so the search's become a list of their own, SearchList, and
+// the query's QueryList. The templates of a data source, which their list calls so, are named as its items.
 func typeCursors(doc *openapi.Document) error {
 	const (
 		queryPath    = "/v1/data_sources/{data_source_id}/query"
@@ -845,14 +846,33 @@ func typeCursors(doc *openapi.Document) error {
 		return err
 	}
 
-	children, err := answer(doc, childrenPath, http.MethodGet)
-	if err != nil {
-		return err
+	lists := map[string]*openapi.Schema{"QueryList": doc.Components.Schemas["QueryList"], "SearchList": &searchList}
+
+	// a list whose start_cursor is a query parameter, which is a UUID, gives the cursor of its next page as one
+	for path, item := range doc.Paths.ByIndex() {
+		for method, op := range item.Operations {
+			if !slices.ContainsFunc(op.Parameters, func(p *openapi.ParameterRef) bool {
+				return p.Value != nil && p.Value.Name == "start_cursor" && p.Value.In == openapi.ParameterLocationQuery
+			}) {
+				continue
+			}
+
+			a, err := answer(doc, string(path), method)
+			if err != nil {
+				return err
+			}
+
+			if s := resolved(a); s.Properties["next_cursor"] != nil {
+				lists[method+" "+string(path)] = s
+			}
+		}
 	}
 
-	for name, s := range map[string]*openapi.Schema{
-		"QueryList": doc.Components.Schemas["QueryList"], "SearchList": &searchList, childrenPath: resolved(children),
-	} {
+	if lists[http.MethodGet+" "+childrenPath] == nil {
+		return fmt.Errorf("GET %s answers with no cursor of its next page", childrenPath)
+	}
+
+	for name, s := range lists {
 		cursor := "ID"
 		if name == "QueryList" {
 			cursor = "QueryCursor"
@@ -866,6 +886,14 @@ func typeCursors(doc *openapi.Document) error {
 			OneOf: openapi.SchemaList{edit.SchemaRef(doc, cursor), {Type: openapi.TypeNull}},
 		})
 	}
+
+	// a data source's templates are its list's items, which no other list calls so
+	templates, ok := doc.Paths["/v1/data_sources/{data_source_id}/templates"]
+	if !ok || templates.Get == nil {
+		return errors.New("GET /v1/data_sources/{data_source_id}/templates not found")
+	}
+
+	templates.Get.Extensions = jsontext.Value(`{"x-pagination":{"items":"templates"}}`)
 
 	return nil
 }
