@@ -931,6 +931,41 @@ func resolved(s *openapi.Schema) *openapi.Schema {
 	return s
 }
 
+// overlapAlternatives makes an anyOf of each oneOf whose alternatives are objects of the same properties, which differ
+// only in those they require: an option by its name and one by its ID, of which one with both is either, as Notion
+// takes an option renamed by its ID. A oneOf of them would refuse what both match. One that finds none fails the run.
+func overlapAlternatives(doc *openapi.Document) error {
+	found := 0
+
+	edit.WalkSchemas(doc, func(s *openapi.Schema) {
+		if len(s.OneOf) < 2 {
+			return
+		}
+
+		first := s.OneOf[0]
+		for _, alt := range s.OneOf {
+			if alt.Type != openapi.TypeObject || len(alt.Properties) == 0 || len(alt.Properties) != len(first.Properties) {
+				return
+			}
+
+			for name, p := range alt.Properties {
+				if q, ok := first.Properties[name]; !ok || !equalJSON(p, q) {
+					return
+				}
+			}
+		}
+
+		s.AnyOf, s.OneOf = s.OneOf, nil
+		found++
+	})
+
+	if found == 0 {
+		return errors.New("no oneOf of alternatives that overlap")
+	}
+
+	return nil
+}
+
 // requestID is the schema of the request_id Notion sends with every response.
 func requestID() *openapi.Schema {
 	return &openapi.Schema{Type: openapi.TypeString, Format: openapi.FormatUUID}
@@ -1517,6 +1552,10 @@ func queryBody(doc *openapi.Document) (*openapi.Schema, error) {
 func fixOpenAPI() (*openapi.Document, error) {
 	doc, err := openapi.LoadFromFile(pathOpenAPI)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := overlapAlternatives(doc); err != nil {
 		return nil, err
 	}
 

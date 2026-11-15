@@ -22478,7 +22478,7 @@
         ]
       },
       "StatusOptionUpdateAllOf": {
-        "oneOf": [
+        "anyOf": [
           {
             "$ref": "#/components/schemas/StatusOptionUpdateAllOfName"
           },
