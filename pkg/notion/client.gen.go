@@ -12,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"iter"
 	"net/http"
 	"net/url"
 	"os"
@@ -21,6 +22,7 @@ import (
 
 	"github.com/MarkRosemaker/cassette"
 	"github.com/go-api-libs/api"
+	"github.com/go-api-libs/api/paging"
 )
 
 const defaultUserAgent = "Notion API"
@@ -369,6 +371,30 @@ func (c *Client) GetUsers(ctx context.Context, params *GetUsersParams) (*UserLis
 	default:
 		return nil, c.failed(ia, api.NewErrUnknownStatusCode(rsp))
 	}
+}
+
+// GetUsersPages yields each page of what GetUsers lists, fetching the next as the one before is used up.
+// It stops when the loop breaks, and at the first error, which it yields.
+func (c *Client) GetUsersPages(ctx context.Context, params *GetUsersParams) iter.Seq2[*UserList, error] {
+	return paging.Pages(func(cursor ID) (*UserList, error) {
+		var p GetUsersParams
+		if params != nil {
+			p = *params
+		}
+		p.StartCursor = cursor
+
+		return c.GetUsers(ctx, &p)
+	}, func(l *UserList) (ID, bool) {
+		return l.NextCursor, l.HasMore
+	})
+}
+
+// GetUsersAll yields every item of what GetUsers lists, fetching a page at a time. It stops when the loop
+// breaks, and at the first error, which it yields.
+func (c *Client) GetUsersAll(ctx context.Context, params *GetUsersParams) iter.Seq2[User, error] {
+	return paging.Items(c.GetUsersPages(ctx, params), func(l *UserList) []User {
+		return l.Results
+	})
 }
 
 // Create a page
@@ -1408,6 +1434,30 @@ func (c *Client) GetBlockChildren(ctx context.Context, blockID ID, params *GetBl
 	}
 }
 
+// GetBlockChildrenPages yields each page of what GetBlockChildren lists, fetching the next as the one before is used up.
+// It stops when the loop breaks, and at the first error, which it yields.
+func (c *Client) GetBlockChildrenPages(ctx context.Context, blockID ID, params *GetBlockChildrenParams) iter.Seq2[*BlockList, error] {
+	return paging.Pages(func(cursor ID) (*BlockList, error) {
+		var p GetBlockChildrenParams
+		if params != nil {
+			p = *params
+		}
+		p.StartCursor = cursor
+
+		return c.GetBlockChildren(ctx, blockID, &p)
+	}, func(l *BlockList) (ID, bool) {
+		return l.NextCursor, l.HasMore
+	})
+}
+
+// GetBlockChildrenAll yields every item of what GetBlockChildren lists, fetching a page at a time. It stops when the loop
+// breaks, and at the first error, which it yields.
+func (c *Client) GetBlockChildrenAll(ctx context.Context, blockID ID, params *GetBlockChildrenParams) iter.Seq2[BlockOrPartial, error] {
+	return paging.Items(c.GetBlockChildrenPages(ctx, blockID, params), func(l *BlockList) []BlockOrPartial {
+		return l.Results
+	})
+}
+
 // Append block children
 //
 //	PATCH /blocks/{block_id}/children
@@ -1739,6 +1789,26 @@ func (c *Client) PostDatabaseQuery(ctx context.Context, dataSourceID ID, params 
 	}
 }
 
+// PostDatabaseQueryPages yields each page of what PostDatabaseQuery lists, fetching the next as the one before is used up.
+// It stops when the loop breaks, and at the first error, which it yields.
+func (c *Client) PostDatabaseQueryPages(ctx context.Context, dataSourceID ID, params *PostDatabaseQueryParams, body PostDatabaseQuery) iter.Seq2[*QueryList, error] {
+	return paging.Pages(func(cursor QueryCursor) (*QueryList, error) {
+		body.StartCursor = cursor
+
+		return c.PostDatabaseQuery(ctx, dataSourceID, params, body)
+	}, func(l *QueryList) (QueryCursor, bool) {
+		return l.NextCursor, l.HasMore
+	})
+}
+
+// PostDatabaseQueryAll yields every item of what PostDatabaseQuery lists, fetching a page at a time. It stops when the loop
+// breaks, and at the first error, which it yields.
+func (c *Client) PostDatabaseQueryAll(ctx context.Context, dataSourceID ID, params *PostDatabaseQueryParams, body PostDatabaseQuery) iter.Seq2[PageOrDataSource, error] {
+	return paging.Items(c.PostDatabaseQueryPages(ctx, dataSourceID, params, body), func(l *QueryList) []PageOrDataSource {
+		return l.Results
+	})
+}
+
 // Create a data source
 //
 //	POST /data_sources
@@ -1912,6 +1982,30 @@ func (c *Client) ListDataSourceTemplates(ctx context.Context, dataSourceID ID, p
 	default:
 		return nil, c.failed(ia, api.NewErrUnknownStatusCode(rsp))
 	}
+}
+
+// ListDataSourceTemplatesPages yields each page of what ListDataSourceTemplates lists, fetching the next as the one before is used up.
+// It stops when the loop breaks, and at the first error, which it yields.
+func (c *Client) ListDataSourceTemplatesPages(ctx context.Context, dataSourceID ID, params *ListDataSourceTemplatesParams) iter.Seq2[*ListDataSourceTemplatesOk, error] {
+	return paging.Pages(func(cursor ID) (*ListDataSourceTemplatesOk, error) {
+		var p ListDataSourceTemplatesParams
+		if params != nil {
+			p = *params
+		}
+		p.StartCursor = cursor
+
+		return c.ListDataSourceTemplates(ctx, dataSourceID, &p)
+	}, func(l *ListDataSourceTemplatesOk) (ID, bool) {
+		return l.NextCursor, l.HasMore
+	})
+}
+
+// ListDataSourceTemplatesAll yields every item of what ListDataSourceTemplates lists, fetching a page at a time. It stops when the loop
+// breaks, and at the first error, which it yields.
+func (c *Client) ListDataSourceTemplatesAll(ctx context.Context, dataSourceID ID, params *ListDataSourceTemplatesParams) iter.Seq2[ListDataSourceTemplatesOkTemplatesItem, error] {
+	return paging.Items(c.ListDataSourceTemplatesPages(ctx, dataSourceID, params), func(l *ListDataSourceTemplatesOk) []ListDataSourceTemplatesOkTemplatesItem {
+		return l.Templates
+	})
 }
 
 // Retrieve a database
@@ -2245,6 +2339,26 @@ func (c *Client) PostSearch(ctx context.Context, params *PostSearchParams, body 
 	}
 }
 
+// PostSearchPages yields each page of what PostSearch lists, fetching the next as the one before is used up.
+// It stops when the loop breaks, and at the first error, which it yields.
+func (c *Client) PostSearchPages(ctx context.Context, params *PostSearchParams, body PostSearch) iter.Seq2[*SearchList, error] {
+	return paging.Pages(func(cursor ID) (*SearchList, error) {
+		body.StartCursor = cursor
+
+		return c.PostSearch(ctx, params, body)
+	}, func(l *SearchList) (ID, bool) {
+		return l.NextCursor, l.HasMore
+	})
+}
+
+// PostSearchAll yields every item of what PostSearch lists, fetching a page at a time. It stops when the loop
+// breaks, and at the first error, which it yields.
+func (c *Client) PostSearchAll(ctx context.Context, params *PostSearchParams, body PostSearch) iter.Seq2[PageOrDataSource, error] {
+	return paging.Items(c.PostSearchPages(ctx, params, body), func(l *SearchList) []PageOrDataSource {
+		return l.Results
+	})
+}
+
 // List comments
 //
 //	GET /comments
@@ -2333,6 +2447,26 @@ func (c *Client) ListComments(ctx context.Context, params ListCommentsParams) (*
 	default:
 		return nil, c.failed(ia, api.NewErrUnknownStatusCode(rsp))
 	}
+}
+
+// ListCommentsPages yields each page of what ListComments lists, fetching the next as the one before is used up.
+// It stops when the loop breaks, and at the first error, which it yields.
+func (c *Client) ListCommentsPages(ctx context.Context, params ListCommentsParams) iter.Seq2[*CommentList, error] {
+	return paging.Pages(func(cursor ID) (*CommentList, error) {
+		params.StartCursor = cursor
+
+		return c.ListComments(ctx, params)
+	}, func(l *CommentList) (ID, bool) {
+		return l.NextCursor, l.HasMore
+	})
+}
+
+// ListCommentsAll yields every item of what ListComments lists, fetching a page at a time. It stops when the loop
+// breaks, and at the first error, which it yields.
+func (c *Client) ListCommentsAll(ctx context.Context, params ListCommentsParams) iter.Seq2[Comment, error] {
+	return paging.Items(c.ListCommentsPages(ctx, params), func(l *CommentList) []Comment {
+		return l.Results
+	})
 }
 
 // Create a comment
@@ -2742,6 +2876,30 @@ func (c *Client) ListFileUploads(ctx context.Context, params *ListFileUploadsPar
 	}
 }
 
+// ListFileUploadsPages yields each page of what ListFileUploads lists, fetching the next as the one before is used up.
+// It stops when the loop breaks, and at the first error, which it yields.
+func (c *Client) ListFileUploadsPages(ctx context.Context, params *ListFileUploadsParams) iter.Seq2[*FileUploadList, error] {
+	return paging.Pages(func(cursor ID) (*FileUploadList, error) {
+		var p ListFileUploadsParams
+		if params != nil {
+			p = *params
+		}
+		p.StartCursor = cursor
+
+		return c.ListFileUploads(ctx, &p)
+	}, func(l *FileUploadList) (ID, bool) {
+		return l.NextCursor, l.HasMore
+	})
+}
+
+// ListFileUploadsAll yields every item of what ListFileUploads lists, fetching a page at a time. It stops when the loop
+// breaks, and at the first error, which it yields.
+func (c *Client) ListFileUploadsAll(ctx context.Context, params *ListFileUploadsParams) iter.Seq2[FileUpload, error] {
+	return paging.Items(c.ListFileUploadsPages(ctx, params), func(l *FileUploadList) []FileUpload {
+		return l.Results
+	})
+}
+
 // Create a file upload
 //
 //	POST /file_uploads
@@ -3149,6 +3307,30 @@ func (c *Client) ListCustomEmojis(ctx context.Context, params *ListCustomEmojisP
 	}
 }
 
+// ListCustomEmojisPages yields each page of what ListCustomEmojis lists, fetching the next as the one before is used up.
+// It stops when the loop breaks, and at the first error, which it yields.
+func (c *Client) ListCustomEmojisPages(ctx context.Context, params *ListCustomEmojisParams) iter.Seq2[*CustomEmojiList, error] {
+	return paging.Pages(func(cursor ID) (*CustomEmojiList, error) {
+		var p ListCustomEmojisParams
+		if params != nil {
+			p = *params
+		}
+		p.StartCursor = cursor
+
+		return c.ListCustomEmojis(ctx, &p)
+	}, func(l *CustomEmojiList) (ID, bool) {
+		return l.NextCursor, l.HasMore
+	})
+}
+
+// ListCustomEmojisAll yields every item of what ListCustomEmojis lists, fetching a page at a time. It stops when the loop
+// breaks, and at the first error, which it yields.
+func (c *Client) ListCustomEmojisAll(ctx context.Context, params *ListCustomEmojisParams) iter.Seq2[CustomEmojiResponse, error] {
+	return paging.Items(c.ListCustomEmojisPages(ctx, params), func(l *CustomEmojiList) []CustomEmojiResponse {
+		return l.Results
+	})
+}
+
 // List views
 //
 //	GET /views
@@ -3244,6 +3426,30 @@ func (c *Client) ListViews(ctx context.Context, params *ListViewsParams) (*ViewL
 	default:
 		return nil, c.failed(ia, api.NewErrUnknownStatusCode(rsp))
 	}
+}
+
+// ListViewsPages yields each page of what ListViews lists, fetching the next as the one before is used up.
+// It stops when the loop breaks, and at the first error, which it yields.
+func (c *Client) ListViewsPages(ctx context.Context, params *ListViewsParams) iter.Seq2[*ViewList, error] {
+	return paging.Pages(func(cursor ID) (*ViewList, error) {
+		var p ListViewsParams
+		if params != nil {
+			p = *params
+		}
+		p.StartCursor = cursor
+
+		return c.ListViews(ctx, &p)
+	}, func(l *ViewList) (ID, bool) {
+		return l.NextCursor, l.HasMore
+	})
+}
+
+// ListViewsAll yields every item of what ListViews lists, fetching a page at a time. It stops when the loop
+// breaks, and at the first error, which it yields.
+func (c *Client) ListViewsAll(ctx context.Context, params *ListViewsParams) iter.Seq2[DataSourceViewReference, error] {
+	return paging.Items(c.ListViewsPages(ctx, params), func(l *ViewList) []DataSourceViewReference {
+		return l.Results
+	})
 }
 
 // Create a view
@@ -3731,6 +3937,30 @@ func (c *Client) GetViewQueryResults(ctx context.Context, viewID ID, queryID ID,
 	}
 }
 
+// GetViewQueryResultsPages yields each page of what GetViewQueryResults lists, fetching the next as the one before is used up.
+// It stops when the loop breaks, and at the first error, which it yields.
+func (c *Client) GetViewQueryResultsPages(ctx context.Context, viewID ID, queryID ID, params *GetViewQueryResultsParams) iter.Seq2[*PageList, error] {
+	return paging.Pages(func(cursor ID) (*PageList, error) {
+		var p GetViewQueryResultsParams
+		if params != nil {
+			p = *params
+		}
+		p.StartCursor = cursor
+
+		return c.GetViewQueryResults(ctx, viewID, queryID, &p)
+	}, func(l *PageList) (ID, bool) {
+		return l.NextCursor, l.HasMore
+	})
+}
+
+// GetViewQueryResultsAll yields every item of what GetViewQueryResults lists, fetching a page at a time. It stops when the loop
+// breaks, and at the first error, which it yields.
+func (c *Client) GetViewQueryResultsAll(ctx context.Context, viewID ID, queryID ID, params *GetViewQueryResultsParams) iter.Seq2[PartialPage, error] {
+	return paging.Items(c.GetViewQueryResultsPages(ctx, viewID, queryID, params), func(l *PageList) []PartialPage {
+		return l.Results
+	})
+}
+
 // Delete a view query
 //
 //	DELETE /views/{view_id}/queries/{query_id}
@@ -4050,6 +4280,26 @@ func (c *Client) QueryAgents(ctx context.Context, body QueryAgents) (*AgentList,
 	default:
 		return nil, c.failed(ia, api.NewErrUnknownStatusCode(rsp))
 	}
+}
+
+// QueryAgentsPages yields each page of what QueryAgents lists, fetching the next as the one before is used up.
+// It stops when the loop breaks, and at the first error, which it yields.
+func (c *Client) QueryAgentsPages(ctx context.Context, body QueryAgents) iter.Seq2[*AgentList, error] {
+	return paging.Pages(func(cursor string) (*AgentList, error) {
+		body.StartCursor = cursor
+
+		return c.QueryAgents(ctx, body)
+	}, func(l *AgentList) (string, bool) {
+		return l.NextCursor, l.HasMore
+	})
+}
+
+// QueryAgentsAll yields every item of what QueryAgents lists, fetching a page at a time. It stops when the loop
+// breaks, and at the first error, which it yields.
+func (c *Client) QueryAgentsAll(ctx context.Context, body QueryAgents) iter.Seq2[AgentListResultsItem, error] {
+	return paging.Items(c.QueryAgentsPages(ctx, body), func(l *AgentList) []AgentListResultsItem {
+		return l.Results
+	})
 }
 
 // Get agent
@@ -4720,6 +4970,30 @@ func (c *Client) ListSkillsPlugins(ctx context.Context, params *ListSkillsPlugin
 	}
 }
 
+// ListSkillsPluginsPages yields each page of what ListSkillsPlugins lists, fetching the next as the one before is used up.
+// It stops when the loop breaks, and at the first error, which it yields.
+func (c *Client) ListSkillsPluginsPages(ctx context.Context, params *ListSkillsPluginsParams) iter.Seq2[*PluginList, error] {
+	return paging.Pages(func(cursor ID) (*PluginList, error) {
+		var p ListSkillsPluginsParams
+		if params != nil {
+			p = *params
+		}
+		p.StartCursor = cursor
+
+		return c.ListSkillsPlugins(ctx, &p)
+	}, func(l *PluginList) (ID, bool) {
+		return l.NextCursor, l.HasMore
+	})
+}
+
+// ListSkillsPluginsAll yields every item of what ListSkillsPlugins lists, fetching a page at a time. It stops when the loop
+// breaks, and at the first error, which it yields.
+func (c *Client) ListSkillsPluginsAll(ctx context.Context, params *ListSkillsPluginsParams) iter.Seq2[PluginListResultsItem, error] {
+	return paging.Items(c.ListSkillsPluginsPages(ctx, params), func(l *PluginList) []PluginListResultsItem {
+		return l.Results
+	})
+}
+
 // Get a plugin directory
 //
 //	GET /ai/plugins/{id}
@@ -5109,6 +5383,26 @@ func (c *Client) QuerySessions(ctx context.Context, body QuerySessions) (*Sessio
 	}
 }
 
+// QuerySessionsPages yields each page of what QuerySessions lists, fetching the next as the one before is used up.
+// It stops when the loop breaks, and at the first error, which it yields.
+func (c *Client) QuerySessionsPages(ctx context.Context, body QuerySessions) iter.Seq2[*SessionList, error] {
+	return paging.Pages(func(cursor string) (*SessionList, error) {
+		body.StartCursor = cursor
+
+		return c.QuerySessions(ctx, body)
+	}, func(l *SessionList) (string, bool) {
+		return l.NextCursor, l.HasMore
+	})
+}
+
+// QuerySessionsAll yields every item of what QuerySessions lists, fetching a page at a time. It stops when the loop
+// breaks, and at the first error, which it yields.
+func (c *Client) QuerySessionsAll(ctx context.Context, body QuerySessions) iter.Seq2[SessionListResultsItem, error] {
+	return paging.Items(c.QuerySessionsPages(ctx, body), func(l *SessionList) []SessionListResultsItem {
+		return l.Results
+	})
+}
+
 // Query session events
 //
 //	POST /sessions/{session_id}/events/query
@@ -5189,6 +5483,26 @@ func (c *Client) QuerySessionEvents(ctx context.Context, sessionID ID, body Quer
 	default:
 		return nil, c.failed(ia, api.NewErrUnknownStatusCode(rsp))
 	}
+}
+
+// QuerySessionEventsPages yields each page of what QuerySessionEvents lists, fetching the next as the one before is used up.
+// It stops when the loop breaks, and at the first error, which it yields.
+func (c *Client) QuerySessionEventsPages(ctx context.Context, sessionID ID, body QuerySessionEvents) iter.Seq2[*SessionEventList, error] {
+	return paging.Pages(func(cursor string) (*SessionEventList, error) {
+		body.StartCursor = cursor
+
+		return c.QuerySessionEvents(ctx, sessionID, body)
+	}, func(l *SessionEventList) (string, bool) {
+		return l.NextCursor, l.HasMore
+	})
+}
+
+// QuerySessionEventsAll yields every item of what QuerySessionEvents lists, fetching a page at a time. It stops when the loop
+// breaks, and at the first error, which it yields.
+func (c *Client) QuerySessionEventsAll(ctx context.Context, sessionID ID, body QuerySessionEvents) iter.Seq2[SessionEventListResultsItem, error] {
+	return paging.Items(c.QuerySessionEventsPages(ctx, sessionID, body), func(l *SessionEventList) []SessionEventListResultsItem {
+		return l.Results
+	})
 }
 
 // Cancel a session

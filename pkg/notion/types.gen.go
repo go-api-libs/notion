@@ -5518,15 +5518,15 @@ type CommentDeletedWebhookPayload struct {
 // CommentList defines a model
 type CommentList struct {
 	// Always `list`
-	Object     string    `json:"object"`
-	NextCursor ID        `json:"next_cursor"`
-	HasMore    bool      `json:"has_more"`
-	Results    []Comment `json:"results"`
+	Object  string    `json:"object"`
+	HasMore bool      `json:"has_more"`
+	Results []Comment `json:"results"`
 	// Always `comment`
 	Type          string                `json:"type"`
 	Comment       EmptyObject           `json:"comment"`
 	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
 	RequestID     uuid.UUID             `json:"request_id,omitzero"`
+	NextCursor    ID                    `json:"next_cursor"`
 }
 
 // CommentOrPartial defines a model
@@ -7367,10 +7367,9 @@ type CustomEmojiList struct {
 	// The list of custom emojis.
 	Results []CustomEmojiResponse `json:"results"`
 	// Whether there are more results available.
-	HasMore bool `json:"has_more"`
-	// The cursor to use for the next page of results, or null if there are no more results.
-	NextCursor ID        `json:"next_cursor"`
+	HasMore    bool      `json:"has_more"`
 	RequestID  uuid.UUID `json:"request_id,omitzero"`
+	NextCursor ID        `json:"next_cursor"`
 }
 
 // CustomEmojiPageIcon defines a model
@@ -9963,15 +9962,15 @@ type FileUploadID struct {
 // FileUploadList defines a model
 type FileUploadList struct {
 	// Always `list`
-	Object     string       `json:"object"`
-	NextCursor ID           `json:"next_cursor"`
-	HasMore    bool         `json:"has_more"`
-	Results    []FileUpload `json:"results"`
+	Object  string       `json:"object"`
+	HasMore bool         `json:"has_more"`
+	Results []FileUpload `json:"results"`
 	// Always `file_upload`
 	Type          string                `json:"type"`
 	FileUpload    EmptyObject           `json:"file_upload"`
 	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
 	RequestID     uuid.UUID             `json:"request_id,omitzero"`
+	NextCursor    ID                    `json:"next_cursor"`
 }
 
 // FileUploadObjectFileImportResultAllOfError defines a model
@@ -12346,9 +12345,8 @@ type ListDataSourceTemplatesOk struct {
 	// Array of templates available in this data source.
 	Templates ListDataSourceTemplatesOkTemplates `json:"templates"`
 	// Whether there are more templates available beyond this page.
-	HasMore bool `json:"has_more"`
-	// Cursor to use for the next page of results. Null if there are no more results.
-	NextCursor ID `json:"next_cursor"`
+	HasMore    bool `json:"has_more"`
+	NextCursor ID   `json:"next_cursor"`
 }
 
 // Array of templates available in this data source.
@@ -14858,15 +14856,15 @@ func (v *PageIconResponse) MarshalJSONTo(enc *jsontext.Encoder) error {
 // PageList defines a model
 type PageList struct {
 	// Always `list`
-	Object     string        `json:"object"`
-	NextCursor ID            `json:"next_cursor"`
-	HasMore    bool          `json:"has_more"`
-	Results    []PartialPage `json:"results"`
+	Object  string        `json:"object"`
+	HasMore bool          `json:"has_more"`
+	Results []PartialPage `json:"results"`
 	// Always `page`
 	Type          string                `json:"type"`
 	Page          EmptyObject           `json:"page"`
 	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
 	RequestID     uuid.UUID             `json:"request_id,omitzero"`
+	NextCursor    ID                    `json:"next_cursor"`
 }
 
 // PageLockedWebhookPayload defines a model
@@ -17036,13 +17034,13 @@ type PlacePropertyValue struct {
 // PluginList defines a model
 type PluginList struct {
 	// Always `list`
-	Object     string            `json:"object"`
-	Results    PluginListResults `json:"results"`
-	NextCursor string            `json:"next_cursor"`
-	HasMore    bool              `json:"has_more"`
+	Object  string            `json:"object"`
+	Results PluginListResults `json:"results"`
+	HasMore bool              `json:"has_more"`
 	// Always `plugin`
-	Type      string    `json:"type"`
-	RequestID uuid.UUID `json:"request_id,omitzero"`
+	Type       string    `json:"type"`
+	RequestID  uuid.UUID `json:"request_id,omitzero"`
+	NextCursor ID        `json:"next_cursor"`
 }
 
 // PluginListResults defines a model
@@ -30121,10 +30119,10 @@ type UserList struct {
 	Type       string      `json:"type"`
 	User       EmptyObject `json:"user"`
 	Object     string      `json:"object"`
-	NextCursor string      `json:"next_cursor"`
 	HasMore    bool        `json:"has_more"`
 	Results    []User      `json:"results"`
 	RequestID  uuid.UUID   `json:"request_id,omitzero"`
+	NextCursor ID          `json:"next_cursor"`
 }
 
 // UserOrPartial defines a model
@@ -30843,15 +30841,15 @@ type ViewDeletedWebhookPayload struct {
 // ViewList defines a model
 type ViewList struct {
 	// Always `list`
-	Object     string                    `json:"object"`
-	NextCursor ID                        `json:"next_cursor"`
-	HasMore    bool                      `json:"has_more"`
-	Results    []DataSourceViewReference `json:"results"`
+	Object  string                    `json:"object"`
+	HasMore bool                      `json:"has_more"`
+	Results []DataSourceViewReference `json:"results"`
 	// Always `view`
 	Type          string                `json:"type"`
 	View          EmptyObject           `json:"view"`
 	RequestStatus RequestStatusResponse `json:"request_status,omitzero"`
 	RequestID     uuid.UUID             `json:"request_id,omitzero"`
+	NextCursor    ID                    `json:"next_cursor"`
 }
 
 // Position of the new view in the database's view tab bar.

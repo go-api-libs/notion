@@ -1432,17 +1432,9 @@
             "$ref": "#/components/responses/error_api_529"
           }
         },
-        "x-codeSamples": [
-          {
-            "lang": "javascript",
-            "label": "TypeScript SDK",
-            "source": "import { Client } from \"@notionhq/client\"\n\nconst notion = new Client({ auth: process.env.NOTION_API_KEY })\n\nconst response = await notion.dataSources.listTemplates({\n  data_source_id: \"d9824bdc-8445-4327-be8b-5b47500af6ce\"\n})"
-          }
-        ],
-        "x-notion-docs-ref": "https://developers.notion.com/reference/list-data-source-templates",
-        "x-notion-docs-guides": [
-          "https://developers.notion.com/guides/data-apis/working-with-databases"
-        ]
+        "x-pagination": {
+          "items": "templates"
+        }
       }
     },
     "/databases/{database_id}": {
@@ -10013,16 +10005,6 @@
             "type": "string",
             "const": "list"
           },
-          "next_cursor": {
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/ID"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "has_more": {
             "type": "boolean"
           },
@@ -10047,6 +10029,16 @@
             "type": "string",
             "format": "uuid",
             "example": "dd0b011c-2bbe-4964-853e-df0f5d26f5c3"
+          },
+          "next_cursor": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
@@ -11426,8 +11418,11 @@
             "description": "Whether there are more results available.",
             "type": "boolean"
           },
+          "request_id": {
+            "type": "string",
+            "format": "uuid"
+          },
           "next_cursor": {
-            "description": "The cursor to use for the next page of results, or null if there are no more results.",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ID"
@@ -11436,10 +11431,6 @@
                 "type": "null"
               }
             ]
-          },
-          "request_id": {
-            "type": "string",
-            "format": "uuid"
           }
         },
         "required": [
@@ -12398,16 +12389,6 @@
             "type": "string",
             "const": "list"
           },
-          "next_cursor": {
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/ID"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "has_more": {
             "type": "boolean"
           },
@@ -12431,6 +12412,16 @@
           "request_id": {
             "type": "string",
             "format": "uuid"
+          },
+          "next_cursor": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
@@ -13634,7 +13625,6 @@
             "type": "boolean"
           },
           "next_cursor": {
-            "description": "Cursor to use for the next page of results. Null if there are no more results.",
             "oneOf": [
               {
                 "$ref": "#/components/schemas/ID"
@@ -15316,16 +15306,6 @@
             "type": "string",
             "const": "list"
           },
-          "next_cursor": {
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/ID"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "has_more": {
             "type": "boolean"
           },
@@ -15349,6 +15329,16 @@
           "request_id": {
             "type": "string",
             "format": "uuid"
+          },
+          "next_cursor": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
@@ -16473,16 +16463,6 @@
           "results": {
             "$ref": "#/components/schemas/PluginListResults"
           },
-          "next_cursor": {
-            "oneOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "has_more": {
             "type": "boolean"
           },
@@ -16494,6 +16474,16 @@
           "request_id": {
             "type": "string",
             "format": "uuid"
+          },
+          "next_cursor": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
@@ -25540,12 +25530,6 @@
             "type": "string",
             "const": "list"
           },
-          "next_cursor": {
-            "type": [
-              "string",
-              "null"
-            ]
-          },
           "has_more": {
             "type": "boolean"
           },
@@ -25559,6 +25543,16 @@
             "type": "string",
             "format": "uuid",
             "example": "ec54f26e-9c42-4b5d-9439-5282caeb8bbc"
+          },
+          "next_cursor": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
@@ -25664,16 +25658,6 @@
             "type": "string",
             "const": "list"
           },
-          "next_cursor": {
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/ID"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
           "has_more": {
             "type": "boolean"
           },
@@ -25698,6 +25682,16 @@
             "type": "string",
             "format": "uuid",
             "example": "d7399d28-607b-466f-b6c8-1229b2d2243d"
+          },
+          "next_cursor": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
