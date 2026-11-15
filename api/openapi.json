@@ -7342,13 +7342,6 @@
             "type": "string",
             "const": "list"
           },
-          "next_cursor": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "example": "7f7a2665-50a6-4a33-9ee7-33a93dd3cbd0"
-          },
           "has_more": {
             "type": "boolean"
           },
@@ -7362,6 +7355,16 @@
             "type": "string",
             "format": "uuid",
             "example": "4ff64c39-b429-4c4d-bae2-84d79296ff88"
+          },
+          "next_cursor": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "required": [
@@ -15408,55 +15411,6 @@
           }
         ]
       },
-      "PageOrDataSourceList": {
-        "title": "Page Or Data Source",
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "const": "page_or_data_source"
-          },
-          "page_or_data_source": {
-            "$ref": "#/components/schemas/emptyObject"
-          },
-          "object": {
-            "type": "string",
-            "const": "list"
-          },
-          "next_cursor": {
-            "type": [
-              "string",
-              "null"
-            ],
-            "example": "s:eacf2f7f-1426-4eb2-a5f1-d63a0bb76f59:3a388fcd-daf4-81f1-9d95-c45c25832f17"
-          },
-          "has_more": {
-            "type": "boolean"
-          },
-          "results": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PageOrDataSource"
-            }
-          },
-          "request_status": {
-            "$ref": "#/components/schemas/RequestStatus"
-          },
-          "request_id": {
-            "type": "string",
-            "format": "uuid",
-            "example": "b2c57706-ce0c-4e22-af55-e69a8f8ca5ad"
-          }
-        },
-        "required": [
-          "type",
-          "page_or_data_source",
-          "object",
-          "next_cursor",
-          "has_more",
-          "results"
-        ]
-      },
       "PageOrPartial": {
         "anyOf": [
           {
@@ -16591,9 +16545,6 @@
           "sorts": {
             "$ref": "#/components/schemas/Sorts"
           },
-          "start_cursor": {
-            "type": "string"
-          },
           "page_size": {
             "type": "integer",
             "minimum": 1,
@@ -16609,6 +16560,9 @@
           },
           "filter": {
             "$ref": "#/components/schemas/Filter"
+          },
+          "start_cursor": {
+            "$ref": "#/components/schemas/QueryCursor"
           }
         },
         "additionalProperties": false
@@ -18258,6 +18212,63 @@
         "enum": [
           "created_time",
           "last_run_at"
+        ]
+      },
+      "QueryCursor": {
+        "description": "Where a query of a data source goes on: \"s:\" and two UUIDs, unlike the cursor of any other list.",
+        "type": "string",
+        "example": "s:eacf2f7f-1426-4eb2-a5f1-d63a0bb76f59:3a388fcd-daf4-81f1-9d95-c45c25832f17"
+      },
+      "QueryList": {
+        "title": "Page Or Data Source",
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "page_or_data_source"
+          },
+          "page_or_data_source": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "object": {
+            "type": "string",
+            "const": "list"
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PageOrDataSource"
+            }
+          },
+          "request_status": {
+            "$ref": "#/components/schemas/RequestStatus"
+          },
+          "next_cursor": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/QueryCursor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "b2c57706-ce0c-4e22-af55-e69a8f8ca5ad"
+          }
+        },
+        "required": [
+          "type",
+          "page_or_data_source",
+          "object",
+          "next_cursor",
+          "has_more",
+          "results"
         ]
       },
       "QueryMeetingNotes": {
@@ -21054,6 +21065,58 @@
           "write"
         ],
         "additionalProperties": false
+      },
+      "SearchList": {
+        "title": "Page Or Data Source",
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "page_or_data_source"
+          },
+          "page_or_data_source": {
+            "$ref": "#/components/schemas/emptyObject"
+          },
+          "object": {
+            "type": "string",
+            "const": "list"
+          },
+          "has_more": {
+            "type": "boolean"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PageOrDataSource"
+            }
+          },
+          "request_status": {
+            "$ref": "#/components/schemas/RequestStatus"
+          },
+          "next_cursor": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ID"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "request_id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "83cf200c-83a3-43ff-97f7-aeed99495975"
+          }
+        },
+        "required": [
+          "type",
+          "page_or_data_source",
+          "object",
+          "next_cursor",
+          "has_more",
+          "results"
+        ]
       },
       "SelectGroupByConfig": {
         "type": "object",
@@ -36866,7 +36929,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/PageOrDataSourceList"
+              "$ref": "#/components/schemas/QueryList"
             }
           }
         }
@@ -36896,7 +36959,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/PageOrDataSourceList"
+              "$ref": "#/components/schemas/SearchList"
             }
           }
         }

@@ -1650,7 +1650,7 @@ func (c *Client) UpdateADataSource(ctx context.Context, dataSourceID ID, body Up
 // Query a data source
 //
 //	POST /data_sources/{data_source_id}/query
-func (c *Client) PostDatabaseQuery(ctx context.Context, dataSourceID ID, params *PostDatabaseQueryParams, body PostDatabaseQuery) (*PageOrDataSourceList, error) {
+func (c *Client) PostDatabaseQuery(ctx context.Context, dataSourceID ID, params *PostDatabaseQueryParams, body PostDatabaseQuery) (*QueryList, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -1698,7 +1698,7 @@ func (c *Client) PostDatabaseQuery(ctx context.Context, dataSourceID ID, params 
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out PageOrDataSourceList
+			var out QueryList
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
 					return nil, err
@@ -2156,7 +2156,7 @@ func (c *Client) CreateDatabase(ctx context.Context, body CreateDatabase) (*Data
 // Search by title
 //
 //	POST /search
-func (c *Client) PostSearch(ctx context.Context, params *PostSearchParams, body PostSearch) (*PageOrDataSourceList, error) {
+func (c *Client) PostSearch(ctx context.Context, params *PostSearchParams, body PostSearch) (*SearchList, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
@@ -2204,7 +2204,7 @@ func (c *Client) PostSearch(ctx context.Context, params *PostSearchParams, body 
 		// OK
 		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
 		case "application/json":
-			var out PageOrDataSourceList
+			var out SearchList
 			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
 				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
 					return nil, err

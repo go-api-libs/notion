@@ -12,15 +12,17 @@ import (
 	"uuid"
 )
 
+// TestPostDatabaseQueryAll pages through a query with a cursor as Notion gives one, "s:" and two UUIDs.
 func TestPostDatabaseQueryAll(t *testing.T) {
 	first, second, third := uuid.New(), uuid.New(), uuid.New()
+	next := QueryCursor("s:" + uuid.New().String() + ":" + third.String())
 
-	var cursors []uuid.UUID
+	var cursors []QueryCursor
 
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var body struct {
-			StartCursor uuid.UUID `json:"start_cursor"`
-			PageSize    int       `json:"page_size"`
+			StartCursor QueryCursor `json:"start_cursor"`
+			PageSize    int         `json:"page_size"`
 		}
 		if err := json.UnmarshalRead(r.Body, &body); err != nil {
 			t.Error(err)
@@ -34,21 +36,17 @@ func TestPostDatabaseQueryAll(t *testing.T) {
 
 		w.Header().Set("Content-Type", "application/json")
 
-		page := func(id uuid.UUID) string { return `{"object":"page","id":"` + id.String() + `"}` }
-		if body.StartCursor == uuid.Nil() {
-			_, _ = w.Write([]byte(`{"object":"list","type":"page_or_data_source","page_or_data_source":{},` +
-				`"results":[` + page(first) + `,` + page(second) + `],"has_more":true,"next_cursor":"` + third.String() + `"}`))
+		if body.StartCursor == "" {
+			_, _ = w.Write([]byte(list("page_or_data_source", "page", []uuid.UUID{first, second}, string(next))))
 		} else {
-			_, _ = w.Write([]byte(`{"object":"list","type":"page_or_data_source","page_or_data_source":{},` +
-				`"results":[` + page(third) + `],"has_more":false,"next_cursor":null}`))
+			_, _ = w.Write([]byte(list("page_or_data_source", "page", []uuid.UUID{third}, "")))
 		}
 	}))
 	defer srv.Close()
 
 	var ids []uuid.UUID
 
-	dataSourceID := uuid.New()
-	for r, err := range testClient(t, srv).PostDatabaseQueryAll(t.Context(), dataSourceID, nil, PostDatabaseQuery{}) {
+	for r, err := range testClient(t, srv).PostDatabaseQueryAll(t.Context(), uuid.New(), nil, PostDatabaseQuery{}) {
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -56,12 +54,12 @@ func TestPostDatabaseQueryAll(t *testing.T) {
 		ids = append(ids, r.PageOrPartial.PartialPage.ID)
 	}
 
-	if want := []uuid.UUID{first, second, third}; len(ids) != 3 || ids[0] != want[0] || ids[1] != want[1] || ids[2] != want[2] {
-		t.Errorf("got %v, want %v", ids, want)
+	if !slices.Equal(ids, []uuid.UUID{first, second, third}) {
+		t.Errorf("got %v, want %v", ids, []uuid.UUID{first, second, third})
 	}
 
-	if len(cursors) != 2 || cursors[0] != uuid.Nil() || cursors[1] != third {
-		t.Errorf("sent cursors %q, want none, then %q", cursors, third)
+	if !slices.Equal(cursors, []QueryCursor{"", next}) {
+		t.Errorf("sent cursors %q, want none, then %q", cursors, next)
 	}
 }
 
@@ -82,16 +80,16 @@ func testClient(t *testing.T, srv *httptest.Server) *Client {
 	return c
 }
 
-// list is a page of a list of objects of the type, with the cursor of the next page if there is one.
-func list(typ, object string, ids []uuid.UUID, next uuid.UUID) string {
+// list is a page of a list of objects of the type, with the cursor of the next page, if there is one.
+func list(typ, object string, ids []uuid.UUID, next string) string {
 	items := make([]string, len(ids))
 	for i, id := range ids {
 		items[i] = `{"object":"` + object + `","id":"` + id.String() + `"}`
 	}
 
 	more, cursor := "false", "null"
-	if next != uuid.Nil() {
-		more, cursor = "true", `"`+next.String()+`"`
+	if next != "" {
+		more, cursor = "true", `"`+next+`"`
 	}
 
 	return `{"object":"list","type":"` + typ + `","` + typ + `":{},"results":[` + strings.Join(items, ",") +
@@ -118,9 +116,9 @@ func TestGetBlockChildrenAll(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 
 		if cursor == "" {
-			_, _ = w.Write([]byte(list("block", "block", []uuid.UUID{first, second}, third)))
+			_, _ = w.Write([]byte(list("block", "block", []uuid.UUID{first, second}, third.String())))
 		} else {
-			_, _ = w.Write([]byte(list("block", "block", []uuid.UUID{third}, uuid.Nil())))
+			_, _ = w.Write([]byte(list("block", "block", []uuid.UUID{third}, "")))
 		}
 	}))
 	defer srv.Close()
@@ -168,9 +166,9 @@ func TestPostSearchAll(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 
 		if body.StartCursor == "" {
-			_, _ = w.Write([]byte(list("page_or_data_source", "page", []uuid.UUID{first}, second)))
+			_, _ = w.Write([]byte(list("page_or_data_source", "page", []uuid.UUID{first}, second.String())))
 		} else {
-			_, _ = w.Write([]byte(list("page_or_data_source", "page", []uuid.UUID{second}, uuid.Nil())))
+			_, _ = w.Write([]byte(list("page_or_data_source", "page", []uuid.UUID{second}, "")))
 		}
 	}))
 	defer srv.Close()
@@ -210,7 +208,7 @@ func TestAll_Stops(t *testing.T) {
 			return
 		}
 
-		_, _ = w.Write([]byte(list("block", "block", []uuid.UUID{uuid.New(), uuid.New()}, uuid.New())))
+		_, _ = w.Write([]byte(list("block", "block", []uuid.UUID{uuid.New(), uuid.New()}, uuid.New().String())))
 	}))
 	defer srv.Close()
 
