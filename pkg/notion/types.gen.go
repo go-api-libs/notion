@@ -2892,6 +2892,25 @@ func (v *AnnotationResponse) unknownEnum() bool {
 	return v.Color != "" && !v.Color.Valid()
 }
 
+// Select active pages, archived pages, or both. Defaults to active. Takes precedence over is_archived. Trashed pages remain excluded, and permissions still apply.
+type ArchiveStatus string
+
+const (
+	ArchiveStatusActive   ArchiveStatus = "active"
+	ArchiveStatusArchived ArchiveStatus = "archived"
+	ArchiveStatusAll      ArchiveStatus = "all"
+)
+
+// Valid indicates whether the value is a known member of the ArchiveStatus enum.
+func (e ArchiveStatus) Valid() bool {
+	switch e {
+	case ArchiveStatusActive, ArchiveStatusArchived, ArchiveStatusAll:
+		return true
+	default:
+		return false
+	}
+}
+
 // AsyncTask defines a model
 type AsyncTask struct {
 	Object           string                     `json:"object"`
@@ -17944,7 +17963,9 @@ type PluginListResultsItem struct {
 type PostDatabaseQuery struct {
 	Sorts    Sorts `json:"sorts,omitzero"`
 	PageSize int   `json:"page_size,omitzero"`
-	// Whether to return archived pages. When omitted or false, returns non-archived pages. When true, returns archived pages.
+	// Select active pages, archived pages, or both. Defaults to active. Takes precedence over is_archived. Trashed pages remain excluded, and permissions still apply.
+	ArchiveStatus ArchiveStatus `json:"archive_status,omitzero"`
+	// Legacy archive selector. False selects active pages. True selects archived pages. Ignored when archive_status is provided.
 	IsArchived *bool `json:"is_archived,omitzero"`
 	// Optionally filter the results to only include pages or data sources. Regular, non-wiki databases only support page children. The default behavior is no result type filtering, in other words, returning both pages and data sources for wikis.
 	ResultType ResultType `json:"result_type,omitzero"`
@@ -25361,7 +25382,7 @@ type Session struct {
 	ChatUserEmails  []string               `json:"chat_user_emails,omitzero"`
 	ToolTypes       []string               `json:"tool_types,omitzero"`
 	ToolCallCount   *int                   `json:"tool_call_count,omitzero"`
-	// Premium AI credits this session consumed. Reported with at most two decimal places, rounded down.
+	// Premium AI credits this session consumed. Values of 0.01 or more have at most two decimal places, and values below 0.01 have at most two significant figures. Both round down.
 	CreditsUsed   *float64 `json:"credits_used,omitzero"`
 	RunsCompleted *int     `json:"runs_completed,omitzero"`
 	MessageCount  *int     `json:"message_count,omitzero"`
@@ -26339,7 +26360,7 @@ type SessionListResultsItem struct {
 	ChatUserEmails  []string               `json:"chat_user_emails,omitzero"`
 	ToolTypes       []string               `json:"tool_types,omitzero"`
 	ToolCallCount   *int                   `json:"tool_call_count,omitzero"`
-	// Premium AI credits this session consumed. Reported with at most two decimal places, rounded down.
+	// Premium AI credits this session consumed. Values of 0.01 or more have at most two decimal places, and values below 0.01 have at most two significant figures. Both round down.
 	CreditsUsed   *float64 `json:"credits_used,omitzero"`
 	RunsCompleted *int     `json:"runs_completed,omitzero"`
 	MessageCount  *int     `json:"message_count,omitzero"`

@@ -105,6 +105,16 @@ func TestEnums_Valid(t *testing.T) {
 		t.Errorf("AgentType(%v): valid, though no member", "not a member")
 	}
 
+	for _, v := range []ArchiveStatus{ArchiveStatusActive, ArchiveStatusArchived, ArchiveStatusAll} {
+		if !v.Valid() {
+			t.Errorf("ArchiveStatus %v: not valid", v)
+		}
+	}
+
+	if ArchiveStatus("not a member").Valid() {
+		t.Errorf("ArchiveStatus(%v): valid, though no member", "not a member")
+	}
+
 	for _, v := range []AsyncTaskMcpOperationName{AsyncTaskMcpOperationNameCreatePages, AsyncTaskMcpOperationNameUpdatePage} {
 		if !v.Valid() {
 			t.Errorf("AsyncTaskMcpOperationName %v: not valid", v)

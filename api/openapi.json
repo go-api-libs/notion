@@ -7075,6 +7075,15 @@
           }
         }
       },
+      "ArchiveStatus": {
+        "description": "Select active pages, archived pages, or both. Defaults to active. Takes precedence over is_archived. Trashed pages remain excluded, and permissions still apply.",
+        "type": "string",
+        "enum": [
+          "active",
+          "archived",
+          "all"
+        ]
+      },
       "AsyncTask": {
         "type": "object",
         "properties": {
@@ -16540,9 +16549,13 @@
             "minimum": 1,
             "example": 3
           },
+          "archive_status": {
+            "$ref": "#/components/schemas/ArchiveStatus"
+          },
           "is_archived": {
-            "description": "Whether to return archived pages. When omitted or false, returns non-archived pages. When true, returns archived pages.",
-            "type": "boolean"
+            "description": "Legacy archive selector. False selects active pages. True selects archived pages. Ignored when archive_status is provided.",
+            "type": "boolean",
+            "deprecated": true
           },
           "result_type": {
             "description": "Optionally filter the results to only include pages or data sources. Regular, non-wiki databases only support page children. The default behavior is no result type filtering, in other words, returning both pages and data sources for wikis.",
@@ -21303,7 +21316,7 @@
             ]
           },
           "credits_used": {
-            "description": "Premium AI credits this session consumed. Reported with at most two decimal places, rounded down.",
+            "description": "Premium AI credits this session consumed. Values of 0.01 or more have at most two decimal places, and values below 0.01 have at most two significant figures. Both round down.",
             "oneOf": [
               {
                 "type": "number"
@@ -22067,7 +22080,7 @@
             ]
           },
           "credits_used": {
-            "description": "Premium AI credits this session consumed. Reported with at most two decimal places, rounded down.",
+            "description": "Premium AI credits this session consumed. Values of 0.01 or more have at most two decimal places, and values below 0.01 have at most two significant figures. Both round down.",
             "oneOf": [
               {
                 "type": "number",
