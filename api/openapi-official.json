@@ -9262,6 +9262,666 @@
         "x-notion-docs-ref": "https://developers.notion.com/reference/query-meeting-notes"
       }
     },
+    "/v1/meeting_notes": {
+      "post": {
+        "tags": [
+          "Meeting notes"
+        ],
+        "summary": "Create a full-page meeting note",
+        "operationId": "create-meeting-note-page",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/notionVersion"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "parent": {
+                    "description": "Page or data source to create the meeting note in. Defaults to the user's meeting notes database, which is created if they don't have one. Not accepted with calendar_event.",
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "description": "Always `page_id`",
+                            "type": "string",
+                            "const": "page_id"
+                          },
+                          "page_id": {
+                            "description": "ID of the parent page.",
+                            "$ref": "#/components/schemas/idRequest"
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "page_id"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "description": "Always `data_source_id`",
+                            "type": "string",
+                            "const": "data_source_id"
+                          },
+                          "data_source_id": {
+                            "description": "ID of the parent data source.",
+                            "$ref": "#/components/schemas/idRequest"
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "data_source_id"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  "title": {
+                    "description": "Title for the meeting note. Not accepted with calendar_event.",
+                    "type": "string",
+                    "maxLength": 2000
+                  },
+                  "markdown": {
+                    "description": "Content for the meeting note's Notes tab, as Markdown. Not accepted with calendar_event.",
+                    "type": "string"
+                  },
+                  "calendar_event": {
+                    "description": "Calendar event to get or create the meeting note for. The meeting note is filed and titled like the event's other meeting notes. Add content to it afterwards.",
+                    "type": "object",
+                    "properties": {
+                      "calendar": {
+                        "description": "The calendar the event belongs to.",
+                        "type": "object",
+                        "properties": {
+                          "account_id": {
+                            "description": "ID of the calendar account.",
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "calendar_id": {
+                            "description": "ID of the calendar.",
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "account_id",
+                          "calendar_id"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "event_id": {
+                        "description": "ID of the event, as returned in eventId by Notion MCP's notion-calendar-list-events.",
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "calendar",
+                      "event_id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "markdown_version": {
+                    "description": "The Markdown syntax to use. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown) and is recommended. `v1` is enhanced markdown. It's deprecated. It's the default on current Notion-Versions. The next Notion-Version rejects `v1` with a `400` `validation_error`.",
+                    "type": "string",
+                    "enum": [
+                      "v1",
+                      "v2"
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "description": "Always \"meeting_note_page_result\".",
+                      "type": "string",
+                      "const": "meeting_note_page_result"
+                    },
+                    "meeting_note": {
+                      "description": "The full-page meeting note, as a meeting_notes block.",
+                      "type": "object",
+                      "properties": {
+                        "object": {
+                          "description": "Always \"block\".",
+                          "type": "string",
+                          "const": "block"
+                        },
+                        "id": {
+                          "description": "The ID of the meeting note block.",
+                          "$ref": "#/components/schemas/idResponse"
+                        },
+                        "type": {
+                          "description": "Always \"meeting_notes\".",
+                          "type": "string",
+                          "const": "meeting_notes"
+                        },
+                        "meeting_notes": {
+                          "description": "Meeting note content fields.",
+                          "type": "object",
+                          "properties": {
+                            "is_full_page": {
+                              "description": "Whether this is a full-page meeting note.",
+                              "type": "boolean"
+                            },
+                            "title": {
+                              "description": "Title of the meeting note as rich text.",
+                              "type": "array",
+                              "maxItems": 100,
+                              "items": {
+                                "$ref": "#/components/schemas/richTextItemResponse"
+                              }
+                            },
+                            "status": {
+                              "description": "Current processing status of the meeting note transcription.",
+                              "type": "string",
+                              "enum": [
+                                "transcription_not_started",
+                                "transcription_paused",
+                                "transcription_in_progress",
+                                "transcription_failed",
+                                "summary_in_progress",
+                                "notes_ready"
+                              ]
+                            },
+                            "children": {
+                              "description": "Block IDs for each tab (summary, notes, transcript).",
+                              "type": "object",
+                              "properties": {
+                                "summary_block_id": {
+                                  "description": "Block ID of the AI summary tab.",
+                                  "$ref": "#/components/schemas/idResponse"
+                                },
+                                "notes_block_id": {
+                                  "description": "Block ID of the meeting notes tab.",
+                                  "$ref": "#/components/schemas/idResponse"
+                                },
+                                "transcript_block_id": {
+                                  "description": "Block ID of the transcript tab.",
+                                  "$ref": "#/components/schemas/idResponse"
+                                }
+                              },
+                              "additionalProperties": false
+                            },
+                            "calendar_event": {
+                              "description": "Calendar event metadata associated with this meeting note.",
+                              "type": "object",
+                              "properties": {
+                                "start_time": {
+                                  "description": "ISO-8601 start time of the calendar event.",
+                                  "type": "string"
+                                },
+                                "end_time": {
+                                  "description": "ISO-8601 end time of the calendar event.",
+                                  "type": "string"
+                                },
+                                "event_id": {
+                                  "description": "ID of the calendar event, as returned by the calendar tools.",
+                                  "type": "string"
+                                },
+                                "attendees": {
+                                  "description": "List of attendee user IDs.",
+                                  "type": "array",
+                                  "maxItems": 100,
+                                  "items": {
+                                    "$ref": "#/components/schemas/idResponse"
+                                  }
+                                }
+                              },
+                              "required": [
+                                "start_time",
+                                "end_time"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "recording": {
+                              "description": "Start and end times of the actual recording.",
+                              "type": "object",
+                              "properties": {
+                                "start_time": {
+                                  "description": "ISO-8601 timestamp when the recording started.",
+                                  "type": "string"
+                                },
+                                "end_time": {
+                                  "description": "ISO-8601 timestamp when the recording ended.",
+                                  "type": "string"
+                                }
+                              },
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "is_full_page"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "created_time": {
+                          "description": "ISO-8601 timestamp when this meeting note was created.",
+                          "type": "string"
+                        },
+                        "last_edited_time": {
+                          "description": "ISO-8601 timestamp when this meeting note was last edited.",
+                          "type": "string"
+                        },
+                        "created_by": {
+                          "description": "User who created this meeting note.",
+                          "$ref": "#/components/schemas/partialUserObjectResponse"
+                        },
+                        "last_edited_by": {
+                          "description": "User who last edited this meeting note.",
+                          "$ref": "#/components/schemas/partialUserObjectResponse"
+                        },
+                        "has_children": {
+                          "description": "Whether this block has child blocks.",
+                          "type": "boolean"
+                        },
+                        "in_trash": {
+                          "description": "Whether this meeting note is in the trash.",
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "object",
+                        "id",
+                        "type",
+                        "meeting_notes",
+                        "created_time",
+                        "last_edited_time",
+                        "created_by",
+                        "last_edited_by",
+                        "has_children",
+                        "in_trash"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "created": {
+                      "description": "Whether the meeting note was created, rather than an existing meeting note for the event returned.",
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "object",
+                    "meeting_note",
+                    "created"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/error_api_400"
+          },
+          "401": {
+            "$ref": "#/components/responses/error_api_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/error_api_403"
+          },
+          "404": {
+            "$ref": "#/components/responses/error_api_404"
+          },
+          "406": {
+            "$ref": "#/components/responses/error_api_406"
+          },
+          "409": {
+            "$ref": "#/components/responses/error_api_409"
+          },
+          "429": {
+            "$ref": "#/components/responses/error_api_429"
+          },
+          "500": {
+            "$ref": "#/components/responses/error_api_500"
+          },
+          "503": {
+            "$ref": "#/components/responses/error_api_503"
+          },
+          "504": {
+            "$ref": "#/components/responses/error_api_504"
+          },
+          "529": {
+            "$ref": "#/components/responses/error_api_529"
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "javascript",
+            "label": "TypeScript SDK",
+            "source": "import { Client } from \"@notionhq/client\"\n\nconst notion = new Client({ auth: process.env.NOTION_API_KEY })\n\nconst response = await notion.request({\n  method: \"post\",\n  path: \"meeting_notes\",\n  body: {\n    parent: {\n      type: \"data_source_id\",\n      data_source_id: \"c02fc1d3-db8b-45c5-a222-27595b15aea7\"\n    },\n    title: \"Weekly sync\",\n    markdown: \"## Agenda\\n- Roadmap review\"\n  }\n})"
+          }
+        ],
+        "x-notion-docs-ref": "https://developers.notion.com/reference/create-meeting-note-page"
+      }
+    },
+    "/v1/meeting_notes/{meeting_note_id}": {
+      "patch": {
+        "tags": [
+          "Meeting notes"
+        ],
+        "summary": "Link a full-page meeting note to a calendar event",
+        "operationId": "update-meeting-note-page",
+        "parameters": [
+          {
+            "name": "meeting_note_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "description": "ID of the full-page meeting note.",
+              "$ref": "#/components/schemas/idRequest"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/notionVersion"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "calendar_event": {
+                    "description": "Calendar event to link the meeting note to. Replaces any event it is already linked to.",
+                    "type": "object",
+                    "properties": {
+                      "calendar": {
+                        "description": "The calendar the event belongs to.",
+                        "type": "object",
+                        "properties": {
+                          "account_id": {
+                            "description": "ID of the calendar account.",
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "calendar_id": {
+                            "description": "ID of the calendar.",
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "required": [
+                          "account_id",
+                          "calendar_id"
+                        ],
+                        "additionalProperties": false
+                      },
+                      "event_id": {
+                        "description": "ID of the event, as returned in eventId by Notion MCP's notion-calendar-list-events.",
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "calendar",
+                      "event_id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "allow_other_meeting_notes": {
+                    "description": "Link even when other meeting notes are linked to the same event. Defaults to false, which returns a 409 listing them instead.",
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "calendar_event"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "object": {
+                      "description": "Always \"meeting_note_page_result\".",
+                      "type": "string",
+                      "const": "meeting_note_page_result"
+                    },
+                    "meeting_note": {
+                      "description": "The full-page meeting note, as a meeting_notes block.",
+                      "type": "object",
+                      "properties": {
+                        "object": {
+                          "description": "Always \"block\".",
+                          "type": "string",
+                          "const": "block"
+                        },
+                        "id": {
+                          "description": "The ID of the meeting note block.",
+                          "$ref": "#/components/schemas/idResponse"
+                        },
+                        "type": {
+                          "description": "Always \"meeting_notes\".",
+                          "type": "string",
+                          "const": "meeting_notes"
+                        },
+                        "meeting_notes": {
+                          "description": "Meeting note content fields.",
+                          "type": "object",
+                          "properties": {
+                            "is_full_page": {
+                              "description": "Whether this is a full-page meeting note.",
+                              "type": "boolean"
+                            },
+                            "title": {
+                              "description": "Title of the meeting note as rich text.",
+                              "type": "array",
+                              "maxItems": 100,
+                              "items": {
+                                "$ref": "#/components/schemas/richTextItemResponse"
+                              }
+                            },
+                            "status": {
+                              "description": "Current processing status of the meeting note transcription.",
+                              "type": "string",
+                              "enum": [
+                                "transcription_not_started",
+                                "transcription_paused",
+                                "transcription_in_progress",
+                                "transcription_failed",
+                                "summary_in_progress",
+                                "notes_ready"
+                              ]
+                            },
+                            "children": {
+                              "description": "Block IDs for each tab (summary, notes, transcript).",
+                              "type": "object",
+                              "properties": {
+                                "summary_block_id": {
+                                  "description": "Block ID of the AI summary tab.",
+                                  "$ref": "#/components/schemas/idResponse"
+                                },
+                                "notes_block_id": {
+                                  "description": "Block ID of the meeting notes tab.",
+                                  "$ref": "#/components/schemas/idResponse"
+                                },
+                                "transcript_block_id": {
+                                  "description": "Block ID of the transcript tab.",
+                                  "$ref": "#/components/schemas/idResponse"
+                                }
+                              },
+                              "additionalProperties": false
+                            },
+                            "calendar_event": {
+                              "description": "Calendar event metadata associated with this meeting note.",
+                              "type": "object",
+                              "properties": {
+                                "start_time": {
+                                  "description": "ISO-8601 start time of the calendar event.",
+                                  "type": "string"
+                                },
+                                "end_time": {
+                                  "description": "ISO-8601 end time of the calendar event.",
+                                  "type": "string"
+                                },
+                                "event_id": {
+                                  "description": "ID of the calendar event, as returned by the calendar tools.",
+                                  "type": "string"
+                                },
+                                "attendees": {
+                                  "description": "List of attendee user IDs.",
+                                  "type": "array",
+                                  "maxItems": 100,
+                                  "items": {
+                                    "$ref": "#/components/schemas/idResponse"
+                                  }
+                                }
+                              },
+                              "required": [
+                                "start_time",
+                                "end_time"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "recording": {
+                              "description": "Start and end times of the actual recording.",
+                              "type": "object",
+                              "properties": {
+                                "start_time": {
+                                  "description": "ISO-8601 timestamp when the recording started.",
+                                  "type": "string"
+                                },
+                                "end_time": {
+                                  "description": "ISO-8601 timestamp when the recording ended.",
+                                  "type": "string"
+                                }
+                              },
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "is_full_page"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "created_time": {
+                          "description": "ISO-8601 timestamp when this meeting note was created.",
+                          "type": "string"
+                        },
+                        "last_edited_time": {
+                          "description": "ISO-8601 timestamp when this meeting note was last edited.",
+                          "type": "string"
+                        },
+                        "created_by": {
+                          "description": "User who created this meeting note.",
+                          "$ref": "#/components/schemas/partialUserObjectResponse"
+                        },
+                        "last_edited_by": {
+                          "description": "User who last edited this meeting note.",
+                          "$ref": "#/components/schemas/partialUserObjectResponse"
+                        },
+                        "has_children": {
+                          "description": "Whether this block has child blocks.",
+                          "type": "boolean"
+                        },
+                        "in_trash": {
+                          "description": "Whether this meeting note is in the trash.",
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "object",
+                        "id",
+                        "type",
+                        "meeting_notes",
+                        "created_time",
+                        "last_edited_time",
+                        "created_by",
+                        "last_edited_by",
+                        "has_children",
+                        "in_trash"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "other_meeting_note_ids": {
+                      "description": "IDs of other meeting notes you can read that are linked to the same event. For a meeting note inside a page, this is the page's ID. Only the first 50 meeting notes found are checked.",
+                      "type": "array",
+                      "maxItems": 50,
+                      "items": {
+                        "$ref": "#/components/schemas/idResponse"
+                      }
+                    }
+                  },
+                  "required": [
+                    "object",
+                    "meeting_note",
+                    "other_meeting_note_ids"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/error_api_400"
+          },
+          "401": {
+            "$ref": "#/components/responses/error_api_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/error_api_403"
+          },
+          "404": {
+            "$ref": "#/components/responses/error_api_404"
+          },
+          "406": {
+            "$ref": "#/components/responses/error_api_406"
+          },
+          "409": {
+            "$ref": "#/components/responses/error_api_409"
+          },
+          "429": {
+            "$ref": "#/components/responses/error_api_429"
+          },
+          "500": {
+            "$ref": "#/components/responses/error_api_500"
+          },
+          "503": {
+            "$ref": "#/components/responses/error_api_503"
+          },
+          "504": {
+            "$ref": "#/components/responses/error_api_504"
+          },
+          "529": {
+            "$ref": "#/components/responses/error_api_529"
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "javascript",
+            "label": "TypeScript SDK",
+            "source": "import { Client } from \"@notionhq/client\"\n\nconst notion = new Client({ auth: process.env.NOTION_API_KEY })\n\nconst meetingNoteId = \"d7b3c8f4-9e6e-4c1a-b5b8-2c0f4a0c5b8e\"\nconst response = await notion.request({\n  method: \"patch\",\n  path: \"meeting_notes/\" + encodeURIComponent(meetingNoteId),\n  body: {\n    calendar_event: {\n      calendar: {\n        account_id: \"a1b2c3d4-5678-9abc-def0-1234567890ab\",\n        calendar_id: \"team@example.com\"\n      },\n      event_id: \"5e2f8c1a9b3d4e6f\"\n    }\n  }\n})"
+          }
+        ],
+        "x-notion-docs-ref": "https://developers.notion.com/reference/update-meeting-note-page"
+      }
+    },
     "/v1/agents/query": {
       "post": {
         "tags": [
@@ -22571,6 +23231,7 @@
               "schema": {
                 "anyOf": [
                   {
+                    "title": "Authorization code",
                     "type": "object",
                     "properties": {
                       "grant_type": {
@@ -22605,6 +23266,7 @@
                     ]
                   },
                   {
+                    "title": "Refresh token",
                     "type": "object",
                     "properties": {
                       "grant_type": {
@@ -22631,6 +23293,7 @@
             "content": {
               "application/json": {
                 "schema": {
+                  "title": "Authorization code or refresh token",
                   "type": "object",
                   "properties": {
                     "access_token": {

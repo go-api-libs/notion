@@ -107,6 +107,8 @@
 - [Delete a block](https://developers.notion.com/reference/delete-a-block.md)
 - [Create a meeting note](https://developers.notion.com/reference/create-meeting-note.md): Creates AI meeting notes from an uploaded audio or video file.
 - [Query meeting notes](https://developers.notion.com/reference/query-meeting-notes.md): Query meeting notes for the workspace with optional filters, sorts, and a result limit.
+- [Create a full-page meeting note](https://developers.notion.com/reference/create-meeting-note-page.md): Creates a full-page meeting note, or gets or creates the meeting note for a calendar event.
+- [Link a full-page meeting note to a calendar event](https://developers.notion.com/reference/update-meeting-note-page.md): Links an existing full-page meeting note to a calendar event.
 - [Create a page](https://developers.notion.com/reference/post-page.md): Use this API to create a new [page](/reference/page) as a child of an existing page or [data source](/reference/data-source).
 - [Retrieve a page](https://developers.notion.com/reference/retrieve-a-page.md)
 - [Retrieve a page property item](https://developers.notion.com/reference/retrieve-a-page-property.md)
