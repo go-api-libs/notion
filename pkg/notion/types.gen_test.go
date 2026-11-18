@@ -395,6 +395,16 @@ func TestEnums_Valid(t *testing.T) {
 		t.Errorf("CreateMeetingNoteLanguage(%v): valid, though no member", "not a member")
 	}
 
+	for _, v := range []CreateMeetingNotePageParentType{CreateMeetingNotePageParentTypePageID, CreateMeetingNotePageParentTypeDataSourceID} {
+		if !v.Valid() {
+			t.Errorf("CreateMeetingNotePageParentType %v: not valid", v)
+		}
+	}
+
+	if CreateMeetingNotePageParentType("not a member").Valid() {
+		t.Errorf("CreateMeetingNotePageParentType(%v): valid, though no member", "not a member")
+	}
+
 	for _, v := range []CreatedByType{CreatedByTypePerson, CreatedByTypeBot, CreatedByTypeAgent} {
 		if !v.Valid() {
 			t.Errorf("CreatedByType %v: not valid", v)
@@ -3461,19 +3471,19 @@ func TestUnions_RoundTrip(t *testing.T) {
 		}, jsonOpts)
 	})
 
-	t.Run("UpdateSessionRequest/SessionMessage", func(t *testing.T) {
+	t.Run("UpdateSession/SessionMessage", func(t *testing.T) {
 		v := SessionMessage{}
-		apitest.RoundTrip(t, UpdateSessionRequest{SessionMessage: &v}, func(u UpdateSessionRequest) bool { return u.SessionMessage != nil }, jsonOpts)
+		apitest.RoundTrip(t, UpdateSession{SessionMessage: &v}, func(u UpdateSession) bool { return u.SessionMessage != nil }, jsonOpts)
 	})
 
-	t.Run("UpdateSessionRequest/SessionAnswer", func(t *testing.T) {
+	t.Run("UpdateSession/SessionAnswer", func(t *testing.T) {
 		v := SessionAnswer{}
-		apitest.RoundTrip(t, UpdateSessionRequest{SessionAnswer: &v}, func(u UpdateSessionRequest) bool { return u.SessionAnswer != nil }, jsonOpts)
+		apitest.RoundTrip(t, UpdateSession{SessionAnswer: &v}, func(u UpdateSession) bool { return u.SessionAnswer != nil }, jsonOpts)
 	})
 
-	t.Run("UpdateSessionRequest/SessionContinuation", func(t *testing.T) {
+	t.Run("UpdateSession/SessionContinuation", func(t *testing.T) {
 		v := SessionContinuation{}
-		apitest.RoundTrip(t, UpdateSessionRequest{SessionContinuation: &v}, func(u UpdateSessionRequest) bool { return u.SessionContinuation != nil }, jsonOpts)
+		apitest.RoundTrip(t, UpdateSession{SessionContinuation: &v}, func(u UpdateSession) bool { return u.SessionContinuation != nil }, jsonOpts)
 	})
 
 	t.Run("UserOrPartial/PartialUser", func(t *testing.T) {
@@ -3724,7 +3734,7 @@ func TestUnions_Null(t *testing.T) {
 	apitest.Null[UpdateADataSourcePropertiesValue](t, jsonOpts)
 	apitest.Null[UpdateAgentModel](t, jsonOpts)
 	apitest.Null[UpdatePageMarkdownAcceptedOperation](t, jsonOpts)
-	apitest.Null[UpdateSessionRequest](t, jsonOpts)
+	apitest.Null[UpdateSession](t, jsonOpts)
 	apitest.Null[UserOrPartial](t, jsonOpts)
 	apitest.Null[VerificationFilter](t, jsonOpts)
 	apitest.Null[VerificationPropertyValue](t, jsonOpts)
@@ -4303,6 +4313,14 @@ func TestTagged_RoundTrip(t *testing.T) {
 
 	t.Run("CreateDatabaseParent/workspace", func(t *testing.T) {
 		apitest.RoundTrip(t, CreateDatabaseParent{Type: "workspace", Workspace: new(true)}, func(v CreateDatabaseParent) bool { return v.Type == "workspace" }, jsonOpts)
+	})
+
+	t.Run("CreateMeetingNotePageParent/page_id", func(t *testing.T) {
+		apitest.RoundTrip(t, CreateMeetingNotePageParent{Type: "page_id", PageID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v CreateMeetingNotePageParent) bool { return v.Type == "page_id" }, jsonOpts)
+	})
+
+	t.Run("CreateMeetingNotePageParent/data_source_id", func(t *testing.T) {
+		apitest.RoundTrip(t, CreateMeetingNotePageParent{Type: "data_source_id", DataSourceID: new(ID(uuid.MustParse("6344e926-01ed-4659-81e8-ea3174a9c351")))}, func(v CreateMeetingNotePageParent) bool { return v.Type == "data_source_id" }, jsonOpts)
 	})
 
 	t.Run("DatabasePropertyRelationConfig/single_property", func(t *testing.T) {

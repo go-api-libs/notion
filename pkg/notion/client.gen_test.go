@@ -31147,6 +31147,1382 @@ func TestClient_Error(t *testing.T) {
 		})
 	})
 
+	t.Run("CreateMeetingNotePage", func(t *testing.T) {
+		t.Setenv("NOTION_API_TOKEN", "**************************************************")
+
+		t.Setenv("NOTION_API_USERNAME", "user")
+		t.Setenv("NOTION_API_PASSWORD", "pass")
+
+		t.Run("transport error", func(t *testing.T) {
+			c, err := NewClient(WithHTTPClient(&http.Client{Transport: apitest.RoundTripFunc(
+				func(*http.Request) (*http.Response, error) { return nil, io.EOF },
+			)}))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, io.EOF) {
+				t.Fatalf("want: %v, got: %v", io.EOF, err)
+			}
+		})
+
+		t.Run("unknown status code", func(t *testing.T) {
+			srv := apitest.NewServer(t, http.StatusTeapot)
+
+			baseURL, err := url.Parse(srv.URL)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(baseURL))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if apiErr.Err != api.ErrUnknownStatusCode {
+				t.Fatalf("got: %v, want: %v", apiErr.Err, api.ErrUnknownStatusCode)
+			} else if apiErr.Response.StatusCode != http.StatusTeapot {
+				t.Fatalf("got: %v, want: %v", apiErr.Response.StatusCode, http.StatusTeapot)
+			}
+		})
+
+		t.Run("unknown content type", func(t *testing.T) {
+			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "foo")
+				w.WriteHeader(http.StatusOK)
+			}))
+			t.Cleanup(srv.Close)
+
+			baseURL, err := url.Parse(srv.URL)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(baseURL))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("decoding error", func(t *testing.T) {
+			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write([]byte("invalid json"))
+			}))
+			t.Cleanup(srv.Close)
+
+			baseURL, err := url.Parse(srv.URL)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(baseURL))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
+				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
+			}
+		})
+
+		t.Run("debug mode keeps an unknown member", func(t *testing.T) {
+			file := filepath.Join(t.TempDir(), "interactions.json")
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusOK, "application/json", apitest.WithUnknownMember(t, MeetingNotePageResult{}, jsonOpts))), WithDebugFile(file))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			for range 2 {
+				if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err != nil {
+					t.Fatalf("debug mode decodes leniently: %v", err)
+				}
+			}
+
+			if ias, err := cassette.InteractionsReadFile(file); err != nil {
+				t.Fatal(err)
+			} else if len(ias) != 1 {
+				t.Fatalf("the debug file holds %d calls, want the one that failed to decode, once", len(ias))
+			}
+		})
+
+		t.Run("debug mode keeps a body it cannot decode", func(t *testing.T) {
+			file := filepath.Join(t.TempDir(), "interactions.json")
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusOK, "application/json", []byte("invalid json"))), WithDebugFile(file))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+
+			if ias, err := cassette.InteractionsReadFile(file); err != nil {
+				t.Fatal(err)
+			} else if len(ias) != 1 {
+				t.Fatalf("the debug file holds %d calls, want the one that failed to decode", len(ias))
+			}
+		})
+
+		t.Run("debug mode reports a debug file it cannot write", func(t *testing.T) {
+			// a file where the debug file's directory would be
+			blocker := filepath.Join(t.TempDir(), "file")
+			if err := os.WriteFile(blocker, nil, 0o600); err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusOK, "application/json", []byte("invalid json"))), WithDebugFile(filepath.Join(blocker, "interactions.json")))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want the *api.DecodingError", err)
+			} else if _, ok := errors.AsType[*fs.PathError](err); !ok {
+				t.Fatalf("got: %v, want the failure to write the debug file beside it", err)
+			}
+		})
+
+		t.Run("400 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusBadRequest, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusBadRequest {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusBadRequest)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("400 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusBadRequest, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("400 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusBadRequest, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("401 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusUnauthorized, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusUnauthorized {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusUnauthorized)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("401 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusUnauthorized, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("401 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusUnauthorized, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("403 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusForbidden, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusForbidden {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusForbidden)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("403 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusForbidden, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("403 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusForbidden, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("404 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusNotFound, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusNotFound {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusNotFound)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("404 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusNotFound, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("404 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusNotFound, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("406 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusNotAcceptable, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusNotAcceptable {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusNotAcceptable)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("406 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusNotAcceptable, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("406 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusNotAcceptable, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("409 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusConflict, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusConflict {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusConflict)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("409 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusConflict, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("409 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusConflict, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("429 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusTooManyRequests, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusTooManyRequests {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusTooManyRequests)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("429 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusTooManyRequests, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("429 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusTooManyRequests, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("500 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusInternalServerError, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusInternalServerError {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusInternalServerError)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("500 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusInternalServerError, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("500 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusInternalServerError, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("503 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusServiceUnavailable, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusServiceUnavailable {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusServiceUnavailable)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("503 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusServiceUnavailable, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("503 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusServiceUnavailable, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("504 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusGatewayTimeout, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusGatewayTimeout {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusGatewayTimeout)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("504 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusGatewayTimeout, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("504 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusGatewayTimeout, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("529 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, 529, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != 529 {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, 529)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("529 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, 529, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("529 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, 529, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.CreateMeetingNotePage(t.Context(), CreateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+	})
+
+	t.Run("UpdateMeetingNotePage", func(t *testing.T) {
+		t.Setenv("NOTION_API_TOKEN", "**************************************************")
+
+		t.Setenv("NOTION_API_USERNAME", "user")
+		t.Setenv("NOTION_API_PASSWORD", "pass")
+
+		t.Run("transport error", func(t *testing.T) {
+			c, err := NewClient(WithHTTPClient(&http.Client{Transport: apitest.RoundTripFunc(
+				func(*http.Request) (*http.Response, error) { return nil, io.EOF },
+			)}))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, io.EOF) {
+				t.Fatalf("want: %v, got: %v", io.EOF, err)
+			}
+		})
+
+		t.Run("unknown status code", func(t *testing.T) {
+			srv := apitest.NewServer(t, http.StatusTeapot)
+
+			baseURL, err := url.Parse(srv.URL)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(baseURL))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if apiErr.Err != api.ErrUnknownStatusCode {
+				t.Fatalf("got: %v, want: %v", apiErr.Err, api.ErrUnknownStatusCode)
+			} else if apiErr.Response.StatusCode != http.StatusTeapot {
+				t.Fatalf("got: %v, want: %v", apiErr.Response.StatusCode, http.StatusTeapot)
+			}
+		})
+
+		t.Run("unknown content type", func(t *testing.T) {
+			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "foo")
+				w.WriteHeader(http.StatusOK)
+			}))
+			t.Cleanup(srv.Close)
+
+			baseURL, err := url.Parse(srv.URL)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(baseURL))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("decoding error", func(t *testing.T) {
+			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write([]byte("invalid json"))
+			}))
+			t.Cleanup(srv.Close)
+
+			baseURL, err := url.Parse(srv.URL)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(baseURL))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			} else if _, ok := errors.AsType[*jsontext.SyntacticError](decErr.Err); !ok {
+				t.Fatalf("got: %T, want: *jsontext.SyntacticError", decErr.Err)
+			}
+		})
+
+		t.Run("debug mode keeps an unknown member", func(t *testing.T) {
+			file := filepath.Join(t.TempDir(), "interactions.json")
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusOK, "application/json", apitest.WithUnknownMember(t, UpdateMeetingNotePageOk{}, jsonOpts))), WithDebugFile(file))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			for range 2 {
+				if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err != nil {
+					t.Fatalf("debug mode decodes leniently: %v", err)
+				}
+			}
+
+			if ias, err := cassette.InteractionsReadFile(file); err != nil {
+				t.Fatal(err)
+			} else if len(ias) != 1 {
+				t.Fatalf("the debug file holds %d calls, want the one that failed to decode, once", len(ias))
+			}
+		})
+
+		t.Run("debug mode keeps a body it cannot decode", func(t *testing.T) {
+			file := filepath.Join(t.TempDir(), "interactions.json")
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusOK, "application/json", []byte("invalid json"))), WithDebugFile(file))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+
+			if ias, err := cassette.InteractionsReadFile(file); err != nil {
+				t.Fatal(err)
+			} else if len(ias) != 1 {
+				t.Fatalf("the debug file holds %d calls, want the one that failed to decode", len(ias))
+			}
+		})
+
+		t.Run("debug mode reports a debug file it cannot write", func(t *testing.T) {
+			// a file where the debug file's directory would be
+			blocker := filepath.Join(t.TempDir(), "file")
+			if err := os.WriteFile(blocker, nil, 0o600); err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusOK, "application/json", []byte("invalid json"))), WithDebugFile(filepath.Join(blocker, "interactions.json")))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want the *api.DecodingError", err)
+			} else if _, ok := errors.AsType[*fs.PathError](err); !ok {
+				t.Fatalf("got: %v, want the failure to write the debug file beside it", err)
+			}
+		})
+
+		t.Run("400 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusBadRequest, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusBadRequest {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusBadRequest)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("400 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusBadRequest, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("400 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusBadRequest, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("401 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusUnauthorized, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusUnauthorized {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusUnauthorized)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("401 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusUnauthorized, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("401 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusUnauthorized, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("403 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusForbidden, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusForbidden {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusForbidden)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("403 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusForbidden, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("403 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusForbidden, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("404 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusNotFound, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusNotFound {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusNotFound)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("404 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusNotFound, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("404 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusNotFound, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("406 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusNotAcceptable, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusNotAcceptable {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusNotAcceptable)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("406 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusNotAcceptable, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("406 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusNotAcceptable, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("409 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusConflict, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusConflict {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusConflict)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("409 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusConflict, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("409 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusConflict, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("429 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusTooManyRequests, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusTooManyRequests {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusTooManyRequests)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("429 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusTooManyRequests, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("429 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusTooManyRequests, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("500 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusInternalServerError, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusInternalServerError {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusInternalServerError)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("500 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusInternalServerError, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("500 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusInternalServerError, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("503 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusServiceUnavailable, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusServiceUnavailable {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusServiceUnavailable)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("503 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusServiceUnavailable, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("503 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusServiceUnavailable, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("504 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusGatewayTimeout, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != http.StatusGatewayTimeout {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, http.StatusGatewayTimeout)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("504 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusGatewayTimeout, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("504 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, http.StatusGatewayTimeout, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+
+		t.Run("529 response", func(t *testing.T) {
+			body, err := json.Marshal(Error{}, jsonOpts)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, 529, "application/json", body)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
+				t.Fatalf("got: %T, want: *api.Error", err)
+			} else if !apiErr.IsCustom || apiErr.Response.StatusCode != 529 {
+				t.Fatalf("got: custom %t, status %d, want: custom, status %d", apiErr.IsCustom, apiErr.Response.StatusCode, 529)
+			} else if _, ok := errors.AsType[*Error](err); !ok {
+				t.Fatalf("got: %v, want it to be a *Error", err)
+			}
+		})
+
+		t.Run("529 response decoding error", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, 529, "application/json", []byte("invalid json"))))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
+				t.Fatalf("got: %T, want: *api.DecodingError", err)
+			}
+		})
+
+		t.Run("529 response unknown content type", func(t *testing.T) {
+			c, err := NewClient(WithBaseURL(apitest.BodyServer(t, 529, "foo", nil)))
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if _, err := c.UpdateMeetingNotePage(t.Context(), uuid.Nil(), UpdateMeetingNotePage{}); err == nil {
+				t.Fatal("expected error")
+			} else if !errors.Is(err, api.ErrUnknownContentType) {
+				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
+			}
+		})
+	})
+
 	t.Run("QueryAgents", func(t *testing.T) {
 		t.Setenv("NOTION_API_TOKEN", "**************************************************")
 
@@ -38666,7 +40042,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, io.EOF) {
 				t.Fatalf("want: %v, got: %v", io.EOF, err)
@@ -38686,7 +40062,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -38714,7 +40090,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -38739,7 +40115,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if decErr, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -38757,7 +40133,7 @@ func TestClient_Error(t *testing.T) {
 			}
 
 			for range 2 {
-				if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err != nil {
+				if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err != nil {
 					t.Fatalf("debug mode decodes leniently: %v", err)
 				}
 			}
@@ -38777,7 +40153,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -38802,7 +40178,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want the *api.DecodingError", err)
@@ -38822,7 +40198,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -38839,7 +40215,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -38852,7 +40228,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -38870,7 +40246,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -38887,7 +40263,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -38900,7 +40276,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -38918,7 +40294,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -38935,7 +40311,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -38948,7 +40324,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -38966,7 +40342,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -38983,7 +40359,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -38996,7 +40372,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -39014,7 +40390,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -39031,7 +40407,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -39044,7 +40420,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -39062,7 +40438,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -39079,7 +40455,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -39092,7 +40468,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -39110,7 +40486,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -39127,7 +40503,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -39140,7 +40516,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -39158,7 +40534,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -39175,7 +40551,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -39188,7 +40564,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -39206,7 +40582,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -39223,7 +40599,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -39236,7 +40612,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -39254,7 +40630,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -39271,7 +40647,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -39284,7 +40660,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)
@@ -39302,7 +40678,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if apiErr, ok := errors.AsType[*api.Error](err); !ok {
 				t.Fatalf("got: %T, want: *api.Error", err)
@@ -39319,7 +40695,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if _, ok := errors.AsType[*api.DecodingError](err); !ok {
 				t.Fatalf("got: %T, want: *api.DecodingError", err)
@@ -39332,7 +40708,7 @@ func TestClient_Error(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if _, err := c.UpdateSession(t.Context(), UpdateSessionRequest{SessionMessage: new(SessionMessage)}); err == nil {
+			if _, err := c.UpdateSession(t.Context(), UpdateSession{SessionMessage: new(SessionMessage)}); err == nil {
 				t.Fatal("expected error")
 			} else if !errors.Is(err, api.ErrUnknownContentType) {
 				t.Fatalf("want: %v, got: %v", api.ErrUnknownContentType, err)

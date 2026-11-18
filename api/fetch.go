@@ -187,9 +187,9 @@ var shortNames = map[string]string{
 	"UpdateADataSourcePropertiesValueOneOf0": "PropertyUpdate",
 	"UpdateADataSourcePropertiesValueName":   "PropertyRename",
 	"UpdateAgentStatus2":                     "AgentStatusUpdate", // beside the UpdateAgentStatus it sets
-	"UpdateSessionRequestMessage":            "SessionMessage",
-	"UpdateSessionRequestOneOf1":             "SessionAnswer",
-	"UpdateSessionRequestOneOf2":             "SessionContinuation",
+	"UpdateSessionMessage":                   "SessionMessage",
+	"UpdateSessionOneOf1":                    "SessionAnswer",
+	"UpdateSessionOneOf2":                    "SessionContinuation",
 }
 
 // exactNames are the names of shortNames whose schema alone is renamed, as their prefix starts the names of others.
@@ -450,11 +450,52 @@ func shortenNames(doc *openapi.Document) error {
 	}
 
 	if len(unused) > 0 {
+		gone := slices.Sorted(maps.Keys(unused))
+		for i, n := range gone {
+			if now := likelyNow(n, names); now != "" {
+				gone[i] += " (now " + now + "?)"
+			}
+		}
+
 		return fmt.Errorf("shortNames or exactNames name schemas the specification no longer has: %s",
-			strings.Join(slices.Sorted(maps.Keys(unused)), ", "))
+			strings.Join(gone, ", "))
 	}
 
 	return nil
+}
+
+// likelyNow is what of names the schema flatten named old most likely is named now: the one that ends in most of
+// the same words, as a schema keeps the words of what holds it below where upstream renamed something, at least
+// two of them; "" for none, or for several alike.
+func likelyNow(old string, names []string) string {
+	words := reWord.FindAllString(old, -1)
+
+	best, most, tie := "", 1, false
+	for _, n := range names {
+		if n == old {
+			continue
+		}
+
+		w := reWord.FindAllString(n, -1)
+
+		same := 0
+		for same < len(words) && same < len(w) && words[len(words)-1-same] == w[len(w)-1-same] {
+			same++
+		}
+
+		switch {
+		case same > most:
+			best, most, tie = n, same, false
+		case same == most:
+			tie = true
+		}
+	}
+
+	if tie {
+		return ""
+	}
+
+	return best
 }
 
 // reWord matches a word of a Go name, as To, Do and URL.
@@ -737,6 +778,34 @@ func nameLists(doc *openapi.Document) {
 			s.Replace(edit.SchemaRef(doc, name))
 		} else {
 			moveToComponents(doc, s, name)
+		}
+	}
+}
+
+// dropBodyTitles drops the title of each schema an operation sends or answers with, written in place, so that
+// flatten names it after its operation, which upstream cannot change without changing the API, and so does not
+// rename it, and every schema it holds, when upstream titles it: as it titled the token a refresh answers with
+// "Authorization code or refresh token", and the list of users "User".
+func dropBodyTitles(doc *openapi.Document) {
+	drop := func(c openapi.Content) {
+		for _, mt := range c.ByIndex() {
+			if mt != nil && mt.Schema != nil && mt.Schema.Ref == nil {
+				mt.Schema.Title = ""
+			}
+		}
+	}
+
+	for _, item := range doc.Paths.ByIndex() {
+		for _, op := range item.Operations {
+			if op.RequestBody != nil && op.RequestBody.Value != nil {
+				drop(op.RequestBody.Value.Content)
+			}
+
+			for _, r := range op.Responses.ByIndex() {
+				if r != nil && r.Value != nil {
+					drop(r.Value.Content)
+				}
+			}
 		}
 	}
 }
@@ -1689,6 +1758,7 @@ func fixOpenAPI() (*openapi.Document, error) {
 		return nil, err
 	}
 
+	dropBodyTitles(doc)
 	nameObjects(doc)
 	nameBranches(doc)
 

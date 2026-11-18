@@ -76,3 +76,30 @@ func TestGenerate(t *testing.T) {
 		}
 	}
 }
+
+// TestLikelyNow tells, for a name in shortNames or exactNames that flatten no longer gives, what it likely gives
+// instead: the name ending in most of the same words, as when upstream titled the response holding it.
+func TestLikelyNow(t *testing.T) {
+	t.Parallel()
+
+	names := []string{
+		"AuthorizationCodeOrRefreshTokenOwnerUserUser",
+		"AuthorizationCodeOrRefreshTokenOwnerUser",
+		"BotInfoResponseOwnerUserUser2",
+		"PageComment",
+	}
+
+	for old, want := range map[string]string{
+		"CreateATokenOkOwnerUserUser": "AuthorizationCodeOrRefreshTokenOwnerUserUser",
+		"CreateATokenOkOwnerUser":     "AuthorizationCodeOrRefreshTokenOwnerUser",
+		"CreateACommentAllOf0OneOf0":  "", // no two words alike
+	} {
+		if got := likelyNow(old, names); got != want {
+			t.Errorf("likelyNow(%q) = %q, want %q", old, got, want)
+		}
+	}
+
+	if got := likelyNow("XOwnerUser", []string{"AOwnerUser", "BOwnerUser"}); got != "" {
+		t.Errorf("of two alike: %q, want none", got)
+	}
+}

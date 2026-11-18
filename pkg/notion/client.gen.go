@@ -4816,6 +4816,198 @@ func (c *Client) QueryMeetingNotes(ctx context.Context, body QueryMeetingNotes) 
 	}
 }
 
+// Create a full-page meeting note
+//
+//	POST /meeting_notes
+func (c *Client) CreateMeetingNotePage(ctx context.Context, body CreateMeetingNotePage) (*MeetingNotePageResult, error) {
+	if c.bearer == "" {
+		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
+	}
+
+	u := c.baseURL.JoinPath("meeting_notes")
+	pr, pw := io.Pipe()
+	req := (&http.Request{
+		Header: http.Header{
+			"Authorization":  []string{c.bearer},
+			"Notion-Version": []string{"2026-03-11"},
+			"User-Agent":     []string{c.userAgent},
+			"Content-Type":   []string{"application/json"},
+		},
+		Host:          u.Host,
+		Method:        http.MethodPost,
+		Proto:         "HTTP/1.1",
+		ProtoMajor:    1,
+		ProtoMinor:    1,
+		URL:           u,
+		Body:          pr,
+		ContentLength: -1,
+	}).WithContext(ctx)
+
+	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
+	defer pr.Close()
+
+	rsp, ia, err := c.do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer rsp.Body.Close()
+
+	switch rsp.StatusCode {
+	case http.StatusOK:
+		// OK
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out MeetingNotePageResult
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
+				}
+			}
+
+			// a value of an enum the specification does not list decodes, but is news
+			if ia != nil && out.unknownEnum() {
+				if err := c.keep(ia); err != nil {
+					return nil, fmt.Errorf("recording the call: %w", err)
+				}
+			}
+
+			return &out, nil
+		default:
+			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
+		}
+	case http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound, http.StatusNotAcceptable, http.StatusConflict, http.StatusTooManyRequests, http.StatusInternalServerError, http.StatusServiceUnavailable, http.StatusGatewayTimeout, 529:
+		// Bad Request
+		// Unauthorized
+		// Forbidden
+		// Not Found
+		// Not Acceptable
+		// Conflict
+		// Too Many Requests
+		// Internal Server Error
+		// Service Unavailable
+		// Gateway Timeout
+		// The Service Is Overloaded
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out Error
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
+				}
+			}
+
+			// a value of an enum the specification does not list decodes, but is news
+			if ia != nil && out.unknownEnum() {
+				if err := c.keep(ia); err != nil {
+					return nil, fmt.Errorf("recording the call: %w", err)
+				}
+			}
+
+			return nil, api.NewErrCustom(rsp, &out)
+		default:
+			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
+		}
+	default:
+		return nil, c.failed(ia, api.NewErrUnknownStatusCode(rsp))
+	}
+}
+
+// Link a full-page meeting note to a calendar event
+//
+//	PATCH /meeting_notes/{meeting_note_id}
+func (c *Client) UpdateMeetingNotePage(ctx context.Context, meetingNoteID ID, body UpdateMeetingNotePage) (*UpdateMeetingNotePageOk, error) {
+	if c.bearer == "" {
+		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
+	}
+
+	u := c.baseURL.JoinPath("meeting_notes", uuid.UUID(meetingNoteID).String())
+	pr, pw := io.Pipe()
+	req := (&http.Request{
+		Header: http.Header{
+			"Authorization":  []string{c.bearer},
+			"Notion-Version": []string{"2026-03-11"},
+			"User-Agent":     []string{c.userAgent},
+			"Content-Type":   []string{"application/json"},
+		},
+		Host:          u.Host,
+		Method:        http.MethodPatch,
+		Proto:         "HTTP/1.1",
+		ProtoMajor:    1,
+		ProtoMinor:    1,
+		URL:           u,
+		Body:          pr,
+		ContentLength: -1,
+	}).WithContext(ctx)
+
+	go func() { pw.CloseWithError(json.MarshalWrite(pw, body, jsonOpts)) }()
+	defer pr.Close()
+
+	rsp, ia, err := c.do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer rsp.Body.Close()
+
+	switch rsp.StatusCode {
+	case http.StatusOK:
+		// OK
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out UpdateMeetingNotePageOk
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
+				}
+			}
+
+			// a value of an enum the specification does not list decodes, but is news
+			if ia != nil && out.unknownEnum() {
+				if err := c.keep(ia); err != nil {
+					return nil, fmt.Errorf("recording the call: %w", err)
+				}
+			}
+
+			return &out, nil
+		default:
+			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
+		}
+	case http.StatusBadRequest, http.StatusUnauthorized, http.StatusForbidden, http.StatusNotFound, http.StatusNotAcceptable, http.StatusConflict, http.StatusTooManyRequests, http.StatusInternalServerError, http.StatusServiceUnavailable, http.StatusGatewayTimeout, 529:
+		// Bad Request
+		// Unauthorized
+		// Forbidden
+		// Not Found
+		// Not Acceptable
+		// Conflict
+		// Too Many Requests
+		// Internal Server Error
+		// Service Unavailable
+		// Gateway Timeout
+		// The Service Is Overloaded
+		switch mt, _, _ := strings.Cut(rsp.Header.Get("Content-Type"), ";"); mt {
+		case "application/json":
+			var out Error
+			if err := json.UnmarshalRead(rsp.Body, &out, jsonOpts); err != nil {
+				if err := api.DecodeLenient(rsp, err, ia, cmp.Or(c.debugFile, defaultDebugFile), &out, jsonOpts); err != nil {
+					return nil, err
+				}
+			}
+
+			// a value of an enum the specification does not list decodes, but is news
+			if ia != nil && out.unknownEnum() {
+				if err := c.keep(ia); err != nil {
+					return nil, fmt.Errorf("recording the call: %w", err)
+				}
+			}
+
+			return nil, api.NewErrCustom(rsp, &out)
+		default:
+			return nil, c.failed(ia, api.NewErrUnknownContentType(rsp))
+		}
+	default:
+		return nil, c.failed(ia, api.NewErrUnknownStatusCode(rsp))
+	}
+}
+
 // Query agents
 //
 //	POST /agents/query
@@ -5882,7 +6074,7 @@ func (c *Client) GetSkillDirectory(ctx context.Context, id ID) (*GetSkillDirecto
 // Update a session
 //
 //	POST /sessions
-func (c *Client) UpdateSession(ctx context.Context, body UpdateSessionRequest) (*CancelSessionOk, error) {
+func (c *Client) UpdateSession(ctx context.Context, body UpdateSession) (*CancelSessionOk, error) {
 	if c.bearer == "" {
 		return nil, errors.New("bearer token NOTION_API_TOKEN not provided")
 	}
