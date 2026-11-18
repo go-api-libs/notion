@@ -7506,6 +7506,128 @@ type CreateMeetingNoteOptions struct {
 	KickoffSummary *bool `json:"kickoff_summary,omitzero"`
 }
 
+// CreateMeetingNotePage defines a model
+type CreateMeetingNotePage struct {
+	// Page or data source to create the meeting note in. Defaults to the user's meeting notes database, which is created if they don't have one. Not accepted with calendar_event.
+	Parent CreateMeetingNotePageParent `json:"parent,omitzero"`
+	// Title for the meeting note. Not accepted with calendar_event.
+	Title string `json:"title,omitzero"`
+	// Content for the meeting note's Notes tab, as Markdown. Not accepted with calendar_event.
+	Markdown string `json:"markdown,omitzero"`
+	// Calendar event to get or create the meeting note for. The meeting note is filed and titled like the event's other meeting notes. Add content to it afterwards.
+	CalendarEvent CreateMeetingNotePageCalendarEvent `json:"calendar_event,omitzero"`
+	// The Markdown syntax to use. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown) and is recommended. `v1` is enhanced markdown. It's deprecated. It's the default on current Notion-Versions. The next Notion-Version rejects `v1` with a `400` `validation_error`.
+	MarkdownVersion MarkdownVersion `json:"markdown_version,omitzero"`
+}
+
+// CreateMeetingNotePageCalendarEvent defines a model
+type CreateMeetingNotePageCalendarEvent struct {
+	// The calendar the event belongs to.
+	Calendar CreateMeetingNotePageCalendarEventCalendar `json:"calendar"`
+	// ID of the event, as returned in eventId by Notion MCP's notion-calendar-list-events.
+	EventID string `json:"event_id"`
+}
+
+// The calendar the event belongs to.
+type CreateMeetingNotePageCalendarEventCalendar struct {
+	// ID of the calendar account.
+	AccountID string `json:"account_id"`
+	// ID of the calendar.
+	CalendarID string `json:"calendar_id"`
+}
+
+// Page or data source to create the meeting note in. Defaults to the user's meeting notes database, which is created if they don't have one. Not accepted with calendar_event.
+type CreateMeetingNotePageParent struct {
+	Type CreateMeetingNotePageParentType `json:"type"`
+	// The ID of the parent page.
+	PageID *ID `json:"page_id,omitzero"`
+	// ID of the parent data source.
+	DataSourceID *ID `json:"data_source_id,omitzero"`
+}
+
+// CreateMeetingNotePageParentType is a value of CreateMeetingNotePageParent's type, naming the members it holds.
+type CreateMeetingNotePageParentType string
+
+const (
+	CreateMeetingNotePageParentTypePageID       CreateMeetingNotePageParentType = "page_id"
+	CreateMeetingNotePageParentTypeDataSourceID CreateMeetingNotePageParentType = "data_source_id"
+)
+
+// Valid indicates whether the value is a known member of the CreateMeetingNotePageParentType enum.
+func (e CreateMeetingNotePageParentType) Valid() bool {
+	_, ok := tagsOfCreateMeetingNotePageParent[string(e)]
+	return ok
+}
+
+// tagsOfCreateMeetingNotePageParent holds, for each value of type, the members of its alternative's own, each with how it is needed.
+var tagsOfCreateMeetingNotePageParent = map[string]map[string]union.TagNeed{
+	"page_id":        {"page_id": union.TagRequired},
+	"data_source_id": {"data_source_id": union.TagRequired},
+}
+
+// taggedMembers returns those of the members of an alternative's own that are set.
+func (v *CreateMeetingNotePageParent) taggedMembers() []string {
+	var set []string
+	if v.PageID != nil {
+		set = append(set, "page_id")
+	}
+	if v.DataSourceID != nil {
+		set = append(set, "data_source_id")
+	}
+
+	return set
+}
+
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
+// alternative's own, only those of the one type names are set. Null sets no alternative.
+func (v *CreateMeetingNotePageParent) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	type plain CreateMeetingNotePageParent
+
+	*v = CreateMeetingNotePageParent{}
+
+	if dec.PeekKind() == 'n' {
+		_, err := dec.ReadToken()
+		return err
+	}
+
+	raw, err := dec.ReadValue()
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(raw, (*plain)(v), jsonOptsOf(dec)); err != nil {
+		return err
+	}
+
+	// a member sent as null is there, though its field reads as left out
+	present, err := union.Members(raw)
+	if err != nil {
+		return err
+	}
+
+	return union.CheckTag("type", string(v.Type), tagsOfCreateMeetingNotePageParent, v.taggedMembers(), present, union.Strict(dec))
+}
+
+// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
+// the value whose member is set, or null where none is.
+func (v *CreateMeetingNotePageParent) MarshalJSONTo(enc *jsontext.Encoder) error {
+	type plain CreateMeetingNotePageParent
+
+	out, set := *v, v.taggedMembers()
+	if out.Type == "" && len(set) == 0 {
+		return enc.WriteToken(jsontext.Null)
+	}
+	if tag, ok := union.InferTag(tagsOfCreateMeetingNotePageParent, set); ok && out.Type == "" {
+		out.Type = CreateMeetingNotePageParentType(tag)
+	}
+
+	if err := union.CheckTag("type", string(out.Type), tagsOfCreateMeetingNotePageParent, set, nil, true); err != nil {
+		return err
+	}
+
+	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
+}
+
 // CreateView defines a model
 type CreateView struct {
 	// The ID of the data source this view should be scoped to.
@@ -13659,6 +13781,22 @@ type MeetingNoteInPageSource struct {
 	Type string `json:"type"`
 	// ID of a completed public API file upload.
 	FileUploadID ID `json:"file_upload_id"`
+}
+
+// MeetingNotePageResult defines a model
+type MeetingNotePageResult struct {
+	// Always "meeting_note_page_result".
+	Object string `json:"object"`
+	// The full-page meeting note, as a meeting_notes block.
+	MeetingNote CreateMeetingNoteMeetingNotes `json:"meeting_note"`
+	// Whether the meeting note was created, rather than an existing meeting note for the event returned.
+	Created bool `json:"created"`
+}
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v *MeetingNotePageResult) unknownEnum() bool {
+	return v.MeetingNote.unknownEnum()
 }
 
 // MeetingNoteSource defines a model
@@ -30970,6 +31108,30 @@ type UpdateMediaContentWithURLAndCaption struct {
 	Caption []RichTextItem `json:"caption,omitzero"`
 }
 
+// UpdateMeetingNotePage defines a model
+type UpdateMeetingNotePage struct {
+	// Calendar event to link the meeting note to. Replaces any event it is already linked to.
+	CalendarEvent CreateMeetingNotePageCalendarEvent `json:"calendar_event"`
+	// Link even when other meeting notes are linked to the same event. Defaults to false, which returns a 409 listing them instead.
+	AllowOtherMeetingNotes *bool `json:"allow_other_meeting_notes,omitzero"`
+}
+
+// UpdateMeetingNotePageOk defines a model
+type UpdateMeetingNotePageOk struct {
+	// Always "meeting_note_page_result".
+	Object string `json:"object"`
+	// The full-page meeting note, as a meeting_notes block.
+	MeetingNote CreateMeetingNoteMeetingNotes `json:"meeting_note"`
+	// IDs of other meeting notes you can read that are linked to the same event. For a meeting note inside a page, this is the page's ID. Only the first 50 meeting notes found are checked.
+	OtherMeetingNoteIDs []ID `json:"other_meeting_note_ids"`
+}
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v *UpdateMeetingNotePageOk) unknownEnum() bool {
+	return v.MeetingNote.unknownEnum()
+}
+
 // UpdatePageMarkdown defines a model
 type UpdatePageMarkdown struct {
 	// Set to true to opt into receiving an async_task result when this update operation is accepted for background execution. If omitted or false, the endpoint keeps the existing synchronous response shape.
@@ -31315,16 +31477,16 @@ func (e UpdatePageMarkdownAcceptedOperationRestSurface) Valid() bool {
 }
 
 // Exactly one mode: append a message, answer pending actions, or replay from an event.
-// UpdateSessionRequest is an untagged oneOf union: exactly one field is set after unmarshaling.
-type UpdateSessionRequest struct {
+// UpdateSession is an untagged oneOf union: exactly one field is set after unmarshaling.
+type UpdateSession struct {
 	SessionMessage      *SessionMessage
 	SessionAnswer       *SessionAnswer
 	SessionContinuation *SessionContinuation
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
-func (v *UpdateSessionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	*v = UpdateSessionRequest{}
+func (v *UpdateSession) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	*v = UpdateSession{}
 
 	if dec.PeekKind() == 'n' {
 		_, err := dec.ReadToken()
@@ -31389,7 +31551,7 @@ func (v *UpdateSessionRequest) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 
 // MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, or null
 // where none is set.
-func (v *UpdateSessionRequest) MarshalJSONTo(enc *jsontext.Encoder) error {
+func (v *UpdateSession) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.SessionMessage != nil:
 		return json.MarshalEncode(enc, v.SessionMessage, jsonOptsTo(enc))

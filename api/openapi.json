@@ -3074,6 +3074,135 @@
         "x-notion-docs-ref": "https://developers.notion.com/reference/query-meeting-notes"
       }
     },
+    "/meeting_notes": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/notionVersion"
+        }
+      ],
+      "post": {
+        "tags": [
+          "Meeting notes"
+        ],
+        "summary": "Create a full-page meeting note",
+        "operationId": "create-meeting-note-page",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CreateMeetingNotePage"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/CreateMeetingNotePageOk"
+          },
+          "400": {
+            "$ref": "#/components/responses/error_api_400"
+          },
+          "401": {
+            "$ref": "#/components/responses/error_api_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/error_api_403"
+          },
+          "404": {
+            "$ref": "#/components/responses/error_api_404"
+          },
+          "406": {
+            "$ref": "#/components/responses/error_api_406"
+          },
+          "409": {
+            "$ref": "#/components/responses/error_api_409"
+          },
+          "429": {
+            "$ref": "#/components/responses/error_api_429"
+          },
+          "500": {
+            "$ref": "#/components/responses/error_api_500"
+          },
+          "503": {
+            "$ref": "#/components/responses/error_api_503"
+          },
+          "504": {
+            "$ref": "#/components/responses/error_api_504"
+          },
+          "529": {
+            "$ref": "#/components/responses/error_api_529"
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "javascript",
+            "label": "TypeScript SDK",
+            "source": "import { Client } from \"@notionhq/client\"\n\nconst notion = new Client({ auth: process.env.NOTION_API_KEY })\n\nconst response = await notion.request({\n  method: \"post\",\n  path: \"meeting_notes\",\n  body: {\n    parent: {\n      type: \"data_source_id\",\n      data_source_id: \"c02fc1d3-db8b-45c5-a222-27595b15aea7\"\n    },\n    title: \"Weekly sync\",\n    markdown: \"## Agenda\\n- Roadmap review\"\n  }\n})"
+          }
+        ],
+        "x-notion-docs-ref": "https://developers.notion.com/reference/create-meeting-note-page"
+      }
+    },
+    "/meeting_notes/{meeting_note_id}": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/meeting_note_id"
+        },
+        {
+          "$ref": "#/components/parameters/notionVersion"
+        }
+      ],
+      "patch": {
+        "tags": [
+          "Meeting notes"
+        ],
+        "summary": "Link a full-page meeting note to a calendar event",
+        "operationId": "update-meeting-note-page",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UpdateMeetingNotePage"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/UpdateMeetingNotePageOk"
+          },
+          "400": {
+            "$ref": "#/components/responses/error_api_400"
+          },
+          "401": {
+            "$ref": "#/components/responses/error_api_401"
+          },
+          "403": {
+            "$ref": "#/components/responses/error_api_403"
+          },
+          "404": {
+            "$ref": "#/components/responses/error_api_404"
+          },
+          "406": {
+            "$ref": "#/components/responses/error_api_406"
+          },
+          "409": {
+            "$ref": "#/components/responses/error_api_409"
+          },
+          "429": {
+            "$ref": "#/components/responses/error_api_429"
+          },
+          "500": {
+            "$ref": "#/components/responses/error_api_500"
+          },
+          "503": {
+            "$ref": "#/components/responses/error_api_503"
+          },
+          "504": {
+            "$ref": "#/components/responses/error_api_504"
+          },
+          "529": {
+            "$ref": "#/components/responses/error_api_529"
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "javascript",
+            "label": "TypeScript SDK",
+            "source": "import { Client } from \"@notionhq/client\"\n\nconst notion = new Client({ auth: process.env.NOTION_API_KEY })\n\nconst meetingNoteId = \"d7b3c8f4-9e6e-4c1a-b5b8-2c0f4a0c5b8e\"\nconst response = await notion.request({\n  method: \"patch\",\n  path: \"meeting_notes/\" + encodeURIComponent(meetingNoteId),\n  body: {\n    calendar_event: {\n      calendar: {\n        account_id: \"a1b2c3d4-5678-9abc-def0-1234567890ab\",\n        calendar_id: \"team@example.com\"\n      },\n      event_id: \"5e2f8c1a9b3d4e6f\"\n    }\n  }\n})"
+          }
+        ],
+        "x-notion-docs-ref": "https://developers.notion.com/reference/update-meeting-note-page"
+      }
+    },
     "/agents/query": {
       "parameters": [
         {
@@ -10607,6 +10736,7 @@
         ]
       },
       "CreateATokenAuthorizationCode": {
+        "title": "Authorization code",
         "type": "object",
         "properties": {
           "grant_type": {
@@ -10804,6 +10934,7 @@
         ]
       },
       "CreateATokenRefreshToken": {
+        "title": "Refresh token",
         "type": "object",
         "properties": {
           "grant_type": {
@@ -11230,6 +11361,100 @@
             "type": "boolean"
           }
         },
+        "additionalProperties": false
+      },
+      "CreateMeetingNotePage": {
+        "type": "object",
+        "properties": {
+          "parent": {
+            "$ref": "#/components/schemas/CreateMeetingNotePageParent"
+          },
+          "title": {
+            "description": "Title for the meeting note. Not accepted with calendar_event.",
+            "type": "string",
+            "maxLength": 2000
+          },
+          "markdown": {
+            "description": "Content for the meeting note's Notes tab, as Markdown. Not accepted with calendar_event.",
+            "type": "string"
+          },
+          "calendar_event": {
+            "description": "Calendar event to get or create the meeting note for. The meeting note is filed and titled like the event's other meeting notes. Add content to it afterwards.",
+            "$ref": "#/components/schemas/CreateMeetingNotePageCalendarEvent"
+          },
+          "markdown_version": {
+            "$ref": "#/components/schemas/MarkdownVersion"
+          }
+        },
+        "additionalProperties": false
+      },
+      "CreateMeetingNotePageCalendarEvent": {
+        "type": "object",
+        "properties": {
+          "calendar": {
+            "$ref": "#/components/schemas/CreateMeetingNotePageCalendarEventCalendar"
+          },
+          "event_id": {
+            "description": "ID of the event, as returned in eventId by Notion MCP's notion-calendar-list-events.",
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "calendar",
+          "event_id"
+        ],
+        "additionalProperties": false
+      },
+      "CreateMeetingNotePageCalendarEventCalendar": {
+        "description": "The calendar the event belongs to.",
+        "type": "object",
+        "properties": {
+          "account_id": {
+            "description": "ID of the calendar account.",
+            "type": "string",
+            "minLength": 1
+          },
+          "calendar_id": {
+            "description": "ID of the calendar.",
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "account_id",
+          "calendar_id"
+        ],
+        "additionalProperties": false
+      },
+      "CreateMeetingNotePageParent": {
+        "description": "Page or data source to create the meeting note in. Defaults to the user's meeting notes database, which is created if they don't have one. Not accepted with calendar_event.",
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/pageIdParentForBlockBasedObject"
+          },
+          {
+            "$ref": "#/components/schemas/CreateMeetingNotePageParentDataSourceID"
+          }
+        ]
+      },
+      "CreateMeetingNotePageParentDataSourceID": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "description": "Always `data_source_id`",
+            "type": "string",
+            "const": "data_source_id"
+          },
+          "data_source_id": {
+            "description": "ID of the parent data source.",
+            "$ref": "#/components/schemas/ID"
+          }
+        },
+        "required": [
+          "type",
+          "data_source_id"
+        ],
         "additionalProperties": false
       },
       "CreateView": {
@@ -13922,6 +14147,30 @@
         },
         "required": [
           "url"
+        ],
+        "additionalProperties": false
+      },
+      "MeetingNotePageResult": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always \"meeting_note_page_result\".",
+            "type": "string",
+            "const": "meeting_note_page_result"
+          },
+          "meeting_note": {
+            "description": "The full-page meeting note, as a meeting_notes block.",
+            "$ref": "#/components/schemas/CreateMeetingNoteMeetingNotes"
+          },
+          "created": {
+            "description": "Whether the meeting note was created, rather than an existing meeting note for the event returned.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "object",
+          "meeting_note",
+          "created"
         ],
         "additionalProperties": false
       },
@@ -24977,6 +25226,51 @@
         },
         "additionalProperties": false
       },
+      "UpdateMeetingNotePage": {
+        "type": "object",
+        "properties": {
+          "calendar_event": {
+            "description": "Calendar event to link the meeting note to. Replaces any event it is already linked to.",
+            "$ref": "#/components/schemas/CreateMeetingNotePageCalendarEvent"
+          },
+          "allow_other_meeting_notes": {
+            "description": "Link even when other meeting notes are linked to the same event. Defaults to false, which returns a 409 listing them instead.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "calendar_event"
+        ],
+        "additionalProperties": false
+      },
+      "UpdateMeetingNotePageOk": {
+        "type": "object",
+        "properties": {
+          "object": {
+            "description": "Always \"meeting_note_page_result\".",
+            "type": "string",
+            "const": "meeting_note_page_result"
+          },
+          "meeting_note": {
+            "description": "The full-page meeting note, as a meeting_notes block.",
+            "$ref": "#/components/schemas/CreateMeetingNoteMeetingNotes"
+          },
+          "other_meeting_note_ids": {
+            "description": "IDs of other meeting notes you can read that are linked to the same event. For a meeting note inside a page, this is the page's ID. Only the first 50 meeting notes found are checked.",
+            "type": "array",
+            "maxItems": 50,
+            "items": {
+              "$ref": "#/components/schemas/ID"
+            }
+          }
+        },
+        "required": [
+          "object",
+          "meeting_note",
+          "other_meeting_note_ids"
+        ],
+        "additionalProperties": false
+      },
       "UpdatePageMarkdown": {
         "type": "object",
         "allOf": [
@@ -25196,8 +25490,7 @@
           "update_content"
         ]
       },
-      "UpdateSessionRequest": {
-        "title": "Update session request",
+      "UpdateSession": {
         "description": "Exactly one mode: append a message, answer pending actions, or replay from an event.",
         "oneOf": [
           {
@@ -36671,6 +36964,16 @@
           }
         }
       },
+      "CreateMeetingNotePageOk": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/MeetingNotePageResult"
+            }
+          }
+        }
+      },
       "CreateViewOk": {
         "description": "OK",
         "content": {
@@ -37211,6 +37514,16 @@
           }
         }
       },
+      "UpdateMeetingNotePageOk": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateMeetingNotePageOk"
+            }
+          }
+        }
+      },
       "UpdatePageMarkdownAccepted": {
         "description": "Accepted when `allow_async` is true and the update has been queued for background execution.",
         "content": {
@@ -37631,6 +37944,15 @@
           "$ref": "#/components/schemas/MarkdownVersion"
         }
       },
+      "meeting_note_id": {
+        "name": "meeting_note_id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "description": "ID of the full-page meeting note.",
+          "$ref": "#/components/schemas/ID"
+        }
+      },
       "name": {
         "name": "name",
         "in": "query",
@@ -37992,6 +38314,16 @@
           }
         }
       },
+      "CreateMeetingNotePage": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CreateMeetingNotePage"
+            }
+          }
+        }
+      },
       "CreateView": {
         "required": true,
         "content": {
@@ -38212,6 +38544,16 @@
           }
         }
       },
+      "UpdateMeetingNotePage": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UpdateMeetingNotePage"
+            }
+          }
+        }
+      },
       "UpdatePageMarkdown": {
         "required": true,
         "content": {
@@ -38227,7 +38569,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/UpdateSessionRequest"
+              "$ref": "#/components/schemas/UpdateSession"
             }
           }
         }
