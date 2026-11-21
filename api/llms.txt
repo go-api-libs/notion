@@ -8,6 +8,7 @@
 - [Set up content for users](https://developers.notion.com/guides/connections-and-tokens/oauth-integrations/preparing-for-users.md): Create pages, databases, and views in a user’s Notion workspace after they authorize your scoped OAuth integration or public integration.
 - [Public integrations](https://developers.notion.com/guides/connections-and-tokens/public-integrations/overview.md): Create an OAuth integration available to any Notion workspace, with the option to list it on the Marketplace.
 - [List on the Marketplace](https://developers.notion.com/guides/connections-and-tokens/public-integrations/marketplace-listing.md): Submit your public connection to the Notion Marketplace and prepare its listing for review.
+- [Share a connection](https://developers.notion.com/guides/connections-and-tokens/share-a-connection.md): Add people and groups as connection owners so more than one person can manage a connection.
 - [Authorization](https://developers.notion.com/guides/authorization/overview.md): Authenticate Notion API requests with personal access tokens, internal connection tokens, or OAuth integration OAuth flows.
 - [Secure API credentials](https://developers.notion.com/guides/authorization/credential-security.md): Store, rotate, and revoke Notion API credentials, and respond when a token is exposed.
 - [Developer tools](https://developers.notion.com/guides/developer-tools/overview.md): Access developer tools, copy resource IDs, and monitor connection health in Notion.
