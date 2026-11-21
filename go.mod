@@ -27,7 +27,7 @@ require (
 	github.com/MarkRosemaker/yaml v0.0.0-20261118230544-f88f96ca5149 // indirect
 	github.com/MarkRosemaker/yaml2json v0.0.0-20261118230255-06c4fe76a5b8 // indirect
 	github.com/spf13/afero v1.15.0 // indirect
-	golang.org/x/exp v0.0.0-20261120182113-8801fbdfac81 // indirect
+	golang.org/x/exp v0.0.0-20261121133325-6d57732a552b // indirect
 	golang.org/x/text v0.44.0 // indirect
 	golang.org/x/tools v0.53.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

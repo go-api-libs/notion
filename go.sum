@@ -48,8 +48,8 @@ github.com/rogpeppe/go-internal v1.16.0 h1:O9DK+vNMDVGLr2BeZqmpLeMjiMNkuXfcqntWb
 github.com/rogpeppe/go-internal v1.16.0/go.mod h1:DrUVZyrJU+txYW5/1kwtXQSMFio52ZOxX7yM1VHvnxs=
 github.com/spf13/afero v1.15.0 h1:b/YBCLWAJdFWJTN9cLhiXXcD7mzKn9Dm86dNnfyQw1I=
 github.com/spf13/afero v1.15.0/go.mod h1:NC2ByUVxtQs4b3sIUphxK0NioZnmxgyCrfzeuq8lxMg=
-golang.org/x/exp v0.0.0-20261120182113-8801fbdfac81 h1:12mHPhk+V4p4okSYZrUlpauhJ0/KM4Y4FUMnsjdyia0=
-golang.org/x/exp v0.0.0-20261120182113-8801fbdfac81/go.mod h1:xeYMf2GfgE/gQmBtvdPsBN608YETsXuvoiEhaOxGg/w=
+golang.org/x/exp v0.0.0-20261121133325-6d57732a552b h1:n/iVrqajGGTo3XoBr3MHlhKbluvLMCVB9+iq3Kp4w7Y=
+golang.org/x/exp v0.0.0-20261121133325-6d57732a552b/go.mod h1:xeYMf2GfgE/gQmBtvdPsBN608YETsXuvoiEhaOxGg/w=
 golang.org/x/sync v0.25.0 h1:dJnifr0nMV8/SBnBvdo4eSGGnrc3O4FFx6IqvtLcmRs=
 golang.org/x/sync v0.25.0/go.mod h1:sUUOizhqBxiL6pEWpqNLUiaJn1ShEbZ6BBqskPbjZm0=
 golang.org/x/text v0.44.0 h1:YItdp/mQNGnsmrgpcdA5yQ3bnRxCfo/Tj/iByGW9GGo=
