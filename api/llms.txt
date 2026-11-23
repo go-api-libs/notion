@@ -231,6 +231,16 @@
 - [Introduction](https://developers.notion.com/reference/admin/intro.md): Learn the conventions, authentication, and pagination patterns used for Notion's Admin API.
 - [Scopes](https://developers.notion.com/reference/admin/scopes.md): Admin API scopes control an organization bot token's access.
 - [Versioning](https://developers.notion.com/reference/admin/versioning.md): Learn about API change management and how to set the appropriate version in your connection.
+- [Analytics reports](https://developers.notion.com/reference/admin/analytics-reports.md): Learn how to create, check, and download workspace analytics reports.
+- [List analytics reports](https://developers.notion.com/reference/admin/list-analytics-reports.md): List analytics reports.
+- [Create user activity analytics report](https://developers.notion.com/reference/admin/create-user-activity-analytics-report.md): Create a user activity analytics report.
+- [Get user activity analytics report](https://developers.notion.com/reference/admin/get-user-activity-analytics-report.md): Get a user activity analytics report.
+- [Create content pages analytics report](https://developers.notion.com/reference/admin/create-content-pages-analytics-report.md): Create a content pages analytics report.
+- [Get content pages analytics report](https://developers.notion.com/reference/admin/get-content-pages-analytics-report.md): Get a content pages analytics report.
+- [Create AI usage analytics report](https://developers.notion.com/reference/admin/create-ai-usage-analytics-report.md): Create an AI usage analytics report.
+- [Get AI usage analytics report](https://developers.notion.com/reference/admin/get-ai-usage-analytics-report.md): Get an AI usage analytics report.
+- [Create skills analytics report](https://developers.notion.com/reference/admin/create-skills-analytics-report.md): Create a skills analytics report.
+- [Get skills analytics report](https://developers.notion.com/reference/admin/get-skills-analytics-report.md): Get a skills analytics report.
 - [List legal holds](https://developers.notion.com/reference/admin/list-legal-holds.md): List all legal holds belonging to your organization.
 - [Add users to a legal hold](https://developers.notion.com/reference/admin/add-legal-hold-users.md): Add users to a legal hold.
 - [Create a legal hold](https://developers.notion.com/reference/admin/create-legal-hold.md): Create a legal hold.
