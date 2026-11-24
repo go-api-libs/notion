@@ -705,16 +705,6 @@ func TestEnums_Valid(t *testing.T) {
 		t.Errorf("IncompleteReason(%v): valid, though no member", "not a member")
 	}
 
-	for _, v := range []InsertContentPositionType{InsertContentPositionTypeStart, InsertContentPositionTypeEnd} {
-		if !v.Valid() {
-			t.Errorf("InsertContentPositionType %v: not valid", v)
-		}
-	}
-
-	if InsertContentPositionType("not a member").Valid() {
-		t.Errorf("InsertContentPositionType(%v): valid, though no member", "not a member")
-	}
-
 	for _, v := range []InternalOrExternalFileWithNameResponseType{InternalOrExternalFileWithNameResponseTypeFile, InternalOrExternalFileWithNameResponseTypeExternal} {
 		if !v.Valid() {
 			t.Errorf("InternalOrExternalFileWithNameResponseType %v: not valid", v)
@@ -2316,6 +2306,30 @@ func TestUnions_RoundTrip(t *testing.T) {
 		apitest.RoundTrip(t, GroupByConfigResponse{FormulaGroupByConfigResponse: &v}, func(u GroupByConfigResponse) bool { return u.FormulaGroupByConfigResponse != nil }, jsonOpts)
 	})
 
+	t.Run("InsertContentPosition/ViewPositionStart", func(t *testing.T) {
+		v := ViewPositionStart{Type: "start"}
+		apitest.RoundTrip(t, InsertContentPosition{ViewPositionStart: &v}, func(u InsertContentPosition) bool { return u.ViewPositionStart != nil }, jsonOpts)
+	})
+
+	t.Run("InsertContentPosition/ViewPositionEnd", func(t *testing.T) {
+		v := ViewPositionEnd{Type: "end"}
+		apitest.RoundTrip(t, InsertContentPosition{ViewPositionEnd: &v}, func(u InsertContentPosition) bool { return u.ViewPositionEnd != nil }, jsonOpts)
+	})
+
+	t.Run("InsertContentPosition/MarkdownEditInsertContentInsertContentPositionAfterContent", func(t *testing.T) {
+		v := MarkdownEditInsertContentInsertContentPositionAfterContent{Type: "after_content"}
+		apitest.RoundTrip(t, InsertContentPosition{MarkdownEditInsertContentInsertContentPositionAfterContent: &v}, func(u InsertContentPosition) bool {
+			return u.MarkdownEditInsertContentInsertContentPositionAfterContent != nil
+		}, jsonOpts)
+	})
+
+	t.Run("InsertContentPosition/MarkdownEditInsertContentInsertContentPositionBeforeContent", func(t *testing.T) {
+		v := MarkdownEditInsertContentInsertContentPositionBeforeContent{Type: "before_content"}
+		apitest.RoundTrip(t, InsertContentPosition{MarkdownEditInsertContentInsertContentPositionBeforeContent: &v}, func(u InsertContentPosition) bool {
+			return u.MarkdownEditInsertContentInsertContentPositionBeforeContent != nil
+		}, jsonOpts)
+	})
+
 	t.Run("MeetingNoteSource/MeetingNoteFromBlock", func(t *testing.T) {
 		v := MeetingNoteFromBlock{Source: MeetingNoteFromBlockSource{Type: "block"}}
 		apitest.RoundTrip(t, MeetingNoteSource{MeetingNoteFromBlock: &v}, func(u MeetingNoteSource) bool { return u.MeetingNoteFromBlock != nil }, jsonOpts)
@@ -3678,6 +3692,7 @@ func TestUnions_Null(t *testing.T) {
 	apitest.Null[FormulaSubGroupBy](t, jsonOpts)
 	apitest.Null[GroupByConfig](t, jsonOpts)
 	apitest.Null[GroupByConfigResponse](t, jsonOpts)
+	apitest.Null[InsertContentPosition](t, jsonOpts)
 	apitest.Null[MeetingNoteSource](t, jsonOpts)
 	apitest.Null[MeetingNotesCondition](t, jsonOpts)
 	apitest.Null[NewComment](t, jsonOpts)
@@ -4377,14 +4392,6 @@ func TestTagged_RoundTrip(t *testing.T) {
 
 	t.Run("FormulaPropertyValue/unsupported", func(t *testing.T) {
 		apitest.RoundTrip(t, FormulaPropertyValue{Type: "unsupported", Unsupported: new(EmptyObject{})}, func(v FormulaPropertyValue) bool { return v.Type == "unsupported" }, jsonOpts)
-	})
-
-	t.Run("InsertContentPosition/start", func(t *testing.T) {
-		apitest.RoundTrip(t, InsertContentPosition{Type: "start"}, func(v InsertContentPosition) bool { return v.Type == "start" }, jsonOpts)
-	})
-
-	t.Run("InsertContentPosition/end", func(t *testing.T) {
-		apitest.RoundTrip(t, InsertContentPosition{Type: "end"}, func(v InsertContentPosition) bool { return v.Type == "end" }, jsonOpts)
 	})
 
 	t.Run("InternalOrExternalFileWithNameResponse/file", func(t *testing.T) {

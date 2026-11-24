@@ -11827,6 +11827,8 @@ type GalleryViewConfigResponse struct {
 	Type string `json:"type"`
 	// Properties to display on gallery cards.
 	Properties []ViewPropertyConfigResponse `json:"properties,omitzero"`
+	// Grouping configuration.
+	GroupBy GroupByConfigResponse `json:"group_by,omitzero"`
 	// Card cover/preview image configuration.
 	Cover CoverConfigResponse `json:"cover,omitzero"`
 	// Cover image size.
@@ -11844,6 +11846,8 @@ func (v *GalleryViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, n
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
 	case "properties":
 		return true, json.UnmarshalDecode(dec, &v.Properties, jsonOptsOf(dec))
+	case "group_by":
+		return true, json.UnmarshalDecode(dec, &v.GroupBy, jsonOptsOf(dec))
 	case "cover":
 		return true, json.UnmarshalDecode(dec, &v.Cover, jsonOptsOf(dec))
 	case "cover_size":
@@ -11861,6 +11865,7 @@ func (v *GalleryViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, n
 // records.
 func (v *GalleryViewConfigResponse) unknownEnum() bool {
 	return slices.ContainsFunc(v.Properties, func(x ViewPropertyConfigResponse) bool { return x.unknownEnum() }) ||
+		v.GroupBy.unknownEnum() ||
 		v.Cover.unknownEnum() ||
 		v.CoverSize != "" && !v.CoverSize.Valid() ||
 		v.CoverAspect != "" && !v.CoverAspect.Valid() ||
@@ -12480,49 +12485,24 @@ type InitialDataSource struct {
 type InsertContent struct {
 	// The Markdown content to insert into the page, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions).
 	Content string `json:"content"`
-	// Selection of existing content to insert after, using the ellipsis format ("start text...end text"). Omit to append at the end of the page.
+	// Deprecated: use `position` with `{"type":"after_content","anchor":"..."}` instead. Selection of existing content to insert after, using the ellipsis format ("start text...end text"). Cannot be combined with `position`.
 	After string `json:"after,omitzero"`
-	// Explicit position for inserted content. Use {"type":"start"} to prepend or {"type":"end"} to append. Cannot be combined with after.
+	// Where to insert the content. Use `{"type":"start"}` to prepend or `{"type":"end"}` to append. Use `{"type":"after_content","anchor":"..."}` or `{"type":"before_content","anchor":"..."}` to insert next to the block that the anchor matches; anchored positions require `markdown_version: "v2"`. Omit to append at the end of the page.
 	Position InsertContentPosition `json:"position,omitzero"`
 }
 
-// Explicit position for inserted content. Use {"type":"start"} to prepend or {"type":"end"} to append. Cannot be combined with after.
+// Where to insert the content. Use `{"type":"start"}` to prepend or `{"type":"end"}` to append. Use `{"type":"after_content","anchor":"..."}` or `{"type":"before_content","anchor":"..."}` to insert next to the block that the anchor matches; anchored positions require `markdown_version: "v2"`. Omit to append at the end of the page.
+// InsertContentPosition is an untagged oneOf union: exactly one field is set after unmarshaling.
 type InsertContentPosition struct {
-	Type InsertContentPositionType `json:"type"`
+	ViewPositionStart                                           *ViewPositionStart
+	ViewPositionEnd                                             *ViewPositionEnd
+	MarkdownEditInsertContentInsertContentPositionAfterContent  *MarkdownEditInsertContentInsertContentPositionAfterContent
+	MarkdownEditInsertContentInsertContentPositionBeforeContent *MarkdownEditInsertContentInsertContentPositionBeforeContent
 }
 
-// InsertContentPositionType is a value of InsertContentPosition's type, naming the members it holds.
-type InsertContentPositionType string
-
-const (
-	InsertContentPositionTypeStart InsertContentPositionType = "start"
-	InsertContentPositionTypeEnd   InsertContentPositionType = "end"
-)
-
-// Valid indicates whether the value is a known member of the InsertContentPositionType enum.
-func (e InsertContentPositionType) Valid() bool {
-	_, ok := tagsOfInsertContentPosition[string(e)]
-	return ok
-}
-
-// tagsOfInsertContentPosition holds, for each value of type, the members of its alternative's own, each with how it is needed.
-var tagsOfInsertContentPosition = map[string]map[string]union.TagNeed{
-	"start": {},
-	"end":   {},
-}
-
-// taggedMembers returns those of the members of an alternative's own that are set.
-func (v *InsertContentPosition) taggedMembers() []string {
-	var set []string
-
-	return set
-}
-
-// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. It decodes the members, then checks that of those of an
-// alternative's own, only those of the one type names are set. Null sets no alternative.
+// UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Its member type names the alternative, which then
+// decodes each further member as it is read. With type first, nothing is read twice. Null sets no alternative.
 func (v *InsertContentPosition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
-	type plain InsertContentPosition
-
 	*v = InsertContentPosition{}
 
 	if dec.PeekKind() == 'n' {
@@ -12530,42 +12510,78 @@ func (v *InsertContentPosition) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		return err
 	}
 
-	raw, err := dec.ReadValue()
+	tag, first, dec, err := union.FirstMember(dec, "type")
 	if err != nil {
 		return err
 	}
 
-	if err := json.Unmarshal(raw, (*plain)(v), jsonOptsOf(dec)); err != nil {
-		return err
+	switch tag {
+	case "start":
+		var vv ViewPositionStart
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.ViewPositionStart = &vv
+	case "end":
+		var vv ViewPositionEnd
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.ViewPositionEnd = &vv
+	case "after_content":
+		var vv MarkdownEditInsertContentInsertContentPositionAfterContent
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.MarkdownEditInsertContentInsertContentPositionAfterContent = &vv
+	case "before_content":
+		var vv MarkdownEditInsertContentInsertContentPositionBeforeContent
+		if err := union.MembersFrom(dec, "type", first, vv.unmarshalJSONMember); err != nil {
+			return err
+		}
+
+		v.MarkdownEditInsertContentInsertContentPositionBeforeContent = &vv
+	default:
+		return union.UnknownValue("type", tag)
 	}
 
-	// a member sent as null is there, though its field reads as left out
-	present, err := union.Members(raw)
-	if err != nil {
-		return err
-	}
-
-	return union.CheckTag("type", string(v.Type), tagsOfInsertContentPosition, v.taggedMembers(), present, union.Strict(dec))
+	return nil
 }
 
-// MarshalJSONTo implements [json.MarshalerTo]. It checks the members as decoding does; with type left empty, it sends
-// the value whose member is set, or null where none is.
+// MarshalJSONTo implements [json.MarshalerTo]. It emits the first non-nil variant, with type first, as decoding wants it, and set to the variant's value, or null
+// where none is set.
 func (v *InsertContentPosition) MarshalJSONTo(enc *jsontext.Encoder) error {
-	type plain InsertContentPosition
+	var (
+		variant any
+		tag     string
+	)
 
-	out, set := *v, v.taggedMembers()
-	if out.Type == "" && len(set) == 0 {
+	switch {
+	case v.ViewPositionStart != nil:
+		variant, tag = v.ViewPositionStart, "start"
+	case v.ViewPositionEnd != nil:
+		variant, tag = v.ViewPositionEnd, "end"
+	case v.MarkdownEditInsertContentInsertContentPositionAfterContent != nil:
+		variant, tag = v.MarkdownEditInsertContentInsertContentPositionAfterContent, "after_content"
+	case v.MarkdownEditInsertContentInsertContentPositionBeforeContent != nil:
+		variant, tag = v.MarkdownEditInsertContentInsertContentPositionBeforeContent, "before_content"
+	default:
 		return enc.WriteToken(jsontext.Null)
 	}
-	if tag, ok := union.InferTag(tagsOfInsertContentPosition, set); ok && out.Type == "" {
-		out.Type = InsertContentPositionType(tag)
-	}
 
-	if err := union.CheckTag("type", string(out.Type), tagsOfInsertContentPosition, set, nil, true); err != nil {
+	out, err := json.Marshal(variant, jsonOptsTo(enc))
+	if err != nil {
 		return err
 	}
 
-	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
+	if out, err = union.First(out, "type", tag); err != nil {
+		return err
+	}
+
+	return enc.WriteValue(out)
 }
 
 // InternalFile defines a model
@@ -13200,6 +13216,8 @@ type ListViewConfigResponse struct {
 	Type string `json:"type"`
 	// Properties to display in list items.
 	Properties []ViewPropertyConfigResponse `json:"properties,omitzero"`
+	// Grouping configuration.
+	GroupBy GroupByConfigResponse `json:"group_by,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether ListViewConfigResponse declares it.
@@ -13209,6 +13227,8 @@ func (v *ListViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name
 		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
 	case "properties":
 		return true, json.UnmarshalDecode(dec, &v.Properties, jsonOptsOf(dec))
+	case "group_by":
+		return true, json.UnmarshalDecode(dec, &v.GroupBy, jsonOptsOf(dec))
 	}
 
 	return false, nil
@@ -13217,7 +13237,8 @@ func (v *ListViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *ListViewConfigResponse) unknownEnum() bool {
-	return slices.ContainsFunc(v.Properties, func(x ViewPropertyConfigResponse) bool { return x.unknownEnum() })
+	return slices.ContainsFunc(v.Properties, func(x ViewPropertyConfigResponse) bool { return x.unknownEnum() }) ||
+		v.GroupBy.unknownEnum()
 }
 
 // MapViewConfig defines a model
@@ -13305,6 +13326,46 @@ func (v *MapViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name 
 func (v *MapViewConfigResponse) unknownEnum() bool {
 	return v.Height != "" && !v.Height.Valid() ||
 		slices.ContainsFunc(v.Properties, func(x ViewPropertyConfigResponse) bool { return x.unknownEnum() })
+}
+
+// MarkdownEditInsertContentInsertContentPositionAfterContent defines a model
+type MarkdownEditInsertContentInsertContentPositionAfterContent struct {
+	// Insert the content after the block where the anchor ends, at that block's nesting level, so anchoring on a parent block inserts after its children.
+	Type string `json:"type"`
+	// Text copied exactly from the page, starting at the beginning of a line with its leading syntax, such as `## ` or `- `, and keeping its inline formatting and escapes. It doesn't need the whole line, only enough to match exactly one place on the page. If the target's text repeats, extend the anchor without moving its end for after_content or its start for before_content: start after_content at an earlier unique line, and continue before_content into the lines after it.
+	Anchor string `json:"anchor"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MarkdownEditInsertContentInsertContentPositionAfterContent declares it.
+func (v *MarkdownEditInsertContentInsertContentPositionAfterContent) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "anchor":
+		return true, json.UnmarshalDecode(dec, &v.Anchor, jsonOptsOf(dec))
+	}
+
+	return false, nil
+}
+
+// MarkdownEditInsertContentInsertContentPositionBeforeContent defines a model
+type MarkdownEditInsertContentInsertContentPositionBeforeContent struct {
+	// Insert the content before the block where the anchor starts, at that block's nesting level.
+	Type string `json:"type"`
+	// Text copied exactly from the page, starting at the beginning of a line with its leading syntax, such as `## ` or `- `, and keeping its inline formatting and escapes. It doesn't need the whole line, only enough to match exactly one place on the page. If the target's text repeats, extend the anchor without moving its end for after_content or its start for before_content: start after_content at an earlier unique line, and continue before_content into the lines after it.
+	Anchor string `json:"anchor"`
+}
+
+// unmarshalJSONMember decodes the value of the member name into its field, reporting whether MarkdownEditInsertContentInsertContentPositionBeforeContent declares it.
+func (v *MarkdownEditInsertContentInsertContentPositionBeforeContent) unmarshalJSONMember(dec *jsontext.Decoder, name string) (bool, error) {
+	switch name {
+	case "type":
+		return true, json.UnmarshalDecode(dec, &v.Type, jsonOptsOf(dec))
+	case "anchor":
+		return true, json.UnmarshalDecode(dec, &v.Anchor, jsonOptsOf(dec))
+	}
+
+	return false, nil
 }
 
 // The Markdown syntax to use. `v2` is [Notion-flavored Markdown](/guides/data-apis/notion-flavored-markdown) and is recommended. `v1` is enhanced markdown. It's deprecated. It's the default on current Notion-Versions. The next Notion-Version rejects `v1` with a `400` `validation_error`.
@@ -16027,6 +16088,17 @@ type PageParentDatabaseID struct {
 type PageParentPageID struct {
 	PageID ID     `json:"page_id"`
 	Type   string `json:"type,omitzero"`
+}
+
+// PagePermissionsUpdatedWebhookPayload defines a model
+type PagePermissionsUpdatedWebhookPayload struct {
+	BaseWebhookPayload
+	// Always `page.permissions_updated`
+	Type string `json:"type"`
+	// The object that triggered the event.
+	Entity WebhookPageEntity `json:"entity"`
+	// Additional event-specific data.
+	Data PageMovedWebhookPayloadData `json:"data"`
 }
 
 // PagePositionSchema defines a model
@@ -28569,7 +28641,7 @@ type TableViewConfig struct {
 	Subtasks *SubtaskConfig `json:"subtasks,omitzero"`
 	// Whether to wrap cell content in the table.
 	WrapCells *bool `json:"wrap_cells,omitzero"`
-	// Number of columns frozen from the left side of the table.
+	// Index of the last frozen column. Columns up to and including this index are frozen. Use -1 to unfreeze all columns.
 	FrozenColumnIndex *int `json:"frozen_column_index,omitzero"`
 	// Whether to show vertical grid lines between columns.
 	ShowVerticalLines *bool `json:"show_vertical_lines,omitzero"`
@@ -28609,7 +28681,7 @@ type TableViewConfigResponse struct {
 	Subtasks *SubtaskConfigResponse `json:"subtasks,omitzero"`
 	// Whether to wrap cell content by default.
 	WrapCells *bool `json:"wrap_cells,omitzero"`
-	// Index of the last frozen column. Columns up to and including this index are frozen.
+	// Index of the last frozen column. Columns up to and including this index are frozen. -1 means no columns are frozen.
 	FrozenColumnIndex *int `json:"frozen_column_index,omitzero"`
 	// Whether to show vertical lines between columns.
 	ShowVerticalLines *bool `json:"show_vertical_lines,omitzero"`
@@ -29319,6 +29391,8 @@ type TimelineViewConfigResponse struct {
 	EndDatePropertyName string `json:"end_date_property_name,omitzero"`
 	// Properties to display on timeline items.
 	Properties []ViewPropertyConfigResponse `json:"properties,omitzero"`
+	// Grouping configuration.
+	GroupBy GroupByConfigResponse `json:"group_by,omitzero"`
 	// Whether to show the table panel alongside the timeline.
 	ShowTable *bool `json:"show_table,omitzero"`
 	// Properties to display in the table panel (when show_table is true).
@@ -29346,6 +29420,8 @@ func (v *TimelineViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, 
 		return true, json.UnmarshalDecode(dec, &v.EndDatePropertyName, jsonOptsOf(dec))
 	case "properties":
 		return true, json.UnmarshalDecode(dec, &v.Properties, jsonOptsOf(dec))
+	case "group_by":
+		return true, json.UnmarshalDecode(dec, &v.GroupBy, jsonOptsOf(dec))
 	case "show_table":
 		return true, json.UnmarshalDecode(dec, &v.ShowTable, jsonOptsOf(dec))
 	case "table_properties":
@@ -29365,6 +29441,7 @@ func (v *TimelineViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, 
 // records.
 func (v *TimelineViewConfigResponse) unknownEnum() bool {
 	return slices.ContainsFunc(v.Properties, func(x ViewPropertyConfigResponse) bool { return x.unknownEnum() }) ||
+		v.GroupBy.unknownEnum() ||
 		slices.ContainsFunc(v.TableProperties, func(x ViewPropertyConfigResponse) bool { return x.unknownEnum() }) ||
 		v.Preference.unknownEnum()
 }

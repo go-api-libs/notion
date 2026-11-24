@@ -1344,11 +1344,12 @@
                                 ]
                               },
                               "after": {
-                                "description": "Selection of existing content to insert after, using the ellipsis format (\"start text...end text\"). Omit to append at the end of the page.",
-                                "type": "string"
+                                "description": "Deprecated: use `position` with `{\"type\":\"after_content\",\"anchor\":\"...\"}` instead. Selection of existing content to insert after, using the ellipsis format (\"start text...end text\"). Cannot be combined with `position`.",
+                                "type": "string",
+                                "deprecated": true
                               },
                               "position": {
-                                "description": "Explicit position for inserted content. Use {\"type\":\"start\"} to prepend or {\"type\":\"end\"} to append. Cannot be combined with after.",
+                                "description": "Where to insert the content. Use `{\"type\":\"start\"}` to prepend or `{\"type\":\"end\"}` to append. Use `{\"type\":\"after_content\",\"anchor\":\"...\"}` or `{\"type\":\"before_content\",\"anchor\":\"...\"}` to insert next to the block that the anchor matches; anchored positions require `markdown_version: \"v2\"`. Omit to append at the end of the page.",
                                 "oneOf": [
                                   {
                                     "type": "object",
@@ -1375,6 +1376,48 @@
                                     "required": [
                                       "type"
                                     ]
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": {
+                                        "description": "Insert the content after the block where the anchor ends, at that block's nesting level, so anchoring on a parent block inserts after its children.",
+                                        "type": "string",
+                                        "const": "after_content"
+                                      },
+                                      "anchor": {
+                                        "description": "Text copied exactly from the page, starting at the beginning of a line with its leading syntax, such as `## ` or `- `, and keeping its inline formatting and escapes. It doesn't need the whole line, only enough to match exactly one place on the page. If the target's text repeats, extend the anchor without moving its end for after_content or its start for before_content: start after_content at an earlier unique line, and continue before_content into the lines after it.",
+                                        "type": "string",
+                                        "examples": [
+                                          "## Next steps"
+                                        ]
+                                      }
+                                    },
+                                    "required": [
+                                      "type",
+                                      "anchor"
+                                    ]
+                                  },
+                                  {
+                                    "type": "object",
+                                    "properties": {
+                                      "type": {
+                                        "description": "Insert the content before the block where the anchor starts, at that block's nesting level.",
+                                        "type": "string",
+                                        "const": "before_content"
+                                      },
+                                      "anchor": {
+                                        "description": "Text copied exactly from the page, starting at the beginning of a line with its leading syntax, such as `## ` or `- `, and keeping its inline formatting and escapes. It doesn't need the whole line, only enough to match exactly one place on the page. If the target's text repeats, extend the anchor without moving its end for after_content or its start for before_content: start after_content at an earlier unique line, and continue before_content into the lines after it.",
+                                        "type": "string",
+                                        "examples": [
+                                          "## Next steps"
+                                        ]
+                                      }
+                                    },
+                                    "required": [
+                                      "type",
+                                      "anchor"
+                                    ]
                                   }
                                 ]
                               }
@@ -1387,8 +1430,7 @@
                         "required": [
                           "type",
                           "insert_content"
-                        ],
-                        "deprecated": true
+                        ]
                       },
                       {
                         "title": "Replace Content Range",
@@ -24373,6 +24415,31 @@
         "security": []
       }
     },
+    "pagePermissionsUpdated": {
+      "post": {
+        "tags": [
+          "Page webhooks"
+        ],
+        "summary": "Page permissions updated",
+        "description": "Webhook event sent when a page's sharing or access settings change, such as sharing it to the web. The payload does not say what changed. Fetch the page to see its current state.",
+        "operationId": "webhook-page-permissions-updated",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/pagePermissionsUpdatedWebhookPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return an HTTP 200 status code to indicate that the data was received successfully."
+          }
+        },
+        "security": []
+      }
+    },
     "pagePropertiesUpdated": {
       "post": {
         "tags": [
@@ -35870,6 +35937,10 @@
               "$ref": "#/components/schemas/viewPropertyConfigResponse"
             }
           },
+          "group_by": {
+            "description": "Grouping configuration.",
+            "$ref": "#/components/schemas/groupByConfigResponse"
+          },
           "cover": {
             "description": "Card cover/preview image configuration.",
             "$ref": "#/components/schemas/coverConfigResponse"
@@ -37201,6 +37272,10 @@
             "items": {
               "$ref": "#/components/schemas/viewPropertyConfigResponse"
             }
+          },
+          "group_by": {
+            "description": "Grouping configuration.",
+            "$ref": "#/components/schemas/groupByConfigResponse"
           }
         },
         "required": [
@@ -39590,6 +39665,46 @@
           "next_cursor",
           "has_more",
           "results"
+        ]
+      },
+      "pagePermissionsUpdatedWebhookPayload": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/baseWebhookPayload"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "description": "Always `page.permissions_updated`",
+                "type": "string",
+                "const": "page.permissions_updated"
+              },
+              "entity": {
+                "description": "The object that triggered the event.",
+                "$ref": "#/components/schemas/webhookPageEntity"
+              },
+              "data": {
+                "description": "Additional event-specific data.",
+                "type": "object",
+                "properties": {
+                  "parent": {
+                    "description": "The parent of the entity that triggered the event.",
+                    "$ref": "#/components/schemas/webhookParentBlock"
+                  }
+                },
+                "required": [
+                  "parent"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "type",
+              "entity",
+              "data"
+            ]
+          }
         ]
       },
       "pagePositionSchema": {
@@ -45615,9 +45730,9 @@
             "type": "boolean"
           },
           "frozen_column_index": {
-            "description": "Number of columns frozen from the left side of the table.",
+            "description": "Index of the last frozen column. Columns up to and including this index are frozen. Use -1 to unfreeze all columns.",
             "type": "integer",
-            "minimum": 0
+            "minimum": -1
           },
           "show_vertical_lines": {
             "description": "Whether to show vertical grid lines between columns.",
@@ -45657,9 +45772,9 @@
             "type": "boolean"
           },
           "frozen_column_index": {
-            "description": "Index of the last frozen column. Columns up to and including this index are frozen.",
+            "description": "Index of the last frozen column. Columns up to and including this index are frozen. -1 means no columns are frozen.",
             "type": "integer",
-            "minimum": 0
+            "minimum": -1
           },
           "show_vertical_lines": {
             "description": "Whether to show vertical lines between columns.",
@@ -46360,6 +46475,10 @@
             "items": {
               "$ref": "#/components/schemas/viewPropertyConfigResponse"
             }
+          },
+          "group_by": {
+            "description": "Grouping configuration.",
+            "$ref": "#/components/schemas/groupByConfigResponse"
           },
           "show_table": {
             "description": "Whether to show the table panel alongside the timeline.",
