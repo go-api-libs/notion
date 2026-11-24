@@ -4,17 +4,17 @@ go 1.27
 
 require (
 	cloud.google.com/go v0.123.0
-	github.com/MarkRosemaker/cassette v0.0.0-20261124110309-32c9c69cd6ad
+	github.com/MarkRosemaker/cassette v0.0.0-20261124134158-2243379a46d0
 	github.com/MarkRosemaker/errpath v0.0.0-20261118230255-99e20cb3445a
 	github.com/MarkRosemaker/jsonutil v0.0.0-20261118230255-4b04cfc02484
 	github.com/MarkRosemaker/openapi v0.0.0-20261124050252-52a60c76de04
-	github.com/MarkRosemaker/openapi-codegen v0.0.0-20261124110735-8bba6a845e7b
+	github.com/MarkRosemaker/openapi-codegen v0.0.0-20261124152808-89aea1ac5d81
 	github.com/MarkRosemaker/openapi-compress v0.0.0-20261124050556-094155f0b064
 	github.com/MarkRosemaker/openapi-edit v0.0.0-20261124050336-02af6fa36ba9
-	github.com/MarkRosemaker/openapi-enrich v0.0.0-20261124110449-feaba678c1c3
+	github.com/MarkRosemaker/openapi-enrich v0.0.0-20261124152307-b7c30f79973b
 	github.com/MarkRosemaker/openapi-flatten v0.0.0-20261124050336-684f3610d8d7
 	github.com/ettle/strcase v0.2.0
-	github.com/go-api-libs/api v0.0.0-20261124110349-399c57411dab
+	github.com/go-api-libs/api v0.0.0-20261124152152-2e43d1b80b9c
 	github.com/go-api-libs/types v0.0.0-20261118230255-0e16a3d7de5d
 	golang.org/x/sync v0.25.0
 )
