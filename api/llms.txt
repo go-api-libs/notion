@@ -186,6 +186,7 @@
 - [Page undeleted](https://developers.notion.com/reference/webhooks/page-undeleted.md): Webhook event for page undeleted in a workspace
 - [Page locked](https://developers.notion.com/reference/webhooks/page-locked.md): Webhook event for page locked in a workspace
 - [Page unlocked](https://developers.notion.com/reference/webhooks/page-unlocked.md): Webhook event for page unlocked in a workspace
+- [Page permissions updated](https://developers.notion.com/reference/webhooks/page-permissions-updated.md): Webhook event sent when a page's sharing or access settings change
 - [Page transcript deleted](https://developers.notion.com/reference/webhooks/page-transcription-block-transcript-deleted.md): Webhook event for transcript deletion in a page's transcription block
 - [Database created](https://developers.notion.com/reference/webhooks/database-created.md): Webhook event for database created in a workspace
 - [Database content updated](https://developers.notion.com/reference/webhooks/database-content-updated.md): Webhook event for database content updated in a workspace
