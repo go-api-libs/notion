@@ -2585,10 +2585,10 @@ func TestUnions_RoundTrip(t *testing.T) {
 		apitest.RoundTrip(t, PublicAPIAsyncTaskStatusResultJSONValue{Bool: &v}, func(u PublicAPIAsyncTaskStatusResultJSONValue) bool { return u.Bool != nil }, jsonOpts)
 	})
 
-	t.Run("PublicAPIAsyncTaskStatusResultJSONValue/PublicAPIAsyncTaskStatusResultJSONValue", func(t *testing.T) {
-		v := []PublicAPIAsyncTaskStatusResultJSONValue{{String: "sample"}}
-		apitest.RoundTrip(t, PublicAPIAsyncTaskStatusResultJSONValue{PublicAPIAsyncTaskStatusResultJSONValue: v}, func(u PublicAPIAsyncTaskStatusResultJSONValue) bool {
-			return u.PublicAPIAsyncTaskStatusResultJSONValue != nil
+	t.Run("PublicAPIAsyncTaskStatusResultJSONValue/PublicAPIAsyncTaskStatusResultJSONValues", func(t *testing.T) {
+		v := PublicAPIAsyncTaskStatusResultJSONValues{PublicAPIAsyncTaskStatusResultJSONValue{String: "sample"}}
+		apitest.RoundTrip(t, PublicAPIAsyncTaskStatusResultJSONValue{PublicAPIAsyncTaskStatusResultJSONValues: v}, func(u PublicAPIAsyncTaskStatusResultJSONValue) bool {
+			return u.PublicAPIAsyncTaskStatusResultJSONValues != nil
 		}, jsonOpts)
 	})
 
@@ -3226,9 +3226,9 @@ func TestUnions_RoundTrip(t *testing.T) {
 		apitest.RoundTrip(t, StatusGroupNames{String: v}, func(u StatusGroupNames) bool { return u.String != "" }, jsonOpts)
 	})
 
-	t.Run("StatusGroupNames/String2", func(t *testing.T) {
-		v := []String{String("sample")}
-		apitest.RoundTrip(t, StatusGroupNames{String2: v}, func(u StatusGroupNames) bool { return u.String2 != nil }, jsonOpts)
+	t.Run("StatusGroupNames/Strings", func(t *testing.T) {
+		v := Strings{String("sample")}
+		apitest.RoundTrip(t, StatusGroupNames{Strings: v}, func(u StatusGroupNames) bool { return u.Strings != nil }, jsonOpts)
 	})
 
 	t.Run("StatusOptionUpdateAllOf/StatusOptionUpdateAllOfName", func(t *testing.T) {
@@ -4607,11 +4607,11 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PagePropertiesValue/title", func(t *testing.T) {
-		apitest.RoundTrip(t, PagePropertiesValue{Type: "title", Title: []RichTextItem{{Type: "text", Text: new(TextRichTextItemText{})}}}, func(v PagePropertiesValue) bool { return v.Type == "title" }, jsonOpts)
+		apitest.RoundTrip(t, PagePropertiesValue{Type: "title", Title: RichTextItems{RichTextItem{Type: "text", Text: new(TextRichTextItemText{})}}}, func(v PagePropertiesValue) bool { return v.Type == "title" }, jsonOpts)
 	})
 
 	t.Run("PagePropertiesValue/rich_text", func(t *testing.T) {
-		apitest.RoundTrip(t, PagePropertiesValue{Type: "rich_text", RichText: []RichTextItem{{Type: "text", Text: new(TextRichTextItemText{})}}}, func(v PagePropertiesValue) bool { return v.Type == "rich_text" }, jsonOpts)
+		apitest.RoundTrip(t, PagePropertiesValue{Type: "rich_text", RichText: RichTextItems{RichTextItem{Type: "text", Text: new(TextRichTextItemText{})}}}, func(v PagePropertiesValue) bool { return v.Type == "rich_text" }, jsonOpts)
 	})
 
 	t.Run("PagePropertiesValue/number", func(t *testing.T) {
@@ -4627,11 +4627,11 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PagePropertiesValue/multi_select", func(t *testing.T) {
-		apitest.RoundTrip(t, PagePropertiesValue{Type: "multi_select", MultiSelect: []PagePropertiesValueMultiSelectItem{{PagePropertiesValueSelectID: new(PagePropertiesValueSelectID{Color: "default"})}}}, func(v PagePropertiesValue) bool { return v.Type == "multi_select" }, jsonOpts)
+		apitest.RoundTrip(t, PagePropertiesValue{Type: "multi_select", MultiSelect: PagePropertiesValueMultiSelectItems{PagePropertiesValueMultiSelectItem{PagePropertiesValueSelectID: new(PagePropertiesValueSelectID{Color: "default"})}}}, func(v PagePropertiesValue) bool { return v.Type == "multi_select" }, jsonOpts)
 	})
 
 	t.Run("PagePropertiesValue/people", func(t *testing.T) {
-		apitest.RoundTrip(t, PagePropertiesValue{Type: "people", People: []PagePropertiesValuePeopleItem{{PartialUserObject: new(PartialUserObject{Object: "user"})}}}, func(v PagePropertiesValue) bool { return v.Type == "people" }, jsonOpts)
+		apitest.RoundTrip(t, PagePropertiesValue{Type: "people", People: PagePropertiesValuePeopleItems{PagePropertiesValuePeopleItem{PartialUserObject: new(PartialUserObject{Object: "user"})}}}, func(v PagePropertiesValue) bool { return v.Type == "people" }, jsonOpts)
 	})
 
 	t.Run("PagePropertiesValue/email", func(t *testing.T) {
@@ -4647,11 +4647,11 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PagePropertiesValue/relation", func(t *testing.T) {
-		apitest.RoundTrip(t, PagePropertiesValue{Type: "relation", Relation: []RelationItemPropertyValue{{}}}, func(v PagePropertiesValue) bool { return v.Type == "relation" }, jsonOpts)
+		apitest.RoundTrip(t, PagePropertiesValue{Type: "relation", Relation: RelationItemPropertyValueResponses{RelationItemPropertyValue{}}}, func(v PagePropertiesValue) bool { return v.Type == "relation" }, jsonOpts)
 	})
 
 	t.Run("PagePropertiesValue/files", func(t *testing.T) {
-		apitest.RoundTrip(t, PagePropertiesValue{Type: "files", Files: []PagePropertiesValueFilesItem{{Type: "file", File: new(InternalFile{})}}}, func(v PagePropertiesValue) bool { return v.Type == "files" }, jsonOpts)
+		apitest.RoundTrip(t, PagePropertiesValue{Type: "files", Files: PagePropertiesValueFilesItems{PagePropertiesValueFilesItem{Type: "file", File: new(InternalFile{})}}}, func(v PagePropertiesValue) bool { return v.Type == "files" }, jsonOpts)
 	})
 
 	t.Run("PagePropertiesValue/status", func(t *testing.T) {
@@ -4731,7 +4731,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PartialRollupValue/array", func(t *testing.T) {
-		apitest.RoundTrip(t, PartialRollupValue{Type: "array", Array: []SimpleOrArrayPropertyValue{{Type: "number", Number: new(1.5)}}}, func(v PartialRollupValue) bool { return v.Type == "array" }, jsonOpts)
+		apitest.RoundTrip(t, PartialRollupValue{Type: "array", Array: SimpleOrArrayPropertyValueResponses{SimpleOrArrayPropertyValue{Type: "number", Number: new(1.5)}}}, func(v PartialRollupValue) bool { return v.Type == "array" }, jsonOpts)
 	})
 
 	t.Run("PartialRollupValue/unsupported", func(t *testing.T) {
@@ -5099,7 +5099,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PropertyValue/multi_select", func(t *testing.T) {
-		apitest.RoundTrip(t, PropertyValue{Type: "multi_select", MultiSelect: []PartialSelectPropertyValue{{}}}, func(v PropertyValue) bool { return v.Type == "multi_select" }, jsonOpts)
+		apitest.RoundTrip(t, PropertyValue{Type: "multi_select", MultiSelect: PartialSelectPropertyValueResponses{PartialSelectPropertyValue{}}}, func(v PropertyValue) bool { return v.Type == "multi_select" }, jsonOpts)
 	})
 
 	t.Run("PropertyValue/status", func(t *testing.T) {
@@ -5119,7 +5119,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PropertyValue/files", func(t *testing.T) {
-		apitest.RoundTrip(t, PropertyValue{Type: "files", Files: []InternalOrExternalFileWithNameResponse{{Type: "file", File: new(InternalFileResponse{})}}}, func(v PropertyValue) bool { return v.Type == "files" }, jsonOpts)
+		apitest.RoundTrip(t, PropertyValue{Type: "files", Files: InternalOrExternalFileWithNameResponses{InternalOrExternalFileWithNameResponse{Type: "file", File: new(InternalFileResponse{})}}}, func(v PropertyValue) bool { return v.Type == "files" }, jsonOpts)
 	})
 
 	t.Run("PropertyValue/created_by", func(t *testing.T) {
@@ -5171,11 +5171,11 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("PropertyValue/people", func(t *testing.T) {
-		apitest.RoundTrip(t, PropertyValue{Type: "people", People: []PeopleArrayBasedPropertyValuePeopleItem{}}, func(v PropertyValue) bool { return v.Type == "people" }, jsonOpts)
+		apitest.RoundTrip(t, PropertyValue{Type: "people", People: PeopleArrayBasedPropertyValuePeopleItems{}}, func(v PropertyValue) bool { return v.Type == "people" }, jsonOpts)
 	})
 
 	t.Run("PropertyValue/relation", func(t *testing.T) {
-		apitest.RoundTrip(t, PropertyValue{Type: "relation", Relation: []RelationItemPropertyValue{{}}}, func(v PropertyValue) bool { return v.Type == "relation" }, jsonOpts)
+		apitest.RoundTrip(t, PropertyValue{Type: "relation", Relation: RelationItemPropertyValueResponses{RelationItemPropertyValue{}}}, func(v PropertyValue) bool { return v.Type == "relation" }, jsonOpts)
 	})
 
 	t.Run("PropertyValue/rollup", func(t *testing.T) {
@@ -5219,7 +5219,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("RollupPropertyItemObjectRollup/array", func(t *testing.T) {
-		apitest.RoundTrip(t, RollupPropertyItemObjectRollup{Type: "array", Array: []EmptyObject{{}}}, func(v RollupPropertyItemObjectRollup) bool { return v.Type == "array" }, jsonOpts)
+		apitest.RoundTrip(t, RollupPropertyItemObjectRollup{Type: "array", Array: EmptyObjects{EmptyObject{}}}, func(v RollupPropertyItemObjectRollup) bool { return v.Type == "array" }, jsonOpts)
 	})
 
 	t.Run("RollupPropertyItemObjectRollup/unsupported", func(t *testing.T) {
@@ -5243,7 +5243,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("SimpleOrArrayPropertyValue/multi_select", func(t *testing.T) {
-		apitest.RoundTrip(t, SimpleOrArrayPropertyValue{Type: "multi_select", MultiSelect: []PartialSelectPropertyValue{{}}}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "multi_select" }, jsonOpts)
+		apitest.RoundTrip(t, SimpleOrArrayPropertyValue{Type: "multi_select", MultiSelect: PartialSelectPropertyValueResponses{PartialSelectPropertyValue{}}}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "multi_select" }, jsonOpts)
 	})
 
 	t.Run("SimpleOrArrayPropertyValue/status", func(t *testing.T) {
@@ -5263,7 +5263,7 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("SimpleOrArrayPropertyValue/files", func(t *testing.T) {
-		apitest.RoundTrip(t, SimpleOrArrayPropertyValue{Type: "files", Files: []InternalOrExternalFileWithNameResponse{{Type: "file", File: new(InternalFileResponse{})}}}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "files" }, jsonOpts)
+		apitest.RoundTrip(t, SimpleOrArrayPropertyValue{Type: "files", Files: InternalOrExternalFileWithNameResponses{InternalOrExternalFileWithNameResponse{Type: "file", File: new(InternalFileResponse{})}}}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "files" }, jsonOpts)
 	})
 
 	t.Run("SimpleOrArrayPropertyValue/created_by", func(t *testing.T) {
@@ -5315,11 +5315,11 @@ func TestTagged_RoundTrip(t *testing.T) {
 	})
 
 	t.Run("SimpleOrArrayPropertyValue/people", func(t *testing.T) {
-		apitest.RoundTrip(t, SimpleOrArrayPropertyValue{Type: "people", People: []PeopleArrayBasedPropertyValuePeopleItem{}}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "people" }, jsonOpts)
+		apitest.RoundTrip(t, SimpleOrArrayPropertyValue{Type: "people", People: PeopleArrayBasedPropertyValuePeopleItems{}}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "people" }, jsonOpts)
 	})
 
 	t.Run("SimpleOrArrayPropertyValue/relation", func(t *testing.T) {
-		apitest.RoundTrip(t, SimpleOrArrayPropertyValue{Type: "relation", Relation: []RelationItemPropertyValue{{}}}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "relation" }, jsonOpts)
+		apitest.RoundTrip(t, SimpleOrArrayPropertyValue{Type: "relation", Relation: RelationItemPropertyValueResponses{RelationItemPropertyValue{}}}, func(v SimpleOrArrayPropertyValue) bool { return v.Type == "relation" }, jsonOpts)
 	})
 
 	t.Run("TemplateMention/template_mention_date", func(t *testing.T) {

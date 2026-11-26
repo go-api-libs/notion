@@ -306,6 +306,9 @@ func (v *AccessibleByItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
+// AccessibleByItems defines a model
+type AccessibleByItems []AccessibleByItem
+
 // AdditionalDataValue defines a model
 // AdditionalDataValue is an untagged oneOf union: exactly one field is set after unmarshaling.
 type AdditionalDataValue struct {
@@ -384,7 +387,7 @@ type Agent struct {
 	// The model the agent runs on: auto (Notion selects) or a pinned model.
 	Model AgentModel `json:"model"`
 	// Integrations the agent is connected to (Notion, Slack, Discord, MCP servers, and other connectors), each with an account and per-target permissions.
-	Connections []AgentConnectionsItem `json:"connections"`
+	Connections UpdateAgentConnectionsItems `json:"connections"`
 	// "active" when the agent can run; "disabled" when it is paused (see pause_reason); "deleted" when it has been removed.
 	Status AgentStatus `json:"status"`
 	// Why the agent is paused when status is "disabled" (e.g. "credit_limit", "disabled_from_workspace_settings"); null when active.
@@ -417,7 +420,7 @@ type Agent struct {
 func (v *Agent) unknownEnum() bool {
 	return v.AgentType != "" && !v.AgentType.Valid() ||
 		v.Icon.unknownEnum() ||
-		slices.ContainsFunc(v.Connections, func(x AgentConnectionsItem) bool { return x.unknownEnum() }) ||
+		v.Connections.unknownEnum() ||
 		v.Status != "" && !v.Status.Valid() ||
 		v.PauseReason != "" && !v.PauseReason.Valid()
 }
@@ -425,7 +428,7 @@ func (v *Agent) unknownEnum() bool {
 // AgentBatch defines a model
 type AgentBatch struct {
 	// The operations to apply, at least one and at most 100. Operations are applied in the order given, and the batch is not atomic: each operation succeeds or fails on its own, and per-operation outcomes are reported in the async task's result.
-	Operations []AgentBatchOperationsItem `json:"operations"`
+	Operations AgentBatchOperationsItems `json:"operations"`
 }
 
 // AgentBatchOk defines a model
@@ -626,6 +629,9 @@ func (v *AgentBatchOperationsItemUpdateStatus) unmarshalJSONMember(dec *jsontext
 
 	return false, nil
 }
+
+// The operations to apply, at least one and at most 100. Operations are applied in the order given, and the batch is not atomic: each operation succeeds or fails on its own, and per-operation outcomes are reported in the async task's result.
+type AgentBatchOperationsItems []AgentBatchOperationsItem
 
 // AgentCondition defines a model
 // AgentCondition is an untagged oneOf union: exactly one field is set after unmarshaling.
@@ -2438,17 +2444,17 @@ type AgentList struct {
 	// Always `list`
 	Object string `json:"object"`
 	// Always `agent`
-	Type       string                 `json:"type"`
-	Results    []AgentListResultsItem `json:"results"`
-	HasMore    bool                   `json:"has_more"`
-	NextCursor string                 `json:"next_cursor"`
-	RequestID  uuid.UUID              `json:"request_id,omitzero"`
+	Type       string                `json:"type"`
+	Results    AgentListResultsItems `json:"results"`
+	HasMore    bool                  `json:"has_more"`
+	NextCursor string                `json:"next_cursor"`
+	RequestID  uuid.UUID             `json:"request_id,omitzero"`
 }
 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *AgentList) unknownEnum() bool {
-	return slices.ContainsFunc(v.Results, func(x AgentListResultsItem) bool { return x.unknownEnum() })
+	return v.Results.unknownEnum()
 }
 
 // AgentListResultsItem defines a model
@@ -2536,6 +2542,15 @@ func (v *AgentListResultsItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 func (v *AgentListResultsItem) unknownEnum() bool {
 	return v.CustomAgent != nil && v.CustomAgent.unknownEnum() ||
 		v.NotionAIAgent != nil && v.NotionAIAgent.unknownEnum()
+}
+
+// AgentListResultsItems defines a model
+type AgentListResultsItems []AgentListResultsItem
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v AgentListResultsItems) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x AgentListResultsItem) bool { return x.unknownEnum() })
 }
 
 // AgentModel defines a model
@@ -3128,13 +3143,13 @@ type BaseWebhookPayload struct {
 	// The ID of the integration the subscription is set up with.
 	IntegrationID ID `json:"integration_id"`
 	// The users or bots that performed the action. Typically an array of length 1; can be more for aggregated events.
-	Authors []AccessibleByItem `json:"authors"`
+	Authors AccessibleByItems `json:"authors"`
 	// The delivery attempt number (1-8) of the current event delivery.
 	AttemptNumber int `json:"attempt_number"`
 	// The Notion API version that was used to render this webhook event's shape.
 	APIVersion APIVersion `json:"api_version"`
 	// The users or bots who own the bot connection to the `integration_id` and have access to the webhook's `entity`. Only present for public integrations.
-	AccessibleBy []AccessibleByItem `json:"accessible_by,omitzero"`
+	AccessibleBy AccessibleByItems `json:"accessible_by,omitzero"`
 }
 
 // Block defines a model
@@ -3482,19 +3497,19 @@ type BlockIDParentForBlockBasedObject struct {
 
 // BlockList defines a model
 type BlockList struct {
-	Type       string           `json:"type"`
-	Block      EmptyObject      `json:"block"`
-	Object     string           `json:"object"`
-	HasMore    bool             `json:"has_more"`
-	Results    []BlockOrPartial `json:"results"`
-	RequestID  uuid.UUID        `json:"request_id,omitzero"`
-	NextCursor ID               `json:"next_cursor"`
+	Type       string          `json:"type"`
+	Block      EmptyObject     `json:"block"`
+	Object     string          `json:"object"`
+	HasMore    bool            `json:"has_more"`
+	Results    BlockOrPartials `json:"results"`
+	RequestID  uuid.UUID       `json:"request_id,omitzero"`
+	NextCursor ID              `json:"next_cursor"`
 }
 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *BlockList) unknownEnum() bool {
-	return slices.ContainsFunc(v.Results, func(x BlockOrPartial) bool { return x.unknownEnum() })
+	return v.Results.unknownEnum()
 }
 
 // BlockObject defines a model
@@ -3832,11 +3847,11 @@ type BlockObjectFile struct {
 
 // BlockObjectHeading defines a model
 type BlockObjectHeading struct {
-	RichText []RichTextItem `json:"rich_text"`
+	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color        APIColor                               `json:"color,omitzero"`
-	IsToggleable *bool                                  `json:"is_toggleable,omitzero"`
-	Children     []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
+	Color        APIColor                              `json:"color,omitzero"`
+	IsToggleable *bool                                 `json:"is_toggleable,omitzero"`
+	Children     BlockObjectWithSingleLevelOfChildrens `json:"children,omitzero"`
 }
 
 // BlockObjectImage defines a model
@@ -4397,6 +4412,15 @@ func (v *BlockObjectWithSingleLevelOfChildren) MarshalJSONTo(enc *jsontext.Encod
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
+// BlockObjectWithSingleLevelOfChildrens defines a model
+type BlockObjectWithSingleLevelOfChildrens []BlockObjectWithSingleLevelOfChildren
+
+// BlockObjectWithoutChildrens defines a model
+type BlockObjectWithoutChildrens []BlockObjectRequestWithoutChildren
+
+// BlockObjects defines a model
+type BlockObjects []BlockObject
+
 // BlockOrPartial defines a model
 // BlockOrPartial is an untagged anyOf union: at least one field is set after unmarshaling.
 type BlockOrPartial struct {
@@ -4472,6 +4496,15 @@ func (v *BlockOrPartial) unknownEnum() bool {
 	return v.Block != nil && v.Block.unknownEnum()
 }
 
+// BlockOrPartials defines a model
+type BlockOrPartials []BlockOrPartial
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v BlockOrPartials) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x BlockOrPartial) bool { return x.unknownEnum() })
+}
+
 // BlockTrashUpdate defines a model
 type BlockTrashUpdate struct {
 	InTrash *bool `json:"in_trash,omitzero"`
@@ -4486,7 +4519,7 @@ type BoardViewConfig struct {
 	// Secondary group-by configuration for sub-grouping within columns. Pass null to remove sub-grouping.
 	SubGroupBy GroupByConfig `json:"sub_group_by,omitzero"`
 	// Property visibility and display configuration on cards. Pass null to clear.
-	Properties []ViewPropertyConfig `json:"properties,omitzero"`
+	Properties ViewPropertyConfigs `json:"properties,omitzero"`
 	// Cover image configuration for cards. Pass null to clear.
 	Cover CoverConfig `json:"cover,omitzero"`
 	// Size of the cover image on cards. Pass null to clear.
@@ -4530,7 +4563,7 @@ type BoardViewConfigResponse struct {
 	// Sub-grouping (vertical swimlanes within columns).
 	SubGroupBy GroupByConfigResponse `json:"sub_group_by,omitzero"`
 	// Properties to display on each card.
-	Properties []ViewPropertyConfigResponse `json:"properties,omitzero"`
+	Properties ViewPropertyConfigResponses `json:"properties,omitzero"`
 	// Card cover/preview image configuration.
 	Cover CoverConfigResponse `json:"cover,omitzero"`
 	// Cover image size.
@@ -4570,7 +4603,7 @@ func (v *BoardViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, nam
 func (v *BoardViewConfigResponse) unknownEnum() bool {
 	return v.GroupBy.unknownEnum() ||
 		v.SubGroupBy.unknownEnum() ||
-		slices.ContainsFunc(v.Properties, func(x ViewPropertyConfigResponse) bool { return x.unknownEnum() }) ||
+		v.Properties.unknownEnum() ||
 		v.Cover.unknownEnum() ||
 		v.CoverSize != "" && !v.CoverSize.Valid() ||
 		v.CoverAspect != "" && !v.CoverAspect.Valid() ||
@@ -4857,10 +4890,10 @@ func (v *BotUserBot) unknownEnum() bool {
 
 // BulletedListItem defines a model
 type BulletedListItem struct {
-	RichText []RichTextItem `json:"rich_text"`
+	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                               `json:"color,omitzero"`
-	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
+	Color    APIColor                              `json:"color,omitzero"`
+	Children BlockObjectWithSingleLevelOfChildrens `json:"children,omitzero"`
 }
 
 // ButtonPropertyItem defines a model
@@ -4896,7 +4929,7 @@ type CalendarEvent struct {
 	// ID of the calendar event, as returned by the calendar tools.
 	EventID string `json:"event_id,omitzero"`
 	// List of attendee user IDs.
-	Attendees []ID `json:"attendees,omitzero"`
+	Attendees IDResponses `json:"attendees,omitzero"`
 }
 
 // CalendarViewConfig defines a model
@@ -4906,7 +4939,7 @@ type CalendarViewConfig struct {
 	// Property ID of the date property used to position items on the calendar.
 	DatePropertyID string `json:"date_property_id"`
 	// Property visibility and display configuration on calendar cards. Pass null to clear.
-	Properties []ViewPropertyConfig `json:"properties,omitzero"`
+	Properties ViewPropertyConfigs `json:"properties,omitzero"`
 	// Default calendar range. "week" shows a week view, "month" shows a month view. Pass null to clear.
 	ViewRange ViewRange `json:"view_range,omitzero"`
 	// Whether to show weekend days. Pass null to clear.
@@ -4940,7 +4973,7 @@ type CalendarViewConfigResponse struct {
 	// Date property name (convenience field).
 	DatePropertyName string `json:"date_property_name,omitzero"`
 	// Properties to display on calendar event cards.
-	Properties []ViewPropertyConfigResponse `json:"properties,omitzero"`
+	Properties ViewPropertyConfigResponses `json:"properties,omitzero"`
 	// Calendar view range.
 	ViewRange ViewRange `json:"view_range,omitzero"`
 	// Whether to show weekend days.
@@ -4970,7 +5003,7 @@ func (v *CalendarViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *CalendarViewConfigResponse) unknownEnum() bool {
-	return slices.ContainsFunc(v.Properties, func(x ViewPropertyConfigResponse) bool { return x.unknownEnum() }) ||
+	return v.Properties.unknownEnum() ||
 		v.ViewRange != "" && !v.ViewRange.Valid()
 }
 
@@ -4992,11 +5025,11 @@ func (v *Callout) unknownEnum() bool {
 
 // CalloutRequest defines a model
 type CalloutRequest struct {
-	RichText []RichTextItem `json:"rich_text"`
+	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                               `json:"color,omitzero"`
-	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
-	Icon     PageIcon                               `json:"icon,omitzero"`
+	Color    APIColor                              `json:"color,omitzero"`
+	Children BlockObjectWithSingleLevelOfChildrens `json:"children,omitzero"`
+	Icon     PageIcon                              `json:"icon,omitzero"`
 }
 
 // CancelSession defines a model
@@ -5156,6 +5189,18 @@ func (v *ChartReferenceLineResponse) unknownEnum() bool {
 		v.DashStyle != "" && !v.DashStyle.Valid()
 }
 
+// Reference lines drawn on the chart. Null when no reference lines are configured.
+type ChartReferenceLineResponses []ChartReferenceLineResponse
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v ChartReferenceLineResponses) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x ChartReferenceLineResponse) bool { return x.unknownEnum() })
+}
+
+// Reference lines on the chart. Pass null to clear.
+type ChartReferenceLines []ChartReferenceLine
+
 // ChartType defines a model
 type ChartType string
 
@@ -5228,7 +5273,7 @@ type ChartViewConfig struct {
 	// Stack-by grouping for stacked/grouped bar charts. Pass null to clear.
 	StackBy GroupByConfig `json:"stack_by,omitzero"`
 	// Reference lines on the chart. Pass null to clear.
-	ReferenceLines []ChartReferenceLine `json:"reference_lines,omitzero"`
+	ReferenceLines ChartReferenceLines `json:"reference_lines,omitzero"`
 	// Chart caption text. Pass null to clear.
 	Caption string `json:"caption,omitzero"`
 	// Whether to color chart elements by their numeric value (gradient coloring). Pass null to clear.
@@ -5348,7 +5393,7 @@ type ChartViewConfigResponse struct {
 	// Stack-by grouping configuration for stacked/grouped bar charts (column/bar/line only). Null when not stacked.
 	StackBy GroupByConfigResponse `json:"stack_by,omitzero"`
 	// Reference lines drawn on the chart. Null when no reference lines are configured.
-	ReferenceLines []ChartReferenceLineResponse `json:"reference_lines,omitzero"`
+	ReferenceLines ChartReferenceLineResponses `json:"reference_lines,omitzero"`
 	// Text caption displayed below the chart. Null when no caption is shown.
 	Caption string `json:"caption,omitzero"`
 	// Whether chart elements are colored by their numeric value (gradient coloring).
@@ -5433,7 +5478,7 @@ func (v *ChartViewConfigResponse) unknownEnum() bool {
 		v.GroupStyle != "" && !v.GroupStyle.Valid() ||
 		v.DonutLabels != "" && !v.DonutLabels.Valid() ||
 		v.StackBy.unknownEnum() ||
-		slices.ContainsFunc(v.ReferenceLines, func(x ChartReferenceLineResponse) bool { return x.unknownEnum() })
+		v.ReferenceLines.unknownEnum()
 }
 
 // ChartViewConfigSort defines a model
@@ -5619,16 +5664,16 @@ func (v *Code) unknownEnum() bool {
 
 // CodeRequest defines a model
 type CodeRequest struct {
-	RichText []RichTextItem `json:"rich_text"`
-	Language Language       `json:"language"`
-	Caption  []RichTextItem `json:"caption,omitzero"`
+	RichText RichTextItems `json:"rich_text"`
+	Language Language      `json:"language"`
+	Caption  RichTextItems `json:"caption,omitzero"`
 }
 
 // CodeUpdate defines a model
 type CodeUpdate struct {
-	RichText []RichTextItem `json:"rich_text,omitzero"`
-	Language Language       `json:"language,omitzero"`
-	Caption  []RichTextItem `json:"caption,omitzero"`
+	RichText RichTextItems `json:"rich_text,omitzero"`
+	Language Language      `json:"language,omitzero"`
+	Caption  RichTextItems `json:"caption,omitzero"`
 }
 
 // ColorTheme defines a model
@@ -5664,9 +5709,12 @@ type Column struct {
 	WidthRatio *float64 `json:"width_ratio,omitzero"`
 }
 
+// ColumnBlockWithChildrens defines a model
+type ColumnBlockWithChildrens []BlockObjectColumn
+
 // ColumnList defines a model
 type ColumnList struct {
-	Children []BlockObjectColumn `json:"children"`
+	Children ColumnBlockWithChildrens `json:"children"`
 }
 
 // ColumnUpdate defines a model
@@ -5677,7 +5725,7 @@ type ColumnUpdate struct {
 
 // ColumnWithChildren defines a model
 type ColumnWithChildren struct {
-	Children []BlockObjectWithSingleLevelOfChildren `json:"children"`
+	Children BlockObjectWithSingleLevelOfChildrens `json:"children"`
 	// Ratio between 0 and 1 of the width of this column relative to all columns in the list. If not provided, uses an equal width.
 	WidthRatio float64 `json:"width_ratio,omitzero"`
 }
@@ -5801,9 +5849,9 @@ type CommentDeletedWebhookPayload struct {
 // CommentList defines a model
 type CommentList struct {
 	// Always `list`
-	Object  string    `json:"object"`
-	HasMore bool      `json:"has_more"`
-	Results []Comment `json:"results"`
+	Object  string                 `json:"object"`
+	HasMore bool                   `json:"has_more"`
+	Results CommentObjectResponses `json:"results"`
 	// Always `comment`
 	Type          string                `json:"type"`
 	Comment       EmptyObject           `json:"comment"`
@@ -5815,8 +5863,17 @@ type CommentList struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *CommentList) unknownEnum() bool {
-	return slices.ContainsFunc(v.Results, func(x Comment) bool { return x.unknownEnum() }) ||
+	return v.Results.unknownEnum() ||
 		v.RequestStatus.unknownEnum()
+}
+
+// CommentObjectResponses defines a model
+type CommentObjectResponses []Comment
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v CommentObjectResponses) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x Comment) bool { return x.unknownEnum() })
 }
 
 // CommentOrPartial defines a model
@@ -6073,7 +6130,7 @@ type CommentUpdateMarkdown struct {
 // CommentUpdateRichText defines a model
 type CommentUpdateRichText struct {
 	// An array of rich text objects that represent the updated content of the comment.
-	RichText []RichTextItem `json:"rich_text"`
+	RichText RichTextItems `json:"rich_text"`
 }
 
 // CommentUpdatedWebhookPayload defines a model
@@ -6196,12 +6253,12 @@ type ContentWithExpression struct {
 
 // ContentWithRichText defines a model
 type ContentWithRichText struct {
-	RichText []RichTextItem `json:"rich_text"`
+	RichText RichTextItems `json:"rich_text"`
 }
 
 // ContentWithRichTextAndColor defines a model
 type ContentWithRichTextAndColor struct {
-	RichText []RichTextItem `json:"rich_text"`
+	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor `json:"color,omitzero"`
 }
@@ -6239,7 +6296,7 @@ func (v *ContentWithRichTextAndColorResponse) unknownEnum() bool {
 
 // ContentWithRichTextColorAndIcon defines a model
 type ContentWithRichTextColorAndIcon struct {
-	RichText []RichTextItem `json:"rich_text"`
+	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor `json:"color,omitzero"`
 	Icon  PageIcon `json:"icon,omitzero"`
@@ -6247,18 +6304,18 @@ type ContentWithRichTextColorAndIcon struct {
 
 // ContentWithRichTextColorAndIconResponseUpdate defines a model
 type ContentWithRichTextColorAndIconResponseUpdate struct {
-	RichText []RichTextItem `json:"rich_text,omitzero"`
-	Icon     PageIcon       `json:"icon,omitzero"`
+	RichText RichTextItems `json:"rich_text,omitzero"`
+	Icon     PageIcon      `json:"icon,omitzero"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor `json:"color,omitzero"`
 }
 
 // ContentWithSingleLevelOfChildren defines a model
 type ContentWithSingleLevelOfChildren struct {
-	RichText []RichTextItem `json:"rich_text"`
+	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                            `json:"color,omitzero"`
-	Children []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
+	Color    APIColor                    `json:"color,omitzero"`
+	Children BlockObjectWithoutChildrens `json:"children,omitzero"`
 }
 
 // ContentWithTable defines a model
@@ -6270,18 +6327,18 @@ type ContentWithTable struct {
 
 // ContentWithTableRow defines a model
 type ContentWithTableRow struct {
-	Cells []RichTextItem `json:"cells"`
+	Cells RichTextItemses `json:"cells"`
 }
 
 // ContentWithTableRowResponse defines a model
 type ContentWithTableRowResponse struct {
-	Cells []RichTexts `json:"cells"`
+	Cells RichTextses `json:"cells"`
 }
 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *ContentWithTableRowResponse) unknownEnum() bool {
-	return slices.ContainsFunc(v.Cells, func(x RichTexts) bool { return x.unknownEnum() })
+	return v.Cells.unknownEnum()
 }
 
 // CoverAspect defines a model
@@ -6770,7 +6827,7 @@ type CreateADatabase struct {
 	// Property schema of data source.
 	Properties map[string]PropertyConfiguration `json:"properties"`
 	// Title of data source as it appears in Notion.
-	Title []RichTextItem `json:"title,omitzero"`
+	Title RichTextItems `json:"title,omitzero"`
 	// Page icon.
 	Icon PageIcon `json:"icon,omitzero"`
 }
@@ -7030,9 +7087,9 @@ type CreateDatabase struct {
 	// The parent page or workspace where the database will be created.
 	Parent CreateDatabaseParent `json:"parent"`
 	// The title of the database.
-	Title []RichTextItem `json:"title,omitzero"`
+	Title RichTextItems `json:"title,omitzero"`
 	// The description of the database.
-	Description []RichTextItem `json:"description,omitzero"`
+	Description RichTextItems `json:"description,omitzero"`
 	// Whether the database should be displayed inline in the parent page. Defaults to false.
 	IsInline *bool `json:"is_inline,omitzero"`
 	// Initial data source configuration for the database.
@@ -7782,7 +7839,7 @@ type CustomAgent struct {
 	// The model selection: automatic, or pinned to a public model ID.
 	Model AgentModel `json:"model"`
 	// Integrations the agent is connected to (Notion, Slack, Discord, MCP servers, and other connectors), each with an account and per-target permissions.
-	Connections []AgentConnectionsItem `json:"connections"`
+	Connections UpdateAgentConnectionsItems `json:"connections"`
 	// "active" when the agent can run; "disabled" when it is paused (see pause_reason); "deleted" when it has been removed.
 	Status AgentStatus `json:"status"`
 	// Why the agent is paused when status is "disabled" (e.g. "credit_limit", "disabled_from_workspace_settings"); null when active.
@@ -7808,7 +7865,7 @@ type CustomAgent struct {
 func (v *CustomAgent) unknownEnum() bool {
 	return v.AgentType != "" && !v.AgentType.Valid() ||
 		v.Icon.unknownEnum() ||
-		slices.ContainsFunc(v.Connections, func(x AgentConnectionsItem) bool { return x.unknownEnum() }) ||
+		v.Connections.unknownEnum() ||
 		v.Status != "" && !v.Status.Valid() ||
 		v.PauseReason != "" && !v.PauseReason.Valid() ||
 		v.CreatedBy.unknownEnum()
@@ -7863,7 +7920,7 @@ type CustomEmojiList struct {
 	// Always `custom_emoji`
 	Type string `json:"type"`
 	// The list of custom emojis.
-	Results []CustomEmojiResponse `json:"results"`
+	Results CustomEmojiResponses `json:"results"`
 	// Whether there are more results available.
 	HasMore    bool      `json:"has_more"`
 	RequestID  uuid.UUID `json:"request_id,omitzero"`
@@ -7896,6 +7953,9 @@ type CustomEmojiResponse struct {
 	URL string `json:"url"`
 }
 
+// The list of custom emojis.
+type CustomEmojiResponses []CustomEmojiResponse
+
 // Line style: "solid" for a continuous line, "dash" for a dashed line.
 type DashStyle string
 
@@ -7919,17 +7979,20 @@ type DashboardRow struct {
 	// The ID of this row module.
 	ID string `json:"id"`
 	// The widget modules within this row.
-	Widgets []DashboardWidget `json:"widgets"`
+	Widgets DashboardWidgetResponses `json:"widgets"`
 	// Fixed height of the row in pixels.
 	Height *int `json:"height,omitzero"`
 }
+
+// The rows that make up the dashboard layout. Each row contains one or more widget modules.
+type DashboardRowResponses []DashboardRow
 
 // DashboardViewConfig defines a model
 type DashboardViewConfig struct {
 	// The view configuration type.
 	Type string `json:"type"`
 	// The rows that make up the dashboard layout. Each row contains one or more widget modules.
-	Rows []DashboardRow `json:"rows"`
+	Rows DashboardRowResponses `json:"rows"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether DashboardViewConfig declares it.
@@ -7955,6 +8018,9 @@ type DashboardWidget struct {
 	// The 0-based index of the row this widget belongs to. Widgets in the same row share the same row_index.
 	RowIndex *int `json:"row_index,omitzero"`
 }
+
+// The widget modules within this row.
+type DashboardWidgetResponses []DashboardWidget
 
 // DataSource defines a model
 type DataSource struct {
@@ -8167,6 +8233,15 @@ func (v *DataSourceReference) unknownEnum() bool {
 	return v.SyncMetadata != nil && v.SyncMetadata.unknownEnum()
 }
 
+// The data sources of the database.
+type DataSourceReferenceResponses []DataSourceReference
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v DataSourceReferenceResponses) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x DataSourceReference) bool { return x.unknownEnum() })
+}
+
 // DataSourceSchemaUpdatedWebhookPayload defines a model
 type DataSourceSchemaUpdatedWebhookPayload struct {
 	BaseWebhookPayload
@@ -8328,6 +8403,9 @@ type DataSourceViewReference struct {
 	ID ID `json:"id"`
 }
 
+// DataSourceViewReferenceResponses defines a model
+type DataSourceViewReferenceResponses []DataSourceViewReference
+
 // Database defines a model
 type Database struct {
 	// The database object type name.
@@ -8355,7 +8433,7 @@ type Database struct {
 	// The time when the database was last edited.
 	LastEditedTime time.Time `json:"last_edited_time"`
 	// The data sources of the database.
-	DataSources []DataSourceReference `json:"data_sources"`
+	DataSources DataSourceReferenceResponses `json:"data_sources"`
 	// The icon of the database.
 	Icon PageIconResponse `json:"icon"`
 	// The cover of the database.
@@ -8374,7 +8452,7 @@ func (v *Database) unknownEnum() bool {
 		v.Description.unknownEnum() ||
 		v.Parent.unknownEnum() ||
 		v.DatabaseType != "" && !v.DatabaseType.Valid() ||
-		slices.ContainsFunc(v.DataSources, func(x DataSourceReference) bool { return x.unknownEnum() }) ||
+		v.DataSources.unknownEnum() ||
 		v.Icon.unknownEnum() ||
 		v.Cover.unknownEnum()
 }
@@ -9788,7 +9866,7 @@ type DiscussionComment struct {
 	// The ID of the discussion to comment on.
 	DiscussionID ID `json:"discussion_id"`
 	// An array of rich text objects that represent the content of the comment.
-	RichText []RichTextItem `json:"rich_text"`
+	RichText RichTextItems `json:"rich_text"`
 }
 
 // DiscussionMarkdownComment defines a model
@@ -9988,9 +10066,9 @@ func (v *Embed) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 // EmbedFileUpload defines a model
 type EmbedFileUpload struct {
-	FileUpload FileUploadID   `json:"file_upload"`
-	Type       string         `json:"type,omitzero"`
-	Caption    []RichTextItem `json:"caption,omitzero"`
+	FileUpload FileUploadID  `json:"file_upload"`
+	Type       string        `json:"type,omitzero"`
+	Caption    RichTextItems `json:"caption,omitzero"`
 }
 
 // EmbedUpdate defines a model
@@ -10063,6 +10141,9 @@ type Emoji string
 
 // EmptyObject defines a model
 type EmptyObject struct{}
+
+// EmptyObjects defines a model
+type EmptyObjects []EmptyObject
 
 // Whether the property must be empty or set.
 type EmptyOperator string
@@ -10622,9 +10703,9 @@ type FileUploadID struct {
 // FileUploadList defines a model
 type FileUploadList struct {
 	// Always `list`
-	Object  string       `json:"object"`
-	HasMore bool         `json:"has_more"`
-	Results []FileUpload `json:"results"`
+	Object  string                    `json:"object"`
+	HasMore bool                      `json:"has_more"`
+	Results FileUploadObjectResponses `json:"results"`
 	// Always `file_upload`
 	Type          string                `json:"type"`
 	FileUpload    EmptyObject           `json:"file_upload"`
@@ -10636,7 +10717,7 @@ type FileUploadList struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *FileUploadList) unknownEnum() bool {
-	return slices.ContainsFunc(v.Results, func(x FileUpload) bool { return x.unknownEnum() }) ||
+	return v.Results.unknownEnum() ||
 		v.RequestStatus.unknownEnum()
 }
 
@@ -10680,6 +10761,15 @@ func (e FileUploadObjectFileImportResultAllOfErrorType) Valid() bool {
 	}
 }
 
+// FileUploadObjectResponses defines a model
+type FileUploadObjectResponses []FileUpload
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v FileUploadObjectResponses) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x FileUpload) bool { return x.unknownEnum() })
+}
+
 // FileUploadPageIcon defines a model
 type FileUploadPageIcon struct {
 	// Always `file_upload`
@@ -10697,11 +10787,11 @@ type FilesPropertyConfiguration struct {
 
 // FilesPropertyItem defines a model
 type FilesPropertyItem struct {
-	Type      string                                   `json:"type"`
-	Files     []InternalOrExternalFileWithNameResponse `json:"files"`
-	Object    string                                   `json:"object"`
-	ID        string                                   `json:"id"`
-	RequestID uuid.UUID                                `json:"request_id,omitzero"`
+	Type      string                                  `json:"type"`
+	Files     InternalOrExternalFileWithNameResponses `json:"files"`
+	Object    string                                  `json:"object"`
+	ID        string                                  `json:"id"`
+	RequestID uuid.UUID                               `json:"request_id,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether FilesPropertyItem declares it.
@@ -10725,7 +10815,7 @@ func (v *FilesPropertyItem) unmarshalJSONMember(dec *jsontext.Decoder, name stri
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *FilesPropertyItem) unknownEnum() bool {
-	return slices.ContainsFunc(v.Files, func(x InternalOrExternalFileWithNameResponse) bool { return x.unknownEnum() })
+	return v.Files.unknownEnum()
 }
 
 // A filter of a data source's entries: by a property or a timestamp, or by any or all of other filters.
@@ -10838,7 +10928,7 @@ func (v *Filter) unknownEnum() bool {
 // FilterAnd defines a model
 type FilterAnd struct {
 	// The entries all of the filters allow.
-	And []Filter `json:"and"`
+	And Filters `json:"and"`
 }
 
 // FilterGroup defines a model
@@ -10846,13 +10936,13 @@ type FilterGroup struct {
 	// Whether every child must match, or any of them.
 	Operator QueryMeetingNotesFilterOperator `json:"operator"`
 	// The conditions in this group. A group with no conditions matches nothing, so send at least one.
-	Filters []MeetingNotesPropertyFilter `json:"filters"`
+	Filters MeetingNotesPropertyFilters `json:"filters"`
 }
 
 // FilterOr defines a model
 type FilterOr struct {
 	// The entries any of the filters allow.
-	Or []Filter `json:"or"`
+	Or Filters `json:"or"`
 }
 
 // Which items are included when filtering. "parents" includes parent items only, "parents_and_subitems" includes both, "subitems" includes sub-items only.
@@ -10873,6 +10963,9 @@ func (e FilterScope) Valid() bool {
 		return false
 	}
 }
+
+// Filters defines a model
+type Filters []Filter
 
 // FormViewConfig defines a model
 type FormViewConfig struct {
@@ -11790,7 +11883,7 @@ type GalleryViewConfig struct {
 	// The view type. Must be "gallery".
 	Type string `json:"type"`
 	// Property visibility and display configuration on gallery cards. Pass null to clear.
-	Properties []ViewPropertyConfig `json:"properties,omitzero"`
+	Properties ViewPropertyConfigs `json:"properties,omitzero"`
 	// Cover image configuration for cards. Pass null to clear.
 	Cover CoverConfig `json:"cover,omitzero"`
 	// Size of the cover image on cards. Pass null to clear.
@@ -11826,7 +11919,7 @@ type GalleryViewConfigResponse struct {
 	// The view configuration type.
 	Type string `json:"type"`
 	// Properties to display on gallery cards.
-	Properties []ViewPropertyConfigResponse `json:"properties,omitzero"`
+	Properties ViewPropertyConfigResponses `json:"properties,omitzero"`
 	// Grouping configuration.
 	GroupBy GroupByConfigResponse `json:"group_by,omitzero"`
 	// Card cover/preview image configuration.
@@ -11864,7 +11957,7 @@ func (v *GalleryViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, n
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *GalleryViewConfigResponse) unknownEnum() bool {
-	return slices.ContainsFunc(v.Properties, func(x ViewPropertyConfigResponse) bool { return x.unknownEnum() }) ||
+	return v.Properties.unknownEnum() ||
 		v.GroupBy.unknownEnum() ||
 		v.Cover.unknownEnum() ||
 		v.CoverSize != "" && !v.CoverSize.Valid() ||
@@ -12419,7 +12512,7 @@ func (e GroupStyle) Valid() bool {
 
 // HeaderContentWithRichTextAndColor defines a model
 type HeaderContentWithRichTextAndColor struct {
-	RichText []RichTextItem `json:"rich_text"`
+	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color        APIColor `json:"color,omitzero"`
 	IsToggleable *bool    `json:"is_toggleable,omitzero"`
@@ -12442,11 +12535,11 @@ func (v *HeaderContentWithRichTextAndColorResponse) unknownEnum() bool {
 
 // HeaderContentWithSingleLevelOfChildren defines a model
 type HeaderContentWithSingleLevelOfChildren struct {
-	RichText []RichTextItem `json:"rich_text"`
+	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color        APIColor                            `json:"color,omitzero"`
-	IsToggleable *bool                               `json:"is_toggleable,omitzero"`
-	Children     []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
+	Color        APIColor                    `json:"color,omitzero"`
+	IsToggleable *bool                       `json:"is_toggleable,omitzero"`
+	Children     BlockObjectWithoutChildrens `json:"children,omitzero"`
 }
 
 // ID defines a model
@@ -12457,6 +12550,12 @@ type IDObject struct {
 	// ID of a FileUpload object that has the status `uploaded`.
 	ID string `json:"id"`
 }
+
+// IDResponses defines a model
+type IDResponses []ID
+
+// IDs of other meeting notes you can read that are linked to the same event. For a meeting note inside a page, this is the page's ID. Only the first 50 meeting notes found are checked.
+type IDResponses3 []ID
 
 // IncompleteReason defines a model
 type IncompleteReason string
@@ -12696,6 +12795,15 @@ func (v *InternalOrExternalFileWithNameResponse) MarshalJSONTo(enc *jsontext.Enc
 // records.
 func (v *InternalOrExternalFileWithNameResponse) unknownEnum() bool {
 	return v.Type != "" && !v.Type.Valid()
+}
+
+// InternalOrExternalFileWithNameResponses defines a model
+type InternalOrExternalFileWithNameResponses []InternalOrExternalFileWithNameResponse
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v InternalOrExternalFileWithNameResponses) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x InternalOrExternalFileWithNameResponse) bool { return x.unknownEnum() })
 }
 
 // IntrospectTokenOk defines a model
@@ -13195,7 +13303,7 @@ type ListViewConfig struct {
 	// The view type. Must be "list".
 	Type string `json:"type"`
 	// Property visibility and display configuration. Pass null to clear.
-	Properties []ViewPropertyConfig `json:"properties,omitzero"`
+	Properties ViewPropertyConfigs `json:"properties,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether ListViewConfig declares it.
@@ -13215,7 +13323,7 @@ type ListViewConfigResponse struct {
 	// The view configuration type.
 	Type string `json:"type"`
 	// Properties to display in list items.
-	Properties []ViewPropertyConfigResponse `json:"properties,omitzero"`
+	Properties ViewPropertyConfigResponses `json:"properties,omitzero"`
 	// Grouping configuration.
 	GroupBy GroupByConfigResponse `json:"group_by,omitzero"`
 }
@@ -13237,7 +13345,7 @@ func (v *ListViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *ListViewConfigResponse) unknownEnum() bool {
-	return slices.ContainsFunc(v.Properties, func(x ViewPropertyConfigResponse) bool { return x.unknownEnum() }) ||
+	return v.Properties.unknownEnum() ||
 		v.GroupBy.unknownEnum()
 }
 
@@ -13250,7 +13358,7 @@ type MapViewConfig struct {
 	// Property ID of the location property used to position items on the map. Pass null to clear.
 	MapBy string `json:"map_by,omitzero"`
 	// Property visibility and display configuration on map pin cards. Pass null to clear.
-	Properties []ViewPropertyConfig `json:"properties,omitzero"`
+	Properties ViewPropertyConfigs `json:"properties,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether MapViewConfig declares it.
@@ -13300,7 +13408,7 @@ type MapViewConfigResponse struct {
 	// Map-by property name (convenience field).
 	MapByPropertyName string `json:"map_by_property_name,omitzero"`
 	// Properties to display on map pin cards.
-	Properties []ViewPropertyConfigResponse `json:"properties,omitzero"`
+	Properties ViewPropertyConfigResponses `json:"properties,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether MapViewConfigResponse declares it.
@@ -13325,7 +13433,7 @@ func (v *MapViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, name 
 // records.
 func (v *MapViewConfigResponse) unknownEnum() bool {
 	return v.Height != "" && !v.Height.Valid() ||
-		slices.ContainsFunc(v.Properties, func(x ViewPropertyConfigResponse) bool { return x.unknownEnum() })
+		v.Properties.unknownEnum()
 }
 
 // MarkdownEditInsertContentInsertContentPositionAfterContent defines a model
@@ -13393,7 +13501,7 @@ type McpServer struct {
 
 // MediaContentWithFileAndCaption defines a model
 type MediaContentWithFileAndCaption struct {
-	Caption    []RichTextItem                     `json:"caption,omitzero"`
+	Caption    RichTextItems                      `json:"caption,omitzero"`
 	Type       MediaContentWithFileAndCaptionType `json:"type,omitzero"`
 	External   *ExternalFile                      `json:"external,omitzero"`
 	FileUpload *FileUploadID                      `json:"file_upload,omitzero"`
@@ -13587,7 +13695,7 @@ func (v *MediaContentWithFileAndCaptionResponse) unknownEnum() bool {
 
 // MediaContentWithFileNameAndCaption defines a model
 type MediaContentWithFileNameAndCaption struct {
-	Caption    []RichTextItem                         `json:"caption,omitzero"`
+	Caption    RichTextItems                          `json:"caption,omitzero"`
 	Name       String                                 `json:"name,omitzero"`
 	Type       MediaContentWithFileNameAndCaptionType `json:"type,omitzero"`
 	External   *ExternalFile                          `json:"external,omitzero"`
@@ -13788,8 +13896,8 @@ type MediaContentWithURL struct {
 
 // MediaContentWithURLAndCaption defines a model
 type MediaContentWithURLAndCaption struct {
-	URL     string         `json:"url"`
-	Caption []RichTextItem `json:"caption,omitzero"`
+	URL     string        `json:"url"`
+	Caption RichTextItems `json:"caption,omitzero"`
 }
 
 // MediaContentWithURLAndCaptionResponse defines a model
@@ -14149,6 +14257,9 @@ func (e MeetingNotesPropertyFilterProperty) Valid() bool {
 		return false
 	}
 }
+
+// The conditions in this group. A group with no conditions matches nothing, so send at least one.
+type MeetingNotesPropertyFilters []MeetingNotesPropertyFilter
 
 // Start and end times of the actual recording.
 type MeetingNotesRecording struct {
@@ -14538,11 +14649,11 @@ type MovePageParentPageID struct {
 
 // MultiSelectPropertyItem defines a model
 type MultiSelectPropertyItem struct {
-	Type        string          `json:"type"`
-	MultiSelect []PartialSelect `json:"multi_select"`
-	Object      string          `json:"object"`
-	ID          string          `json:"id"`
-	RequestID   uuid.UUID       `json:"request_id,omitzero"`
+	Type        string                 `json:"type"`
+	MultiSelect PartialSelectResponses `json:"multi_select"`
+	Object      string                 `json:"object"`
+	ID          string                 `json:"id"`
+	RequestID   uuid.UUID              `json:"request_id,omitzero"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether MultiSelectPropertyItem declares it.
@@ -14566,7 +14677,7 @@ func (v *MultiSelectPropertyItem) unmarshalJSONMember(dec *jsontext.Decoder, nam
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *MultiSelectPropertyItem) unknownEnum() bool {
-	return slices.ContainsFunc(v.MultiSelect, func(x PartialSelect) bool { return x.unknownEnum() })
+	return v.MultiSelect.unknownEnum()
 }
 
 // NewComment defines a model
@@ -14750,13 +14861,13 @@ type NotionAIAgent struct {
 	// Always `notion_ai`
 	ID string `json:"id"`
 	// Always `notion_ai`
-	AgentType          string                 `json:"agent_type"`
-	Name               string                 `json:"name"`
-	Description        *struct{}              `json:"description"`
-	InstructionsPageID *struct{}              `json:"instructions_page_id"`
-	Icon               NotionAIAgentIcon      `json:"icon"`
-	Model              AgentModel             `json:"model"`
-	Connections        []AgentConnectionsItem `json:"connections"`
+	AgentType          string                      `json:"agent_type"`
+	Name               string                      `json:"name"`
+	Description        *struct{}                   `json:"description"`
+	InstructionsPageID *struct{}                   `json:"instructions_page_id"`
+	Icon               NotionAIAgentIcon           `json:"icon"`
+	Model              AgentModel                  `json:"model"`
+	Connections        UpdateAgentConnectionsItems `json:"connections"`
 	// Always `active`
 	Status         string        `json:"status"`
 	PauseReason    *struct{}     `json:"pause_reason"`
@@ -14773,7 +14884,7 @@ type NotionAIAgent struct {
 // records.
 func (v *NotionAIAgent) unknownEnum() bool {
 	return v.Icon.unknownEnum() ||
-		slices.ContainsFunc(v.Connections, func(x AgentConnectionsItem) bool { return x.unknownEnum() })
+		v.Connections.unknownEnum()
 }
 
 // NotionAIAgentIcon defines a model
@@ -15367,7 +15478,7 @@ type PageComment struct {
 	// The parent of the comment. This can be a page or a block.
 	Parent CreateACommentAllOfOneOfParent `json:"parent"`
 	// An array of rich text objects that represent the content of the comment.
-	RichText []RichTextItem `json:"rich_text"`
+	RichText RichTextItems `json:"rich_text"`
 }
 
 // PageContentUpdatedWebhookPayload defines a model
@@ -15386,7 +15497,7 @@ type PageContentUpdatedWebhookPayloadData struct {
 	// The parent of the entity whose content was updated.
 	Parent WebhookParentBlock `json:"parent"`
 	// The blocks that were updated in this event.
-	UpdatedBlocks []WebhookExternalBlock `json:"updated_blocks"`
+	UpdatedBlocks WebhookUpdatedBlocks `json:"updated_blocks"`
 }
 
 // PageCover defines a model
@@ -15855,9 +15966,9 @@ func (v *PageIconResponse) unknownEnum() bool {
 // PageList defines a model
 type PageList struct {
 	// Always `list`
-	Object  string        `json:"object"`
-	HasMore bool          `json:"has_more"`
-	Results []PartialPage `json:"results"`
+	Object  string                     `json:"object"`
+	HasMore bool                       `json:"has_more"`
+	Results PartialPageObjectResponses `json:"results"`
 	// Always `page`
 	Type          string                `json:"type"`
 	Page          EmptyObject           `json:"page"`
@@ -15894,7 +16005,7 @@ type PageMarkdown struct {
 	// Whether the content was truncated due to exceeding the record count limit.
 	Truncated bool `json:"truncated"`
 	// Block IDs that could not be loaded (appeared as <unknown> tags in the markdown). Pass these IDs back to this endpoint to fetch their content separately.
-	UnknownBlockIDs []ID `json:"unknown_block_ids"`
+	UnknownBlockIDs IDResponses `json:"unknown_block_ids"`
 	// Content warnings from a synchronous update. Returned only when there is at least one warning.
 	Warnings PageMarkdownWarnings `json:"warnings,omitzero"`
 }
@@ -16001,6 +16112,15 @@ func (v *PageOrDataSource) MarshalJSONTo(enc *jsontext.Encoder) error {
 func (v *PageOrDataSource) unknownEnum() bool {
 	return v.PageOrPartial != nil && v.PageOrPartial.unknownEnum() ||
 		v.DataSourceOrPartial != nil && v.DataSourceOrPartial.unknownEnum()
+}
+
+// PageOrDataSources defines a model
+type PageOrDataSources []PageOrDataSource
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v PageOrDataSources) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x PageOrDataSource) bool { return x.unknownEnum() })
 }
 
 // PageOrPartial defines a model
@@ -16219,23 +16339,23 @@ type PagePropertiesUpdatedWebhookPayloadData struct {
 
 // PagePropertiesValue defines a model
 type PagePropertiesValue struct {
-	Type         PagePropertiesValueType              `json:"type,omitzero"`
-	Title        []RichTextItem                       `json:"title,omitzero"`
-	RichText     []RichTextItem                       `json:"rich_text,omitzero"`
-	Number       *float64                             `json:"number,omitzero"`
-	URL          *Text                                `json:"url,omitzero"`
-	Select       *OptionRef                           `json:"select,omitzero"`
-	MultiSelect  []PagePropertiesValueMultiSelectItem `json:"multi_select,omitzero"`
-	People       []PagePropertiesValuePeopleItem      `json:"people,omitzero"`
-	Email        *String                              `json:"email,omitzero"`
-	PhoneNumber  *String                              `json:"phone_number,omitzero"`
-	Date         *Date                                `json:"date,omitzero"`
-	Checkbox     *bool                                `json:"checkbox,omitzero"`
-	Relation     []RelationItemPropertyValue          `json:"relation,omitzero"`
-	Files        []PagePropertiesValueFilesItem       `json:"files,omitzero"`
-	Status       *OptionRef                           `json:"status,omitzero"`
-	Place        *Place                               `json:"place,omitzero"`
-	Verification *VerificationValue                   `json:"verification,omitzero"`
+	Type         PagePropertiesValueType             `json:"type,omitzero"`
+	Title        RichTextItems                       `json:"title,omitzero"`
+	RichText     RichTextItems                       `json:"rich_text,omitzero"`
+	Number       *float64                            `json:"number,omitzero"`
+	URL          *Text                               `json:"url,omitzero"`
+	Select       *OptionRef                          `json:"select,omitzero"`
+	MultiSelect  PagePropertiesValueMultiSelectItems `json:"multi_select,omitzero"`
+	People       PagePropertiesValuePeopleItems      `json:"people,omitzero"`
+	Email        *String                             `json:"email,omitzero"`
+	PhoneNumber  *String                             `json:"phone_number,omitzero"`
+	Date         *Date                               `json:"date,omitzero"`
+	Checkbox     *bool                               `json:"checkbox,omitzero"`
+	Relation     RelationItemPropertyValueResponses  `json:"relation,omitzero"`
+	Files        PagePropertiesValueFilesItems       `json:"files,omitzero"`
+	Status       *OptionRef                          `json:"status,omitzero"`
+	Place        *Place                              `json:"place,omitzero"`
+	Verification *VerificationValue                  `json:"verification,omitzero"`
 }
 
 // PagePropertiesValueType is a value of PagePropertiesValue's type, naming the members it holds.
@@ -16498,6 +16618,9 @@ func (v *PagePropertiesValueFilesItem) MarshalJSONTo(enc *jsontext.Encoder) erro
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
+// PagePropertiesValueFilesItems defines a model
+type PagePropertiesValueFilesItems []PagePropertiesValueFilesItem
+
 // PagePropertiesValueMultiSelectItem defines a model
 // PagePropertiesValueMultiSelectItem is an untagged anyOf union: at least one field is set after unmarshaling.
 type PagePropertiesValueMultiSelectItem struct {
@@ -16576,6 +16699,9 @@ func (v *PagePropertiesValueMultiSelectItem) MarshalJSONTo(enc *jsontext.Encoder
 	return enc.WriteToken(jsontext.Null)
 }
 
+// PagePropertiesValueMultiSelectItems defines a model
+type PagePropertiesValueMultiSelectItems []PagePropertiesValueMultiSelectItem
+
 // PagePropertiesValuePeopleItem defines a model
 // PagePropertiesValuePeopleItem is an untagged anyOf union: at least one field is set after unmarshaling.
 type PagePropertiesValuePeopleItem struct {
@@ -16649,6 +16775,9 @@ func (v *PagePropertiesValuePeopleItem) MarshalJSONTo(enc *jsontext.Encoder) err
 	return enc.WriteValue(out)
 }
 
+// PagePropertiesValuePeopleItems defines a model
+type PagePropertiesValuePeopleItems []PagePropertiesValuePeopleItem
+
 // PagePropertiesValueSelectID defines a model
 type PagePropertiesValueSelectID struct {
 	ID   String `json:"id"`
@@ -16707,6 +16836,9 @@ type PageReference struct {
 	// The object ID.
 	ID ID `json:"id"`
 }
+
+// The page results for this page.
+type PageReferenceResponses []PageReference
 
 // PageTemplateDefault defines a model
 type PageTemplateDefault struct {
@@ -16831,20 +16963,20 @@ func (v *Paragraph) unknownEnum() bool {
 
 // ParagraphRequest defines a model
 type ParagraphRequest struct {
-	RichText []RichTextItem `json:"rich_text"`
+	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                               `json:"color,omitzero"`
-	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
-	Icon     PageIcon                               `json:"icon,omitzero"`
+	Color    APIColor                              `json:"color,omitzero"`
+	Children BlockObjectWithSingleLevelOfChildrens `json:"children,omitzero"`
+	Icon     PageIcon                              `json:"icon,omitzero"`
 }
 
 // ParagraphWithSingleLevelOfChildren defines a model
 type ParagraphWithSingleLevelOfChildren struct {
-	RichText []RichTextItem `json:"rich_text"`
+	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                            `json:"color,omitzero"`
-	Icon     PageIcon                            `json:"icon,omitzero"`
-	Children []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
+	Color    APIColor                    `json:"color,omitzero"`
+	Icon     PageIcon                    `json:"icon,omitzero"`
+	Children BlockObjectWithoutChildrens `json:"children,omitzero"`
 }
 
 // ParentForBlockBased defines a model
@@ -17260,15 +17392,18 @@ type PartialPage struct {
 	ID ID `json:"id"`
 }
 
+// PartialPageObjectResponses defines a model
+type PartialPageObjectResponses []PartialPage
+
 // PartialRollupValue defines a model
 type PartialRollupValue struct {
 	// The function used for the rollup, e.g. count, count_values, percent_not_empty, max.
-	Function    RollupFunction               `json:"function"`
-	Type        PartialRollupValueType       `json:"type"`
-	Number      *float64                     `json:"number,omitzero"`
-	Date        *DateResponse                `json:"date,omitzero"`
-	Array       []SimpleOrArrayPropertyValue `json:"array,omitzero"`
-	Unsupported *EmptyObject                 `json:"unsupported,omitzero"`
+	Function    RollupFunction                      `json:"function"`
+	Type        PartialRollupValueType              `json:"type"`
+	Number      *float64                            `json:"number,omitzero"`
+	Date        *DateResponse                       `json:"date,omitzero"`
+	Array       SimpleOrArrayPropertyValueResponses `json:"array,omitzero"`
+	Unsupported *EmptyObject                        `json:"unsupported,omitzero"`
 }
 
 // PartialRollupValueType is a value of PartialRollupValue's type, naming the members it holds.
@@ -17369,7 +17504,7 @@ func (v *PartialRollupValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 func (v *PartialRollupValue) unknownEnum() bool {
 	return v.Function != "" && !v.Function.Valid() ||
 		v.Type != "" && !v.Type.Valid() ||
-		slices.ContainsFunc(v.Array, func(x SimpleOrArrayPropertyValue) bool { return x.unknownEnum() })
+		v.Array.unknownEnum()
 }
 
 // PartialSelect defines a model
@@ -17398,6 +17533,24 @@ type PartialSelectPropertyValue struct {
 // records.
 func (v *PartialSelectPropertyValue) unknownEnum() bool {
 	return v.Color != "" && !v.Color.Valid()
+}
+
+// PartialSelectPropertyValueResponses defines a model
+type PartialSelectPropertyValueResponses []PartialSelectPropertyValue
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v PartialSelectPropertyValueResponses) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x PartialSelectPropertyValue) bool { return x.unknownEnum() })
+}
+
+// PartialSelectResponses defines a model
+type PartialSelectResponses []PartialSelect
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v PartialSelectResponses) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x PartialSelect) bool { return x.unknownEnum() })
 }
 
 // PartialUser defines a model
@@ -17439,7 +17592,7 @@ type PartialUserPerson struct {
 
 // PatchBlockChildren defines a model
 type PatchBlockChildren struct {
-	Children []BlockObject         `json:"children"`
+	Children BlockObjects          `json:"children"`
 	Position ContentPositionSchema `json:"position,omitzero"`
 	// Controls the notifications Notion sends people about this change. Set mode to "silent" to skip page update notifications, @mention notifications, and notifications to people added to a Person property, or "default" to use the standard behavior. Database automations, reminders, and connection webhooks still work as usual. Page history, page activity, and workspace audit logs still record the change.
 	Notifications PageWriteNotificationsSchema `json:"notifications,omitzero"`
@@ -17656,6 +17809,15 @@ func (v *PeopleArrayBasedPropertyValuePeopleItem) unknownEnum() bool {
 	return v.UserOrPartial != nil && v.UserOrPartial.unknownEnum()
 }
 
+// PeopleArrayBasedPropertyValuePeopleItems defines a model
+type PeopleArrayBasedPropertyValuePeopleItems []PeopleArrayBasedPropertyValuePeopleItem
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v PeopleArrayBasedPropertyValuePeopleItems) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x PeopleArrayBasedPropertyValuePeopleItem) bool { return x.unknownEnum() })
+}
+
 // PeoplePropertyConfiguration defines a model
 type PeoplePropertyConfiguration struct {
 	// Always `people`
@@ -17794,7 +17956,7 @@ type PersonFilter struct {
 	// Whether the property must contain the people listed.
 	Operator PersonFilterOperator `json:"operator"`
 	// The people to compare against.
-	Value []PersonFilterValueItem `json:"value"`
+	Value PersonFilterValueItems `json:"value"`
 }
 
 // Whether the property must contain the people listed.
@@ -17935,6 +18097,9 @@ func (v *PersonFilterValueItemRelative) unmarshalJSONMember(dec *jsontext.Decode
 
 	return false, nil
 }
+
+// The people to compare against.
+type PersonFilterValueItems []PersonFilterValueItem
 
 // PersonGroupByConfig defines a model
 type PersonGroupByConfig struct {
@@ -18191,8 +18356,8 @@ type PostPage struct {
 	Properties PageProperties `json:"properties,omitzero"`
 	Icon       PageIcon       `json:"icon,omitzero"`
 	Cover      PageCover      `json:"cover,omitzero"`
-	Content    []BlockObject  `json:"content,omitzero"`
-	Children   []BlockObject  `json:"children,omitzero"`
+	Content    BlockObjects   `json:"content,omitzero"`
+	Children   BlockObjects   `json:"children,omitzero"`
 	// Page content as Markdown, in the syntax set by `markdown_version`: Notion-flavored Markdown (`v2`, recommended) or enhanced markdown (`v1`, deprecated, the default on current Notion-Versions). Mutually exclusive with content/children.
 	Markdown string `json:"markdown,omitzero"`
 	// Set to true to receive an async_task response for markdown page creation. Only supported when markdown is provided.
@@ -19681,7 +19846,7 @@ type PropertyItemList struct {
 	Object       string                               `json:"object"`
 	NextCursor   string                               `json:"next_cursor"`
 	HasMore      bool                                 `json:"has_more"`
-	Results      []PropertyItem                       `json:"results"`
+	Results      PropertyItemObjectResponses          `json:"results"`
 	RequestID    uuid.UUID                            `json:"request_id,omitzero"`
 }
 
@@ -19689,7 +19854,7 @@ type PropertyItemList struct {
 // records.
 func (v *PropertyItemList) unknownEnum() bool {
 	return v.PropertyItem.unknownEnum() ||
-		slices.ContainsFunc(v.Results, func(x PropertyItem) bool { return x.unknownEnum() })
+		v.Results.unknownEnum()
 }
 
 // PropertyItemListResponsePropertyItem defines a model
@@ -19807,6 +19972,15 @@ func (v *PropertyItemListResponsePropertyItem) MarshalJSONTo(enc *jsontext.Encod
 func (v *PropertyItemListResponsePropertyItem) unknownEnum() bool {
 	return v.Type != "" && !v.Type.Valid() ||
 		v.Rollup != nil && v.Rollup.unknownEnum()
+}
+
+// PropertyItemObjectResponses defines a model
+type PropertyItemObjectResponses []PropertyItem
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v PropertyItemObjectResponses) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x PropertyItem) bool { return x.unknownEnum() })
 }
 
 // PropertyRename defines a model
@@ -20054,33 +20228,33 @@ func (v *PropertyUpdate) MarshalJSONTo(enc *jsontext.Encoder) error {
 // PropertyValue defines a model
 type PropertyValue struct {
 	IDObject
-	Type            PropertyValueType                         `json:"type"`
-	Number          *float64                                  `json:"number,omitzero"`
-	URL             *string                                   `json:"url,omitzero"`
-	Select          *PartialSelectPropertyValue               `json:"select,omitzero"`
-	MultiSelect     []PartialSelectPropertyValue              `json:"multi_select,omitzero"`
-	Status          *PartialSelectPropertyValue               `json:"status,omitzero"`
-	Date            *DateResponse                             `json:"date,omitzero"`
-	Email           *string                                   `json:"email,omitzero"`
-	PhoneNumber     *string                                   `json:"phone_number,omitzero"`
-	Checkbox        *bool                                     `json:"checkbox,omitzero"`
-	Files           []InternalOrExternalFileWithNameResponse  `json:"files,omitzero"`
-	CreatedBy       *UserOrPartial                            `json:"created_by,omitzero"`
-	CreatedTime     *time.Time                                `json:"created_time,omitzero"`
-	LastEditedBy    *UserOrPartial                            `json:"last_edited_by,omitzero"`
-	LastEditedTime  *time.Time                                `json:"last_edited_time,omitzero"`
-	Formula         *FormulaPropertyValue                     `json:"formula,omitzero"`
-	Button          *EmptyObject                              `json:"button,omitzero"`
-	UniqueID        *UniqueIDPropertyValue                    `json:"unique_id,omitzero"`
-	Verification    *VerificationPropertyValue                `json:"verification,omitzero"`
-	Place           *PlacePropertyValue                       `json:"place,omitzero"`
-	LastVisitedTime *time.Time                                `json:"last_visited_time,omitzero"`
-	Title           RichTexts                                 `json:"title,omitzero"`
-	RichText        RichTexts                                 `json:"rich_text,omitzero"`
-	People          []PeopleArrayBasedPropertyValuePeopleItem `json:"people,omitzero"`
-	Relation        []RelationItemPropertyValue               `json:"relation,omitzero"`
-	HasMore         *bool                                     `json:"has_more,omitzero"`
-	Rollup          *PartialRollupValue                       `json:"rollup,omitzero"`
+	Type            PropertyValueType                        `json:"type"`
+	Number          *float64                                 `json:"number,omitzero"`
+	URL             *string                                  `json:"url,omitzero"`
+	Select          *PartialSelectPropertyValue              `json:"select,omitzero"`
+	MultiSelect     PartialSelectPropertyValueResponses      `json:"multi_select,omitzero"`
+	Status          *PartialSelectPropertyValue              `json:"status,omitzero"`
+	Date            *DateResponse                            `json:"date,omitzero"`
+	Email           *string                                  `json:"email,omitzero"`
+	PhoneNumber     *string                                  `json:"phone_number,omitzero"`
+	Checkbox        *bool                                    `json:"checkbox,omitzero"`
+	Files           InternalOrExternalFileWithNameResponses  `json:"files,omitzero"`
+	CreatedBy       *UserOrPartial                           `json:"created_by,omitzero"`
+	CreatedTime     *time.Time                               `json:"created_time,omitzero"`
+	LastEditedBy    *UserOrPartial                           `json:"last_edited_by,omitzero"`
+	LastEditedTime  *time.Time                               `json:"last_edited_time,omitzero"`
+	Formula         *FormulaPropertyValue                    `json:"formula,omitzero"`
+	Button          *EmptyObject                             `json:"button,omitzero"`
+	UniqueID        *UniqueIDPropertyValue                   `json:"unique_id,omitzero"`
+	Verification    *VerificationPropertyValue               `json:"verification,omitzero"`
+	Place           *PlacePropertyValue                      `json:"place,omitzero"`
+	LastVisitedTime *time.Time                               `json:"last_visited_time,omitzero"`
+	Title           RichTexts                                `json:"title,omitzero"`
+	RichText        RichTexts                                `json:"rich_text,omitzero"`
+	People          PeopleArrayBasedPropertyValuePeopleItems `json:"people,omitzero"`
+	Relation        RelationItemPropertyValueResponses       `json:"relation,omitzero"`
+	HasMore         *bool                                    `json:"has_more,omitzero"`
+	Rollup          *PartialRollupValue                      `json:"rollup,omitzero"`
 }
 
 // PropertyValueType is a value of PropertyValue's type, naming the members it holds.
@@ -20289,16 +20463,16 @@ func (v *PropertyValue) MarshalJSONTo(enc *jsontext.Encoder) error {
 func (v *PropertyValue) unknownEnum() bool {
 	return v.Type != "" && !v.Type.Valid() ||
 		v.Select != nil && v.Select.unknownEnum() ||
-		slices.ContainsFunc(v.MultiSelect, func(x PartialSelectPropertyValue) bool { return x.unknownEnum() }) ||
+		v.MultiSelect.unknownEnum() ||
 		v.Status != nil && v.Status.unknownEnum() ||
-		slices.ContainsFunc(v.Files, func(x InternalOrExternalFileWithNameResponse) bool { return x.unknownEnum() }) ||
+		v.Files.unknownEnum() ||
 		v.CreatedBy != nil && v.CreatedBy.unknownEnum() ||
 		v.LastEditedBy != nil && v.LastEditedBy.unknownEnum() ||
 		v.Formula != nil && v.Formula.unknownEnum() ||
 		v.Verification != nil && v.Verification.unknownEnum() ||
 		v.Title.unknownEnum() ||
 		v.RichText.unknownEnum() ||
-		slices.ContainsFunc(v.People, func(x PeopleArrayBasedPropertyValuePeopleItem) bool { return x.unknownEnum() }) ||
+		v.People.unknownEnum() ||
 		v.Rollup != nil && v.Rollup.unknownEnum()
 }
 
@@ -20308,7 +20482,7 @@ type PublicAPIAsyncTaskStatusResultJSONValue struct {
 	String                                       string
 	Float64                                      *float64
 	Bool                                         *bool
-	PublicAPIAsyncTaskStatusResultJSONValue      []PublicAPIAsyncTaskStatusResultJSONValue
+	PublicAPIAsyncTaskStatusResultJSONValues     PublicAPIAsyncTaskStatusResultJSONValues
 	MapOfPublicAPIAsyncTaskStatusResultJSONValue map[string]PublicAPIAsyncTaskStatusResultJSONValue
 }
 
@@ -20360,9 +20534,9 @@ func (v *PublicAPIAsyncTaskStatusResultJSONValue) UnmarshalJSONFrom(dec *jsontex
 
 	// leniently, more than one may match, and the first does
 	if strict || matched == 0 {
-		var vv []PublicAPIAsyncTaskStatusResultJSONValue
+		var vv PublicAPIAsyncTaskStatusResultJSONValues
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.PublicAPIAsyncTaskStatusResultJSONValue = vv
+			v.PublicAPIAsyncTaskStatusResultJSONValues = vv
 			matched++
 		}
 	}
@@ -20393,14 +20567,17 @@ func (v *PublicAPIAsyncTaskStatusResultJSONValue) MarshalJSONTo(enc *jsontext.En
 		return json.MarshalEncode(enc, v.Float64, jsonOptsTo(enc))
 	case v.Bool != nil:
 		return json.MarshalEncode(enc, v.Bool, jsonOptsTo(enc))
-	case v.PublicAPIAsyncTaskStatusResultJSONValue != nil:
-		return json.MarshalEncode(enc, v.PublicAPIAsyncTaskStatusResultJSONValue, jsonOptsTo(enc))
+	case v.PublicAPIAsyncTaskStatusResultJSONValues != nil:
+		return json.MarshalEncode(enc, v.PublicAPIAsyncTaskStatusResultJSONValues, jsonOptsTo(enc))
 	case v.MapOfPublicAPIAsyncTaskStatusResultJSONValue != nil:
 		return json.MarshalEncode(enc, v.MapOfPublicAPIAsyncTaskStatusResultJSONValue, jsonOptsTo(enc))
 	}
 
 	return enc.WriteToken(jsontext.Null)
 }
+
+// PublicAPIAsyncTaskStatusResultJSONValues defines a model
+type PublicAPIAsyncTaskStatusResultJSONValues []PublicAPIAsyncTaskStatusResultJSONValue
 
 // QueryAgents defines a model
 type QueryAgents struct {
@@ -20700,7 +20877,7 @@ type QueryAgentsFilterAgentVersionNumber struct {
 
 // QueryAgentsFilterAnd defines a model
 type QueryAgentsFilterAnd struct {
-	And []QueryAgentsFilterOrItem `json:"and"`
+	And QueryAgentsFilterOrItems `json:"and"`
 }
 
 // QueryAgentsFilterConnections defines a model
@@ -20865,7 +21042,7 @@ func (e QueryAgentsFilterModelModeSelectEquals) Valid() bool {
 
 // QueryAgentsFilterOr defines a model
 type QueryAgentsFilterOr struct {
-	Or []QueryAgentsFilterOrItem `json:"or"`
+	Or QueryAgentsFilterOrItems `json:"or"`
 }
 
 // QueryAgentsFilterOrItem defines a model
@@ -21102,13 +21279,19 @@ func (v *QueryAgentsFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 // QueryAgentsFilterOrItemAnd defines a model
 type QueryAgentsFilterOrItemAnd struct {
-	And []AgentCondition `json:"and"`
+	And QueryAgentsFilterOrItemOrItems `json:"and"`
 }
 
 // QueryAgentsFilterOrItemOr defines a model
 type QueryAgentsFilterOrItemOr struct {
-	Or []AgentCondition `json:"or"`
+	Or QueryAgentsFilterOrItemOrItems `json:"or"`
 }
+
+// QueryAgentsFilterOrItemOrItems defines a model
+type QueryAgentsFilterOrItemOrItems []AgentCondition
+
+// QueryAgentsFilterOrItems defines a model
+type QueryAgentsFilterOrItems []QueryAgentsFilterOrItem
 
 // QueryAgentsFilterStatus defines a model
 type QueryAgentsFilterStatus struct {
@@ -21165,12 +21348,12 @@ type QueryCursor string
 
 // QueryList defines a model
 type QueryList struct {
-	Type             string             `json:"type"`
-	PageOrDataSource EmptyObject        `json:"page_or_data_source"`
-	Object           string             `json:"object"`
-	HasMore          bool               `json:"has_more"`
-	Results          []PageOrDataSource `json:"results"`
-	RequestStatus    RequestStatus      `json:"request_status,omitzero"`
+	Type             string            `json:"type"`
+	PageOrDataSource EmptyObject       `json:"page_or_data_source"`
+	Object           string            `json:"object"`
+	HasMore          bool              `json:"has_more"`
+	Results          PageOrDataSources `json:"results"`
+	RequestStatus    RequestStatus     `json:"request_status,omitzero"`
 	// Where a query of a data source goes on: "s:" and two UUIDs, unlike the cursor of any other list.
 	NextCursor QueryCursor `json:"next_cursor"`
 	RequestID  uuid.UUID   `json:"request_id,omitzero"`
@@ -21179,7 +21362,7 @@ type QueryList struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *QueryList) unknownEnum() bool {
-	return slices.ContainsFunc(v.Results, func(x PageOrDataSource) bool { return x.unknownEnum() }) ||
+	return v.Results.unknownEnum() ||
 		v.RequestStatus.unknownEnum()
 }
 
@@ -21198,7 +21381,7 @@ type QueryMeetingNotesFilter struct {
 	// Operator for combinator filters.
 	Operator QueryMeetingNotesFilterOperator `json:"operator"`
 	// Nested filters; each may be a combinator (and/or) or property filter.
-	Filters []QueryMeetingNotesFilterFiltersItem `json:"filters,omitzero"`
+	Filters QueryMeetingNotesFilterFiltersItems `json:"filters,omitzero"`
 }
 
 // QueryMeetingNotesFilterFiltersItem defines a model
@@ -21280,6 +21463,9 @@ func (v *QueryMeetingNotesFilterFiltersItem) MarshalJSONTo(enc *jsontext.Encoder
 
 	return enc.WriteToken(jsontext.Null)
 }
+
+// Nested filters; each may be a combinator (and/or) or property filter.
+type QueryMeetingNotesFilterFiltersItems []QueryMeetingNotesFilterFiltersItem
 
 // QueryMeetingNotesFilterOperator defines a model
 type QueryMeetingNotesFilterOperator string
@@ -21505,7 +21691,7 @@ func (v *QuerySessionEventsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 // QuerySessionEventsFilterAnd defines a model
 type QuerySessionEventsFilterAnd struct {
-	And []QuerySessionEventsFilterOrItem `json:"and"`
+	And QuerySessionEventsFilterOrItems `json:"and"`
 }
 
 // QuerySessionEventsFilterCreatedAt defines a model
@@ -21554,7 +21740,7 @@ type QuerySessionEventsFilterCreatedAtTimestamp struct {
 
 // QuerySessionEventsFilterOr defines a model
 type QuerySessionEventsFilterOr struct {
-	Or []QuerySessionEventsFilterOrItem `json:"or"`
+	Or QuerySessionEventsFilterOrItems `json:"or"`
 }
 
 // QuerySessionEventsFilterOrItem defines a model
@@ -21695,13 +21881,19 @@ func (v *QuerySessionEventsFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) er
 
 // QuerySessionEventsFilterOrItemAnd defines a model
 type QuerySessionEventsFilterOrItemAnd struct {
-	And []SessionEventFilterItem `json:"and"`
+	And QuerySessionEventsFilterOrItemOrItems `json:"and"`
 }
 
 // QuerySessionEventsFilterOrItemOr defines a model
 type QuerySessionEventsFilterOrItemOr struct {
-	Or []SessionEventFilterItem `json:"or"`
+	Or QuerySessionEventsFilterOrItemOrItems `json:"or"`
 }
+
+// QuerySessionEventsFilterOrItemOrItems defines a model
+type QuerySessionEventsFilterOrItemOrItems []SessionEventFilterItem
+
+// QuerySessionEventsFilterOrItems defines a model
+type QuerySessionEventsFilterOrItems []QuerySessionEventsFilterOrItem
 
 // QuerySessionEventsFilterSequence defines a model
 type QuerySessionEventsFilterSequence struct {
@@ -21971,13 +22163,13 @@ func (v *QuerySessionsFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 // QuerySessionsFilterAnd defines a model
 type QuerySessionsFilterAnd struct {
 	// Return sessions that match every child filter.
-	And []SessionNestedFilter `json:"and"`
+	And SessionNestedFilters `json:"and"`
 }
 
 // QuerySessionsFilterOr defines a model
 type QuerySessionsFilterOr struct {
 	// Return sessions that match any child filter.
-	Or []SessionNestedFilter `json:"or"`
+	Or SessionNestedFilters `json:"or"`
 }
 
 // Ordered sort precedence. Defaults to updated_at descending.
@@ -22561,6 +22753,9 @@ type RelationItemPropertyValue struct {
 	// The ID of the page in the mention.
 	ID ID `json:"id"`
 }
+
+// RelationItemPropertyValueResponses defines a model
+type RelationItemPropertyValueResponses []RelationItemPropertyValue
 
 // RelationPropertyConfiguration defines a model
 type RelationPropertyConfiguration struct {
@@ -24253,6 +24448,12 @@ func (v *RichTextItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
+// RichTextItems defines a model
+type RichTextItems []RichTextItem
+
+// RichTextItemses defines a model
+type RichTextItemses []RichTextItems
+
 // RichTextPropertyConfiguration defines a model
 type RichTextPropertyConfiguration struct {
 	// Always `rich_text`
@@ -24297,6 +24498,15 @@ type RichTexts []RichText
 // records.
 func (v RichTexts) unknownEnum() bool {
 	return slices.ContainsFunc(v, func(x RichText) bool { return x.unknownEnum() })
+}
+
+// RichTextses defines a model
+type RichTextses []RichTexts
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v RichTextses) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x RichTexts) bool { return x.unknownEnum() })
 }
 
 // RollupByIDs defines a model
@@ -24879,7 +25089,7 @@ type RollupPropertyItemObjectRollup struct {
 	Type        RollupPropertyItemObjectRollupType `json:"type"`
 	Number      *float64                           `json:"number,omitzero"`
 	Date        *DateResponse                      `json:"date,omitzero"`
-	Array       []EmptyObject                      `json:"array,omitzero"`
+	Array       EmptyObjects                       `json:"array,omitzero"`
 	Unsupported *EmptyObject                       `json:"unsupported,omitzero"`
 	Incomplete  *EmptyObject                       `json:"incomplete,omitzero"`
 }
@@ -25229,20 +25439,20 @@ type RunToolsAutomatically struct {
 
 // SearchList defines a model
 type SearchList struct {
-	Type             string             `json:"type"`
-	PageOrDataSource EmptyObject        `json:"page_or_data_source"`
-	Object           string             `json:"object"`
-	HasMore          bool               `json:"has_more"`
-	Results          []PageOrDataSource `json:"results"`
-	RequestStatus    RequestStatus      `json:"request_status,omitzero"`
-	NextCursor       ID                 `json:"next_cursor"`
-	RequestID        uuid.UUID          `json:"request_id,omitzero"`
+	Type             string            `json:"type"`
+	PageOrDataSource EmptyObject       `json:"page_or_data_source"`
+	Object           string            `json:"object"`
+	HasMore          bool              `json:"has_more"`
+	Results          PageOrDataSources `json:"results"`
+	RequestStatus    RequestStatus     `json:"request_status,omitzero"`
+	NextCursor       ID                `json:"next_cursor"`
+	RequestID        uuid.UUID         `json:"request_id,omitzero"`
 }
 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *SearchList) unknownEnum() bool {
-	return slices.ContainsFunc(v.Results, func(x PageOrDataSource) bool { return x.unknownEnum() }) ||
+	return v.Results.unknownEnum() ||
 		v.RequestStatus.unknownEnum()
 }
 
@@ -25325,13 +25535,13 @@ func (e SelectGroupByConfigType) Valid() bool {
 
 // SelectOptions defines a model
 type SelectOptions struct {
-	Options []SelectProperty `json:"options"`
+	Options SelectPropertyResponses `json:"options"`
 }
 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *SelectOptions) unknownEnum() bool {
-	return slices.ContainsFunc(v.Options, func(x SelectProperty) bool { return x.unknownEnum() })
+	return v.Options.unknownEnum()
 }
 
 // SelectOptionsPropertyFilter defines a model
@@ -25571,6 +25781,15 @@ func (v *SelectPropertyItem) unknownEnum() bool {
 	return v.Select.unknownEnum()
 }
 
+// SelectPropertyResponses defines a model
+type SelectPropertyResponses []SelectProperty
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v SelectPropertyResponses) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x SelectProperty) bool { return x.unknownEnum() })
+}
+
 // Session defines a model
 type Session struct {
 	// Always `session`
@@ -25794,7 +26013,7 @@ func (v *SessionEventCondition) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 // SessionEventFilterAnd defines a model
 type SessionEventFilterAnd struct {
-	And []SessionEventCondition `json:"and"`
+	And SessionEventFilterOrItems `json:"and"`
 }
 
 // SessionEventFilterItem defines a model
@@ -25935,26 +26154,29 @@ func (v *SessionEventFilterItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 // SessionEventFilterOr defines a model
 type SessionEventFilterOr struct {
-	Or []SessionEventCondition `json:"or"`
+	Or SessionEventFilterOrItems `json:"or"`
 }
+
+// SessionEventFilterOrItems defines a model
+type SessionEventFilterOrItems []SessionEventCondition
 
 // SessionEventList defines a model
 type SessionEventList struct {
 	// Always `list`
 	Object string `json:"object"`
 	// Always `session_event`
-	Type         string                        `json:"type"`
-	SessionEvent struct{}                      `json:"session_event"`
-	Results      []SessionEventListResultsItem `json:"results"`
-	HasMore      bool                          `json:"has_more"`
-	NextCursor   string                        `json:"next_cursor"`
-	RequestID    uuid.UUID                     `json:"request_id,omitzero"`
+	Type         string                       `json:"type"`
+	SessionEvent struct{}                     `json:"session_event"`
+	Results      SessionEventListResultsItems `json:"results"`
+	HasMore      bool                         `json:"has_more"`
+	NextCursor   string                       `json:"next_cursor"`
+	RequestID    uuid.UUID                    `json:"request_id,omitzero"`
 }
 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *SessionEventList) unknownEnum() bool {
-	return slices.ContainsFunc(v.Results, func(x SessionEventListResultsItem) bool { return x.unknownEnum() })
+	return v.Results.unknownEnum()
 }
 
 // SessionEventListResultsItem defines a model
@@ -26088,7 +26310,7 @@ type SessionEventListResultsItemAgentMessage struct {
 	CreatedAt string `json:"created_at"`
 	// Always `agent.message`
 	Type      string                                               `json:"type"`
-	Content   []SessionEventListResultsItemUserMessageContentItem  `json:"content"`
+	Content   SessionEventListResultsItemUserMessageContentItems   `json:"content"`
 	CreatedBy SessionCreatedBy                                     `json:"created_by"`
 	Metadata  SessionEventListResultsItemAgentMessageMetadataModel `json:"metadata"`
 }
@@ -26302,10 +26524,10 @@ type SessionEventListResultsItemUserMessage struct {
 	Sequence  int    `json:"sequence"`
 	CreatedAt string `json:"created_at"`
 	// Always `user.message`
-	Type      string                                              `json:"type"`
-	Content   []SessionEventListResultsItemUserMessageContentItem `json:"content"`
-	CreatedBy SessionCreatedBy                                    `json:"created_by"`
-	Metadata  map[string]string                                   `json:"metadata"`
+	Type      string                                             `json:"type"`
+	Content   SessionEventListResultsItemUserMessageContentItems `json:"content"`
+	CreatedBy SessionCreatedBy                                   `json:"created_by"`
+	Metadata  map[string]string                                  `json:"metadata"`
 }
 
 // unmarshalJSONMember decodes the value of the member name into its field, reporting whether SessionEventListResultsItemUserMessage declares it.
@@ -26458,6 +26680,18 @@ func (v *SessionEventListResultsItemUserMessageContentItemText) unmarshalJSONMem
 	}
 
 	return false, nil
+}
+
+// SessionEventListResultsItemUserMessageContentItems defines a model
+type SessionEventListResultsItemUserMessageContentItems []SessionEventListResultsItemUserMessageContentItem
+
+// SessionEventListResultsItems defines a model
+type SessionEventListResultsItems []SessionEventListResultsItem
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v SessionEventListResultsItems) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x SessionEventListResultsItem) bool { return x.unknownEnum() })
 }
 
 // One of: `requires_action`, `completed`, `failed`, `canceled`, `terminated`
@@ -26867,13 +27101,13 @@ func (v *SessionNestedFilter) MarshalJSONTo(enc *jsontext.Encoder) error {
 // SessionNestedFilterAnd defines a model
 type SessionNestedFilterAnd struct {
 	// Return sessions that match every child filter.
-	And []SessionNestedFilterOrItem `json:"and"`
+	And SessionNestedFilterOrItems `json:"and"`
 }
 
 // SessionNestedFilterOr defines a model
 type SessionNestedFilterOr struct {
 	// Return sessions that match any child filter.
-	Or []SessionNestedFilterOrItem `json:"or"`
+	Or SessionNestedFilterOrItems `json:"or"`
 }
 
 // SessionNestedFilterOrItem defines a model
@@ -26988,6 +27222,12 @@ func (v *SessionNestedFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
+// SessionNestedFilterOrItems defines a model
+type SessionNestedFilterOrItems []SessionNestedFilterOrItem
+
+// SessionNestedFilters defines a model
+type SessionNestedFilters []SessionNestedFilter
+
 // SessionRequiredActions defines a model
 type SessionRequiredActions []RequiredActionsItem
 
@@ -27078,32 +27318,32 @@ type SessionTimestampFilterTimestamp struct {
 
 // SimpleOrArrayPropertyValue defines a model
 type SimpleOrArrayPropertyValue struct {
-	Type            SimpleOrArrayPropertyValueType            `json:"type"`
-	Number          *float64                                  `json:"number,omitzero"`
-	URL             *string                                   `json:"url,omitzero"`
-	Select          *PartialSelectPropertyValue               `json:"select,omitzero"`
-	MultiSelect     []PartialSelectPropertyValue              `json:"multi_select,omitzero"`
-	Status          *PartialSelectPropertyValue               `json:"status,omitzero"`
-	Date            *DateResponse                             `json:"date,omitzero"`
-	Email           *string                                   `json:"email,omitzero"`
-	PhoneNumber     *string                                   `json:"phone_number,omitzero"`
-	Checkbox        *bool                                     `json:"checkbox,omitzero"`
-	Files           []InternalOrExternalFileWithNameResponse  `json:"files,omitzero"`
-	CreatedBy       *UserOrPartial                            `json:"created_by,omitzero"`
-	CreatedTime     *time.Time                                `json:"created_time,omitzero"`
-	LastEditedBy    *UserOrPartial                            `json:"last_edited_by,omitzero"`
-	LastEditedTime  *time.Time                                `json:"last_edited_time,omitzero"`
-	Formula         *FormulaPropertyValue                     `json:"formula,omitzero"`
-	Button          *EmptyObject                              `json:"button,omitzero"`
-	UniqueID        *UniqueIDPropertyValue                    `json:"unique_id,omitzero"`
-	Verification    *VerificationPropertyValue                `json:"verification,omitzero"`
-	Place           *PlacePropertyValue                       `json:"place,omitzero"`
-	LastVisitedTime *time.Time                                `json:"last_visited_time,omitzero"`
-	Title           RichTexts                                 `json:"title,omitzero"`
-	RichText        RichTexts                                 `json:"rich_text,omitzero"`
-	People          []PeopleArrayBasedPropertyValuePeopleItem `json:"people,omitzero"`
-	Relation        []RelationItemPropertyValue               `json:"relation,omitzero"`
-	HasMore         *bool                                     `json:"has_more,omitzero"`
+	Type            SimpleOrArrayPropertyValueType           `json:"type"`
+	Number          *float64                                 `json:"number,omitzero"`
+	URL             *string                                  `json:"url,omitzero"`
+	Select          *PartialSelectPropertyValue              `json:"select,omitzero"`
+	MultiSelect     PartialSelectPropertyValueResponses      `json:"multi_select,omitzero"`
+	Status          *PartialSelectPropertyValue              `json:"status,omitzero"`
+	Date            *DateResponse                            `json:"date,omitzero"`
+	Email           *string                                  `json:"email,omitzero"`
+	PhoneNumber     *string                                  `json:"phone_number,omitzero"`
+	Checkbox        *bool                                    `json:"checkbox,omitzero"`
+	Files           InternalOrExternalFileWithNameResponses  `json:"files,omitzero"`
+	CreatedBy       *UserOrPartial                           `json:"created_by,omitzero"`
+	CreatedTime     *time.Time                               `json:"created_time,omitzero"`
+	LastEditedBy    *UserOrPartial                           `json:"last_edited_by,omitzero"`
+	LastEditedTime  *time.Time                               `json:"last_edited_time,omitzero"`
+	Formula         *FormulaPropertyValue                    `json:"formula,omitzero"`
+	Button          *EmptyObject                             `json:"button,omitzero"`
+	UniqueID        *UniqueIDPropertyValue                   `json:"unique_id,omitzero"`
+	Verification    *VerificationPropertyValue               `json:"verification,omitzero"`
+	Place           *PlacePropertyValue                      `json:"place,omitzero"`
+	LastVisitedTime *time.Time                               `json:"last_visited_time,omitzero"`
+	Title           RichTexts                                `json:"title,omitzero"`
+	RichText        RichTexts                                `json:"rich_text,omitzero"`
+	People          PeopleArrayBasedPropertyValuePeopleItems `json:"people,omitzero"`
+	Relation        RelationItemPropertyValueResponses       `json:"relation,omitzero"`
+	HasMore         *bool                                    `json:"has_more,omitzero"`
 }
 
 // SimpleOrArrayPropertyValueType is a value of SimpleOrArrayPropertyValue's type, naming the members it holds.
@@ -27307,16 +27547,25 @@ func (v *SimpleOrArrayPropertyValue) MarshalJSONTo(enc *jsontext.Encoder) error 
 func (v *SimpleOrArrayPropertyValue) unknownEnum() bool {
 	return v.Type != "" && !v.Type.Valid() ||
 		v.Select != nil && v.Select.unknownEnum() ||
-		slices.ContainsFunc(v.MultiSelect, func(x PartialSelectPropertyValue) bool { return x.unknownEnum() }) ||
+		v.MultiSelect.unknownEnum() ||
 		v.Status != nil && v.Status.unknownEnum() ||
-		slices.ContainsFunc(v.Files, func(x InternalOrExternalFileWithNameResponse) bool { return x.unknownEnum() }) ||
+		v.Files.unknownEnum() ||
 		v.CreatedBy != nil && v.CreatedBy.unknownEnum() ||
 		v.LastEditedBy != nil && v.LastEditedBy.unknownEnum() ||
 		v.Formula != nil && v.Formula.unknownEnum() ||
 		v.Verification != nil && v.Verification.unknownEnum() ||
 		v.Title.unknownEnum() ||
 		v.RichText.unknownEnum() ||
-		slices.ContainsFunc(v.People, func(x PeopleArrayBasedPropertyValuePeopleItem) bool { return x.unknownEnum() })
+		v.People.unknownEnum()
+}
+
+// SimpleOrArrayPropertyValueResponses defines a model
+type SimpleOrArrayPropertyValueResponses []SimpleOrArrayPropertyValue
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v SimpleOrArrayPropertyValueResponses) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x SimpleOrArrayPropertyValue) bool { return x.unknownEnum() })
 }
 
 // A sort of a data source's entries, by a property or a timestamp.
@@ -27458,7 +27707,7 @@ type StatusDatabasePropertyConfigStatus struct {
 	// The name of the configured default status option, or null when no default is configured. Read-only.
 	DefaultOption string `json:"default_option,omitzero"`
 	// The options for the status property.
-	Options []SelectProperty `json:"options"`
+	Options SelectPropertyResponses `json:"options"`
 	// The groups for the status property.
 	Groups StatusDatabasePropertyConfigStatusGroups `json:"groups"`
 }
@@ -27466,7 +27715,7 @@ type StatusDatabasePropertyConfigStatus struct {
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *StatusDatabasePropertyConfigStatus) unknownEnum() bool {
-	return slices.ContainsFunc(v.Options, func(x SelectProperty) bool { return x.unknownEnum() }) ||
+	return v.Options.unknownEnum() ||
 		v.Groups.unknownEnum()
 }
 
@@ -27556,7 +27805,7 @@ func (v *StatusGroupByConfigResponse) unknownEnum() bool {
 // StatusGroupNames is an untagged anyOf union: at least one field is set after unmarshaling.
 type StatusGroupNames struct {
 	String  String
-	String2 []String
+	Strings Strings
 }
 
 // UnmarshalJSONFrom implements [json.UnmarshalerFrom]. Null sets no alternative.
@@ -27586,9 +27835,9 @@ func (v *StatusGroupNames) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	}
 
 	{
-		var vv []String
+		var vv Strings
 		if err := json.Unmarshal(raw, &vv, opts); err == nil {
-			v.String2 = vv
+			v.Strings = vv
 			matched++
 		}
 	}
@@ -27606,8 +27855,8 @@ func (v *StatusGroupNames) MarshalJSONTo(enc *jsontext.Encoder) error {
 	switch {
 	case v.String != "":
 		return json.MarshalEncode(enc, v.String, jsonOptsTo(enc))
-	case v.String2 != nil:
-		return json.MarshalEncode(enc, v.String2, jsonOptsTo(enc))
+	case v.Strings != nil:
+		return json.MarshalEncode(enc, v.Strings, jsonOptsTo(enc))
 	}
 
 	return enc.WriteToken(jsontext.Null)
@@ -28190,6 +28439,9 @@ func (v *StringOrStringArray) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
+// Strings defines a model
+type Strings []String
+
 // SubmissionPermissions defines a model
 type SubmissionPermissions string
 
@@ -28545,14 +28797,14 @@ type SyncedBlock struct {
 
 // SyncedBlockChild defines a model
 type SyncedBlockChild struct {
-	SyncedFrom BlockObjectSyncedBlockSyncedFrom    `json:"synced_from"`
-	Children   []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
+	SyncedFrom BlockObjectSyncedBlockSyncedFrom `json:"synced_from"`
+	Children   BlockObjectWithoutChildrens      `json:"children,omitzero"`
 }
 
 // SyncedBlockRequest defines a model
 type SyncedBlockRequest struct {
-	SyncedFrom BlockObjectSyncedBlockSyncedFrom       `json:"synced_from"`
-	Children   []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
+	SyncedFrom BlockObjectSyncedBlockSyncedFrom      `json:"synced_from"`
+	Children   BlockObjectWithSingleLevelOfChildrens `json:"children,omitzero"`
 }
 
 // SyncedBlockUpdate defines a model
@@ -28565,6 +28817,12 @@ type SyncedFrom struct {
 	Type    string `json:"type"`
 	BlockID ID     `json:"block_id"`
 }
+
+// TabItemRequestWithSingleLevelOfChildrens defines a model
+type TabItemRequestWithSingleLevelOfChildrens []TabItemWithSingleLevelOfChildren
+
+// TabItemRequestWithoutChildrens defines a model
+type TabItemRequestWithoutChildrens []TabItemWithoutChildren
 
 // TabItemWithSingleLevelOfChildren defines a model
 type TabItemWithSingleLevelOfChildren struct {
@@ -28582,12 +28840,12 @@ type TabItemWithoutChildren struct {
 
 // TabRequestWithNestedTabItemChildren defines a model
 type TabRequestWithNestedTabItemChildren struct {
-	Children []TabItemWithSingleLevelOfChildren `json:"children"`
+	Children TabItemRequestWithSingleLevelOfChildrens `json:"children"`
 }
 
 // TabRequestWithTabItemChildren defines a model
 type TabRequestWithTabItemChildren struct {
-	Children []TabItemWithoutChildren `json:"children"`
+	Children TabItemRequestWithoutChildrens `json:"children"`
 }
 
 // TableOfContents defines a model
@@ -28610,10 +28868,10 @@ type TableOfContentsRequest struct {
 
 // TableRequestWithTableRowChildren defines a model
 type TableRequestWithTableRowChildren struct {
-	TableWidth      int        `json:"table_width"`
-	Children        []TableRow `json:"children"`
-	HasColumnHeader *bool      `json:"has_column_header,omitzero"`
-	HasRowHeader    *bool      `json:"has_row_header,omitzero"`
+	TableWidth      int       `json:"table_width"`
+	Children        TableRows `json:"children"`
+	HasColumnHeader *bool     `json:"has_column_header,omitzero"`
+	HasRowHeader    *bool     `json:"has_row_header,omitzero"`
 }
 
 // TableRow defines a model
@@ -28622,6 +28880,9 @@ type TableRow struct {
 	Type     string              `json:"type,omitzero"`
 	Object   string              `json:"object,omitzero"`
 }
+
+// TableRows defines a model
+type TableRows []TableRow
 
 // TableUpdate defines a model
 type TableUpdate struct {
@@ -28634,7 +28895,7 @@ type TableViewConfig struct {
 	// The view type. Must be "table".
 	Type string `json:"type"`
 	// Property visibility and display configuration. Pass null to clear.
-	Properties []ViewPropertyConfig `json:"properties,omitzero"`
+	Properties ViewPropertyConfigs `json:"properties,omitzero"`
 	// Group-by configuration for the table. Pass null to remove grouping.
 	GroupBy GroupByConfig `json:"group_by,omitzero"`
 	// Subtask (sub-item) configuration. Pass null to reset subtask config to defaults (which may show subtasks). Use `{ "display_mode": "disabled" }` to explicitly disable subtasks.
@@ -28674,7 +28935,7 @@ type TableViewConfigResponse struct {
 	// The view configuration type.
 	Type string `json:"type"`
 	// Columns/properties visible in the table view.
-	Properties []ViewPropertyConfigResponse `json:"properties,omitzero"`
+	Properties ViewPropertyConfigResponses `json:"properties,omitzero"`
 	// Vertical (row) grouping configuration.
 	GroupBy GroupByConfigResponse `json:"group_by,omitzero"`
 	// Sub-item (subtask) display configuration.
@@ -28712,7 +28973,7 @@ func (v *TableViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, nam
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *TableViewConfigResponse) unknownEnum() bool {
-	return slices.ContainsFunc(v.Properties, func(x ViewPropertyConfigResponse) bool { return x.unknownEnum() }) ||
+	return v.Properties.unknownEnum() ||
 		v.GroupBy.unknownEnum() ||
 		v.Subtasks != nil && v.Subtasks.unknownEnum()
 }
@@ -28730,8 +28991,8 @@ func (v *Template) unknownEnum() bool {
 
 // TemplateChild defines a model
 type TemplateChild struct {
-	RichText []RichTextItem                      `json:"rich_text"`
-	Children []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
+	RichText RichTextItems               `json:"rich_text"`
+	Children BlockObjectWithoutChildrens `json:"children,omitzero"`
 }
 
 // TemplateMention defines a model
@@ -28950,8 +29211,8 @@ func (v *TemplateMentionResponse) unknownEnum() bool {
 
 // TemplateRequest defines a model
 type TemplateRequest struct {
-	RichText []RichTextItem                         `json:"rich_text"`
-	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
+	RichText RichTextItems                         `json:"rich_text"`
+	Children BlockObjectWithSingleLevelOfChildrens `json:"children,omitzero"`
 }
 
 // IANA timezone to use when resolving template variables like @now and @today (e.g. 'America/New_York'). Defaults to the authorizing user's timezone for public integrations, or UTC for internal integrations.
@@ -29338,11 +29599,11 @@ type TimelineViewConfig struct {
 	// Property ID of the date property used for the end of timeline items. Pass null to clear.
 	EndDatePropertyID string `json:"end_date_property_id,omitzero"`
 	// Property visibility and display configuration on timeline items. Pass null to clear.
-	Properties []ViewPropertyConfig `json:"properties,omitzero"`
+	Properties ViewPropertyConfigs `json:"properties,omitzero"`
 	// Whether to show the table panel alongside the timeline. Pass null to clear.
 	ShowTable *bool `json:"show_table,omitzero"`
 	// Property configuration for the table panel (when show_table is true). Pass null to clear.
-	TableProperties []ViewPropertyConfig `json:"table_properties,omitzero"`
+	TableProperties ViewPropertyConfigs `json:"table_properties,omitzero"`
 	// Timeline display preferences (zoom level and center position). Pass null to clear.
 	Preference TimelinePreference `json:"preference,omitzero"`
 	// Configuration for dependency arrows between timeline items. Pass null to clear.
@@ -29390,13 +29651,13 @@ type TimelineViewConfigResponse struct {
 	// End date property name (convenience field).
 	EndDatePropertyName string `json:"end_date_property_name,omitzero"`
 	// Properties to display on timeline items.
-	Properties []ViewPropertyConfigResponse `json:"properties,omitzero"`
+	Properties ViewPropertyConfigResponses `json:"properties,omitzero"`
 	// Grouping configuration.
 	GroupBy GroupByConfigResponse `json:"group_by,omitzero"`
 	// Whether to show the table panel alongside the timeline.
 	ShowTable *bool `json:"show_table,omitzero"`
 	// Properties to display in the table panel (when show_table is true).
-	TableProperties []ViewPropertyConfigResponse `json:"table_properties,omitzero"`
+	TableProperties ViewPropertyConfigResponses `json:"table_properties,omitzero"`
 	// Timeline zoom/preference state.
 	Preference TimelinePreferenceResponse `json:"preference,omitzero"`
 	// Dependency arrows configuration.
@@ -29440,9 +29701,9 @@ func (v *TimelineViewConfigResponse) unmarshalJSONMember(dec *jsontext.Decoder, 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *TimelineViewConfigResponse) unknownEnum() bool {
-	return slices.ContainsFunc(v.Properties, func(x ViewPropertyConfigResponse) bool { return x.unknownEnum() }) ||
+	return v.Properties.unknownEnum() ||
 		v.GroupBy.unknownEnum() ||
-		slices.ContainsFunc(v.TableProperties, func(x ViewPropertyConfigResponse) bool { return x.unknownEnum() }) ||
+		v.TableProperties.unknownEnum() ||
 		v.Preference.unknownEnum()
 }
 
@@ -29672,34 +29933,34 @@ func (v *ToDo) unknownEnum() bool {
 
 // ToDoChild defines a model
 type ToDoChild struct {
-	RichText []RichTextItem `json:"rich_text"`
+	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                            `json:"color,omitzero"`
-	Children []BlockObjectRequestWithoutChildren `json:"children,omitzero"`
-	Checked  *bool                               `json:"checked,omitzero"`
+	Color    APIColor                    `json:"color,omitzero"`
+	Children BlockObjectWithoutChildrens `json:"children,omitzero"`
+	Checked  *bool                       `json:"checked,omitzero"`
 }
 
 // ToDoGrandchild defines a model
 type ToDoGrandchild struct {
-	RichText []RichTextItem `json:"rich_text"`
-	Checked  *bool          `json:"checked,omitzero"`
+	RichText RichTextItems `json:"rich_text"`
+	Checked  *bool         `json:"checked,omitzero"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor `json:"color,omitzero"`
 }
 
 // ToDoRequest defines a model
 type ToDoRequest struct {
-	RichText []RichTextItem `json:"rich_text"`
+	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                               `json:"color,omitzero"`
-	Children []BlockObjectWithSingleLevelOfChildren `json:"children,omitzero"`
-	Checked  *bool                                  `json:"checked,omitzero"`
+	Color    APIColor                              `json:"color,omitzero"`
+	Children BlockObjectWithSingleLevelOfChildrens `json:"children,omitzero"`
+	Checked  *bool                                 `json:"checked,omitzero"`
 }
 
 // ToDoUpdate defines a model
 type ToDoUpdate struct {
-	RichText []RichTextItem `json:"rich_text,omitzero"`
-	Checked  *bool          `json:"checked,omitzero"`
+	RichText RichTextItems `json:"rich_text,omitzero"`
+	Checked  *bool         `json:"checked,omitzero"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor `json:"color,omitzero"`
 }
@@ -29792,10 +30053,10 @@ func (v *TranscriptionBlock) unknownEnum() bool {
 
 // TranscriptionCalendarEvent defines a model
 type TranscriptionCalendarEvent struct {
-	StartTime time.Time `json:"start_time"`
-	EndTime   time.Time `json:"end_time"`
-	EventID   string    `json:"event_id,omitzero"`
-	Attendees []ID      `json:"attendees,omitzero"`
+	StartTime time.Time   `json:"start_time"`
+	EndTime   time.Time   `json:"end_time"`
+	EventID   string      `json:"event_id,omitzero"`
+	Attendees IDResponses `json:"attendees,omitzero"`
 }
 
 // TranscriptionChildren defines a model
@@ -30755,7 +31016,7 @@ func (v *UpdateAComment) MarshalJSONTo(enc *jsontext.Encoder) error {
 // UpdateADataSource defines a model
 type UpdateADataSource struct {
 	// Title of data source as it appears in Notion.
-	Title []RichTextItem `json:"title,omitzero"`
+	Title RichTextItems `json:"title,omitzero"`
 	// Data source icon.
 	Icon PageIcon `json:"icon,omitzero"`
 	// The property schema of the data source. The keys are property names or IDs, and the values are property configuration objects. Properties set to null will be removed.
@@ -30984,6 +31245,15 @@ type UpdateAgent struct {
 	Model UpdateAgentModel `json:"model,omitzero"`
 }
 
+// UpdateAgentConnectionsItems defines a model
+type UpdateAgentConnectionsItems []AgentConnectionsItem
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v UpdateAgentConnectionsItems) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x AgentConnectionsItem) bool { return x.unknownEnum() })
+}
+
 // UpdateAgentCreditLimit defines a model
 type UpdateAgentCreditLimit struct {
 	// The per-agent credit limit as a non-negative integer, or null to clear the limit.
@@ -31141,9 +31411,9 @@ type UpdateDatabase struct {
 	// The parent page or workspace to move the database to. If not provided, the database will not be moved.
 	Parent CreateDatabaseParent `json:"parent,omitzero"`
 	// The updated title of the database, if any. If not provided, the title will not be updated.
-	Title []RichTextItem `json:"title,omitzero"`
+	Title RichTextItems `json:"title,omitzero"`
 	// The updated description of the database, if any. If not provided, the description will not be updated.
-	Description []RichTextItem `json:"description,omitzero"`
+	Description RichTextItems `json:"description,omitzero"`
 	// Whether the database should be displayed inline in the parent page. If not provided, the inline status will not be updated.
 	IsInline *bool `json:"is_inline,omitzero"`
 	// The updated icon for the database, if any. If not provided, the icon will not be updated.
@@ -31160,29 +31430,29 @@ type UpdateDatabase struct {
 
 // UpdateEmbedFileUpload defines a model
 type UpdateEmbedFileUpload struct {
-	FileUpload FileUploadID   `json:"file_upload"`
-	Caption    []RichTextItem `json:"caption,omitzero"`
+	FileUpload FileUploadID  `json:"file_upload"`
+	Caption    RichTextItems `json:"caption,omitzero"`
 }
 
 // UpdateMediaContentWithFileAndCaption defines a model
 type UpdateMediaContentWithFileAndCaption struct {
-	Caption    []RichTextItem `json:"caption,omitzero"`
-	External   ExternalFile   `json:"external,omitzero"`
-	FileUpload FileUploadID   `json:"file_upload,omitzero"`
+	Caption    RichTextItems `json:"caption,omitzero"`
+	External   ExternalFile  `json:"external,omitzero"`
+	FileUpload FileUploadID  `json:"file_upload,omitzero"`
 }
 
 // UpdateMediaContentWithFileNameAndCaption defines a model
 type UpdateMediaContentWithFileNameAndCaption struct {
-	Caption    []RichTextItem `json:"caption,omitzero"`
-	External   ExternalFile   `json:"external,omitzero"`
-	FileUpload FileUploadID   `json:"file_upload,omitzero"`
-	Name       String         `json:"name,omitzero"`
+	Caption    RichTextItems `json:"caption,omitzero"`
+	External   ExternalFile  `json:"external,omitzero"`
+	FileUpload FileUploadID  `json:"file_upload,omitzero"`
+	Name       String        `json:"name,omitzero"`
 }
 
 // UpdateMediaContentWithURLAndCaption defines a model
 type UpdateMediaContentWithURLAndCaption struct {
-	URL     string         `json:"url,omitzero"`
-	Caption []RichTextItem `json:"caption,omitzero"`
+	URL     string        `json:"url,omitzero"`
+	Caption RichTextItems `json:"caption,omitzero"`
 }
 
 // UpdateMeetingNotePage defines a model
@@ -31200,7 +31470,7 @@ type UpdateMeetingNotePageOk struct {
 	// The full-page meeting note, as a meeting_notes block.
 	MeetingNote CreateMeetingNoteMeetingNotes `json:"meeting_note"`
 	// IDs of other meeting notes you can read that are linked to the same event. For a meeting note inside a page, this is the page's ID. Only the first 50 meeting notes found are checked.
-	OtherMeetingNoteIDs []ID `json:"other_meeting_note_ids"`
+	OtherMeetingNoteIDs IDResponses3 `json:"other_meeting_note_ids"`
 }
 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
@@ -31849,19 +32119,28 @@ func (v *User) unknownEnum() bool {
 
 // UserList defines a model
 type UserList struct {
-	Type       string      `json:"type"`
-	User       EmptyObject `json:"user"`
-	Object     string      `json:"object"`
-	HasMore    bool        `json:"has_more"`
-	Results    []User      `json:"results"`
-	RequestID  uuid.UUID   `json:"request_id,omitzero"`
-	NextCursor ID          `json:"next_cursor"`
+	Type       string              `json:"type"`
+	User       EmptyObject         `json:"user"`
+	Object     string              `json:"object"`
+	HasMore    bool                `json:"has_more"`
+	Results    UserObjectResponses `json:"results"`
+	RequestID  uuid.UUID           `json:"request_id,omitzero"`
+	NextCursor ID                  `json:"next_cursor"`
 }
 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
 func (v *UserList) unknownEnum() bool {
-	return slices.ContainsFunc(v.Results, func(x User) bool { return x.unknownEnum() })
+	return v.Results.unknownEnum()
+}
+
+// UserObjectResponses defines a model
+type UserObjectResponses []User
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v UserObjectResponses) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x User) bool { return x.unknownEnum() })
 }
 
 // UserOrPartial defines a model
@@ -32638,9 +32917,9 @@ type ViewDeletedWebhookPayload struct {
 // ViewList defines a model
 type ViewList struct {
 	// Always `list`
-	Object  string                    `json:"object"`
-	HasMore bool                      `json:"has_more"`
-	Results []DataSourceViewReference `json:"results"`
+	Object  string                           `json:"object"`
+	HasMore bool                             `json:"has_more"`
+	Results DataSourceViewReferenceResponses `json:"results"`
 	// Always `view`
 	Type          string                `json:"type"`
 	View          EmptyObject           `json:"view"`
@@ -32841,6 +33120,18 @@ func (v *ViewPropertyConfigResponse) unknownEnum() bool {
 		v.TimeFormat != "" && !v.TimeFormat.Valid()
 }
 
+// ViewPropertyConfigResponses defines a model
+type ViewPropertyConfigResponses []ViewPropertyConfigResponse
+
+// unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
+// records.
+func (v ViewPropertyConfigResponses) unknownEnum() bool {
+	return slices.ContainsFunc(v, func(x ViewPropertyConfigResponse) bool { return x.unknownEnum() })
+}
+
+// ViewPropertyConfigs defines a model
+type ViewPropertyConfigs []ViewPropertyConfig
+
 // ViewQuery defines a model
 type ViewQuery struct {
 	// The object type.
@@ -32854,7 +33145,7 @@ type ViewQuery struct {
 	// Total number of results in the query.
 	TotalCount float64 `json:"total_count"`
 	// The page results for this page.
-	Results []PageReference `json:"results"`
+	Results PageReferenceResponses `json:"results"`
 	// Cursor for the next page of results.
 	NextCursor ID `json:"next_cursor"`
 	// Whether there are more results.
@@ -33041,6 +33332,9 @@ func (e WebhookUpdatedBlockType) Valid() bool {
 		return false
 	}
 }
+
+// The blocks that were updated in this event.
+type WebhookUpdatedBlocks []WebhookExternalBlock
 
 // WebhookViewEntity defines a model
 type WebhookViewEntity struct {
