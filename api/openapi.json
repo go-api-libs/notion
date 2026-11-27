@@ -5305,15 +5305,6 @@
         },
         "x-flattened-from": "#/components/schemas/baseWebhookPayload/properties/authors"
       },
-      "AccessibleByItems2": {
-        "description": "The users or bots who own the bot connection to the `integration_id` and have access to the webhook's `entity`. Only present for public integrations.",
-        "type": "array",
-        "maxItems": 100,
-        "items": {
-          "$ref": "#/components/schemas/AccessibleByItem"
-        },
-        "x-flattened-from": "#/components/schemas/baseWebhookPayload/properties/accessible_by"
-      },
       "AdditionalDataValue": {
         "oneOf": [
           {
@@ -6439,23 +6430,6 @@
         },
         "x-flattened-from": "#/components/schemas/Agent/properties/connections"
       },
-      "AgentConnectionsItems2": {
-        "type": "array",
-        "maxItems": 100,
-        "items": {
-          "$ref": "#/components/schemas/AgentConnectionsItem"
-        },
-        "x-flattened-from": "#/components/schemas/AgentListResultsItemNotionAi/properties/connections"
-      },
-      "AgentConnectionsItems3": {
-        "description": "Integrations the agent is connected to (Notion, Slack, Discord, MCP servers, and other connectors), each with an account and per-target permissions.",
-        "type": "array",
-        "maxItems": 100,
-        "items": {
-          "$ref": "#/components/schemas/AgentConnectionsItem"
-        },
-        "x-flattened-from": "#/components/schemas/AgentListResultsItemOneOf0/properties/connections"
-      },
       "AgentCreatedByUser": {
         "type": "object",
         "properties": {
@@ -6764,7 +6738,7 @@
             "$ref": "#/components/schemas/AgentModel"
           },
           "connections": {
-            "$ref": "#/components/schemas/AgentConnectionsItems2"
+            "$ref": "#/components/schemas/AgentConnectionsItems"
           },
           "status": {
             "description": "Always `active`",
@@ -6873,7 +6847,8 @@
             "$ref": "#/components/schemas/AgentModel"
           },
           "connections": {
-            "$ref": "#/components/schemas/AgentConnectionsItems3"
+            "description": "Integrations the agent is connected to (Notion, Slack, Discord, MCP servers, and other connectors), each with an account and per-target permissions.",
+            "$ref": "#/components/schemas/AgentConnectionsItems"
           },
           "status": {
             "description": "\"active\" when the agent can run; \"disabled\" when it is paused (see pause_reason); \"deleted\" when it has been removed.",
@@ -7956,7 +7931,7 @@
             "type": "boolean"
           },
           "children": {
-            "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildrens"
+            "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildrenList"
           }
         },
         "required": [
@@ -8523,7 +8498,7 @@
             "$ref": "#/components/schemas/BlockObjectSyncedBlockSyncedFrom"
           },
           "children": {
-            "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildrens"
+            "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildrenList"
           }
         },
         "required": [
@@ -8651,7 +8626,7 @@
             "$ref": "#/components/schemas/RichTextItems"
           },
           "children": {
-            "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildrens"
+            "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildrenList"
           }
         },
         "required": [
@@ -8690,7 +8665,7 @@
             "$ref": "#/components/schemas/apiColor"
           },
           "children": {
-            "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildrens"
+            "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildrenList"
           },
           "checked": {
             "type": "boolean"
@@ -8960,6 +8935,13 @@
         ],
         "additionalProperties": false
       },
+      "BlockObjectWithSingleLevelOfChildrenList": {
+        "type": "array",
+        "maxItems": 100,
+        "items": {
+          "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildren"
+        }
+      },
       "BlockObjectWithSingleLevelOfChildrenNumberedListItem": {
         "title": "Numbered List Item",
         "type": "object",
@@ -9030,7 +9012,7 @@
             "$ref": "#/components/schemas/BlockObjectSyncedBlockSyncedFrom"
           },
           "children": {
-            "$ref": "#/components/schemas/blockObjectWithoutChildrens"
+            "$ref": "#/components/schemas/blockObjectRequestWithoutChildrenList"
           }
         },
         "required": [
@@ -9087,7 +9069,7 @@
             "$ref": "#/components/schemas/RichTextItems"
           },
           "children": {
-            "$ref": "#/components/schemas/blockObjectWithoutChildrens"
+            "$ref": "#/components/schemas/blockObjectRequestWithoutChildrenList"
           }
         },
         "required": [
@@ -9126,7 +9108,7 @@
             "$ref": "#/components/schemas/apiColor"
           },
           "children": {
-            "$ref": "#/components/schemas/blockObjectWithoutChildrens"
+            "$ref": "#/components/schemas/blockObjectRequestWithoutChildrenList"
           },
           "checked": {
             "type": "boolean"
@@ -9157,13 +9139,6 @@
           "toggle"
         ],
         "additionalProperties": false
-      },
-      "BlockObjectWithSingleLevelOfChildrens": {
-        "type": "array",
-        "maxItems": 100,
-        "items": {
-          "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildren"
-        }
       },
       "BlockObjects": {
         "type": "array",
@@ -9215,7 +9190,6 @@
             "description": "Property visibility and display configuration on cards. Pass null to clear.",
             "oneOf": [
               {
-                "description": "Property visibility and display configuration on cards. Pass null to clear.",
                 "$ref": "#/components/schemas/ViewPropertyConfigs"
               },
               {
@@ -9392,7 +9366,7 @@
             "$ref": "#/components/schemas/apiColor"
           },
           "children": {
-            "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildrens"
+            "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildrenList"
           }
         },
         "required": [
@@ -9460,7 +9434,6 @@
             "description": "Property visibility and display configuration on calendar cards. Pass null to clear.",
             "oneOf": [
               {
-                "description": "Property visibility and display configuration on calendar cards. Pass null to clear.",
                 "$ref": "#/components/schemas/ViewPropertyConfigs"
               },
               {
@@ -10070,7 +10043,7 @@
           "colorful"
         ]
       },
-      "ColumnBlockWithChildrens": {
+      "ColumnBlockWithChildrenList": {
         "type": "array",
         "minItems": 2,
         "maxItems": 100,
@@ -10082,7 +10055,7 @@
         "type": "object",
         "properties": {
           "children": {
-            "$ref": "#/components/schemas/ColumnBlockWithChildrens"
+            "$ref": "#/components/schemas/ColumnBlockWithChildrenList"
           }
         },
         "required": [
@@ -10094,7 +10067,7 @@
         "type": "object",
         "properties": {
           "children": {
-            "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildrens"
+            "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildrenList"
           },
           "width_ratio": {
             "description": "Ratio between 0 and 1 of the width of this column relative to all columns in the list. If not provided, uses an equal width.",
@@ -10351,7 +10324,7 @@
             "$ref": "#/components/schemas/apiColor"
           },
           "children": {
-            "$ref": "#/components/schemas/blockObjectWithoutChildrens"
+            "$ref": "#/components/schemas/blockObjectRequestWithoutChildrenList"
           }
         },
         "required": [
@@ -10363,7 +10336,7 @@
         "type": "object",
         "properties": {
           "cells": {
-            "$ref": "#/components/schemas/RichTextItemses"
+            "$ref": "#/components/schemas/RichTextItemsList"
           }
         },
         "required": [
@@ -12854,7 +12827,6 @@
         "type": "object",
         "properties": {
           "or": {
-            "description": "The entries any of the filters allow.",
             "$ref": "#/components/schemas/Filters"
           }
         },
@@ -12873,6 +12845,7 @@
         ]
       },
       "Filters": {
+        "description": "The entries any of the filters allow.",
         "type": "array",
         "maxItems": 100,
         "items": {
@@ -13129,7 +13102,6 @@
             "description": "Property visibility and display configuration on gallery cards. Pass null to clear.",
             "oneOf": [
               {
-                "description": "Property visibility and display configuration on gallery cards. Pass null to clear.",
                 "$ref": "#/components/schemas/ViewPropertyConfigs"
               },
               {
@@ -13374,7 +13346,7 @@
             "type": "boolean"
           },
           "children": {
-            "$ref": "#/components/schemas/blockObjectWithoutChildrens"
+            "$ref": "#/components/schemas/blockObjectRequestWithoutChildrenList"
           }
         },
         "required": [
@@ -13843,7 +13815,6 @@
             "description": "Property visibility and display configuration. Pass null to clear.",
             "oneOf": [
               {
-                "description": "Property visibility and display configuration. Pass null to clear.",
                 "$ref": "#/components/schemas/ViewPropertyConfigs"
               },
               {
@@ -13908,7 +13879,6 @@
             "description": "Property visibility and display configuration on map pin cards. Pass null to clear.",
             "oneOf": [
               {
-                "description": "Property visibility and display configuration on map pin cards. Pass null to clear.",
                 "$ref": "#/components/schemas/ViewPropertyConfigs"
               },
               {
@@ -15286,6 +15256,14 @@
           "reject"
         ]
       },
+      "OtherMeetingNoteIds": {
+        "description": "IDs of other meeting notes you can read that are linked to the same event. For a meeting note inside a page, this is the page's ID. Only the first 50 meeting notes found are checked.",
+        "type": "array",
+        "maxItems": 50,
+        "items": {
+          "$ref": "#/components/schemas/ID"
+        }
+      },
       "Page": {
         "type": "object",
         "properties": {
@@ -15414,6 +15392,7 @@
             "$ref": "#/components/schemas/webhookParentBlock"
           },
           "updated_blocks": {
+            "description": "The blocks that were updated in this event.",
             "$ref": "#/components/schemas/webhookUpdatedBlocks"
           }
         },
@@ -16307,7 +16286,7 @@
             "$ref": "#/components/schemas/PageIcon"
           },
           "children": {
-            "$ref": "#/components/schemas/blockObjectWithoutChildrens"
+            "$ref": "#/components/schemas/blockObjectRequestWithoutChildrenList"
           }
         },
         "required": [
@@ -18161,7 +18140,7 @@
         "type": "object",
         "properties": {
           "or": {
-            "$ref": "#/components/schemas/QueryAgentsFilterOrItems2"
+            "$ref": "#/components/schemas/QueryAgentsFilterOrItems"
           }
         },
         "required": [
@@ -18225,7 +18204,7 @@
         "type": "object",
         "properties": {
           "or": {
-            "$ref": "#/components/schemas/QueryAgentsFilterOrItemOrItems2"
+            "$ref": "#/components/schemas/QueryAgentsFilterOrItemOrItems"
           }
         },
         "required": [
@@ -18275,14 +18254,6 @@
         },
         "x-flattened-from": "#/components/schemas/QueryAgentsFilterOrItemAnd/properties/and"
       },
-      "QueryAgentsFilterOrItemOrItems2": {
-        "type": "array",
-        "minItems": 1,
-        "items": {
-          "$ref": "#/components/schemas/AgentCondition"
-        },
-        "x-flattened-from": "#/components/schemas/QueryAgentsFilterOrItemOr/properties/or"
-      },
       "QueryAgentsFilterOrItems": {
         "type": "array",
         "minItems": 1,
@@ -18290,14 +18261,6 @@
           "$ref": "#/components/schemas/QueryAgentsFilterOrItem"
         },
         "x-flattened-from": "#/components/schemas/QueryAgentsFilterAnd/properties/and"
-      },
-      "QueryAgentsFilterOrItems2": {
-        "type": "array",
-        "minItems": 1,
-        "items": {
-          "$ref": "#/components/schemas/QueryAgentsFilterOrItem"
-        },
-        "x-flattened-from": "#/components/schemas/QueryAgentsFilterOr/properties/or"
       },
       "QueryAgentsFilterStatus": {
         "type": "object",
@@ -18955,7 +18918,6 @@
         "type": "object",
         "properties": {
           "and": {
-            "description": "Return sessions that match every child filter.",
             "$ref": "#/components/schemas/sessionNestedFilters"
           }
         },
@@ -20755,13 +20717,14 @@
         ]
       },
       "RichTextItems": {
+        "description": "Title of data source as it appears in Notion.",
         "type": "array",
         "maxItems": 100,
         "items": {
           "$ref": "#/components/schemas/RichTextItem"
         }
       },
-      "RichTextItemses": {
+      "RichTextItemsList": {
         "type": "array",
         "maxItems": 100,
         "items": {
@@ -20793,7 +20756,7 @@
           "$ref": "#/components/schemas/RichText"
         }
       },
-      "RichTextses": {
+      "RichTextsList": {
         "type": "array",
         "maxItems": 100,
         "items": {
@@ -22358,7 +22321,8 @@
         "type": "object",
         "properties": {
           "or": {
-            "$ref": "#/components/schemas/SessionNestedFilterOrItems2"
+            "description": "Return sessions that match any child filter.",
+            "$ref": "#/components/schemas/SessionNestedFilterOrItems"
           }
         },
         "required": [
@@ -22390,15 +22354,6 @@
           "$ref": "#/components/schemas/SessionNestedFilterOrItem"
         },
         "x-flattened-from": "#/components/schemas/SessionNestedFilterAnd/properties/and"
-      },
-      "SessionNestedFilterOrItems2": {
-        "description": "Return sessions that match any child filter.",
-        "type": "array",
-        "maxItems": 100,
-        "items": {
-          "$ref": "#/components/schemas/SessionNestedFilterOrItem"
-        },
-        "x-flattened-from": "#/components/schemas/SessionNestedFilterOr/properties/or"
       },
       "SessionRequiredActions": {
         "type": "array",
@@ -23108,7 +23063,6 @@
             "description": "Property visibility and display configuration. Pass null to clear.",
             "oneOf": [
               {
-                "description": "Property visibility and display configuration. Pass null to clear.",
                 "$ref": "#/components/schemas/ViewPropertyConfigs"
               },
               {
@@ -23519,7 +23473,6 @@
             "description": "Property visibility and display configuration on timeline items. Pass null to clear.",
             "oneOf": [
               {
-                "description": "Property visibility and display configuration on timeline items. Pass null to clear.",
                 "$ref": "#/components/schemas/ViewPropertyConfigs"
               },
               {
@@ -23542,7 +23495,6 @@
             "description": "Property configuration for the table panel (when show_table is true). Pass null to clear.",
             "oneOf": [
               {
-                "description": "Property configuration for the table panel (when show_table is true). Pass null to clear.",
                 "$ref": "#/components/schemas/ViewPropertyConfigs"
               },
               {
@@ -24591,7 +24543,6 @@
         "type": "object",
         "properties": {
           "title": {
-            "description": "Title of data source as it appears in Notion.",
             "$ref": "#/components/schemas/RichTextItems"
           },
           "icon": {
@@ -25309,7 +25260,7 @@
             "$ref": "#/components/schemas/CreateMeetingNoteMeetingNotes"
           },
           "other_meeting_note_ids": {
-            "$ref": "#/components/schemas/idResponses3"
+            "$ref": "#/components/schemas/OtherMeetingNoteIds"
           }
         },
         "required": [
@@ -26192,6 +26143,7 @@
         ]
       },
       "ViewPropertyConfigs": {
+        "description": "Property visibility and display configuration on cards. Pass null to clear.",
         "type": "array",
         "maxItems": 100,
         "items": {
@@ -26587,7 +26539,8 @@
             "$ref": "#/components/schemas/APIVersion"
           },
           "accessible_by": {
-            "$ref": "#/components/schemas/AccessibleByItems2"
+            "description": "The users or bots who own the bot connection to the `integration_id` and have access to the webhook's `entity`. Only present for public integrations.",
+            "$ref": "#/components/schemas/AccessibleByItems"
           }
         },
         "required": [
@@ -26709,7 +26662,7 @@
           }
         ]
       },
-      "blockObjectWithoutChildrens": {
+      "blockObjectRequestWithoutChildrenList": {
         "type": "array",
         "maxItems": 100,
         "items": {
@@ -26733,7 +26686,6 @@
             "$ref": "#/components/schemas/groupByConfigResponse"
           },
           "properties": {
-            "description": "Properties to display on each card.",
             "$ref": "#/components/schemas/viewPropertyConfigResponses"
           },
           "cover": {
@@ -28123,7 +28075,7 @@
         "type": "object",
         "properties": {
           "cells": {
-            "$ref": "#/components/schemas/RichTextses"
+            "$ref": "#/components/schemas/RichTextsList"
           }
         },
         "required": [
@@ -31110,14 +31062,6 @@
       "idResponses": {
         "type": "array",
         "maxItems": 100,
-        "items": {
-          "$ref": "#/components/schemas/ID"
-        }
-      },
-      "idResponses3": {
-        "description": "IDs of other meeting notes you can read that are linked to the same event. For a meeting note inside a page, this is the page's ID. Only the first 50 meeting notes found are checked.",
-        "type": "array",
-        "maxItems": 50,
         "items": {
           "$ref": "#/components/schemas/ID"
         }
@@ -34492,6 +34436,7 @@
         ]
       },
       "sessionNestedFilters": {
+        "description": "Return sessions that match every child filter.",
         "type": "array",
         "maxItems": 100,
         "items": {
@@ -35042,7 +34987,7 @@
           "in_trash"
         ]
       },
-      "tabItemRequestWithSingleLevelOfChildrens": {
+      "tabItemRequestWithSingleLevelOfChildrenList": {
         "type": "array",
         "minItems": 1,
         "maxItems": 100,
@@ -35050,7 +34995,7 @@
           "$ref": "#/components/schemas/tabItemWithSingleLevelOfChildren"
         }
       },
-      "tabItemRequestWithoutChildrens": {
+      "tabItemRequestWithoutChildrenList": {
         "type": "array",
         "minItems": 1,
         "maxItems": 100,
@@ -35104,7 +35049,7 @@
         "type": "object",
         "properties": {
           "children": {
-            "$ref": "#/components/schemas/tabItemRequestWithSingleLevelOfChildrens"
+            "$ref": "#/components/schemas/tabItemRequestWithSingleLevelOfChildrenList"
           }
         },
         "required": [
@@ -35116,7 +35061,7 @@
         "type": "object",
         "properties": {
           "children": {
-            "$ref": "#/components/schemas/tabItemRequestWithoutChildrens"
+            "$ref": "#/components/schemas/tabItemRequestWithoutChildrenList"
           }
         },
         "required": [
@@ -36714,6 +36659,7 @@
         "additionalProperties": false
       },
       "viewPropertyConfigResponses": {
+        "description": "Properties to display on each card.",
         "type": "array",
         "maxItems": 100,
         "items": {
@@ -36977,7 +36923,7 @@
             "$ref": "#/components/schemas/apiColor"
           },
           "children": {
-            "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildrens"
+            "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildrenList"
           },
           "icon": {
             "$ref": "#/components/schemas/PageIcon"
@@ -36999,7 +36945,7 @@
             "$ref": "#/components/schemas/apiColor"
           },
           "children": {
-            "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildrens"
+            "$ref": "#/components/schemas/BlockObjectWithSingleLevelOfChildrenList"
           },
           "icon": {
             "$ref": "#/components/schemas/PageIcon"
