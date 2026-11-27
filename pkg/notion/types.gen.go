@@ -306,7 +306,7 @@ func (v *AccessibleByItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// AccessibleByItems defines a model
+// The users or bots that performed the action. Typically an array of length 1; can be more for aggregated events.
 type AccessibleByItems []AccessibleByItem
 
 // AdditionalDataValue defines a model
@@ -3847,11 +3847,12 @@ type BlockObjectFile struct {
 
 // BlockObjectHeading defines a model
 type BlockObjectHeading struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color        APIColor                              `json:"color,omitzero"`
-	IsToggleable *bool                                 `json:"is_toggleable,omitzero"`
-	Children     BlockObjectWithSingleLevelOfChildrens `json:"children,omitzero"`
+	Color        APIColor                                 `json:"color,omitzero"`
+	IsToggleable *bool                                    `json:"is_toggleable,omitzero"`
+	Children     BlockObjectWithSingleLevelOfChildrenList `json:"children,omitzero"`
 }
 
 // BlockObjectImage defines a model
@@ -4126,6 +4127,9 @@ func (v *BlockObjectRequestWithoutChildren) MarshalJSONTo(enc *jsontext.Encoder)
 
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
+
+// BlockObjectRequestWithoutChildrenList defines a model
+type BlockObjectRequestWithoutChildrenList []BlockObjectRequestWithoutChildren
 
 // BlockObjectSyncedBlockSyncedFrom defines a model
 type BlockObjectSyncedBlockSyncedFrom struct {
@@ -4412,11 +4416,8 @@ func (v *BlockObjectWithSingleLevelOfChildren) MarshalJSONTo(enc *jsontext.Encod
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// BlockObjectWithSingleLevelOfChildrens defines a model
-type BlockObjectWithSingleLevelOfChildrens []BlockObjectWithSingleLevelOfChildren
-
-// BlockObjectWithoutChildrens defines a model
-type BlockObjectWithoutChildrens []BlockObjectRequestWithoutChildren
+// BlockObjectWithSingleLevelOfChildrenList defines a model
+type BlockObjectWithSingleLevelOfChildrenList []BlockObjectWithSingleLevelOfChildren
 
 // BlockObjects defines a model
 type BlockObjects []BlockObject
@@ -4890,10 +4891,11 @@ func (v *BotUserBot) unknownEnum() bool {
 
 // BulletedListItem defines a model
 type BulletedListItem struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                              `json:"color,omitzero"`
-	Children BlockObjectWithSingleLevelOfChildrens `json:"children,omitzero"`
+	Color    APIColor                                 `json:"color,omitzero"`
+	Children BlockObjectWithSingleLevelOfChildrenList `json:"children,omitzero"`
 }
 
 // ButtonPropertyItem defines a model
@@ -5025,11 +5027,12 @@ func (v *Callout) unknownEnum() bool {
 
 // CalloutRequest defines a model
 type CalloutRequest struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                              `json:"color,omitzero"`
-	Children BlockObjectWithSingleLevelOfChildrens `json:"children,omitzero"`
-	Icon     PageIcon                              `json:"icon,omitzero"`
+	Color    APIColor                                 `json:"color,omitzero"`
+	Children BlockObjectWithSingleLevelOfChildrenList `json:"children,omitzero"`
+	Icon     PageIcon                                 `json:"icon,omitzero"`
 }
 
 // CancelSession defines a model
@@ -5664,16 +5667,20 @@ func (v *Code) unknownEnum() bool {
 
 // CodeRequest defines a model
 type CodeRequest struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text"`
 	Language Language      `json:"language"`
-	Caption  RichTextItems `json:"caption,omitzero"`
+	// Title of data source as it appears in Notion.
+	Caption RichTextItems `json:"caption,omitzero"`
 }
 
 // CodeUpdate defines a model
 type CodeUpdate struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text,omitzero"`
 	Language Language      `json:"language,omitzero"`
-	Caption  RichTextItems `json:"caption,omitzero"`
+	// Title of data source as it appears in Notion.
+	Caption RichTextItems `json:"caption,omitzero"`
 }
 
 // ColorTheme defines a model
@@ -5709,12 +5716,12 @@ type Column struct {
 	WidthRatio *float64 `json:"width_ratio,omitzero"`
 }
 
-// ColumnBlockWithChildrens defines a model
-type ColumnBlockWithChildrens []BlockObjectColumn
+// ColumnBlockWithChildrenList defines a model
+type ColumnBlockWithChildrenList []BlockObjectColumn
 
 // ColumnList defines a model
 type ColumnList struct {
-	Children ColumnBlockWithChildrens `json:"children"`
+	Children ColumnBlockWithChildrenList `json:"children"`
 }
 
 // ColumnUpdate defines a model
@@ -5725,7 +5732,7 @@ type ColumnUpdate struct {
 
 // ColumnWithChildren defines a model
 type ColumnWithChildren struct {
-	Children BlockObjectWithSingleLevelOfChildrens `json:"children"`
+	Children BlockObjectWithSingleLevelOfChildrenList `json:"children"`
 	// Ratio between 0 and 1 of the width of this column relative to all columns in the list. If not provided, uses an equal width.
 	WidthRatio float64 `json:"width_ratio,omitzero"`
 }
@@ -6253,11 +6260,13 @@ type ContentWithExpression struct {
 
 // ContentWithRichText defines a model
 type ContentWithRichText struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text"`
 }
 
 // ContentWithRichTextAndColor defines a model
 type ContentWithRichTextAndColor struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor `json:"color,omitzero"`
@@ -6296,6 +6305,7 @@ func (v *ContentWithRichTextAndColorResponse) unknownEnum() bool {
 
 // ContentWithRichTextColorAndIcon defines a model
 type ContentWithRichTextColorAndIcon struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color APIColor `json:"color,omitzero"`
@@ -6304,6 +6314,7 @@ type ContentWithRichTextColorAndIcon struct {
 
 // ContentWithRichTextColorAndIconResponseUpdate defines a model
 type ContentWithRichTextColorAndIconResponseUpdate struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text,omitzero"`
 	Icon     PageIcon      `json:"icon,omitzero"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
@@ -6312,10 +6323,11 @@ type ContentWithRichTextColorAndIconResponseUpdate struct {
 
 // ContentWithSingleLevelOfChildren defines a model
 type ContentWithSingleLevelOfChildren struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                    `json:"color,omitzero"`
-	Children BlockObjectWithoutChildrens `json:"children,omitzero"`
+	Color    APIColor                              `json:"color,omitzero"`
+	Children BlockObjectRequestWithoutChildrenList `json:"children,omitzero"`
 }
 
 // ContentWithTable defines a model
@@ -6327,12 +6339,12 @@ type ContentWithTable struct {
 
 // ContentWithTableRow defines a model
 type ContentWithTableRow struct {
-	Cells RichTextItemses `json:"cells"`
+	Cells RichTextItemsList `json:"cells"`
 }
 
 // ContentWithTableRowResponse defines a model
 type ContentWithTableRowResponse struct {
-	Cells RichTextses `json:"cells"`
+	Cells RichTextsList `json:"cells"`
 }
 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
@@ -10066,9 +10078,10 @@ func (v *Embed) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 // EmbedFileUpload defines a model
 type EmbedFileUpload struct {
-	FileUpload FileUploadID  `json:"file_upload"`
-	Type       string        `json:"type,omitzero"`
-	Caption    RichTextItems `json:"caption,omitzero"`
+	FileUpload FileUploadID `json:"file_upload"`
+	Type       string       `json:"type,omitzero"`
+	// Title of data source as it appears in Notion.
+	Caption RichTextItems `json:"caption,omitzero"`
 }
 
 // EmbedUpdate defines a model
@@ -10964,7 +10977,7 @@ func (e FilterScope) Valid() bool {
 	}
 }
 
-// Filters defines a model
+// The entries any of the filters allow.
 type Filters []Filter
 
 // FormViewConfig defines a model
@@ -12512,6 +12525,7 @@ func (e GroupStyle) Valid() bool {
 
 // HeaderContentWithRichTextAndColor defines a model
 type HeaderContentWithRichTextAndColor struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
 	Color        APIColor `json:"color,omitzero"`
@@ -12535,11 +12549,12 @@ func (v *HeaderContentWithRichTextAndColorResponse) unknownEnum() bool {
 
 // HeaderContentWithSingleLevelOfChildren defines a model
 type HeaderContentWithSingleLevelOfChildren struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color        APIColor                    `json:"color,omitzero"`
-	IsToggleable *bool                       `json:"is_toggleable,omitzero"`
-	Children     BlockObjectWithoutChildrens `json:"children,omitzero"`
+	Color        APIColor                              `json:"color,omitzero"`
+	IsToggleable *bool                                 `json:"is_toggleable,omitzero"`
+	Children     BlockObjectRequestWithoutChildrenList `json:"children,omitzero"`
 }
 
 // ID defines a model
@@ -12553,9 +12568,6 @@ type IDObject struct {
 
 // IDResponses defines a model
 type IDResponses []ID
-
-// IDs of other meeting notes you can read that are linked to the same event. For a meeting note inside a page, this is the page's ID. Only the first 50 meeting notes found are checked.
-type IDResponses3 []ID
 
 // IncompleteReason defines a model
 type IncompleteReason string
@@ -13501,6 +13513,7 @@ type McpServer struct {
 
 // MediaContentWithFileAndCaption defines a model
 type MediaContentWithFileAndCaption struct {
+	// Title of data source as it appears in Notion.
 	Caption    RichTextItems                      `json:"caption,omitzero"`
 	Type       MediaContentWithFileAndCaptionType `json:"type,omitzero"`
 	External   *ExternalFile                      `json:"external,omitzero"`
@@ -13695,6 +13708,7 @@ func (v *MediaContentWithFileAndCaptionResponse) unknownEnum() bool {
 
 // MediaContentWithFileNameAndCaption defines a model
 type MediaContentWithFileNameAndCaption struct {
+	// Title of data source as it appears in Notion.
 	Caption    RichTextItems                          `json:"caption,omitzero"`
 	Name       String                                 `json:"name,omitzero"`
 	Type       MediaContentWithFileNameAndCaptionType `json:"type,omitzero"`
@@ -13896,7 +13910,8 @@ type MediaContentWithURL struct {
 
 // MediaContentWithURLAndCaption defines a model
 type MediaContentWithURLAndCaption struct {
-	URL     string        `json:"url"`
+	URL string `json:"url"`
+	// Title of data source as it appears in Notion.
 	Caption RichTextItems `json:"caption,omitzero"`
 }
 
@@ -14861,13 +14876,14 @@ type NotionAIAgent struct {
 	// Always `notion_ai`
 	ID string `json:"id"`
 	// Always `notion_ai`
-	AgentType          string                      `json:"agent_type"`
-	Name               string                      `json:"name"`
-	Description        *struct{}                   `json:"description"`
-	InstructionsPageID *struct{}                   `json:"instructions_page_id"`
-	Icon               NotionAIAgentIcon           `json:"icon"`
-	Model              AgentModel                  `json:"model"`
-	Connections        UpdateAgentConnectionsItems `json:"connections"`
+	AgentType          string            `json:"agent_type"`
+	Name               string            `json:"name"`
+	Description        *struct{}         `json:"description"`
+	InstructionsPageID *struct{}         `json:"instructions_page_id"`
+	Icon               NotionAIAgentIcon `json:"icon"`
+	Model              AgentModel        `json:"model"`
+	// Integrations the agent is connected to (Notion, Slack, Discord, MCP servers, and other connectors), each with an account and per-target permissions.
+	Connections UpdateAgentConnectionsItems `json:"connections"`
 	// Always `active`
 	Status         string        `json:"status"`
 	PauseReason    *struct{}     `json:"pause_reason"`
@@ -15420,6 +15436,9 @@ func (v *OptionRef) MarshalJSONTo(enc *jsontext.Encoder) error {
 
 	return enc.WriteToken(jsontext.Null)
 }
+
+// IDs of other meeting notes you can read that are linked to the same event. For a meeting note inside a page, this is the page's ID. Only the first 50 meeting notes found are checked.
+type OtherMeetingNoteIds []ID
 
 // Page defines a model
 type Page struct {
@@ -16339,8 +16358,10 @@ type PagePropertiesUpdatedWebhookPayloadData struct {
 
 // PagePropertiesValue defines a model
 type PagePropertiesValue struct {
-	Type         PagePropertiesValueType             `json:"type,omitzero"`
-	Title        RichTextItems                       `json:"title,omitzero"`
+	Type PagePropertiesValueType `json:"type,omitzero"`
+	// Title of data source as it appears in Notion.
+	Title RichTextItems `json:"title,omitzero"`
+	// Title of data source as it appears in Notion.
 	RichText     RichTextItems                       `json:"rich_text,omitzero"`
 	Number       *float64                            `json:"number,omitzero"`
 	URL          *Text                               `json:"url,omitzero"`
@@ -16963,20 +16984,22 @@ func (v *Paragraph) unknownEnum() bool {
 
 // ParagraphRequest defines a model
 type ParagraphRequest struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                              `json:"color,omitzero"`
-	Children BlockObjectWithSingleLevelOfChildrens `json:"children,omitzero"`
-	Icon     PageIcon                              `json:"icon,omitzero"`
+	Color    APIColor                                 `json:"color,omitzero"`
+	Children BlockObjectWithSingleLevelOfChildrenList `json:"children,omitzero"`
+	Icon     PageIcon                                 `json:"icon,omitzero"`
 }
 
 // ParagraphWithSingleLevelOfChildren defines a model
 type ParagraphWithSingleLevelOfChildren struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                    `json:"color,omitzero"`
-	Icon     PageIcon                    `json:"icon,omitzero"`
-	Children BlockObjectWithoutChildrens `json:"children,omitzero"`
+	Color    APIColor                              `json:"color,omitzero"`
+	Icon     PageIcon                              `json:"icon,omitzero"`
+	Children BlockObjectRequestWithoutChildrenList `json:"children,omitzero"`
 }
 
 // ParentForBlockBased defines a model
@@ -24448,11 +24471,11 @@ func (v *RichTextItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return json.MarshalEncode(enc, (*plain)(&out), jsonOptsTo(enc))
 }
 
-// RichTextItems defines a model
+// Title of data source as it appears in Notion.
 type RichTextItems []RichTextItem
 
-// RichTextItemses defines a model
-type RichTextItemses []RichTextItems
+// RichTextItemsList defines a model
+type RichTextItemsList []RichTextItems
 
 // RichTextPropertyConfiguration defines a model
 type RichTextPropertyConfiguration struct {
@@ -24500,12 +24523,12 @@ func (v RichTexts) unknownEnum() bool {
 	return slices.ContainsFunc(v, func(x RichText) bool { return x.unknownEnum() })
 }
 
-// RichTextses defines a model
-type RichTextses []RichTexts
+// RichTextsList defines a model
+type RichTextsList []RichTexts
 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
 // records.
-func (v RichTextses) unknownEnum() bool {
+func (v RichTextsList) unknownEnum() bool {
 	return slices.ContainsFunc(v, func(x RichTexts) bool { return x.unknownEnum() })
 }
 
@@ -27222,10 +27245,10 @@ func (v *SessionNestedFilterOrItem) MarshalJSONTo(enc *jsontext.Encoder) error {
 	return enc.WriteToken(jsontext.Null)
 }
 
-// SessionNestedFilterOrItems defines a model
+// Return sessions that match every child filter.
 type SessionNestedFilterOrItems []SessionNestedFilterOrItem
 
-// SessionNestedFilters defines a model
+// Return sessions that match every child filter.
 type SessionNestedFilters []SessionNestedFilter
 
 // SessionRequiredActions defines a model
@@ -28797,14 +28820,14 @@ type SyncedBlock struct {
 
 // SyncedBlockChild defines a model
 type SyncedBlockChild struct {
-	SyncedFrom BlockObjectSyncedBlockSyncedFrom `json:"synced_from"`
-	Children   BlockObjectWithoutChildrens      `json:"children,omitzero"`
+	SyncedFrom BlockObjectSyncedBlockSyncedFrom      `json:"synced_from"`
+	Children   BlockObjectRequestWithoutChildrenList `json:"children,omitzero"`
 }
 
 // SyncedBlockRequest defines a model
 type SyncedBlockRequest struct {
-	SyncedFrom BlockObjectSyncedBlockSyncedFrom      `json:"synced_from"`
-	Children   BlockObjectWithSingleLevelOfChildrens `json:"children,omitzero"`
+	SyncedFrom BlockObjectSyncedBlockSyncedFrom         `json:"synced_from"`
+	Children   BlockObjectWithSingleLevelOfChildrenList `json:"children,omitzero"`
 }
 
 // SyncedBlockUpdate defines a model
@@ -28818,11 +28841,11 @@ type SyncedFrom struct {
 	BlockID ID     `json:"block_id"`
 }
 
-// TabItemRequestWithSingleLevelOfChildrens defines a model
-type TabItemRequestWithSingleLevelOfChildrens []TabItemWithSingleLevelOfChildren
+// TabItemRequestWithSingleLevelOfChildrenList defines a model
+type TabItemRequestWithSingleLevelOfChildrenList []TabItemWithSingleLevelOfChildren
 
-// TabItemRequestWithoutChildrens defines a model
-type TabItemRequestWithoutChildrens []TabItemWithoutChildren
+// TabItemRequestWithoutChildrenList defines a model
+type TabItemRequestWithoutChildrenList []TabItemWithoutChildren
 
 // TabItemWithSingleLevelOfChildren defines a model
 type TabItemWithSingleLevelOfChildren struct {
@@ -28840,12 +28863,12 @@ type TabItemWithoutChildren struct {
 
 // TabRequestWithNestedTabItemChildren defines a model
 type TabRequestWithNestedTabItemChildren struct {
-	Children TabItemRequestWithSingleLevelOfChildrens `json:"children"`
+	Children TabItemRequestWithSingleLevelOfChildrenList `json:"children"`
 }
 
 // TabRequestWithTabItemChildren defines a model
 type TabRequestWithTabItemChildren struct {
-	Children TabItemRequestWithoutChildrens `json:"children"`
+	Children TabItemRequestWithoutChildrenList `json:"children"`
 }
 
 // TableOfContents defines a model
@@ -28991,8 +29014,9 @@ func (v *Template) unknownEnum() bool {
 
 // TemplateChild defines a model
 type TemplateChild struct {
-	RichText RichTextItems               `json:"rich_text"`
-	Children BlockObjectWithoutChildrens `json:"children,omitzero"`
+	// Title of data source as it appears in Notion.
+	RichText RichTextItems                         `json:"rich_text"`
+	Children BlockObjectRequestWithoutChildrenList `json:"children,omitzero"`
 }
 
 // TemplateMention defines a model
@@ -29211,8 +29235,9 @@ func (v *TemplateMentionResponse) unknownEnum() bool {
 
 // TemplateRequest defines a model
 type TemplateRequest struct {
-	RichText RichTextItems                         `json:"rich_text"`
-	Children BlockObjectWithSingleLevelOfChildrens `json:"children,omitzero"`
+	// Title of data source as it appears in Notion.
+	RichText RichTextItems                            `json:"rich_text"`
+	Children BlockObjectWithSingleLevelOfChildrenList `json:"children,omitzero"`
 }
 
 // IANA timezone to use when resolving template variables like @now and @today (e.g. 'America/New_York'). Defaults to the authorizing user's timezone for public integrations, or UTC for internal integrations.
@@ -29933,15 +29958,17 @@ func (v *ToDo) unknownEnum() bool {
 
 // ToDoChild defines a model
 type ToDoChild struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                    `json:"color,omitzero"`
-	Children BlockObjectWithoutChildrens `json:"children,omitzero"`
-	Checked  *bool                       `json:"checked,omitzero"`
+	Color    APIColor                              `json:"color,omitzero"`
+	Children BlockObjectRequestWithoutChildrenList `json:"children,omitzero"`
+	Checked  *bool                                 `json:"checked,omitzero"`
 }
 
 // ToDoGrandchild defines a model
 type ToDoGrandchild struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text"`
 	Checked  *bool         `json:"checked,omitzero"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
@@ -29950,15 +29977,17 @@ type ToDoGrandchild struct {
 
 // ToDoRequest defines a model
 type ToDoRequest struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
-	Color    APIColor                              `json:"color,omitzero"`
-	Children BlockObjectWithSingleLevelOfChildrens `json:"children,omitzero"`
-	Checked  *bool                                 `json:"checked,omitzero"`
+	Color    APIColor                                 `json:"color,omitzero"`
+	Children BlockObjectWithSingleLevelOfChildrenList `json:"children,omitzero"`
+	Checked  *bool                                    `json:"checked,omitzero"`
 }
 
 // ToDoUpdate defines a model
 type ToDoUpdate struct {
+	// Title of data source as it appears in Notion.
 	RichText RichTextItems `json:"rich_text,omitzero"`
 	Checked  *bool         `json:"checked,omitzero"`
 	// One of: `default`, `gray`, `brown`, `orange`, `yellow`, `green`, `blue`, `purple`, `pink`, `red`, `default_background`, `gray_background`, `brown_background`, `orange_background`, `yellow_background`, `green_background`, `blue_background`, `purple_background`, `pink_background`, `red_background`
@@ -31245,7 +31274,7 @@ type UpdateAgent struct {
 	Model UpdateAgentModel `json:"model,omitzero"`
 }
 
-// UpdateAgentConnectionsItems defines a model
+// Integrations the agent is connected to (Notion, Slack, Discord, MCP servers, and other connectors), each with an account and per-target permissions.
 type UpdateAgentConnectionsItems []AgentConnectionsItem
 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
@@ -31430,12 +31459,14 @@ type UpdateDatabase struct {
 
 // UpdateEmbedFileUpload defines a model
 type UpdateEmbedFileUpload struct {
-	FileUpload FileUploadID  `json:"file_upload"`
-	Caption    RichTextItems `json:"caption,omitzero"`
+	FileUpload FileUploadID `json:"file_upload"`
+	// Title of data source as it appears in Notion.
+	Caption RichTextItems `json:"caption,omitzero"`
 }
 
 // UpdateMediaContentWithFileAndCaption defines a model
 type UpdateMediaContentWithFileAndCaption struct {
+	// Title of data source as it appears in Notion.
 	Caption    RichTextItems `json:"caption,omitzero"`
 	External   ExternalFile  `json:"external,omitzero"`
 	FileUpload FileUploadID  `json:"file_upload,omitzero"`
@@ -31443,6 +31474,7 @@ type UpdateMediaContentWithFileAndCaption struct {
 
 // UpdateMediaContentWithFileNameAndCaption defines a model
 type UpdateMediaContentWithFileNameAndCaption struct {
+	// Title of data source as it appears in Notion.
 	Caption    RichTextItems `json:"caption,omitzero"`
 	External   ExternalFile  `json:"external,omitzero"`
 	FileUpload FileUploadID  `json:"file_upload,omitzero"`
@@ -31451,7 +31483,8 @@ type UpdateMediaContentWithFileNameAndCaption struct {
 
 // UpdateMediaContentWithURLAndCaption defines a model
 type UpdateMediaContentWithURLAndCaption struct {
-	URL     string        `json:"url,omitzero"`
+	URL string `json:"url,omitzero"`
+	// Title of data source as it appears in Notion.
 	Caption RichTextItems `json:"caption,omitzero"`
 }
 
@@ -31470,7 +31503,7 @@ type UpdateMeetingNotePageOk struct {
 	// The full-page meeting note, as a meeting_notes block.
 	MeetingNote CreateMeetingNoteMeetingNotes `json:"meeting_note"`
 	// IDs of other meeting notes you can read that are linked to the same event. For a meeting note inside a page, this is the page's ID. Only the first 50 meeting notes found are checked.
-	OtherMeetingNoteIDs IDResponses3 `json:"other_meeting_note_ids"`
+	OtherMeetingNoteIDs OtherMeetingNoteIds `json:"other_meeting_note_ids"`
 }
 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
@@ -33120,7 +33153,7 @@ func (v *ViewPropertyConfigResponse) unknownEnum() bool {
 		v.TimeFormat != "" && !v.TimeFormat.Valid()
 }
 
-// ViewPropertyConfigResponses defines a model
+// Properties to display on each card.
 type ViewPropertyConfigResponses []ViewPropertyConfigResponse
 
 // unknownEnum reports whether v holds a value of an enum the specification does not list, a response debug mode
@@ -33129,7 +33162,7 @@ func (v ViewPropertyConfigResponses) unknownEnum() bool {
 	return slices.ContainsFunc(v, func(x ViewPropertyConfigResponse) bool { return x.unknownEnum() })
 }
 
-// ViewPropertyConfigs defines a model
+// Property visibility and display configuration on cards. Pass null to clear.
 type ViewPropertyConfigs []ViewPropertyConfig
 
 // ViewQuery defines a model
